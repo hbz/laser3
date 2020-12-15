@@ -2946,40 +2946,44 @@ class SubscriptionController
             response.sendError(401); return
         }
 
-        List iesToAdd = params."iesToAdd".split(",")
+        if(params."iesToAdd") {
+            List iesToAdd = params."iesToAdd".split(",")
 
 
-        def ie_accept_status = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
+            def ie_accept_status = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
 
-        Integer countIEsToAdd = 0
+            Integer countIEsToAdd = 0
 
-        if(result.subscriptionInstance) {
-            iesToAdd.each { ieID ->
-                IssueEntitlement ie = IssueEntitlement.findById(ieID)
-                def tipp = ie.tipp
+            if (result.subscriptionInstance) {
+                iesToAdd.each { ieID ->
+                    IssueEntitlement ie = IssueEntitlement.findById(ieID)
+                    def tipp = ie.tipp
 
 
-                if(tipp) {
-                    try {
-                        if (subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, (ie.priceItem != null), ie_accept_status)) {
-                            log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscriptionInstance.id}")
-                            countIEsToAdd++
+                    if (tipp) {
+                        try {
+                            if (subscriptionService.addEntitlement(result.subscriptionInstance, tipp.gokbId, ie, (ie.priceItem != null), ie_accept_status)) {
+                                log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscriptionInstance.id}")
+                                countIEsToAdd++
+                            }
+                        }
+                        catch (EntitlementCreationException e) {
+                            log.debug("Error: Added tipp ${tipp} to sub ${result.subscriptionInstance.id}: " + e.getMessage())
+                            flash.error = message(code: 'renewEntitlementsWithSurvey.noSelectedTipps')
                         }
                     }
-                    catch (EntitlementCreationException e) {
-                        log.debug("Error: Added tipp ${tipp} to sub ${result.subscriptionInstance.id}: " + e.getMessage())
-                        flash.error = message(code: 'renewEntitlementsWithSurvey.noSelectedTipps')
-                    }
                 }
-            }
 
-            if(countIEsToAdd > 0){
-                flash.message = message(code:'renewEntitlementsWithSurvey.tippsToAdd', args: [countIEsToAdd])
-            }
+                if (countIEsToAdd > 0) {
+                    flash.message = message(code: 'renewEntitlementsWithSurvey.tippsToAdd', args: [countIEsToAdd])
+                }
 
+            } else {
+                log.error("Unable to locate subscription instance")
+            }
         }
         else {
-            log.error("Unable to locate subscription instance")
+            flash.error = message(code: 'renewEntitlementsWithSurvey.noSelectedTipps')
         }
         redirect action: 'renewEntitlementsWithSurvey', id: params.id, params: [targetObjectId: params.id, surveyConfigID: result.surveyConfig?.id]
     }
