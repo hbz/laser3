@@ -2106,7 +2106,7 @@ class SubscriptionControllerService {
             if(!result.editable) {
                 [result:null,status:STATUS_ERROR]
             }
-            else {
+            if(params."iesToAdd") {
                 List iesToAdd = params."iesToAdd".split(",")
                 Integer countIEsToAdd = 0
                 iesToAdd.each { ieID ->
@@ -2129,6 +2129,10 @@ class SubscriptionControllerService {
                     result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd',args,locale)
                 }
                 [result:result,status:STATUS_OK]
+            }
+            else {
+                result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps',null,locale)
+                [result:result,status:STATUS_ERROR]
             }
         }
     }

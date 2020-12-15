@@ -28,13 +28,13 @@
                                        message="openIssueEntitlementsSurveyAgain.label"/>
         </g:if>
 
-        <g:if test="${surveyInfo && surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_COMPLETED.id]}">
+        <g:if test="${surveyInfo && surveyOrg.finishDate && surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_SURVEY_COMPLETED.id, RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_COMPLETED.id]}">
             <semui:actionsDropdownItem controller="survey" action="completeIssueEntitlementsSurveyforParticipant"
                                        params="[id: surveyConfig.id, participant: participant.id]"
                                        message="completeIssueEntitlementsSurvey.forParticipant.label"/>
         </g:if>
         <g:else>
-            <semui:actionsDropdownItemDisabled tooltip="${message(code: 'renewEntitlementsWithSurvey.noCompleted')}"
+            <semui:actionsDropdownItemDisabled tooltip="${message(code: 'surveyResult.noFinish.info.consortia')}"
                                                controller="survey"
                                                action="completeIssueEntitlementsSurveyforParticipant"
                                                message="completeIssueEntitlementsSurvey.forParticipant.label"/>
