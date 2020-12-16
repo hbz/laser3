@@ -12,9 +12,6 @@
 </p>
 <style>
 
-
-
-
 #lock {
     border: 2px solid green;
     background-color: #EFE;
@@ -39,7 +36,7 @@
             (second tabbable element)
             <a href="#">third link</a>, <a href="#">last link</a>.<br/>
 
-            <button onClick="triggerLock()">TRIGGER LOCK!</button>
+            <button id="trigger-lock" ">TRIGGER LOCK!</button>
         </div>
 
         <input placeholder="inputOutside">
@@ -47,7 +44,6 @@
 </section>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-
     function createLock() {
         var locked = false;
         var lock = document.getElementById('lock');
@@ -70,5 +66,5 @@
         return triggerLock;
     };
 
-    var triggerLock=createLock();
-    </laser:script>
+    $('#trigger-lock').click(createLock())
+</laser:script>
