@@ -61,7 +61,7 @@ class LoginController {
     String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
 
     SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response)
-    log.debug("auth action - the original request was for .." + savedRequest?.requestURL)
+    log.debug("auth action - the original request was for: " + savedRequest?.requestURL)
 
     render view: 'auth', model: [postUrl: postUrl, rememberMeParameter: config.rememberMe.parameter]
   }
