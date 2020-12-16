@@ -9727,7 +9727,7 @@ $.fn.dropdown.settings.templates = {
       values      = select.values || {},
       html        = ''
     ;
-    html +=  '<i aria-hidden="true" class="dropdown icon"></i>';
+    html +=  '<i class="dropdown icon"></i>';
     if(select.placeholder) {
       html += '<div class="default text">' + placeholder + '</div>';
     }
@@ -9769,7 +9769,7 @@ $.fn.dropdown.settings.templates = {
 
   // generates label for multiselect
   label: function(value, text) {
-    return text + '<i aria-hidden="true" class="delete icon"></i>';
+    return text + '<i class="delete icon"></i>';
   },
 
 
