@@ -208,7 +208,6 @@
                                 </sec:ifAnyGranted>
 
                                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_GLOBAL_DATA">
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="globalDataSync" action="index" >${message(code:'menu.datamanager.global_data_sync')}</semui:link>
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="checkPackageTIPPs">Tipps Check of GOKB and LAS:eR</semui:link>
                                 </sec:ifAnyGranted>
 

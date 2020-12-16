@@ -375,32 +375,13 @@ r2d2 = {
             obj.input.$input.dropdown({clearable: true}) // reference to current dropdown
         })
 
-        $(ctxSel + ' .simpleHiddenRefdata').editable({
+        $(ctxSel + ' .simpleHiddenValue').editable({
             language: JSPC.vars.locale,
             format:   JSPC.vars.dateFormat,
             url: function(params) {
                 var hidden_field_id = $(this).data('hidden-id');
                 $("#" + hidden_field_id).val(params.value);
                 // Element has a data-hidden-id which is the hidden form property that should be set to the appropriate value
-            }
-        })
-
-        $(ctxSel + ' .simpleReferenceTypedown').select2({
-            placeholder: "Search for...",
-            minimumInputLength: 1,
-            ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-                url: JSPC.vars.ajaxJsonLookupUrl,
-                dataType: 'json',
-                data: function (term, page) {
-                    return {
-                        format:'json',
-                        q: term,
-                        baseClass:$(this).data('domain')
-                    };
-                },
-                results: function (data, page) {
-                    return {results: data.values};
-                }
             }
         })
     },

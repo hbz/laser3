@@ -263,8 +263,7 @@ class SemanticUiInplaceTagLib {
         if (attrs.type == "date") {
             out << '<div class="ui calendar datepicker">'
         }
-
-        out << "<a href=\"#\" class=\"simpleHiddenRefdata ${attrs.class?:''}\""
+        out << "<a href=\"#\" class=\"simpleHiddenValue ${attrs.class?:''}\""
 
         if (attrs.type == "date") {
             out << " data-type=\"text\"" // combodate | date
@@ -279,7 +278,12 @@ class SemanticUiInplaceTagLib {
             if (attrs.language) {
                 out << " data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\""
             }
-        } else {
+        }
+        else if (attrs.type == "refdata") {
+            String data_link = createLink(controller: 'ajax', action: 'sel2RefdataSearch', params:[id: attrs.category, format: 'json'])
+            out << " data-type=\"select\" data-source=\"${data_link}\" "
+        }
+        else {
             out << " data-type=\"${attrs.type?:'text'}\" "
         }
 
