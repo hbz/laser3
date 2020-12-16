@@ -105,90 +105,8 @@
             </div>
         </div>
 
-        <%-- as far as I understood, package information must not be edited from LAS:eR - this is GOKb's matter
-        <g:if test="${editable}">
-          <div class="row">
-              <div class="column">
-                  <semui:form>
-                      <g:form class="ui form" controller="ajax" action="addToCollection">
-
-                          <legend><h3 class="ui header">${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
-                          <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
-                          <input type="hidden" name="__newObjectClass" value="${TitleInstancePackagePlatform.class.name}"/>
-                          <input type="hidden" name="__recip" value="pkg"/>
-
-                          <!-- N.B. this should really be looked up in the controller and set, not hard coded here -->
-                          <input type="hidden" name="status" value="${RefdataValue.class.name}:29"/>
-                          <div class="two fluid fields">
-                              <div class="field">
-                                  <label for="title">${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
-                                  <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" id="title" name="title" baseClass="${TitleInstance.class.name}"/>
-                              </div>
-                              <div class="field">
-                                  <label for="platform">${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
-                                  <g:simpleReferenceTypedown class="input-large" style="width:350px;" id="platform" name="platform" baseClass="${Platform.class.name}"/>
-                              </div>
-                          </div>
-                          <button type="submit" class="ui button">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
-
-                      </g:form>
-                  </semui:form>
-              </div>
-          </div>
-        </g:if>--%>
         <div class="row">
             <div class="column">
-                <%--<g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
-            <g:if test="${editable}">
-          <table class="ui celled la-table table la-ignore-fixed la-bulk-header">
-
-            <thead>
-            <tr>
-
-              <td>
-                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="JSPC.app.selectAll()"/></g:if>
-              </td>
-
-              <td colspan="7">
-                  <div class="ui form">
-                      <div class="two fields">
-                          <div class="field">
-                              <select id="bulkOperationSelect" name="bulkOperation" class="ui selection dropdown la-clearable">
-                                <option value="edit">${message(code:'package.show.batch.edit.label', default:'Batch Edit Selected Rows Using the following values')}</option>
-                                <option value="remove">${message(code:'package.show.batch.remove.label', default:'Batch Remove Selected Rows')}</option>
-                              </select>
-                          </div>
-                      </div>
-                  </div>
-
-
-                  <table class="ui celled la-table table">
-                    <tr>
-                        <td>${message(code:'subscription.details.coverageStartDate')}</td>
-                        <td>${message(code:'tipp.startVolume')}</td>
-                        <td>${message(code:'tipp.startIssue')}</td>
-                    </tr>
-                    <tr>
-                        <td>${message(code:'subscription.details.coverageEndDate')}</td>
-                        <td>${message(code:'tipp.endVolume')}</td>
-                        <td>${message(code:'tipp.endIssue')}</td>
-                    </tr>
-                    <tr>
-                      <td>${message(code:'tipp.coverageDepth')}</td>
-                      <td>${message(code:'tipp.coverageNote')}</td>
-                      <td>${message(code:'tipp.embargo')}</td>
-                    </tr>
-                  </table>
-
-              </td>
-            </tr>
-
-            </thead>
-                <tbody></tbody>
-          </table>
-            </g:if>
-
-        </g:form>--%>
                 <g:render template="/templates/tipps/table" model="[tipps: titlesList, showPackage: false, showPlattform: true, showBulkFlag: false]"/>
             </div>
         </div>
@@ -197,14 +115,6 @@
           <g:if test="${titlesList}" >
             <semui:paginate action="current" controller="package" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
           </g:if>
-
-
-
-
-    <%-- <g:render template="enhanced_select" contextPath="../templates" />
-    <g:render template="orgLinksModal" 
-              contextPath="../templates" 
-              model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />--%>
 
     <laser:script file="${this.getGroovyPageFileName()}">
        JSPC.app.selectAll = function () {

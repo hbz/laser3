@@ -96,7 +96,7 @@
 
 
         <a class="${us_dashboard_tab.getValue().value=='Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active item':'item'}" data-tab="surveys">
-                <i class="checked tasks icon large"></i>
+                <i class="chart pie icon large"></i>
                 ${surveys.size()}
                 ${message(code:'myinst.dash.survey.label')}
         </a>
