@@ -16,8 +16,11 @@
     }
 %>
 <g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
-    <g:render template="/templates/tasks/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}"  />
+    <div id="container-tasks">
+        <g:render template="/templates/tasks/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}"  />
+    </div>
 </g:if>
+
 <div id="container-documents">
     <g:render template="/templates/documents/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}" />
 </div>
@@ -25,3 +28,9 @@
 <div id="container-notes">
     <g:render template="/templates/notes/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}" />
 </div>
+
+<style>
+.la-sidekick > div[id^=container] {
+    margin-bottom: 1em;
+}
+</style>
