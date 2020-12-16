@@ -8,5 +8,6 @@
 //= require libs/moment.min.js
 //= require libs/readmore.min.js
 //= require /select2/js/select2.min.js      // vendor
+//= require /dom-focus-lock-master/umd/index.js
 
 console.log('+ base.js')

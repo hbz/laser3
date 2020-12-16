@@ -1,0 +1,56 @@
+{
+  "name": "dom-focus-lock",
+  "version": "1.0.4",
+  "description": "It is a trap! (for a focus)",
+  "author": "theKashey <thekashey@gmail.com>",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "unpkg": "umd/index.js",
+  "scripts": {
+    "build": "rollup --config rollup.config.js",
+    "prepublishOnly": "npm run build",
+    "lint": "eslint src tests",
+    "lint:fix": "eslint src tests --fix",
+    "test": "ws --static.index example/testForm.html --open"
+  },
+  "files": [
+    "src",
+    "dist",
+    "umd"
+  ],
+  "dependencies": {
+    "focus-lock": "^0.6.8"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "eslint": "^4.6.0",
+    "local-web-server": "^2.6.1",
+    "rollup": "^1.5.0",
+    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-commonjs": "^9.2.1",
+    "rollup-plugin-node-globals": "^1.4.0",
+    "rollup-plugin-node-resolve": "^4.0.1"
+  },
+  "browserslist": [
+    "last 2 versions"
+  ],
+  "keywords": [
+    "vanilla",
+    "dom",
+    "modals",
+    "focus",
+    "lock",
+    "trap",
+    "tabbable"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theKashey/dom-focus-lock.git"
+  },
+  "bugs": {
+    "url": "https://github.com/theKashey/dom-focus-lock/issues"
+  },
+  "homepage": "https://github.com/theKashey/dom-focus-lock#readme"
+}
