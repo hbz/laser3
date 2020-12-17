@@ -36,7 +36,7 @@
             (second tabbable element)
             <a href="#">third link</a>, <a href="#">last link</a>.<br/>
 
-            <button id="trigger-lock" ">TRIGGER LOCK!</button>
+            <button id="trigger-lock">TRIGGER LOCK!</button>
         </div>
 
         <input placeholder="inputOutside">
