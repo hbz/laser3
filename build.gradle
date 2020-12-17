@@ -137,8 +137,10 @@ assets {
     minifyCss = true
     skipNonDigests = true
 
+    minifyOptions = [optimizationLevel: 'ADVANCED']
+
     from '/themes'
-    excludes = ['**/*.html', '**/*.txt',  '**/*.md', '**/*.less', '**/*.sass']
+    excludes = ['**/*.html', '**/*.txt',  '**/*.md', '**/*.less', '**/*.sass', '**/*.min.js', '**/*-min.js']
 }
 
 // database-migration
