@@ -311,7 +311,7 @@ r2d2 = {
                         }
                     }
                     if (dVal.includes('datesCheck')) {
-                        let thisInput = $.trim(value), startDateInput, endDateInput, startDate, endDate;
+                        var thisInput = $.trim(value), startDateInput, endDateInput, startDate, endDate;
                         if($(this).attr("data-name") === "startDate") {
                             startDateInput = thisInput;
                             endDateInput = $('a[data-name="endDate"][data-pk="'+$(this).attr("data-pk")+'"]').text();
