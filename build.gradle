@@ -133,14 +133,14 @@ tasks.withType(Test) {
 
 // asset-pipeline
 assets {
-    minifyJs = true
-    minifyCss = true
+    minifyJs = false
+    minifyCss = false
     skipNonDigests = true
 
-    minifyOptions = [optimizationLevel: 'ADVANCED']
+    //minifyOptions = [optimizationLevel: 'ADVANCED']
 
     from '/themes'
-    excludes = ['**/*.html', '**/*.txt',  '**/*.md', '**/*.less', '**/*.sass', '**/*.min.js', '**/*-min.js']
+    //excludes = ['**/*.html', '**/*.txt',  '**/*.md', '**/*.less', '**/*.sass', '**/*.min.js', '**/*-min.js']
 }
 
 // database-migration
