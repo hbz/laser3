@@ -57,8 +57,6 @@
             baseItems << it
         }
     }
-    //println "EDITABLE: ${editable}"
-    //println "EDITABLE2: ${editable2}"
 %>
 <g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
     <semui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || editable2}">
@@ -114,7 +112,7 @@
                                 </div>
                             </g:else>
                             <%-- START Third Button --%>
-                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR")}">
+                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && accessService.checkMinUserOrgRole(contextService.getUser(), docctx.owner.owner, "INST_EDITOR")}">
                                 <g:if test="${docctx?.isShared}">
                                     <laser:remoteLink class="ui mini icon green button js-no-wait-wheel la-popup-tooltip la-delay"
                                                       controller="ajax"

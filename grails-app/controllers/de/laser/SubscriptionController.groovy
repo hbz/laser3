@@ -1004,6 +1004,7 @@ class SubscriptionController {
             if (!ctrlResult.result) {
                 response.sendError(401)
             }
+            else flash.error = ctrlResult.result.error
         }
         redirect action: 'renewEntitlementsWithSurvey', id: params.id, params: [targetObjectId: params.id, surveyConfigID: ctrlResult.result.surveyConfig?.id]
     }

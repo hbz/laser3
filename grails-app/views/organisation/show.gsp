@@ -336,15 +336,13 @@
             <div class="ui card">
                 <div class="content">
                     <g:if test="${!isProviderOrAgency}">
-                        <h3><g:message code="org.contactpersons.and.addresses.label"/></h3>
+                        <h5 class="ui header"><g:message code="org.contactpersons.and.addresses.label"/></h5>
                     </g:if>
 
-                    <div class="ui la-float-right">
                         <g:if test="${(orgInstance.id == institution.id && user.hasAffiliation('INST_EDITOR'))}">
                             <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                     class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                         </g:if>
-                    </div>
                 </div>
 
                 <div class="description">

@@ -21,7 +21,7 @@
 </semui:controlButtons>
 
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
-<g:inPlaceEdit domain="${Subscription.class.name}" pk="${subscription.id}" field="name" id="name" class="newipe">${subscription?.name}</g:inPlaceEdit>
+<semui:xEditable owner="${subscription}" field="name"/>
 </h1>
 <h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.addEntitlements.label')}</h2>
 <%-- <g:render template="nav"/> --%>
@@ -438,14 +438,6 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                 console.log("error occurred, consult logs!");
             });
     }
-
-      $("simpleHiddenRefdata").editable({
-        url: function(params) {
-          var hidden_field_id = $(this).data('hidden-id');
-          $("#"+hidden_field_id).val(params.value);
-          // Element has a data-hidden-id which is the hidden form property that should be set to the appropriate value
-        }
-      });
 
     $(".bulkcheck").change(function() {
         JSPC.app.updateSelectionCache($(this).parents("tr").attr("data-index"),$(this).prop('checked'));

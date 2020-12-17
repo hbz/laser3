@@ -4,6 +4,7 @@ import de.laser.exceptions.CreationException
 import de.laser.helper.RDStore
 import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.dao.DuplicateKeyException
 
 class BookInstance extends TitleInstance {
 
@@ -53,8 +54,14 @@ class BookInstance extends TitleInstance {
         withTransaction {
             BookInstance bi = new BookInstance(params)
             bi.setGlobalUID()
-            if(!bi.save())
-                throw new CreationException(bi.errors)
+            try {
+                if(!bi.save())
+                    throw new CreationException(bi.errors)
+            }
+            catch (DuplicateKeyException ignored) {
+                log.info("book instance exists, returning existing one")
+                bi = TitleInstance.findByGokbId(params.gokbId) as BookInstance
+            }
             bi
         }
     }

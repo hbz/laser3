@@ -30,7 +30,6 @@ class TippController  {
       return
     }
 
-    params.max = Math.min(params.max ? params.int('max') : 10, 100)
     SwissKnife.setPaginationParams(result, params, (User) result.user)
 
     String base_qry = "from TitleInstancePackagePlatform as tipp where tipp.title = :title and tipp.status != :status "

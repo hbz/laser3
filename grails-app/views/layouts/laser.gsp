@@ -66,7 +66,7 @@
                     <g:if test="${contextOrg}">
                         <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                             ${message(code:'menu.public')}
-                            <i aria-hidden="true" class="dropdown icon"></i>
+                            <i  class="dropdown icon"></i>
 
                             <div class="menu" role="menu">
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="package" action="index">${message(code:'menu.public.all_pkg')}</semui:link>
@@ -97,7 +97,7 @@
 
                         <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                             ${message(code:'menu.my')}
-                            <i aria-hidden="true" class="dropdown icon"></i>
+                            <i  class="dropdown icon"></i>
 
                             <div class="menu" role="menu">
 
@@ -135,7 +135,7 @@
 
                         <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                             ${message(code:'menu.institutions.myInst')}
-                            <i aria-hidden="true" class="dropdown icon"></i>
+                            <i  class="dropdown icon"></i>
 
                             <div class="menu" role="menu">
                                 <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
@@ -167,7 +167,7 @@
                     <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA,ROLE_STATISTICS_EDITOR">
                         <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                             ${message(code:'menu.datamanager')}
-                            <i aria-hidden="true" class="dropdown icon"></i>
+                            <i  class="dropdown icon"></i>
 
                             <div class="menu" role="menu">
                                 <sec:ifAnyGranted roles="ROLE_STATISTICS_EDITOR">
@@ -208,7 +208,6 @@
                                 </sec:ifAnyGranted>
 
                                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_GLOBAL_DATA">
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="globalDataSync" action="index" >${message(code:'menu.datamanager.global_data_sync')}</semui:link>
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="checkPackageTIPPs">Tipps Check of GOKB and LAS:eR</semui:link>
                                 </sec:ifAnyGranted>
 
@@ -226,7 +225,7 @@
                     <sec:ifAnyGranted roles="ROLE_ADMIN">
                         <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                             ${message(code:'menu.admin')}
-                            <i aria-hidden="true" class="dropdown icon"></i>
+                            <i  class="dropdown icon"></i>
 
                             <div class="menu" role="menu">
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="profile" action="errorOverview">
@@ -251,7 +250,7 @@
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     ${message(code:'menu.admin.sysAdmin')}
-                                    <i aria-hidden="true" class="dropdown icon"></i>
+                                    <i  class="dropdown icon"></i>
 
                                     <div class="menu" role="menu">
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="appInfo">${message(code:'menu.admin.appInfo')}</semui:link>
@@ -267,7 +266,7 @@
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     <i class="ui icon code branch"></i>
                                     <span class="text">Developer</span>
-                                    <i aria-hidden="true" class="dropdown icon"></i>
+                                    <i  class="dropdown icon"></i>
 
                                     <div class="menu" role="menu">
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="dev" action="frontend">Frontend</semui:link>
@@ -282,7 +281,7 @@
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     ${message(code:'org.plural.label')}
-                                    <i aria-hidden="true" class="dropdown icon"></i>
+                                    <i  class="dropdown icon"></i>
 
                                     <div class="menu" role="menu">
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="organisation" action="index">${message(code:'menu.admin.allOrganisations')}</semui:link>
@@ -300,7 +299,7 @@
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     ${message(code:'menu.admin.bulkOps')}
-                                   <i aria-hidden="true" class="dropdown icon"></i>
+                                   <i  class="dropdown icon"></i>
 
                                    <div class="menu" role="menu">
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="orgsExport">${message(code:'menu.admin.bulkOps.orgsExport')}</semui:link>
@@ -327,7 +326,7 @@
                     <sec:ifAnyGranted roles="ROLE_YODA">
                         <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                             ${message(code:'menu.yoda')}
-                            <i aria-hidden="true" class="dropdown icon"></i>
+                            <i  class="dropdown icon"></i>
 
                             <div class="menu" role="menu">
 
@@ -335,7 +334,7 @@
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     <i class="ui icon keyboard outline"></i>${message(code:'menu.yoda.engine')}
-                                    <i aria-hidden="true" class="dropdown icon"></i>
+                                    <i  class="dropdown icon"></i>
 
                                     <div class="menu" role="menu">
 
@@ -363,7 +362,7 @@
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     Fällige Termine
-                                    <i aria-hidden="true" class="dropdown icon"></i>
+                                    <i  class="dropdown icon"></i>
                                     <div class="menu" role="menu">
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dueDates_updateDashboardDB">${message(code:'menu.admin.updateDashboardTable')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</semui:link>
@@ -374,7 +373,7 @@
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     ${message(code:'menu.admin.dataManagement')}
-                                    <i aria-hidden="true" class="dropdown icon"></i>
+                                    <i  class="dropdown icon"></i>
 
                                     <div class="menu" role="menu">
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listPlatformDuplicates">List Platform Duplicates</semui:link>
@@ -394,7 +393,7 @@
 
                             <div class="item" role="menuitem" aria-haspopup="true">
                                 ${message(code:'menu.admin.syncManagement')}
-                                <i aria-hidden="true" class="dropdown icon"></i>
+                                <i  class="dropdown icon"></i>
                                 <div class="menu" role="menu">
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</semui:link>
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="globalMultithreadSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync.multithread')}</semui:link>
@@ -409,7 +408,7 @@
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     ElasticSearch
-                                    <i aria-hidden="true" class="dropdown icon"></i>
+                                    <i  class="dropdown icon"></i>
                                     <div class="menu" role="menu">
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">${message(code:'menu.yoda.updateESIndex')}</semui:link>
@@ -424,7 +423,7 @@
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     ${message(code:'menu.admin.dataMigration')}
-                                    <i aria-hidden="true" class="dropdown icon"></i>
+                                    <i  class="dropdown icon"></i>
                                     <div class="menu" role="menu">
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="migrateCollectiveSubscriptions">Migrate Collective Subscriptions (0.20)</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="migrateNatStatSettings">Migrate NatStat Settings (0.20)</semui:link>
@@ -480,7 +479,7 @@
                         <g:if test="${contextUser}">
                             <div class="ui dropdown item la-noBorder" role="menuitem" aria-haspopup="true">
                                 ${contextUser.displayName}
-                                <i aria-hidden="true" class="dropdown icon"></i>
+                                <i  class="dropdown icon"></i>
 
                                 <div class="menu" role="menu">
 

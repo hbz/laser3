@@ -310,7 +310,7 @@
                                 -->
                             </th>
                             <th>
-                                <g:simpleHiddenRefdata id="bulk_medium" name="bulk_medium" refdataCategory="${RDConstants.IE_MEDIUM}"/>
+                                <semui:simpleHiddenValue id="bulk_medium2" name="bulk_medium2" type="refdata" category="${RDConstants.IE_MEDIUM}"/>
                             </th>
                             <th>
                                 <%--<semui:datepicker hideLabel="true"

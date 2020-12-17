@@ -24,11 +24,9 @@
 </semui:controlButtons>
 
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
-<g:inPlaceEdit domain="Subscription" pk="${subscription.id}" field="name" id="name"
-               class="newipe">${subscription.name}</g:inPlaceEdit>
+<semui:xEditable owner="${subscription}" field="name"/>
 </h1>
 <h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.details.addMembers.label', args:memberType)}</h2>
-
 
 <g:if test="${consortialView}">
 
