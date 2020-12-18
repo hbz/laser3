@@ -11,24 +11,3 @@
         <i aria-hidden="true" class="trash alternate icon"></i>
     </g:link>
 </p>
-
-<section id="mySection">
-    Focus lock demo:
-    <div>
-        <a href="#">first link</a>, <a href="#">second link</a>.<br/>
-        <button tabindex="1">Button with tabindex</button>
-        (first tabbable element)
-
-        <div id="lock">
-            Lock content
-            <a href="#">first link</a>, <a href="#">second link</a>.<br/>
-            <button tabindex="1">Button with tabindex</button>
-            (second tabbable element)
-            <a href="#">third link</a>, <a href="#">last link</a>.<br/>
-
-            <button id="trigger-lock">TRIGGER LOCK!</button>
-        </div>
-
-        <input placeholder="inputOutside">
-    </div>
-</section>
