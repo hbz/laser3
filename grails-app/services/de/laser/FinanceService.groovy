@@ -14,7 +14,6 @@ import de.laser.helper.ProfilerUtils
 import de.laser.interfaces.CalculatedType
 import de.laser.titles.TitleInstance
 import de.laser.exceptions.FinancialDataException
-import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtils
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
@@ -25,7 +24,6 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.validation.ObjectError
 import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.text.NumberFormat
 import java.text.ParseException
@@ -1414,18 +1412,7 @@ class FinanceService {
      * @return the ordered list of currencies
      */
     List<Map<String,Object>> orderedCurrency() {
-        //def all_currencies = RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?', 'Currency')
-        // restrict only to new refdata values
-        // created in bootstrap.groovy with e.g. [key:'EUR']
-        // TODO: migrate old values to new ones
-        Set<RefdataValue> allCurrencies = []
-        //List<String> staticOrder = grails.util.Holders.config?.financials?.currency?.split("[|]")
-        List<String> staticOrder = ConfigUtils.getFinancialsCurrency()?.split("[|]")
-
-        staticOrder.each { String important ->
-            allCurrencies << RefdataValue.getByValueAndCategory(important,RDConstants.CURRENCY)
-        }
-        allCurrencies.addAll(RefdataCategory.getAllRefdataValues(RDConstants.CURRENCY))
+        Set<RefdataValue> allCurrencies = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.CURRENCY)
 
         List<Map<String,Object>> result = [[id:0,text:messageSource.getMessage('financials.currency.none',null, LocaleContextHolder.getLocale())]] //is only provisorical, TODO [ticket=2107]
         result.addAll(allCurrencies.collect { rdv ->

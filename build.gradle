@@ -138,7 +138,24 @@ assets {
     skipNonDigests = true
 
     from '/themes'
-    excludes = ['**/*.html', '**/*.txt',  '**/*.md', '**/*.less', '**/*.sass']
+    excludes = [
+        // javascripts/*
+            'libs/**',
+            'modules/**',
+        // themes/*
+            'accessibility/**',
+            'javascript/**',
+            'laser/**',
+        // vendor/*
+            'bulma/**',
+            'chartist/**',
+            'chartist-plugin-legend/**',
+            'cryptoJS-v3.1.2/**',
+            'datatables/**',
+            'select2/**/*.js',
+            'select2/**/*.css',
+            'swagger-ui/**',
+    ]
 }
 
 // database-migration

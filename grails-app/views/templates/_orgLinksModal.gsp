@@ -9,7 +9,7 @@
         <h3>DEPRECATED</h3>
 
         <div class="field">
-            <table id="org_role_tab" class="ui celled la-table compact table">
+            <table id="org_role_tab" class="ui celled compact la-table table">
                 <thead>
                     <tr>
                         <th>${message(code:'template.orgLinksModal.name.label')}</th>
@@ -55,24 +55,20 @@
     $('#add_org_head_row').empty()
 
         JSPC.app.oOrTable = $('#org_role_tab').dataTable( {
-            'bAutoWidth':  true,
-            "sScrollY":    "240px",
-            "sAjaxSource": "<g:createLink controller="ajax" action="refdataSearch" id="allOrgs" params="${[format:'json']}"/>",
-            "bServerSide": true,
-            "bProcessing": true,
-            "bDestroy":    true,
-            "bSort":       false,
-            "sDom":        "frtiS",
-            "oScroller": {
-                "loadingIndicator": false
-            },
-            "aoColumnDefs": [ {
-                    "aTargets": [ 1 ],
-                    "mData": "DT_RowId",
-                    "mRender": function ( data, type, full ) {
-                        return '<input type="checkbox" name="orm_orgOid" value="' + data + '"/>';
-                    }
-                } ],
+            "ajax": "<g:createLink controller="ajax" action="refdataSearch" id="allOrgs" params="${[format:'json']}"/>",
+            "scrollY":          '25vh',
+            "scrollCollapse":   false,
+            "paging":           false,
+            "destroy":          true,
+            "processing":       true,
+            // "serverSide":       true,
+            "columnDefs":       [ {
+                "targets": [1],
+                "data": "DT_RowId",
+                "render": function (data, type, full) {
+                    return '<input type="checkbox" name="orm_orgOid" value="' + data + '"/>';
+                }
+            } ],
             "language": {
                 "decimal":        "<g:message code='datatables.decimal' />",
                 "emptyTable":     "<g:message code='datatables.emptyTable' />",
