@@ -5,6 +5,6 @@
 //= require libs/jquery-editable-poshytip.js
 //= require libs/moment-with-locales-hbz-customized.js
 //= require libs/readmore.js
-//= require /select2/js/select2.js      // vendor
+//= require /select2/js/select2.js      //-- vendor
 
 console.log('+ base.js')

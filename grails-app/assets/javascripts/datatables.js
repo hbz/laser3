@@ -1,3 +1,3 @@
 // FileName: datatables.js
 //
-//= require /datatables/datatables.js       // vendor
+//= require /datatables/datatables.js       //-- vendor
