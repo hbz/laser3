@@ -1,5 +1,6 @@
 <p class="la-clear-before">
     <g:link controller="public"
+            id="trigger-lock"
             action="wcagTest"
             params=""
             data-content="Hier kommt der Tooltip rein"
@@ -12,13 +13,13 @@
 </p>
 <style>
 
-#lock {
-    border: 2px solid green;
+#js-modal {
+    border: 20px solid green;
     background-color: #EFE;
 }
 
-#lock.locked {
-    border: 2px solid red;
+#js-modal.locked {
+    border: 20px solid red;
     background-color: #FEE;
 }
 </style>
@@ -46,7 +47,8 @@
 <laser:script file="${this.getGroovyPageFileName()}">
     function createLock() {
         var locked = false;
-        var lock = document.getElementById('lock');
+        var lock = document.getElementById('js-modal');
+
 
         function setStyle() {
             lock.classList[locked ? 'add' : 'remove']('locked');
@@ -66,5 +68,5 @@
         return triggerLock;
     };
 
-    $('#trigger-lock').click(createLock())
+    $('.js-open-confirm-modal').click(createLock())
 </laser:script>
