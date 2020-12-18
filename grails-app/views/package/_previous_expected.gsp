@@ -4,6 +4,7 @@
   <head>
     <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'package.label')}</title>
+    <asset:stylesheet src="datatables.css"/><laser:javascript src="datatables.js"/>%{-- dont move --}%
   </head>
   <body>
 
