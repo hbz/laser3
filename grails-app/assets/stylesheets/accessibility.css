@@ -2,6 +2,6 @@
  * FileName: accessibility.css
  *
  *= require base.css
- *= require /accessibility/semantic.min.css         // themes
+ *= require /accessibility/semantic.min.css         //-- themes
  *= require tmp_semui.css
  */
