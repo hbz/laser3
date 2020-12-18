@@ -6,5 +6,5 @@
 //= require libs/moment-with-locales-hbz-customized.js
 //= require libs/readmore.js
 //= require /select2/js/select2.js      //-- vendor
-
+//= require /focusLoopingUtil/focusLoopingUtil.js
 console.log('+ base.js')

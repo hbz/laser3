@@ -11,19 +11,8 @@
         <i aria-hidden="true" class="trash alternate icon"></i>
     </g:link>
 </p>
-<style>
 
-#js-modal {
-    border: 20px solid green;
-    background-color: #EFE;
-}
-
-#js-modal.locked {
-    border: 20px solid red;
-    background-color: #FEE;
-}
-</style>
-<section>
+<section id="mySection">
     Focus lock demo:
     <div>
         <a href="#">first link</a>, <a href="#">second link</a>.<br/>
@@ -43,30 +32,3 @@
         <input placeholder="inputOutside">
     </div>
 </section>
-
-<laser:script file="${this.getGroovyPageFileName()}">
-    function createLock() {
-        var locked = false;
-        var lock = document.getElementById('js-modal');
-
-
-        function setStyle() {
-            lock.classList[locked ? 'add' : 'remove']('locked');
-        }
-
-        function triggerLock() {
-            locked = !locked;
-            if (locked) {
-                focusLock.on(lock);
-            } else {
-                focusLock.off(lock);
-            }
-            setStyle();
-        }
-
-        setStyle();
-        return triggerLock;
-    };
-
-    $('.js-open-confirm-modal').click(createLock())
-</laser:script>
