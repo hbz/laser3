@@ -4,10 +4,10 @@
  *
  * To rebuild or modify this file with the latest versions of the included
  * software please visit:
- *   https://datatables.net/download/#se/dt-1.10.22/b-1.6.5/b-colvis-1.6.5/fc-3.3.2/sc-2.0.3
+ *   https://datatables.net/download/#se/dt-1.10.16/b-1.5.1/b-colvis-1.5.1/fc-3.2.4/sc-1.4.4
  *
  * Included libraries:
- *   DataTables 1.10.22, Buttons 1.6.5, Column visibility 1.6.5, FixedColumns 3.3.2, Scroller 2.0.3
+ *   DataTables 1.10.16, Buttons 1.5.1, Column visibility 1.5.1, FixedColumns 3.2.4, Scroller 1.4.4
  */
 
 /*
@@ -71,7 +71,7 @@ div.dataTables_wrapper div.dataTables_length select {
 div.dataTables_wrapper div.dataTables_length .ui.selection.dropdown {
   min-width: 0;
 }
-div.dataTables_wrapper div.dataTables_filter span.input {
+div.dataTables_wrapper div.dataTables_filter input {
   margin-left: 0.5em;
 }
 div.dataTables_wrapper div.dataTables_info {
@@ -169,24 +169,19 @@ div.dt-button-info > div {
   padding: 1em;
 }
 
-div.dt-button-collection-title {
-  text-align: center;
-  padding: 0.3em 0 0.5em;
-  font-size: 0.9em;
-}
-
-div.dt-button-collection-title:empty {
-  display: none;
-}
-
 div.dt-button-collection {
   position: absolute;
   top: 0;
   left: 0;
-  min-width: 200px;
+  width: 150px;
   margin-top: 3px !important;
   z-index: 2002;
   background: white;
+  -webkit-column-gap: 8px;
+  -moz-column-gap: 8px;
+  -ms-column-gap: 8px;
+  -o-column-gap: 8px;
+  column-gap: 8px;
 }
 div.dt-button-collection.fixed {
   position: fixed;
@@ -196,7 +191,7 @@ div.dt-button-collection.fixed {
   border-radius: 0;
 }
 div.dt-button-collection.fixed.two-column {
-  margin-left: -200px;
+  margin-left: -150px;
 }
 div.dt-button-collection.fixed.three-column {
   margin-left: -225px;
@@ -204,22 +199,12 @@ div.dt-button-collection.fixed.three-column {
 div.dt-button-collection.fixed.four-column {
   margin-left: -300px;
 }
-div.dt-button-collection > :last-child {
-  display: block !important;
-  -webkit-column-gap: 8px;
-  -moz-column-gap: 8px;
-  -ms-column-gap: 8px;
-  -o-column-gap: 8px;
-  column-gap: 8px;
-}
-div.dt-button-collection > :last-child > * {
+div.dt-button-collection > * {
   -webkit-column-break-inside: avoid;
   break-inside: avoid;
 }
 div.dt-button-collection.two-column {
-  width: 400px;
-}
-div.dt-button-collection.two-column > :last-child {
+  width: 300px;
   padding-bottom: 1px;
   -webkit-column-count: 2;
   -moz-column-count: 2;
@@ -229,8 +214,6 @@ div.dt-button-collection.two-column > :last-child {
 }
 div.dt-button-collection.three-column {
   width: 450px;
-}
-div.dt-button-collection.three-column > :last-child {
   padding-bottom: 1px;
   -webkit-column-count: 3;
   -moz-column-count: 3;
@@ -240,8 +223,6 @@ div.dt-button-collection.three-column > :last-child {
 }
 div.dt-button-collection.four-column {
   width: 600px;
-}
-div.dt-button-collection.four-column > :last-child {
   padding-bottom: 1px;
   -webkit-column-count: 4;
   -moz-column-count: 4;
@@ -351,36 +332,24 @@ div.DTFC_RightBodyWrapper table.ui.table.dataTable thead .sorting_desc:after {
 }
 
 
-div.dts {
+div.DTS {
   display: block !important;
 }
-div.dts tbody th,
-div.dts tbody td {
+div.DTS tbody th,
+div.DTS tbody td {
   white-space: nowrap;
 }
-div.dts div.dts_loading {
+div.DTS div.DTS_Loading {
   z-index: 1;
 }
-div.dts div.dts_label {
-  position: absolute;
-  right: 10px;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
-  text-align: right;
-  border-radius: 3px;
-  padding: 0.4em;
-  z-index: 2;
-  display: none;
-}
-div.dts div.dataTables_scrollBody {
+div.DTS div.dataTables_scrollBody {
   background: repeating-linear-gradient(45deg, #edeeff, #edeeff 10px, white 10px, white 20px);
 }
-div.dts div.dataTables_scrollBody table {
+div.DTS div.dataTables_scrollBody table {
   z-index: 2;
 }
-div.dts div.dataTables_paginate,
-div.dts div.dataTables_length {
+div.DTS div.dataTables_paginate,
+div.DTS div.dataTables_length {
   display: none;
 }
 

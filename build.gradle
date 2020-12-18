@@ -48,7 +48,7 @@ dependencies {
     compile 'org.hibernate:hibernate-core:5.1.16.Final'
     compile 'org.grails.plugins:gsp'
     console 'org.grails:grails-console'
-    compile 'com.bertramlabs.plugins:asset-pipeline-grails:3.0.9' // change: runtime -> compile
+    compile 'com.bertramlabs.plugins:asset-pipeline-grails:3.0.9' // changed: runtime -> compile
     profile 'org.grails.profiles:web'
     runtime 'org.apache.tomcat:tomcat-jdbc'
     testCompile 'org.grails:grails-gorm-testing-support'
@@ -82,9 +82,9 @@ dependencies {
     compile 'org.hibernate:hibernate-ehcache:5.1.16.Final'
 
     // apache stuff
-    compile 'org.apache.commons:commons-exec:1.3'
-    compile 'commons-fileupload:commons-fileupload:1.3.3'
     compile 'commons-io:commons-io:2.6'
+    compile 'commons-fileupload:commons-fileupload:1.3.3'
+    compile 'org.apache.commons:commons-exec:1.3'
     compile 'org.apache.commons:commons-lang3:3.9'
     compile 'org.apache.httpcomponents:httpmime:4.5.4'
     compile 'org.apache.poi:poi-ooxml:3.9'
@@ -95,7 +95,6 @@ dependencies {
     compile 'gov.loc:bagit:4.0'
     compile 'org.codehaus.gpars:gpars:1.2.1'
     compile 'org.liquibase:liquibase-core:3.5.5' // org.grails.plugins:database-migration:3.0.3
-
 
     runtime 'org.postgresql:postgresql:42.2.5.jre6'
 }
@@ -117,10 +116,10 @@ buildProperties {
 // war-file creation
 war {
     baseName = 'laser2'
-    archiveName 'laser2.war'
+    archiveName = 'laser2.war'
 }
 
-// windows: limitation of command line length
+// windows limitation of command line length
 grails {
     pathingJar = true
 }
@@ -134,10 +133,29 @@ tasks.withType(Test) {
 
 // asset-pipeline
 assets {
-    minifyJs = false
-    minifyCss = false
+    minifyJs = true
+    minifyCss = true
+    skipNonDigests = true
 
     from '/themes'
+    excludes = [
+        // javascripts/*
+            'libs/**',
+            'modules/**',
+        // themes/*
+            'accessibility/**',
+            'javascript/**',
+            'laser/**',
+        // vendor/*
+            'bulma/**',
+            'chartist/**',
+            'chartist-plugin-legend/**',
+            'cryptoJS-v3.1.2/**',
+            'datatables/**',
+            'select2/**/*.js',
+            'select2/**/*.css',
+            'swagger-ui/**',
+    ]
 }
 
 // database-migration
