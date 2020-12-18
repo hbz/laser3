@@ -152,7 +152,8 @@ assets {
             'chartist-plugin-legend/**',
             'cryptoJS-v3.1.2/**',
             'datatables/**',
-            'select2/**',
+            'select2/**/*.js',
+            'select2/**/*.css',
             'swagger-ui/**',
     ]
 }
