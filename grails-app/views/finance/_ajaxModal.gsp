@@ -483,11 +483,11 @@
                         if($("#newSubscription").hasClass('error') || $("#newPackage").hasClass('error') || $("#newIE").hasClass('error'))
                             alert("${message(code:'financials.newCosts.entitlementError')}");
                         else {
-                            if($("[name='newLicenseeTarget']").length > 0 && $("[name='newLicenseeTarget']").val() === '') {
+                            if($("[name='newLicenseeTarget']").length === 1 && $("[name='newLicenseeTarget']").val()[0] === '') {
                                 alert("${message(code:'financials.newCosts.noSubscriptionError')}") //continue here: a confirm if the consortial user wants really to attach cost items to the parent subscription
                             }
                             else {
-                                if($("[name='newLicenseeTarget']").val() && $("[name='newLicenseeTarget']").val().indexOf('forParent') > -1) {
+                                if($("[name='newLicenseeTarget']").val() && $("[name='newLicenseeTarget']").val().join(";").indexOf('forParent') > -1) {
                                     if(confirm("${message(code:'financials.newCosts.confirmForParent')}")) $(this).unbind('submit').submit();
                                 }
                                 else $(this).unbind('submit').submit();

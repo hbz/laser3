@@ -37,14 +37,24 @@ class RefdataReorderService {
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 10 where rdv.value = :value',[value:'Scientific staff'])
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 20 where rdv.value = :value',[value:'User'])
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 30 where rdv.value = :value',[value:'Population'])
+        List currencies = RefdataValue.findAllByOwner(RefdataCategory.getByDesc('Currency'),[sort:'value',order:'asc'])
+        order = 40
         //currencies: defined by external
-        List currencies = RefdataValue.findAllByOwnerAndValueNotEqual(RefdataCategory.getByDesc('Currency'),'EUR',[sort:'value',order:'asc'])
-        RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 0 where rdv.value = :value',[value:'EUR'])
-        order = 10
         currencies.each { RefdataValue c ->
-            c.order = order
+            switch(c.value) {
+                case 'EUR': c.order = 0
+                    break
+                case 'GBP': c.order = 10
+                    break
+                case 'USD': c.order = 20
+                    break
+                case 'CHF': c.order = 30
+                    break
+                default: c.order = order
+                    order += 10
+                    break
+            }
             c.save()
-            order += 10
         }
 
         //ToDo Order of cost.item.elements
