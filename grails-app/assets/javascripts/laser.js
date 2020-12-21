@@ -8,6 +8,7 @@
 //= require modules/bb8.js
 //= require modules/a11y/collections/menu.js
 //= require modules/a11y/elements/icon.js
+//= require modules/a11y/modules/modal.js
 //= require modules/jsqtk.js
 
 console.log('+ laser.js')
@@ -20,6 +21,7 @@ $(function () {
     tooltip.go();
     a11yMenu.go();
     a11yIcon.go();
+    a11yModal.go();
 
     $('main.ui.main').removeClass('hidden');
 })
