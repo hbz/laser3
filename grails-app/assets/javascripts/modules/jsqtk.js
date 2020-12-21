@@ -16,10 +16,10 @@ jsqtk = {
 
         jsqtk._checkIds()
 
-        var elCounter = jsqtk._checkEventListeners()
-        var currentKeys = jsqtk.el_keys[jsqtk.el_keys.length - 1]
+        let elCounter = jsqtk._checkEventListeners()
+        let currentKeys = jsqtk.el_keys[jsqtk.el_keys.length - 1]
 
-        var tmp = []
+        let tmp = []
         $.each(jsqtk.el_resultCounter, function (k, v) {
             tmp.push(k + ': ' + v)
         })
@@ -31,7 +31,7 @@ jsqtk = {
             console.log('- el_blacklist: ' + jsqtk.el_blacklist)
         }
         if (currentKeys.length > 0) {
-            var history = []
+            let history = []
             jsqtk.el_keys.forEach(function (i){ history.push(i.length) })
 
             console.log('- history count of used data-jsqtk-ids: [' + history + ']')
@@ -45,7 +45,7 @@ jsqtk = {
 
         console.groupCollapsed('jsqtk .. id doublets', jsqtk.id_result.length)
         jsqtk.id_result.forEach(function (k) {
-            var tmp = []
+            let tmp = []
             $.each($('[id="' + k + '"]'), function (i, elem) {
                 tmp.push(elem)
             })
@@ -56,11 +56,11 @@ jsqtk = {
 
     info: function (id) {
         console.log('jsqtk.info()')
-        var elem = $('*[data-jsqtk-id="jsqtk-' + id + '"]')
+        let elem = $('*[data-jsqtk-id="jsqtk-' + id + '"]')
 
         if (elem) {
             console.log(elem)
-            var evs = $._data(elem[0], 'events')
+            let evs = $._data(elem[0], 'events')
             $.each(evs, function (i, elist) {
                 $.each(elist, function (ii, oo) {
                     console.log(oo)
@@ -79,7 +79,7 @@ jsqtk = {
     // ----->
 
     _checkEventListeners: function () {
-        var elCounter = 0
+        let elCounter = 0
 
         jsqtk.el_result = {}
         jsqtk.el_resultCounter = {}
@@ -87,15 +87,15 @@ jsqtk = {
         $.each($('*'), function (i, elem) {
             jsqtk.el_idCounter = jsqtk.el_idCounter + 1
 
-            var jsqtkEid = 'jsqtk-' + jsqtk.el_idCounter
-            var evs = $._data(elem, 'events')
+            let jsqtkEid = 'jsqtk-' + jsqtk.el_idCounter
+            let evs = $._data(elem, 'events')
 
             if (evs) {
                 elCounter = elCounter + Object.keys(evs).length
 
                 $.each(evs, function (ii, elist) {
                     if ($.inArray(ii, jsqtk.el_blacklist) < 0 && elist.length > 1) {
-                        var checkList = jsqtk._checkEventListenersInternal(elist)
+                        let checkList = jsqtk._checkEventListenersInternal(elist)
 
                         if (checkList.length > 0) {
                             if ($(elem).attr('data-jsqtk-id')) {
@@ -119,7 +119,7 @@ jsqtk = {
             }
         })
 
-        var keys = Object.keys(jsqtk.el_result).sort(function (a, b) {
+        let keys = Object.keys(jsqtk.el_result).sort(function (a, b) {
             a.split('-')[1] < b.split('-')[1] ? 1 : -1
         })
         jsqtk.el_keys.push(keys)
@@ -128,10 +128,10 @@ jsqtk = {
     },
 
     _checkEventListenersInternal: function (events) {
-        var result = []
+        let result = []
 
-        for (var i=0; i<events.length; i++) {
-            for (var j=i+1; j<events.length; j++) {
+        for (let i=0; i<events.length; i++) {
+            for (let j=i+1; j<events.length; j++) {
                 if (events[i].handler.toString() == events[j].handler.toString()) {
                     if ($.inArray(events[i].handler, result) < 0) {
                         result.push(events[i].handler)
@@ -150,7 +150,7 @@ jsqtk = {
         jsqtk.id_result = []
 
         $.each($('[id]'), function (i, elem) {
-            var id = $(elem).attr('id')
+            let id = $(elem).attr('id')
             if ($.inArray(id, jsqtk.id_keys) < 0) {
                 jsqtk.id_keys.push(id)
             }
