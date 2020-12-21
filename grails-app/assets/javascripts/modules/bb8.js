@@ -4,7 +4,6 @@
 bb8 = {
 
     go: function() {
-        // console.log('bb8.go()')
         bb8.init('body')
     },
 
@@ -28,12 +27,12 @@ bb8 = {
 
     ajax4remoteLink: function(elem) {
 
-        var url     = $(elem).attr('href')
-        var before  = $(elem).attr('data-before')       // before
-        var done    = $(elem).attr('data-done')         // onSuccess-Trigger
-        var fail    = $(elem).attr('data-fail')
-        var always  = $(elem).attr('data-always')       // onComplete
-        var update  = '#' + $(elem).attr('data-update')
+        let url     = $(elem).attr('href')
+        let before  = $(elem).attr('data-before')       // before
+        let done    = $(elem).attr('data-done')         // onSuccess-Trigger
+        let fail    = $(elem).attr('data-fail')
+        let always  = $(elem).attr('data-always')       // onComplete
+        let update  = '#' + $(elem).attr('data-update')
 
         $.ajax({
             url: url,
@@ -68,13 +67,13 @@ bb8 = {
 
     ajax4remoteForm: function(elem) {
 
-        var url     = $(elem).attr('action')
-        var before  = $(elem).attr('data-before')       // before
-        var done    = $(elem).attr('data-done')         // onSuccess-Trigger
-        var fail    = $(elem).attr('data-fail')
-        var always  = $(elem).attr('data-always')       // onComplete
-        var data    = $(elem).serialize()
-        var update  = '#' + $(elem).attr('data-update')
+        let url     = $(elem).attr('action')
+        let before  = $(elem).attr('data-before')       // before
+        let done    = $(elem).attr('data-done')         // onSuccess-Trigger
+        let fail    = $(elem).attr('data-fail')
+        let always  = $(elem).attr('data-always')       // onComplete
+        let data    = $(elem).serialize()
+        let update  = '#' + $(elem).attr('data-update')
 
         $.ajax({
             url: url,

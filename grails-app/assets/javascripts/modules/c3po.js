@@ -58,10 +58,10 @@ c3po = {
     searchProp: function (grouped, ajaxurl, cssId, tenantId) {
         console.log("c3po.searchProp() " + ajaxurl + " : " + cssId + " : " + tenantId)
 
-        var desc = $(cssId + " .customPropSelect").attr('data-desc')
-        var oid = $(cssId + " .customPropSelect").attr('data-oid')
+        let desc = $(cssId + " .customPropSelect").attr('data-desc')
+        let oid  = $(cssId + " .customPropSelect").attr('data-oid')
 
-        var baseClass = 'de.laser.properties.PropertyDefinition'
+        let baseClass = 'de.laser.properties.PropertyDefinition'
 
         if (grouped == c3po.PROP_SEARCH_GROUPED) {
             baseClass = 'de.laser.properties.PropertyDefinitionGroup'
@@ -104,7 +104,7 @@ c3po = {
 
         $(cssId + " .customPropSelect").on("select2-selecting", function (e) {
             if (e.val == -1) {
-                var selectedText = e.object.text;
+                let selectedText = e.object.text;
                 selectedText = selectedText.replace("Neue Eigenschaft: ", "")
                 $("input[name='cust_prop_name']").val(selectedText);
                 $('#cust_prop_add_modal').modal('show');
@@ -118,7 +118,7 @@ c3po = {
         console.log("c3po.showHideRefData() " + cssId)
 
         $('#cust_prop_modal_select').change(function () {
-            var selectedText = $("#cust_prop_modal_select option:selected").val();
+            let selectedText = $("#cust_prop_modal_select option:selected").val();
             if (selectedText == "de.laser.RefdataValue") {
                 $("#cust_prop_ref_data_name").show();
             } else {
