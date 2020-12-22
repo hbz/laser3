@@ -22,7 +22,7 @@
                     <span id="custom-logo"></span>
                 </div>
                 <div class="column is-7">
-                    <h1 class="title">ebookCatalogue (working title)</h1>
+                    <h1 class="title">ebookCatalogue</h1>
                     <h2 class="subtitle">
                         give us some time, but <strong>here</strong> we go ..
                     </h2>
@@ -78,7 +78,7 @@
         background-color: #fafafa;
     }
     .custom-section-result {
-        border-top: 1px solid #3298dc;
+        border-top: 1px solid #dbdbdb;
     }
 
 </style>
