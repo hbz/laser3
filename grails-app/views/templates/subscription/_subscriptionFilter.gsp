@@ -39,23 +39,23 @@
                 </div>
             </div>
             <% /* 1-3 */ %>
-            <div class="field fieldcontain">
+            <div class="field">
                 <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
             <% /*
             <!-- 1-4 -->
-            <div class="field disabled fieldcontain">
+            <div class="field disabled">
                 <semui:datepicker label="myinst.currentSubscriptions.filter.renewalDate.label"  id="renewalDate" name="renewalDate"
                                   placeholder="filter.placeholder" value="${params.renewalDate}"/>
             </div>
             <!-- 1-5 -->
-            <div class="field disabled fieldcontain">
+            <div class="field disabled">
                 <semui:datepicker label="myinst.currentSubscriptions.filter.durationDateEnd.label"
                                   id="durationDate" name="durationDate" placeholder="filter.placeholder" value="${params.durationDate}"/>
             </div>
             */ %>
             <% /* 1-4 */ %>
-            <div class="field fieldcontain">
+            <div class="field">
                 <label>${message(code: 'default.status.label')}</label>
                 <laser:select class="ui dropdown" name="status"
                               from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
@@ -72,7 +72,7 @@
             <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
             <%--
                         <!-- 2-1 -->
-                        <div class="field disabled fieldcontain">
+                        <div class="field disabled">
                             <label>${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
                             <laser:select name="status" class="ui dropdown"
                                           from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
@@ -83,7 +83,7 @@
 
                         </div>
                         <!-- 2-2 -->
-                        <div class="field disabled fieldcontain">
+                        <div class="field disabled">
                             <label>${message(code: 'default.status.label')}</label>
                             <laser:select name="status" class="ui dropdown"
                                           from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"

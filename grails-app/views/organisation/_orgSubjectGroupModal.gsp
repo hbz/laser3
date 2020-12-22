@@ -5,7 +5,7 @@
 
     <semui:modal id="subjectGroup" message="org.subjectGroup.add.label">
         <g:form class="ui form" url="[controller: 'organisation', action: 'addSubjectGroup',id:org.id]" method="post">
-            <div class="field fieldcontain">
+            <div class="field">
             <label><g:message code="org.subjectGroup.label"/>:</label>
 
             <g:select from="${availableSubjectGroups}"

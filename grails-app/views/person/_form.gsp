@@ -1,6 +1,6 @@
 <%@ page import="de.laser.PersonRole; de.laser.RefdataCategory; de.laser.Org; de.laser.Person; de.laser.helper.RDConstants" %>
 
-<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'title', 'error')}">
+<div class="field ${hasErrors(bean: personInstance, field: 'title', 'error')}">
 	<label for="title">
 		<g:message code="person.title.label"/>
 	</label>
@@ -8,7 +8,7 @@
 
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')} required">
+<div class="field ${hasErrors(bean: personInstance, field: 'first_name', 'error')} required">
 	<label for="first_name">
 		<g:message code="person.first_name.label" />
 	</label>
@@ -16,7 +16,7 @@
 
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
+<div class="field ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
 	<label for="middle_name">
 		<g:message code="person.middle_name.label" />
 		
@@ -25,7 +25,7 @@
 
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
+<div class="field ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
 	<label for="last_name">
 		<g:message code="person.last_name.label" />
 	</label>
@@ -33,7 +33,7 @@
 
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
+<div class="field ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
     <label for="gender">
         <g:message code="person.gender.label" />
 
@@ -46,7 +46,7 @@
                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
 </div>
 <%--
-<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
+<div class="field ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
     <label for="roleType">
 		${RefdataCategory.getByDesc(RDConstants.PERSON_POSITION).getI10n('desc')}
 
@@ -59,7 +59,7 @@
                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
 </div>
 --%>
-<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
+<div class="field ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
     <label for="contactType">
 		${RefdataCategory.getByDesc(RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}
 
@@ -72,7 +72,7 @@
                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contacts', 'error')} ">
+<div class="field ${hasErrors(bean: personInstance, field: 'contacts', 'error')} ">
 	<label for="contacts">
 		<g:message code="person.contacts.label" />
 	</label>
@@ -91,7 +91,7 @@
     <% /* <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/> */ %>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'addresses', 'error')} ">
+<div class="field ${hasErrors(bean: personInstance, field: 'addresses', 'error')} ">
 	<label for="addresses">
 		<g:message code="person.addresses.label" />
 	</label>
@@ -110,7 +110,7 @@
     <% /* <g:render template="/templates/cpa/addressFormModal" model="['prsId': personInstance?.id]"/> */ %>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
+<div class="field ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
     <label for="isPublic">
         <g:message code="person.isPublic.label" />
     </label>
@@ -121,7 +121,7 @@
                   value="${personInstance?.isPublic?.id}" /><%-- todo: ERMS-1562 --%>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
+<div class="field ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
     <label for="tenant">
         <g:message code="person.tenant.label" default="Tenant (Permissions to edit this person and depending addresses and contacts)" />
     </label>

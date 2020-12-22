@@ -1,7 +1,7 @@
 <g:form action="public" controller="wcagTest" method="get" class="ui small form clearing">
 
     <div class="three fields">
-        <div class="field fieldcontain">
+        <div class="field">
             <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
         </div>
 

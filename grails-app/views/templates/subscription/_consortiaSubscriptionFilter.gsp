@@ -31,7 +31,7 @@
             </div>
 
             <g:if test="${'onlyMemberSubs' in tableConfig}">
-                <div class="field fieldcontain">
+                <div class="field">
                     <label>${message(code:'default.subscription.label')}</label>
                     <div class="ui search selection multiple dropdown" id="selSubscription">
                         <input type="hidden" name="selSubscription">
@@ -41,10 +41,10 @@
                     </div>
                 </div>
             </g:if>
-            <div class="field fieldcontain">
+            <div class="field">
                 <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
-            <div class="field fieldcontain">
+            <div class="field">
                 <label>${message(code: 'default.status.label')}</label>
                 <%
                     def fakeList = []
@@ -104,7 +104,7 @@
                     </fieldset>
                 </div>
             </g:if>
-            <div class="field fieldcontain">
+            <div class="field">
                 <label for="identifier">${message(code: 'default.search.identifier')}</label>
                 <div class="ui input">
                     <input type="text" id="identifier" name="identifier"
