@@ -38,7 +38,6 @@
 
 				<semui:errors bean="${contactInstance}" />
 
-				<fieldset>
 					<g:form class="ui form" action="create" >
 						<fieldset>
 							<g:render template="form"/>
@@ -51,7 +50,6 @@
 							</div>
 						</fieldset>
 					</g:form>
-				</fieldset>
 				
 			</div>
 

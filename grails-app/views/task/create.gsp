@@ -42,7 +42,6 @@
 
 				<semui:errors bean="${taskInstance}" />
 
-				<fieldset>
 					<g:form class="ui form" action="create" >
 						<fieldset>
 							<% /* f:all bean="taskInstance"/*/ %>
@@ -57,7 +56,6 @@
 							</div>
 						</fieldset>
 					</g:form>
-				</fieldset>
 				
 			</div><!-- .twelve -->
 
