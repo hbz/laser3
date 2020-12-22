@@ -28,9 +28,3 @@
 <div id="container-notes">
     <g:render template="/templates/notes/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}" />
 </div>
-
-<style>
-.la-sidekick > div[id^=container] {
-    margin-bottom: 1em;
-}
-</style>

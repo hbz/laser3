@@ -30101,6 +30101,10 @@ a.ui.card:hover,
   color: #275480;
 }
 
+.ui.card:last-child {
+  margin-bottom: 1em;
+}
+
 .la-sidekick .hidden + .ui.card {
   margin-top: 0em;
 }

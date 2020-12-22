@@ -99,6 +99,9 @@
 .ui.card>.content>a.header, .ui.cards>.card>.content>a.header {
   color: @linkColor;
 }
+.ui.card:last-child {
+  margin-bottom: 1em;
+}
 
 .la-sidekick .hidden + .ui.card {
   margin-top: 0em;
