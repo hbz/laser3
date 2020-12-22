@@ -11,7 +11,7 @@
 		<div class="ui grid">
 
             <div class="four wide column">
-                <div class="well">
+                <div>
                     <ul class="nav nav-list">
                         <li class="nav-header">${entityName}</li>
                         <li>

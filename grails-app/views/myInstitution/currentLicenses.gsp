@@ -167,7 +167,7 @@
                       <tr>
                           <g:if test="${compare}">
                               <td class="center aligned">
-                                  <g:checkBox name="selectedObjects" value="${l.id}" checked="false"/>
+                                  <g:checkBox id="selectedObjects_${l.id}" name="selectedObjects" value="${l.id}" checked="false"/>
                               </td>
                           </g:if>
                           <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>

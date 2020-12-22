@@ -64,7 +64,7 @@
             <%-- Show overwrite option if there is an existing OPL --%>
                 <g:if test="${existing_opl}">
                     ${message(code:'onix.import.dupe', default:'This ONIX-PL document appears to describe an existing ONIX-PL license')}:
-                    <div class="well">
+                    <div>
                         <g:link action="index"
                                 controller="onixplLicense"
                                 id="${existing_opl.id}">

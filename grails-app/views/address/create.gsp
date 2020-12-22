@@ -12,7 +12,7 @@
 		<div>
 			
 			<div class="span3">
-				<div class="well">
+				<div>
 					<ul class="nav nav-list">
 						<li class="nav-header">${entityName}</li>
 						<li>
