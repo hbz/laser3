@@ -241,7 +241,7 @@ placeholder: "Kategorie eintippen...",
 minimumInputLength: 1,
 
 formatInputTooShort: function () {
-return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
+return "${message(code:'select2.minChars.note')}";
 },
 formatNoMatches: function() {
 return "${message(code:'select2.noMatchesFound')}";

@@ -332,7 +332,7 @@
         $("[name='dateBeforeFilter']").change(function(){
             var val = $(this)['context']['selectedOptions'][0]['label'];
 
-            if(val != "${message(code:'default.filter.date.none', default:'-None-')}"){
+            if(val != "${message(code:'default.filter.date.none')}"){
                 $(".dateBefore").removeClass("hidden");
             }else{
                 $(".dateBefore").addClass("hidden");

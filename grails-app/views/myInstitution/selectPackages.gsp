@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'myinst.selectPackages.label', default:'Package Planning - Select Candidate Packages')}</title>
+    <title>${message(code:'laser')} : ${message(code:'myinst.selectPackages.label')}</title>
   </head>
 
   <body>
@@ -13,13 +13,13 @@
       </g:each></ul>
        <table class="ui celled la-table table">
         <tr>
-          <th>${message(code:'package.content_provider', default:'Content Provider')}</th>
-          <th>${message(code:'myinst.selectPackages.candidates', default:'Candidate Packages')}</th>
-          <th>${message(code:'myinst.selectPackages.pkg_titles', default:'Titles in Package')}</th>
-          <th>${message(code:'myinst.selectPackages.titles_no', default:'# Matching Titles')}</th>
-          <th>${message(code:'tipp.platform', default:'Platform')}</th>
-          <th>${message(code:'myinst.selectPackages.overlap', default:'Overlap')}</th>
-          <th>${message(code:'default.select.label', default:'Select')}</th>
+          <th>${message(code:'package.content_provider')}</th>
+          <th>${message(code:'myinst.selectPackages.candidates')}</th>
+          <th>${message(code:'myinst.selectPackages.pkg_titles')}</th>
+          <th>${message(code:'myinst.selectPackages.titles_no')}</th>
+          <th>${message(code:'tipp.platform')}</th>
+          <th>${message(code:'myinst.selectPackages.overlap')}</th>
+          <th>${message(code:'default.select.label')}</th>
         </tr>
         <g:each in="${candidates}" var="c">
           <tr>

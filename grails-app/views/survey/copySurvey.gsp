@@ -466,7 +466,7 @@
                                             ${s.name}
                                         </g:if>
                                         <g:else>
-                                            -- ${message(code: 'myinst.currentSubscriptions.name_not_set', default: 'Name Not Set')}  --
+                                            -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
                                         </g:else>
                                         <g:if test="${s.instanceOf}">
                                             <g:if test="${s.consortia && s.consortia == institution}">

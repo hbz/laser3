@@ -28,9 +28,9 @@
 						
 							<g:sortableColumn property="startDate" title="${message(code: 'default.startDate.label')}" />
 						
-							<g:sortableColumn property="startVolume" title="${message(code: 'issueEntitlement.startVolume.label', default: 'Start Volume')}" />
+							<g:sortableColumn property="startVolume" title="${message(code: 'issueEntitlement.startVolume.label')}" />
 						
-							<g:sortableColumn property="startIssue" title="${message(code: 'issueEntitlement.startIssue.label', default: 'Start Issue')}" />
+							<g:sortableColumn property="startIssue" title="${message(code: 'issueEntitlement.startIssue.label')}" />
 						
 							<th></th>
 						</tr>

@@ -38,7 +38,7 @@
 								<td> ${message(code:'subscription.compare.name')} </td>
 								<td>${message(code:'default.compare.restrict.after', args:[subs_message] )}
 									<semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
-									${message(code:'default.compare.restrict.before', default:'and/or ending before-')}
+									${message(code:'default.compare.restrict.before')}
 									<semui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br />
 									<div class="ui search selection dropdown">
 										<input type="hidden" name="subA" id="subSelectA" value="${subA}">
@@ -50,7 +50,7 @@
 								<td>
 									${message(code:'default.compare.restrict.after', args:[subs_message] )}
 									<semui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
-									${message(code:'default.compare.restrict.before', default:'and/or ending before-')}
+									${message(code:'default.compare.restrict.before')}
 									<semui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br />
 									<div class="ui search selection dropdown">
 										<input type="hidden" name="subB" id="subSelectB" value="${subB}">

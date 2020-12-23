@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} ${message(code: 'myinst.renewalSearch.label', default: 'Renewals Generation - Search')}</title>
+    <title>${message(code: 'laser')} ${message(code: 'myinst.renewalSearch.label')}</title>
 </head>
 
 <body>
@@ -36,9 +36,9 @@
     </g:form>
 
     <div class="ui info message">
-        <div class="header">${message(code: 'myinst.renewalSearch.workflowinfo', default: 'Renewal Workflow')}</div>
+        <div class="header">${message(code: 'myinst.renewalSearch.workflowinfo')}</div>
 
-        <p>${message(code: 'myinst.renewalSearch.workflow', default: '')}</p>
+        <p>${message(code: 'myinst.renewalSearch.workflow')}</p>
     </div>
 
 <hr />
@@ -48,7 +48,7 @@
     <div class="ui info message">
         <div class="header">Info</div>
 
-        <p>${message(code: 'myinst.renewalSearch.auswahl', default: 'In your selection at least one package must be deposited!')}</p>
+        <p>${message(code: 'myinst.renewalSearch.auswahl')}</p>
     </div>
     <hr />
 </g:if>
@@ -56,12 +56,12 @@
 <div class="field">
     <g:if test="${Subscription.get(sub_id).packages}">
     <g:link class="ui button" controller="myInstitution" params="${[sub_id: sub_id]}"
-            action="renewalsnoPackageChange">${message(code: 'myinst.renewalSearch.uploadnopackageschange', default: 'Import Renewals with packages')}</g:link>
+            action="renewalsnoPackageChange">${message(code: 'myinst.renewalSearch.uploadnopackageschange')}</g:link>
     </g:if>
         <g:link class="ui button" controller="myInstitution" params="${[sub_id: sub_id]}"
-                    action="renewalswithoutPackage">${message(code: 'myinst.renewalSearch.uploadwithoutpackage', default: 'Import Renewals without packages')}</g:link>
+                    action="renewalswithoutPackage">${message(code: 'myinst.renewalSearch.uploadwithoutpackage')}</g:link>
     <g:link class="ui button" controller="myInstitution"
-            action="renewalsUpload">${message(code: 'menu.institutions.imp_renew', default: 'Import Renewals')}</g:link>
+            action="renewalsUpload">${message(code: 'menu.institutions.imp_renew')}</g:link>
 
 </div>
 <hr />
@@ -110,7 +110,7 @@
                     <thead>
                     <tr>
                         <th>${message(code: 'package.show.pkg_name')}</th>
-                        %{--<th>${message(code: 'consortium.label', default: 'Consortium')}</th>--}%
+                        %{--<th>${message(code: 'consortium.label')}</th>--}%
                         <th></th>
                     </tr>
                     </thead>
@@ -123,7 +123,7 @@
                             %{--<td>${hit.getSource().consortiaName}</td>--}%
                             <td>
                                 <button type="submit" class="ui button" name="addBtn"
-                                        value="${hit.getSource().dbId}">${message(code: 'myinst.renewalSearch.addBtn', default: 'Add to<br />basket')}</button>
+                                        value="${hit.getSource().dbId}">${message(code: 'myinst.renewalSearch.addBtn')}</button>
                             </td>
                         </tr>
                     </g:each>
@@ -159,9 +159,9 @@
             <g:if test="${basket}">
 
                 <button class="ui button" type="submit" name="generate"
-                        value="yes">${message(code: 'myinst.renewalSearch.generate', default: 'Generate Comparison Sheet')}</button><br /><br />
+                        value="yes">${message(code: 'myinst.renewalSearch.generate')}</button><br /><br />
             %{--<button class="ui button" type="button" name=""--}%
-            %{--value="">${message(code: 'myinst.renewalSearch.generateonline', default: 'Generate Comparison Sheet Online')}</button>--}%
+            %{--value="">${message(code: 'myinst.renewalSearch.generateonline')}</button>--}%
 
             </g:if>
             <table class="ui celled la-table table">

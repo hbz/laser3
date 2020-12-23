@@ -7,7 +7,7 @@
   </head>
   <body>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'license.create.label', default:'New Template License')}</h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'license.create.label')}</h1>
 
         <semui:messages data="${flash}" />
 

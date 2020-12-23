@@ -27,12 +27,12 @@
 
             <g:if test="${subInstance}">
                 <g:hiddenField id="sub_id_${subInstance.id}" name="sub" value="${subInstance.id}"/>
-                <div class="ui info message">${message(code: 'myinst.licensewithSub.notice', default: 'Create a new license and link it to the subscription "{0}"', args: [subInstance.name])}</div>
+                <div class="ui info message">${message(code: 'myinst.licensewithSub.notice', args: [subInstance.name])}</div>
             </g:if>
 
             <g:if test="${params.baselicense}">
                 <g:hiddenField name="baselicense" value="${params.baselicense}"/>
-                <div class="ui info message">${message(code: 'myinst.copyLicense.notice', default: 'Create new License from License Template "{0}"', args: [params.licenseName])}</div>
+                <div class="ui info message">${message(code: 'myinst.copyLicense.notice', args: [params.licenseName])}</div>
             </g:if>
 
             <div class="field required">
@@ -60,7 +60,7 @@
 
             <%-- <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <div class="field">
-                    <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
+                    <label>${message(code:'myinst.emptySubscription.create_as')}</label>
 
                     <select id="asOrgType" name="asOrgType" class="ui dropdown">
                         <g:each in="${RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot: RDConstants.ORG_TYPE])}" var="opt">
