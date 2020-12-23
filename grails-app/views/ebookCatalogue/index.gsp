@@ -3,7 +3,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="ebookCatalogue">
+    <meta name="layout" content="eBookCatalogue">
 </head>
 
 <body>
@@ -19,76 +19,76 @@
         </g:else>
     </g:else>
 
-<section class="section custom-section-form">
-<div class="container">
-    <g:form method="get" autocomplete="off">
+<section class="section custom-section-form pt-6 pb-6">
+    <div class="container">
+        <g:form method="get" autocomplete="off">
 
-        <div class="field">
-            <div class="control is-expanded">
-                <input id="q" name="q" value="${params.q}"
-                       class="input is-medium" autofocus="autofocus" onfocus="this.select()"
-                       type="search" placeholder="Suche nach EBooks .." />
-            </div>
-        </div>
-
-        <div class="field">
-            <label class="label">${message(code: 'myinst.currentSubscriptions.subscription_kind')}</label>
-            <%
-                List<RefdataValue> subkinds = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)
-                subkinds -= RDStore.SUBSCRIPTION_KIND_LOCAL
-            %>
-                <div class="field is-grouped">
-                    <g:each in="${subkinds}" var="subKind">
-
-                        <g:if test="${subKind.value == 'National Licence'}">
-                            <div class="control js-natLic">
-                        </g:if>
-                        <g:elseif test="${subKind.value == 'Alliance Licence'}">
-                            <div class="control js-allLic">
-                        </g:elseif>
-                        <g:elseif test="${subKind.value == 'Consortial Licence'}">
-                            <div class="control js-consLic">
-                        </g:elseif>
-                        <g:else>
-                            <div class="control">
-                        </g:else>
-                                <label class="checkbox" for="checkSubType-${subKind.id}">
-                                    <input id="checkSubType-${subKind.id}" name="subKinds" type="checkbox" value="${subKind.id}"
-                                        <g:if test="${params.list('subKinds').contains(subKind.id.toString())}"> checked="" </g:if>
-                                        <g:if test="${initQuery}"> checked="" </g:if>
-                                           tabindex="0">
-                                    ${subKind.getI10n('value')}
-                                </label>
-                            </div>
-                    </g:each>
-                    </div>
-        </div>
-
-        <div class="field" id="js-consAuth">
-            <label class="label">${message(code: 'gasco.filter.consortialAuthority')}</label>
-            <div class="control is-expanded">
-                <div class="select is-fullwidth">
-                    <g:select from="${allConsortia}" id="consortial"
-                              optionKey="${{ Org.class.name + ':' + it.id }}"
-                              optionValue="${{ it.getName() }}"
-                              name="consortia"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"
-                              value="${params.consortia}"/>
+            <div class="field">
+                <div class="control is-expanded">
+                    <input id="q" name="q" value="${params.q}"
+                           class="input is-medium" autofocus="autofocus" onfocus="this.select()"
+                           type="search" placeholder="Suche nach EBooks .." />
                 </div>
             </div>
-        </div>
 
-        <div class="field is-grouped">
-            <div class="control">
-                <a href="${request.forwardURI}" class="button is-light is-link">${message(code:'default.button.reset.label')}</a>
-            </div>
-            <div class="control">
-                <input type="submit" class="button is-info is-link" value="${message(code:'default.button.search.label')}">
-            </div>
-        </div>
+            <div class="field">
+                <label class="label">${message(code: 'myinst.currentSubscriptions.subscription_kind')}</label>
+                <%
+                    List<RefdataValue> subkinds = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)
+                    subkinds -= RDStore.SUBSCRIPTION_KIND_LOCAL
+                %>
+                    <div class="field is-grouped">
+                        <g:each in="${subkinds}" var="subKind">
 
-    </g:form>
-</div>
+                            <g:if test="${subKind.value == 'National Licence'}">
+                                <div class="control js-natLic">
+                            </g:if>
+                            <g:elseif test="${subKind.value == 'Alliance Licence'}">
+                                <div class="control js-allLic">
+                            </g:elseif>
+                            <g:elseif test="${subKind.value == 'Consortial Licence'}">
+                                <div class="control js-consLic">
+                            </g:elseif>
+                            <g:else>
+                                <div class="control">
+                            </g:else>
+                                    <label class="checkbox" for="checkSubType-${subKind.id}">
+                                        <input id="checkSubType-${subKind.id}" name="subKinds" type="checkbox" value="${subKind.id}"
+                                            <g:if test="${params.list('subKinds').contains(subKind.id.toString())}"> checked="" </g:if>
+                                            <g:if test="${initQuery}"> checked="" </g:if>
+                                               tabindex="0">
+                                        ${subKind.getI10n('value')}
+                                    </label>
+                                </div>
+                        </g:each>
+                        </div>
+            </div>
+
+            <div class="field" id="js-consAuth">
+                <label class="label">${message(code: 'gasco.filter.consortialAuthority')}</label>
+                <div class="control is-expanded">
+                    <div class="select is-fullwidth">
+                        <g:select from="${allConsortia}" id="consortial"
+                                  optionKey="${{ Org.class.name + ':' + it.id }}"
+                                  optionValue="${{ it.getName() }}"
+                                  name="consortia"
+                                  noSelection="${['' : message(code:'default.select.choose.label')]}"
+                                  value="${params.consortia}"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field is-grouped">
+                <div class="control">
+                    <a href="${request.forwardURI}" class="button is-light is-link">${message(code:'default.button.reset.label')}</a>
+                </div>
+                <div class="control">
+                    <input type="submit" class="button is-info is-link" value="${message(code:'default.button.search.label')}">
+                </div>
+            </div>
+
+        </g:form>
+    </div>
 </section>
 
     <laser:script>
@@ -127,12 +127,12 @@
 
     <g:if test="${subscriptions.size() == 0}">
         <div class="level">
-            <div class="level-item"><span class="tag is-warning">Leider keine Treffer</span></div>
+            <div class="level-item"><span class="tag is-medium is-warning">Leider keine Treffer</span></div>
         </div>TitleInstancePackagePlatform
     </g:if>
     <g:else>
         <div class="level mb-6">
-            <div class="level-item"><span class="tag is-success">${subscriptions.size()} Treffer</span></div>
+            <div class="level-item"><span class="tag is-medium is-success">${subscriptions.size()} Treffer</span></div>
         </div>
 
         <table class="table is-striped is-fullwidth">
@@ -181,7 +181,6 @@
                             </g:each>
                         </td>
                         <td>
-
                             ${gasco_verhandlername ?: sub.getConsortia()?.name}
                             <br />
                         <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, sub.getConsortia())}" var="personRole">
@@ -191,12 +190,14 @@
                                         <div class="item">
                                             <div class="content">
                                                 <div class="header">
-                                                    ${person?.getFirst_name()} ${person?.getLast_name()}
+                                                    <g:if test="${person && (person.getFirst_name() != 'Kontakt' && person.getLast_name() != 'Kontakt')}">
+                                                        ${person.getFirst_name()} ${person.getLast_name()}
+                                                    </g:if>
                                                 </div>
                                                 <g:each in ="${Contact.findAllByPrsAndContentType(person, RDStore.CCT_URL)}" var="prsContact">
                                                     <div class="description">
                                                         <i class="fas fa-globe"></i>
-                                                        <span class="tag">&#128278;</span>
+                                                        <span class="tag">&#127760;</span>
                                                         <a class="la-break-all" href="${prsContact?.content}" target="_blank">${prsContact?.content}</a>
                                                     </div>
                                                 </g:each>
