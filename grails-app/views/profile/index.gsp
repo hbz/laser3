@@ -359,7 +359,7 @@
                 </h4>
                 <%-- TODO: check this
                 <div class="field">
-                    <label>${message(code: 'profile.info_icon', default:'Show Info Icon')}</label>
+                    <label>${message(code: 'profile.info_icon')}</label>
                     <semui:xEditableRefData owner="${user}" field="showInfoIcon" config="${RDConstants.Y_N}" />
                 </div>
                 --%>

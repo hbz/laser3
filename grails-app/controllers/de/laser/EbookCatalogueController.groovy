@@ -2,9 +2,11 @@ package de.laser
 
 import de.laser.properties.SubscriptionProperty
 import de.laser.properties.PropertyDefinition
-import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
+import org.springframework.web.context.request.RequestContextHolder
+
+import javax.servlet.http.HttpSession
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class EbookCatalogueController {
@@ -14,16 +16,7 @@ class EbookCatalogueController {
     @Secured(['ROLE_ADMIN'])
     def index() {
 
-        Map<String, Object> result = [:]
-
-        result.allConsortia = Org.executeQuery(
-                """select o from Org o, OrgSetting os_gs, OrgSetting os_ct where 
-                        os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and 
-                        os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and 
-                        os_ct.roleValue in (select r from Role r where authority  = 'ORG_CONSORTIUM')
-                        order by lower(o.name)"""
-        )
-
+        Map<String, Object> result = EbookCatalogueController._stats_TODO( false )
 
         if (! params.subKinds && ! params.consortia && ! params.q) {
             // init filter with checkboxes checked
@@ -159,6 +152,84 @@ class EbookCatalogueController {
                 redirect controller: 'public', action: 'gasco'
             }
         }
+        result
+    }
+
+    static Map<String, Object> _stats_TODO(boolean reset) {
+
+        Map<String, Object> result = [:]
+        HttpSession session = RequestContextHolder.currentRequestAttributes().getSession()
+
+        if (reset) {
+            session.removeAttribute('ebc_allConsortia')
+            session.removeAttribute('ebc_allSubscriptions')
+            session.removeAttribute('ebc_allProvider')
+            session.removeAttribute('ebc_allTitles')
+        }
+
+        if (! session.getAttribute('ebc_allConsortia')) {
+            session.setAttribute('ebc_allConsortia',
+                    Org.executeQuery(
+                    """select o from Org o, OrgSetting os_gs, OrgSetting os_ct where 
+                        os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and 
+                        os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and 
+                        os_ct.roleValue in (select r from Role r where authority  = 'ORG_CONSORTIUM')
+                        order by lower(o.name)"""
+            ))
+        }
+        result.allConsortia = session.getAttribute('ebc_allConsortia')
+
+        if (! session.getAttribute('ebc_allSubscriptions')) {
+            session.setAttribute('ebc_allSubscriptions',
+                    Subscription.executeQuery(
+                    """select distinct s from Subscription as s where (
+                            lower(s.status.value) = 'current' and lower(s.type.value) != 'local licence'
+                            and exists 
+                                ( select scp from s.propertySet as scp where
+                                    scp.type = :gasco and lower(scp.refValue.value) = 'yes' )
+                            )
+                            and exists 
+                                ( select ogr from OrgRole ogr where ogr.sub = s and ogr.org in (:validOrgs) )""",
+                    [
+                    gasco    : PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP),
+                    validOrgs: result.allConsortia
+                    ]
+            ))
+        }
+        result.allSubscriptions = session.getAttribute('ebc_allSubscriptions')
+
+        if (! session.getAttribute('ebc_allProvider')) {
+            session.setAttribute('ebc_allProvider',
+                    Org.executeQuery(
+                    """select distinct ogr.org from OrgRole ogr where 
+                            ogr.roleType.value = 'Provider'
+                            and ogr.sub in (:allSubscriptions)""",
+                    [
+                    allSubscriptions: result.allSubscriptions
+                    ]
+            ))
+        }
+        result.allProvider = session.getAttribute('ebc_allProvider')
+
+        if (! session.getAttribute('ebc_allTitles')) {
+            session.setAttribute('ebc_allTitles',
+                    IssueEntitlement.executeQuery(
+                            """select ie from IssueEntitlement ie where 
+                            ie.subscription in :allSubscriptions 
+                            and ie.status.value != 'Deleted' and ie.status.value != 'Retired'
+                                """,
+                            [
+                            allSubscriptions: result.allSubscriptions
+                            ]
+            ))
+
+        }
+        result.allTitles = session.getAttribute('ebc_allTitles')
+
+        int hitCounter = session.getAttribute('ebc_hitCounter') ?: 0
+        result.hitCounter = ++hitCounter
+        session.setAttribute('ebc_hitCounter', result.hitCounter)
+
         result
     }
 }

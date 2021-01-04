@@ -129,7 +129,7 @@
                 <g:set var="sub" value="${zeile.sub}"/>
                 <tr>
                     <td>
-                        <g:checkBox name="selectedMembers" value="${sub.id}" checked="false"/>
+                        <g:checkBox id="selectedMembers_${sub.id}" name="selectedMembers" value="${sub.id}" checked="false"/>
                     </td>
                     <td>${i + 1}</td>
                     <g:set var="subscr" value="${zeile.orgs}"/>

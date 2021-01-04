@@ -22,11 +22,11 @@
 						
 							<th class="header"><g:message code="doc.type.label" default="Type" /></th>
 						
-							<g:sortableColumn property="content" title="${message(code: 'doc.content.label', default: 'Content')}" />
+							<g:sortableColumn property="content" title="${message(code: 'doc.content.label')}" />
 						
-							<g:sortableColumn property="uuid" title="${message(code: 'doc.uuid.label', default: 'Uuid')}" />
+							<g:sortableColumn property="uuid" title="${message(code: 'doc.uuid.label')}" />
 						
-							<g:sortableColumn property="contentType" title="${message(code: 'doc.contentType.label', default: 'Content Type')}" />
+							<g:sortableColumn property="contentType" title="${message(code: 'doc.contentType.label')}" />
 						
 							<th></th>
 						</tr>

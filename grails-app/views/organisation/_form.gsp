@@ -1,7 +1,7 @@
 <%@ page import="de.laser.Org;de.laser.helper.RDConstants;de.laser.RefdataCategory" %>
 
 <% /*
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'globalUID', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'globalUID', 'error')} ">
 	<label for="globalUID">
 		<g:message code="globalUID.label" default="Global UID" />
 	</label>
@@ -9,49 +9,69 @@
 </div>
 */ %>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'name', 'error')} required">
+<div class="field ${hasErrors(bean: orgInstance, field: 'name', 'error')} required">
 	<label for="name">
 		<g:message code="default.name.label" />
 	</label>
     <g:textField name="name" maxlength="255" value="${orgInstance?.name}"/>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'shortname', 'error')} ">
+<div class="fields two">
+<div class="field ${hasErrors(bean: orgInstance, field: 'shortname', 'error')}">
 	<label for="shortname">
 		<g:message code="org.shortname.label" />
 	</label>
     <g:textField name="shortname" maxlength="255" value="${orgInstance?.shortname}"/>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'sortname', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'sortname', 'error')}">
 	<label for="sortname">
 		<g:message code="org.sortname.label" />
 	</label>
     <g:textField name="sortname" maxlength="255" value="${orgInstance?.sortname}"/>
 </div>
+</div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'url', 'error')} ">
+<div class="fields two">
+<div class="field ${hasErrors(bean: orgInstance, field: 'sector', 'error')}">
+	<label for="sector">
+		<g:message code="org.sector.label" />
+	</label>
+	<laser:select id="sector" name="sector.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.ORG_SECTOR)}"
+				  optionKey="id" optionValue="value" value="${orgInstance?.sector?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
+</div>
+
+<div class="field ${hasErrors(bean: orgInstance, field: 'libraryType', 'error')}">
+	<label for="libraryType">
+		<g:message code="org.libraryType.label" />
+	</label>
+	<laser:select id="libraryType" name="libraryType.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_TYPE)}"
+				  optionKey="id" optionValue="value" value="${orgInstance?.libraryType?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
+</div>
+</div>
+
+<div class="field ${hasErrors(bean: orgInstance, field: 'url', 'error')}">
 	<label for="url">
 		<g:message code="org.url.label" />
 	</label>
     <g:textField name="url" maxlength="512" value="${orgInstance?.url}"/>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'urlGov', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'urlGov', 'error')}">
 	<label for="urlGov">
 		<g:message code="org.urlGov.label" />
 	</label>
 	<g:textField name="urlGov" maxlength="512" value="${orgInstance?.urlGov}"/>
 </div>
 
-%{--<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'fteStudents', 'error')}">
+%{--<div class="field ${hasErrors(bean: orgInstance, field: 'fteStudents', 'error')}">
 	<label for="fteStudents">
 		<g:message code="org.fteStudents.label" default="Fte Students" />
 	</label>
 	<g:field name="fteStudents" type="number" value="${orgInstance?.fteStudents}" required=""/>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'fteStaff', 'error')}">
+<div class="field ${hasErrors(bean: orgInstance, field: 'fteStaff', 'error')}">
 	<label for="fteStaff">
 		<g:message code="org.fteStaff.label" default="Fte Staff" />
 	</label>
@@ -59,7 +79,7 @@
 </div>--}%
 
 <%--
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'comment', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'comment', 'error')} ">
 	<label for="comment">
 		<g:message code="org.comment.label" default="Comment" />
 	</label>
@@ -67,7 +87,7 @@
 </div> --%>
 
 <% /*
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'ipRange', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'ipRange', 'error')} ">
 	<label for="ipRange">
 		<g:message code="org.ipRange.label" default="Ip Range" />
 	</label>
@@ -75,16 +95,8 @@
 </div>
 */ %>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'sector', 'error')} ">
-	<label for="sector">
-		<g:message code="org.sector.label" />
-	</label>
-	<laser:select id="sector" name="sector.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.ORG_SECTOR)}"
-			  optionKey="id" optionValue="value" value="${orgInstance?.sector?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
-</div>
-
 <% /*
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'shortcode', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'shortcode', 'error')} ">
 	<label for="shortcode">
 		<g:message code="org.shortcode.label" default="Shortcode" />
 	</label>
@@ -93,7 +105,7 @@
 */ %>
 
 <%--
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'scope', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'scope', 'error')} ">
 	<label for="scope">
 		<g:message code="org.scope.label" default="Scope" />
 	</label>
@@ -101,14 +113,14 @@
 </div> --%>
 
 <%--
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'categoryId', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'categoryId', 'error')} ">
 	<label for="categoryId">
 		<g:message code="org.categoryId.label" default="Category Id" />
 	</label>
 	<g:textField name="categoryId" maxlength="128" value="${orgInstance?.categoryId}"/>
 </div> --%>
 
-%{--<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'orgType', 'error')} ">
+%{--<div class="field ${hasErrors(bean: orgInstance, field: 'orgType', 'error')} ">
 	<label for="orgType">
 		<g:message code="org.orgType.label" default="Org Type" />
 	</label>
@@ -117,7 +129,7 @@
 </div>--}%
 
 <%--
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'status', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'status', 'error')} ">
 	<label for="status">
 		<g:message code="org.status.label" />
 	</label>
@@ -126,7 +138,7 @@
 </div> --%>
 
 <%--
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'membership', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'membership', 'error')} ">
 	<label for="membership">
 		<g:message code="org.membership.label" default="Membership" />
 	</label>
@@ -134,7 +146,7 @@
 			  optionKey="id" value="${orgInstance?.membership?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div> --%>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'country', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'country', 'error')}">
 	<label for="country">
 		<g:message code="org.country.label" />
 	</label>
@@ -142,7 +154,7 @@
 			  optionKey="id" optionValue="value" value="${orgInstance?.country?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'region', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'region', 'error')}">
 	<label for="region">
 		<g:message code="org.region.label" />
 	</label>
@@ -150,7 +162,7 @@
 			  optionKey="id" optionValue="value" value="${orgInstance?.region?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'libraryNetwork', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'libraryNetwork', 'error')}">
 	<label for="libraryNetwork">
 		<g:message code="org.libraryNetwork.label" />
 	</label>
@@ -158,7 +170,7 @@
 			  optionKey="id" optionValue="value" value="${orgInstance?.libraryNetwork?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'funderType', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'funderType', 'error')}">
 	<label for="funderType">
 		<g:message code="org.funderType.label" />
 	</label>
@@ -166,16 +178,8 @@
 			  optionKey="id" optionValue="value" value="${orgInstance?.funderType?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'libraryType', 'error')} ">
-	<label for="libraryType">
-		<g:message code="org.libraryType.label" />
-	</label>
-	<laser:select id="libraryType" name="libraryType.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_TYPE)}"
-			  optionKey="id" optionValue="value" value="${orgInstance?.libraryType?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
-</div>
-
 <% /*
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'importSource', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'importSource', 'error')} ">
 	<label for="importSource">
 		<g:message code="org.importSource.label" default="Import Source" />
 	</label>
@@ -184,7 +188,7 @@
 */ %>
 
 <% /*
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'lastImportDate', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'lastImportDate', 'error')} ">
 	<label for="lastImportDate">
 		<g:message code="org.lastImportDate.label" default="Last Import Date" />
 	</label>
@@ -193,7 +197,7 @@
 */ %>
 
 <% /*
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'addresses', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'addresses', 'error')} ">
 	<label for="addresses">
 		<g:message code="org.addresses.label" default="Addresses" />
 	</label>
@@ -208,7 +212,7 @@
 	</ul>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'affiliations', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'affiliations', 'error')} ">
 	<label for="affiliations">
 		<g:message code="org.affiliations.label" default="Affiliations" />
 	</label>
@@ -218,12 +222,12 @@
 			<li><g:link controller="userOrg" action="show" id="${a.id}">${a}</g:link></li>
 		</g:each>
 		<li class="add">
-			<g:link controller="userOrg" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'userOrg.label', default: 'UserOrg')])}</g:link>
+			<g:link controller="userOrg" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'userOrg.label')])}</g:link>
 		</li>
 	</ul>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'contacts', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'contacts', 'error')} ">
 	<label for="contacts">
 		<g:message code="org.contacts.label" default="Contacts" />
 	</label>
@@ -238,7 +242,7 @@
 	</ul>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'customProperties', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'customProperties', 'error')} ">
 	<label for="customProperties">
 		<g:message code="org.customProperties.label" default="Custom Properties" />
 	</label>
@@ -248,12 +252,12 @@
 			<li><g:link controller="orgCustomProperty" action="show" id="${c.id}">${c}</g:link></li>
 		</g:each>
 		<li class="add">
-			<g:link controller="orgCustomProperty" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'orgCustomProperty.label', default: 'OrgCustomProperty')])}</g:link>
+			<g:link controller="orgCustomProperty" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'orgCustomProperty.label')])}</g:link>
 		</li>
 	</ul>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'ids', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'ids', 'error')} ">
 	<label for="ids">
 		<g:message code="org.ids.label" default="Ids" />
 	</label>
@@ -263,12 +267,12 @@
 			<li><g:link controller="identifierOccurrence" action="show" id="${i.id}">${i}</g:link></li>
 		</g:each>
 		<li class="add">
-			<g:link controller="identifierOccurrence" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'identifierOccurrence.label', default: 'IdentifierOccurrence')])}</g:link>
+			<g:link controller="identifierOccurrence" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'identifierOccurrence.label')])}</g:link>
 		</li>
 	</ul>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'incomingCombos', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'incomingCombos', 'error')} ">
 	<label for="incomingCombos">
 		<g:message code="org.incomingCombos.label" default="Incoming Combos" />
 	</label>
@@ -278,12 +282,12 @@
 			<li><g:link controller="combo" action="show" id="${i.id}">${i}</g:link></li>
 		</g:each>
 		<li class="add">
-			<g:link controller="combo" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'combo.label', default: 'Combo')])}</g:link>
+			<g:link controller="combo" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'combo.label')])}</g:link>
 		</li>
 	</ul>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'links', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'links', 'error')} ">
 	<label for="links">
 		<g:message code="org.links.label" default="Links" />
 	</label>
@@ -293,12 +297,12 @@
 			<li><g:link controller="orgRole" action="show" id="${l.id}">${l}</g:link></li>
 		</g:each>
 		<li class="add">
-			<g:link controller="orgRole" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'orgRole.label', default: 'OrgRole')])}</g:link>
+			<g:link controller="orgRole" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'orgRole.label')])}</g:link>
 		</li>
 	</ul>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'outgoingCombos', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'outgoingCombos', 'error')} ">
 	<label for="outgoingCombos">
 		<g:message code="org.outgoingCombos.label" default="Outgoing Combos" />
 	</label>
@@ -308,12 +312,12 @@
 			<li><g:link controller="combo" action="show" id="${o.id}">${o}</g:link></li>
 		</g:each>
 		<li class="add">
-			<g:link controller="combo" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'combo.label', default: 'Combo')])}</g:link>
+			<g:link controller="combo" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'combo.label')])}</g:link>
 		</li>
 	</ul>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'privateProperties', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'privateProperties', 'error')} ">
 	<label for="privateProperties">
 		<g:message code="org.privateProperties.label" default="Private Properties" />
 	</label>
@@ -323,12 +327,12 @@
 			<li><g:link controller="orgPrivateProperty" action="show" id="${p.id}">${p}</g:link></li>
 		</g:each>
 		<li class="add">
-			<g:link controller="orgPrivateProperty" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'orgPrivateProperty.label', default: 'OrgPrivateProperty')])}</g:link>
+			<g:link controller="orgPrivateProperty" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'orgPrivateProperty.label')])}</g:link>
 		</li>
 	</ul>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'prsLinks', 'error')} ">
+<div class="field ${hasErrors(bean: orgInstance, field: 'prsLinks', 'error')} ">
 	<label for="prsLinks">
 		<g:message code="org.prsLinks.label" default="Prs Links" />
 	</label>
@@ -338,7 +342,7 @@
 			<li><g:link controller="personRole" action="show" id="${p.id}">${p}</g:link></li>
 		</g:each>
 		<li class="add">
-			<g:link controller="personRole" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'personRole.label', default: 'PersonRole')])}</g:link>
+			<g:link controller="personRole" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'personRole.label')])}</g:link>
 		</li>
 	</ul>
 </div>

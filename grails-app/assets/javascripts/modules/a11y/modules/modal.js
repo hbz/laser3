@@ -38,7 +38,9 @@ a11yModal = {
             focusElement = config.focusElement;
 
         if (!el) {
-            throw new Error('Could not initialize focus-trapping - Element Missing');
+            console.log('Could not initialize focus-trapping - Element Missing');
+            return;
+            //throw new Error('Could not initialize focus-trapping - Element Missing');
         }
         if (escCallback && !(escCallback instanceof Function)) {
             throw new Error('Could not initialize focus-trapping - `config.escCallback` is not a function');

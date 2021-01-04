@@ -28,9 +28,9 @@ ${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
 ${message(code: 'surveyInfo.name.label', locale: language)}: <strong>${survey.name} </strong>
 
 <br />
-(<g:formatDate format="${message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')}"
+(<g:formatDate format="${message(code: 'default.date.format.notime')}"
                               date="${survey.startDate}"/> - <g:formatDate
-        format="${message(code: 'default.date.format.notime', default: 'yyyy-MM-dd')}" date="${survey.endDate}"/>)
+        format="${message(code: 'default.date.format.notime')}" date="${survey.endDate}"/>)
 
 <br />
 <br />

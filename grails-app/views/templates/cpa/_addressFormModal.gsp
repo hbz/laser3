@@ -16,7 +16,7 @@
             <input id="type" name="type.id" type="hidden" value="${typeId}"/>
         </g:if>--}%
 
-        <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
+        <div class="field ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
             <label for="type">
                 ${RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}
             </label>
@@ -28,21 +28,21 @@
                           multiple=""
                           value="${addressInstance?.type?.id ?: typeId}"/>
         </div>
-        <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'name', 'error')} ">
+        <div class="field ${hasErrors(bean: addressInstance, field: 'name', 'error')} ">
             <label for="name">
                 <g:message code="address.name.label" />
             </label>
             <g:textField id="name" name="name" value="${addressInstance?.name}"/>
         </div>
 
-        <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'additionFirst', 'error')} ">
+        <div class="field ${hasErrors(bean: addressInstance, field: 'additionFirst', 'error')} ">
             <label for="additionFirst">
                 <g:message code="address.additionFirst.label" />
             </label>
             <g:textField id="additionFirst" name="additionFirst" value="${addressInstance?.additionFirst}"/>
         </div>
 
-        <div class="field fieldcontain ${hasErrors(bean: addressInstance, field: 'additionSecond', 'error')} ">
+        <div class="field ${hasErrors(bean: addressInstance, field: 'additionSecond', 'error')} ">
             <label for="additionSecond">
                 <g:message code="address.additionSecond.label" />
             </label>
@@ -53,7 +53,7 @@
 
         <div class="field">
             <div class="two fields">
-                <div class="field thirteen wide fieldcontain ${hasErrors(bean: addressInstance, field:
+                <div class="field thirteen wide ${hasErrors(bean: addressInstance, field:
                         'street_1', 'error')}">
                     <label for="street_1">
                         <g:message code="address.street_1.label" />
@@ -61,7 +61,7 @@
                     <g:textField id="street_1" name="street_1" value="${addressInstance?.street_1}" />
                 </div>
 
-                <div class="field three wide fieldcontain ${hasErrors(bean: addressInstance, field: 'street_2',
+                <div class="field three wide ${hasErrors(bean: addressInstance, field: 'street_2',
                         'error')} ">
                     <label for="street_2">
                         <g:message code="address.street_2.label" />
@@ -73,14 +73,14 @@
 
         <div class="field">
             <div class="two fields">
-                <div class="field three wide fieldcontain ${hasErrors(bean: addressInstance, field: 'zipcode', 'error')}">
+                <div class="field three wide ${hasErrors(bean: addressInstance, field: 'zipcode', 'error')}">
                     <label for="zipcode">
                         <g:message code="address.zipcode.label" />
                     </label>
                     <g:textField id="zipcode" name="zipcode" value="${addressInstance?.zipcode}" />
                 </div>
 
-                <div class="field thirteen wide fieldcontain ${hasErrors(bean: addressInstance, field: 'city', 'error')}">
+                <div class="field thirteen wide ${hasErrors(bean: addressInstance, field: 'city', 'error')}">
                     <label for="city">
                         <g:message code="address.city.label" />
                     </label>
@@ -93,21 +93,21 @@
 
         <div class="field">
             <div class="three fields">
-                <div class="field six wide fieldcontain ${hasErrors(bean: addressInstance, field: 'pob', 'error')} ">
+                <div class="field six wide ${hasErrors(bean: addressInstance, field: 'pob', 'error')} ">
                     <label for="pob">
                         <g:message code="address.pob.label" />
                     </label>
                     <g:textField id="pob" name="pob" value="${addressInstance?.pob}"/>
                 </div>
 
-                <div class="field three wide fieldcontain ${hasErrors(bean: addressInstance, field: 'pobZipcode', 'error')} ">
+                <div class="field three wide ${hasErrors(bean: addressInstance, field: 'pobZipcode', 'error')} ">
                     <label for="pobZipcode">
                         <g:message code="address.zipcode.label" />
                     </label>
                     <g:textField id="pobZipcode" name="pobZipcode" value="${addressInstance?.pobZipcode}"/>
                 </div>
 
-                <div class="field seven wide fieldcontain ${hasErrors(bean: addressInstance, field: 'pobCity', 'error')} ">
+                <div class="field seven wide ${hasErrors(bean: addressInstance, field: 'pobCity', 'error')} ">
                     <label for="pobCity">
                         <g:message code="address.city.label" />
                     </label>
@@ -117,7 +117,7 @@
         </div>
         <div class="field">
             <div class="two fields">
-                <div class="field seven wide fieldcontain ${hasErrors(bean: addressInstance, field: 'country',
+                <div class="field seven wide ${hasErrors(bean: addressInstance, field: 'country',
                         'error')}">
                     <label for="country">
                         <g:message code="address.country.label" />
@@ -130,7 +130,7 @@
                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 </div>
 
-                <div class="field nine wide fieldcontain ${hasErrors(bean: addressInstance, field: 'region',
+                <div class="field nine wide ${hasErrors(bean: addressInstance, field: 'region',
                         'error')}">
                     <label for="region">
                         <g:message code="address.region.label" />

@@ -210,7 +210,7 @@
                                         config='${de.laser.helper.RDConstants.CORE_STATUS}'/></dd>
         </g:if>
     <%--              <g:set var="iecorestatus" value="${issueEntitlementInstance.getTIP()?.coreStatus(null)}"/>
-<%--<dt>${message(code:'subscription.details.core_status', default:'Core Status')}</dt>
+<%--<dt>${message(code:'subscription.details.core_status')}</dt>
     <dd>
       <g:render template="/templates/coreStatus" model="${['issueEntitlement': issueEntitlementInstance]}"/>
     </dd> --%>

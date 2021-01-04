@@ -596,9 +596,9 @@ class SemanticUiTagLib {
             value = attrs.value
         }
 
-        def classes = attrs.containsKey('required') ? 'field fieldcontain required' : 'field fieldcontain'
-        def required = attrs.containsKey('required') ? 'required=""' : ''
-        def hideLabel = attrs.hideLabel ? false : true
+        String classes    = attrs.containsKey('required') ? 'field required' : 'field'
+        String required   = attrs.containsKey('required') ? 'required=""' : ''
+        boolean hideLabel = attrs.hideLabel ? false : true
 
         if (attrs.class) {
             classes += ' ' + attrs.class

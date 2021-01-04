@@ -170,7 +170,7 @@
                 <tr id="bulkdelete-b${ci.id}">
                     <g:if test="${tmplShowCheckbox}">
                         <td>
-                            <g:checkBox name="selectedCostItems" value="${ci.id}" checked="false"/>
+                            <g:checkBox id="selectedCostItems_${ci.id}" name="selectedCostItems" value="${ci.id}" checked="false"/>
                         </td>
                     </g:if>
                     <td>

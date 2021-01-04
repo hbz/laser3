@@ -29,7 +29,7 @@
                     from="${availableStatuses}"
                     optionKey="${{it.value}}"
                     optionValue="${{it.getI10n('value')}}"
-                    noSelection="${['null': message(code:'datamanager.titleView.status.ph', default:'-Any Status-')]}"
+                    noSelection="${['null': message(code:'datamanager.titleView.status.ph')]}"
                     />
           </div>
           <div class="field la-field-right-aligned">

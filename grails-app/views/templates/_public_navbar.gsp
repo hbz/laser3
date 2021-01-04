@@ -13,13 +13,6 @@
                 <li id="signup" <g:if test="${active.equals("signup")}"> class="active" </g:if>>
                     <a href="${createLink(uri: '/signup')}">${message(code:'public.nav.signUp.label')}</a>
                 </li>
-
-            <% /*
-            <li class="${active.equals('publicExport')?'active':''}">
-                            <a href="${createLink(uri: '/publicExport')}">${message(code:'public.nav.exports.label', default:'Exports')}</a>
-
-            </li>
-            */ %>
                 <li id="contact" <g:if test="${active.equals("contact")}"> class="active" </g:if>>
                     <a href="${createLink(uri: '/contact-us')}">${message(code:'public.nav.contact.label')}</a>
                 </li>

@@ -11,7 +11,7 @@
             <g:hiddenField id="customeridentifier_id_${customeridentifier.id}" name="customeridentifier" value="${customeridentifier.id}"/>
         </g:if>
 
-        <div class="field fieldcontain">
+        <div class="field">
             <label for="addCIPlatform">${message(code:'default.provider.label')} : ${message(code:'platform.label')}</label>
             <g:if test="${customeridentifier}">
                 <% Platform p = customeridentifier.platform%>
@@ -28,13 +28,13 @@
             </g:else>
         </div>
 
-        <div class="field fieldcontain">
+        <div class="field">
             <label for="value">${message(code: 'org.customerIdentifier')}:</label>
 
             <input type="text" id="value" name="value" value="${customeridentifier?.value}" required/>
         </div>
 
-        <div class="field fieldcontain">
+        <div class="field">
             <label for="note">${message(code: 'default.notes.label')}:</label>
 
             <input type="text" id="note" name="note" value="${customeridentifier?.note}"/>

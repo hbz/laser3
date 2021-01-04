@@ -177,17 +177,17 @@
             <td>
                 <g:if test="${controllerName in ["survey"] && actionName == "surveyCostItems"}">
                     <g:if test="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org), RDStore.COST_ITEM_DELETED)}">
-                        <g:checkBox name="selectedOrgs" value="${org.id}" checked="false"/>
+                        <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
                     </g:if>
                 </g:if>
                 <g:else>
                     <g:if test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
                         <g:if test="${org.isEmpty()}">
-                            <g:checkBox name="selectedOrgs" value="${org.id}" checked="false"/>
+                            <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
                         </g:if>
                     </g:if>
                     <g:else>
-                        <g:checkBox name="selectedOrgs" value="${org.id}" checked="false"/>
+                        <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
                     </g:else>
                 </g:else>
             </td>

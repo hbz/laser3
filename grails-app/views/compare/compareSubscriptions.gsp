@@ -22,7 +22,7 @@
         <div class="ui field">
             <label for="selectedSubscriptions">${message(code: 'default.compare.subscriptions')}</label>
 
-            <div class="field fieldcontain">
+            <div class="field">
                 <label>${message(code: 'filter.status')}</label>
                 <select id="status" name="status" multiple="" class="ui search selection fluid multiple dropdown" onchange="JSPC.app.adjustDropdown()">
                     <option value=""><g:message code="default.select.choose.label"/></option>

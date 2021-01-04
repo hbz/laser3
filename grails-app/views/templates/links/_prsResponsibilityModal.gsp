@@ -1,6 +1,6 @@
 <semui:modal id="prsLinksModal" text="Neuen ${modalPrsLinkRole.getI10n("value")} hinzufügen" hideSubmitButton="true">
 
-        <%--<p>${message(code:'myinst.addressBook.visibleOnly', default:'Some persons are visible to you due your addressbook')}</p>--%>
+        <%--<p>${message(code:'myinst.addressBook.visibleOnly')}</p>--%>
     <p>Hier können Sie einen ihrer öffentlichen Kontakte mit diesem Objekt verknüpfen.</p>
 
     <div class="field">

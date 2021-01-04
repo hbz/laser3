@@ -11,7 +11,7 @@
             <g:hiddenField id="identifier_id_${identifier.id}" name="identifierId" value="${identifier.id}"/>
         </g:if>
 
-        <div class="field fieldcontain">
+        <div class="field">
             <label for="namespace">${message(code: 'identifier.namespace.label')}:</label>
             <g:if test="${identifier}">
                 <input type="text" id="namespace" name="ns.id" value="${identifier.ns.getI10n('name') ?: identifier.ns.ns}" disabled/>
@@ -26,7 +26,7 @@
             </g:else>
        </div>
 
-        <div class="field fieldcontain ${identifier && identifier.ns.ns == IdentifierNamespace.LEIT_ID ? 'required' : ''}">
+        <div class="field ${identifier && identifier.ns.ns == IdentifierNamespace.LEIT_ID ? 'required' : ''}">
             <label for="value">${message(code: 'default.identifier.label')}:</label>
 
             <g:if test="${identifier && identifier.ns.ns == IdentifierNamespace.LEIT_ID}">
@@ -45,7 +45,7 @@
             </g:else>
         </div>
 
-        <div class="field fieldcontain">
+        <div class="field">
             <label for="note">${message(code: 'default.notes.label')}:</label>
 
             <input type="text" id="note" name="note" value="${identifier?.note}"/>

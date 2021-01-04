@@ -25,7 +25,7 @@
         <div class="field">
             <div class="two fields">
 
-                <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
+                <div class="field ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
                     <label for="contactType">
                         ${RefdataCategory.getByDesc(RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}
                     </label>
@@ -103,7 +103,7 @@
             <div class="field">
                 <div class="two fields">
 
-                    <div class="field wide twelve fieldcontain ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
+                    <div class="field wide twelve ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
                         <label for="tenant">
                             <g:message code="person.tenant.label"
                                        default="Tenant (Permissions to edit this person and depending addresses and contacts)"/>
@@ -112,7 +112,7 @@
                                   value="${contextService.getOrg().id}"/>
                     </div>
 
-                    <div class="field wide four fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
+                    <div class="field wide four ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
                         <label for="isPublic">
                             <g:message code="person.isPublic.label" />
                         </label>
@@ -130,7 +130,7 @@
 
                 <div class="three fields">
 
-                    <div class="field three wide fieldcontain">
+                    <div class="field three wide">
                         <label for="contact1_contentType" for="contact2_contentType" for="contact3_contentType">
                             &nbsp;<%--<g:message code="contact.contentType.label" default="ContentType" />--%>
                         </label>
@@ -149,7 +149,7 @@
                                value="${RDStore.CCT_FAX.id}" />
                     </div>
 
-                    <div class="field three fieldcontain">
+                    <div class="field three">
                         <label for="contact1_type" for="contact2_type" for="contact3_type">
                             ${RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}
                         </label>
@@ -171,7 +171,7 @@
                     </div>
 
 
-                    <div class="field ten wide fieldcontain">
+                    <div class="field ten wide">
                         <label for="contact1_content" for="contact2_content" for="contact3_content">
                             <g:message code="contact.content.label" />
                         </label>

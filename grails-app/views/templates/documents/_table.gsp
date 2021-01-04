@@ -21,7 +21,7 @@
     <table class="ui celled la-table table license-documents">
         <thead>
             <tr>
-                <%--<g:if test="${editable}"><th>${message(code:'default.select.label', default:'Select')}</th></g:if> : REMOVED BULK--%>
+                <%--<g:if test="${editable}"><th>${message(code:'default.select.label')}</th></g:if> : REMOVED BULK--%>
                 <th>${message(code:'license.docs.table.title')}</th>
                 <th>${message(code:'license.docs.table.fileName')}</th>
                 <th>${message(code:'license.docs.table.type')}</th>

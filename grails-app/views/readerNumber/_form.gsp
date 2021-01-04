@@ -2,7 +2,7 @@
 
 
 
-<div class="fieldcontain ${hasErrors(bean: numbersInstance, field: 'type', 'error')} required">
+<div class="${hasErrors(bean: numbersInstance, field: 'type', 'error')} required">
 	<label for="type">
 		<g:message code="readerNumber.referenceGroup.label" />
 		<span class="required-indicator">*</span>
@@ -11,7 +11,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: numbersInstance, field: 'number', 'error')} ">
+<div class="${hasErrors(bean: numbersInstance, field: 'number', 'error')} ">
 	<label for="number">
 		<g:message code="readerNumber.number.label" />
 		
@@ -20,7 +20,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: numbersInstance, field: 'startDate', 'error')} required">
+<div class="${hasErrors(bean: numbersInstance, field: 'startDate', 'error')} required">
 	<label for="startDate">
 		<g:message code="readerNumber.startDate.label" default="Start Date" />
 		<span class="required-indicator">*</span>
@@ -29,7 +29,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: numbersInstance, field: 'endDate', 'error')} ">
+<div class="${hasErrors(bean: numbersInstance, field: 'endDate', 'error')} ">
 	<label for="endDate">
 		<g:message code="readerNumber.endDate.label" default="End Date" />
 		
@@ -38,7 +38,7 @@
 
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: numbersInstance, field: 'org', 'error')} required">
+<div class="${hasErrors(bean: numbersInstance, field: 'org', 'error')} required">
 	<label for="org">
 		<g:message code="numbers.org.label" default="Org" />
 		<span class="required-indicator">*</span>

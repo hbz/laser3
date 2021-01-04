@@ -178,7 +178,7 @@
         <%--<div class="two fields">
 
         <%-- class="field">
-            <label for="filterMultiIE">${message(code: 'myinst.currentTitles.dupes', default: 'Titles we subscribe to through 2 or more packages')}</label>
+            <label for="filterMultiIE">${message(code: 'myinst.currentTitles.dupes')}</label>
 
             <div class="ui checkbox">
                 <input type="checkbox" class="hidden" name="filterMultiIE" id="filterMultiIE"

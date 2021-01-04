@@ -32,9 +32,9 @@
 			<td style="white-space: nowrap"> 
 				${message(code:'default.date.label')}:
 			  <g:if test="${obj.endDate != null}">
-			  	<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.endDate}"/> <br />
+			  	<g:formatDate format="${message(code:'default.date.format.notime')}" date="${obj.endDate}"/> <br />
 			  </g:if> <g:else>
-			  	<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.tipp.endDate}"/> <br />
+			  	<g:formatDate format="${message(code:'default.date.format.notime')}" date="${obj.tipp.endDate}"/> <br />
 			  </g:else>
 			  ${message(code:'tipp.volume')}:
   			  <g:if test="${obj.endVolume != null}">

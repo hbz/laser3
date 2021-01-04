@@ -45,7 +45,7 @@
                     <input type="hidden" name="subscription.copy_docs" value="${permissionInfo?.sub_id}"/>
                     <input type="hidden" name="subscription.name" value="${permissionInfo?.sub_name}"/>
 
-                    <tr><th>${message(code:'default.select.label')}</th><th >${message(code:'myinst.renewalUpload.props', default:'Subscription Properties')}</th><th>${message(code:'default.value.label')}</th></tr>
+                    <tr><th>${message(code:'default.select.label')}</th><th >${message(code:'myinst.renewalUpload.props')}</th><th>${message(code:'default.value.label')}</th></tr>
                     <tr>
                         <th><g:checkBox name="subscription.copyStart" value="${true}" /></th>
                         <th>${message(code:'default.startDate.label')}</th>
@@ -58,13 +58,13 @@
                     </tr>
                     <tr>
                         <th><g:checkBox name="subscription.copyDocs" value="${true}" /></th>
-                        <th>${message(code:'myinst.renewalUpload.copy', default:'Copy Documents and Notes from Subscription')}</th>
+                        <th>${message(code:'myinst.renewalUpload.copy')}</th>
                         <td>${message(code: 'subscription')}: ${permissionInfo?.sub_name}</td>
                     </tr>
                     <tr>
                         <th><g:checkBox name="subscription.copyLicense" value="${permissionInfo?.sub_license ? true : false}"/></th>
-                        <th>${message(code: 'myinst.renewalUpload.copyLiense', default: 'Copy License from Subscription')}</th>
-                        <td>${message(code: 'license')}: ${permissionInfo?.sub_license?:message(code: 'myinst.renewalUpload.noLicensetoSub', default: 'No License in the Subscription!')}</td>
+                        <th>${message(code: 'myinst.renewalUpload.copyLiense')}</th>
+                        <td>${message(code: 'license')}: ${permissionInfo?.sub_license?:message(code: 'myinst.renewalUpload.noLicensetoSub')}</td>
                     </tr>
                     </tbody>
                 </table>

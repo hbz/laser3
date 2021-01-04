@@ -11,7 +11,7 @@
 		<div class="ui grid">
 
             <div class="four wide column">
-                <div class="well">
+                <div>
                     <ul class="nav nav-list">
                         <li class="nav-header">${entityName}</li>
                         <li>
@@ -42,7 +42,6 @@
 
 				<semui:errors bean="${taskInstance}" />
 
-				<fieldset>
 					<g:form class="ui form" action="create" >
 						<fieldset>
 							<% /* f:all bean="taskInstance"/*/ %>
@@ -57,7 +56,6 @@
 							</div>
 						</fieldset>
 					</g:form>
-				</fieldset>
 				
 			</div><!-- .twelve -->
 

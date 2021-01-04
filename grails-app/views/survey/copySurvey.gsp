@@ -336,12 +336,12 @@
                     </div>
                 </div>
                 <!-- 1-2 -->
-                <div class="field fieldcontain">
+                <div class="field">
                     <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn"
                                       placeholder="filter.placeholder" value="${validOn}"/>
                 </div>
 
-                <div class="field fieldcontain">
+                <div class="field">
                     <label>${message(code: 'default.status.label')}</label>
                     <laser:select class="ui dropdown" name="status"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
@@ -466,7 +466,7 @@
                                             ${s.name}
                                         </g:if>
                                         <g:else>
-                                            -- ${message(code: 'myinst.currentSubscriptions.name_not_set', default: 'Name Not Set')}  --
+                                            -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
                                         </g:else>
                                         <g:if test="${s.instanceOf}">
                                             <g:if test="${s.consortia && s.consortia == institution}">

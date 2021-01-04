@@ -27,7 +27,7 @@
                     <tr>
                         <th>${message(code:'package.show.pkg_name')} in GOKB</th>
                         <th>${message(code:'package.show.pkg_name')} in LAS:eR</th>
-                        <%--<th>${message(code:'consortium.label', default:'Consortium')}</th>--%>
+                        <%--<th>${message(code:'consortium.label')}</th>--%>
                         <th>${message(code:'tipp.plural')} in GOKB</th>
                         <th>${message(code:'tipp.plural')} in LAS:eR</th>
                     </thead>

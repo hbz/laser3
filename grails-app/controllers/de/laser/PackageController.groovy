@@ -334,7 +334,6 @@ class PackageController  {
         exportService.printStart("Package show")
 
         Map<String, Object> result = [:]
-        boolean showDeletedTipps = false
 
         result.user = contextService.getUser()
         Package packageInstance = Package.get(params.id)
@@ -375,11 +374,6 @@ class PackageController  {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         params.max = result.max
 
-        Map<String,Object> limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
-
-        // def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
-        Map<String,Object> qry_params = [pkgInstance: packageInstance]
-
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Date today = new Date()
         if (!params.asAt) {
@@ -389,21 +383,7 @@ class PackageController  {
                 params.asAt = sdf.format(packageInstance.endDate)
             }
         }
-        Date date_filter
-        if (params.mode == 'advanced') {
-            date_filter = null
-            params.asAt = null
-        } else if (params.asAt && params.asAt.length() > 0) {
-            date_filter = sdf.parse(params.asAt)
-        } else {
-            date_filter = today
-        }
 
-        Map<String,Object> query = filterService.generateBasePackageQuery(params, qry_params, showDeletedTipps, date_filter,"Package")
-
-        // log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
-        List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.base_qry, query.qry_params, limits)
-        //result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params).size()
         result.unfiltered_num_tipp_rows = TitleInstancePackagePlatform.executeQuery(
                 "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg", [pkg: packageInstance]).size()
 

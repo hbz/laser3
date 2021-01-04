@@ -502,7 +502,7 @@
                                     <g:if test="${editable}">
                                         <g:link action="removeEntitlement" class="ui icon negative button"
                                                 params="${[ieid: ie.id, sub: subscription.id]}"
-                                                onClick="return confirm('${message(code: 'subscription.details.removeEntitlement.confirm', default: 'Are you sure you wish to delete this entitlement?')}');">
+                                                onClick="return confirm('${message(code: 'subscription.details.removeEntitlement.confirm')}');">
                                             <i class="trash alternate icon"></i>
                                         </g:link>
                                     </g:if>

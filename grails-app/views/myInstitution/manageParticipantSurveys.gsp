@@ -47,11 +47,11 @@
                 </div>
             </div>
 
-            <div class="field fieldcontain">
+            <div class="field">
                 <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${params.validOn}" />
             </div>
 
-            <div class="field fieldcontain">
+            <div class="field">
                 <label>${message(code: 'default.valid_onYear.label')}</label>
                 <g:select name="validOnYear"
                           from="${surveyYears}"

@@ -79,7 +79,7 @@
                     <tr>
                         <g:if test="${compare}">
                             <td class="center aligned">
-                                <g:checkBox name="selectedObjects" value="${s.id}" checked="false"/>
+                                <g:checkBox id="selectedObjects_${s.id}" name="selectedObjects" value="${s.id}" checked="false"/>
                             </td>
                         </g:if>
                         <td class="center aligned">
@@ -332,7 +332,7 @@
         $("[name='dateBeforeFilter']").change(function(){
             var val = $(this)['context']['selectedOptions'][0]['label'];
 
-            if(val != "${message(code:'default.filter.date.none', default:'-None-')}"){
+            if(val != "${message(code:'default.filter.date.none')}"){
                 $(".dateBefore").removeClass("hidden");
             }else{
                 $(".dateBefore").addClass("hidden");

@@ -6,7 +6,7 @@
   </head>
   <body>
     <div>
-      <div class="well">
+      <div>
         <p>
           Edit License...
         </p>
