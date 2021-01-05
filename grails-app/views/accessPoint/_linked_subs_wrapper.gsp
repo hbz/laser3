@@ -1,23 +1,21 @@
 <g:form action="" controller="accessPoint" method="post" class="ui form">
     <div class="inline field">
-      <div class="ui checkbox">
-        <label for="activeCheckbox">${message(code: "accessPoint.linkedSubscription.statusCheckboxLabel")}</label>
-        <%--<input id="activeCheckbox" autocomplete="off" name="currentLicences" type="checkbox" ${activeSubsOnly ? 'checked' : ''}
-               onchange="${remoteFunction(
-                   controller: 'accessPoint',
-                   action: 'dynamicSubscriptionList',
-                   params: "'id=' + ${accessPoint.id}+'&checked='+this.checked",
-                   update: 'subPkgPlatformTable',
-               )}"> --%>
+        <div class="ui">%{-- add checkbox; js fix needed --}%
 
-          <input id="activeCheckbox" autocomplete="off" name="currentLicences" type="checkbox" ${activeSubsOnly ? 'checked' : ''}
-                 onchange="<laser:remoteJsOnChangeHandler
-                         controller="accessPoint"
-                         action="dynamicSubscriptionList"
-                         data="{id:${accessPoint.id},checked:this.checked}"
-                         update="#subPkgPlatformTable"
-                 />">
-      </div>
+            <label for="activeCheckbox">${message(code: "accessPoint.linkedSubscription.statusCheckboxLabel")}</label>
+
+            <% String jsHandler = laser.remoteJsOnChangeHandler(
+                    controller: "accessPoint",
+                    action: "dynamicSubscriptionList",
+                    data: "{id:${accessPoint.id},checked:this.checked}",
+                    update: "#subPkgPlatformTable"
+            ) %>
+            <input id="activeCheckbox" name="currentLicences"
+                   type="checkbox" ${activeSubsOnly ? 'checked' : ''}
+                   onchange="${jsHandler}" />
+
+        </div>
     </div>
-  </g:form>
+</g:form>
+
 <g:render template="linked_subs_table"/>
