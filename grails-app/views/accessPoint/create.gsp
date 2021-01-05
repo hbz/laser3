@@ -23,7 +23,7 @@
   <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
   ${orgInstance.name}
   </h1>
-  <g:render template="/organisation/nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
+  <g:render template="/organisation/nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
 
   <h1 class="ui header la-noMargin-top"><g:message code="accessPoint.new"/></h1>
   <semui:messages data="${flash}"/>
