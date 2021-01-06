@@ -12,11 +12,11 @@
       <semui:crumb message="menu.admin.showAffiliations" class="active"/>
     </semui:breadcrumbs>
 
-    <semui:messages data="${flash}" />
-        <br />
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
           ${message(code:'menu.admin.showAffiliations')}
         </h1>
+
+        <semui:messages data="${flash}" />
 
         <table class="ui celled la-table table">
           <thead>

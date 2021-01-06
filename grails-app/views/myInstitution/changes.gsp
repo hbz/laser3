@@ -12,10 +12,8 @@
         <semui:breadcrumbs>
             <semui:crumb message="myinst.pendingChanges.label" class="active" />
         </semui:breadcrumbs>
-        <br />
-        <h1 class="ui icon header la-clear-before"><semui:headerIcon />
-            ${message(code:'myinst.pendingChanges.label')}
-        </h1>
+
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'myinst.pendingChanges.label')}</h1>
 
             <g:if test="${packages}">
                 <g:form controller="pendingChange" action="processAll">

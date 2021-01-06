@@ -20,17 +20,16 @@
     </g:if>
     <semui:crumb message="copySurvey.label" class="active"/>
 </semui:breadcrumbs>
-<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
         type="Survey"/>${surveyConfig.getConfigNameShort()}</h1>
 
-<h3>
+<h2 class="ui header">
     ${message(code: 'copySurvey.label')}:
     <g:link controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]">
         ${surveyConfig.getConfigNameShort()}
     </g:link>
-</h3>
+</h2>
 
 <semui:messages data="${flash}"/>
 
@@ -48,7 +47,7 @@
             </g:if>
 
             <g:if test="${targetSubs}">
-                <h4>${message(code: 'copySurvey.subscription.info2')}</h4>
+                <h4 class="ui header">${message(code: 'copySurvey.subscription.info2')}</h4>
 
                 <div class="ui ordered list">
                     <g:each in="${targetSubs}" var="sub" status="i">

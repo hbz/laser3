@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 
 <div class="ui top attached segment" id="chartContainer${entry.id}">
-    <h2>${entry.dropdownNamingConvention(institution)}</h2>
+    <h2 class="ui header">${entry.dropdownNamingConvention(institution)}</h2>
     <a class="closeSegment" data-entry="${genericOIDService.getOID(entry)}">
         <i class="ui icon times"></i>
     </a>

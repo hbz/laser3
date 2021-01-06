@@ -18,7 +18,7 @@
 		</g:else>
 		<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
 	</semui:breadcrumbs>
-	<br />
+
 		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]" /></h1>
 
 		<semui:messages data="${flash}" />

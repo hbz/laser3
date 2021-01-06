@@ -4,7 +4,7 @@
 <semui:modal id="transferParticipantsModal" message="surveyInfo.transferParticipants"
              msgSave="${message(code: 'surveyInfo.transferParticipants.button')}">
 
-    <h3><g:message code="surveyInfo.transferParticipants.option"/>:</h3>
+    <h3 class="ui header"><g:message code="surveyInfo.transferParticipants.option"/>:</h3>
 
     <g:form class="ui form"
             url="[controller: 'survey', action: 'processTransferParticipantsByRenewal', params: [id: params.id, surveyConfigID: surveyConfig.id]]">

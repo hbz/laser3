@@ -2,8 +2,6 @@
 <laser:serviceInjection/>
 <!doctype html>
 
-
-
 <html>
 <head>
     <meta name="layout" content="laser">
@@ -29,8 +27,6 @@
     </semui:exportDropdown>
 </semui:controlButtons>
 
-
-<br />
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${institution.name} - ${message(code: 'currentSurveys.label')}
 <semui:totalNumber total="${countSurveys.values().sum { it }}"/>
 </h1>

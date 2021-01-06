@@ -12,16 +12,10 @@
     <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
 </semui:breadcrumbs>
 
-<br />
 <h1 class="ui left aligned icon header la-clear-before"><semui:headerIcon/>Title Enrichment of series_name, monograph_parent_collection_title, subject_reference, summary_of_content</h1>
-
-<br />
-<br />
-<br />
 
 <semui:messages data="${flash}"/>
 
-<br />
 <g:form class="ui form" controller="admin" action="titleEnrichment" params="" method="post"
         enctype="multipart/form-data">
     <div class="two fields">

@@ -8,8 +8,7 @@
 		<title>${message(code:'laser')} : <g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<div>
-				
+
 			<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" /></h1>
 
 			<semui:messages data="${flash}" />
@@ -55,6 +54,5 @@
 
 			<semui:paginate total="${docInstanceTotal}" />
 
-		</div>
 	</body>
 </html>

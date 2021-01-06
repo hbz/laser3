@@ -11,19 +11,18 @@
     <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
     <semui:crumb message="menu.admin.dataConsistency" class="active"/>
 </semui:breadcrumbs>
-<br />
 
-<h2 class="ui header la-noMargin-top">${message(code: "menu.admin.dataConsistency")}</h2>
+<h1 class="ui header la-noMargin-top">${message(code: "menu.admin.dataConsistency")}</h1>
 
 <div class="ui grid">
     <div class="twelve wide column">
 
-        <h3 class="ui headerline">${message(code: "admin.duplicateNamesAndTitles")}</h3>
+        <h2 class="ui header">${message(code: "admin.duplicateNamesAndTitles")}</h2>
 
         <g:each in="${titles}" var="obj">
             <g:if test="${true}">
 
-                <h4 class="ui headerline" id="jumpMark_2_${obj.key}">${obj.key}</h4>
+                <h3 class="ui header" id="jumpMark_2_${obj.key}">${obj.key}</h3>
 
                 <table class="ui sortable celled la-table compact la-ignore-fixed table">
                     <thead>

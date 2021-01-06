@@ -26,7 +26,7 @@
     <g:each in="${pendingChanges}" var="memberId, pcList">
         <g:set var="member" value="${Subscription.get(memberId)}" />
 
-        <h4>${member.getNameConcatenated()}</h4>
+        <h4 class="ui header">${member.getNameConcatenated()}</h4>
 
         <g:render template="/templates/pendingChanges" model="${['pendingChanges':pcList, 'flash':flash, 'model':member, 'tmplSimpleView':true]}"/>
     </g:each>

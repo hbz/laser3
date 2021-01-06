@@ -13,7 +13,6 @@
                  action="currentSubscriptions"/>
     <semui:crumb class="active" message="menu.my.comp_sub"/>
 </semui:breadcrumbs>
-<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'menu.my.comp_sub')}</h1>
 

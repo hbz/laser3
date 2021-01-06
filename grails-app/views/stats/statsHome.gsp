@@ -22,7 +22,7 @@
             </li>
             --%>
         </semui:breadcrumbs>
-        <br />
+
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.admin.statistics')}</h1>
 
         <table class="ui celled la-table table">

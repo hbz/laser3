@@ -12,7 +12,7 @@
 <semui:breadcrumbs>
     <semui:crumb message="package.show.all" class="active"/>
 </semui:breadcrumbs>
-<br />
+
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'package.show.all')}
 <semui:totalNumber total="${resultsTotal2}"/>
 </h1>

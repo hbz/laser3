@@ -25,13 +25,11 @@
 
     <semui:modeSwitch controller="package" action="show" params="${params}"/>
 
-<semui:messages data="${flash}" />
-
-
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-
         ${packageInstance?.name}
     </h1>
+
+    <semui:messages data="${flash}" />
 
     <g:render template="nav"/>
 

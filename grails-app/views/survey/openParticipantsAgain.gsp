@@ -100,7 +100,7 @@
 
             <g:form action="processOpenParticipantsAgain" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
-                <h4><g:message code="surveyParticipants.hasAccess"/></h4>
+                <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
 
                 <g:set var="surveyParticipantsHasAccess"
                        value="${surveyResult.findAll { it.participant.hasAccessOrg() }}"/>
@@ -301,7 +301,7 @@
                     </tbody>
                 </table>
 
-                <h4><g:message code="surveyParticipants.hasNotAccess"/></h4>
+                <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
                 <g:set var="surveyParticipantsHasNotAccess"
                        value="${surveyResult.findAll { !it.participant.hasAccessOrg() }}"/>

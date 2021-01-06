@@ -32,15 +32,10 @@
     </semui:exportDropdown>
 </semui:controlButtons>
 
-<br />
-
-
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
 ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.name}
 <semui:surveyStatus object="${surveyConfig.surveyInfo}"/>
 </h1>
-
-<br />
 
 <g:if test="${flash}">
     <semui:messages data="${flash}"/>

@@ -14,7 +14,7 @@
     <semui:crumb text="Application Config" class="active"/>
 </semui:breadcrumbs>
 
-<h2 class="ui header">${message(code:'menu.yoda.appConfig')}</h2>
+<h1 class="ui header">${message(code:'menu.yoda.appConfig')}</h1>
 
 <p>${message(code:'sys.properties')}</p>
 

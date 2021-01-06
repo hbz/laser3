@@ -55,7 +55,9 @@
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${title}
 <semui:totalNumber total="${membersCount}"/>
 </h1>
+
 <g:render template="/templates/filter/javascript" />
+
 <semui:messages data="${flash}"/>
     <%
         List configShowFilter = [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value']]

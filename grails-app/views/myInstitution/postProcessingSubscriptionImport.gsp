@@ -13,8 +13,8 @@
         </semui:breadcrumbs>
         <br />
         <semui:messages data="${flash}" />
-        <h2><g:message code="myinst.subscriptionImport.post.header2"/></h2>
-        <h3><g:message code="myinst.subscriptionImport.post.header3"/></h3>
+        <h2 class="ui header"><g:message code="myinst.subscriptionImport.post.header2"/></h2>
+        <h3 class="ui header"><g:message code="myinst.subscriptionImport.post.header3"/></h3>
         <g:form name="subscriptionParameter" action="addSubscriptions" controller="subscription" method="post">
             <g:hiddenField name="candidates" value="${candidates.keySet() as JSON}"/>
             <table class="ui striped table">

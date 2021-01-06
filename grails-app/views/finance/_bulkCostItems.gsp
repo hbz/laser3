@@ -4,7 +4,7 @@
 
 <g:set var="financeService" bean="financeService"/>
 
-<h3><span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+<h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
           data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
     ${message(code: 'surveyCostItems.bulkOption.label')}
     <i class="question circle icon"></i>

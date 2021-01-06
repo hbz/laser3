@@ -48,14 +48,13 @@
             <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
                 <g:render template="actions" />
             </g:if>
-
         </semui:controlButtons>
-
-        <semui:messages data="${flash}"/>
 
         <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'myinst.currentSubscriptions.label')}
             <semui:totalNumber total="${num_sub_rows}"/>
         </h1>
+
+    <semui:messages data="${flash}"/>
 
     <g:render template="/templates/subscription/subscriptionFilter"/>
 

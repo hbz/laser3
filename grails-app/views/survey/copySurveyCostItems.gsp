@@ -203,7 +203,7 @@ ${surveyInfo.name}
 
 </div>
 
-<h2>
+<h2 class="ui header">
     ${message(code: 'surveyInfo.copySurveyCostItems')}
 </h2>
 

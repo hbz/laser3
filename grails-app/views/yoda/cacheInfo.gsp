@@ -19,11 +19,11 @@
     sessionCache.put("test", "${new Date()}")
     sessionCache.get("test")
 %>
-<br />
-<h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h2>
+
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h1>
 
 <g:set var="sessionCache" value="${contextService.getSessionCache()}" />
-<h3 class="ui header">SessionCache <span class="ui label">${sessionCache.getSession().class}</span></h3>
+<h2 class="ui header">SessionCache <span class="ui label">${sessionCache.getSession().class}</span></h2>
 
 <div class="ui segment">
     <p>ID: ${sessionCache.getSession().id}</p>
@@ -46,7 +46,7 @@
 
 <hr />
 
-<h3 class="ui header">Ehcache <span class="ui label">${ehcacheManager.class}</span></h3>
+<h2 class="ui header">Ehcache <span class="ui label">${ehcacheManager.class}</span></h2>
 
 <%
     List ehCaches = [
@@ -61,7 +61,7 @@
         <g:set var="cache" value="${ehcacheManager.getCache(cacheName)}" />
         <g:set var="cacheStats" value="${cache.getStatistics()}" />
 
-        <h4 class="ui header">${cacheName}
+        <h3 class="ui header">${cacheName}
             <span class="ui label">
                 ${cache.class} (
                 hitCount: ${cacheStats.cacheHitCount()},
@@ -72,7 +72,7 @@
                     heap: ${cacheStats.getLocalHeapSize()}kb
                 </g:else> )
             </span>
-        </h4>
+        </h3>
 
         <div class="ui segments">
 
@@ -132,7 +132,7 @@
 
 <hr />
 
-<h3 class="ui header">Hibernate <span class="ui label">${hibernateSession.class}</span></h3>
+<h2 class="ui header">Hibernate <span class="ui label">${hibernateSession.class}</span></h2>
 
 <div class="ui segment">
     <g:each in="${hibernateSession.statistics}" var="hst">

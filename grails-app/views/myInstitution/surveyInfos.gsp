@@ -16,7 +16,6 @@
     <semui:crumb text="${surveyInfo.name}" class="active"/>
 </semui:breadcrumbs>
 
-
 <semui:controlButtons>
     <semui:exportDropdown>
         <semui:exportDropdownItem>
@@ -26,14 +25,10 @@
     </semui:exportDropdown>
 </semui:controlButtons>
 
-
-
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
 ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
-
-<br />
 
 <semui:messages data="${flash}"/>
 
@@ -60,7 +55,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
     <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
     <semui:form>
-        <h3><g:message code="surveyInfo.owner.label"/>:</h3>
+        <h3 class="ui header"><g:message code="surveyInfo.owner.label"/>:</h3>
 
         <table class="ui table la-table compact">
             <tbody>

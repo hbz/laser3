@@ -18,7 +18,6 @@
     <semui:crumb class="active"
                  text="${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}"/>
 </semui:breadcrumbs>
-<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscription.name}</h1>
 
@@ -29,7 +28,7 @@
 
 <semui:messages data="${flash}"/>
 
-<h4>
+<h4 class="ui header">
     <g:message code="subscription"/>:
     <g:link controller="subscription" action="show" id="${subscription.id}">${subscription.name}</g:link><br /><br />
 
@@ -40,7 +39,7 @@
         <div class="ui two column very relaxed grid">
             <div class="column">
                 <semui:filter>
-                    <h4>${message(code: 'subscription.propertiesMembers.onlyPropOfParentSubscription', args: [subscription.name])}</h4>
+                    <h4 class="ui header">${message(code: 'subscription.propertiesMembers.onlyPropOfParentSubscription', args: [subscription.name])}</h4>
                     <g:form action="propertiesMembers" method="post" class="ui form" id="${params.id}">
                         <g:render template="/templates/properties/genericFilter"
                                   model="[propList: propList, hideFilterProp: true]"/>
@@ -57,7 +56,7 @@
 
             <div class="column">
                 <semui:filter>
-                    <h4>${message(code: 'subscription.properties')}:</h4>
+                    <h4 class="ui header">${message(code: 'subscription.properties')}:</h4>
                     <g:form action="propertiesMembers" method="post" class="ui form" id="${params.id}">
                         <g:render template="/templates/properties/genericFilter"
                                   model="[propList: PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP)+PropertyDefinition.findAllByTenantAndDescr(contextOrg, PropertyDefinition.SUB_PROP), hideFilterProp: true]"/>
@@ -123,7 +122,7 @@
 
 
     <div class="ui segment">
-        <h4>${message(code: 'subscription.propertiesMembers.deletePropertyInfo', args: args.memberType)}</h4>
+        <h4 class="ui header">${message(code: 'subscription.propertiesMembers.deletePropertyInfo', args: args.memberType)}</h4>
 
         <g:link class="ui button negative js-open-confirm-modal"
                 data-confirm-tokenMsg="${message(code: 'subscription.propertiesMembers.deleteProperty.button.confirm')}"
@@ -136,7 +135,7 @@
 
 
     <div class="ui segment">
-        <h3><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
+        <h3 class="ui header"><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
         <table class="ui celled la-table table">
             <thead>
             <tr>
@@ -350,7 +349,7 @@
             <g:hiddenField id="ppm_id_${params.id}" name="id" value="${params.id}"/>
 
             <div class="field required">
-                <h4>${message(code: 'subscription.propertiesMembers.info', args: args.memberType)}</h4>
+                <h4 class="ui header">${message(code: 'subscription.propertiesMembers.info', args: args.memberType)}</h4>
 
                 <div class="inline field">
                     <label>${message(code: 'subscription.propertiesMembers.propertySelected')}:</label>
@@ -399,7 +398,7 @@
             <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
 
 
-            <h3>${message(code: 'subscription.propertiesMembers.subscriber')} <semui:totalNumber
+            <h3 class="ui header">${message(code: 'subscription.propertiesMembers.subscriber')} <semui:totalNumber
                     total="${filteredSubChilds?.size()}"/></h3>
             <table class="ui celled la-table table">
                 <thead>

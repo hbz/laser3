@@ -21,7 +21,7 @@
         </semui:exportDropdown>
         <g:render template="actions"/>
     </semui:controlButtons>
-    <br />
+
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.institutions.manage_props')}</h1>
 
     <g:render template="nav" />

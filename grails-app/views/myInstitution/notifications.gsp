@@ -11,10 +11,9 @@
         <semui:breadcrumbs>
             <semui:crumb message="myinst.acceptedChanges.label" class="active" />
         </semui:breadcrumbs>
-        <br />
+
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
             ${message(code:'myinst.acceptedChanges.label')}
-            <%--${message(code:'myinst.todo.pagination', args:[(params.offset?:1), (java.lang.Math.min(num_todos,(params.int('offset')?:0)+10)), num_todos])}--%>
         </h1>
 
         <%--<g:if test="${changes != null}" >

@@ -10,10 +10,8 @@
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
     <semui:crumb message="menu.yoda.quartzInfo" class="active"/>
 </semui:breadcrumbs>
-<br />
-<h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.quartzInfo')}</h2>
 
-<br />
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.quartzInfo')}</h1>
 
 <g:each in="${quartz}" var="groupKey, group">
     <%--<h3 class="ui header">${groupKey}</h3>--%>

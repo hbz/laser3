@@ -20,7 +20,6 @@
                  text="${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}"/>
 
 </semui:breadcrumbs>
-<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscription.name}</h1>
 
@@ -31,7 +30,7 @@
 
 <semui:messages data="${flash}"/>
 
-<h4>
+<h4 class="ui header">
     <g:message code="subscription"/>: <g:link controller="subscription" action="show"
                                               id="${subscription.id}">${subscription.name}</g:link>
     <br /><br />
@@ -92,7 +91,7 @@
             <g:set var="editableOld" value="${editable}"/>
 
             <div class="ui segment">
-                <h3><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
+                <h3 class="ui header"><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
                 <table class="ui celled la-table table">
                     <thead>
                     <tr>
@@ -162,7 +161,7 @@
                     <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
                     <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
-                    <h4>${message(code: 'subscription.subscriptionPropertiesMembers.info', args: args.memberType)}</h4>
+                    <h4 class="ui header">${message(code: 'subscription.subscriptionPropertiesMembers.info', args: args.memberType)}</h4>
 
                     <div class="two fields">
                         <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from"/>
@@ -228,7 +227,7 @@
                     <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
 
 
-                    <h3>
+                    <h3 class="ui header">
                         ${message(code: 'subscription.propertiesMembers.subscriber')}
                         <semui:totalNumber total="${filteredSubChilds?.size()}"/>
                     </h3>
@@ -364,7 +363,7 @@
     <g:if test="${params.tab == 'providerAgency'}">
         <div class="ui bottom attached tab segment active">
             <div class="ui segment ">
-                <h3><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
+                <h3 class="ui header"><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
 
                 <div class="twelve wide column">
 
@@ -382,7 +381,7 @@
                         </div>
 
                         <div class="ui segment">
-                            <h3>${message(code: 'subscription.propertiesMembers.subscriber')} <semui:totalNumber
+                            <h3 class="ui header">${message(code: 'subscription.propertiesMembers.subscriber')} <semui:totalNumber
                                     total="${filteredSubChilds?.size()}"/></h3>
                             <table class="ui celled la-table table">
                                 <thead>
@@ -463,14 +462,14 @@
     <g:if test="${params.tab == 'documents'}">
         <div class="ui bottom attached tab segment active">
             <div class="ui segment ">
-                <h3><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
+                <h3 class="ui header"><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
 
                 <g:render template="/templates/documents/table"
                           model="${[instance: subscription, context: 'documents', redirect: 'subscriptionPropertiesMembers', owntp: 'subscription']}"/>
             </div>
 
             <div class="ui segment">
-                <h3>${message(code: 'subscription.propertiesMembers.subscriber')} <semui:totalNumber
+                <h3 class="ui header">${message(code: 'subscription.propertiesMembers.subscriber')} <semui:totalNumber
                         total="${filteredSubChilds?.size()}"/></h3>
                 <table class="ui celled la-table table">
                     <thead>
@@ -516,13 +515,13 @@
     <g:if test="${params.tab == 'notes'}">
         <div class="ui bottom attached tab segment active">
             <div class="ui segment ">
-                <h3><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
+                <h3 class="ui header"><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
 
                 <g:render template="/templates/notes/table" model="${[instance: subscription, redirect: 'subscriptionPropertiesMembers']}"/>
             </div>
 
             <div class="ui segment">
-                <h3>${message(code: 'subscription.propertiesMembers.subscriber')} <semui:totalNumber
+                <h3 class="ui header">${message(code: 'subscription.propertiesMembers.subscriber')} <semui:totalNumber
                         total="${filteredSubChilds?.size()}"/></h3>
                 <table class="ui celled la-table table">
                     <thead>
@@ -568,7 +567,7 @@
     <g:if test="${params.tab == 'multiYear'}">
         <div class="ui bottom attached tab segment active">
             <div class="ui segment ">
-                <h3><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
+                <h3 class="ui header"><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
 
                 <table class="ui celled la-table table">
                     <thead>
@@ -607,7 +606,7 @@
             </div>
 
             <div class="ui segment">
-                <h3>${message(code: 'subscription.propertiesMembers.subscriber')} <semui:totalNumber
+                <h3 class="ui header">${message(code: 'subscription.propertiesMembers.subscriber')} <semui:totalNumber
                         total="${filteredSubChilds?.size()}"/></h3>
                 <table class="ui celled la-table table">
                     <thead>

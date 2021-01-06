@@ -11,12 +11,10 @@
 <semui:breadcrumbs>
     <semui:crumb message="menu.institutions.help" class="active"/>
 </semui:breadcrumbs>
-<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.user.help')}</h1>
 
-<br />
-<h3 class="ui icon header la-clear-before la-noMargin-top"><g:message code="help.contentHelp"/></h3>
+<h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="help.contentHelp"/></h2>
 
 <div class="ui accordion styled fluid la-clear-before">
     <div class="title">

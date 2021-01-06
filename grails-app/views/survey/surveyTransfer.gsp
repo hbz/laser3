@@ -36,7 +36,7 @@
 <semui:messages data="${flash}"/>
 
 
-<h2>
+<h2 class="ui header">
     ${message(code: 'surveyInfo.transfer')}
 </h2>
 

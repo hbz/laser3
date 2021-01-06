@@ -11,11 +11,11 @@
     <semui:crumb text="Datenbereinigung" class="active"/>
 </semui:breadcrumbs>
 <br />
-    <h2 class="ui header">Lizenzen - ${subscriptions.size()}, Verträge - ${licenses.size()}</h2>
+    <h1 class="ui header">Lizenzen - ${subscriptions.size()}, Verträge - ${licenses.size()}</h1>
 
     <br />
 
-    <h3 class="ui header">Lizenzen - ${subscriptions.size()}</h3>
+    <h2 class="ui header">Lizenzen - ${subscriptions.size()}</h2>
 
     <g:link class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'subscription']}">Lösche die nächsten 10 Lizenzen</g:link>
     <br />
@@ -40,7 +40,7 @@
     <br />
     <br />
 
-    <h3 class="ui header">Verträge - ${licenses.size()}</h3>
+    <h2 class="ui header">Verträge - ${licenses.size()}</h2>
 
     <g:link class="ui button red" controller="yoda" action="dropDeletedObjects" params="${[cmd:'license']}">Lösche die nächsten 10 Verträge</g:link>
     <br />

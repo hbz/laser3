@@ -13,12 +13,11 @@
         <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
     </semui:breadcrumbs>
 
-    <semui:messages data="${flash}" />
-    <br />
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-
         ${packageInstance?.name}
     </h1>
+
+    <semui:messages data="${flash}" />
 
     <g:render template="nav"/>
 

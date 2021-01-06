@@ -65,7 +65,7 @@
     <g:form action="processTransferParticipants" controller="survey" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
 
-        <h4><g:message code="surveyParticipants.hasAccess"/></h4>
+        <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
 
         <g:set var="surveyParticipantsHasAccess"
                value="${surveyResult.findAll { it.participant.hasAccessOrg() }}"/>
@@ -274,7 +274,7 @@
             </tbody>
         </table>
 
-        <h4><g:message code="surveyParticipants.hasNotAccess"/></h4>
+        <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
         <g:set var="surveyParticipantsHasNotAccess"
                value="${surveyResult.findAll { !it.participant.hasAccessOrg() }}"/>
@@ -480,7 +480,7 @@
             <br />
             <semui:form>
             <div class="ui form">
-            <h3>${message(code: 'surveyTransfer.info.label')}:</h3>
+            <h3 class="ui header">${message(code: 'surveyTransfer.info.label')}:</h3>
                 <div class="two fields">
                     <div class="ui field">
                          <div class="field">

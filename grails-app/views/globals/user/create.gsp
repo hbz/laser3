@@ -9,7 +9,7 @@
     <body>
 
         <g:render template="${breadcrumb}" model="${[inContextOrg: inContextOrg, orgInstance: orgInstance, departmentalView: departmentalView, institutionalView: institutionalView,  params:params ]}"/>
-        <br>
+
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'user.create_new.label')}</h1>
 
         <semui:messages data="${flash}" />

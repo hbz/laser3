@@ -19,7 +19,6 @@
     <semui:crumb class="active" id="${issueEntitlementInstance.id}"
                  text="${issueEntitlementInstance.tipp.title.title}"/>
 </semui:breadcrumbs>
-<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
         type="${issueEntitlementInstance.tipp.title.printTitleType()}"/>

@@ -17,7 +17,7 @@
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <semui:crumb message="createIssueEntitlementsSurvey.label" class="active"/>
 </semui:breadcrumbs>
-<br />
+
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
         type="Survey"/>${message(code: 'createIssueEntitlementsSurvey.label')}</h1>
 
@@ -31,9 +31,9 @@
 </div>
 
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label')}
+<h2 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label')}
 <semui:totalNumber total="${num_sub_rows}"/>
-</h1>
+</h2>
 
 <g:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">

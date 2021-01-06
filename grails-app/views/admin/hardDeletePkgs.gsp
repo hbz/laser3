@@ -12,7 +12,7 @@
             <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
             <semui:crumb text="Package Delete" class="active"/>
         </semui:breadcrumbs>
-        <br />
+
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Package Delete</h1>
 
         <semui:messages data="${flash}" />

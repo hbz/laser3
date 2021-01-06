@@ -6,7 +6,7 @@
         <input type="hidden" name="property" value="${property}"/>
         <input type="hidden" name="recip_prop" value="${recip_prop}"/>
 
-        <h3>DEPRECATED</h3>
+        <h3 class="ui header">DEPRECATED</h3>
 
         <div class="field">
             <table id="org_role_tab" class="ui celled compact la-table table">

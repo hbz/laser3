@@ -11,7 +11,7 @@
 <semui:breadcrumbs>
     <semui:crumb message="menu.my.platforms" class="active" />
 </semui:breadcrumbs>
-<br />
+
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code:'menu.my.platforms')}
     <semui:totalNumber total="${platformInstanceTotal}"/>
 </h1>

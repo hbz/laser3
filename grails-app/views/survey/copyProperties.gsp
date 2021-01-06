@@ -205,7 +205,7 @@ ${surveyInfo.name}
 
 <semui:messages data="${flash}"/>
 
-<h2>
+<h2 class="ui header">
     ${message(code: 'copyProperties.copyProperties', args: [message(code: 'copyProperties.' + params.tab)])}
 </h2>
 

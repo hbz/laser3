@@ -42,7 +42,7 @@
 
 <pre>numberOfActiveUsers : ${numberOfActiveUsers}</pre>
 
-<h3>TEST: SwissKnife.checkMessageKey()</h3>
+<h3 class="ui header">TEST: SwissKnife.checkMessageKey()</h3>
 
 <semui:msg class="warning" header="${message(code: 'message.information')}" message="x.myinst.addressBook.visible" />
 <semui:msg class="warning" header="${message(code: 'message.information')}" message="${message(code: 'myinst.addressBook.visible')}" />
