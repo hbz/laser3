@@ -13,7 +13,6 @@
 <semui:breadcrumbs>
     <semui:crumb message="menu.institutions.manage_props" class="active" />
 </semui:breadcrumbs>
-<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.institutions.manage_props')}</h1>
 
@@ -58,7 +57,7 @@
     <div class="ui segment">
         <g:form action="processManageProperties" method="post" class="ui form">
             <div class="field">
-                <h2><g:if test="${filterPropDef.tenant != null}"><i class="shield alternate icon"></i></g:if><g:message code="property.manageProperties.add" args="[filterPropDef.getI10n('name')]"/></h2>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef.type)}
+                <h2 class="ui header"><g:if test="${filterPropDef.tenant != null}"><i class="shield alternate icon"></i></g:if><g:message code="property.manageProperties.add" args="[filterPropDef.getI10n('name')]"/></h2>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef.type)}
                 <g:hiddenField name="filterPropDef" value="${genericOIDService.getOID(filterPropDef)}"/>
                 <g:if test="${filterPropDef.isRefdataValueType()}">
                     <g:set var="refdataValues" value="${[]}"/>
@@ -280,7 +279,7 @@
             <g:hiddenField id="pmp_id_${params.id}" name="id" value="${params.id}"/>
 
             <div class="field">
-                <h2>
+                <h2 class="ui header">
                     <g:if test="${filterPropDef.tenant != null}">
                         <i class="shield alternate icon"></i>
                     </g:if>

@@ -13,7 +13,7 @@
 <g:form action="deleteSurveyParticipants" controller="survey" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
 
-    <h3><g:message code="surveyParticipants.hasAccess"/></h3>
+    <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
 
     <g:set var="surveyParticipantsHasAccess"
            value="${selectedParticipants?.findAll{ it?.hasAccessOrg() }?.sort{ it?.sortname }}"/>
@@ -35,7 +35,7 @@
               ]"/>
 
 
-    <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
+    <h3 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h3>
 
     <g:set var="surveyParticipantsHasNotAccess"
            value="${selectedParticipants.findAll{ !it?.hasAccessOrg() }.sort{ it?.sortname }}"/>

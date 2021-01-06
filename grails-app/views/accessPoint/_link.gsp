@@ -1,6 +1,6 @@
 <div class="ui card">
     <div class="content">
-        <h5>${message(code: 'accessPoint.link.with.platform')}
+        <h5 class="ui header">${message(code: 'accessPoint.link.with.platform')}
             <span class="la-long-tooltip la-popup-tooltip la-delay"
                   data-content="${message(code: 'accessPoint.platformHelp')}">
                 <i class="question circle icon la-popup"></i>

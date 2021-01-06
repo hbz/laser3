@@ -35,7 +35,7 @@
             </g:if>
         </semui:breadcrumbs>
     </g:else>
-        <br />
+
     <g:if test="${isRenewSub}">
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'subscription.details.renewals.renew_sub.label')}: <g:if test="${sourceObject}">${sourceObject.name}</g:if></h1>
     </g:if>

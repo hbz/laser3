@@ -22,9 +22,6 @@
                 <g:render template="actions" />
             </semui:controlButtons>
         </g:if>
-        <g:else>
-            <br />
-        </g:else>
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 

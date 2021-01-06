@@ -13,7 +13,7 @@
         <semui:crumb text="Application Info" class="active"/>
     </semui:breadcrumbs>
 
-    <h2 class="ui left aligned icon header la-noMargin-top"><semui:headerIcon />Application Info</h2>
+    <h1 class="ui left aligned icon header la-noMargin-top"><semui:headerIcon />Application Info</h1>
 
     <table class="ui celled la-table table">
         <thead>

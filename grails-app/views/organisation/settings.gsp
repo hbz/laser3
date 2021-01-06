@@ -15,7 +15,6 @@
                 <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
             </g:if>
         </semui:breadcrumbs>
-        <br />
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${orgInstance.name}</h1>
 

@@ -12,9 +12,8 @@
     <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
     <semui:crumb message="menu.admin.fileConsistency" class="active"/>
 </semui:breadcrumbs>
-<br />
 
-<h2 class="ui header la-noMargin-top">${message(code: "menu.admin.fileConsistency")}</h2>
+<h1 class="ui header la-noMargin-top">${message(code: "menu.admin.fileConsistency")}</h1>
 
 <div class="ui grid">
     <div class="sixtenn wide column">

@@ -22,9 +22,7 @@
             </semui:exportDropdown>
         </semui:controlButtons>
 
-        <p>
-            <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="myinst.reporting"/></h1>
-        </p>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="myinst.reporting"/></h1>
 
         <div class="ui form grid">
             <div class="row" id="controlling">

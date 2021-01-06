@@ -11,7 +11,7 @@
       <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager.dash')}" />
       <semui:crumb text="${message(code:'datamanager.deletedTitleManagement.label')}" class="active"/>
     </semui:breadcrumbs>
-    <br />
+
     <h1 class="ui header la-noMargin-top">
       ${message(code:'datamanager.deletedTitleManagement.label')}
       <semui:totalNumber total="${titleInstanceTotal}"/>

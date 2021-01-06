@@ -34,7 +34,6 @@
             <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
         </g:if>
     </semui:breadcrumbs>
-    <br />
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${orgInstance.name}</h1>
 
@@ -70,7 +69,7 @@
         <div class="ui card">
             <div class="content">
                 <div class="header">
-                    <h4>${RDStore.getRefdataValue(accessPointListItem.key, RDConstants.ACCESS_POINT_TYPE).getI10n('value')}</h4></div>
+                    <h4 class="ui header">${RDStore.getRefdataValue(accessPointListItem.key, RDConstants.ACCESS_POINT_TYPE).getI10n('value')}</h4></div>
             </div>
             <div class="content">
 

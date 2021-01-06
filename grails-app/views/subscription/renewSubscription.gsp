@@ -14,10 +14,8 @@
     <semui:crumb action="show" controller="subscription" id="${subscription.id}" text="${subscription.name}"/>
     <semui:crumb message="myinst.renewals" class="active"/>
 </semui:breadcrumbs>
-<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'myinst.renewals')}: ${subscription.name}</h1>
-
 
 <semui:messages data="${flash}"/>
 

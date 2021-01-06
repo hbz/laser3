@@ -65,13 +65,14 @@
     </semui:exportDropdown>
 </semui:controlButtons>
 
-<semui:messages data="${flash}"/>
-
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'myinst.currentTitles.label')}
 <semui:totalNumber total="${num_ti_rows}"/>
 </h1>
 
+<semui:messages data="${flash}"/>
+
 <g:render template="/templates/filter/javascript" />
+
 <semui:filter showFilterButton="true">
     <g:form id="filtering-form" action="currentTitles" controller="myInstitution" method="get" class="ui form">
 

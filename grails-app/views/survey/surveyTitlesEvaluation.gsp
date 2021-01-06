@@ -75,7 +75,7 @@
                 <br />
                 <semui:form>
 
-                    <h4><g:message code="surveyParticipants.hasAccess"/></h4>
+                    <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
 
                     <g:set var="surveyParticipantsHasAccess"
                            value="${participantsFinish.findAll { it?.hasAccessOrg() }?.sort {
@@ -159,7 +159,7 @@
                         </tbody>
                     </table>
 
-                    <h4><g:message code="surveyParticipants.hasNotAccess"/></h4>
+                    <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
                     <g:set var="surveyParticipantsHasNotAccess" value="${participantsFinish.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
 
@@ -247,7 +247,7 @@
 
             <semui:form>
 
-                <h4><g:message code="surveyParticipants.hasAccess"/></h4>
+                <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
 
                 <g:set var="surveyParticipantsHasAccess"
                        value="${participantsNotFinish?.findAll { it?.hasAccessOrg() }?.sort {
@@ -330,7 +330,7 @@
                     </tbody>
                 </table>
 
-                <h4><g:message code="surveyParticipants.hasNotAccess"/></h4>
+                <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
                 <g:set var="surveyParticipantsHasNotAccess" value="${participantsNotFinish.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
 
@@ -418,7 +418,7 @@
 
             <semui:form>
 
-                <h4><g:message code="surveyParticipants.hasAccess"/></h4>
+                <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
 
                 <g:set var="surveyParticipantsHasAccess"
                        value="${participants?.findAll { it?.hasAccessOrg() }?.sort {
@@ -501,7 +501,7 @@
                     </tbody>
                 </table>
 
-                <h4><g:message code="surveyParticipants.hasNotAccess"/></h4>
+                <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
                 <g:set var="surveyParticipantsHasNotAccess" value="${participants.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
 

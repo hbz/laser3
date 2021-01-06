@@ -10,10 +10,8 @@
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
     <semui:crumb message="menu.yoda.userMatrix" class="active"/>
 </semui:breadcrumbs>
-<br />
-<h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.userMatrix')}</h2>
 
-<br />
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.userMatrix')}</h1>
 
 <div class="ui accordion">
     <g:each in="${matrix}" var="role">

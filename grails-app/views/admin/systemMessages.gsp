@@ -12,8 +12,7 @@
     <semui:crumb message="menu.admin.systemMessage" class="active"/>
 </semui:breadcrumbs>
 
-<br />
-<h2 class="ui left floated aligned header la-clear-before">${message(code: "menu.admin.systemMessage")}</h2>
+<h1 class="ui left floated aligned header la-clear-before">${message(code: "menu.admin.systemMessage")}</h1>
 
 <semui:messages data="${flash}" />
 

@@ -13,8 +13,8 @@
     </semui:breadcrumbs>
 
     <semui:messages data="${flash}" />
-    <br />
-    <h2 class="ui left floated aligned header la-clear-before">${message(code:'announcement.create.label')}</h2>
+
+    <h1 class="ui left floated aligned header la-clear-before">${message(code:'announcement.create.label')}</h1>
 
     <semui:form>
         <g:form action="createAnnouncement" class="ui form">

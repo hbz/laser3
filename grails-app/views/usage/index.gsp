@@ -12,12 +12,12 @@
     <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
     <semui:crumb text="Stats" class="active"/>
 </semui:breadcrumbs>
-<br />
+
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'default.usage.adminPage.mainHeader')}</h1>
 
 <semui:messages data="${flash}" />
 
-<h3 class="ui header">${message(code: 'default.usage.adminPage.formHeader')}</h3>
+<h2 class="ui header">${message(code: 'default.usage.adminPage.formHeader')}</h2>
 <semui:filter>
     <g:form action="index" controller="usage" method="get" class="ui small form">
         <div class="three fields">

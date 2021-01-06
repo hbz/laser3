@@ -218,7 +218,7 @@
 <g:else>
 
     <semui:form>
-        <h3>
+        <h3 class="ui header">
             <g:message code="survey.notExist.plural"/>
         </h3>
     </semui:form>

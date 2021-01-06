@@ -13,9 +13,8 @@
     $('body').attr('class', 'organisation_accessPoint_edit_${accessPoint.accessMethod}');
 </laser:script>
 
-<div>
     <g:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
-    <br />
+
     <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg)
             || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
         <semui:controlButtons>
@@ -28,15 +27,13 @@
         </semui:controlButtons>
     </g:if>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
-    ${orgInstance.name}
-    </h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
     <g:render template="/organisation/nav" model="${[orgInstance: accessPoint.org, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
 
-    <h1 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]"/></h1>
-    <semui:messages data="${flash}"/>
+    <h2 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]"/></h2>
 
+    <semui:messages data="${flash}"/>
 
     <div class="la-inline-lists">
         <div class="ui card">
@@ -70,7 +67,7 @@
 
     <div class="ui bottom attached active tab segment" data-tab="IPv4">
 
-        <h5>${message(code: 'accessPoint.ip.configuration')}
+        <h5 class="ui header">${message(code: 'accessPoint.ip.configuration')}
         %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-html='${message(code:'accessPoint.permittedIpRanges')}'>
             <i class="question circle icon la-popup"></i>
         </span>--}%
@@ -138,7 +135,7 @@
     </div>
 
 <div class="ui bottom attached tab segment" data-tab="IPv6">
-    <h5>${message(code: 'accessPoint.ip.configuration')}
+    <h5 class="ui header">${message(code: 'accessPoint.ip.configuration')}
     %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-html='${message(code:'accessPoint.permittedIpRanges')}'>
         <i class="question circle icon la-popup"></i>
     </span>--}%
@@ -202,7 +199,6 @@
         </div>
         </div>
     </g:if>
-</div>
 
 <br />
 

@@ -31,8 +31,6 @@
     </semui:actionsDropdown>
 </semui:controlButtons>--}%
 
-<br />
-
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 ${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
@@ -42,7 +40,7 @@ ${surveyInfo.name}
 
 <semui:messages data="${flash}"/>
 
-<h2>
+<h2 class="ui header">
     ${message(code: 'surveyInfo.copySurveyCostItems')}
 </h2>
 

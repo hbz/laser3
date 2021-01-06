@@ -11,8 +11,8 @@
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
     <semui:crumb message="menu.yoda.activityProfiler" class="active"/>
 </semui:breadcrumbs>
-<br />
-    <h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.activityProfiler')}</h2>
+
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.activityProfiler')}</h1>
 
     <table class="ui celled la-table compact table">
         <thead>

@@ -12,7 +12,7 @@
           <semui:crumb controller="title" action="list" message="menu.public.all_titles" />
           <semui:crumb class="active" text="${message(code:'title.title.label')}: ${ti.title}" />
       </semui:breadcrumbs>
-  <br />
+
   <h1 class="ui icon header la-clear-before la-noMargin-top">
             <semui:headerTitleIcon type="${ti.printTitleType()}"/>
             ${ti.title}

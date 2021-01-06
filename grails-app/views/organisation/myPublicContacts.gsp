@@ -19,14 +19,11 @@
     <semui:crumb message="menu.institutions.publicContacts" class="active"/>
 </semui:breadcrumbs>
 
-<semui:controlButtons>
-</semui:controlButtons>
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
 <semui:messages data="${flash}"/>
 
 <g:render template="/organisation/nav"/>
-
 
 <div class="ui top attached tabular menu">
     <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">

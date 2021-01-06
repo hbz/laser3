@@ -6,7 +6,6 @@
     </head>
 
     <body>
-        <div>
             <table class="ui celled table" id="calcResults">
                 <g:each in="${costItems.entrySet()}" var="entry">
                     <g:set var="ci" value="${entry.getKey()}"/>
@@ -22,6 +21,6 @@
                     </tr>
                 </g:each>
             </table>
-        </div>
+
     </body>
 </html>

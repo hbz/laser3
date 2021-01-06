@@ -17,7 +17,6 @@
         <semui:crumb class="active" message="myinst.copyLicense" />
     </g:if>
 </semui:breadcrumbs>
-<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'myinst.copyLicense')}: ${sourceObject.reference}</h1>
 

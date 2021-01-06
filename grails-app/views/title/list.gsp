@@ -10,7 +10,7 @@
     <semui:breadcrumbs>
       <semui:crumb message="menu.public.all_titles" class="active" />
     </semui:breadcrumbs>
-    <br />
+
     <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.public.all_titles')}
       <semui:totalNumber total="${resultsTotal >= 10000 ? '10000+' : resultsTotal}"/>
     </h1>

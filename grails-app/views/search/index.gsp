@@ -189,7 +189,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
             <div class="four wide column">
                 <div class="ui la-filter segment">
 
-                    <h3><i class="circular filter inverted icon la-filter-icon"></i> Filter</h3>
+                    <h3 class="ui header"><i class="circular filter inverted icon la-filter-icon"></i> Filter</h3>
 
                     <g:each in="${facets}" var="facet">
                         <div class="panel panel-default">

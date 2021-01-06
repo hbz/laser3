@@ -1,7 +1,6 @@
 <%@ page import="de.laser.SurveyConfig; de.laser.OrgRole" %>
 
-<h3><g:message code="surveys.active"/></h3>
-
+<h3 class="ui header"><g:message code="surveys.active"/></h3>
 
 <div class="ui divided items">
     <g:each in="${surveys}" var="survey" status="i">

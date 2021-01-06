@@ -22,7 +22,6 @@
     </semui:exportDropdown>
 </semui:controlButtons>
 
-<br />
 <h1 class="ui left floated aligned icon header la-clear-before">
     <semui:headerIcon/>${message(code: 'manageParticipantSurveys.header')}
     <semui:totalNumber total="${countSurveys.values().sum { it }}"/>

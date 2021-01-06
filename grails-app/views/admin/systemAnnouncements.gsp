@@ -12,14 +12,14 @@
         <semui:crumb message="menu.admin.announcements" class="active"/>
     </semui:breadcrumbs>
 
-    <semui:messages data="${flash}" />
-    <br />
     <g:if test="${currentAnnouncement}">
         <h1 class="ui left floated aligned header la-clear-before">${message(code:'announcement.update.label')}</h1>
     </g:if>
     <g:else>
         <h1 class="ui left floated aligned header la-clear-before">${message(code:'announcement.create.label')}</h1>
     </g:else>
+
+    <semui:messages data="${flash}" />
 
     <semui:form>
         <g:form action="createSystemAnnouncement" class="ui form">
