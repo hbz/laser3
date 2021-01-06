@@ -482,7 +482,7 @@ class AdminController  {
 
         params.sort =   params.sort ?: 'created'
         params.order =  params.order ?: 'desc'
-        params.max =    params.max ?: 1000
+        params.max =    params.max ?: 300
 
         result.events = SystemEvent.list(params)
 

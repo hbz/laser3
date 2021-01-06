@@ -7,16 +7,14 @@
 
 <body>
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
-    <semui:crumb message="menu.admin.serverDifferences" class="active"/>
-</semui:breadcrumbs>
+    <semui:breadcrumbs>
+        <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
+        <semui:crumb message="menu.admin.serverDifferences" class="active"/>
+    </semui:breadcrumbs>
 
-<br />
-<br />
-<br />
+    <br />
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.admin.serverDifferences"/></h1>
 
-<div>
     <table class="ui celled la-table table">
         <thead>
         <tr>
@@ -49,6 +47,6 @@
             </tr>
         </tbody>
     </table>
-</div>
+
 </body>
 </html>

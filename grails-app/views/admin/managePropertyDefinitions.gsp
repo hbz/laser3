@@ -29,8 +29,6 @@
         <br />
 		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.admin.managePropertyDefinitions"/></h1>
 
-        <h3 class="ui header">${message(code:'license.properties')}</h3>
-
 		<semui:messages data="${flash}" />
 
 		<div class="ui styled fluid accordion">
