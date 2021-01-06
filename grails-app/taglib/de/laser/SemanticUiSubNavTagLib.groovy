@@ -47,7 +47,7 @@ class SemanticUiSubNavTagLib {
         String linkBody  = (text && message) ? text + " - " + message : text + message
         String aClass    = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
-        def tooltip = attrs.tooltip ?: ""
+        String tooltip = attrs.tooltip ?: ""
 
         if(tooltip != "") {
             linkBody = '<div data-tooltip="' + tooltip + '" data-position="bottom center">' + linkBody + '</div>'
@@ -68,7 +68,6 @@ class SemanticUiSubNavTagLib {
         else {
             out << '<a href="" class="' + aClass + '">' + linkBody + '</a>'
         }
-
     }
 
 
@@ -80,9 +79,9 @@ class SemanticUiSubNavTagLib {
         String linkBody = (text && message) ? text + " - " + message : text + message
         String aClass = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
-        boolean check = SwissKnife.checkAndCacheNavPerms(attrs, request)
+        String tooltip = attrs.tooltip ?: ""
 
-        def tooltip = attrs.tooltip ?: ""
+        boolean check = SwissKnife.checkAndCacheNavPerms(attrs, request)
 
         if (tooltip != "") {
             linkBody = '<div data-tooltip="' + tooltip + '" data-position="bottom center">' + linkBody + '</div>'
