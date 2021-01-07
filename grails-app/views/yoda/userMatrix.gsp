@@ -17,9 +17,7 @@
     <g:each in="${matrix}" var="role">
         <g:if test="${role.value.size() > 0}">
             <div class="title">
-                <h4 class="ui headline">
-                    <i class="dropdown icon"></i> ${role.key} ( ${role.value.size()} Nutzer )
-                </h4>
+                <strong><i class="dropdown icon"></i> ${role.key} ( ${role.value.size()} Nutzer )</strong>
             </div>
             <div class="content">
                 <table class="ui celled la-table compact table">

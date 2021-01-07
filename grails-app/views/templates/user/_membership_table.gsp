@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 
 <div class="column wide sixteen">
-    <h4 class="ui dividing header">${message(code: 'profile.membership.existing')}</h4>
+    <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
     <table class="ui celled la-table table">
         <thead>
         <tr>

@@ -12,7 +12,7 @@
         <semui:crumb text="FTControl" class="active" />
     </semui:breadcrumbs>
 
-  <h1 class="ui header">Currently Running: ${dataloadService.update_running}</h1>
+  <h1 class="ui header la-clear-before la-noMargin-top">Currently Running: ${dataloadService.update_running}</h1>
   <h2 class="ui header">Last update run: <g:formatDate date="${dataloadService.lastIndexUpdate}" format="${message(code:'default.date.format.noZ')}"/></h2>
 
     <semui:messages data="${flash}" />

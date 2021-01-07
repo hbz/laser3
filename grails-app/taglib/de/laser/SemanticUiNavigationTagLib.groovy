@@ -35,10 +35,9 @@ class SemanticUiNavigationTagLib {
     def crumb = { attrs, body ->
 
         def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
-        def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
+        String linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
         if (attrs.controller) {
-
             if (attrs.controller != 'home') {
                 linkBody = linkBody.encodeAsHTML()
             }
@@ -264,7 +263,7 @@ class SemanticUiNavigationTagLib {
     def mainNavItem = { attrs, body ->
 
         def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
-        def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
+        String linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
         if (attrs.generateElementId) {
             attrs.elementId = generateElementId(attrs)

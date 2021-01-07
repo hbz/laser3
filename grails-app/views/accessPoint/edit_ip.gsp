@@ -27,9 +27,7 @@
         </semui:controlButtons>
     </g:if>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
-    ${orgInstance.name}
-    </h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
     <g:render template="/organisation/nav" model="${[orgInstance: accessPoint.org, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
 
@@ -63,11 +61,11 @@
 
     <div class="ui bottom attached active tab segment" data-tab="IPv4">
 
-        <h5 class="ui header">${message(code: 'accessPoint.ip.configuration')}
+        <h3 class="ui header">${message(code: 'accessPoint.ip.configuration')}
         %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-html='${message(code:'accessPoint.permittedIpRanges')}'>
             <i class="question circle icon la-popup"></i>
         </span>--}%
-        </h5>
+        </h3>
 
         <table class="ui celled la-table table very compact">
             <thead>
@@ -130,11 +128,11 @@
     </div>
 
 <div class="ui bottom attached tab segment" data-tab="IPv6">
-    <h5 class="ui header">${message(code: 'accessPoint.ip.configuration')}
+    <h3 class="ui header">${message(code: 'accessPoint.ip.configuration')}
     %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-html='${message(code:'accessPoint.permittedIpRanges')}'>
         <i class="question circle icon la-popup"></i>
     </span>--}%
-    </h5>
+    </h3>
 
     <table class="ui celled la-table table very compact">
         <thead>
