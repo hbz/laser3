@@ -10,10 +10,8 @@
     <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
     <semui:crumb text="Datenbereinigung" class="active"/>
 </semui:breadcrumbs>
-<br />
-    <h1 class="ui header la-clear-before la-noMargin-top">Lizenzen - ${subscriptions.size()}, Verträge - ${licenses.size()}</h1>
 
-    <br />
+    <h1 class="ui header la-clear-before la-noMargin-top">Lizenzen - ${subscriptions.size()}, Verträge - ${licenses.size()}</h1>
 
     <h2 class="ui header">Lizenzen - ${subscriptions.size()}</h2>
 

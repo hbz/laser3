@@ -11,7 +11,6 @@
     <semui:crumb message="menu.institutions.change_log" class="active" />
   </semui:breadcrumbs>
 
-  <h1 class="ui icon header la-clear-before"><semui:headerIcon />${message(code:'menu.institutions.change_log')}</h1>
 
   <semui:controlButtons>
     <semui:exportDropdown>
@@ -22,7 +21,8 @@
     <g:render template="actions"/>
   </semui:controlButtons>
 
-      <div>
+  <h1 class="ui icon header la-clear-before"><semui:headerIcon />${message(code:'menu.institutions.change_log')}</h1>
+
         <p>
           <strong>
             <span class="ui circular label">${num_changes}</span> <g:message code="default.matches.label"/>
@@ -38,7 +38,6 @@
             </g:each>
           </select>
         </g:form>
-      </div>
 
       <table class="ui celled la-table table">
         <g:each in="${changes}" var="chg">
