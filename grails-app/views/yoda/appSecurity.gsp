@@ -121,12 +121,12 @@
         <div class="secInfoWrapper secInfoWrapper2">
             <g:each in="${controller}" var="c">
 
-                <h4 class="ui header" id="jumpMark_${c.key}">
+                <h3 class="ui header" id="jumpMark_${c.key}">
                     ${c.key}
                     <g:each in="${c.value.secured}" var="cSecured">
                         <span class="${cSecured}">${cSecured}</span> &nbsp;
                     </g:each>
-                </h4>
+                </h3>
 
                 <div class="ui segment">
                     <div class="ui divided list">

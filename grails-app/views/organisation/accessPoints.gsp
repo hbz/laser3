@@ -40,28 +40,6 @@
     <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}" />
 
     <semui:messages data="${flash}" />
-    
-    
-%{--
-    <semui:filter>
-        <g:form action="accessPoints" role="form" class="ui form" method="get" params="${params}">
-          <div class="fields">
-            <div class="field">
-              <label for="filter" class="control-label">${message(code: 'accessPoint.show')}</label>
-              <g:select id="filter"
-                        name="filter"
-                        from="${[
-                                    [key:'all',value:"${message(code: 'accessPoint.all')}"],
-                                    [key:'valid',value:"${message(code:'accessPoint.valid')}"],
-                                    [key:'invalid',value:"${message(code: 'accessPoint.invalid')}"]
-                               ]}"
-                        optionKey="key" optionValue="value" value="${params.filter}"
-                        onchange="this.form.submit()"/>
-            </div>
-          </div>
-        </g:form>
-    </semui:filter>
---}%
 
     <div class="la-inline-lists">
 

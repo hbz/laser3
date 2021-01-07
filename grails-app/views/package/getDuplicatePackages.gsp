@@ -7,8 +7,10 @@
     </head>
     <body>
         <g:set var="toDelete" value="${[]}"/>
+
+        <h1 class="ui header la-clear-before la-noMargin-top">Pakete mit gleicher GOKb-ID</h1>
         <semui:messages data="${flash}" />
-            <h1 class="ui header">Pakete mit gleicher GOKb-ID</h1>
+
             <div class="ui grid">
                 <div class="row">
                     <div class="sixteen wide column">

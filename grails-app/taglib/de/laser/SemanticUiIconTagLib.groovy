@@ -35,10 +35,11 @@ class SemanticUiIconTagLib {
 
     def propertyIcon = { attrs, body ->
         def object = attrs.object
-        def aClass = (attrs.class ? ' ' + attrs.class : '')
-        boolean showToolTipp = attrs.showToolTipp ?: false
+        String aClass = (attrs.class ? ' ' + attrs.class : '')
         String defaultToolTippContent = object ? message(code: "${object.getClass().getSimpleName().toLowerCase()}.${attrs.propertyName}.label") : null
         String toolTippContent = attrs.toolTippContent ?: (defaultToolTippContent ?: '')
+
+        boolean showToolTipp = attrs.showToolTipp ?: false
 
         if(showToolTipp) {
             out << '<span class="la-popup-tooltip la-delay" data-content="' + toolTippContent + '" data-position="left center" data-variation="tiny">'
