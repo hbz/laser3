@@ -67,10 +67,7 @@
             <g:render template="actions" />
         </semui:controlButtons>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-
-            ${packageInstance.name}
-        </h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${packageInstance.name}</h1>
 
         <g:render template="nav"/>
 

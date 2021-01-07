@@ -10,7 +10,7 @@
   <semui:breadcrumbs>
     <semui:crumb message="menu.admin.dash" controller="admin" action="index" class="active"/>
   </semui:breadcrumbs>
-  <br />
+
   <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Admin Dashboard</h1>
 
 </body>
