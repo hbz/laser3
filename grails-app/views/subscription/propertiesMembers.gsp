@@ -28,18 +28,17 @@
 
 <semui:messages data="${flash}"/>
 
-<h4 class="ui header">
+<h2 class="ui header">
     <g:message code="subscription"/>:
     <g:link controller="subscription" action="show" id="${subscription.id}">${subscription.name}</g:link><br /><br />
-
-</h4>
+</h2>
 
 <g:if test="${filteredSubChilds}">
     <div class="ui segment">
         <div class="ui two column very relaxed grid">
             <div class="column">
                 <semui:filter>
-                    <h4 class="ui header">${message(code: 'subscription.propertiesMembers.onlyPropOfParentSubscription', args: [subscription.name])}</h4>
+                    <h3 class="ui header">${message(code: 'subscription.propertiesMembers.onlyPropOfParentSubscription', args: [subscription.name])}</h3>
                     <g:form action="propertiesMembers" method="post" class="ui form" id="${params.id}">
                         <g:render template="/templates/properties/genericFilter"
                                   model="[propList: propList, hideFilterProp: true]"/>
@@ -56,7 +55,7 @@
 
             <div class="column">
                 <semui:filter>
-                    <h4 class="ui header">${message(code: 'subscription.properties')}:</h4>
+                    <h3 class="ui header">${message(code: 'subscription.properties')}:</h3>
                     <g:form action="propertiesMembers" method="post" class="ui form" id="${params.id}">
                         <g:render template="/templates/properties/genericFilter"
                                   model="[propList: PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP)+PropertyDefinition.findAllByTenantAndDescr(contextOrg, PropertyDefinition.SUB_PROP), hideFilterProp: true]"/>
@@ -78,7 +77,7 @@
     <div class="ui one stackable cards">
         <div class="ui card la-dl-no-table">
             <div class="content">
-                <h5 class="ui header">${message(code: 'subscription.properties.consortium')}</h5>
+                <h3 class="ui header">${message(code: 'subscription.properties.consortium')}</h3>
 
                 <div id="member_props_div">
                     <g:render template="/templates/properties/members" model="${[

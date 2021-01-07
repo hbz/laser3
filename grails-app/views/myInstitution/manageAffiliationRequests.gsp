@@ -7,7 +7,7 @@
 
 <body>
 
-<h1 class="ui header">THIS PAGE IS DEPRECATED</h1>
+<h1 class="ui header la-clear-before la-noMargin-top">THIS PAGE IS DEPRECATED</h1>
 
 
     <semui:breadcrumbs>
@@ -15,7 +15,7 @@
         <semui:crumb message="menu.institutions.affiliation_requests" class="active" />
     </semui:breadcrumbs>
 
-    <h1 class="ui header">${message(code: "menu.institutions.affiliation_requests")}</h1>
+    <h1 class="ui header la-clear-before la-noMargin-top">${message(code: "menu.institutions.affiliation_requests")}</h1>
 
     <table class="ui celled la-table table">
         <thead>

@@ -30,12 +30,10 @@
 
 <semui:messages data="${flash}"/>
 
-<h4 class="ui header">
-    <g:message code="subscription"/>: <g:link controller="subscription" action="show"
-                                              id="${subscription.id}">${subscription.name}</g:link>
-    <br /><br />
-
-</h4>
+<h2 class="ui header">
+    <g:message code="subscription"/>:
+    <g:link controller="subscription" action="show" id="${subscription.id}">${subscription.name}</g:link>
+</h2>
 
 
 <g:if test="${filteredSubChilds}">
