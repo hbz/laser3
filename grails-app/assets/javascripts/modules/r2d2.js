@@ -598,10 +598,16 @@ r2d2 = {
 
                 var remoteLink = $(elem).hasClass('la-js-remoteLink')
 
-
                 $('.tiny.modal')
                     .modal({
                         onShow : function() {
+                            keyboardHandler = function keyboardHandler(e) {
+                                if (e.keyCode === 27) {
+                                    $(this).modal('hide');
+                                }
+                            }
+                            this.addEventListener('keyup', keyboardHandler);
+
                             //only in form context
                             if (dataAttr) {
                                 // only if the button that triggers the confirmation modal has the attribute value set
@@ -615,6 +621,9 @@ r2d2 = {
                                     $('[data-confirm-id='+dataAttr+']').prepend(hiddenField);
                                 }
                             }
+                        },
+                        onHide : function() {
+                            this.removeEventListener('keyup', keyboardHandler);
                         },
                         closable  : false,
                         onApprove : function() {
@@ -639,48 +648,7 @@ r2d2 = {
                                 $('#additionalHiddenField').remove();
                             }
                         }
-                        /*                        onShow : function() {
-                                                    $modal.removeAttr('aria-hidden');
-                                                    // is needed to hide the rest of the page from Screenreaders in case of open the modal
-                                                    if ($('#js-modal-page').length === 0) { // just to avoid missing #js-modal-page
-                                                        $body.wrapInner('<div id="js-modal-page"></div>');
-                                                    }
-                                                    $page = $('#js-modal-page');
-                                                    $page.attr('aria-hidden', 'true');
-                                                    $body.on("keydown", "#js-modal", function(event) {
-                                                        var $this = $(this);
-                                                        if (event.keyCode == 9) { // tab or Strg tab
 
-                                                            // get list of all children elements in given object
-                                                            var children = $this.find('*');
-
-                                                            // get list of focusable items
-                                                            var focusableItems = children.filter(focusableElementsString).filter(':visible');
-
-                                                            // get currently focused item
-                                                            var focusedItem = $(document.activeElement);
-
-                                                            // get the number of focusable items
-                                                            var numberOfFocusableItems = focusableItems.length;
-
-                                                            var focusedItemIndex = focusableItems.index(focusedItem);
-
-                                                            if (!event.shiftKey && (focusedItemIndex == numberOfFocusableItems - 1)) {
-                                                                focusableItems.get(0).focus();
-                                                                event.preventDefault();
-                                                            }
-                                                            if (event.shiftKey && focusedItemIndex == 0) {
-                                                                focusableItems.get(numberOfFocusableItems - 1).focus();
-                                                                event.preventDefault();
-                                                            }
-                                                        }
-
-                                                    })
-                                                },
-                                                onHidden : function() {
-                                                    $page.removeAttr('aria-hidden');
-                                                    $modal.attr('aria-hidden', 'true');
-                                                }*/
                     })
                     .modal('show');
         }
