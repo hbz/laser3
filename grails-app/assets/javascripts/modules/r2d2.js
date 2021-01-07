@@ -360,12 +360,12 @@ r2d2 = {
                 }
             }
             $(".table").trigger('reflow')
-        })
+        });
 
         $(ctxSel + ' .xEditableDatepicker').editable({});
 
         $(ctxSel + ' .xEditableManyToOne').editable({
-            tpl: '<select class="ui dropdown"></select>',
+            tpl: '<select class="ui search selection dropdown"></select>',
             success: function(response, newValue) {
                 if(response.status == 'error') return response.msg; //msg will be shown in editable form
             }
@@ -373,7 +373,7 @@ r2d2 = {
 
             $('.table').trigger('reflow');
             obj.input.$input.dropdown({clearable: true}) // reference to current dropdown
-        })
+        });
 
         $(ctxSel + ' .simpleHiddenValue').editable({
             language: JSPC.vars.locale,
@@ -383,7 +383,7 @@ r2d2 = {
                 $("#" + hidden_field_id).val(params.value);
                 // Element has a data-hidden-id which is the hidden form property that should be set to the appropriate value
             }
-        })
+        });
     },
 
 
