@@ -157,7 +157,7 @@ class SemanticUiTagLib {
 
         if (yodaService.showDebugInfo()) {
 
-            out << '<a href="#debugInfo" id="showDebugInfo" aria-label="Debug Info" class="ui button icon" data-semui="modal">'
+            out << '<a href="#debugInfo" id="showDebugInfo" role="dialog" aria-label="Debug Info" class="ui button icon" data-semui="modal">'
             out << '<i aria-hidden="true" class="red bug icon"></i>'
             out << '</a>'
 
@@ -180,7 +180,7 @@ class SemanticUiTagLib {
 
         if (systemChecks) {
 
-            out << '<a href="#systemInfo" id="showSystemInfo" aria-label="System Info" class="ui button icon" data-semui="modal">'
+            out << '<a href="#systemInfo" id="showSystemInfo" role="dialog" aria-label="System Info" class="ui button icon" data-semui="modal">'
             out << '<i aria-hidden="true" class="red exclamation triangle icon"></i>'
             out << '</a>'
 
@@ -458,7 +458,7 @@ class SemanticUiTagLib {
         String msgSave     = attrs.msgSave ?: (isEditModal ? "${g.message(code:'default.button.save_changes')}" : "${g.message(code:'default.button.create.label')}")
         String msgDelete   = attrs.msgDelete ?: "${g.message(code:'default.button.delete.label')}"
 
-        out << '<div class="ui modal ' + modalSize + '"' + id + '>'
+        out << '<div role="dialog" class="ui modal ' + modalSize + '"' + id + ' aria-label="Modal">'
         out << '<div class="header">' + title + '</div>'
         out << '<div class="content ' + attrs.contentClass + '">'
         out << body()
@@ -499,8 +499,7 @@ class SemanticUiTagLib {
         String msgDelete = "Endgültig löschen"
         String msgCancel = "Abbrechen"
 
-
-        out << '<div id="js-modal" class="ui tiny modal" role="dialog" aria-modal="true" tabindex="-1" aria-label="Bestätigungs-Modal">'
+        out << '<div id="js-modal" class="ui tiny modal" role="dialog" aria-modal="true" tabindex="-1" aria-label="'+ "${message(code: 'wcag.label.confirmationModal')}" +'" >'
         out << '<div class="header">'
         out << '<span class="confirmation-term" id="js-confirmation-term"></span>'
         out << '</div>'
