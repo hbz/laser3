@@ -1329,14 +1329,6 @@ class AdminController  {
         redirect controller: 'myInstitution', action: 'dashboard'
     }
 
-    def cleanUpGorm() {
-        log.debug("Clean up GORM");
-        def session = sessionFactory.currentSession
-        session.flush()
-        session.clear()
-         //propertyInstanceMap.get().clear()
-    }
-
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def manageOrganisations() {

@@ -27,7 +27,7 @@ class ChangeNotificationService extends AbstractLockableService {
 
     ExecutorService executorService
     def genericOIDService
-    def sessionFactory
+    def globalService
     ContextService contextService
 
     // N,B, This is critical for this service as it's called from domain object OnChange handlers
@@ -209,7 +209,7 @@ class ChangeNotificationService extends AbstractLockableService {
           // log.debug("Deleting reported change ${pc.id}");
           //pc.delete(flush:true)
         //}
-        cleanUpGorm()
+        globalService.cleanUpGorm()
       } // queueItems.each{}
   }
 
@@ -241,14 +241,6 @@ class ChangeNotificationService extends AbstractLockableService {
             }
         })
     }
-
-    def cleanUpGorm() {
-        log.debug("Clean up GORM")
-        def session = sessionFactory.currentSession
-        session.flush()
-        session.clear()
-    }
-
 
     @Deprecated
     def registerPendingChange(prop, target, desc, objowner, changeMap) {
