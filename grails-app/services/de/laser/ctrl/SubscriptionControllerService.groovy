@@ -1,63 +1,14 @@
 package de.laser.ctrl
 
-import com.k_int.kbplus.ExecutorWrapperService
-import com.k_int.kbplus.FactService
-import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.GlobalSourceSyncService
-import com.k_int.kbplus.PackageService
-import de.laser.AccessService
-import de.laser.AddressbookService
-import de.laser.ApiSource
-import de.laser.AuditConfig
-import de.laser.AuditService
-import de.laser.ContextService
-import de.laser.EscapeService
-import de.laser.FilterService
-import de.laser.FinanceService
-import de.laser.FormService
-import de.laser.GokbService
-import de.laser.GlobalRecordSource
-import de.laser.Identifier
-import de.laser.IdentifierNamespace
-import de.laser.IssueEntitlement
-import de.laser.IssueEntitlementCoverage
-import de.laser.IssueEntitlementGroup
-import de.laser.IssueEntitlementGroupItem
-import de.laser.License
-import de.laser.Links
-import de.laser.LinksGenerationService
-import de.laser.Org
-import de.laser.OrgRole
-import de.laser.OrgSetting
-import de.laser.Package
-import de.laser.PendingChange
-import de.laser.PendingChangeConfiguration
-import de.laser.Person
-import de.laser.Platform
-import de.laser.PropertyService
-import de.laser.RefdataCategory
-import de.laser.RefdataValue
-import de.laser.Subscription
-import de.laser.SubscriptionController
-import de.laser.SubscriptionPackage
-import de.laser.SubscriptionService
-import de.laser.SurveyConfig
-import de.laser.SurveyService
-import de.laser.Task
-import de.laser.TaskService
-import de.laser.TitleInstancePackagePlatform
+import com.k_int.kbplus.*
+import de.laser.*
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
-import de.laser.helper.DateUtils
-import de.laser.helper.EhcacheWrapper
-import de.laser.helper.ProfilerUtils
-import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
-import de.laser.helper.SwissKnife
+import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.OrgProperty
 import de.laser.properties.PlatformProperty
@@ -572,7 +523,7 @@ class SubscriptionControllerService {
         else {
             if(formService.validateToken(params)) {
                 RefdataValue subStatus = RefdataValue.get(params.subStatus) ?: RDStore.SUBSCRIPTION_CURRENT
-                RefdataValue role_sub       = RDStore.OR_SUBSCRIBER_CONS
+
                 if (result.editable) {
                     List<Org> members = []
                     License licenseCopy
@@ -1320,7 +1271,6 @@ class SubscriptionControllerService {
             if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE]){
                 List<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
                 if (childSubs) {
-                    List<SubscriptionPackage> spChildSubs = SubscriptionPackage.findAllByPkgAndSubscriptionInList(result.package, childSubs)
                     String queryChildSubs = "select ie.id from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
                     Map<String,Object> queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id]
                     int numOfPCsChildSubs = result.package.removePackagePendingChanges(childSubs.id, false)

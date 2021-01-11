@@ -1,12 +1,11 @@
 package de.laser
 
-
 import de.laser.auth.User
-import grails.plugin.springsecurity.SpringSecurityUtils
+import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.syntax.Numbers
-import de.laser.helper.RDStore
 
 @Transactional
 class AddressbookService {

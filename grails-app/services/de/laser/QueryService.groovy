@@ -1,18 +1,15 @@
 package de.laser
 
-
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.UserSetting
 import de.laser.auth.User
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.RDStore
 import de.laser.helper.SqlDateUtils
 import de.laser.interfaces.CalculatedType
-import de.laser.properties.LicenseProperty
-import de.laser.properties.OrgProperty
-import de.laser.properties.PersonProperty
-import de.laser.properties.SubscriptionProperty
+import de.laser.properties.*
 import grails.gorm.transactions.Transactional
 
-import de.laser.UserSetting.KEYS
+import java.sql.Timestamp
 
 @Transactional
 class QueryService {
@@ -30,11 +27,11 @@ class QueryService {
         java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
         ArrayList dueObjects = new ArrayList()
 
-        if (contextUser.getSettingsValue(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE)==RDStore.YN_YES || contextUser.getSettingsValue(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==RDStore.YN_YES) {
-            def endDateFrom =                (contextUser.getSettingsValue(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE)==RDStore.YN_YES)? today : null
-            def endDateTo =                  (contextUser.getSettingsValue(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE)==RDStore.YN_YES)? computeInfoDate(contextUser, KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE) : null
-            def manualCancellationDateFrom = (contextUser.getSettingsValue(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==RDStore.YN_YES)? today : null
-            def manualCancellationDateTo =   (contextUser.getSettingsValue(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==RDStore.YN_YES)? computeInfoDate(contextUser, KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD) : null
+        if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE)==RDStore.YN_YES || contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==RDStore.YN_YES) {
+            def endDateFrom =                (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE)==RDStore.YN_YES)? today : null
+            def endDateTo =                  (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE)==RDStore.YN_YES)? computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_ENDDATE) : null
+            def manualCancellationDateFrom = (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==RDStore.YN_YES)? today : null
+            def manualCancellationDateTo =   (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==RDStore.YN_YES)? computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD) : null
             getDueSubscriptions(contextOrg, endDateFrom, endDateTo, manualCancellationDateFrom, manualCancellationDateTo).each{
                 boolean isConsortialOrCollective = it._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]
                 if ( ! isConsortialOrCollective ) {
@@ -43,45 +40,45 @@ class QueryService {
             }
         }
 
-        if (contextUser.getSettingsValue(KEYS.IS_REMIND_FOR_TASKS)==RDStore.YN_YES) {
+        if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_TASKS)==RDStore.YN_YES) {
             dueObjects.addAll( taskService.getTasksByResponsibles(
                     contextUser,
                     contextOrg,
                     [query:" and t.status = :open and t.endDate <= :endDate",
                      queryParams:[open: RDStore.TASK_STATUS_OPEN,
-                                  endDate: computeInfoDate(contextUser, KEYS.REMIND_PERIOD_FOR_TASKS)]]) )
+                                  endDate: computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_TASKS)]]) )
         }
 
-        if (contextUser.getSettingsValue(KEYS.IS_REMIND_FOR_SURVEYS_NOT_MANDATORY_ENDDATE)==RDStore.YN_YES) {
+        if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SURVEYS_NOT_MANDATORY_ENDDATE)==RDStore.YN_YES) {
 
             dueObjects.addAll(SurveyInfo.executeQuery("SELECT distinct(sr.surveyConfig.surveyInfo) FROM SurveyResult sr LEFT JOIN sr.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo WHERE sr.participant = :org AND surInfo.endDate <= :endDate AND sr.finishDate is NULL AND surInfo.status = :status AND surInfo.isMandatory = false",
                     [org: contextOrg,
-                     endDate: computeInfoDate(contextUser, KEYS.REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE),
+                     endDate: computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE),
                      status: RDStore.SURVEY_SURVEY_STARTED]))
 
             dueObjects.addAll(SurveyInfo.executeQuery("SELECT distinct(surInfo) FROM SurveyInfo surInfo WHERE surInfo.owner = :org AND surInfo.endDate <= :endDate AND surInfo.status = :status AND surInfo.isMandatory = false",
                     [org: contextOrg,
-                     endDate: computeInfoDate(contextUser, KEYS.REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE),
+                     endDate: computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_SURVEYS_NOT_MANDATORY_ENDDATE),
                      status: RDStore.SURVEY_SURVEY_STARTED]))
 
         }
 
-        if (contextUser.getSettingsValue(KEYS.IS_REMIND_FOR_SURVEYS_MANDATORY_ENDDATE)==RDStore.YN_YES) {
+        if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SURVEYS_MANDATORY_ENDDATE)==RDStore.YN_YES) {
 
             dueObjects.addAll(SurveyInfo.executeQuery("SELECT distinct(sr.surveyConfig.surveyInfo) FROM SurveyResult sr LEFT JOIN sr.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo WHERE sr.participant = :org AND surInfo.endDate <= :endDate AND sr.finishDate is NULL AND surInfo.status = :status AND surInfo.isMandatory = true",
                     [org: contextOrg,
-                     endDate: computeInfoDate(contextUser, KEYS.REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE),
+                     endDate: computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE),
                      status: RDStore.SURVEY_SURVEY_STARTED]))
 
             dueObjects.addAll(SurveyInfo.executeQuery("SELECT distinct(surInfo) FROM SurveyInfo surInfo WHERE surInfo.owner = :org AND surInfo.endDate <= :endDate AND surInfo.status = :status AND surInfo.isMandatory = true",
                     [org: contextOrg,
-                     endDate: computeInfoDate(contextUser, KEYS.REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE),
+                     endDate: computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_SURVEYS_MANDATORY_ENDDATE),
                      status: RDStore.SURVEY_SURVEY_STARTED]))
 
         }
 
-        if (contextUser.getSettingsValue(KEYS.IS_REMIND_FOR_LICENSE_CUSTOM_PROP)==RDStore.YN_YES) {
-            getDueLicenseCustomProperties(contextOrg, today, computeInfoDate(contextUser, KEYS.REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP)).each{
+        if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_LICENSE_CUSTOM_PROP)==RDStore.YN_YES) {
+            getDueLicenseCustomProperties(contextOrg, today, computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP)).each{
 
                 boolean isConsortialOrCollective = it.owner._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]
                 if ( ! isConsortialOrCollective ) {
@@ -89,20 +86,20 @@ class QueryService {
                 }
             }
         }
-        if (contextUser.getSettingsValue(KEYS.IS_REMIND_FOR_LIZENSE_PRIVATE_PROP)==RDStore.YN_YES) {
-            dueObjects.addAll(getDueLicensePrivateProperties(contextOrg, today, computeInfoDate(contextUser, KEYS.REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP)))
+        if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_LIZENSE_PRIVATE_PROP)==RDStore.YN_YES) {
+            dueObjects.addAll(getDueLicensePrivateProperties(contextOrg, today, computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_LICENSE_PRIVATE_PROP)))
         }
-        if (contextUser.getSettingsValue(KEYS.IS_REMIND_FOR_PERSON_PRIVATE_PROP)==RDStore.YN_YES) {
-            dueObjects.addAll(PersonProperty.findAllByDateValueBetweenForOrgAndIsNotPulbic(today, computeInfoDate(contextUser, KEYS.REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP), contextOrg))
+        if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_PERSON_PRIVATE_PROP)==RDStore.YN_YES) {
+            dueObjects.addAll(PersonProperty.findAllByDateValueBetweenForOrgAndIsNotPulbic(today, computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_PERSON_PRIVATE_PROP), contextOrg))
         }
-        if (contextUser.getSettingsValue(KEYS.IS_REMIND_FOR_ORG_CUSTOM_PROP)==RDStore.YN_YES) {
-            dueObjects.addAll(OrgProperty.findAllByDateValueBetweenAndTenantAndIsPublic(today, computeInfoDate(contextUser, KEYS.REMIND_PERIOD_FOR_ORG_CUSTOM_PROP), contextOrg,true))
+        if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_ORG_CUSTOM_PROP)==RDStore.YN_YES) {
+            dueObjects.addAll(OrgProperty.findAllByDateValueBetweenAndTenantAndIsPublic(today, computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_ORG_CUSTOM_PROP), contextOrg,true))
         }
-        if (contextUser.getSettingsValue(KEYS.IS_REMIND_FOR_ORG_PRIVATE_PROP)==RDStore.YN_YES) {
-            dueObjects.addAll(getDueOrgPrivateProperties(contextOrg, today, computeInfoDate(contextUser, KEYS.REMIND_PERIOD_FOR_ORG_PRIVATE_PROP)))
+        if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_ORG_PRIVATE_PROP)==RDStore.YN_YES) {
+            dueObjects.addAll(getDueOrgPrivateProperties(contextOrg, today, computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_ORG_PRIVATE_PROP)))
         }
-        if (contextUser.getSettingsValue(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP)==RDStore.YN_YES) {
-            getDueSubscriptionCustomProperties(contextOrg, today, computeInfoDate(contextUser, KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP)).each{
+        if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP)==RDStore.YN_YES) {
+            getDueSubscriptionCustomProperties(contextOrg, today, computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP)).each{
 
                 boolean isConsortialOrCollective = it.owner._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]
 
@@ -111,12 +108,12 @@ class QueryService {
                 }
             }
         }
-        if (contextUser.getSettingsValue(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_PRIVATE_PROP)==RDStore.YN_YES) {
-            dueObjects.addAll(getDueSubscriptionPrivateProperties(contextOrg, today, computeInfoDate(contextUser, KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP)))
+        if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_PRIVATE_PROP)==RDStore.YN_YES) {
+            dueObjects.addAll(getDueSubscriptionPrivateProperties(contextOrg, today, computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_PRIVATE_PROP)))
         }
         dueObjects = dueObjects.sort {
             (it instanceof AbstractPropertyWithCalculatedLastUpdated)?
-                    it.dateValue : (((it instanceof Subscription || it instanceof License) && it.manualCancellationDate)? it.manualCancellationDate : it.endDate)?: java.sql.Timestamp.valueOf("0001-1-1 00:00:00")
+                    it.dateValue : (((it instanceof Subscription || it instanceof License) && it.manualCancellationDate)? it.manualCancellationDate : it.endDate)?: Timestamp.valueOf("0001-1-1 00:00:00")
         }
 
         dueObjects

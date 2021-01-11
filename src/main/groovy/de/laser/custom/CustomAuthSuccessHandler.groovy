@@ -31,5 +31,4 @@ class CustomAuthSuccessHandler extends AjaxAwareAuthenticationSuccessHandler {
 
         super.onAuthenticationSuccess(request, response, authentication)
     }
-
 }

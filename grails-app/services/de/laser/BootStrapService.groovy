@@ -2,13 +2,16 @@ package de.laser
 
 import com.opencsv.CSVReader
 import de.laser.auth.*
-import de.laser.helper.*
+import de.laser.helper.ConfigUtils
+import de.laser.helper.RDConstants
+import de.laser.helper.ServerUtils
 import de.laser.properties.PropertyDefinition
 import de.laser.system.SystemEvent
 import de.laser.system.SystemSetting
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import groovy.sql.Sql
+import org.hibernate.SQLQuery
 import org.hibernate.type.TextType
 
 @Transactional
@@ -417,8 +420,8 @@ class BootStrapService {
                         if (fileSql.take(26).equalsIgnoreCase('CREATE OR REPLACE FUNCTION')) {
 
                             try {
-                                org.hibernate.SQLQuery query    = sessionFactory.currentSession.createSQLQuery(fileSql)
-                                org.hibernate.SQLQuery validate = sessionFactory.currentSession
+                                SQLQuery query    = sessionFactory.currentSession.createSQLQuery(fileSql)
+                                SQLQuery validate = sessionFactory.currentSession
                                         .createSQLQuery(validateSql)
                                         .addScalar("regexp_matches", new TextType())
 

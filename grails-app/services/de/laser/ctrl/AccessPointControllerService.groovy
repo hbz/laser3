@@ -1,18 +1,9 @@
 package de.laser.ctrl
 
-import de.laser.AccessPointData
-import de.laser.AccessService
-import de.laser.ContextService
-import de.laser.Org
-import de.laser.Platform
-import de.laser.RefdataValue
+import de.laser.*
 import de.laser.helper.RDStore
-import de.laser.oap.OrgAccessPoint
-import de.laser.oap.OrgAccessPointEzproxy
-import de.laser.oap.OrgAccessPointLink
-import de.laser.oap.OrgAccessPointOA
-import de.laser.oap.OrgAccessPointShibboleth
-import de.laser.oap.OrgAccessPointVpn
+import de.laser.oap.*
+import de.uni_freiburg.ub.Exception.InvalidRangeException
 import de.uni_freiburg.ub.IpRange
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -57,7 +48,7 @@ class AccessPointControllerService {
                     validRanges << ipRange
                 }
             }
-            catch (InvalidRangeException) {
+            catch (InvalidRangeException e) {
                 invalidRanges << range
             }
         }

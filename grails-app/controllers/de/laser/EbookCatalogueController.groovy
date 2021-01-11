@@ -4,6 +4,7 @@ import de.laser.properties.SubscriptionProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.web.context.request.RequestContextHolder
 
 import javax.servlet.http.HttpSession
@@ -16,11 +17,12 @@ class EbookCatalogueController {
     @Secured(['ROLE_ADMIN'])
     def index() {
 
-        Map<String, Object> result = EbookCatalogueController._stats_TODO( false )
+        Map<String, Object> result = _stats_TODO( false )
 
         if (! params.subKinds && ! params.consortia && ! params.q) {
             // init filter with checkboxes checked
             result.initQuery = 'true'
+            result.queryHistory = _history_TODO( null, 0, false )
         }
         else {
 
@@ -71,7 +73,7 @@ class EbookCatalogueController {
                 queryParams.put('consortia', consortia)
             }
 
-            def subKinds = []
+            List subKinds = []
             if (params.containsKey('subKinds')) {
                 params.list('subKinds').each{
                     subKinds.add(Long.parseLong(it))
@@ -87,6 +89,8 @@ class EbookCatalogueController {
                 result.subscriptions = Subscription.executeQuery("select s " + query + " order by lower(s.name) asc", queryParams)
             }
             result.subscriptionsCount = result.subscriptions.size()
+
+            result.queryHistory = _history_TODO( params, result.subscriptionsCount, false )
         }
 
         result
@@ -155,7 +159,7 @@ class EbookCatalogueController {
         result
     }
 
-    static Map<String, Object> _stats_TODO(boolean reset) {
+    Map<String, Object> _stats_TODO(boolean reset) {
 
         Map<String, Object> result = [:]
         HttpSession session = RequestContextHolder.currentRequestAttributes().getSession()
@@ -166,6 +170,8 @@ class EbookCatalogueController {
             session.removeAttribute('ebc_allProvider')
             session.removeAttribute('ebc_allTitles')
         }
+
+        // --- stats
 
         if (! session.getAttribute('ebc_allConsortia')) {
             session.setAttribute('ebc_allConsortia',
@@ -226,10 +232,66 @@ class EbookCatalogueController {
         }
         result.allTitles = session.getAttribute('ebc_allTitles')
 
+        // --- hitCounter
+
         int hitCounter = session.getAttribute('ebc_hitCounter') ?: 0
         result.hitCounter = ++hitCounter
         session.setAttribute('ebc_hitCounter', result.hitCounter)
 
         result
+    }
+
+    List _history_TODO(GrailsParameterMap params, int subCount, boolean reset) {
+
+        HttpSession session = RequestContextHolder.currentRequestAttributes().getSession()
+
+        if (reset) {
+            session.removeAttribute('ebc_queryHistory')
+        }
+
+        // --- queryHistory
+
+        if (! session.getAttribute('ebc_queryHistory')) {
+            session.setAttribute('ebc_queryHistory', [])
+        }
+
+        List<String> query = []
+        List<String> label = []
+
+        if (params?.containsKey('q')) {
+            query.add('q=' + params.get('q'))
+            if (params.q) {
+                label.add(params.q)
+            }
+        }
+        if (params?.containsKey('consortia')) {
+            query.add('consortia=' + params.get('consortia'))
+            if (params.consortia) {
+                label.add(genericOIDService.resolveOID(params.consortia).getName())
+            }
+        }
+        if (params?.containsKey('subKinds') && params.subKinds) {
+            query.add('subKinds=' + params.list('subKinds').join('&subKinds='))
+            if (params.subKinds) {
+                if (params.list('subKinds').size() == 5) {
+                    label.add('alle Lizenztypen')
+                } else {
+                    label.add(params.list('subKinds').collect { RefdataValue.get(it).getI10n('value') }.join(','))
+                }
+            }
+        }
+
+        List history = (List) session.getAttribute('ebc_queryHistory')
+
+        if (query) {
+            history.add([label: label, matches: subCount, queryString: '?' + query.join('&')])
+
+            if (history.size() > 10) {
+                history.remove(0)
+            }
+            session.setAttribute('ebc_queryHistory', history)
+        }
+
+        history.reverse()
     }
 }
