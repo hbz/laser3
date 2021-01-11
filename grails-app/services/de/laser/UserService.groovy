@@ -1,6 +1,5 @@
 package de.laser
 
-
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
@@ -10,7 +9,6 @@ import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.mvc.FlashScope
-import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.validation.FieldError
 

@@ -301,12 +301,6 @@ class PendingChangeService extends AbstractLockableService {
                 }
 
                 if (saveWithoutError && pendingChange instanceof PendingChange) {
-                    /*if(pendingChange.pkg?.pendingChanges) pendingChange.pkg?.pendingChanges?.remove(pendingChange)
-                    pendingChange.pkg?.save();
-                    if(pendingChange.license?.pendingChanges) pendingChange.license?.pendingChanges?.remove(pendingChange)
-                    pendingChange.license?.save();
-                    if(pendingChange.subscription?.pendingChanges) pendingChange.subscription?.pendingChanges?.remove(pendingChange)
-                    pendingChange.subscription?.save();*/
                     pendingChange.status = RefdataValue.getByValueAndCategory("Accepted", RDConstants.PENDING_CHANGE_STATUS)
                     pendingChange.actionDate = new Date()
                     pendingChange.save()  // ERMS-2184 // called implicit somewhere

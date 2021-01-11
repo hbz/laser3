@@ -85,15 +85,14 @@ class InstitutionsService {
                 base.documents.each { DocContext dctx ->
 
                     if (dctx.isShared) {
-                        DocContext ndc = new DocContext(
+                        new DocContext(
                                 owner: dctx.owner,
                                 license: licenseInstance,
                                 domain: dctx.domain,
                                 status: dctx.status,
                                 doctype: dctx.doctype,
                                 sharedFrom: dctx
-                        )
-                        ndc.save()
+                        ).save()
                     }
                 }
             }
@@ -127,7 +126,7 @@ class InstitutionsService {
                     Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
                     Files.copy(source, target)
 
-                    DocContext ndc = new DocContext(
+                    new DocContext(
                             owner: clonedContents,
                             license: licenseInstance,
                             domain: dctx.domain,

@@ -1,19 +1,18 @@
 package de.laser
 
-import com.k_int.kbplus.*
+
+import com.k_int.kbplus.ExportService
+import com.k_int.kbplus.GenericOIDService
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
-import de.laser.helper.ConfigUtils
-import de.laser.helper.DateUtils
-import de.laser.helper.RDStore
-import de.laser.helper.ServerUtils
+import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import de.laser.system.SystemEvent
-import grails.plugins.mail.MailService
-import grails.gorm.transactions.Transactional
-import grails.util.Holders
 import grails.core.GrailsApplication
+import grails.gorm.transactions.Transactional
+import grails.plugins.mail.MailService
+import grails.util.Holders
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -614,7 +613,7 @@ class SurveyService {
                 {
 
                     User user = userOrg.user
-                    Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
+                    Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
                     String emailReceiver = user.getEmail()
                     String currentServer = ServerUtils.getCurrentServer()
                     String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD)? "" : (ConfigUtils.getLaserSystemId() + " - ")
@@ -886,7 +885,7 @@ class SurveyService {
                         }
 
                         replyTo = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
-                        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value.toString())
+                        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
                         Object[] args = ["${survey.type.getI10n('value', language)}"]
                         String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + (reminderMail ? messageSource.getMessage('email.subject.surveysReminder', args, language)  : messageSource.getMessage('email.subject.surveys', args, language)) + " " + survey.name + "")
 
@@ -1090,7 +1089,7 @@ class SurveyService {
                     Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                     Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
                     Files.copy(source, target)
-                    DocContext ndc = new DocContext(
+                    new DocContext(
                             owner: clonedContents,
                             surveyConfig: newSurveyConfig,
                             domain: dctx.domain,
@@ -1113,7 +1112,7 @@ class SurveyService {
                             mimeType: dctx.owner.mimeType,
                             migrated: dctx.owner.migrated
                     ).save()
-                    DocContext ndc = new DocContext(
+                    new DocContext(
                             owner: clonedContents,
                             surveyConfig: newSurveyConfig,
                             domain: dctx.domain,
@@ -1137,13 +1136,13 @@ class SurveyService {
         //Copy Participants
         if (params.copySurvey.copyParticipants) {
             oldSurveyConfig.orgs.each { SurveyOrg surveyOrg ->
-                SurveyOrg newSurveyOrg = new SurveyOrg(surveyConfig: newSurveyConfig, org: surveyOrg.org).save()
+                new SurveyOrg(surveyConfig: newSurveyConfig, org: surveyOrg.org).save()
             }
         }
         //Copy Properties
         if (params.copySurvey.copySurveyProperties) {
             oldSurveyConfig.surveyProperties.each { SurveyConfigProperties surveyConfigProperty ->
-                SurveyConfigProperties configProperty = new SurveyConfigProperties(
+                new SurveyConfigProperties(
                         surveyProperty: surveyConfigProperty.surveyProperty,
                         surveyConfig: newSurveyConfig).save()
             }

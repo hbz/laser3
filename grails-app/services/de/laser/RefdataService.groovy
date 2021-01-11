@@ -1,8 +1,7 @@
 package de.laser
 
-
-import de.laser.helper.AppUtils
 import de.laser.annotations.RefdataAnnotation
+import de.laser.helper.AppUtils
 import grails.gorm.transactions.Transactional
 
 @Transactional

@@ -42,6 +42,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import java.awt.*
 import java.math.RoundingMode
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.List
 
@@ -1455,7 +1456,7 @@ class ExportService {
 	* @return the value in the required format for CSV exports.
 	**/
 	def val(val){
-		if(val instanceof java.sql.Timestamp || val instanceof Date){
+		if(val instanceof Timestamp || val instanceof Date){
 			return val?formatter.format(val):" "
 		}else{
 			val = val? val.replaceAll('"',"'") :" "
