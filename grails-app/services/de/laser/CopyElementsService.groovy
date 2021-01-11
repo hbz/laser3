@@ -1,6 +1,8 @@
 package de.laser
 
-import com.k_int.kbplus.*
+
+import com.k_int.kbplus.DocstoreService
+import com.k_int.kbplus.GenericOIDService
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.CreationException
 import de.laser.finance.CostItem
@@ -12,12 +14,10 @@ import de.laser.oap.OrgAccessPointLink
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import grails.gorm.transactions.Transactional
-import grails.util.Holders
 import grails.web.mvc.FlashScope
-import grails.web.servlet.mvc.GrailsParameterMap
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.web.servlet.mvc.GrailsWebRequest
 import org.grails.web.util.WebUtils
-import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 

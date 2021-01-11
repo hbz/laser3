@@ -1,8 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.ChangeNotificationService
-import de.laser.titles.TitleHistoryEventParticipant
-import de.laser.titles.TitleInstance
 import com.k_int.kbplus.GlobalSourceSyncService
 import de.laser.exceptions.CleanupException
 import de.laser.helper.ConfigUtils
@@ -10,13 +8,15 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.oap.OrgAccessPointLink
+import de.laser.titles.TitleHistoryEventParticipant
+import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Holders
+import grails.web.mapping.LinkGenerator
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChildren
 import groovyx.net.http.HTTPBuilder
-import grails.web.mapping.LinkGenerator
 import org.springframework.transaction.TransactionStatus
 
 //@CompileStatic

@@ -1,18 +1,11 @@
 package de.laser
 
-
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.AppUtils
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.interfaces.CalculatedType
-import de.laser.properties.LicenseProperty
-import de.laser.properties.OrgProperty
-import de.laser.properties.PlatformProperty
-import de.laser.properties.PropertyDefinition
-import de.laser.properties.PropertyDefinitionGroup
-import de.laser.properties.PropertyDefinitionGroupBinding
-import de.laser.properties.SubscriptionProperty
+import de.laser.properties.*
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil

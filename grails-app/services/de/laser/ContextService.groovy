@@ -1,11 +1,10 @@
 package de.laser
 
-
 import de.laser.auth.User
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SessionCacheWrapper
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityService
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Transactional

@@ -1,13 +1,9 @@
 package de.laser
 
-
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
-import de.laser.interfaces.CalculatedType
 import de.laser.system.SystemEvent
 import grails.gorm.transactions.Transactional
-import org.grails.plugins.domain.DomainClassGrailsPlugin
-import org.hibernate.Session
 import org.springframework.transaction.TransactionStatus
 
 @Transactional

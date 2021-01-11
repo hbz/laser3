@@ -1,7 +1,5 @@
 package de.laser
 
-
-import de.laser.properties.OrgProperty
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
@@ -9,6 +7,7 @@ import de.laser.auth.UserRole
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.properties.OrgProperty
 import de.laser.properties.PropertyDefinition
 import grails.gorm.transactions.Transactional
 import groovy.util.logging.Slf4j

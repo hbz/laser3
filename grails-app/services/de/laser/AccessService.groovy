@@ -4,6 +4,7 @@ package de.laser
 import de.laser.auth.*
 import de.laser.helper.RDConstants
 import grails.gorm.transactions.Transactional
+import org.springframework.web.context.request.RequestContextHolder
 
 @Transactional
 class AccessService {
@@ -111,7 +112,7 @@ class AccessService {
             //println(oss.getValue())
             boolean isOrgBasicMemberView = false
             try {
-                isOrgBasicMemberView = org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes().params.orgBasicMemberView
+                isOrgBasicMemberView = RequestContextHolder.currentRequestAttributes().params.orgBasicMemberView
             } catch (IllegalStateException e) {}
 
             if(isOrgBasicMemberView && (oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM'))){

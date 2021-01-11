@@ -95,8 +95,8 @@ class DataloadService {
                 return false
             }
         } else {
+            log.debug("FT update already running")
             return false
-        log.debug("FT update already running")
         }
     }
 
@@ -105,8 +105,8 @@ class DataloadService {
         SystemEvent.createEvent('FT_INDEX_UPDATE_START')
         synchronized(this) {
             if ( update_running ) {
-                return false
                 log.debug("Exiting FT update - one already running");
+                return false
             }
             else {
                 update_running = true;

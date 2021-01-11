@@ -2,9 +2,7 @@ package de.laser.ctrl
 
 import de.laser.ContextService
 import de.laser.Platform
-import de.laser.PlatformController
 import de.laser.SubscriptionPackage
-import de.laser.auth.User
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
 import grails.gorm.transactions.Transactional

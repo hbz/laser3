@@ -1,12 +1,10 @@
 package de.laser
 
-
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.properties.LicenseProperty
 import de.laser.properties.SubscriptionProperty
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import grails.plugins.orm.auditable.Auditable
 import grails.gorm.transactions.Transactional
-import grails.core.GrailsApplication
+import grails.plugins.orm.auditable.Auditable
 
 import javax.persistence.Transient
 
