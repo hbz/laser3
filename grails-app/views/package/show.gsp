@@ -135,7 +135,7 @@
                                         parent: packageInstance.class.name+':'+packageInstance.id,
                                         property: 'orgs',
                                         recip_prop: 'pkg',
-                                        tmplRole: de.laser.helper.RDStore.OR_CONTENT_PROVIDER,
+                                        tmplRole: RDStore.OR_CONTENT_PROVIDER,
                                         tmplText:'Anbieter hinzufügen',
                                         tmplID:'ContentProvider',
                                         tmplButtonText: 'Anbieter hinzufügen',
@@ -196,39 +196,7 @@
 
 
         <aside class="four wide column la-sidekick">
-            <g:if test="${accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
-                <semui:card message="package.show.addToSub" class="notes">
-                    <div class="content">
-                        <g:if test="${subscriptionList.size() > 0}">
-
-                            <g:form controller="package" action="addToSub" id="${packageInstance.id}" class="ui form">
-
-                                <select class="ui dropdown" name="subid">
-                                    <g:each in="${subscriptionList}" var="s">
-                                        <option value="${s.id}">${s.dropdownNamingConvention(contextService.getOrg())}</option>
-                                    </g:each>
-                                </select>
-
-                                <br />
-                                <br />
-                                <div class="ui checkbox">
-                                    <label>${message(code:'package.show.addEnt')}</label>
-                                    <input type="checkbox" id="addEntitlementsCheckbox" name="addEntitlements" value="true" class="hidden"/>
-                                </div>
-
-                                <input class="ui button" id="add_to_sub_submit_id" type="submit" value="${message(code:'default.button.submit.label')}"/>
-
-                            </g:form>
-                        </g:if>
-                        <g:else>
-                            ${message(code: 'package.show.no_subs')}
-                        </g:else>
-                    </div>
-                </semui:card>
-            </g:if>
-
             <g:render template="/templates/aside1" model="${[ownobj:packageInstance, owntp:'pkg']}" />
-
         </aside><!-- .four -->
 
     </div><!-- .grid -->

@@ -368,9 +368,6 @@ class PackageController  {
             roleTypes.addAll([RDStore.OR_SUBSCRIPTION_COLLECTIVE, RDStore.OR_SUBSCRIBER_COLLECTIVE])
         }
 
-        result.subscriptionList = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and oo.sub.status = :current and not exists (select sp.subscription from SubscriptionPackage sp where sp.subscription = oo.sub and sp.pkg = :pkg)',
-                [contextOrg: contextService.getOrg(), roleTypes: roleTypes, current: RDStore.SUBSCRIPTION_CURRENT, pkg:packageInstance])
-
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         params.max = result.max
 
