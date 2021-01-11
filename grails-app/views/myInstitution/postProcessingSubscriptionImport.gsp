@@ -64,7 +64,7 @@
                                                         if(!value)
                                                             value = prop.getValue().propValue
                                                     %>
-                                                    <li>${genericOIDService.resolveOID(prop.getKey()).name}: ${value} (${prop.getValue().propNote ?: 'Keine Anmerkung'})</li>
+                                                    <li>${genericOIDService.resolveOID(prop.getKey()).getI10n("name")}: ${value} (${prop.getValue().propNote ?: 'Keine Anmerkung'})</li>
                                                 </g:if>
                                             </g:each>
                                         </ul>

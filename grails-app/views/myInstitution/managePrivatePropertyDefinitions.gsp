@@ -266,7 +266,7 @@
 
     $('#cust_prop_modal_select').change(function() {
         var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
-        if( selectedText == "${RefdataValue.CLASS}") {
+        if( selectedText == "${RefdataValue.name}") {
             $("#cust_prop_ref_data_name").show();
 
             var $pMatch = $( "p[data-prop-def-desc='" + $( "#pd_descr option:selected" ).val() + "']" )

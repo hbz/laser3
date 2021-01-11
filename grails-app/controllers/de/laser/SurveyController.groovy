@@ -677,7 +677,7 @@ class SurveyController {
                 //costs dataToDisplay
                result.dataToDisplay = ['own','cons']
                result.offsets = [consOffset:0,ownOffset:0]
-               result.sortConfig = [consSort:'sortname',consOrder:'asc',
+               result.sortConfig = [consSort:'oo.org.sortname',consOrder:'asc',
                                     ownSort:'ci.costTitle',ownOrder:'asc']
 
                 result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
@@ -2625,19 +2625,23 @@ class SurveyController {
         result.orgsContinuetoSubscription = []
         result.newOrgsContinuetoSubscription = []
 
-            SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue order by participant.sortname",
+        List<SurveyResult> surveyResults = SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue order by participant.sortname",
                     [
                      owner      : result.institution.id,
                      surProperty: result.participationProperty.id,
                      surConfig  : result.surveyConfig.id,
-                     refValue   : RDStore.YN_YES]).each {
+                     refValue   : RDStore.YN_YES])
+        surveyResults.each {
                 Map newSurveyResult = [:]
                 newSurveyResult.participant = it.participant
                 newSurveyResult.resultOfParticipation = it
                 newSurveyResult.surveyConfig = result.surveyConfig
                 if(result.properties) {
                     String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
-                    newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
+                    //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
+                    //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
+                    String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
+                    newSurveyResult.properties = SurveyResult.executeQuery(query,[participant: it.participant,context: result.institution,cfg: result.surveyConfig,properties: result.properties])
                 }
 
                 if (it.participant.id in currentParticipantIDs) {
@@ -2733,9 +2737,10 @@ class SurveyController {
                 newSurveyResult.participant = it.participant
                 newSurveyResult.resultOfParticipation = it
                 newSurveyResult.surveyConfig = result.surveyConfig
-                newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it.participant, result.institution, result.surveyConfig, result.properties).sort {
-                    it.type.getI10n('name')
+                if(result.properties) {
+
                 }
+
 
                 if (it.participant.id in currentParticipantIDs) {
                     newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",

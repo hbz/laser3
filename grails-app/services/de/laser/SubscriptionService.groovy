@@ -24,7 +24,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.web.multipart.commons.CommonsMultipartFile
+import org.springframework.web.multipart.MultipartFile
 
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
@@ -1050,7 +1050,7 @@ class SubscriptionService {
         success
     }
 
-    Map subscriptionImport(CommonsMultipartFile tsvFile) {
+    Map subscriptionImport(MultipartFile tsvFile) {
         Locale locale = LocaleContextHolder.getLocale()
         Org contextOrg = contextService.getOrg()
         RefdataValue comboType
@@ -1390,6 +1390,7 @@ class SubscriptionService {
 
     List addSubscriptions(candidates,GrailsParameterMap params) {
         List errors = []
+        Locale locale = LocaleContextHolder.getLocale()
         Org contextOrg = contextService.getOrg()
         SimpleDateFormat databaseDateFormatParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -1416,6 +1417,7 @@ class SubscriptionService {
                 if(sub.instanceOf && member)
                     sub.isSlaved = RDStore.YN_YES
                 if(sub.save()) {
+                    sub.refresh() //needed for dependency processing
                     //create the org role associations
                     RefdataValue parentRoleType, memberRoleType
                     if(accessService.checkPerm("ORG_CONSORTIUM")) {
@@ -1424,10 +1426,6 @@ class SubscriptionService {
                     }
                     else
                         parentRoleType = RDStore.OR_SUBSCRIBER
-                    entry.licenses.each { String licenseOID ->
-                        License license = (License) genericOIDService.resolveOID(licenseOID)
-                        setOrgLicRole(sub,license,false)
-                    }
                     OrgRole parentRole = new OrgRole(roleType: parentRoleType, sub: sub, org: contextOrg)
                     if(!parentRole.save()) {
                         errors << parentRole.errors
@@ -1437,6 +1435,10 @@ class SubscriptionService {
                         if(!memberRole.save()) {
                             errors << memberRole.errors
                         }
+                    }
+                    entry.licenses.each { String licenseOID ->
+                        License license = (License) genericOIDService.resolveOID(licenseOID)
+                        setOrgLicRole(sub,license,false)
                     }
                     if(provider) {
                         OrgRole providerRole = new OrgRole(roleType: RDStore.OR_PROVIDER, sub: sub, org: provider)
@@ -1472,7 +1474,8 @@ class SubscriptionService {
                         }
                     }
                     if(entry.notes) {
-                        Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: entry.notes, title: message(code:'myinst.subscriptionImport.notes.title',args:[sdf.format(new Date())]), type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE), owner: contextOrg, user: contextService.getUser())
+                        Object[] args = [sdf.format(new Date())]
+                        Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: entry.notes, title: messageSource.getMessage('myinst.subscriptionImport.notes.title',args,locale), type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE), owner: contextOrg, user: contextService.getUser())
                         if(docContent.save()) {
                             DocContext dc = new DocContext(subscription: sub, owner: docContent, doctype: RDStore.DOC_TYPE_NOTE)
                             dc.save()
