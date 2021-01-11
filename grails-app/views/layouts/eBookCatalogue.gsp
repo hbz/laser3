@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>EBookCatalogue</title>
+    <title>EBookCatalogue - DEMO</title>
     <meta name="description" content="">
     <meta name="viewport" content="initial-scale = 1.0">
 
@@ -30,7 +30,7 @@
                 </div>
             </div>
 
-            <g:if test="${queryHistory}">
+            <g:if test="${queryHistory?.size() > 1}">
                 <div id="history">
                     <div class="dropdown is-right is-hoverable has-text-right">
                         <div class="dropdown-trigger">
@@ -129,8 +129,9 @@
 <laser:scriptBlock/>%{-- dont move --}%
 
 <style>
-    #custom-hero {
-    }
+    /* #custom-hero .hero-body {
+        background-image: url("${resource(dir: 'images', file: 'eBookCatalogue/cubes.png')}");
+    } */
     #custom-logo {
         display: inline-block;
         width: 150px;
