@@ -427,7 +427,7 @@ r2d2 = {
                 },
                 onShow : function() {
                     var modalCallbackFunction = JSPC.callbacks.modal.show[$(this).attr('id')];
-                    a11yModal._loopFocus({
+                    a11yModal.go({
                         el: document.getElementById($(this).attr('id')),
                         focusElement: '',
                         escCallback:''
@@ -606,7 +606,7 @@ r2d2 = {
                 $('.tiny.modal')
                     .modal({
                         onShow : function() {
-                            a11yModal._loopFocus({
+                            a11yModal.go({
                                 el: document.getElementById($(this).attr('id')),
                                 focusElement: '',
                                 escCallback:''
