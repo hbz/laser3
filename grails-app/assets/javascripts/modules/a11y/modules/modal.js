@@ -2,6 +2,12 @@
 // modules/a11y/modules/modal.js
 
 a11yModal = {
+
+    go: function (config) {
+        a11yModal._loopFocus(config)
+    },
+
+
     /**
      * Source https://medium.com/@im_rahul/focus-trapping-looping-b3ee658e5177
      *
