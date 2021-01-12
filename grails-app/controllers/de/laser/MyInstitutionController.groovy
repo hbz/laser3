@@ -1528,10 +1528,9 @@ join sub.orgRelations or_sub where
     def processSubscriptionImport() {
         Subscription.withTransaction { TransactionStatus ts ->
             Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-            CommonsMultipartFile tsvFile = request.getFile("tsvFile") //this makes the transaction closure necessary
+            MultipartFile tsvFile = request.getFile("tsvFile") //this makes the transaction closure necessary
             if(tsvFile && tsvFile.size > 0) {
                 String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
-                log.debug(Charset.defaultCharset())
                 if(encoding == "UTF-8") {
                     result.filename = tsvFile.originalFilename
                     Map subscriptionData = subscriptionService.subscriptionImport(tsvFile)

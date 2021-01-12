@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.GenericOIDService
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.AppUtils
 import de.laser.helper.DateUtils
@@ -9,14 +10,17 @@ import de.laser.properties.*
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
 @Transactional
 class PropertyService {
 
-    def genericOIDService
-    def contextService
+    GenericOIDService genericOIDService
+    ContextService contextService
+    MessageSource messageSource
 
     private List<String> splitQueryFromOrderBy(String sql) {
         String order_by
@@ -147,7 +151,7 @@ class PropertyService {
      */
     List addPrivatePropertyDefinition(GrailsParameterMap params) {
         log.debug("trying to add private property definition for institution: " + params)
-
+        Locale locale = LocaleContextHolder.getLocale()
         Org tenant = contextService.getOrg()
 
         RefdataCategory rdc = null
@@ -172,11 +176,12 @@ class PropertyService {
                 tenant      : tenant.globalUID]
 
         PropertyDefinition privatePropDef = PropertyDefinition.construct(map)
+        Object[] args = [privatePropDef.descr, privatePropDef.getI10n('name')]
         if (privatePropDef.save()) {
-            return ['message', message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
+            return ['message', messageSource.getMessage('default.created.message', args, locale)]
         }
         else {
-            return ['error', message(code: 'default.not.created.message', args:[privatePropDef.descr, privatePropDef.getI10n('name')])]
+            return ['error', messageSource.getMessage('default.not.created.message', args, locale)]
         }
     }
 
