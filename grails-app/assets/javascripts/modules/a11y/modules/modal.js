@@ -2,20 +2,6 @@
 // modules/a11y/modules/modal.js
 
 a11yModal = {
-
-    go: function () {
-        a11yModal.initModal()
-    },
-
-    initModal: function () {
-        console.log('a11yModal.initModal()')
-        $('#js-open-confirm-modal').on("click", a11yModal._loopFocus({
-            el: document.getElementById('js-modal'),
-            focusElement: '',
-            escCallback:''
-        }));
-    },
-
     /**
      * Source https://medium.com/@im_rahul/focus-trapping-looping-b3ee658e5177
      *
@@ -46,7 +32,7 @@ a11yModal = {
             throw new Error('Could not initialize focus-trapping - `config.escCallback` is not a function');
         }
 
-        const FOCUSABLE_ELEMENT_SELECTORS = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, [tabindex="0"], [contenteditable]';
+        const FOCUSABLE_ELEMENT_SELECTORS = 'a[href], area[href], input:not([type=hidden]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, [tabindex="0"], [contenteditable]';
 
         const KEY_CODE_MAP = {
             TAB: 9
