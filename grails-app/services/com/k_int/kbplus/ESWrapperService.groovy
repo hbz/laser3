@@ -43,15 +43,6 @@ class ESWrapperService {
         log.debug("es_index_name = ${es_index_name}")
         log.debug("es_host = ${es_host}")
 
-      /*  Settings settings = Settings.builder().put("cluster.name", es_cluster_name).build()
-
-        //Nötig ?
-        //Settings settings = Settings.builder()
-        //        .put("client.transport.sniff", true).build();
-
-        esclient = new org.elasticsearch.transport.client.PreBuiltTransportClient(settings);
-        esclient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(es_host), 9300));*/
-
         log.debug("ES Init completed");
     }
 

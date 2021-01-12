@@ -1,9 +1,8 @@
 package de.laser
 
-
 import de.laser.helper.ConfigUtils
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 @Transactional
 class SystemService {

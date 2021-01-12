@@ -1,15 +1,14 @@
 package de.laser
 
-
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
+import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
-import grails.core.GrailsApplication
 import org.springframework.context.i18n.LocaleContextHolder
 
 @Transactional
@@ -72,12 +71,7 @@ class InstAdmService {
                 UserOrg.STATUS_APPROVED
         )
 
-        if (userOrgs.size() == 1 && userOrgs[0].user == user) {
-            return  true
-        }
-        else {
-            return false
-        }
+        return (userOrgs.size() == 1 && userOrgs[0].user == user)
     }
 
 	@Deprecated

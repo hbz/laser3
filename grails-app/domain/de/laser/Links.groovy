@@ -94,10 +94,10 @@ class Links {
         }
 
         if(context) {
-            if(context in [sourceSubscription,sourceLicense]) {
+            if(context.id in [sourceSubscription?.id,sourceLicense?.id]) {
                 determineDestination()
             }
-            else if(context in [destinationSubscription,destinationLicense]) {
+            else if(context.id in [destinationSubscription?.id,destinationLicense?.id]) {
                 determineSource()
             }
         }

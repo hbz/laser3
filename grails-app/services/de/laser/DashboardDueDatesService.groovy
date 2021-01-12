@@ -7,9 +7,10 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import de.laser.system.SystemEvent
+import grails.core.GrailsApplication
 import grails.plugins.mail.MailService
 import grails.util.Holders
-import grails.core.GrailsApplication
+import org.springframework.context.i18n.LocaleContextHolder
 
 //@Transactional
 class DashboardDueDatesService {
@@ -31,7 +32,7 @@ class DashboardDueDatesService {
         from = ConfigUtils.getNotificationsEmailFrom()
         replyTo = ConfigUtils.getNotificationsEmailReplyTo()
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+        locale = LocaleContextHolder.getLocale()
         log.debug("Initialised DashboardDueDatesService...")
     }
 

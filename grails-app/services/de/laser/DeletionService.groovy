@@ -1,25 +1,14 @@
 package de.laser
 
-
 import de.laser.auth.User
-import de.laser.finance.BudgetCode
-import de.laser.finance.CostItem
-import de.laser.finance.CostItemElementConfiguration
-import de.laser.finance.Invoice
-import de.laser.finance.Order
-import de.laser.finance.PriceItem
+import de.laser.finance.*
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.oap.OrgAccessPoint
-import de.laser.properties.LicenseProperty
-import de.laser.properties.PropertyDefinition
-import de.laser.properties.PropertyDefinitionGroup
-import de.laser.properties.PropertyDefinitionGroupBinding
-import de.laser.properties.SubscriptionProperty
+import de.laser.properties.*
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemTicket
 import org.elasticsearch.action.delete.DeleteRequest
-import org.elasticsearch.action.delete.DeleteResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 
@@ -919,7 +908,7 @@ class DeletionService {
         try {
             if(ESWrapperService.testConnection()) {
                 DeleteRequest request = new DeleteRequest(es_index, id)
-                DeleteResponse deleteResponse = esclient.delete(request, RequestOptions.DEFAULT)
+                esclient.delete(request, RequestOptions.DEFAULT)
             }
             esclient.close()
         }

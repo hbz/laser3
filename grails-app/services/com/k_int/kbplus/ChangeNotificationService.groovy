@@ -27,7 +27,7 @@ class ChangeNotificationService extends AbstractLockableService {
 
     ExecutorService executorService
     def genericOIDService
-    def sessionFactory
+    def globalService
     ContextService contextService
 
     // N,B, This is critical for this service as it's called from domain object OnChange handlers
@@ -35,7 +35,6 @@ class ChangeNotificationService extends AbstractLockableService {
 
   void broadcastEvent(String contextObjectOID, changeDetailDocument) {
     // log.debug("broadcastEvent(${contextObjectOID},${changeDetailDocument})");
-    def contextObject = genericOIDService.resolveOID(contextObjectOID);
 
     def jsonChangeDocument = changeDetailDocument as JSON
       ChangeNotificationQueueItem new_queue_item = new ChangeNotificationQueueItem(oid:contextObjectOID,
@@ -183,11 +182,11 @@ class ChangeNotificationService extends AbstractLockableService {
                 case 'announcements':
                     RefdataValue announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
                   // result.recentAnnouncements = Doc.findAllByType(announcement_type,[max:10,sort:'dateCreated',order:'desc'])
-                    Doc newAnnouncement = new Doc(title:'Automated Announcement',
-                                                type:announcement_type,
-                                                content:announcement_content,
-                                                dateCreated:new Date(),
-                                                user:User.findByUsername('admin')).save()
+                    new Doc(title:'Automated Announcement',
+                            type:announcement_type,
+                            content:announcement_content,
+                            dateCreated:new Date(),
+                            user:User.findByUsername('admin')).save()
 
                   break;
                 default:
@@ -197,19 +196,12 @@ class ChangeNotificationService extends AbstractLockableService {
           }
         }
 
-
             if (pc_delete_list) {
                 log.debug('Deleting ChangeNotificationQueueItems: ' + pc_delete_list)
                 ChangeNotificationQueueItem.executeUpdate('DELETE FROM ChangeNotificationQueueItem WHERE id in (:idList)', [idList: pc_delete_list])
             }
 
-        // log.debug("Delete reported changes...");
-        // If we got this far, all is OK, delete any pending changes
-        //pc_delete_list.each { pc ->
-          // log.debug("Deleting reported change ${pc.id}");
-          //pc.delete(flush:true)
-        //}
-        cleanUpGorm()
+        globalService.cleanUpGorm()
       } // queueItems.each{}
   }
 
@@ -241,14 +233,6 @@ class ChangeNotificationService extends AbstractLockableService {
             }
         })
     }
-
-    def cleanUpGorm() {
-        log.debug("Clean up GORM")
-        def session = sessionFactory.currentSession
-        session.flush()
-        session.clear()
-    }
-
 
     @Deprecated
     def registerPendingChange(prop, target, desc, objowner, changeMap) {
