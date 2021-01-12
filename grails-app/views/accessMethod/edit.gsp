@@ -8,14 +8,11 @@
 	</head>
 	<body>
 
-            <div>
                 <g:render template="breadcrumb" model="${[ accessMethod:accessMethod, params:params ]}"/>
-                <br />
+
                 <h1 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]" /></h1>
+
                 <semui:messages data="${flash}" />
-
-
-
 
                 <g:form class="ui form" url="[controller: 'accessMethod', action: 'update']" method="POST">
                     <g:hiddenField id="accessMethod_id_${accessMethod.id}" name="id" value="${accessMethod.id}" />
@@ -57,6 +54,5 @@
 
                 </g:form>
 
-            </div>
 	</body>
 </html>

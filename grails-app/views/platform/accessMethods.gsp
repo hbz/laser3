@@ -14,7 +14,7 @@
         </semui:breadcrumbs>
 
         <semui:modeSwitch controller="platform" action="show" params="${params}" />
-        <br />
+
         <h1 class="ui header la-noMargin-top">
             <g:if test="${editable}"><span id="platformNameEdit"
                                            class="xEditableValue"
@@ -72,13 +72,13 @@
                             />
                         </td>
                         <td>
-                            <div class="field wide six fieldcontain ">
+                            <div class="field wide six">
                                 <semui:datepicker hideLabel="true" id="validFrom" name="validFrom" value ="${params.validFrom}">
                                 </semui:datepicker>
                             </div>
                         </td>
                         <td>
-                            <div class="field wide six fieldcontain  ">
+                            <div class="field wide six">
                                 <semui:datepicker  hideLabel="true" id="validTo" name="validTo" value ="${params.validTo}">
                                 </semui:datepicker>
                             </div>

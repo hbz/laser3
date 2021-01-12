@@ -11,7 +11,7 @@
         <g:else>
             <g:set var="groupingText" value="${message(code:'org.'+key+'.label')}"/>
         </g:else>
-        <h2><g:message code="myinst.reporting.graphHeader" args="${[message(code:'myinst.reporting.graphHeader.'+requestObject),groupingText]}"/></h2>
+        <h2 class="ui header"><g:message code="myinst.reporting.graphHeader" args="${[message(code:'myinst.reporting.graphHeader.'+requestObject),groupingText]}"/></h2>
         <a class="closeSegment">
             <i class="ui icon times"></i>
         </a>

@@ -29,7 +29,7 @@
                 <g:field type="text" name="name" value="" />
             </div>
             <div class="field required">
-                <label>${message(code: 'accessPoint.entitiyId.label', default: 'EntityId')}</label>
+                <label>${message(code: 'accessPoint.entitiyId.label')}</label>
                 <g:textField name="entityId" value="${entityId}" />
             </div>
         </g:elseif>
@@ -46,7 +46,7 @@
                 <g:field type="text" name="name" value="" />
             </div>
             <div class="field">
-                <label>${message(code: 'accessPoint.entitiyId.label', default: 'EntityId')}</label>
+                <label>${message(code: 'accessPoint.entitiyId.label')}</label>
                 <g:textField name="entityId" value="${entityId}" />
             </div>
         </g:elseif>

@@ -15,7 +15,13 @@
     </g:else>
     <g:if test="${!isProviderOrAgency}">
         <semui:securedSubNavItem affiliation="INST_USER" controller="organisation" action="readerNumber" params="${[id: orgInstance.id]}" message="menu.institutions.readerNumbers"/>
-        <semui:securedSubNavItem affiliation="INST_USER" controller="organisation" action="accessPoints" params="${[id: orgInstance.id]}" message="org.nav.accessPoints"/>
+
+        <g:if test="${tmplAccessPointsActive}">
+            <semui:securedSubNavItem affiliation="INST_USER" controller="organisation" action="accessPoints" class="active" params="${[id: orgInstance.id]}" message="org.nav.accessPoints"/>
+        </g:if>
+        <g:else>
+            <semui:securedSubNavItem affiliation="INST_USER" controller="organisation" action="accessPoints" params="${[id: orgInstance.id]}" message="org.nav.accessPoints"/>
+        </g:else>
     </g:if>
     <semui:securedSubNavItem controller="organisation" action="tasks" params="${[id: orgInstance.id]}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.institutions.tasks"/>
     <semui:securedSubNavItem controller="organisation" action="documents" params="${[id: orgInstance.id]}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.my.documents" />

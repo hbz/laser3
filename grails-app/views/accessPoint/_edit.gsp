@@ -14,9 +14,8 @@
     $('body').attr('class', 'organisation_accessPoint_edit_${accessPoint.accessMethod}');
 </laser:script>
 
-<div>
     <g:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
-    <br />
+
     <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg)
             || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
         <semui:controlButtons>
@@ -29,12 +28,11 @@
         </semui:controlButtons>
     </g:if>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
-    ${orgInstance.name}
-    </h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
-    <g:render template="/organisation/nav" model="${[orgInstance: accessPoint.org, inContextOrg: inContextOrg]}"/>
-    <h1 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]"/></h1>
+    <g:render template="/organisation/nav" model="${[orgInstance: accessPoint.org, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
+
+    <h2 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]"/></h2>
     <semui:messages data="${flash}"/>
 
     <g:form class="ui form" url="[controller: 'accessPoint', action: 'edit_' + accessPoint.accessMethod]" id="${accessPoint.id}" method="GET">
@@ -68,7 +66,7 @@
         </g:if>
 
         </div>
-    </div>
+
     </g:form>
 
 

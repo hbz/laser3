@@ -34,35 +34,12 @@
             <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
         </g:if>
     </semui:breadcrumbs>
-    <br />
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${orgInstance.name}</h1>
 
     <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}" />
 
     <semui:messages data="${flash}" />
-    
-    
-%{--
-    <semui:filter>
-        <g:form action="accessPoints" role="form" class="ui form" method="get" params="${params}">
-          <div class="fields">
-            <div class="field">
-              <label for="filter" class="control-label">${message(code: 'accessPoint.show')}</label>
-              <g:select id="filter"
-                        name="filter"
-                        from="${[
-                                    [key:'all',value:"${message(code: 'accessPoint.all')}"],
-                                    [key:'valid',value:"${message(code:'accessPoint.valid')}"],
-                                    [key:'invalid',value:"${message(code: 'accessPoint.invalid')}"]
-                               ]}"
-                        optionKey="key" optionValue="value" value="${params.filter}"
-                        onchange="this.form.submit()"/>
-            </div>
-          </div>
-        </g:form>
-    </semui:filter>
---}%
 
     <div class="la-inline-lists">
 
@@ -70,7 +47,7 @@
         <div class="ui card">
             <div class="content">
                 <div class="header">
-                    <h4>${RDStore.getRefdataValue(accessPointListItem.key, RDConstants.ACCESS_POINT_TYPE).getI10n('value')}</h4></div>
+                    <h4 class="ui header">${RDStore.getRefdataValue(accessPointListItem.key, RDConstants.ACCESS_POINT_TYPE).getI10n('value')}</h4></div>
             </div>
             <div class="content">
 

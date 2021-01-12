@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} ${message(code:'menu.datamanager.dash')}</title>
+    <title>${message(code:'laser')} : ${message(code:'datamanager.deletedTitleManagement.label')}</title>
   </head>
 
   <body>
@@ -11,8 +11,11 @@
       <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager.dash')}" />
       <semui:crumb text="${message(code:'datamanager.deletedTitleManagement.label')}" class="active"/>
     </semui:breadcrumbs>
-    <br />
-    <h1 class="ui header la-noMargin-top">${message(code:'datamanager.deletedTitleManagement.label')} : ${titleInstanceTotal}</h1>
+
+    <h1 class="ui header la-noMargin-top">
+      ${message(code:'datamanager.deletedTitleManagement.label')}
+      <semui:totalNumber total="${titleInstanceTotal}"/>
+    </h1>
 
     <semui:messages data="${flash}" />
 

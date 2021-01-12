@@ -11,7 +11,7 @@
 		<semui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"  />
 		<semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
 	</semui:breadcrumbs>
-	<br />
+
 		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
 
 		<semui:messages data="${flash}" />
@@ -63,11 +63,11 @@
 							</tbody>
 						</table>
 						<semui:msg class="warning" message="org.findProviderMatches.match" args="[params.proposedProvider]" />
-						<g:link controller="organisation" action="createProvider" class="ui negative button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.matches.create', default:'Create New Provider with the Name', args: [params.proposedProvider])}</g:link>
+						<g:link controller="organisation" action="createProvider" class="ui negative button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.matches.create', args: [params.proposedProvider])}</g:link>
 					</g:if>
 					<g:else>
 						<semui:msg class="warning" message="org.findProviderMatches.no_match" args="[params.proposedProvider]" />
-						<g:link controller="organisation" action="createProvider" class="ui positive button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.no_matches.create', default:'Create New Provider with the Name', args: [params.proposedProvider])}</g:link>
+						<g:link controller="organisation" action="createProvider" class="ui positive button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.no_matches.create', args: [params.proposedProvider])}</g:link>
 					</g:else>
 				</g:if>
 

@@ -18,7 +18,7 @@
 		</g:else>
 		<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
 	</semui:breadcrumbs>
-	<br />
+
 		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]" /></h1>
 
 		<semui:messages data="${flash}" />
@@ -29,7 +29,6 @@
 			
 			<div class="twelve wide column">
 
-				<fieldset>
 					<g:form class="ui form" action="edit" id="${addressInstance.id}" >
 						<g:hiddenField name="version" value="${addressInstance.version}" />
 						<fieldset>
@@ -47,7 +46,6 @@
 							</div>
 						</fieldset>
 					</g:form>
-				</fieldset>
 
 			</div><!-- .twelve -->
 

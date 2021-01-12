@@ -14,7 +14,7 @@
 </semui:breadcrumbs>
 
 <div>
-    <h2 class="ui header">${message(code: 'menu.yoda.systemSettings')}</h2>
+    <h1 class="ui header la-clear-before la-noMargin-top">${message(code: 'menu.yoda.systemSettings')}</h1>
 
     <g:set var="mailConfigDisabled" value="${grailsApplication.config.grails.mail.disabled}" />
     <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode')?.value == 'true'}" />

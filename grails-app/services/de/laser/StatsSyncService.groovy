@@ -28,8 +28,8 @@ class StatsSyncService {
 
     def grailsApplication
     ExecutorService executorService
-    def sessionFactory
     def factService
+    def globalService
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def queryParams = [:]
     def errors = []
@@ -286,7 +286,7 @@ class StatsSyncService {
                     }
                 }
             }
-            cleanUpGorm()
+            globalService.cleanUpGorm()
             def elapsed = System.currentTimeMillis() - start_time;
             totalTime+=elapsed
             incrementActivityHistogram()
@@ -721,14 +721,6 @@ class StatsSyncService {
         } else {
             return true
         }
-    }
-
-    def cleanUpGorm() {
-        log.debug("Clean up GORM")
-        def session = sessionFactory.currentSession
-        session.flush()
-        session.clear()
-         //propertyInstanceMap.get().clear()
     }
 
     static synchronized void incrementActivityHistogram() {

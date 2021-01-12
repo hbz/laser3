@@ -2,14 +2,14 @@
 <html>
     <head>
         <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : Stats</title>
+        <title>${message(code:'laser')} : ${message(code:'menu.admin.statistics')}</title>
     </head>
 
     <body>
 
         <semui:breadcrumbs>
             <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
-            <semui:crumb text="Stats" class="active"/>
+            <semui:crumb message="menu.admin.statistics" class="active"/>
 
             <%--
             <li class="dropdown la-float-right">
@@ -22,8 +22,8 @@
             </li>
             --%>
         </semui:breadcrumbs>
-        <br />
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Stats</h1>
+
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.admin.statistics')}</h1>
 
         <table class="ui celled la-table table">
             <thead>

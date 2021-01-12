@@ -213,12 +213,12 @@
                             <g:if test="${id.ns.ns == 'originEditUrl'}">
                             <%--<span class="ui small blue image label">
                                 ${id.ns.ns}: <div class="detail"><a
-                                    href="${id.value}">${message(code: 'package.show.openLink', default: 'Open Link')}</a>
+                                    href="${id.value}">${message(code: 'package.show.openLink')}</a>
                             </div>
                             </span>
                             <span class="ui small blue image label">
                                 ${id.ns.ns}: <div class="detail"><a
-                                    href="${id.value.toString().replace("resource/show", "public/packageContent")}">${message(code: 'package.show.openLink', default: 'Open Link')}</a>
+                                    href="${id.value.toString().replace("resource/show", "public/packageContent")}">${message(code: 'package.show.openLink')}</a>
                             </div>
                             </span>--%>
                             </g:if>

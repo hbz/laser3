@@ -4,7 +4,7 @@
     <g:form class="ui form" url="[controller: 'accessMethod', action: 'create']" method="POST">
          <div class="field" style="height: 330px;">
             <div class="three fields">
-                <div class="field wide four fieldcontain">
+                <div class="field wide four">
                     <label for="accessMethod">
                         <g:message code="default.type.label" />
                     </label>
@@ -14,13 +14,13 @@
                                      optionKey="id"
                                      optionValue="value" />
                 </div>
-                <div class="field wide six fieldcontain ">
+                <div class="field wide six">
                     <semui:datepicker label ="accessMethod.valid_from" id="validFrom" name="validFrom" placeholder ="default.date.label" value ="${params.validFrom}">
                     </semui:datepicker>
                     
                 </div>
 
-                <div class="field wide six fieldcontain  ">
+                <div class="field wide six">
                     <semui:datepicker label ="accessMethod.valid_to" name="validTo" placeholder ="default.date.label" value ="${params.validTo}">
                     </semui:datepicker>
                 </div>

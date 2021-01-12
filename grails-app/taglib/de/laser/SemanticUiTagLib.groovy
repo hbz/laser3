@@ -127,11 +127,10 @@ class SemanticUiTagLib {
 
     def card = { attrs, body ->
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
-        def title = (text && message) ? text + " - " + message : text + message
+        String title = (text && message) ? text + " - " + message : text + message
 
         out << '<div class="ui card ' + attrs.class + '">'
         out << '    <div class="content">'
-
 
         if (title) {
             out << '    <div class="header">'
@@ -148,30 +147,17 @@ class SemanticUiTagLib {
             out << '   </div>'
 
         }
-
         out << body()
 
         out << '    </div>'
         out << '</div>'
-
     }
 
-    //
-    /*
-    def editableLabel = { attrs, body ->
-
-        if (attrs.editable) {
-            out << '<div class="ui orange circular label" style="margin-left:0">'
-            out << '<i aria-hidden="true" class="write icon" style="margin-right:0"></i>'
-            out << '</div>'
-        }
-    }
-    */
     def debugInfo = { attrs, body ->
 
         if (yodaService.showDebugInfo()) {
 
-            out << '<a href="#debugInfo" id="showDebugInfo" aria-label="Debug Info" class="ui button icon" data-semui="modal">'
+            out << '<a href="#debugInfo" id="showDebugInfo" role="dialog" aria-label="Debug Info" class="ui button icon" data-semui="modal">'
             out << '<i aria-hidden="true" class="red bug icon"></i>'
             out << '</a>'
 
@@ -190,11 +176,11 @@ class SemanticUiTagLib {
 
     def systemInfo = { attrs, body ->
 
-        def systemChecks = systemService.serviceCheck()
+        Map<String, Object> systemChecks = systemService.serviceCheck()
 
         if (systemChecks) {
 
-            out << '<a href="#systemInfo" id="showSystemInfo" aria-label="System Info" class="ui button icon" data-semui="modal">'
+            out << '<a href="#systemInfo" id="showSystemInfo" role="dialog" aria-label="System Info" class="ui button icon" data-semui="modal">'
             out << '<i aria-hidden="true" class="red exclamation triangle icon"></i>'
             out << '</a>'
 
@@ -349,24 +335,13 @@ class SemanticUiTagLib {
         }
     }
 
-    def editableLabel = { attrs, body ->
-
-        if (attrs.editable) {
-
-            out << '<div class="ui green circular horizontal label la-popup-tooltip la-delay"  style="margin-right:0; margin-left: 1rem;" data-content="' + message(code: 'statusbar.editable.tooltip') + '"  data-position="bottom right" data-variation="tiny">'
-            out << '<i aria-hidden="true" class="write  icon" style="margin-right:0"></i>'
-            out << '</div>'
-        }
-    }
     // <semui:modeSwitch controller="controller" action="action" params="params" />
-
 
     def modeSwitch = { attrs, body ->
 
         //return;
+        String mode = (attrs.params.mode == 'basic') ? 'basic' : ((attrs.params.mode == 'advanced') ? 'advanced' : null)
 
-
-        def mode = (attrs.params.mode == 'basic') ? 'basic' : ((attrs.params.mode == 'advanced') ? 'advanced' : null)
         if (!mode) {
             User user = contextService.getUser()
             mode = (user.getSettingsValue(UserSetting.KEYS.SHOW_SIMPLE_VIEWS)?.value == 'No') ? 'advanced' : 'basic'
@@ -374,19 +349,6 @@ class SemanticUiTagLib {
             // CAUTION: inject default mode
             attrs.params.mode = mode
         }
-    }
-
-    //<semui:meta> CONTENT <semui:meta>
-
-    def meta = { attrs, body ->
-
-        out << '<aside class="ui segment metaboxContent accordion">'
-        out << '<div class="title"> <i aria-hidden="true" class="dropdown icon la-dropdown-accordion"></i>FREE TO USE</div>'
-        out << '<div class="content">'
-        out << body()
-        out << '</div>'
-        out << '</aside>'
-        out << '<div class="metaboxContent-spacer"></div>'
     }
 
     //<semui:filter showFilterButton="true|false" extended="true|false"> CONTENT <semui:filter>
@@ -457,19 +419,12 @@ class SemanticUiTagLib {
             out << '</div>'
         out << '</section>'
     }
-    def filterTemp = { attrs, body ->
-
-        out << '<div class="ui la-filter-temp segment">'
-        out << body()
-        out << '</div>'
-    }
-
 
     def searchSegment = { attrs, body ->
 
-        def method = attrs.method ?: 'GET'
-        def controller = attrs.controller ?: ''
-        def action = attrs.action ?: ''
+        String method = attrs.method ?: 'GET'
+        String controller = attrs.controller ?: ''
+        String action = attrs.action ?: ''
 
         out << '<div class="ui la-search segment">'
         out << '<form class="ui form" controller="' + controller + '" action="' + action + '" method="' + method + '">'
@@ -487,38 +442,23 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
-    //<semui:form> CONTENT <semui:form>
-
-    def simpleForm = { attrs, body ->
-
-        def method = attrs.method ?: 'GET'
-        def controller = attrs.controller ?: ''
-        def action = attrs.action ?: ''
-
-        out << '<div class="ui segment">'
-        out << '<form class="ui form" controller="' + controller + '" action="' + action + '" method="' + method + '">'
-        out << body()
-        out << '</form>'
-        out << '</div>'
-    }
-
     //<semui:modal id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" modalSize="large/small/tiny/mini" >
     // CONTENT
     // <semui:modal>
 
     def modal = { attrs, body ->
 
-        String id        = attrs.id ? ' id="' + attrs.id + '" ' : ''
-        String modalSize = attrs.modalSize ? attrs.modalSize  : ''
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
-        String title     = (text && message) ? text + " - " + message : text + message
-        String isEditModal = attrs.isEditModal
+        String id           = attrs.id ? ' id="' + attrs.id + '" ' : ''
+        String modalSize    = attrs.modalSize ? attrs.modalSize  : ''
+        String title        = (text && message) ? text + " - " + message : text + message
+        String isEditModal  = attrs.isEditModal
 
         String msgClose    = attrs.msgClose ?: "${g.message(code:'default.button.close.label')}"
         String msgSave     = attrs.msgSave ?: (isEditModal ? "${g.message(code:'default.button.save_changes')}" : "${g.message(code:'default.button.create.label')}")
         String msgDelete   = attrs.msgDelete ?: "${g.message(code:'default.button.delete.label')}"
 
-        out << '<div class="ui modal ' + modalSize + '"' + id + '>'
+        out << '<div role="dialog" class="ui modal ' + modalSize + '"' + id + ' aria-label="Modal">'
         out << '<div class="header">' + title + '</div>'
         out << '<div class="content ' + attrs.contentClass + '">'
         out << body()
@@ -559,8 +499,7 @@ class SemanticUiTagLib {
         String msgDelete = "Endgültig löschen"
         String msgCancel = "Abbrechen"
 
-
-        out << '<div id="js-modal" class="ui tiny modal" role="alertdialog" aria-modal="true" tabindex="-1" aria-label="Bestätigungs-Modal" aria-hidden="true">'
+        out << '<div id="js-modal" class="ui tiny modal" role="dialog" aria-modal="true" tabindex="-1" aria-label="'+ "${message(code: 'wcag.label.confirmationModal')}" +'" >'
         out << '<div class="header">'
         out << '<span class="confirmation-term" id="js-confirmation-term"></span>'
         out << '</div>'
@@ -596,9 +535,9 @@ class SemanticUiTagLib {
             value = attrs.value
         }
 
-        def classes = attrs.containsKey('required') ? 'field fieldcontain required' : 'field fieldcontain'
-        def required = attrs.containsKey('required') ? 'required=""' : ''
-        def hideLabel = attrs.hideLabel ? false : true
+        String classes    = attrs.containsKey('required') ? 'field required' : 'field'
+        String required   = attrs.containsKey('required') ? 'required=""' : ''
+        boolean hideLabel = attrs.hideLabel ? false : true
 
         if (attrs.class) {
             classes += ' ' + attrs.class
@@ -619,8 +558,9 @@ class SemanticUiTagLib {
         out << '</div>'
         out << '</div>'
         out << '</div>'
-
     }
+
+
     def anualRings = { attrs, body ->
         def object = attrs.object
 
@@ -913,68 +853,12 @@ class SemanticUiTagLib {
         out << total
         out << '</span>'
     }
-    def dropdown = { attrs, body ->
-        if (!attrs.name) {
-            throwTagError("Tag [semui:dropdown] is missing required attribute [name]")
-        }
-        if (!attrs.containsKey('from')) {
-            throwTagError("Tag [semui:dropdown] is missing required attribute [from]")
-        }
 
-        def name = attrs.name
-        def id = attrs.id
-        def cssClass = attrs.class
-        def from = attrs.from
-        def optionKey = attrs.optionKey
-        def optionValue = attrs.optionValue
-        def iconWhich = attrs.iconWhich
-        def requestParam = attrs.requestParam
-        def display = attrs.display
-
-        def noSelection = attrs.noSelection
-
-        out << "<div class='ui fluid search selection dropdown ${cssClass}' data-requestParam='"+requestParam+"' data-display='"+display+"'>"
-
-        out << "<input type='hidden' name='${name}'>"
-        out << ' <i aria-hidden="true" class="dropdown icon"></i>'
-        out << "<input class='search' id='${id}'>"
-        out << ' <div class="default text">'
-        out << "${noSelection}"
-
-        out << '</div>'
-        out << ' <div class="menu">'
-
-        from.eachWithIndex { el, i ->
-            out << '<div class="item" data-value="'
-            //out <<    el.toString().encodeAsHTML()
-            if (optionKey) {
-                out << optionKey(el)
-            }
-            out <<  '">'
-            out <<  optionValue(el).toString().encodeAsHTML()
-
-            def tenant = el.hasProperty('tenant') ? el.tenant : null
-            def owner  = el.hasProperty('owner') ? el.owner : null
-
-            if (tenant != null || owner != null){
-                out <<  " <i class='${iconWhich} icon'></i>"
-            }
-            out <<  '</div>'
-        }
-        // close <div class="menu">
-        out <<  '</div>'
-
-        // close <div class="ui fluid search selection dropdown">
-        out << '</div>'
-
-    }
     def dateDevider = { attrs, body ->
         out << "<span class='ui grey horizontal divider la-date-devider'>"
         out << "        ${message(code:'default.to')}"
         out << "</span>"
     }
-
-    public SemanticUiTagLib() {}
 
     def tabs = { attrs, body ->
 
@@ -986,10 +870,10 @@ class SemanticUiTagLib {
     def tabsItem = { attrs, body ->
 
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
-        def linkBody = (text && message) ? text + " - " + message : text + message
-        def aClass = ((this.pageScope.variables?.actionName == attrs.action && attrs.tab == params.tab) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+        String linkBody = (text && message) ? text + " - " + message : text + message
+        String aClass = ((this.pageScope.variables?.actionName == attrs.action && attrs.tab == params.tab) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
-        def counts = (attrs.counts >= 0) ? '<div class="ui '  + ' circular label">' + attrs.counts + '</div>' : null
+        String counts = (attrs.counts >= 0) ? '<div class="ui '  + ' circular label">' + attrs.counts + '</div>' : null
 
         linkBody = counts ? linkBody + counts : linkBody
 

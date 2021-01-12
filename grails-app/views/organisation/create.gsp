@@ -11,7 +11,7 @@
             <semui:crumb message="menu.public.all_orgs" controller="organisation" action="index" />
             <semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
 	    </semui:breadcrumbs>
-		<br />
+
 		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
 
 		<semui:messages data="${flash}" />
@@ -21,8 +21,8 @@
 		<div class="ui grid">
 
 			<div class="twelve wide column">
+				<div class="ui grey segment la-clear-before">
 
-				<fieldset>
 					<g:form class="ui form" action="create" >
 						<fieldset>
                             <g:render template="form"/>
@@ -36,8 +36,8 @@
 							</div>
 						</fieldset>
 					</g:form>
-				</fieldset>
 
+				</div>
 			</div><!-- .twelve -->
 
 				<aside class="four wide column">

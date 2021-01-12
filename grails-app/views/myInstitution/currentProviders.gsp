@@ -49,12 +49,12 @@
 
         </semui:controlButtons>
 
-
     <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon /><g:message code="menu.my.providers" />
         <semui:totalNumber total="${orgListTotal}"/>
     </h1>
 
     <semui:messages data="${flash}" />
+
     <g:render template="/templates/filter/javascript" />
     <semui:filter showFilterButton="true">
         <g:form action="currentProviders" method="get" class="ui form">

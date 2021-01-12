@@ -139,7 +139,7 @@
             <g:form action="processSurveyCostItemsBulk" name="surveyCostItemsBulk" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
 
-                <h3><span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
+                <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
                     ${message(code: 'surveyCostItems.bulkOption.label')}
                         <i class="question circle icon"></i>
                     </span>:</h3>
@@ -256,7 +256,7 @@
 
                 <g:if test="${params.tab == 'selectedSubParticipants'}">
 
-                    <h3><g:message code="surveyParticipants.hasAccess"/></h3>
+                    <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
 
                     <g:set var="surveyParticipantsHasAccess"
                            value="${selectedSubParticipants?.findAll { it?.hasAccessOrg() }?.sort {
@@ -282,7 +282,7 @@
 
                     </div>
 
-                    <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
+                    <h3 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h3>
 
                     <g:set var="surveyParticipantsHasNotAccess"
                            value="${selectedSubParticipants?.findAll { !it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
@@ -311,7 +311,7 @@
 
                 <g:if test="${params.tab == 'selectedParticipants'}">
 
-                    <h3><g:message code="surveyParticipants.hasAccess"/></h3>
+                    <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
 
 
                     <g:set var="surveyParticipantsHasAccess"
@@ -337,7 +337,7 @@
                               ]"/>
 
 
-                    <h3><g:message code="surveyParticipants.hasNotAccess"/></h3>
+                    <h3 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h3>
 
                     <g:set var="surveyParticipantsHasNotAccess"
                            value="${selectedParticipants?.findAll { !it?.hasAccessOrg() }?.sort { it?.sortname }}"/>

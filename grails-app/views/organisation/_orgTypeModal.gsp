@@ -12,7 +12,7 @@
 <semui:modal id="orgType" message="org.orgType.add.label">
     <g:form class="ui form" url="[controller: 'organisation', action: 'addOrgType']" method="post">
         <input type="hidden" name="org" value="${org.id}"/>
-        <div class="field fieldcontain">
+        <div class="field">
         <label><g:message code="org.orgType.label" default="Organisation Type" />:</label>
 
         <g:select from="${availableOrgTypes}"

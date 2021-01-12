@@ -17,7 +17,7 @@
 
       <semui:messages data="${flash}" />
 
-      <h3 class="ui header">${message(code:'user.affiliation.plural')}</h3>
+      <h2 class="ui header">${message(code:'user.affiliation.plural')}</h2>
 
       <table class="ui celled la-table table">
         <thead>
@@ -40,7 +40,7 @@
         </tbody>
       </table>
 
-      <h3 class="ui header">${message(code:'user.role.plural')}</h3>
+      <h2 class="ui header">${message(code:'user.role.plural')}</h2>
 
       <table class="ui celled la-table table">
         <thead>

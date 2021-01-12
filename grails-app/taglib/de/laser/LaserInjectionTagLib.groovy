@@ -22,9 +22,21 @@ class LaserInjectionTagLib {
         g.set( var:'orgDocumentService',        bean:'orgDocumentService' )
         g.set( var:'pendingChangeService',      bean:'pendingChangeService')
         g.set( var:'subscriptionsQueryService', bean:'subscriptionsQueryService' )
+        g.set( var:'subscriptionService',       bean:'subscriptionService' )
         g.set( var:'surveyService',             bean:'surveyService' )
         g.set( var:'systemService',             bean:'systemService' )
         g.set( var:'taskService',               bean:'taskService' )
         g.set( var:'yodaService',               bean:'yodaService' )
+    }
+
+    // TODO: in progress
+
+    def templateInfo = { attrs, body ->
+
+        out << '<!-- \n'
+        if (attrs.source) {
+            out << attrs.source.getProperties().get('groovyPageFileName') + '\n'
+        }
+        out << '\n --!>'
     }
 }

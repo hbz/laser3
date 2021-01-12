@@ -37,24 +37,18 @@
 
         </g:if>
 
-
         <semui:actionsDropdownItem notActive="true" data-semui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
                                    message="menu.institutions.copy_emailaddresses.button"/>
     </semui:actionsDropdown>
 </semui:controlButtons>
 
-
-
-<g:render template="/templates/copyFilteredEmailAddresses"
-          model="[emailAddresses: emailAddresses]"/>
-
+<g:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'menu.institutions.myAddressbook')}
 <semui:totalNumber total="${num_visiblePersons}"/>
 </h1>
 
 <semui:messages data="${flash}"/>
-
 
 <g:render template="/templates/filter/javascript"/>
 <semui:filter showFilterButton="true">

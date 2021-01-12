@@ -2,17 +2,19 @@
 <html>
   <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Manage Content Items</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.admin.manageContentItems')}</title>
   </head>
 
   <body>
-
       <semui:breadcrumbs>
           <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
-          <semui:crumb text="Content Items" class="active"/>
+          <semui:crumb message="menu.admin.manageContentItems" class="active"/>
       </semui:breadcrumbs>
 
+      <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.admin.manageContentItems')}</h1>
+
       <semui:messages data="${flash}" />
+
 
     <div class="ui grid">
       <div class="twelve wide column">

@@ -12,14 +12,14 @@
         <semui:crumb message="menu.admin.announcements" class="active"/>
     </semui:breadcrumbs>
 
-    <semui:messages data="${flash}" />
-    <br />
     <g:if test="${currentAnnouncement}">
-        <h2 class="ui left floated aligned header la-clear-before">${message(code:'announcement.update.label')}</h2>
+        <h1 class="ui left floated aligned header la-clear-before">${message(code:'announcement.update.label')}</h1>
     </g:if>
     <g:else>
-        <h2 class="ui left floated aligned header la-clear-before">${message(code:'announcement.create.label')}</h2>
+        <h1 class="ui left floated aligned header la-clear-before">${message(code:'announcement.create.label')}</h1>
     </g:else>
+
+    <semui:messages data="${flash}" />
 
     <semui:form>
         <g:form action="createSystemAnnouncement" class="ui form">
@@ -68,7 +68,7 @@ ${currentAnnouncement?.getCleanContent()}
     </semui:form>
 
     <br />
-    <h3 class="ui  header la-clear-before">${message(code:'announcement.previous.label')}</h3>
+    <h2 class="ui  header la-clear-before">${message(code:'announcement.previous.label')}</h2>
 
 
     <g:if test="${mailDisabled}">
@@ -81,7 +81,7 @@ ${currentAnnouncement?.getCleanContent()}
     <div>
         <g:each in="${announcements}" var="sa">
             <div class="ui segment">
-                <h4 class="ui header"><% print sa.title; /* avoid auto encodeAsHTML() */ %></h4>
+                <h3 class="ui header"><% print sa.title; /* avoid auto encodeAsHTML() */ %></h3>
                 <g:if test="${sa.isPublished}">
                     <div class="ui green ribbon label"><i class="ui icon exclamation circle"></i>${message(code:'announcement.published')}</div>
                 </g:if>

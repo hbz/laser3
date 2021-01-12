@@ -189,7 +189,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
             <div class="four wide column">
                 <div class="ui la-filter segment">
 
-                    <h3><i class="circular filter inverted icon la-filter-icon"></i> Filter</h3>
+                    <h3 class="ui header"><i class="circular filter inverted icon la-filter-icon"></i> Filter</h3>
 
                     <g:each in="${facets}" var="facet">
                         <div class="panel panel-default">
@@ -707,7 +707,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                     <br />
                                     <strong>${message(code: 'task.endDate.label')}</strong>:
                                         <g:if test="${hit.getSourceAsMap()?.endDate}">
-                                            <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)}"/>
+                                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)}"/>
                                         </g:if>
                                     <br />
                                     <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>

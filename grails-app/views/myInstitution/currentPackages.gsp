@@ -10,7 +10,7 @@
 <semui:breadcrumbs>
     <semui:crumb message="menu.my.packages" class="active" />
 </semui:breadcrumbs>
-<br />
+
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code:'menu.my.packages')}
     <semui:totalNumber total="${packageListTotal}"/>
 </h1>
@@ -34,7 +34,7 @@
             </div>
             <!-- 1-2 -->
 
-            <div class="field fieldcontain">
+            <div class="field">
                 <label>${message(code: 'myinst.currentPackages.filter.subStatus.label')}</label>
                 <laser:select class="ui dropdown" name="status"
                               from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"

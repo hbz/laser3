@@ -10,13 +10,13 @@
         <semui:breadcrumbs>
             <semui:crumb message="menu.institutions.costConfiguration" class="active" />
         </semui:breadcrumbs>
-        <br />
+
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/><g:message code="menu.institutions.costConfiguration"/></h1>
 
-
-
-         <semui:msg class="warning" header="${message(code: 'message.information')}" message="costConfiguration.preset" />
         <semui:messages data="${flash}"/>
+
+        <semui:msg class="warning" header="${message(code: 'message.information')}" message="costConfiguration.preset" />
+
         <g:if test="${editable}">
             <div class="content ui form">
                 <div class="fields">

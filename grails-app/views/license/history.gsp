@@ -8,7 +8,7 @@
 <body>
 
     <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
-    <br />
+
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
         <semui:totalNumber total="${historyLinesTotal?:'0'}"/>

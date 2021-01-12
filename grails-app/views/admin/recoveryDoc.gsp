@@ -12,9 +12,8 @@
     <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
     <semui:crumb message="menu.admin.recoveryDoc" class="active"/>
 </semui:breadcrumbs>
-<br />
 
-<h2 class="ui header la-noMargin-top">${message(code: "menu.admin.recoveryDoc")}</h2>
+<h1 class="ui header la-noMargin-top">${message(code: "menu.admin.recoveryDoc")}</h1>
 
 <semui:messages data="${flash}"/>
 
@@ -95,7 +94,7 @@
             </div>
 
             <div class="content">
-                <h4>Machen Sie hier eine Auswahl, welche Datei zum Wiederherstellen ins Filesystem genutzt werden soll.</h4>
+                <h4 class="ui header">Machen Sie hier eine Auswahl, welche Datei zum Wiederherstellen ins Filesystem genutzt werden soll.</h4>
                 <g:each in="${docsToRecovery}" var="docRecovery">
                     <g:if test="${doc.id != docRecovery.id}">
                         <ul>
@@ -171,7 +170,7 @@
 
 </g:if>
 <g:else>
-    <h2>Dokument in der Datenbank mit entspr. Datei im Filesystem gefunden.</h2>
+    <h2 class="ui header">Dokument in der Datenbank mit entspr. Datei im Filesystem gefunden.</h2>
 </g:else>
 
 </body>

@@ -33,7 +33,7 @@
             </div>
         </div>
 
-        <div class="field fieldcontain required">
+        <div class="field required">
             <label for="content">
                 <g:message code="contact.content.label" />
             </label>
@@ -41,7 +41,7 @@
         </div>
 
         <g:if test="${!orgId}">
-            <div class="field fieldcontain">
+            <div class="field">
                 <label for="prs">
                     <g:message code="contact.prs.label" />
                 </label>
@@ -56,7 +56,7 @@
         </g:if>
 
         <g:if test="${!prsId}">
-            <div class="field fieldcontain">
+            <div class="field">
                 <label for="org">
                     <g:message code="contact.belongesTo.uppercase.label"  />
                 </label>

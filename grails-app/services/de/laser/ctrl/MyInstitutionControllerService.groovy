@@ -1,10 +1,6 @@
 package de.laser.ctrl
 
-import de.laser.MyInstitutionController
-import de.laser.Org
-import de.laser.SurveyConfig
-import de.laser.SurveyInfo
-import de.laser.UserSetting
+import de.laser.*
 import de.laser.auth.User
 import de.laser.helper.DateUtils
 import de.laser.helper.ProfilerUtils

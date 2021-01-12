@@ -78,7 +78,7 @@
                     <input id="filterCITitle" name="filterCITitle" type="text" value="${filterPresets?.filterCITitle}"/>
                 </div>
                 <g:if test="${!fixedSubscription}">
-                    <div class="field fieldcontain"><!--NEW -->
+                    <div class="field"><!--NEW -->
                         <label>${message(code:'default.subscription.label')}</label>
                         <div class="ui search selection multiple dropdown newFilter" id="filterCISub">
                             <input type="hidden" name="filterCISub">
@@ -88,7 +88,7 @@
                         </div>
                     </div>
                 </g:if>
-                <div class="field fieldcontain"><!--NEW -->
+                <div class="field"><!--NEW -->
                     <label>${message(code:'package.label')}</label>
                     <div class="ui search selection multiple dropdown newFilter" id="filterCISPkg">
                         <input type="hidden" name="filterCISPkg">
@@ -155,7 +155,7 @@
             </div><!-- .three -->
 
             <div class="three fields">
-                <div class="field fieldcontain">
+                <div class="field">
                     <label>${message(code:'financials.referenceCodes')}</label>
                     <div class="ui search selection dropdown newFilter" id="filterCIReference">
                         <input type="hidden" name="filterCIReference">
@@ -170,7 +170,7 @@
                               noSelection="${['':message(code:'default.select.all.label')]}" />--%>
                 </div>
 
-                <div class="field fieldcontain">
+                <div class="field">
                     <label for="filterCIElement">${message(code:'financials.costItemElement')}</label>
                     <select name="filterCIElement" id="filterCIElement" multiple="" class="ui dropdown search selection">
                         <option value=""><g:message code="default.select.all.label"/></option>
@@ -183,7 +183,7 @@
                     </select>
                 </div>
 
-                <div class="field fieldcontain">
+                <div class="field">
                     <label for="filterCIStatus">${message(code:'default.status.label')}</label>
                     <select name="filterCIStatus" id="filterCIStatus" multiple="" class="ui dropdown search selection">
                         <option value=""><g:message code="default.select.all.label"/></option>

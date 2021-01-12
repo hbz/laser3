@@ -52,13 +52,13 @@
                 </tr>
                 <tr>
                     <th><g:checkBox name="subscription.copyDocs" value="${true}"/></th>
-                    <th>${message(code: 'myinst.renewalUpload.copy', default: 'Copy Documents and Notes from Subscription')}</th>
-                    <td>${message(code: 'subscription', default:'Subscription')}: ${permissionInfo?.sub_name}</td>
+                    <th>${message(code: 'myinst.renewalUpload.copy')}</th>
+                    <td>${message(code: 'subscription')}: ${permissionInfo?.sub_name}</td>
                 </tr>
                 <tr>
                     <th><g:checkBox name="subscription.copyLicense" value="${permissionInfo?.sub_license ? true : false}"/></th>
-                    <th>${message(code: 'myinst.renewalUpload.copyLiense', default: 'Copy License from Subscription')}</th>
-                    <td>${message(code: 'license', default:'License')}: ${permissionInfo?.sub_license?:message(code: 'myinst.renewalUpload.noLicensetoSub', default: 'No License in the Subscription!')}</td>
+                    <th>${message(code: 'myinst.renewalUpload.copyLiense')}</th>
+                    <td>${message(code: 'license')}: ${permissionInfo?.sub_license?:message(code: 'myinst.renewalUpload.noLicensetoSub')}</td>
                 </tr>
                 </tbody>
             </table>

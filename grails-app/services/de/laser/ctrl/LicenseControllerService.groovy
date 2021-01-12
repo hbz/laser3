@@ -1,12 +1,6 @@
 package de.laser.ctrl
 
-import de.laser.AccessService
-import de.laser.AuditService
-import de.laser.ContextService
-import de.laser.License
-import de.laser.LicenseController
-import de.laser.LinksGenerationService
-import de.laser.Task
+import de.laser.*
 import de.laser.auth.User
 import de.laser.helper.SwissKnife
 import de.laser.interfaces.CalculatedType

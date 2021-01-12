@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} ${message(code:'menu.datamanager.dash')}</title>
+    <title>${message(code:'laser')} : ${message(code:'datamanager.deletedOrgManagement.label')}</title>
   </head>
 
   <body>
@@ -11,8 +11,11 @@
       <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager.dash')}" />
       <semui:crumb text="${message(code:'datamanager.deletedOrgManagement.label')}" class="active"/>
     </semui:breadcrumbs>
-    <br />
-    <h1 class="ui left floated aligned header la-clear-before">${message(code:'datamanager.deletedOrgManagement.label')} : ${orgTotal} </h1>
+
+    <h1 class="ui left floated aligned header la-clear-before">
+      ${message(code:'datamanager.deletedOrgManagement.label')}
+      <semui:totalNumber total="${orgTotal}"/>
+    </h1>
 
     <semui:messages data="${flash}" />
 

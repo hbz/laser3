@@ -20,7 +20,6 @@
 
             <div class="twelve wide column">
 
-				<fieldset>
 					<g:form class="ui form" action="edit" id="${taskInstance?.id}" >
 						<g:hiddenField name="version" value="${taskInstance?.version}" />
 						<fieldset>
@@ -40,7 +39,6 @@
 							</div>
 						</fieldset>
 					</g:form>
-				</fieldset>
 
 			</div><!-- .twelve -->
 

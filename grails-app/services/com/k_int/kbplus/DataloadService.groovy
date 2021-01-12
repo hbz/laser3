@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import de.laser.Doc
 import de.laser.DocContext
 import de.laser.FTControl
+import de.laser.GlobalService
 import de.laser.Identifier
 import de.laser.IssueEntitlement
 import de.laser.License
@@ -61,10 +62,9 @@ class DataloadService {
 
     ExecutorService executorService
     def ESWrapperService
-    def sessionFactory
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def grailsApplication
-    def genericOIDService
+    def globalService
 
     String es_index
     def dataload_running=false
@@ -95,8 +95,8 @@ class DataloadService {
                 return false
             }
         } else {
+            log.debug("FT update already running")
             return false
-        log.debug("FT update already running")
         }
     }
 
@@ -105,8 +105,8 @@ class DataloadService {
         SystemEvent.createEvent('FT_INDEX_UPDATE_START')
         synchronized(this) {
             if ( update_running ) {
-                return false
                 log.debug("Exiting FT update - one already running");
+                return false
             }
             else {
                 update_running = true;
@@ -264,19 +264,6 @@ class DataloadService {
                 result.dateCreated = pkg.dateCreated
                 result.lastUpdated = pkg.lastUpdated
 
-/*                if (pkg.startDate) {
-                    GregorianCalendar c = new GregorianCalendar()
-                    c.setTime(pkg.startDate)
-                    result.startYear = "${c.get(Calendar.YEAR)}"
-                    result.startYearAndMonth = "${c.get(Calendar.YEAR)}-${(c.get(Calendar.MONTH)) + 1}"
-                }
-
-                if (pkg.endDate) {
-                    GregorianCalendar c = new GregorianCalendar()
-                    c.setTime(pkg.endDate)
-                    result.endYear = "${c.get(Calendar.YEAR)}"
-                    result.endYearAndMonth = "${c.get(Calendar.YEAR)}-${(c.get(Calendar.MONTH)) + 1}"
-                }*/
             result
         }
 
@@ -1053,7 +1040,7 @@ class DataloadService {
                             latest_ft_record.esElements = latest_ft_record.esElements ?: 0
                             latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
                             latest_ft_record.save()
-                            //cleanUpGorm();
+                            //globalService.cleanUpGorm();
                         }
                     }
                     results.close();
@@ -1176,20 +1163,12 @@ class DataloadService {
       
       log.debug("Rows_updated:: ${rows_updated} ${num_rows_updated}");
 
-      cleanUpGorm()
+      globalService.cleanUpGorm();
     }
 
     log.debug("Completed normalisation step... updated ${rows_updated} rows in ${System.currentTimeMillis()-sort_str_start_time}ms");
 
   }
-    def cleanUpGorm() {
-        log.debug("Clean up GORM")
-
-        def session = sessionFactory.currentSession
-        session.flush()
-        session.clear()
-         //propertyInstanceMap.get().clear()
-    }
 
     def clearDownAndInitES() {
         log.debug("Clear down and init ES");

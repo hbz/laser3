@@ -13,9 +13,8 @@
     $('body').attr('class', 'organisation_accessPoint_edit_${accessPoint.accessMethod}');
 </laser:script>
 
-<div>
     <g:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
-    <br />
+
     <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg)
             || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
         <semui:controlButtons>
@@ -28,14 +27,13 @@
         </semui:controlButtons>
     </g:if>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
-    ${orgInstance.name}
-    </h1>
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
-    <g:render template="/organisation/nav" model="${[orgInstance: accessPoint.org, inContextOrg: inContextOrg]}"/>
-    <h1 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]"/></h1>
+    <g:render template="/organisation/nav" model="${[orgInstance: accessPoint.org, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
+
+    <h2 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]"/></h2>
+
     <semui:messages data="${flash}"/>
-
 
     <div class="la-inline-lists">
         <div class="ui card">
@@ -69,11 +67,11 @@
 
     <div class="ui bottom attached active tab segment" data-tab="IPv4">
 
-        <h5>${message(code: 'accessPoint.ip.configuration')}
+        <h3 class="ui header">${message(code: 'accessPoint.ip.configuration')}
         %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-html='${message(code:'accessPoint.permittedIpRanges')}'>
             <i class="question circle icon la-popup"></i>
         </span>--}%
-        </h5>
+        </h3>
 
         <table class="ui celled la-table table very compact">
             <thead>
@@ -93,7 +91,7 @@
                     <td class="center aligned">
                         <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
                             <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}"
-                                    class="ui negative icon mini button">
+                                    class="ui negative icon button">
                                 <i class="trash very alternate icon"></i>
                             </g:link>
                         </g:if>
@@ -107,14 +105,13 @@
             <div class="ui divider"></div>
 
             <div class="content">
-                <g:form class="ui form" url="[controller: 'accessPoint', action: 'addIpRange']" id="${accessPoint.id}"
-                        method="POST">
-                    <g:hiddenField id="accessPoint_id_${accessPoint.id}" name="id" value="${accessPoint.id}"/>
-                    <g:hiddenField name="accessMethod" value="${accessPoint.accessMethod}"/>
+                <g:form class="ui form" url="[controller: 'accessPoint', action: 'addIpRange']" method="POST">
+                    <g:hiddenField name="id" id="ipv4_id" value="${accessPoint.id}"/>
+                    <g:hiddenField name="accessMethod" id="ipv4_accessMethod" value="${accessPoint.accessMethod}"/>
 
                     <div class="ui form">
                         <div class="field">
-                            <label>${message(code: 'accessPoint.ip.data')}
+                            <label for="ipv4_ip">${message(code: 'accessPoint.ip.data')}
                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                       data-tooltip="${message(code: "accessPoint.ip.input")}">
                                     <i class="question circle icon la-popup"></i></span>
@@ -122,13 +119,13 @@
 
 
                             <g:if test="${autofocus == true}">
-                                <g:field type="text" name="ip" value="${ip}" autofocus=""/>
+                                <g:field type="text" name="ip" id="ipv4_ip" value="${ip}" autofocus=""/>
                             </g:if>
                             <g:else>
-                                <g:field type="text" name="ip" value="${ip}"/>
+                                <g:field type="text" name="ip" id="ipv4_ip" value="${ip}"/>
                             </g:else>
                         </div>
-                        <input type="submit" class="ui tiny button"
+                        <input type="submit" class="ui button"
                                value="${message(code: 'accessPoint.button.add')}" />
                     </div>
                 </g:form>
@@ -138,11 +135,11 @@
     </div>
 
 <div class="ui bottom attached tab segment" data-tab="IPv6">
-    <h5>${message(code: 'accessPoint.ip.configuration')}
+    <h3 class="ui header">${message(code: 'accessPoint.ip.configuration')}
     %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-html='${message(code:'accessPoint.permittedIpRanges')}'>
         <i class="question circle icon la-popup"></i>
     </span>--}%
-    </h5>
+    </h3>
 
     <table class="ui celled la-table table very compact">
         <thead>
@@ -162,7 +159,7 @@
                 <td class="center aligned">
                     <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
                         <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}"
-                                class="ui negative icon mini button">
+                                class="ui negative icon button">
                             <i class="trash very alternate icon"></i>
                         </g:link>
                     </g:if>
@@ -176,35 +173,32 @@
         <div class="ui divider"></div>
 
         <div class="content">
-            <g:form class="ui form" url="[controller: 'accessPoint', action: 'addIpRange']" id="${accessPoint.id}"
-                    method="POST">
-                <g:hiddenField name="id" value="${accessPoint.id}"/>
-                <g:hiddenField name="accessMethod" value="${accessPoint.accessMethod}"/>
+            <g:form class="ui form" url="[controller: 'accessPoint', action: 'addIpRange']" method="POST">
+                <g:hiddenField name="id" id="ipv6_id" value="${accessPoint.id}"/>
+                <g:hiddenField name="accessMethod" id="ipv6_accessMethod" value="${accessPoint.accessMethod}"/>
 
                 <div class="ui form">
                     <div class="field">
-                        <label>${message(code: 'accessPoint.ip.data')}
+                        <label for="ipv6_ip">${message(code: 'accessPoint.ip.data')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay"
                                   data-tooltip="${message(code: "accessPoint.ip.input")}">
                                 <i class="question circle icon la-popup"></i></span>
                         </label>
 
-
                         <g:if test="${autofocus == true}">
-                            <g:field type="text" name="ip" value="${ip}" autofocus=""/>
+                            <g:field type="text" name="ip" id="ipv6_ip" value="${ip}" autofocus=""/>
                         </g:if>
                         <g:else>
-                            <g:field type="text" name="ip" value="${ip}"/>
+                            <g:field type="text" name="ip" id="ipv6_ip" value="${ip}"/>
                         </g:else>
                     </div>
-                    <input type="submit" class="ui tiny button"
+                    <input type="submit" class="ui button"
                            value="${message(code: 'accessPoint.button.add')}" />
                 </div>
             </g:form>
         </div>
         </div>
     </g:if>
-</div>
 
 <br />
 

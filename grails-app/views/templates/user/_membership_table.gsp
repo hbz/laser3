@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 
 <div class="column wide sixteen">
-    <h4 class="ui dividing header">${message(code: 'profile.membership.existing')}</h4>
+    <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
     <table class="ui celled la-table table">
         <thead>
         <tr>
@@ -48,7 +48,7 @@
 
                         %{--<g:if test="${tmplProfile}">
                             <td class="x">
-                            <g:link class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:aff.id]}">${message(code:'default.button.revoke.label', default:'Revoke')}</g:link>
+                            <g:link class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:aff.id]}">${message(code:'default.button.revoke.label')}</g:link>
                             </td>
                         </g:if>--}%
                         <g:if test="${tmplUserEdit}">

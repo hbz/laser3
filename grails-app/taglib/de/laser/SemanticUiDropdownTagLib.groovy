@@ -14,9 +14,9 @@ class SemanticUiDropdownTagLib {
 
     def controlButtons = { attrs, body ->
 
-        out << '<nav class="ui icon buttons la-ctrls la-float-right la-js-dont-hide-button" aria-label=' + message(code: 'wcag.label.actionMenu')  +'>'
+        out << '<nav class="ui icon buttons la-ctrls la-js-dont-hide-button" aria-label=' + message(code: 'wcag.label.actionMenu')  +'>'
         out <<   body()
-        out << '</nav><br>'
+        out << '</nav>'
     }
 
     def exportDropdown = { attrs, body ->
@@ -38,42 +38,6 @@ class SemanticUiDropdownTagLib {
         out << body()
     }
 
-    // <semui:signedDropdown name="xyz" noSelection="Bitte auswählen .." from="${orgList}" signedIds="${signedOrgIdList}" />
-
-    def signedDropdown = { attrs, body ->
-
-        String id = ''
-        if (attrs.name) {
-            id = ' id="' + attrs.id + '" name="' + attrs.name + '" '
-        }
-        out << '<select class="ui fluid labeled search dropdown"' + id + '>'
-
-        if (attrs.noSelection) {
-            out << '<option value="">' + attrs.noSelection + '</option>'
-        }
-
-        attrs.from?.each { item ->
-            out << '<option value="' + (item.class.name + ':' + item.id) + '">'
-
-            if (item instanceof Org) {
-                out << item.name
-
-                if (item.shortname) {
-                    out << ' (' + item.shortname + ') '
-                }
-            }
-            else {
-                out << item.toString()
-            }
-
-            if (attrs.signedIds?.contains(item.id)) {
-                out << '&nbsp; &#10004;'
-            }
-            out << '</option>'
-        }
-        out << '</select>'
-    }
-
     // <semui:actionsDropdown params="${params}"  />
 
     def actionsDropdown = { attrs, body ->
@@ -91,9 +55,9 @@ class SemanticUiDropdownTagLib {
     def actionsDropdownItem = { attrs, body ->
 
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
-        def linkBody  = (text && message) ? text + " - " + message : text + message
-        def aClass    = attrs.class ? attrs.class + ' item' : 'item'
-        def href      = attrs.href ? attrs.href : '#'
+        String linkBody  = (text && message) ? text + " - " + message : text + message
+        String aClass    = attrs.class ? attrs.class + ' item' : 'item'
+        String href      = attrs.href ? attrs.href : '#'
 
         if (attrs.tooltip && attrs.tooltip != '') {
             linkBody = '<div data-tooltip="' + attrs.tooltip +'" data-position="bottom center">' + linkBody + '</div>'
@@ -132,7 +96,6 @@ class SemanticUiDropdownTagLib {
         def tooltip = attrs.tooltip ?: "Die Funktion \'"+message+"\' ist zur Zeit nicht verfügbar!"
 
         out << '<a href="#" class="item"><div class="disabled" data-tooltip="'+tooltip+'" data-position="bottom center">'+message+'</div></a>'
-
     }
 
     def dropdownWithI18nExplanations = { attrs, body ->
@@ -142,7 +105,6 @@ class SemanticUiDropdownTagLib {
         if (!attrs.containsKey('from')) {
             throwTagError("Tag [semui:dropdownWithI18nExplanations] is missing required attribute [from]")
         }
-
 
         out << "<div class='ui dropdown selection ${attrs.class}' id='${attrs.id}'>"
         out << "<input type='hidden' name='${attrs.name}' "
@@ -166,18 +128,9 @@ class SemanticUiDropdownTagLib {
 
     }
 
-    def menuDropdown = { attrs, body ->
-
-        out << '<div class="ui secondary stackable menu">'
-
-        out <<          body()
-
-        out << '</div>'
-    }
-
     def menuDropdownItems = { attrs, body ->
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
-        def textMessage     = (text && message) ? text + " - " + message : text + message
+        String textMessage     = (text && message) ? text + " - " + message : text + message
         //def aClass = ((this.pageScope.variables?.actionName == attrs.actionName) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         out << '<div class="ui pointing dropdown link item '
@@ -195,9 +148,8 @@ class SemanticUiDropdownTagLib {
 
     def menuDropdownItem = { attrs, body ->
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
-        def linkBody  = (text && message) ? text + " - " + message : text + message
-        def aClass    = ('item') + (attrs.class ? ' ' + attrs.class : '')
-
+        String linkBody  = (text && message) ? text + " - " + message : text + message
+        String aClass    = ('item') + (attrs.class ? ' ' + attrs.class : '')
 
         if (attrs.disabled) {
             out << '<div class="item disabled">' + linkBody + '</div>'
@@ -219,5 +171,60 @@ class SemanticUiDropdownTagLib {
         out << '<div class="divider"></div>'
     }
 
+    def dropdown = { attrs, body ->
+        if (!attrs.name) {
+            throwTagError("Tag [semui:dropdown] is missing required attribute [name]")
+        }
+        if (!attrs.containsKey('from')) {
+            throwTagError("Tag [semui:dropdown] is missing required attribute [from]")
+        }
+
+        def name = attrs.name
+        def id = attrs.id
+        def cssClass = attrs.class
+        def from = attrs.from
+        def optionKey = attrs.optionKey
+        def optionValue = attrs.optionValue
+        def iconWhich = attrs.iconWhich
+        def requestParam = attrs.requestParam
+        def display = attrs.display
+
+        def noSelection = attrs.noSelection
+
+        out << "<div class='ui fluid search selection dropdown ${cssClass}' data-requestParam='"+requestParam+"' data-display='"+display+"'>"
+
+        out << "<input type='hidden' name='${name}'>"
+        out << ' <i aria-hidden="true" class="dropdown icon"></i>'
+        out << "<input class='search' id='${id}'>"
+        out << ' <div class="default text">'
+        out << "${noSelection}"
+
+        out << '</div>'
+        out << ' <div class="menu">'
+
+        from.eachWithIndex { el, i ->
+            out << '<div class="item" data-value="'
+            //out <<    el.toString().encodeAsHTML()
+            if (optionKey) {
+                out << optionKey(el)
+            }
+            out <<  '">'
+            out <<  optionValue(el).toString().encodeAsHTML()
+
+            def tenant = el.hasProperty('tenant') ? el.tenant : null
+            def owner  = el.hasProperty('owner') ? el.owner : null
+
+            if (tenant != null || owner != null){
+                out <<  " <i class='${iconWhich} icon'></i>"
+            }
+            out <<  '</div>'
+        }
+        // close <div class="menu">
+        out <<  '</div>'
+
+        // close <div class="ui fluid search selection dropdown">
+        out << '</div>'
+
+    }
 }
 

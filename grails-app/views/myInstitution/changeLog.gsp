@@ -2,14 +2,15 @@
 <html>
   <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.institutions.todo')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.institutions.change_log')}</title>
   </head>
 
   <body>
 
   <semui:breadcrumbs>
-    <semui:crumb message="default.changeLog.label" class="active" />
+    <semui:crumb message="menu.institutions.change_log" class="active" />
   </semui:breadcrumbs>
+
 
   <semui:controlButtons>
     <semui:exportDropdown>
@@ -20,11 +21,14 @@
     <g:render template="actions"/>
   </semui:controlButtons>
 
-    <div class="home-page">
-      <br />
-      <div>
-        ${message(code:'myinst.changeLog.showing', args:[num_changes])}<br />
-        <semui:paginate  action="changeLog" controller="myInstitution" params="${params}" next="Next" prev="Prev" max="${max}" total="${num_changes}" /> <br />
+  <h1 class="ui icon header la-clear-before"><semui:headerIcon />${message(code:'menu.institutions.change_log')}</h1>
+
+        <p>
+          <strong>
+            <span class="ui circular label">${num_changes}</span> <g:message code="default.matches.label"/>
+          </strong>
+        </p>
+
         <g:form method="get" action="changeLog" params="${params}">
           ${message(code:'myinst.changeLog.restrictTo')}:
           <select class="ui dropdown" name="restrict" onchange="this.form.submit()">
@@ -34,13 +38,11 @@
             </g:each>
           </select>
         </g:form>
-      </div>
 
       <table class="ui celled la-table table">
         <g:each in="${changes}" var="chg">
           <tr>
             <td><g:formatDate format="yyyy-MM-dd" date="${chg.ts}"/>
-             
             </td>
             <td>
               <g:if test="${chg.subscription != null}">${message(code:'subscription.change.to')} <g:link controller="subscription" action="index" id="${chg.subscription.id}">${chg.subscription.id} </g:link></g:if>
@@ -55,12 +57,7 @@
         </g:each>
       </table>
 
-
         <semui:paginate  action="changeLog" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${num_changes}" />
-
-
-    </div>
-
 
   </body>
 </html>

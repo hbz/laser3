@@ -38,13 +38,14 @@
 
   </semui:controlButtons>
 
-  <semui:messages data="${flash}" />
-
   <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'license.current')}
       <semui:totalNumber total="${licenseCount}"/>
   </h1>
 
+  <semui:messages data="${flash}" />
+
   <g:render template="/templates/filter/javascript" />
+
   <semui:filter showFilterButton="true" class="license-searches">
       <form class="ui form">
           <div class="four fields">
@@ -167,7 +168,7 @@
                       <tr>
                           <g:if test="${compare}">
                               <td class="center aligned">
-                                  <g:checkBox name="selectedObjects" value="${l.id}" checked="false"/>
+                                  <g:checkBox id="selectedObjects_${l.id}" name="selectedObjects" value="${l.id}" checked="false"/>
                               </td>
                           </g:if>
                           <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>

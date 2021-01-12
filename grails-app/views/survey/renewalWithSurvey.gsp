@@ -39,7 +39,7 @@ ${surveyInfo.name}
 <semui:messages data="${flash}"/>
 
 
-<h2>
+<h2 class="ui header">
     ${message(code: 'surveyInfo.renewalOverView')}
 </h2>
 
@@ -81,7 +81,7 @@ ${surveyInfo.name}
             </semui:actionsDropdown>
         </semui:controlButtons>
 
-        <h3>
+        <h3 class="ui header">
         <g:message code="renewalWithSurvey.parentSubscription"/>:
         <g:if test="${parentSubscription}">
             <g:link controller="subscription" action="show"

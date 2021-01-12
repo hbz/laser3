@@ -72,31 +72,6 @@
             </div>
         </div><!-- .eight -->
 
-        <%--
-        <g:if test="${editable}">
-            <div class="column wide eight">
-                <div class="ui segment form">
-
-                    <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
-
-                        <h4 class="ui header">${message(code: 'api.label', default:'API')}</h4>
-
-                        <div class="ui field">
-                            <label>${message(code: 'api.apikey.label', default:'API-Key')}</label>
-                            <input type="text" readonly="readonly" value="${user.apikey}" />
-                        </div>
-
-                        <div class="ui field">
-                            <label>${message(code: 'api.apisecret.label', default:'API-Secret')}</label>
-                            <input type="text" readonly="readonly" value="${user.apisecret}" />
-                        </div>
-                    </g:if>
-
-                </div>
-            </div><!-- .eight -->
-        </g:if>
-        --%>
-
     </div><!-- grid -->
 
 

@@ -2,9 +2,12 @@ package de.laser
 
 import de.laser.properties.SubscriptionProperty
 import de.laser.properties.PropertyDefinition
-import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
+import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.web.context.request.RequestContextHolder
+
+import javax.servlet.http.HttpSession
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class EbookCatalogueController {
@@ -14,20 +17,12 @@ class EbookCatalogueController {
     @Secured(['ROLE_ADMIN'])
     def index() {
 
-        Map<String, Object> result = [:]
-
-        result.allConsortia = Org.executeQuery(
-                """select o from Org o, OrgSetting os_gs, OrgSetting os_ct where 
-                        os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and 
-                        os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and 
-                        os_ct.roleValue in (select r from Role r where authority  = 'ORG_CONSORTIUM')
-                        order by lower(o.name)"""
-        )
-
+        Map<String, Object> result = _stats_TODO( false )
 
         if (! params.subKinds && ! params.consortia && ! params.q) {
             // init filter with checkboxes checked
             result.initQuery = 'true'
+            result.queryHistory = _history_TODO( null, 0, false )
         }
         else {
 
@@ -78,7 +73,7 @@ class EbookCatalogueController {
                 queryParams.put('consortia', consortia)
             }
 
-            def subKinds = []
+            List subKinds = []
             if (params.containsKey('subKinds')) {
                 params.list('subKinds').each{
                     subKinds.add(Long.parseLong(it))
@@ -94,6 +89,8 @@ class EbookCatalogueController {
                 result.subscriptions = Subscription.executeQuery("select s " + query + " order by lower(s.name) asc", queryParams)
             }
             result.subscriptionsCount = result.subscriptions.size()
+
+            result.queryHistory = _history_TODO( params, result.subscriptionsCount, false )
         }
 
         result
@@ -160,5 +157,141 @@ class EbookCatalogueController {
             }
         }
         result
+    }
+
+    private Map<String, Object> _stats_TODO(boolean reset) {
+
+        Map<String, Object> result = [:]
+        HttpSession session = RequestContextHolder.currentRequestAttributes().getSession()
+
+        if (reset) {
+            session.removeAttribute('ebc_allConsortia')
+            session.removeAttribute('ebc_allSubscriptions')
+            session.removeAttribute('ebc_allProvider')
+            session.removeAttribute('ebc_allTitles')
+        }
+
+        // --- stats
+
+        if (! session.getAttribute('ebc_allConsortia')) {
+            session.setAttribute('ebc_allConsortia',
+                    Org.executeQuery(
+                    """select o from Org o, OrgSetting os_gs, OrgSetting os_ct where 
+                        os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and 
+                        os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and 
+                        os_ct.roleValue in (select r from Role r where authority  = 'ORG_CONSORTIUM')
+                        order by lower(o.name)"""
+            ))
+        }
+        result.allConsortia = session.getAttribute('ebc_allConsortia')
+
+        if (! session.getAttribute('ebc_allSubscriptions')) {
+            session.setAttribute('ebc_allSubscriptions',
+                    Subscription.executeQuery(
+                    """select distinct s from Subscription as s where (
+                            lower(s.status.value) = 'current' and lower(s.type.value) != 'local licence'
+                            and exists 
+                                ( select scp from s.propertySet as scp where
+                                    scp.type = :gasco and lower(scp.refValue.value) = 'yes' )
+                            )
+                            and exists 
+                                ( select ogr from OrgRole ogr where ogr.sub = s and ogr.org in (:validOrgs) )""",
+                    [
+                    gasco    : PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP),
+                    validOrgs: result.allConsortia
+                    ]
+            ))
+        }
+        result.allSubscriptions = session.getAttribute('ebc_allSubscriptions')
+
+        if (! session.getAttribute('ebc_allProvider')) {
+            session.setAttribute('ebc_allProvider',
+                    Org.executeQuery(
+                    """select distinct ogr.org from OrgRole ogr where 
+                            ogr.roleType.value = 'Provider'
+                            and ogr.sub in (:allSubscriptions)""",
+                    [
+                    allSubscriptions: result.allSubscriptions
+                    ]
+            ))
+        }
+        result.allProvider = session.getAttribute('ebc_allProvider')
+
+        if (! session.getAttribute('ebc_allTitles')) {
+            session.setAttribute('ebc_allTitles',
+                    IssueEntitlement.executeQuery(
+                            """select ie from IssueEntitlement ie where 
+                            ie.subscription in :allSubscriptions 
+                            and ie.status.value != 'Deleted' and ie.status.value != 'Retired'
+                                """,
+                            [
+                            allSubscriptions: result.allSubscriptions
+                            ]
+            ))
+
+        }
+        result.allTitles = session.getAttribute('ebc_allTitles')
+
+        // --- hitCounter
+
+        int hitCounter = session.getAttribute('ebc_hitCounter') ?: 0
+        result.hitCounter = ++hitCounter
+        session.setAttribute('ebc_hitCounter', result.hitCounter)
+
+        result
+    }
+
+    private List _history_TODO(GrailsParameterMap params, int subCount, boolean reset) {
+
+        HttpSession session = RequestContextHolder.currentRequestAttributes().getSession()
+
+        if (reset) {
+            session.removeAttribute('ebc_queryHistory')
+        }
+
+        // --- queryHistory
+
+        if (! session.getAttribute('ebc_queryHistory')) {
+            session.setAttribute('ebc_queryHistory', [])
+        }
+
+        List<String> query = []
+        List<String> label = []
+
+        if (params?.containsKey('q')) {
+            query.add('q=' + params.get('q'))
+            if (params.q) {
+                label.add(params.q)
+            }
+        }
+        if (params?.containsKey('consortia')) {
+            query.add('consortia=' + params.get('consortia'))
+            if (params.consortia) {
+                label.add(genericOIDService.resolveOID(params.consortia).getName())
+            }
+        }
+        if (params?.containsKey('subKinds') && params.subKinds) {
+            query.add('subKinds=' + params.list('subKinds').join('&subKinds='))
+            if (params.subKinds) {
+                if (params.list('subKinds').size() == 5) {
+                    label.add('alle Lizenztypen')
+                } else {
+                    label.add(params.list('subKinds').collect { RefdataValue.get(it).getI10n('value') }.join(','))
+                }
+            }
+        }
+
+        List history = (List) session.getAttribute('ebc_queryHistory')
+
+        if (query) {
+            history.add([label: label, matches: subCount, queryString: '?' + query.join('&')])
+
+            if (history.size() > 10) {
+                history.remove(0)
+            }
+            session.setAttribute('ebc_queryHistory', history)
+        }
+
+        history.reverse()
     }
 }

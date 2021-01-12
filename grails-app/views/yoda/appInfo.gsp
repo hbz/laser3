@@ -13,11 +13,11 @@
         <semui:crumb text="Application Info" class="active"/>
     </semui:breadcrumbs>
 
-    <h2 class="ui left aligned icon header la-noMargin-top"><semui:headerIcon />Application Info</h2>
+    <h1 class="ui left aligned icon header la-noMargin-top"><semui:headerIcon />Application Info</h1>
 
     <table class="ui celled la-table table">
         <thead>
-            <tr><th colspan="2"><h3 class="ui header">App</h3></th></tr>
+            <tr><th colspan="2"><h2 class="ui header">App</h2></th></tr>
         </thead>
         <tbody>
         <tr><td>App name</td><td> <g:meta name="info.app.name"/></td></tr>
@@ -33,7 +33,7 @@
 
     <table class="ui celled la-table table">
         <thead>
-            <tr><th colspan="2"><h3 class="ui header">Build</h3></th></tr>
+            <tr><th colspan="2"><h2 class="ui header">Build</h2></th></tr>
         </thead>
         <tbody>
         <tr><td>Build Date</td><td> <g:meta name="info.app.build.date"/></td></tr>
@@ -45,7 +45,7 @@
 
     <table class="ui celled la-table table">
         <thead>
-            <tr><th colspan="2"><h3 class="ui header">Database</h3></th></tr>
+            <tr><th colspan="2"><h2 class="ui header">Database</h2></th></tr>
         </thead>
         <tbody>
         <tr><td>DBM version</td><td> ${dbmVersion[0]} : ${dbmVersion[1]} </td></tr>
@@ -56,7 +56,7 @@
 
     <table class="ui celled la-table table">
         <thead>
-            <tr><th colspan="2"><h3 class="ui header">ES Index Update</h3></th></tr>
+            <tr><th colspan="2"><h2 class="ui header">ES Index Update</h2></th></tr>
         </thead>
         <tbody>
         <tr><td>Currently Running</td><td>${dataloadService.update_running}</td></tr>
@@ -69,7 +69,7 @@
 
     <table class="ui celled la-table table">
         <thead>
-            <tr><th colspan="2"><h3 class="ui header">Global Data Sync</h3></th></tr>
+            <tr><th colspan="2"><h2 class="ui header">Global Data Sync</h2></th></tr>
         </thead>
         <tbody>
             <tr><td>Currently Running</td><td>${globalSourceSyncService.running}</td></tr>
@@ -78,7 +78,7 @@
 
     <table class="ui celled la-table table">
         <thead>
-            <tr><th colspan="2"><h3 class="ui header">STATS Sync Service</h3></th></tr>
+            <tr><th colspan="2"><h2 class="ui header">STATS Sync Service</h2></th></tr>
         </thead>
         <tbody>
         <tr><td>Currently Running</td><td>${statsSyncService.running}</td></tr>
@@ -112,7 +112,7 @@
 
     <table class="ui celled la-table table">
         <thead>
-            <tr><th colspan="2"><h3 class="ui header">HttpServletRequest.getAttributeNames()</h3></th></tr>
+            <tr><th colspan="2"><h2 class="ui header">HttpServletRequest.getAttributeNames()</h2></th></tr>
         </thead>
         <tbody>
         <tr>
@@ -129,7 +129,7 @@
 
     <table class="ui celled la-table table">
         <thead>
-            <tr><th colspan="2"><h3 class="ui header">HttpServletRequest</h3></th></tr>
+            <tr><th colspan="2"><h2 class="ui header">HttpServletRequest</h2></th></tr>
         </thead>
         <tbody>
         <tr>

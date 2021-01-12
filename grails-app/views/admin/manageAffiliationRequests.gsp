@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Manage Affiliation Requests</title>
+    <title>${message(code:'laser')} : ${message(code: "menu.institutions.affiliation_requests")}</title>
   </head>
 
     <body>
@@ -15,8 +15,8 @@
         <semui:messages data="${flash}" />
 
         <g:if test="${pendingRequests}"><%-- INST_ADM --%>
-            <br />
-            <h2 class="ui header">${message(code: "menu.institutions.affiliation_requests")}</h2>
+
+            <h1 class="ui header la-clear-before la-noMargin-top">${message(code: "menu.institutions.affiliation_requests")}</h1>
 
             <table class="ui celled la-table table">
                 <thead>

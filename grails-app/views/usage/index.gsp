@@ -12,16 +12,16 @@
     <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
     <semui:crumb text="Stats" class="active"/>
 </semui:breadcrumbs>
-<br />
+
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'default.usage.adminPage.mainHeader')}</h1>
 
 <semui:messages data="${flash}" />
 
-<h3 class="ui header">${message(code: 'default.usage.adminPage.formHeader')}</h3>
+<h2 class="ui header">${message(code: 'default.usage.adminPage.formHeader')}</h2>
 <semui:filter>
     <g:form action="index" controller="usage" method="get" class="ui small form">
         <div class="three fields">
-            <div class="field fieldcontain">
+            <div class="field">
                 <label for="supplier">${message(code: 'default.usage.adminPage.platformLabel')}</label>
                 <g:select class="ui dropdown" id="supplier" name="supplier"
                               from="${providerList}"
@@ -31,7 +31,7 @@
                               value="${params.supplier}"
                               noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
             </div>
-            <div class="field fieldcontain">
+            <div class="field">
                 <label for="institution">${message(code: 'default.usage.adminPage.institutionLabel')}</label>
                 <g:select class="ui dropdown" id="institution" name="institution"
                           from="${institutionList}"
@@ -92,14 +92,14 @@
     <g:form action="index" controller="usage" method="get" class="ui small form">
 
         <div class="two fields">
-            <div class="field fieldcontain">
+            <div class="field">
                 <label for="supplier">${message(code: 'default.usage.adminPage.natStatSupplierLabel')}</label>
                 <g:select class="ui dropdown" id="supplier" name="supplier"
                           from="${natstatProviders}"
                           value="${params.supplier}"
                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
-            <div class="field fieldcontain">
+            <div class="field">
                 <label for="institution">${message(code: 'default.usage.adminPage.institutionLabel')}</label>
                 <g:select class="ui dropdown" name="institution"
                           from="${natstatInstitutions}"

@@ -26,24 +26,6 @@ class SubscriptionsQueryService {
             filterSet = true
         }
 
-        /*
-        def dateBeforeFilter = null;
-        def dateBeforeFilterVal = null;
-        if(params.dateBeforeFilter && params.dateBeforeVal){
-            if(params.dateBeforeFilter == "renewalDate"){
-                dateBeforeFilter = " and s.manualRenewalDate < :date_before"
-                dateBeforeFilterVal =sdf.parse(params.dateBeforeVal)
-            }else if (params.dateBeforeFilter == "endDate"){
-                dateBeforeFilter = " and s.endDate < :date_before"
-                dateBeforeFilterVal =sdf.parse(params.dateBeforeVal)
-            }else{
-              result.remove('dateBeforeFilterVal')
-              result.remove('dateBeforeFilter')
-            }
-
-        }
-        */
-
         RefdataValue role_sub            = RDStore.OR_SUBSCRIBER
         RefdataValue role_subCons        = RDStore.OR_SUBSCRIBER_CONS
         RefdataValue role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA

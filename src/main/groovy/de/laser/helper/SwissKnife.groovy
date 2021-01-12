@@ -71,8 +71,8 @@ class SwissKnife {
      * @return
      */
     static Map<String, Object> setPaginationParams(Map<String, Object> result, GrailsParameterMap params, User user) {
-        result.max    = params.max    ? Integer.parseInt(params.max) : user.getDefaultPageSizeAsInteger()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.max    = params.max    ? Integer.parseInt(params.max.toString()) : user.getDefaultPageSizeAsInteger()
+        result.offset = params.offset ? Integer.parseInt(params.offset.toString()) : 0
 
         result
     }

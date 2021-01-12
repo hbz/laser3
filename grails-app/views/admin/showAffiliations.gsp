@@ -2,24 +2,27 @@
 <html>
   <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Show Affiliations</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.admin.showAffiliations')}</title>
   </head>
 
   <body>
 
     <semui:breadcrumbs>
       <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
-      <semui:crumb text="Show Affiliations" class="active"/>
+      <semui:crumb message="menu.admin.showAffiliations" class="active"/>
     </semui:breadcrumbs>
 
-    <semui:messages data="${flash}" />
-        <br />
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Affiliations</h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
+          ${message(code:'menu.admin.showAffiliations')}
+        </h1>
+
+        <semui:messages data="${flash}" />
 
         <table class="ui celled la-table table">
           <thead>
             <tr>
-              <th>Username</th><th>Affiliations</th>
+              <th>${message(code:'profile.display')} / ${message(code:'profile.username')}</th>
+              <th>${message(code:'profile.membership')}</th>
             </tr>
           </thead>
           <g:each in="${users}" var="u">

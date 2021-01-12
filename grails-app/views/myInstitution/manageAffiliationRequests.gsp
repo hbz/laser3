@@ -2,20 +2,18 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'myinst.reporting', default:'Institutional Admin Dash')}</title>
+    <title>${message(code:'laser')} : ${message(code:'myinst.reporting')}</title>
 </head>
 
 <body>
 
-<h1>THIS PAGE IS DEPRECATED</h1>
+<semui:breadcrumbs>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
+    <semui:crumb message="menu.institutions.affiliation_requests" class="active" />
+</semui:breadcrumbs>
 
-
-    <semui:breadcrumbs>
-        <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-        <semui:crumb message="menu.institutions.affiliation_requests" class="active" />
-    </semui:breadcrumbs>
-
-    <h2 class="ui header">${message(code: "menu.institutions.affiliation_requests")}</h2>
+    <h1 class="ui header la-clear-before la-noMargin-top">${message(code: "menu.institutions.affiliation_requests")}</h1>
+    <h2 class="ui header">THIS PAGE IS DEPRECATED</h2>
 
     <table class="ui celled la-table table">
         <thead>

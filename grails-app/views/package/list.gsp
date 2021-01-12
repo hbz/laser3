@@ -80,8 +80,8 @@
                                 <g:link controller="organisation" action="show" id="${orgLink.org.id}">${orgLink.org.name}</g:link> <br />
                             </g:each>
                         </td>
-                        <td><g:formatDate date="${packageInstance.dateCreated}" format="${message(code:'default.date.format.noZ', default:'yyyy-MM-dd HH:mm:ss')}"/></td>
-                        <td><g:formatDate date="${packageInstance.lastUpdated}" format="${message(code:'default.date.format.noZ', default:'yyyy-MM-dd HH:mm:ss')}"/></td>
+                        <td><g:formatDate date="${packageInstance.dateCreated}" format="${message(code:'default.date.format.noZ')}"/></td>
+                        <td><g:formatDate date="${packageInstance.lastUpdated}" format="${message(code:'default.date.format.noZ')}"/></td>
                     </tr>
                 </g:each>
             </tbody>

@@ -54,7 +54,7 @@
             </g:if>
             <g:else>
                 <br />
-                ${message(code:'onix.import.existing_licenses', default:'Existing associations with LAS:eR licenses were maintained.')}
+                ${message(code:'onix.import.existing_licenses')}
             </g:else>
         </g:if>
     <%-- Show the form if no OPL has been created --%>
@@ -63,15 +63,15 @@
                 <g:hiddenField name="license_id" value="${params.license_id!=""?params.license_id:license_id}" />
             <%-- Show overwrite option if there is an existing OPL --%>
                 <g:if test="${existing_opl}">
-                    ${message(code:'onix.import.dupe', default:'This ONIX-PL document appears to describe an existing ONIX-PL license')}:
-                    <div class="well">
+                    ${message(code:'onix.import.dupe')}:
+                    <div>
                         <g:link action="index"
                                 controller="onixplLicense"
                                 id="${existing_opl.id}">
                             ${existing_opl.title}
                         </g:link>
                     </div>
-                    ${message(code:'onix.import.replace', default:'Would you like to replace the existing ONIX-PL license or create a new record?')}
+                    ${message(code:'onix.import.replace')}
                     <br />
                     <br />
                     <button name="replace_opl" id="replace_opl" value="replace"
@@ -119,7 +119,7 @@
                         controller="onixplLicense"
                         class="ui button"
                         id="${validationResult.onixpl_license.id}">
-                    ${message(code:'onix.import.view', args:[(validationResult.replace ? message(code:'onix.import.view.updated', default:'updated') : message(code:'onix.import.view.new', default:'new'))])}</g:link>
+                    ${message(code:'onix.import.view', args:[(validationResult.replace ? message(code:'onix.import.view.updated') : message(code:'onix.import.view.new'))])}</g:link>
         </g:if>
         </div>
     </g:if>

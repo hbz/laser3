@@ -100,9 +100,6 @@
 body.myInstitution_dashboard .ui.tab .item .header {
     margin: 0.5rem 0;
 }
-body.myInstitution_dashboard .ui.tab .item span {
-    line-height: 1.3rem;
-}
 
 /* label what server */
 
@@ -278,4 +275,20 @@ h1 .icon.h1-icon-overwrite {
     position: fixed;
     bottom: 0.5rem;
     left: 0.5rem;
+}
+
+/* -- 2021-01-06 -- */
+
+main.ui.container.main {
+    position: relative;
+    padding-top: 0;             /* 105px */
+    margin-top: 105px;          /* switched from padding to margin */
+}
+.main > nav.ui.breadcrumb {
+    display: block !important;  /* full width to avoid <br> tags and other hacks */
+}
+.main > nav.ui.buttons {
+    position: absolute;         /* right upper corner */
+    top: 0;
+    right: 0;
 }

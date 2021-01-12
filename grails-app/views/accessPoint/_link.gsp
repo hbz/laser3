@@ -1,6 +1,6 @@
 <div class="ui card">
     <div class="content">
-        <h5>${message(code: 'accessPoint.link.with.platform')}
+        <h5 class="ui header">${message(code: 'accessPoint.link.with.platform')}
             <span class="la-long-tooltip la-popup-tooltip la-delay"
                   data-content="${message(code: 'accessPoint.platformHelp')}">
                 <i class="question circle icon la-popup"></i>
@@ -15,8 +15,7 @@
                           optionKey="id"
                           optionValue="name"
                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-                <input type="Submit" class="ui tiny button" value="${message(code: 'accessPoint.button.linkPlatform')}"
-                       onClick="this.form.submit()" />
+                <input type="Submit" class="ui button" value="${message(code: 'accessPoint.button.linkPlatform')}" />
             </g:if>
             <g:hiddenField id="accessPoint_id_${accessPoint.id}" name="accessPointId" value="${accessPoint.id}"/>
             <g:hiddenField name="accessMethod" value="${accessPoint.accessMethod}"/>
@@ -25,20 +24,19 @@
     </div>
 </div>
 
-<div class="ui card">
-    <div class="content">
-        <h5>${message(code: 'accessPoint.link.with.subscription')}
-            <span class="la-long-tooltip la-popup-tooltip la-delay"
-                  data-html='${message(code: "accessPoint.linkedSubscriptionHelp")}'>
-                <i class="question circle icon la-popup"></i>
-            </span>
-        </h5>
-        <g:if test="${linkedPlatformSubscriptionPackages}">
-            <g:render template="linked_subs_wrapper"/>
-        </g:if>
-        <g:else>
-            <p>${message(code: "accessPoint.info.noCustomLink")}</p>
-        </g:else>
+<div class="ui message info">
+    <div class="header">
+        ${message(code: 'accessPoint.link.with.subscription')}
+        <span class="la-long-tooltip la-popup-tooltip la-delay"
+              data-html='${message(code: "accessPoint.linkedSubscriptionHelp")}'>
+            <i class="question circle icon la-popup"></i>
+        </span>
     </div>
+    <g:if test="${linkedPlatformSubscriptionPackages}">
+        <g:render template="linked_subs_wrapper"/>
+    </g:if>
+    <g:else>
+        <p>${message(code: "accessPoint.info.noCustomLink")}</p>
+    </g:else>
 </div>
 

@@ -8,13 +8,10 @@
 		<title>${message(code:'laser')} : <g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<div>
-				
 
-					<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" /></h1>
+		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" /></h1>
 
-
-			<semui:messages data="${flash}" />
+		<semui:messages data="${flash}" />
 				
 				<table class="ui sortable celled la-table table">
 					<thead>
@@ -28,9 +25,9 @@
 						
 							<g:sortableColumn property="startDate" title="${message(code: 'default.startDate.label')}" />
 						
-							<g:sortableColumn property="startVolume" title="${message(code: 'issueEntitlement.startVolume.label', default: 'Start Volume')}" />
+							<g:sortableColumn property="startVolume" title="${message(code: 'issueEntitlement.startVolume.label')}" />
 						
-							<g:sortableColumn property="startIssue" title="${message(code: 'issueEntitlement.startIssue.label', default: 'Start Issue')}" />
+							<g:sortableColumn property="startIssue" title="${message(code: 'issueEntitlement.startIssue.label')}" />
 						
 							<th></th>
 						</tr>
@@ -61,6 +58,5 @@
 
 					<semui:paginate total="${issueEntitlementInstanceTotal}" />
 
-		</div>
 	</body>
 </html>

@@ -12,7 +12,7 @@
             <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
             <semui:crumb message="menu.institutions.manage_prop_groups" class="active"/>
         </semui:breadcrumbs>
-        <br />
+
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.institutions.manage_prop_groups"/></h1>
 
         <semui:messages data="${flash}" />

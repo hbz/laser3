@@ -22,8 +22,6 @@
     <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
 </semui:breadcrumbs>
 
-<br />
-
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
 <semui:surveyStatus object="${surveyInfo}"/>
@@ -241,7 +239,7 @@ placeholder: "Kategorie eintippen...",
 minimumInputLength: 1,
 
 formatInputTooShort: function () {
-return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
+return "${message(code:'select2.minChars.note')}";
 },
 formatNoMatches: function() {
 return "${message(code:'select2.noMatchesFound')}";

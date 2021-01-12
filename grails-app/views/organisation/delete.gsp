@@ -9,7 +9,7 @@
 
 <body>
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
-    <br />
+
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
         ${orgInstance?.name}
     </h1>
@@ -18,7 +18,7 @@
         <g:render template="nav" />
     </g:if>
 
-    <h3>[ Funktionalität unvollständig implementiert ]</h3>
+    <h2 class="ui header">[ Funktionalität unvollständig implementiert ]</h2>
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">

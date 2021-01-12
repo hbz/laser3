@@ -175,7 +175,7 @@
 
                         %{-- <g:if test="${tipp.availabilityStatus?.getI10n('value')}">
                              <div class="item">
-                                 <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.access.label', default: 'Access')}"></i>
+                                 <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.access.label')}"></i>
                                  <div class="content">
                                      ${tipp.availabilityStatus?.getI10n('value')}
                                  </div>

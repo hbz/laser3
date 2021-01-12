@@ -5,12 +5,12 @@
         <input type="hidden" name="ownerclass" value="${ownobj.class.name}"/>
         <input type="hidden" name="ownertp" value="${owntp}"/>
 
-        <div class="field fieldcontain">
+        <div class="field">
             <label for="licenseNoteTitle">${message(code:'template.addNote.title')}:</label>
 
             <input type="text" id="licenseNoteTitle" name="licenseNoteTitle" />
         </div>
-        <div class="field fieldcontain">
+        <div class="field">
             <label for="licenseNote">${message(code:'template.addNote.note')}:</label>
 
             <textarea id="licenseNote" name="licenseNote"></textarea>

@@ -9,13 +9,13 @@
 </head>
 <body>
 
+<semui:modeSwitch controller="platform" action="show" params="${params}" />
+
 <semui:breadcrumbs>
     <semui:crumb controller="platform" #action="index" message="platform.show.all" />
     <semui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}" />
 </semui:breadcrumbs>
 
-<semui:modeSwitch controller="platform" action="show" params="${params}" />
-<br />
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
 
     <g:if test="${editable}"><span id="platformNameEdit"

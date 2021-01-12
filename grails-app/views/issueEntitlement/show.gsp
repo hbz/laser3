@@ -19,7 +19,6 @@
     <semui:crumb class="active" id="${issueEntitlementInstance.id}"
                  text="${issueEntitlementInstance.tipp.title.title}"/>
 </semui:breadcrumbs>
-<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
         type="${issueEntitlementInstance.tipp.title.printTitleType()}"/>
@@ -210,7 +209,7 @@
                                         config='${de.laser.helper.RDConstants.CORE_STATUS}'/></dd>
         </g:if>
     <%--              <g:set var="iecorestatus" value="${issueEntitlementInstance.getTIP()?.coreStatus(null)}"/>
-<%--<dt>${message(code:'subscription.details.core_status', default:'Core Status')}</dt>
+<%--<dt>${message(code:'subscription.details.core_status')}</dt>
     <dd>
       <g:render template="/templates/coreStatus" model="${['issueEntitlement': issueEntitlementInstance]}"/>
     </dd> --%>

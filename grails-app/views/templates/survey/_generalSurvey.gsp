@@ -357,7 +357,7 @@
 
 <g:if test="${surveyResults}">
     <semui:form>
-        <h3><g:message code="surveyConfigsInfo.properties"/>
+        <h3 class="ui header"><g:message code="surveyConfigsInfo.properties"/>
         <semui:totalNumber
                 total="${surveyResults.size()}"/>
         </h3>

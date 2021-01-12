@@ -10,7 +10,7 @@
       <semui:crumb controller="title" action="list" message="menu.public.all_titles" />
       <semui:crumb text="${message(code:'datamanager.titleView.label')}" class="active"/>
     </semui:breadcrumbs>
-    <br />
+
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="datamanager.titleView.label"/>
       <semui:totalNumber total="${totalHits}"/>
     </h1>
@@ -29,7 +29,7 @@
                     from="${availableStatuses}"
                     optionKey="${{it.value}}"
                     optionValue="${{it.getI10n('value')}}"
-                    noSelection="${['null': message(code:'datamanager.titleView.status.ph', default:'-Any Status-')]}"
+                    noSelection="${['null': message(code:'datamanager.titleView.status.ph')]}"
                     />
           </div>
           <div class="field la-field-right-aligned">

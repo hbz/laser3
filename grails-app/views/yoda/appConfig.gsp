@@ -14,7 +14,7 @@
     <semui:crumb text="Application Config" class="active"/>
 </semui:breadcrumbs>
 
-<h2 class="ui header">${message(code:'menu.yoda.appConfig')}</h2>
+<h1 class="ui header la-clear-before la-noMargin-top">${message(code:'menu.yoda.appConfig')}</h1>
 
 <p>${message(code:'sys.properties')}</p>
 
@@ -23,9 +23,9 @@
 </laser:script>
 
 <g:form action="appConfig" method="POST" class="ui form">
-    <input type="submit" name="one"class="ui button" value="Refresh"  />
+    <input type="submit" name="one" class="ui button" value="Refresh"  />
 </g:form>
-<h3 class="ui header"> Current output for Holders.config</h3>
+<h2 class="ui header"> Current output for Holders.config</h2>
 <div class="ui form">
     <g:each in="${currentconf.keySet().sort()}" var="key">
         <div class="field">

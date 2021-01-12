@@ -14,7 +14,7 @@
 
     <semui:messages data="${flash}" />
 
-    <h2 class="ui header">Private Properties (mandatory) without existing values</h2>
+    <h1 class="ui header la-clear-before la-noMargin-top">Private Properties (mandatory) without existing values</h1>
 
     <g:link controller="yoda" action="dbmFixPrivateProperties" params="[cmd:'doIt']" class="ui button negative">
         <i class="icon trash alternate"></i> &nbsp;  Delete all</g:link>
@@ -26,7 +26,7 @@
         <g:each in="${candidates}" var="cat, ppp">
             <tr>
                 <td colspan="5">
-                    <h3>${cat} - ${ppp.size()}</h3>
+                    <h3 class="ui header">${cat} - ${ppp.size()}</h3>
                 </td>
             </tr>
             <tr>

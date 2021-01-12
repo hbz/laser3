@@ -11,7 +11,7 @@
     <semui:crumb text="Datenbereinigung" class="active"/>
 </semui:breadcrumbs>
 
-    <h2 class="ui header">Ersetzen des UserSetting DASHBOARD_REMINDER_PERIOD</h2>
+    <h1 class="ui header la-clear-before la-noMargin-top">Ersetzen des UserSetting DASHBOARD_REMINDER_PERIOD</h1>
     <semui:messages data="${flash}"/>
     <br />
     <br />

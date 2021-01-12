@@ -22,7 +22,7 @@
             <div class="eight wide field">
                 <label>${message(code: 'copyElementsIntoObject.targetObject.name', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}:</label>
                 <g:if test="${sourceObject instanceof Subscription}">
-                    <div class="field fieldcontain">
+                    <div class="field">
                         <label>${message(code: 'filter.status')}</label>
                         <laser:select class="ui dropdown" name="status" id="status"
                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
@@ -50,7 +50,7 @@
                     <br>
                 </g:if>
                 <g:if test="${sourceObject instanceof License}">
-                    <div class="field fieldcontain">
+                    <div class="field">
                         <label>${message(code: 'filter.status')}</label>
                         <laser:select class="ui dropdown" name="status" id="status"
                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS)}"

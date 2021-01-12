@@ -17,10 +17,8 @@
         <semui:crumb class="active" text="${message(code: 'myinst.copySubscription')}" />
     </g:if>
 </semui:breadcrumbs>
-<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'myinst.copySubscription')}: ${sourceObject.name}</h1>
-
 
 <semui:messages data="${flash}"/>
 

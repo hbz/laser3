@@ -2,7 +2,7 @@
 
 
 
-<div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'contentType', 'error')} ">
+<div class="field ${hasErrors(bean: contactInstance, field: 'contentType', 'error')} ">
 	<label for="contentType">
 		<g:message code="contact.contentType.label" />
 		
@@ -16,7 +16,7 @@
 
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'content', 'error')} ">
+<div class="field ${hasErrors(bean: contactInstance, field: 'content', 'error')} ">
 	<label for="content">
 		<g:message code="contact.content.label" />
 		
@@ -25,7 +25,7 @@
 
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'type', 'error')} ">
+<div class="field ${hasErrors(bean: contactInstance, field: 'type', 'error')} ">
 	<label for="type">
 		${RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}
 		
@@ -38,7 +38,7 @@
         required=""/>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'prs', 'error')} ">
+<div class="field ${hasErrors(bean: contactInstance, field: 'prs', 'error')} ">
 	<label for="prs">
 		<g:message code="contact.prs.label" />
 		
@@ -47,7 +47,7 @@
 
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'org', 'error')} ">
+<div class="field ${hasErrors(bean: contactInstance, field: 'org', 'error')} ">
 	<label for="org">
 		<g:message code="contact.org.label" />
 		

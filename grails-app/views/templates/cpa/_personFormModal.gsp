@@ -222,11 +222,11 @@
                 <g:if test="${personInstance}">
                     <g:each in="${personInstance.contacts?.toSorted()}" var="contact">
                         <div class="two fields">
-                            <div class="field three wide fieldcontain">
+                            <div class="field three wide">
                                 <input type="text" readonly value="${contact.contentType.getI10n('value')}"/>
                             </div>
 
-                            <div class="field thirteen wide fieldcontain">
+                            <div class="field thirteen wide">
                                 <g:textField name="content${contact.id}" value="${contact.content}"/>
                             </div>
                         </div>
@@ -251,7 +251,7 @@
                 <br />
 
                 <div class="three fields">
-                    <div class="field three wide fieldcontain">
+                    <div class="field three wide">
                         <label></label>
                         <laser:select class="ui dropdown" name="contentType.id"
                                       from="${Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
@@ -260,12 +260,12 @@
                                       value="${contactInstance?.contentType?.id}"/>
                     </div>
 
-                    <div class="field one wide fieldcontain">
+                    <div class="field one wide">
 
                     </div>
 
 
-                    <div class="field twelve wide fieldcontain">
+                    <div class="field twelve wide">
                         <label></label>
                         <g:textField id="content" name="content" value="${contactInstance?.content}"/>
                     </div>

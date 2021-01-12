@@ -72,7 +72,7 @@
     <g:if test="${entitlements.size() > 0}">
         ${message(code: 'subscription.entitlement.plural')} ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (entitlements?.size())), num_sub_rows])}.     </g:if>
     <g:else>
-        ${message(code: 'subscription.details.no_ents', default: 'No entitlements yet')}
+        ${message(code: 'subscription.details.no_ents')}
     </g:else>
     <g:set var="counter" value="${offset + 1}"/>
 
@@ -81,8 +81,7 @@
         <tr>
 
             <th>${message(code: 'sidewide.number')}</th>
-            <g:sortableColumn class="eight wide" params="${params}" property="tipp.title.sortTitle"
-                              title="${message(code: 'title.label', default: 'Title')}"/>
+            <g:sortableColumn class="eight wide" params="${params}" property="tipp.title.sortTitle" title="${message(code: 'title.label')}"/>
             <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
             <th class="four wide">${message(code: 'subscription.details.coverage_dates')}</th>
             <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>

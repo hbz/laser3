@@ -1,11 +1,7 @@
 package de.laser.ctrl
 
 import com.k_int.kbplus.GenericOIDService
-import de.laser.ContextService
-import de.laser.Doc
-import de.laser.DocContext
-import de.laser.Org
-import de.laser.RefdataValue
+import de.laser.*
 import de.laser.helper.AppUtils
 import de.laser.helper.RDConstants
 import grails.core.GrailsClass

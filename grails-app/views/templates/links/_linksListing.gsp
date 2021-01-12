@@ -5,9 +5,12 @@
         <g:if test="${subscriptionLicenseLink}">
             <g:message code="license.plural"/>
         </g:if>
-        <g:else>
+        <g:elseif test="${subscription}">
             <g:message code="subscription.details.linksHeader"/>
-        </g:else>
+        </g:elseif>
+        <g:elseif test="${license}">
+            <g:message code="license.details.linksHeader"/>
+        </g:elseif>
     </h5>
     <g:if test="${links.entrySet()}">
         <table class="ui three column table">
@@ -114,18 +117,28 @@
             </g:each>
         </table>
     </g:if>
-    <g:else>
+    <g:elseif test="${subscription}">
         <p>
             <g:message code="subscription.details.noLink"/>
         </p>
-    </g:else>
+    </g:elseif>
+    <g:elseif test="${license}">
+        <p>
+            <g:message code="license.details.noLink"/>
+        </p>
+    </g:elseif>
     <div class="ui la-vertical buttons">
         <%
             Map<String,Object> model
+            String addLink = ""
+            if(license || subscriptionLicenseLink)
+                addLink = message(code:'license.details.addLink')
+            else if(subscription)
+                addLink = message(code:'subscription.details.addLink')
             if(subscriptionLicenseLink) {
-                model = [tmplText:message(code:'license.details.addLink'),
+                model = [tmplText:addLink,
                          tmplID:'addLicenseLink',
-                         tmplButtonText:message(code:'license.details.addLink'),
+                         tmplButtonText:addLink,
                          tmplModalID:'sub_add_license_link',
                          editmode: editable,
                          subscriptionLicenseLink: true,
@@ -134,9 +147,9 @@
                 ]
             }
             else {
-                model = [tmplText:message(code:'subscription.details.addLink'),
+                model = [tmplText:addLink,
                  tmplID:'addLink',
-                 tmplButtonText:message(code:'subscription.details.addLink'),
+                 tmplButtonText:addLink,
                  tmplModalID:'sub_add_link',
                  editmode: editable,
                  atConsortialParent: atConsortialParent,

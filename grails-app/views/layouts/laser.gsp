@@ -490,7 +490,7 @@
 
                                     <div class="divider"></div>
 
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="profile" action="index">${message(code:'menu.user.profile')}</semui:link>
+                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="profile" action="index">${message(code:'profile.user')}</semui:link>
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="profile" action="help">${message(code:'menu.user.help')}</semui:link>
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</semui:link>
 

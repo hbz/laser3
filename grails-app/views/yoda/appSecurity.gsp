@@ -10,10 +10,10 @@
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
     <semui:crumb message="menu.yoda.security" class="active"/>
 </semui:breadcrumbs>
-<br />
-<h2 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.security')}</h2>
 
-<h3 class="ui header">Hierarchical Global Roles</h3>
+<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.security')}</h1>
+
+<h2 class="ui header">Hierarchical Global Roles</h2>
 
 <div class="secInfoWrapper">
     <div class="ui list">
@@ -26,7 +26,7 @@
     </div>
 </div>
 
-<h3 class="ui header">Independent Global Roles</h3>
+<h2 class="ui header">Independent Global Roles</h2>
 
 <div class="secInfoWrapper">
     <div class="ui list">
@@ -41,7 +41,7 @@
     </div>
 </div>
 
-<h3 class="ui header">Hierarchical Org Roles (Customer Types)</h3>
+<h2 class="ui header">Hierarchical Org Roles (Customer Types)</h2>
 
 <div class="secInfoWrapper">
     <div class="ui list">
@@ -55,7 +55,7 @@
     </div>
 </div>
 
-<h3 class="ui header">Hierarchical User Roles</h3>
+<h2 class="ui header">Hierarchical User Roles</h2>
 
 <div class="secInfoWrapper">
     <div class="ui list">
@@ -70,7 +70,7 @@
     </div>
 </div>
 
-<h3 class="ui header">Controller Security</h3>
+<h2 class="ui header">Controller Security</h2>
 
 <g:each in="${controller}" var="c">
     <a href="#jumpMark_${c.key}">${c.key.replace('Controller', '')}</a>
@@ -121,12 +121,12 @@
         <div class="secInfoWrapper secInfoWrapper2">
             <g:each in="${controller}" var="c">
 
-                <h4 class="ui header" id="jumpMark_${c.key}">
+                <h3 class="ui header" id="jumpMark_${c.key}">
                     ${c.key}
                     <g:each in="${c.value.secured}" var="cSecured">
                         <span class="${cSecured}">${cSecured}</span> &nbsp;
                     </g:each>
-                </h4>
+                </h3>
 
                 <div class="ui segment">
                     <div class="ui divided list">

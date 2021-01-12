@@ -19,21 +19,15 @@ class SemanticUiSubNavTagLib {
 
     def subNav = { attrs, body ->
 
-        out << '<nav class="ui '
-        if(attrs.showInTabular){
-            out << ' tabular '
-        }else{
-            out << ' secondary pointing '
-        }
-        out << ' stackable  menu la-clear-before" role="tablist">'
+        out << '<nav class="ui ' + (attrs.showInTabular ? 'tabular ' : 'secondary pointing ')
+        out << 'stackable menu la-clear-before" role="tablist">'
         out <<   body()
         out << '</nav>'
     }
 
     def complexSubNavItem = { attrs, body ->
 
-        def (text, message) = SwissKnife.getTextAndMessage(attrs)
-        def aClass = ((this.pageScope.variables?.workFlowPart == attrs.workFlowPart) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+        String aClass = ((this.pageScope.variables?.workFlowPart == attrs.workFlowPart) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         if (attrs.controller) {
             out << g.link(body(),
@@ -48,14 +42,15 @@ class SemanticUiSubNavTagLib {
         }
     }
     def subNavItem = { attrs, body ->
-        def (text, message) = SwissKnife.getTextAndMessage(attrs)
-        def linkBody  = (text && message) ? text + " - " + message : text + message
-        def aClass    = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
-        def tooltip = attrs.tooltip ?: ""
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
+        String linkBody  = (text && message) ? text + " - " + message : text + message
+        String aClass    = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+
+        String tooltip = attrs.tooltip ?: ""
 
         if(tooltip != "") {
-            linkBody = '<div data-tooltip="'+tooltip+'" data-position="bottom center">'+linkBody+'</div>'
+            linkBody = '<div data-tooltip="' + tooltip + '" data-position="bottom center">' + linkBody + '</div>'
         }
 
         if (attrs.disabled) {
@@ -73,7 +68,6 @@ class SemanticUiSubNavTagLib {
         else {
             out << '<a href="" class="' + aClass + '">' + linkBody + '</a>'
         }
-
     }
 
 
@@ -83,18 +77,17 @@ class SemanticUiSubNavTagLib {
 
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         String linkBody = (text && message) ? text + " - " + message : text + message
+        String aClass = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+
+        String tooltip = attrs.tooltip ?: ""
 
         boolean check = SwissKnife.checkAndCacheNavPerms(attrs, request)
 
-        def tooltip = attrs.tooltip ?: ""
-
         if (tooltip != "") {
-            linkBody = '<div data-tooltip="'+tooltip+'" data-position="bottom center">'+linkBody+'</div>'
+            linkBody = '<div data-tooltip="' + tooltip + '" data-position="bottom center">' + linkBody + '</div>'
         }
 
         if (check) {
-            String aClass = (this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item'
-
             if (attrs.controller) {
                 out << g.link(linkBody,
                         class: aClass,

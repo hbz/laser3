@@ -11,9 +11,10 @@
     <semui:crumb message="menu.institutions.financeImport" class="active"/>
   </semui:breadcrumbs>
 
+    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.institutions.financeImport')}</h1>
+
     <semui:messages data="${flash}" />
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.institutions.financeImport')}</h1>
        <semui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.financeImport.headline" />
 
           <g:if test="${params.id}">

@@ -44,20 +44,20 @@
 					<td>
 						${message(code:'package.compare.restrict.after')}
                         <semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
-						${message(code:'package.compare.restrict.before', default:'and/or ending before')}
+						${message(code:'package.compare.restrict.before')}
 						<semui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/>
 						<br />
-						${message(code:'package.compare.select.first', default:'Now select first package to compare (filtered by dates above). Use \'%\' as wildcard.')}
+						${message(code:'package.compare.select.first')}
 						<br />
                         <input type="hidden" name="pkgA" id="packageSelectA" value="${pkgA}"/>
 					</td>
 					<td> 
-					    ${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after')}
+					    ${message(code:'package.compare.restrict.after')}
                         <semui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
-						${message(code:'package.compare.restrict.before', default:'and/or ending before')}
+						${message(code:'package.compare.restrict.before')}
                         <semui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/>
 						<br />
-						${message(code:'package.compare.select.second', default:'Select second package to compare (Filtered by dates above). Use \'%\' as wildcard.')}
+						${message(code:'package.compare.select.second')}
 						<br />
                         <input type="hidden" name="pkgB" id="packageSelectB" value="${pkgB}"/>
 					</td>
@@ -158,10 +158,10 @@
 	 <table class="ui celled la-table table">
 		<tr>
 			<td style="text-align:right;padding-right:10px;">
-				${message(code:'package.compare.filter.title', default:'Filters - Title')}: <input type="text" name="filter" value="${params.filter}"/>
+				${message(code:'package.compare.filter.title')}: <input type="text" name="filter" value="${params.filter}"/>
 			</td>
 			<td>
-				${message(code:'package.compare.filter.coverage_startsBefore', default:'Coverage Starts Before')}:
+				${message(code:'package.compare.filter.coverage_startsBefore')}:
                                 <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
 			</td>
 			<td style="padding-left:10px;"> <input type='button' class="ui button" id="resetFilters" value="${message(code:'default.button.clear.label')}"/></td>
@@ -171,11 +171,11 @@
 			${message(code:'package.compare.filter.coverage_note')}: <input type="text" name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
 		</td>
 		<td>
-			${message(code:'package.compare.filter.coverage_endsAfter', default:'Coverage Ends After')}:
+			${message(code:'package.compare.filter.coverage_endsAfter')}:
 			<semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
 		</td>
 
-			<td  style="padding-left:10px;"> <input type="submit" class="ui button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" /> </td>
+			<td  style="padding-left:10px;"> <input type="submit" class="ui button" value="${message(code:'package.compare.filter.submit.label')}" /> </td>
 		</tr>
 	</table>
 
@@ -195,7 +195,7 @@
 	</thead>
 	<tbody>
 		<tr>
-			<td><strong>${message(code:'package.compare.results.tipps.total', default:'Total Titles (TIPPs) for query')}</strong></td>
+			<td><strong>${message(code:'package.compare.results.tipps.total')}</strong></td>
 			<td><strong>${listACount.titles} (${listACount.tipps})</strong></td>
 			<td><strong>${listBCount.titles} (${listBCount.tipps})</strong></td>
 		<tr>

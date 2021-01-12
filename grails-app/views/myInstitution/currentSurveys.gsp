@@ -2,8 +2,6 @@
 <laser:serviceInjection/>
 <!doctype html>
 
-
-
 <html>
 <head>
     <meta name="layout" content="laser">
@@ -29,8 +27,6 @@
     </semui:exportDropdown>
 </semui:controlButtons>
 
-
-<br />
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${institution.name} - ${message(code: 'currentSurveys.label')}
 <semui:totalNumber total="${countSurveys.values().sum { it }}"/>
 </h1>
@@ -53,11 +49,11 @@
             </div>
 
 
-            <div class="field fieldcontain">
+            <div class="field">
                 <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${params.validOn}" />
             </div>
 
-            <div class="field fieldcontain">
+            <div class="field">
                 <label>${message(code: 'default.valid_onYear.label')}</label>
                 <g:select name="validOnYear"
                           from="${surveyYears}"
@@ -238,7 +234,7 @@
                         <g:if test="${surveyConfig.subSurveyUseForTransfer}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info2")}">
-                                <i class="yellow icon envelope large "></i>
+                                <i class="yellow icon pie chart large"></i>
                             </span>
                         </g:if>
 

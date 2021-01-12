@@ -20,17 +20,16 @@
     </g:if>
     <semui:crumb message="copySurvey.label" class="active"/>
 </semui:breadcrumbs>
-<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
         type="Survey"/>${surveyConfig.getConfigNameShort()}</h1>
 
-<h3>
+<h2 class="ui header">
     ${message(code: 'copySurvey.label')}:
     <g:link controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]">
         ${surveyConfig.getConfigNameShort()}
     </g:link>
-</h3>
+</h2>
 
 <semui:messages data="${flash}"/>
 
@@ -48,7 +47,7 @@
             </g:if>
 
             <g:if test="${targetSubs}">
-                <h4>${message(code: 'copySurvey.subscription.info2')}</h4>
+                <h4 class="ui header">${message(code: 'copySurvey.subscription.info2')}</h4>
 
                 <div class="ui ordered list">
                     <g:each in="${targetSubs}" var="sub" status="i">
@@ -336,12 +335,12 @@
                     </div>
                 </div>
                 <!-- 1-2 -->
-                <div class="field fieldcontain">
+                <div class="field">
                     <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn"
                                       placeholder="filter.placeholder" value="${validOn}"/>
                 </div>
 
-                <div class="field fieldcontain">
+                <div class="field">
                     <label>${message(code: 'default.status.label')}</label>
                     <laser:select class="ui dropdown" name="status"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
@@ -466,7 +465,7 @@
                                             ${s.name}
                                         </g:if>
                                         <g:else>
-                                            -- ${message(code: 'myinst.currentSubscriptions.name_not_set', default: 'Name Not Set')}  --
+                                            -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
                                         </g:else>
                                         <g:if test="${s.instanceOf}">
                                             <g:if test="${s.consortia && s.consortia == institution}">

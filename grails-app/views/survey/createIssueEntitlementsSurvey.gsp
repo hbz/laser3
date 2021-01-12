@@ -17,7 +17,7 @@
     <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <semui:crumb message="createIssueEntitlementsSurvey.label" class="active"/>
 </semui:breadcrumbs>
-<br />
+
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
         type="Survey"/>${message(code: 'createIssueEntitlementsSurvey.label')}</h1>
 
@@ -31,9 +31,9 @@
 </div>
 
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label')}
+<h2 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label')}
 <semui:totalNumber total="${num_sub_rows}"/>
-</h1>
+</h2>
 
 <g:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
@@ -59,12 +59,12 @@
                 </div>
             </div>
             <!-- 1-2 -->
-            <div class="field fieldcontain">
+            <div class="field">
                 <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn"
                                   placeholder="filter.placeholder" value="${validOn}"/>
             </div>
 
-            <div class="field fieldcontain">
+            <div class="field">
                 <label>${message(code: 'default.status.label')}</label>
                 <laser:select class="ui dropdown" name="status"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
@@ -181,7 +181,7 @@
                                     ${s.name}
                                 </g:if>
                                 <g:else>
-                                    -- ${message(code: 'myinst.currentSubscriptions.name_not_set', default: 'Name Not Set')}  --
+                                    -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
                                 </g:else>
                                 <g:if test="${s.instanceOf}">
                                     <g:if test="${s.consortia && s.consortia == institution}">

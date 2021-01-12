@@ -13,8 +13,9 @@
         <semui:breadcrumbs>
             <semui:crumb text="${message(code:'menu.institutions.dash')}" class="active" />
         </semui:breadcrumbs>
-        <br />
+
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${institution.name}</h1>
+
         <div class="ui equal width grid la-clear-before">
             <div class="row">
 
@@ -288,7 +289,7 @@
             %{--
             <g:if test="${editable}">
                 <div class="la-float-right">
-                    <g:link action="announcements" class="ui button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
+                    <g:link action="announcements" class="ui button">${message(code:'myinst.ann.view.label')}</g:link>
                 </div>
             </g:if>
             --}%
@@ -307,7 +308,7 @@
                             <div class="row">
                                 <div class="three wide column">
 
-                                    <strong>${message(code:'myinst.ann.posted_by', default:'Posted by')}</strong>
+                                    <strong>${message(code:'myinst.ann.posted_by')}</strong>
                                     <g:link controller="user" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link>
                                     <br /><br />
                                     <g:formatDate date="${ra.dateCreated}" formatName="default.date.format.noZ"/>

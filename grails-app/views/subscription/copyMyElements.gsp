@@ -10,7 +10,6 @@
 
 <body>
 <g:render template="breadcrumb" model="${[params: params]}"/>
-<br />
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'subscription.details.copyMyElements.label')}</h1>
 

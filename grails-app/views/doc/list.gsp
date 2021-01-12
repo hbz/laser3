@@ -8,8 +8,7 @@
 		<title>${message(code:'laser')} : <g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<div>
-				
+
 			<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" /></h1>
 
 			<semui:messages data="${flash}" />
@@ -22,11 +21,11 @@
 						
 							<th class="header"><g:message code="doc.type.label" default="Type" /></th>
 						
-							<g:sortableColumn property="content" title="${message(code: 'doc.content.label', default: 'Content')}" />
+							<g:sortableColumn property="content" title="${message(code: 'doc.content.label')}" />
 						
-							<g:sortableColumn property="uuid" title="${message(code: 'doc.uuid.label', default: 'Uuid')}" />
+							<g:sortableColumn property="uuid" title="${message(code: 'doc.uuid.label')}" />
 						
-							<g:sortableColumn property="contentType" title="${message(code: 'doc.contentType.label', default: 'Content Type')}" />
+							<g:sortableColumn property="contentType" title="${message(code: 'doc.contentType.label')}" />
 						
 							<th></th>
 						</tr>
@@ -55,6 +54,5 @@
 
 			<semui:paginate total="${docInstanceTotal}" />
 
-		</div>
 	</body>
 </html>

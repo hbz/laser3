@@ -8,14 +8,14 @@
             <g:hiddenField name="linkto" value="${owntp}"/>
         </g:if>
 
-        <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
+        <div class="field ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
             <label for="title">
                 <g:message code="task.title.label" />
             </label>
             <g:textField id="title" name="title" required="" value="${taskInstance?.title}"/>
         </div>
 
-        <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'description', 'error')}">
+        <div class="field ${hasErrors(bean: taskInstance, field: 'description', 'error')}">
             <label for="description">
                 <g:message code="task.description.label" />
             </label>
@@ -23,7 +23,7 @@
         </div>
 
         <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
-            <div class="field fieldcontain required">
+            <div class="field required">
                 <fieldset>
                     <legend>
                         <g:message code="task.typ" />
@@ -64,7 +64,7 @@
             </div>
 
             <div id="licensediv"
-                 class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'license', 'error')} required">
+                 class="field ${hasErrors(bean: taskInstance, field: 'license', 'error')} required">
                 <label for="license">
                     <g:message code="task.linkto" /><g:message code="license.label" />
                 </label>
@@ -80,7 +80,7 @@
 
             </div>
 
-            <div id="orgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} required">
+            <div id="orgdiv" class="field ${hasErrors(bean: taskInstance, field: 'org', 'error')} required">
             <label for="org">
                 <g:message code="task.linkto" /><g:message code="task.org.label" />
             </label>
@@ -95,7 +95,7 @@
                 />
             </div>
 
-            <div id="pkgdiv" class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} required">
+            <div id="pkgdiv" class="field ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} required">
                 <label for="pkg">
                     <g:message code="task.linkto" /><g:message code="package.label" />
                 </label>
@@ -107,7 +107,7 @@
             </div>
 
             <div id="subscriptiondiv"
-                 class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required">
+                 class="field ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required">
                 <label for="subscription">
                     <g:message code="task.linkto" /><g:message code="default.subscription.label" />
                 </label>
@@ -129,7 +129,7 @@
         <div class="field">
             <div class="two fields">
 
-                <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'status', 'error')} required">
+                <div class="field wide eight ${hasErrors(bean: taskInstance, field: 'status', 'error')} required">
                     <label for="status">
                         <g:message code="task.status.label" />
                     </label>
@@ -154,7 +154,7 @@
                 <g:message code="task.responsible.label" />
             </label>
             <div class="two fields">
-                <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsible', 'error')}">
+                <div class="field wide eight ${hasErrors(bean: taskInstance, field: 'responsible', 'error')}">
                     <fieldset>
 
                         <div class="field">
@@ -174,7 +174,7 @@
                 </div>
 
                 <div id="responsibleUser"
-                     class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')}">
+                     class="field wide eight ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')}">
                     <label for="responsibleUserInput">
                         <g:message code="task.responsibleUser.label" />
                     </label>

@@ -1,13 +1,13 @@
 <g:form class="ui form" id="create_task" url="[controller: 'dev', action: 'index']" method="post">
 
-    <div class="field fieldcontain  required">
+    <div class="field required">
         <label for="title">
             <g:message code="task.title.label"/>
         </label>
         <g:textField id="title" name="title" required="required" value=""/>
     </div>
 
-    <div class="field fieldcontain">
+    <div class="field">
         <label for="description">
             <g:message code="task.description.label"/>
         </label>
@@ -15,7 +15,7 @@
     </div>
 
 
-    <div class="field fieldcontain required">
+    <div class="field required">
         <fieldset>
             <legend>
                 <g:message code="task.typ"/>
@@ -59,7 +59,7 @@
     </div>
 
 
-    <div id="licensediv" class="field fieldcontain  required" >
+    <div id="licensediv" class="field required" >
         <label for="license">
             Art der Lizenz
         </label>

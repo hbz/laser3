@@ -13,7 +13,7 @@
         <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
         <semui:crumb message="menu.admin.manageOrganisations" class="active" />
     </semui:breadcrumbs>
-    <br />
+
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.admin.manageOrganisations" />
         <semui:totalNumber total="${orgListTotal}"/>
     </h1>

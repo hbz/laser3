@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.ExportService
-import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
@@ -9,8 +8,6 @@ import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
-
-import java.text.SimpleDateFormat
 
 @Transactional
 class AccessPointService {
@@ -67,8 +64,6 @@ class AccessPointService {
     }
 
     def exportAccessPoints(List accessPoints, Org contextOrg) {
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-
         List titles = []
 
         titles.addAll([messageSource.getMessage('accessMethod.label', null, LocaleContextHolder.getLocale()),

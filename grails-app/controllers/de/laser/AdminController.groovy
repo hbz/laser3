@@ -482,7 +482,7 @@ class AdminController  {
 
         params.sort =   params.sort ?: 'created'
         params.order =  params.order ?: 'desc'
-        params.max =    params.max ?: 1000
+        params.max =    params.max ?: 300
 
         result.events = SystemEvent.list(params)
 
@@ -1327,14 +1327,6 @@ class AdminController  {
             flash.error = "Es liegt kein inkrementeller Dump vor ... haben Sie vorher die Daten ausgeschrieben?"
         }
         redirect controller: 'myInstitution', action: 'dashboard'
-    }
-
-    def cleanUpGorm() {
-        log.debug("Clean up GORM");
-        def session = sessionFactory.currentSession
-        session.flush()
-        session.clear()
-         //propertyInstanceMap.get().clear()
     }
 
     @Secured(['ROLE_ADMIN'])

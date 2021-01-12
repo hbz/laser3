@@ -10,11 +10,10 @@
   <body>
 
     <g:render template="breadcrumb" model="${[ params:params ]}"/>
-    <br />
+
     <semui:messages data="${flash}" />
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-
         <semui:xEditable owner="${subscription}" field="name" />
     </h1>
 

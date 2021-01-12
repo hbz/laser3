@@ -9,6 +9,7 @@
 <body>
 
 <semui:breadcrumbs>
+    <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager.dash')}" />
     <semui:crumb message="mailTemplate.plural.label" class="active"/>
 </semui:breadcrumbs>
 
@@ -75,22 +76,22 @@
 
     <g:form class="ui form" url="[controller: 'dataManager', action: 'editMailTemplate']">
         <input type="hidden" name="target" value="" />
-        <div class="field fieldcontain required">
+        <div class="field required">
             <label for="mailTemplateName">${message(code:'mailTemplate.name.label')}:</label>
             <input type="text" id="mailTemplateNameEdit" name="name" />
         </div>
 
-        <div class="field fieldcontain required">
+        <div class="field required">
             <label for="mailTemplateSubject">${message(code:'mailTemplate.subject.label')}:</label>
             <input type="text" id="mailTemplateSubjectEdit" name="subject" />
         </div>
 
-        <div class="field fieldcontain">
+        <div class="field">
             <label for="mailTemplateText">${message(code:'mailTemplate.text.label')}:</label>
             <g:textArea id="mailTemplateTextEdit" name="text" rows="5" cols="40"/>
         </div>
 
-        <div  class="field fieldcontain required">
+        <div  class="field required">
             <label for="mailTemplateLanguage">${message(code:'mailTemplate.language.label')}:</label>
             <g:select id="mailTemplateLanguageEdit"
                       name="language"
@@ -101,7 +102,7 @@
                       noSelection="[null: '']"/>
         </div>
 
-        <div  class="field fieldcontain required">
+        <div  class="field required">
             <label for="mailTemplateType">${message(code:'default.type.label')}:</label>
             <g:select id="mailTemplateTypeEdit"
                       name="type"
@@ -130,22 +131,22 @@
 
     <g:form id="create_mail_template" class="ui form" url="[controller:'dataManager', action:'createMailTemplate']" method="post">
 
-        <div class="field fieldcontain required">
+        <div class="field required">
             <label for="mailTemplateName">${message(code:'mailTemplate.name.label')}:</label>
             <input type="text" id="mailTemplateName" name="name" />
         </div>
 
-        <div class="field fieldcontain required">
+        <div class="field required">
             <label for="mailTemplateSubject">${message(code:'mailTemplate.subject.label')}:</label>
             <input type="text" id="mailTemplateSubject" name="subject" />
         </div>
 
-        <div class="field fieldcontain">
+        <div class="field">
             <label for="mailTemplateText">${message(code:'mailTemplate.text.label')}:</label>
             <g:textArea id="mailTemplateText" name="text" rows="5" cols="40"/>
         </div>
 
-        <div  class="field fieldcontain required">
+        <div  class="field required">
         <label for="mailTemplateLanguage">${message(code:'mailTemplate.language.label')}:</label>
         <g:select id="mailTemplateLanguage"
                   name="language"
@@ -156,7 +157,7 @@
                   noSelection="[null: '']"/>
         </div>
 
-        <div  class="field fieldcontain required">
+        <div  class="field required">
             <label for="mailTemplateType">${message(code:'default.type.label')}:</label>
             <g:select id="mailTemplateType"
                       name="type"

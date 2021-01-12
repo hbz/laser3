@@ -11,12 +11,11 @@
     <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
     <semui:crumb text="Package Tipps LAS:eR and GOKB" class="active"/>
 </semui:breadcrumbs>
-<br />
+
 <h1 class="ui header la-noMargin-top"> Package Tipps LAS:eR and GOKB</h1>
 
 %{--<g:link action="checkPackageTIPPs" params="${params+[onlyNotEqual: true]}" class="ui button">Show only where Tipps Not Equal</g:link>--}%
-<br />
-<br />
+
 <div class="ui grid">
 
     <div>
@@ -27,7 +26,7 @@
                     <tr>
                         <th>${message(code:'package.show.pkg_name')} in GOKB</th>
                         <th>${message(code:'package.show.pkg_name')} in LAS:eR</th>
-                        <%--<th>${message(code:'consortium.label', default:'Consortium')}</th>--%>
+                        <%--<th>${message(code:'consortium.label')}</th>--%>
                         <th>${message(code:'tipp.plural')} in GOKB</th>
                         <th>${message(code:'tipp.plural')} in LAS:eR</th>
                     </thead>

@@ -1,7 +1,7 @@
 <g:form action="public" controller="wcagTest" method="get" class="ui small form clearing">
 
     <div class="three fields">
-        <div class="field fieldcontain">
+        <div class="field">
             <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
         </div>
 
@@ -22,7 +22,7 @@
     $("[name='dateBeforeFilter']").change(function(){
         var val = $(this)['context']['selectedOptions'][0]['label'];
 
-        if (val != "${message(code:'default.filter.date.none', default:'-None-')}"){
+        if (val != "${message(code:'default.filter.date.none')}"){
             $(".dateBefore").removeClass("hidden");
         } else {
             $(".dateBefore").addClass("hidden");

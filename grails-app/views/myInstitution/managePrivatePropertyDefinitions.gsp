@@ -23,9 +23,7 @@
         <g:render template="actions"/>
     </semui:controlButtons>
 
-    <br />
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.institutions.manage_props')}</h1>
-
 
     <g:render template="nav" />
 
@@ -268,7 +266,7 @@
 
     $('#cust_prop_modal_select').change(function() {
         var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
-        if( selectedText == "${RefdataValue.CLASS}") {
+        if( selectedText == "${RefdataValue.name}") {
             $("#cust_prop_ref_data_name").show();
 
             var $pMatch = $( "p[data-prop-def-desc='" + $( "#pd_descr option:selected" ).val() + "']" )
@@ -289,7 +287,7 @@
         minimumInputLength: 1,
 
         formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
+            return "${message(code:'select2.minChars.note')}";
         },
         formatNoMatches: function() {
             return "${message(code:'select2.noMatchesFound')}";

@@ -1140,7 +1140,7 @@ aside.ui.accordion .title:not(.ui) {
 
 .editableform .control-group select,
 .editableform .control-group input {
-  width: auto!important;
+  width: 100% !important;
 }
 
 .editable-clear-x {

@@ -79,7 +79,7 @@
                     <tr>
                         <g:if test="${compare}">
                             <td class="center aligned">
-                                <g:checkBox name="selectedObjects" value="${s.id}" checked="false"/>
+                                <g:checkBox id="selectedObjects_${s.id}" name="selectedObjects" value="${s.id}" checked="false"/>
                             </td>
                         </g:if>
                         <td class="center aligned">
@@ -234,7 +234,7 @@
                                         <g:link controller="subscription" action="surveys" id="${s.id}"
                                                 class="ui icon button">
                                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info3")}">
-                                                <i class="ui icon envelope open"></i>
+                                                <i class="ui icon pie chart open"></i>
                                             </span>
                                         </g:link>
                                     </g:if>
@@ -247,13 +247,13 @@
                                             <g:if test="${surveysConsortiaSub.surveyInfo?.isCompletedforOwner()}">
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                       data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
-                                                    <i class="ui icon envelope green"></i>
+                                                    <i class="ui icon pie chart green"></i>
                                                 </span>
                                             </g:if>
                                             <g:else>
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                       data-content="${message(code: "surveyconfig.isCompletedforOwner.false")}">
-                                                    <i class="ui icon envelope open"></i>
+                                                    <i class="ui icon pie chart open"></i>
                                                 </span>
                                             </g:else>
                                         </g:link>
@@ -332,7 +332,7 @@
         $("[name='dateBeforeFilter']").change(function(){
             var val = $(this)['context']['selectedOptions'][0]['label'];
 
-            if(val != "${message(code:'default.filter.date.none', default:'-None-')}"){
+            if(val != "${message(code:'default.filter.date.none')}"){
                 $(".dateBefore").removeClass("hidden");
             }else{
                 $(".dateBefore").addClass("hidden");

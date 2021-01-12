@@ -12,8 +12,7 @@
     <semui:crumb message="menu.admin.systemMessage" class="active"/>
 </semui:breadcrumbs>
 
-<br />
-<h2 class="ui left floated aligned header la-clear-before">${message(code: "menu.admin.systemMessage")}</h2>
+<h1 class="ui left floated aligned header la-clear-before">${message(code: "menu.admin.systemMessage")}</h1>
 
 <semui:messages data="${flash}" />
 
@@ -48,8 +47,12 @@
                 </div>
             </td>
             <td>
-                <g:if test="${SystemMessage.TYPE_ATTENTION == msg.type}">Systemmeldung</g:if>
-                <g:if test="${SystemMessage.TYPE_STARTPAGE_NEWS == msg.type}">Startseite</g:if>
+                <g:if test="${SystemMessage.TYPE_ATTENTION == msg.type}">
+                    <span class="ui label orange">Systemmeldung</span>
+                </g:if>
+                <g:if test="${SystemMessage.TYPE_STARTPAGE_NEWS == msg.type}">
+                    <span class="ui label blue">Startseite</span>
+                </g:if>
             </td>
             <td>
                 <semui:xEditableBoolean owner="${msg}" field="isActive"/>
@@ -72,13 +75,13 @@
 
         <fieldset>
             <div class="field">
-                <label>${message(code: 'default.content.label')} (${message(code: 'default.german.label')})</label>
-                <textarea name="content_de" ></textarea>
+                <label for="content_de">${message(code: 'default.content.label')} (${message(code: 'default.german.label')})</label>
+                <textarea name="content_de" id="content_de"></textarea>
             </div>
 
             <div class="field">
-                <label>${message(code: 'default.content.label')} (${message(code: 'default.english.label')})</label>
-                <textarea name="content_en" ></textarea>
+                <label for="content_en">${message(code: 'default.content.label')} (${message(code: 'default.english.label')})</label>
+                <textarea name="content_en" id="content_en"></textarea>
             </div>
 
             <div class="field">

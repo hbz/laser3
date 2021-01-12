@@ -13,8 +13,8 @@
         </semui:breadcrumbs>
         <br />
         <semui:messages data="${flash}" />
-        <h2>${message(code:'myinst.financeImport.post.header2')}</h2>
-        <h3>${message(code:'myinst.financeImport.post.header3')}</h3>
+        <h2 class="ui header">${message(code:'myinst.financeImport.post.header2')}</h2>
+        <h3 class="ui header">${message(code:'myinst.financeImport.post.header3')}</h3>
         <g:form name="costItemParameter" action="importCostItems" controller="finance" method="post">
             <g:hiddenField name="candidates" value="${candidates.keySet() as JSON}"/>
             <g:hiddenField name="budgetCodes" value="${budgetCodes as JSON}"/>
