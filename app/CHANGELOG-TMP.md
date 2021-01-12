@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3054    12.01.2021  rc1.6   1.6.7       Andreas Bug         Kontaktadressen konnten bei bestehenden Kontakten nicht bearbeitet werden
+
 --      12.01.2021  rc1.6   1.6.7       Andreas Feature     Rückverweise korrigiert auf neue Domain
 
 --      12.01.2021  rc1.6   1.6.7       Andreas Feature     Rückverweis im Menü angepasst
