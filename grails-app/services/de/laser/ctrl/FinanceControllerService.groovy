@@ -37,6 +37,9 @@ class FinanceControllerService {
                                      ],
                                      institution:contextService.getOrg(),
                                      editConf:[:]]
+        List<Map<String,Object>> currenciesList = financeService.orderedCurrency()
+        currenciesList.remove(currenciesList.find{Map<String,Object> entry -> entry.id == 0})
+        result.currenciesList = currenciesList
         if(params.ownSort) {
             result.sortConfig.ownSort = params.sort
             result.sortConfig.ownOrder = params.order
