@@ -21,6 +21,18 @@
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
 
+<semui:controlButtons>
+    <semui:actionsDropdown>
+        <g:if test="${editable}">
+            <a href="#createPersonModal" class="item" data-semui="modal" onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPerson.label"/></a>
+        </g:if><g:else>
+        <semui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}" message="person.create_new.contactPerson.label"/>
+    </g:else>
+        <semui:actionsDropdownItem notActive="true" data-semui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
+                                   message="menu.institutions.copy_emailaddresses.button"/>
+    </semui:actionsDropdown>
+</semui:controlButtons>
+
 <semui:messages data="${flash}"/>
 
 <g:render template="/organisation/nav"/>
@@ -40,18 +52,6 @@
 </div>
 
 <div class="ui bottom attached tab segment ${params.tab == 'contacts' ? 'active' : ''}" data-tab="contacts">
-
-    <semui:controlButtons>
-        <semui:actionsDropdown>
-            <g:if test="${editable}">
-                <a href="#createPersonModal" class="item" data-semui="modal" onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPerson.label"/></a>
-            </g:if><g:else>
-            <semui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}" message="person.create_new.contactPerson.label"/>
-        </g:else>
-            <semui:actionsDropdownItem notActive="true" data-semui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
-                                       message="menu.institutions.copy_emailaddresses.button"/>
-        </semui:actionsDropdown>
-    </semui:controlButtons>
 
     <g:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
     <br />
