@@ -11,6 +11,8 @@
 
 --      12.01.2021  rc1.6   1.6.7       Andreas Bug         Paketverknüpfung neu priorisiert (d.h. zuerst LAS:eR, dann GOKb, falls Paket noch nicht übertragen)
 
+2764    12.01.2021  rc1.6   1.6.7       David   Bug         Sicherheitslücke
+
 --      14.12.2020  rc1.6   1.6.6       Andreas Feature     neues Verfahrensverzeichnis eingehängt
 
 3036    14.12.2020  rc1.6   1.6.6       Andreas Bug         Darstellungs- und Fallbackfehler bei Kosten behoben
