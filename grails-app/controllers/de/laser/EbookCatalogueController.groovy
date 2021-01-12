@@ -159,7 +159,7 @@ class EbookCatalogueController {
         result
     }
 
-    Map<String, Object> _stats_TODO(boolean reset) {
+    private Map<String, Object> _stats_TODO(boolean reset) {
 
         Map<String, Object> result = [:]
         HttpSession session = RequestContextHolder.currentRequestAttributes().getSession()
@@ -241,7 +241,7 @@ class EbookCatalogueController {
         result
     }
 
-    List _history_TODO(GrailsParameterMap params, int subCount, boolean reset) {
+    private List _history_TODO(GrailsParameterMap params, int subCount, boolean reset) {
 
         HttpSession session = RequestContextHolder.currentRequestAttributes().getSession()
 

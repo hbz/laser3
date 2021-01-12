@@ -157,7 +157,7 @@
             </g:if>
 
             <g:if test="${actionName == 'members'}">
-                <g:if test="${validSubChilds}">
+                <g:if test="${subscriptionService.getValidSubChilds(subscription)}">
                     <div class="divider"></div>
                     <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
                 </g:if>
