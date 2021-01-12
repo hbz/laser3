@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      12.01.2021  rc1.6   1.6.7       Andreas Feature     Rückverweise korrigiert auf neue Domain
+
 --      12.01.2021  rc1.6   1.6.7       Andreas Feature     Rückverweis im Menü angepasst
 
 --      12.01.2021  rc1.6   1.6.7       Andreas Bug         Paketverknüpfung neu priorisiert (d.h. zuerst LAS:eR, dann GOKb, falls Paket noch nicht übertragen)
