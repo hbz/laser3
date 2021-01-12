@@ -427,6 +427,11 @@ r2d2 = {
                 },
                 onShow : function() {
                     var modalCallbackFunction = JSPC.callbacks.modal.show[$(this).attr('id')];
+                    a11yModal.go({
+                        el: document.getElementById($(this).attr('id')),
+                        focusElement: '',
+                        escCallback:''
+                    });
                     if (typeof modalCallbackFunction === "function") {
                         modalCallbackFunction(triggerElement)
                     }
@@ -601,6 +606,11 @@ r2d2 = {
                 $('.tiny.modal')
                     .modal({
                         onShow : function() {
+                            a11yModal.go({
+                                el: document.getElementById($(this).attr('id')),
+                                focusElement: '',
+                                escCallback:''
+                            });
                             keyboardHandler = function keyboardHandler(e) {
                                 if (e.keyCode === 27) {
                                     $(this).modal('hide');
