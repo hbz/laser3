@@ -1090,21 +1090,11 @@ class YodaController {
         List<ApiSource> apiSources = ApiSource.findAllByEditUrlIsNull()
         List<GlobalRecordSource> globalRecordSources = GlobalRecordSource.findAllByEditUriIsNull()
         apiSources.each { ApiSource aps ->
-            if(aps.baseUrl.contains('phaeton.hbz-nrw')) {
-                aps.editUrl = 'https://gokb.org'
-            }
-            else {
-                aps.editUrl = aps.baseUrl
-            }
+            aps.editUrl = aps.baseUrl
             aps.save(flush:true)
         }
         globalRecordSources.each { GlobalRecordSource grs ->
-            if(grs.uri.contains('phaeton.hbz-nrw')) {
-                grs.editUri = 'https://gokb.org/gokb/oai/packages'
-            }
-            else {
-                grs.editUri = grs.uri
-            }
+            grs.editUri = grs.uri
             grs.save(flush:true)
         }
         flash.message = "${apiSources.size()} ApiSources und ${globalRecordSources.size()} GlobalRecordSources angepasst!"
