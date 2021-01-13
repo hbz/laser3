@@ -592,7 +592,7 @@ class FactService {
   List<Platform> platformsWithNatstatId()
   {
     String hql = "select platform from Platform as platform" +
-        " where exists (select 1 from platform.customProperties as pcp where pcp.owner = platform.id and pcp.type.name = 'NatStat Supplier ID') order by platform.name"
+        " where exists (select 1 from platform.propertySet as pcp where pcp.owner = platform.id and pcp.type.name = 'NatStat Supplier ID') order by platform.name"
     return Platform.executeQuery(hql)
   }
 
