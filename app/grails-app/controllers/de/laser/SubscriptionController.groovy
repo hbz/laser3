@@ -3226,12 +3226,12 @@ class SubscriptionController
             log.debug("linkPackage. Global Record Source URL: " +source.baseUrl)
             globalSourceSyncService.source = source
             String addType = params.addType
-            GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:'gokb',identifier:params.addUUID])
-            if(packageRecord && packageRecord.record?.header?.status?.text() != 'deleted') {
-                if(!Package.findByGokbId(pkgUUID)) {
-                    executorService.execute({
-                        Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id)
-                        try {
+            if(!Package.findByGokbId(pkgUUID)) {
+                executorService.execute({
+                    Thread.currentThread().setName("PackageSync_"+result.subscriptionInstance?.id)
+                    try {
+                        GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:'gokb',identifier:params.addUUID])
+                        if(packageRecord && packageRecord.record?.header?.status?.text() != 'deleted') {
                             globalSourceSyncService.defineMapFields()
                             globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
                             List<Map<String,Object>> tippsToNotify = globalSourceSyncService.createOrUpdatePackage(packageRecord.record.metadata.gokb.package)
@@ -3255,41 +3255,38 @@ class SubscriptionController
                             //globalSourceSyncService.notifyDependencies([tippsToNotify])
                             //globalSourceSyncService.cleanUpGorm()
                         }
-                        catch (Exception e) {
-                            log.error("sync job has failed, please consult stacktrace as follows: ")
-                            e.printStackTrace()
-                        }
-                    })
-                }
-                else {
-                    Package pkgToLink = Package.findByGokbId(pkgUUID)
-                    //Set<Subscription> subInstances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-                    println "Add package ${addType} entitlements to subscription ${result.subscriptionInstance}"
-                    if (addType == 'With') {
-                        pkgToLink.addToSubscription(result.subscriptionInstance, true)
-
-                        /*subInstances.each {
-                            pkgToLink.addToSubscription(it, true)
-                        }*/
-                    } else if (addType == 'Without') {
-                        pkgToLink.addToSubscription(result.subscriptionInstance, false)
-
-                        /*subInstances.each {
-                            pkgToLink.addToSubscription(it, false)
-                        }*/
                     }
-                }
-                switch(params.addType) {
-                    case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
-                        redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
-                        break
-                    case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
-                        redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: packageRecord.record.metadata.gokb.package.name]
-                        break
-                }
+                    catch (Exception e) {
+                        log.error("sync job has failed, please consult stacktrace as follows: ")
+                        e.printStackTrace()
+                    }
+                })
             }
             else {
-                flash.error = message(code:'subscription.details.link.packageNotFound')
+                Package pkgToLink = Package.findByGokbId(pkgUUID)
+                //Set<Subscription> subInstances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                println "Add package ${addType} entitlements to subscription ${result.subscriptionInstance}"
+                if (addType == 'With') {
+                    pkgToLink.addToSubscription(result.subscriptionInstance, true)
+
+                    /*subInstances.each {
+                        pkgToLink.addToSubscription(it, true)
+                    }*/
+                } else if (addType == 'Without') {
+                    pkgToLink.addToSubscription(result.subscriptionInstance, false)
+
+                    /*subInstances.each {
+                        pkgToLink.addToSubscription(it, false)
+                    }*/
+                }
+            }
+            switch(params.addType) {
+                case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
+                    redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
+                    break
+                case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
+                    redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: packageRecord.record.metadata.gokb.package.name]
+                    break
             }
         }
 
