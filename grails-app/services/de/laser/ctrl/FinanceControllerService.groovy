@@ -37,6 +37,9 @@ class FinanceControllerService {
                                      ],
                                      institution:contextService.getOrg(),
                                      editConf:[:]]
+        List<Map<String,Object>> currenciesList = financeService.orderedCurrency()
+        currenciesList.remove(currenciesList.find{Map<String,Object> entry -> entry.id == 0})
+        result.currenciesList = currenciesList
         if(params.ownSort) {
             result.sortConfig.ownSort = params.sort
             result.sortConfig.ownOrder = params.order
@@ -210,11 +213,12 @@ class FinanceControllerService {
      * @return basic parameters for manipulating cost items
      */
     Map<String,Object> getEditVars(Org org) {
+        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
         [
             costItemStatus:     RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS) - RDStore.COST_ITEM_DELETED,
             costItemCategory:   RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_CATEGORY),
             costItemSigns:      RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION),
-            costItemElements:   CostItemElementConfiguration.findAllByForOrganisation(org),
+            costItemElements:   CostItemElementConfiguration.executeQuery('select ciec from CostItemElementConfiguration ciec join ciec.costItemElement cie where ciec.forOrganisation = :org order by cie.value_'+locale+' asc',[org:org]),
             taxType:            RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE),
             yn:                 RefdataCategory.getAllRefdataValues(RDConstants.Y_N),
             budgetCodes:        BudgetCode.findAllByOwner(org),
