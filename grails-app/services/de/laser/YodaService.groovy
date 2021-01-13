@@ -753,7 +753,7 @@ class YodaService {
         }
         platformsWithoutTIPPs.each { Platform platform ->
             println("processing platform ${platform} without TIPP ${platform.gokbId} to check correctness ...")
-            Map esQuery = gokbService.queryElasticsearch('https://gokb.org/gokb/api/find?uuid='+platform.gokbId)
+            Map esQuery = gokbService.queryElasticsearch('https://gokb.hbz-nrw.de/gokb/api/find?uuid='+platform.gokbId)
             List esResult
             //is a consequent error of GOKbService's copy-paste-mess ...
             if(esQuery.warning)

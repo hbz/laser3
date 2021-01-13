@@ -1161,13 +1161,13 @@ class SubscriptionControllerService {
                 log.debug("linkPackage. Global Record Source URL: " +source.baseUrl)
                 globalSourceSyncService.source = source
                 String addType = params.addType
-                GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord', metadataPrefix:'gokb', identifier:params.addUUID])
-                if(packageRecord && packageRecord.record?.header?.status?.text() != 'deleted') {
-                    result.packageName = packageRecord.record.metadata.gokb.package.name
-                    if(!Package.findByGokbId(pkgUUID)) {
-                        executorService.execute({
-                            Thread.currentThread().setName("PackageSync_"+result.subscription.id)
-                            try {
+                if(!Package.findByGokbId(pkgUUID)) {
+                    executorService.execute({
+                        Thread.currentThread().setName("PackageSync_"+result.subscription.id)
+                        try {
+                            GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord', metadataPrefix:'gokb', identifier:params.addUUID])
+                            if(packageRecord && packageRecord.record?.header?.status?.text() != 'deleted') {
+                                result.packageName = packageRecord.record.metadata.gokb.package.name
                                 globalSourceSyncService.defineMapFields()
                                 globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
                                 globalSourceSyncService.createOrUpdatePackageOAI(packageRecord.record.metadata.gokb.package)
@@ -1180,25 +1180,22 @@ class SubscriptionControllerService {
                                     pkgToLink.addToSubscription(result.subscription, false)
                                 }
                             }
-                            catch (Exception e) {
-                                log.error("sync job has failed, please consult stacktrace as follows: ")
-                                e.printStackTrace()
-                            }
-                        })
-                    }
-                    else {
-                        Package pkgToLink = Package.findByGokbId(pkgUUID)
-                        log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                        if (addType == 'With') {
-                            pkgToLink.addToSubscription(result.subscription, true)
                         }
-                        else if (addType == 'Without') {
-                            pkgToLink.addToSubscription(result.subscription, false)
+                        catch (Exception e) {
+                            log.error("sync job has failed, please consult stacktrace as follows: ")
+                            e.printStackTrace()
                         }
-                    }
+                    })
                 }
                 else {
-                    result.error = messageSource.getMessage('subscription.details.link.packageNotFound',null,locale)
+                    Package pkgToLink = Package.findByGokbId(pkgUUID)
+                    log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
+                    if (addType == 'With') {
+                        pkgToLink.addToSubscription(result.subscription, true)
+                    }
+                    else if (addType == 'Without') {
+                        pkgToLink.addToSubscription(result.subscription, false)
+                    }
                 }
             }
             if (result.subscription.packages) {
