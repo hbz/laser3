@@ -11,6 +11,15 @@ class LaserFilters {
 
         // TODO: grails-upgrade: http://docs.grails.org/latest/guide/theWebLayer.html#interceptors
 
+        cacheControlFilter(controller:'*', action:'*') {
+
+            before = {
+                response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
+                response.setHeader("Pragma", "no-cache")
+                response.setHeader("Expires", "0")
+            }
+        }
+
         globalUIDFilter(controller:'*', action:'*') {
 
             before = {

@@ -169,6 +169,7 @@
     <g:render template="/templates/cpa/person_table"
               model="${[persons: visiblePersons,
                         showAddresses: true,
+                        showContacts: true,
                         tmplConfigShow: ['lineNumber', 'name', 'showAddresses', 'function', 'position']
               ]}"/>
 
