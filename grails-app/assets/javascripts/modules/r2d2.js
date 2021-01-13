@@ -418,7 +418,7 @@ r2d2 = {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                 },
                 detachable: true,
-                autofocus: false,
+                autofocus: true,
                 closable: false,
                 transition: 'scale',
                 onApprove : function() {
@@ -434,6 +434,11 @@ r2d2 = {
                     });
                     if (typeof modalCallbackFunction === "function") {
                         modalCallbackFunction(triggerElement)
+                    }
+                    keyboardHandler = function keyboardHandler(e) {
+                        if (e.keyCode === 27) {
+                            $(this).modal('hide');
+                        }
                     }
                 }
             }).modal('show')
