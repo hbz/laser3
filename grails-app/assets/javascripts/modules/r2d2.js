@@ -432,14 +432,19 @@ r2d2 = {
                         focusElement: '',
                         escCallback:''
                     });
-                    if (typeof modalCallbackFunction === "function") {
-                        modalCallbackFunction(triggerElement)
-                    }
-                    keyboardHandler = function keyboardHandler(e) {
+                    keyboardHandler = function (e) {
                         if (e.keyCode === 27) {
                             $(this).modal('hide');
                         }
                     }
+                    this.addEventListener('keyup', keyboardHandler);
+                    if (typeof modalCallbackFunction === "function") {
+                        modalCallbackFunction(triggerElement)
+                    }
+
+                },
+                onHide : function() {
+                    this.removeEventListener('keyup', keyboardHandler);
                 }
             }).modal('show')
         });
@@ -616,7 +621,7 @@ r2d2 = {
                                 focusElement: '',
                                 escCallback:''
                             });
-                            keyboardHandler = function keyboardHandler(e) {
+                            keyboardHandler = function (e) {
                                 if (e.keyCode === 27) {
                                     $(this).modal('hide');
                                 }
