@@ -421,7 +421,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     Org getConsortia() {
-        Org result = orgRelations.find { OrgRole oo -> oo.roleType == RDStore.OR_SUBSCRIPTION_CONSORTIA }.org
+        Org result = orgRelations.find { OrgRole oo -> oo.roleType == RDStore.OR_SUBSCRIPTION_CONSORTIA }?.org //null check necessary because of single users!
         result
     }
 

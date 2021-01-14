@@ -400,7 +400,7 @@ class MyInstitutionController  {
 
         result.licenses = totalLicenses.drop((int) result.offset).take((int) result.max)
         if(result.licenses) {
-            Set<Links> allLinkedSubscriptions = Subscription.executeQuery("select li from Links li join li.destinationSubscription s where li.sourceLicense in (:licenses) and li.linkType = :linkType and s.status.id = :status", [licenses: result.licenses, linkType: RDStore.LINKTYPE_LICENSE, status: qry_params.subStatus])
+            Set<Links> allLinkedSubscriptions = Subscription.executeQuery("select li from Links li join li.destinationSubscription s join s.orgRelations oo where li.sourceLicense in (:licenses) and li.linkType = :linkType and s.status.id = :status and oo.org = :context", [licenses: result.licenses, linkType: RDStore.LINKTYPE_LICENSE, status: qry_params.subStatus,context:result.institution])
             Map<License,Set<Subscription>> subscriptionLicenseMap = [:]
             allLinkedSubscriptions.each { Links li ->
                 Set<Subscription> subscriptions = subscriptionLicenseMap.get(li.sourceLicense)

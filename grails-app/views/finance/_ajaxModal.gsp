@@ -484,7 +484,7 @@
                             alert("${message(code:'financials.newCosts.entitlementError')}");
                         else {
                             if($("[name='newLicenseeTarget']").length === 1 && $("[name='newLicenseeTarget']").val()[0] === '') {
-                                alert("${message(code:'financials.newCosts.noSubscriptionError')}") //continue here: a confirm if the consortial user wants really to attach cost items to the parent subscription
+                                alert("${message(code:'financials.newCosts.noSubscriptionError')}")
                             }
                             else {
                                 if($("[name='newLicenseeTarget']").val() && $("[name='newLicenseeTarget']").val().join(";").indexOf('forParent') > -1) {

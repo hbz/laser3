@@ -149,7 +149,7 @@
             </div>
         </div>
 
-        <div class="field required" id="radioGroup">
+        <div class="field" id="radioGroup">
             <label for="radioGroup">
                 <g:message code="task.responsible.label" />
             </label>
@@ -174,7 +174,7 @@
                 </div>
 
                 <div id="responsibleUser"
-                     class="field wide eight ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')}">
+                     class="field wide eight ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')} required">
                     <label for="responsibleUserInput">
                         <g:message code="task.responsibleUser.label" />
                     </label>
@@ -274,7 +274,7 @@
                                 ]
                             },
                             responsibleUser: {
-                                identifier: 'responsible',
+                                identifier: 'responsibleUserInput',
                                 rules: [
                                     {
                                         type: 'checked',
