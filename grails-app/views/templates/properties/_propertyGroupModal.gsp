@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_propertyGroupModal -->
-<%@ page import="de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinitionGroupItem; de.laser.properties.PropertyDefinition; de.laser.FormService"%>
+<%@ page import="de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinitionGroupItem; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; de.laser.FormService; org.springframework.context.i18n.LocaleContextHolder"%>
 <laser:serviceInjection />
 
 <semui:modal id="propDefGroupModal" message="propertyDefinitionGroup.create_new.label" msgSave="${createOrUpdate}">
@@ -59,12 +59,10 @@
                     <label><g:message code="propertyDefinitionGroup.editModal.properties"/></label>
 
                     <div class="scrollWrapper">
-
                         <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
                             <table class="ui table compact hidden scrollContent" data-propDefTable="${pdDescr}">
                                 <tbody>
-                                <g:set var="clt" value="${de.laser.helper.SortUtils.getCollator()}" />
-                                <g:each in="${PropertyDefinition.findAllWhere(tenant:null, descr:pdDescr).sort{ a,b -> clt.compare(a?.getI10n('name'), b?.getI10n('name'))}}" var="pd">
+                                <g:each in="${PropertyDefinition.where{ tenant == null && descr == pdDescr }.sort( 'name_' + I10nTranslation.decodeLocale(LocaleContextHolder.getLocale()) )}" var="pd">
                                     <tr>
                                         <td>
                                             ${pd?.getI10n('name')}

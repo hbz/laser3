@@ -526,6 +526,38 @@ class AdminController  {
     }
 
     @Secured(['ROLE_ADMIN'])
+    def databaseCollations() {
+        Map<String, Object> result = [:]
+
+        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+        Sql sql = new Sql(dataSource)
+
+        result.table_columns = sql.rows("""
+            SELECT table_schema, table_name, column_name, data_type, collation_catalog, collation_schema, collation_name
+            FROM information_schema.columns
+            where data_type in ('text', 'character varying') and table_schema = 'public'
+            order by  table_schema, table_name, column_name;
+            """)
+
+        result.laser_german_phonebook = "DIN 5007 Var.2"
+        result.default_collate = sql.rows("show LC_COLLATE;").get(0).get('lc_collate')
+
+        result.examples = [
+                'default' : sql.rows(
+                        "select rdv.rdv_value_de from refdata_value rdv, refdata_category rdc " +
+                                "where rdv.rdv_owner = rdc.rdc_id and rdc.rdc_description = 'country' " +
+                                "order by rdv.rdv_value_de COLLATE \"default\" limit 20;"
+                ).collect{ it.rdv_value_de },
+                // works because RefdataValue.value_de is set to laser_german_phonebook
+                'laser_german_phonebook' : RefdataValue.executeQuery(
+                        "select rdv.value_de from RefdataValue rdv where rdv.owner.desc = 'country' order by rdv.value_de", [max: 20]
+                )
+        ]
+
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
     def databaseStatistics() {
         Map<String, Object> result = [:]
 
