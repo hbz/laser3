@@ -365,39 +365,17 @@
                                 <div class="divider"></div>
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
-                                    ${message(code:'menu.admin.dataManagement')}
+                                    ${message(code:'menu.admin.syncManagement')}
                                     <i  class="dropdown icon"></i>
-
                                     <div class="menu" role="menu">
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listPlatformDuplicates">List Platform Duplicates</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="package" action="getDuplicatePackages">List Package Duplicates</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listDeletedTIPPS">List TIPP Duplicates and deleted TIPPs</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="listDuplicateTitles">Check Title GOKb IDs</semui:link>
-                                        <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="tippTransfer">${message(code:'menu.admin.tippTransfer')}</semui:link>--%>
-                                        <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="ieTransfer">${message(code:'menu.admin.ieTransfer')}</semui:link>--%>
-                                        <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</semui:link>--%>
-                                        <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</semui:link>--%>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="databaseStatistics">${message(code: "menu.admin.databaseStatistics")}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="fileConsistency">${message(code: "menu.admin.fileConsistency")}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="globalMultithreadSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync.multithread')}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="getTIsWithoutGOKBId">${message(code:'menu.yoda.purgeTIsWithoutGOKBID')}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="titlesUpdate">${message(code:'menu.admin.bulkOps.checkLicenseLinks')}</semui:link>
                                     </div>
                                 </div>
-
-                            <div class="item" role="menuitem" aria-haspopup="true">
-                                ${message(code:'menu.admin.syncManagement')}
-                                <i  class="dropdown icon"></i>
-                                <div class="menu" role="menu">
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</semui:link>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="globalMultithreadSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync.multithread')}</semui:link>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</semui:link>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</semui:link>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="getTIsWithoutGOKBId">${message(code:'menu.yoda.purgeTIsWithoutGOKBID')}</semui:link>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="titlesUpdate">${message(code:'menu.admin.bulkOps.checkLicenseLinks')}</semui:link>
-                                </div>
-                            </div>
-
-                                <div class="divider"></div>
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     ElasticSearch
@@ -413,6 +391,27 @@
                                 </div>
 
                                 <div class="divider"></div>
+
+                                <div class="item" role="menuitem" aria-haspopup="true">
+                                    ${message(code:'menu.admin.dataManagement')}
+                                    <i  class="dropdown icon"></i>
+
+                                    <div class="menu" role="menu">
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listPlatformDuplicates">List Platform Duplicates</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="package" action="getDuplicatePackages">List Package Duplicates</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listDeletedTIPPS">List TIPP Duplicates and deleted TIPPs</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="listDuplicateTitles">Check Title GOKb IDs</semui:link>
+                                        <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="tippTransfer">${message(code:'menu.admin.tippTransfer')}</semui:link>--%>
+                                        <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="ieTransfer">${message(code:'menu.admin.ieTransfer')}</semui:link>--%>
+                                        <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</semui:link>--%>
+                                        <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</semui:link>--%>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="databaseCollations">${message(code: "menu.admin.databaseCollations")}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="databaseStatistics">${message(code: "menu.admin.databaseStatistics")}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="fileConsistency">${message(code: "menu.admin.fileConsistency")}</semui:link>
+                                    </div>
+                                </div>
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     ${message(code:'menu.admin.dataMigration')}
