@@ -418,7 +418,7 @@ r2d2 = {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                 },
                 detachable: true,
-                autofocus: false,
+                autofocus: true,
                 closable: false,
                 transition: 'scale',
                 onApprove : function() {
@@ -432,9 +432,19 @@ r2d2 = {
                         focusElement: '',
                         escCallback:''
                     });
+                    keyboardHandler = function (e) {
+                        if (e.keyCode === 27) {
+                            $(this).modal('hide');
+                        }
+                    }
+                    this.addEventListener('keyup', keyboardHandler);
                     if (typeof modalCallbackFunction === "function") {
                         modalCallbackFunction(triggerElement)
                     }
+
+                },
+                onHide : function() {
+                    this.removeEventListener('keyup', keyboardHandler);
                 }
             }).modal('show')
         });
@@ -611,7 +621,7 @@ r2d2 = {
                                 focusElement: '',
                                 escCallback:''
                             });
-                            keyboardHandler = function keyboardHandler(e) {
+                            keyboardHandler = function (e) {
                                 if (e.keyCode === 27) {
                                     $(this).modal('hide');
                                 }
