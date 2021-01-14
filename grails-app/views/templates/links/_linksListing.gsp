@@ -84,7 +84,7 @@
                                                 <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                         data-confirm-term-how="unlink"
-                                                        action="unlinkLicense" params="${[licenseOID: link.sourceLicense.id, id:subscription.id]}">
+                                                        controller="subscription" action="unlinkLicense" params="${[license: link.sourceLicense.id, id:subscription.id]}">
                                                     <i class="unlink icon"></i>
                                                 </g:link>
                                             </span>
@@ -117,14 +117,14 @@
             </g:each>
         </table>
     </g:if>
+    <g:elseif test="${license || subscriptionLicenseLink}">
+        <p>
+            <g:message code="license.details.noLink"/>
+        </p>
+    </g:elseif>
     <g:elseif test="${subscription}">
         <p>
             <g:message code="subscription.details.noLink"/>
-        </p>
-    </g:elseif>
-    <g:elseif test="${license}">
-        <p>
-            <g:message code="license.details.noLink"/>
         </p>
     </g:elseif>
     <div class="ui la-vertical buttons">

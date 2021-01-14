@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.IssueEntitlement" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.IssueEntitlement; de.laser.I10nTranslation" %>
 <laser:serviceInjection />
 <!-- template: meta/identifier : editable: ${editable} -->
 
@@ -109,14 +109,8 @@
                 <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
 
                     <%
-                    List<IdentifierNamespace> nsList = IdentifierNamespace.where{((nsType == object.class.name || nsType == null) && isFromLaser == true)}
-                            .list(sort: 'ns')
-                            .sort { a, b ->
-                                String aVal = a.getI10n('name') ?: a.ns
-                                String bVal = b.getI10n('name') ?: b.ns
-                                aVal.compareToIgnoreCase bVal
-                            }
-                            .collect{ it }
+                        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+                        List<IdentifierNamespace> nsList = IdentifierNamespace.executeQuery('select idns from IdentifierNamespace idns where (idns.nsType = :objectType or idns.nsType = null) and idns.isFromLaser = true order by idns.ns asc, idns.name_'+locale+' asc',[objectType:object.class.name])
                     %>
                     <g:if test="${editable && nsList}">
 

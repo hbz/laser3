@@ -434,7 +434,7 @@ class FinanceService {
                         "where ci.owner = :org ${genericExcludes+subFilter+filterQuery.ciFilter} "+
                         "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder
                     pu.setBenchmark("execute own query")
-                    List<CostItem> ownSubscriptionCostItems = CostItem.executeQuery(queryStringBase,[org:org]+genericExcludeParams+ownFilter)
+                    Set<CostItem> ownSubscriptionCostItems = CostItem.executeQuery(queryStringBase,[org:org]+genericExcludeParams+ownFilter)
                     result.own = [count:ownSubscriptionCostItems.size()]
                     pu.setBenchmark("map assembly")
                     if(ownSubscriptionCostItems) {
@@ -465,7 +465,7 @@ class FinanceService {
                                         ciA.sub?.orgRelations?.find { oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name}
                         }*/
                         pu.setBenchmark("map assembly")
-                        result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consortialCostRows],[max:configMap.max,offset:configMap.offsets.consOffset])
+                        result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consortialCostRows],[max:configMap.max,offset:configMap.offsets.consOffset]).toSet()
                         result.cons.sums = calculateResults(consortialCostItems)
                     }
                     break
