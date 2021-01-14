@@ -26860,6 +26860,10 @@ Floated Menu / Item
 .ui.message {
   border-radius: 0;
 }
+
+.ui.message a {
+  text-decoration: underline;
+}
 /*!
  * # Semantic UI 2.4.2 - Table
  * http://github.com/semantic-org/semantic-ui/
