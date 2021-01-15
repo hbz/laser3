@@ -78,35 +78,5 @@
             </tr>
         </g:each>
     </tbody>
-
-    <%--<g:if test="${editable}">
-        <tfoot>
-            <tr>
-                <g:if test="${ownobj.privateProperties}">
-                    <td colspan="4">
-                </g:if>
-                <g:else>
-                    <td>
-                </g:else>
-                        <laser:remoteForm url="[controller: 'ajax', action: 'addPrivatePropertyValue']"
-                                      name="cust_prop_add_value_private"
-                                      class="ui form"
-                                      data-update="${custom_props_div}"
-                                      data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})">
-                        <g:if test="${!(actionName.contains('survey') || controllerName.contains('survey'))}">
-                            <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
-                            <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
-                            <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
-                            <input type="hidden" name="editable"   value="${editable}"/>
-                            <input type="hidden" name="ownerClass" value="${ownobj?.class?.name}"/>
-
-                            <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
-                        </g:if>
-                    </laser:remoteForm>
-
-                    </td>
-            </tr>
-        </tfoot>
-    </g:if>--%>
 </table>
 <!-- O: templates/properties/_members -->
