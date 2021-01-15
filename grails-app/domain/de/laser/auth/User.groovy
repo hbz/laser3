@@ -78,9 +78,9 @@ class User {
         gets UserSetting
         creating new one (with value) if not existing
      */
-    def getSetting(UserSetting.KEYS key, def defaultValue) {
+    UserSetting getSetting(UserSetting.KEYS key, def defaultValue) {
         def us = UserSetting.get(this, key)
-        (us == UserSetting.SETTING_NOT_FOUND) ? UserSetting.add(this, key, defaultValue) : us
+        (us == UserSetting.SETTING_NOT_FOUND) ? UserSetting.add(this, key, defaultValue) : (UserSetting) us
     }
 
     /*
@@ -88,7 +88,7 @@ class User {
         creating new UserSetting (with value) if not existing
      */
     def getSettingsValue(UserSetting.KEYS key, def defaultValue) {
-        def setting = getSetting(key, defaultValue)
+        UserSetting setting = getSetting(key, defaultValue)
         setting.getValue()
     }
 
@@ -102,7 +102,7 @@ class User {
 
     long getDefaultPageSize() {
         // create if no setting found
-        def setting = getSetting(UserSetting.KEYS.PAGE_SIZE, 10)
+        UserSetting setting = getSetting(UserSetting.KEYS.PAGE_SIZE, 10)
         // if setting exists, but null value
         long value = setting.getValue() ?: 10
         return value

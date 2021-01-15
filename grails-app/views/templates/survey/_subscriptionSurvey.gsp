@@ -414,7 +414,7 @@
                                 <g:set var="editable" value="${false}" scope="request"/>
                                 <g:set var="editable" value="${false}" scope="page"/>
                                 <g:render template="/subscription/properties" model="${[
-                                        subscription: subscription
+                                        subscription: subscription, calledFromSurvey: true
                                 ]}"/>
 
                             </div>

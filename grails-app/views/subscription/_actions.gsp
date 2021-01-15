@@ -115,9 +115,9 @@
                     </g:else>
                 </g:if>
             </sec:ifAnyGranted>
-            <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
+            <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkPerm("ORG_CONSORTIUM")}">
                 <div class="divider"></div>
-                <g:if test="${hasPrevious}">
+                <g:if test="${hasNext}">
                     <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
                                                        params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewalsConsortium.label"/>
                 </g:if>
@@ -127,7 +127,7 @@
                 </g:else>
             </g:if>
             <g:if test ="${subscription._getCalculatedType() == CalculatedType.TYPE_LOCAL}">
-                <g:if test ="${hasPrevious}">
+                <g:if test ="${hasNext}">
                     <semui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
                                                        params="${[id: params.id]}" tooltip="${message(code: 'subscription.details.renewals.isAlreadyRenewed')}" message="subscription.details.renewals.label"/>
                 </g:if>

@@ -178,16 +178,14 @@ class AjaxHtmlController {
         User user = contextService.getUser()
         if(params.subscription) {
             Subscription subscription = Subscription.get(params.subscription)
-            render template: "/subscription/properties", model: [calledFrom: 'subscription',
-                                                                 subscription: subscription,
+            render template: "/subscription/properties", model: [subscription: subscription,
                                                                  showConsortiaFunctions: subscriptionService.showConsortiaFunctions(contextOrg, subscription),
                                                                  contextOrg: contextOrg,
                                                                  editable: subscription.isEditableBy(user)]
         }
         else if(params.license) {
             License license = License.get(params.license)
-            render template: "/license/properties", model: [calledFrom: 'license',
-                                                            license: license,
+            render template: "/license/properties", model: [license: license,
                                                             showConsortiaFunctions: licenseControllerService.showConsortiaFunctions(license),
                                                             contextOrg: contextOrg,
                                                             institution: contextOrg,

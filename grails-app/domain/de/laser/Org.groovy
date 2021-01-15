@@ -313,9 +313,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 	    gets OrgSetting
 	    creating new one (with value) if not existing
      */
-    def getSetting(OrgSetting.KEYS key, def defaultValue) {
+    OrgSetting getSetting(OrgSetting.KEYS key, def defaultValue) {
         def os = OrgSetting.get(this, key)
-        (os == OrgSetting.SETTING_NOT_FOUND) ? OrgSetting.add(this, key, defaultValue) : os
+        (os == OrgSetting.SETTING_NOT_FOUND) ? OrgSetting.add(this, key, defaultValue) : (OrgSetting) os
     }
 
     /*
@@ -323,7 +323,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         creating new OrgSetting (with value) if not existing
      */
     def getSettingsValue(OrgSetting.KEYS key, def defaultValue) {
-        def setting = getSetting(key, defaultValue)
+        OrgSetting setting = getSetting(key, defaultValue)
         setting.getValue()
     }
 

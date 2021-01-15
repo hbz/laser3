@@ -17,18 +17,20 @@
 
 </semui:modal>
 
-<g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_ADMINISTRATIVE]}">
-    <div class="ui card la-dl-no-table ">
-        <div class="content">
-            <h5 class="ui header">${message(code:'subscription.properties.consortium')}</h5>
-            <div id="member_props_div">
-                <g:render template="/templates/properties/members" model="${[
-                        prop_desc: PropertyDefinition.SUB_PROP,
-                        ownobj: subscription,
-                        custom_props_div: "member_props_div"]}"/>
+<g:if test="${memberProperties}">%{-- check for content --}%
+    <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_ADMINISTRATIVE]}">
+        <div class="ui card la-dl-no-table">
+            <div class="content">
+                <h5 class="ui header">${message(code:'subscription.properties.consortium')}</h5>
+                <div id="member_props_div">
+                    <g:render template="/templates/properties/members" model="${[
+                            prop_desc: PropertyDefinition.SUB_PROP,
+                            ownobj: subscription,
+                            custom_props_div: "member_props_div"]}"/>
+                </div>
             </div>
         </div>
-    </div>
+    </g:if>
 </g:if>
 
 <!-- TODO div class="ui card la-dl-no-table la-js-hideable" -->
@@ -107,13 +109,12 @@
                 ${message(code:'subscription.properties')}
             </g:else>
         </h5>
-         <%--!!!!Die Editable Prüfung dient dazu, dass für die Umfrag Lizenz-Merkmal nicht editierbar sind !!!!--%>
         <div id="custom_props_div_props">
             <g:render template="/templates/properties/custom" model="${[
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscription,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
-                    editable: (calledFrom == 'subscription' && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')),
+                    editable: (!calledFromSurvey && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')),
                     custom_props_div: "custom_props_div_props" ]}"/>
         </div>
     </div>
