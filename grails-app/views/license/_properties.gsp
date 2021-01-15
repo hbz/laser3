@@ -17,18 +17,20 @@
 
 </semui:modal>
 
-<g:if test="${license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
-    <div class="ui card la-dl-no-table ">
-        <div class="content">
-            <h5 class="ui header">${message(code:'license.properties.consortium')}</h5>
-            <div id="member_props_div">
-                <g:render template="/templates/properties/members" model="${[
-                        prop_desc: PropertyDefinition.LIC_PROP,
-                        ownobj: license,
-                        custom_props_div: "member_props_div"]}"/>
+<g:if test="${memberProperties}">%{-- check for content --}%
+    <g:if test="${license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
+        <div class="ui card la-dl-no-table ">
+            <div class="content">
+                <h5 class="ui header">${message(code:'license.properties.consortium')}</h5>
+                <div id="member_props_div">
+                    <g:render template="/templates/properties/members" model="${[
+                            prop_desc: PropertyDefinition.LIC_PROP,
+                            ownobj: license,
+                            custom_props_div: "member_props_div"]}"/>
+                </div>
             </div>
         </div>
-    </div>
+    </g:if>
 </g:if>
 
 <div class="ui card la-dl-no-table la-js-hideable">
