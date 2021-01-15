@@ -306,7 +306,7 @@ class SemanticUiNavigationTagLib {
             )
         }
         else {
-            out << '<div class="item disabled" role="menuitem">' + linkBody + '</div>'
+            out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="menuitem">' + linkBody + '</div>'
         }
     }
 
