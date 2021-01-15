@@ -466,12 +466,8 @@ class ProfileController {
         redirect(action: "index")
     }
 
-    private void changeValue(def userSetting, String key, String fallbackValue, String messageSuccessfull) {
+    private void changeValue(UserSetting userSetting, String key, String fallbackValue, String messageSuccessfull) {
 
-        if ( userSetting == UserSetting.SETTING_NOT_FOUND) {
-            log.debug(key + ' ignored; UserSetting not found')
-            return
-        }
         if (! params.containsKey(key) && ! fallbackValue) {
             log.debug(userSetting.key.toString() + ' ignored; because ' + key + ' not sent and no fallback given')
             return
