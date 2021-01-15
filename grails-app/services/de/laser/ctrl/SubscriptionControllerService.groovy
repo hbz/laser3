@@ -2347,7 +2347,7 @@ class SubscriptionControllerService {
             result.subscriptionConsortia = result.subscription.getConsortia()
             result.licenses = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription, RDStore.LINKTYPE_LICENSE).collect { Links li -> li.sourceLicense }
             LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.subscription)
-            result.hasPrevious = links.prevLink.size() > 0
+            result.hasNext = links.nextLink.size() > 0
             result.navPrevSubscription = links.prevLink
             result.navNextSubscription = links.nextLink
             if(result.subscription.instanceOf)
