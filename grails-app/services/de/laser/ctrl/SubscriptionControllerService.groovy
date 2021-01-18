@@ -1871,7 +1871,7 @@ class SubscriptionControllerService {
                         }
                         if (params.titleGroup && (params.titleGroup.trim().length() > 0)) {
                             IssueEntitlementGroup entitlementGroup = IssueEntitlementGroup.get(Long.parseLong(params.titleGroup))
-                            if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie)){
+                            if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie) && !IssueEntitlementGroupItem.findByIe(ie)){
                                 IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                         ie: ie,
                                         ieGroup: entitlementGroup)
@@ -1977,7 +1977,7 @@ class SubscriptionControllerService {
                     }
                     params.list('titleGroup').each {
                         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.get(it)
-                        if(issueEntitlementGroup && !IssueEntitlementGroupItem.findByIeAndIeGroup(result.ie, issueEntitlementGroup)) {
+                        if(issueEntitlementGroup && !IssueEntitlementGroupItem.findByIeAndIeGroup(result.ie, issueEntitlementGroup) && !IssueEntitlementGroupItem.findByIe(result.ie)) {
                             IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(ie: result.ie, ieGroup: issueEntitlementGroup)
                             if (!issueEntitlementGroupItem.save()) {
                                 log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
