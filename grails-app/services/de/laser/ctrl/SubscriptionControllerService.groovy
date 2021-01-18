@@ -1767,6 +1767,25 @@ class SubscriptionControllerService {
         else [result:null,status:STATUS_ERROR]
     }
 
+    Map<String,Object> removeEntitlementWithIEGroups(GrailsParameterMap params) {
+        IssueEntitlement ie = IssueEntitlement.get(params.ieid)
+        RefdataValue oldStatus = ie.status
+        ie.status = RDStore.TIPP_STATUS_DELETED
+        if(ie.save()){
+            if(IssueEntitlementGroupItem.executeUpdate("delete from IssueEntitlementGroupItem iegi where iegi.ie = :ie", [ie: ie]))
+            {
+                return [result:null,status:STATUS_OK]
+            }else {
+                ie.status = oldStatus
+                ie.save()
+                return [result:null,status:STATUS_ERROR]
+            }
+        }
+        else {
+            return [result:null,status:STATUS_ERROR]
+        }
+    }
+
     Map<String,Object> processAddEntitlements(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if (!result) {

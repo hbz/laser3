@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3007    18.01.2021  dev     2.0         Moe     Feature     Titel aus Titel-Gruppe entfernen
+
 2957    18.01.2021  dev     2.0         Moe     Feature     g:sortableColumn umwandeln in semui:sortableColumn
 
 2955    18.01.2021  dev     2.0         Moe     Feature     Umfrage Link bei Spotlight-Suche verbessern
