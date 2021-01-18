@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3004    18.01.2021  dev     2.0         Moe     Feature     Falsche Titelzählung in Titel-Gruppen
+
 3005    18.01.2021  dev     2.0         Moe     Feature     Titelzuordnung zu Titel-Gruppen
 
 3007    18.01.2021  dev     2.0         Moe     Feature     Titel aus Titel-Gruppe entfernen
