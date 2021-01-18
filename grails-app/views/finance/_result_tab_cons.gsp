@@ -175,8 +175,8 @@
                     </g:if>
                     <td>
                         <%
-                            int offset = consOffset ? consOffset : 0
-                            Set<Long> memberRoles = [RDStore.OR_SUBSCRIBER_CONS.id,RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id,RDStore.OR_SUBSCRIBER_COLLECTIVE.id]
+                            int offset = consOffset ?: 0
+                            Set<Long> memberRoles = [RDStore.OR_SUBSCRIBER_CONS.id,RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id]
                         %>
                         ${ jj + 1 + offset }
                     </td>
