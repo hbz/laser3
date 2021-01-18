@@ -81,3 +81,8 @@ dd {
         }
     }
 }
+
+.ui.list .list > .disabled.item,
+.ui.list > .disabled.item {
+  pointer-events: all;
+}

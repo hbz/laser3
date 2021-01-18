@@ -17453,6 +17453,11 @@ dd {
 .ui.breadcrumb ul li {
   display: inline;
 }
+
+.ui.list .list > .disabled.item,
+.ui.list > .disabled.item {
+  pointer-events: all;
+}
 /*!
  * # Semantic UI 2.4.2 - Loader
  * http://github.com/semantic-org/semantic-ui/
@@ -35066,6 +35071,13 @@ select.ui.dropdown {
 
 .la-filter .ui.selection.dropdown:hover {
   border-color: #FFFFFF;
+}
+
+/* Disabled */
+
+.ui.disabled.dropdown,
+.ui.dropdown .menu > .disabled.item {
+  pointer-events: auto!important;
 }
 /*!
  * # Semantic UI 2.4.2 - Video

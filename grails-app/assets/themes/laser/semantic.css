@@ -17286,6 +17286,11 @@ dd {
 .ui.breadcrumb ul li {
   display: inline;
 }
+
+.ui.list .list > .disabled.item,
+.ui.list > .disabled.item {
+  pointer-events: all;
+}
 /*!
  * # Semantic UI 2.4.2 - Loader
  * http://github.com/semantic-org/semantic-ui/
@@ -34874,6 +34879,13 @@ select.ui.dropdown {
   .dropdown.right:before { content: "\f0da"; }
   .dropdown.close:before { content: "\f00d"; }
 */
+
+/* Disabled */
+
+.ui.disabled.dropdown,
+.ui.dropdown .menu > .disabled.item {
+  pointer-events: auto!important;
+}
 /*!
  * # Semantic UI 2.4.2 - Video
  * http://github.com/semantic-org/semantic-ui/
