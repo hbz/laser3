@@ -35,6 +35,7 @@ class FinanceControllerService {
                                              subscrSort:'sub.name', subscrOrder:'asc',
                                              ownSort:'ci.costTitle', ownOrder:'asc'
                                      ],
+                                     yn: RefdataCategory.getAllRefdataValues(RDConstants.Y_N),
                                      institution:contextService.getOrg(),
                                      editConf:[:]]
         List<Map<String,Object>> currenciesList = financeService.orderedCurrency()
@@ -220,7 +221,6 @@ class FinanceControllerService {
             costItemSigns:      RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION),
             costItemElements:   CostItemElementConfiguration.executeQuery('select ciec from CostItemElementConfiguration ciec join ciec.costItemElement cie where ciec.forOrganisation = :org order by cie.value_'+locale+' asc',[org:org]),
             taxType:            RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE),
-            yn:                 RefdataCategory.getAllRefdataValues(RDConstants.Y_N),
             budgetCodes:        BudgetCode.findAllByOwner(org),
             currency:           financeService.orderedCurrency()
         ]

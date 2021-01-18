@@ -130,7 +130,7 @@ class FinanceService {
             catch (Exception e) {
                 elementSign = null
             }
-            boolean cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
+            boolean cost_item_isVisibleForSubscriber = Long.parseLong(params.newIsVisibleForSubscriber) == RDStore.YN_YES.id
             if (! subsToDo) {
                 subsToDo << null // Fallback for editing cost items via myInstitution/finance // TODO: ugly
             }
@@ -1375,6 +1375,7 @@ class FinanceService {
                     costItem.finalCostRounding = params.newFinalCostRounding2 ? true : false
                     costItem.currencyRate = cost_currency_rate ?: costItem.currencyRate
                     costItem.taxKey = tax_key ?: costItem.taxKey
+                    costItem.isVisibleForSubscriber = Long.parseLong(params.newIsVisibleForSubscriber2) == RDStore.YN_YES.id
                     costItem.save()
                 }
             }
