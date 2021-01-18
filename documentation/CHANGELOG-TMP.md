@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2955    18.01.2021  dev     2.0         Moe     Feature     Umfrage Link bei Spotlight-Suche verbessern
+
 3047    18.01.2021  dev     2.0         Moe     Feature     Quelllizenz ist nicht gesetzt bei Elemente kopieren in andere Lizenz 
 
 3054    12.01.2021  rc1.6   1.6.7       Andreas Bug         Kontaktadressen konnten bei bestehenden Kontakten nicht bearbeitet werden
