@@ -4,4 +4,7 @@
 
 .ui.message {
   border-radius: @borderRadius;
+  a {
+    text-decoration: underline;
+  }
 }
