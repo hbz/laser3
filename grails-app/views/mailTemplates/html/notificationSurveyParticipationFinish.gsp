@@ -17,6 +17,7 @@
 <g:set var="orgName" value="${raw(org.name)}"/>
 <g:set var="language" value="${user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value}"/>
 <g:set var="grailsApplication" bean="grailsApplication"/>
+<g:set var="grailsApplication" bean="grailsApplication"/>
 <g:set var="surveyUrl" value="${survey.surveyConfigs[0].pickAndChoose ? "/survey/surveyTitlesSubscriber/${survey.surveyConfigs[0].id}?participant=${org.id}" : "/survey/evaluationParticipant/${survey.id}?surveyConfigID=${survey.surveyConfigs[0].id}&participant=${org.id}"}"/>
 
 ${message(code: 'email.text.title', locale: language)} ${userName},
@@ -28,12 +29,13 @@ ${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
 ${message(code: 'surveyInfo.name.label', locale: language)}: <strong>${survey.name} </strong>
 
 <br />
-(<g:formatDate format="${message(code: 'default.date.format.notime')}"
-                              date="${survey.startDate}"/> - <g:formatDate
-        format="${message(code: 'default.date.format.notime')}" date="${survey.endDate}"/>)
+${message(code: 'email.survey.date.from.to', [formatDate(format: message(code: 'default.date.format.notime'), date: survey.startDate), formatDate(format: message(code: 'default.date.format.notime'), date: survey.endDate)])}
+<br />
+<br />
 
-<br />
-<br />
+<g:if test="${survey.surveyConfigs[0].pickAndChoose}">
+    ${message(code: 'email.survey.finish.selection.text', locale: language)} ${subscriptionService.getIssueEntitlementsUnderNegotiation(survey.surveyConfigs[0].subscription.getDerivedSubscriptionBySubscribers(org)).size()}
+</g:if>
 
 <g:if test="${surveyResults}">
     <table>
@@ -88,7 +90,7 @@ ${message(code: 'surveyInfo.name.label', locale: language)}: <strong>${survey.na
 </g:if>
 <br />
 <br />
-${message(code: 'email.survey.text2', locale: language)}
+${message(code: 'email.survey.finish.url', locale: language)}
 ${grailsApplication.config.grails.serverURL + surveyUrl}
 <br />
 <br />
