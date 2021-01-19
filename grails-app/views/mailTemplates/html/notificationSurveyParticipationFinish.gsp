@@ -23,18 +23,21 @@
 ${message(code: 'email.text.title', locale: language)} ${userName},
 <br />
 <br />
-${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
-<br />
+${message(code: 'email.survey.finish.text', locale: language)}
 <br />
 ${message(code: 'surveyInfo.name.label', locale: language)}: <strong>${survey.name} </strong>
-
 <br />
-${message(code: 'email.survey.date.from.to', [formatDate(format: message(code: 'default.date.format.notime'), date: survey.startDate), formatDate(format: message(code: 'default.date.format.notime'), date: survey.endDate)])}
+(${message(code: 'email.survey.date.from.to', args: [formatDate(format: message(code: 'default.date.format.notime'), date: survey.startDate), formatDate(format: message(code: 'default.date.format.notime'), date: survey.endDate)])})
+<br />
+<br />
+${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
 <br />
 <br />
 
 <g:if test="${survey.surveyConfigs[0].pickAndChoose}">
     ${message(code: 'email.survey.finish.selection.text', locale: language)} ${subscriptionService.getIssueEntitlementsUnderNegotiation(survey.surveyConfigs[0].subscription.getDerivedSubscriptionBySubscribers(org)).size()}
+    <br />
+    <br />
 </g:if>
 
 <g:if test="${surveyResults}">
@@ -91,17 +94,10 @@ ${message(code: 'email.survey.date.from.to', [formatDate(format: message(code: '
 <br />
 <br />
 ${message(code: 'email.survey.finish.url', locale: language)}
+<br />
 ${grailsApplication.config.grails.serverURL + surveyUrl}
 <br />
 <br />
---
-<br />
-<br />
-Mit freundlichen Grüßen,
-<br />
-der LAS:eR-Support
-<br />
-<br />
-(Diese Nachricht wurde automatisch vom LAS:eR System generiert)
+<g:render template="/mailTemplates/html/signature" />
 </body>
 </html>
