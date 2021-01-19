@@ -715,6 +715,19 @@ class SubscriptionController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    def removeEntitlementWithIEGroups() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.removeEntitlementWithIEGroups(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR)
+            flash.error = message(code:'default.delete.error.general.message')
+        else {
+            Object[] args = [message(code:'issueEntitlement.label'),params.ieid]
+            flash.message = message(code: 'default.deleted.message',args: args)
+        }
+        redirect action: 'index', id: params.sub
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processAddEntitlements() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processAddEntitlements(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {

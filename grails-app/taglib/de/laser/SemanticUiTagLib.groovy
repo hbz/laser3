@@ -1024,6 +1024,7 @@ class SemanticUiTagLib {
 
     }
 
+    @Deprecated
     Closure sortableColumn = { attrs, body ->
         def writer = out
         if (!attrs.property) {

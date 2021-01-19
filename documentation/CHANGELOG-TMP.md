@@ -7,6 +7,20 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3016    18.01.2021  dev     2.0         Moe     Feature     Mailtext Titelauswahl beendet
+
+3004    18.01.2021  dev     2.0         Moe     Feature     Falsche Titelzählung in Titel-Gruppen
+
+3005    18.01.2021  dev     2.0         Moe     Feature     Titelzuordnung zu Titel-Gruppen
+
+3007    18.01.2021  dev     2.0         Moe     Feature     Titel aus Titel-Gruppe entfernen
+
+2957    18.01.2021  dev     2.0         Moe     Feature     g:sortableColumn umwandeln in semui:sortableColumn
+
+2955    18.01.2021  dev     2.0         Moe     Feature     Umfrage Link bei Spotlight-Suche verbessern
+
+3047    18.01.2021  dev     2.0         Moe     Feature     Quelllizenz ist nicht gesetzt bei Elemente kopieren in andere Lizenz 
+
 3054    12.01.2021  rc1.6   1.6.7       Andreas Bug         Kontaktadressen konnten bei bestehenden Kontakten nicht bearbeitet werden
 
 --      12.01.2021  rc1.6   1.6.7       Andreas Feature     Rückverweise korrigiert auf neue Domain
