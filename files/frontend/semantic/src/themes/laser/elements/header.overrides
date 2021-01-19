@@ -86,7 +86,7 @@ body[class*="title"]  {
 body[class*="Organisation"],
 body[class*="organisation"],
 body[class*="myPublicContacts"],
-body[class*="userList"]{
+body[class*="myInstitution"]{
   .ui.icon.header .circular.icon.la-object {
     display: inline-block;
     background-color: @organisation;
