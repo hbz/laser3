@@ -1312,7 +1312,7 @@ class CopyElementsService {
 
                     ieGroup.items.each { ieGroupItem ->
                         IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(targetObject, ieGroupItem.ie.tipp, RDStore.TIPP_STATUS_DELETED)
-                        if (ie) {
+                        if (ie && !IssueEntitlementGroupItem.findByIe(ie)) {
                             IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                     ie: ie,
                                     ieGroup: issueEntitlementGroup)

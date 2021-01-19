@@ -40,17 +40,11 @@
         <th>${message(code: 'sidewide.number')}</th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
-        <g:if test="${controllerName == 'org' && actionName == 'myPublicContacts'}">
-            <semui:sortableColumn params="${params}" property="p.last_name"
+        <g:sortableColumn params="${params}" property="p.last_name"
                               title="${message(code: 'person.name.label')}"/>
-        </g:if>
-        <g:else>
-            <semui:sortableColumn params="${params}" property="p.last_name"
-                              title="${message(code: 'person.name.label')}"/>
-        </g:else>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('organisation')}">
-        <semui:sortableColumn params="${params}" property="pr.org.name"
+        <g:sortableColumn params="${params}" property="pr.org.name"
                           title="${message(code: 'person.organisation.label')}"/>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('function')}">

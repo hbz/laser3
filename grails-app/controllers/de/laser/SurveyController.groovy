@@ -1635,7 +1635,7 @@ class SurveyController {
                 ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
                 ie.save()
 
-                if(issueEntitlementGroup){
+                if(issueEntitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)){
                     //println(issueEntitlementGroup)
                     IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                             ie: ie,
@@ -1694,7 +1694,7 @@ class SurveyController {
                     ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
                     ie.save()
 
-                    if(issueEntitlementGroup){
+                    if(issueEntitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)){
                         IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                 ie: ie,
                                 ieGroup: issueEntitlementGroup)
