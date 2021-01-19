@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3068    18.01.2021  dev     2.0         Moe     Feature     Statistik per System Flag deaktvieren/aktvieren
+
 3016    18.01.2021  dev     2.0         Moe     Feature     Mailtext Titelauswahl beendet
 
 3004    18.01.2021  dev     2.0         Moe     Feature     Falsche Titelzählung in Titel-Gruppen
