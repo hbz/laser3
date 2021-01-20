@@ -242,8 +242,14 @@
 
         JSPC.app.chooseRequiredDropdown = function (opt) {
             $(document).ready(function () {
-                $('#create_task')
-                    .form({
+
+                $.fn.form.settings.rules.responsibleUser = function() {
+                    if($("#radioresponsibleUser").is(":checked")) {
+                        return $('#responsibleUserInput').val();
+                    }
+                    else return true;
+                }
+                $('#create_task').form({
                         inline: true,
                         fields: {
                             title: {
@@ -277,7 +283,7 @@
                                 identifier: 'responsibleUserInput',
                                 rules: [
                                     {
-                                        type: 'checked',
+                                        type: 'responsibleUser',
                                         prompt: '<g:message code="validation.responsibleMustBeChecked" />'
                                     }
                                 ]

@@ -386,7 +386,7 @@ class ControlledListService {
             queryString += " and s.status = :status "
         }
         List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, orgRoles.org.sortname asc, s.startDate asc, s.endDate asc",filter)
-        subscriptions.each { Subscription row ->
+        subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
             s.packages.each { sp ->
                 result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention(org)}",value:genericOIDService.getOID(sp)])
