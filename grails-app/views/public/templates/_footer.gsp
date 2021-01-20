@@ -99,7 +99,7 @@
                 <h2 class="ui inverted header">${message(code: 'landingpage.footer.3.head')}</h2>
                 <div class="ui inverted link list">
 
-                    <a target="_blank" class="item" href="https://github.com/hbz/laser/releases">
+                    <a target="_blank" class="item" href="https://github.com/hbz/laser2/releases">
                         Version: ${grailsApplication.metadata['info.app.version']}
                     </a>
 
