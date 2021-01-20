@@ -8,10 +8,14 @@
     <title>${message(code:'laser')} : ${message(code:'user.delete.label')}</title>
 </head>
 <body>
-    <g:render template="breadcrumb" model="${[ user:user, params:params ]}"/>
+    <g:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
+
+    <semui:controlButtons>
+        <g:render template="/user/global/actions" />
+    </semui:controlButtons>
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="user.delete.label" /></h1>
-    <h2 class="ui header la-noMargin-top">${user?.username} : ${user?.displayName ?: 'Nutzer unbekannt'}</h2>
+    <h2 class="ui header la-noMargin-top">${user.username} - ${user.displayName ?: 'Nutzer unbekannt'}</h2>
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == DeletionService.RESULT_SUCCESS}">
@@ -20,10 +24,10 @@
         </g:if>
         <g:else>
             <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
-                <semui:msg class="info" header="" message="user.delete.info2" />
+                <semui:msg class="warning" header="" message="user.delete.info2" />
             </g:if>
             <g:else>
-                <semui:msg class="info" header="" message="user.delete.info" />
+                <semui:msg class="warning" header="" message="user.delete.info" />
             </g:else>
 
             <g:if test="${delResult.status == DeletionService.RESULT_CUSTOM}">
@@ -36,11 +40,14 @@
                 <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
-            <g:form controller="user" action="delete" params="${[id: user.id, process: true]}">
+            <g:form action="deleteUser" params="${[id: user.id, process: true]}">
 
-                <g:link controller="organisation" action="users" params="${[id: contextService.getOrg().id]}" class="ui button">${message(code:'org.nav.users')}</g:link>
-
-                <g:link controller="user" action="edit" params="${[id: user.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
+                <g:if test="${controllerName in ['user', 'myInstitution']}">
+                    <g:link action="users" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
+                </g:if>
+                <g:else>TODO contextService.getOrg().id
+                    <g:link action="users" params="${[id: contextService.getOrg().id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
+                </g:else>
 
                 <g:if test="${editable}">
 

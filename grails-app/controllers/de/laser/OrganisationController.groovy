@@ -21,17 +21,18 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class OrganisationController  {
 
+    def accessPointService
     def accessService
-    def contextService
     def addressbookService
-    def filterService
-    def propertyService
+    def contextService
+    def deletionService
     def docstoreService
     def instAdmService
+    def filterService
+    def genericOIDService
     def organisationService
-    def deletionService
+    def propertyService
     def userService
-    def accessPointService
     IdentifierService identifierService
     OrganisationControllerService organisationControllerService
     TaskService taskService
@@ -937,36 +938,82 @@ class OrganisationController  {
         filterParams.org = result.orgInstance
 
         result.users = userService.getUserSet(filterParams)
-        result.breadcrumb = 'breadcrumb'
         result.titleMessage = "${result.orgInstance.name} - ${message(code:'org.nav.users')}"
         result.inContextOrg = false
-        result.navPath = "nav"
-        result.navConfiguration = [orgInstance: result.orgInstance, inContextOrg: false]
         result.multipleAffiliationsWarning = true
         Set<Org> availableComboOrgs = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name asc', [ctxOrg:result.orgInstance])
         availableComboOrgs.add(result.orgInstance)
-        result.filterConfig = [filterableRoles:Role.findAllByRoleType('user'), orgField: false]
-        result.tableConfig = [
+
+        result.navConfig = [
+                orgInstance: result.orgInstance, inContextOrg: result.inContextOrg
+        ]
+        result.filterConfig = [
+                filterableRoles:Role.findAllByRoleType('user'), orgField: false
+        ]
+        result.tmplConfig = [
                 editable: result.editable,
                 editor: result.user,
                 editLink: 'editUser',
+                deleteLink: 'deleteUser',
                 users: result.users,
                 showAllAffiliations: false,
-                showAffiliationDeleteLink: true,
                 modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA'),
                 availableComboOrgs: availableComboOrgs
         ]
         result.total = result.users.size()
-        render view: '/globals/user/list', model: result
+        render view: '/user/global/list', model: result
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    def deleteUser() {
+        Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
+
+        if (result.user) {
+            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user and uo.status = :status',
+                    [user: result.user, status: UserOrg.STATUS_APPROVED])
+
+            if (affils.size() > 1) {
+                flash.error = 'Dieser Nutzer ist mehreren Organisationen zugeordnet und kann daher nicht gelöscht werden.'
+                redirect action: 'editUser', params: [uoid: params.uoid, id: params.id]
+                return
+            }
+            else if (affils.size() == 1 && (affils.get(0).id != contextService.getOrg().id)) {
+                flash.error = 'Dieser Nutzer ist nicht ihrer Organisationen zugeordnet und kann daher nicht gelöscht werden.'
+                redirect action: 'editUser', params: [uoid: params.uoid, id: params.id]
+                return
+            }
+
+            if (params.process && result.editable) {
+                User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
+
+                result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
+            }
+            else {
+                result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
+            }
+
+            result.substituteList = User.executeQuery(
+                    'select distinct u from User u join u.affiliations ua where ua.status = :uaStatus and ua.org = :ctxOrg and u != :self',
+                    [uaStatus: UserOrg.STATUS_APPROVED, ctxOrg: contextService.getOrg(), self: result.user]
+            )
+        }
+
+        render view: '/user/global/delete', model: result
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
     def editUser() {
-        Map result = [user: User.get(params.id), editor: contextService.getUser(), orgInstance: contextService.getOrg(), manipulateAffiliations: false]
-        result.editable = checkIsEditable(result.user, result.orgInstance)
+        Map result = [
+                user: genericOIDService.resolveOID(params.uoid),
+                editor: contextService.getUser(),
+                orgInstance: Org.get(params.id),
+                manipulateAffiliations: false
+        ]
+        result.editable = checkIsEditable(result.user, contextService.getOrg())
 
-        render view: '/globals/user/edit', model: result
+        render view: '/user/global/edit', model: result
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
@@ -976,9 +1023,8 @@ class OrganisationController  {
         result.availableOrgs = Org.get(params.id)
         result.availableOrgRoles = Role.findAllByRoleType('user')
         result.editor = result.user
-        result.breadcrumb = 'breadcrumb'
 
-        render view: '/globals/user/create', model: result
+        render view: '/user/global/create', model: result
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
@@ -988,7 +1034,7 @@ class OrganisationController  {
         //despite IntelliJ's warnings, success may be an array other than the boolean true
         if(success instanceof User) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'user.label'), success.id])
-            redirect action: 'editUser', id: success.id
+            redirect action: 'editUser', params: [uoid: genericOIDService.getOID(success), id: params.id]
         }
         else if(success instanceof List) {
             flash.error = success.join('<br>')
@@ -999,14 +1045,14 @@ class OrganisationController  {
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
     def addAffiliation() {
-        Map<String, Object> result = userControllerService.getResultGenerics(params)
+        Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions')
-            redirect action: 'editUser', id: params.id
+            redirect action: 'editUser', params: [id: params.id, uoid: params.uoid]
             return
         }
         userService.addAffiliation(result.user,params.org,params.formalRole,flash)
-        redirect action: 'editUser', id: params.id
+        redirect action: 'editUser', params: [id: params.id, uoid: params.uoid]
     }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])

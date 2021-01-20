@@ -591,8 +591,7 @@ class AjaxJsonController {
         Map<String, Object> result = [result: false]
 
         if (params.input) {
-            List<User> checkList = User.executeQuery("select u from User u where u.username = lower(:searchTerm)", [searchTerm:params.input])
-            result.result = checkList.size() > 0
+            result.result = null != User.findByUsernameIlike(params.input)
         }
         render result as JSON
     }

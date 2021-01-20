@@ -79,22 +79,22 @@ class UserController  {
 
         result.users = userService.getUserSet(filterParams)
         result.titleMessage = message(code:'user.show_all.label')
-        result.breadcrumb = 'breadcrumb'
         Set<Org> availableComboOrgs = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name asc', [ctxOrg:contextService.getOrg()])
         availableComboOrgs.add(contextService.getOrg())
         result.filterConfig = [filterableRoles:Role.findAllByRoleTypeInList(['user','global']), orgField: true, availableComboOrgs: availableComboOrgs]
-        result.tableConfig = [
+
+        result.tmplConfig = [
                 editable:result.editable,
                 editor: result.editor,
                 editLink: 'edit',
+                deleteLink: 'delete',
                 users: result.users,
                 showAllAffiliations: true,
-                showAffiliationDeleteLink: false,
                 modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')
         ]
         result.total = result.users.size()
 
-        render view: '/globals/user/list', model: result
+        render view: '/user/global/list', model: result
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -118,7 +118,7 @@ class UserController  {
             result.availableOrgRoles = Role.findAllByRoleType('user')
             result.manipulateAffiliations = true
         }
-        render view: '/globals/user/edit', model: result
+        render view: '/user/global/edit', model: result
     }
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
@@ -191,11 +191,10 @@ class UserController  {
             return
         }
 
-        result.breadcrumb = 'breadcrumb'
         result.availableOrgs = Org.executeQuery('from Org o where o.sector = :sector order by o.name', [sector: RDStore.O_SECTOR_HIGHER_EDU])
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
-        render view: '/globals/user/create', model: result
+        render view: '/user/global/create', model: result
     }
 
     @Secured(['ROLE_ADMIN'])

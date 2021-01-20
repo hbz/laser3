@@ -146,7 +146,7 @@ class MyInstitutionControllerService {
             case 'surveyInfosIssueEntitlements':
                 result.editable = surveyService.isEditableIssueEntitlementsSurvey(org, SurveyConfig.get(params.id))
                 break
-            case 'userList':
+            case 'users':
                 result.editable = user.hasRole('ROLE_ADMIN') || user.hasAffiliation('INST_ADM')
                 break
             case 'managePropertyDefinitions':
