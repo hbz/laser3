@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-3068    18.01.2021  dev     2.0         Moe     Feature     Statistik per System Flag deaktvieren/aktvieren
+2498    19.01.2021  dev     2.0         Moe     Feature     Titelauswahlumfrage: Titel werden nicht von Konsortialstelle angenommen/akzeptiert
+
+3068    19.01.2021  dev     2.0         Moe     Feature     Statistik per System Flag deaktvieren/aktvieren
 
 3016    18.01.2021  dev     2.0         Moe     Feature     Mailtext Titelauswahl beendet
 

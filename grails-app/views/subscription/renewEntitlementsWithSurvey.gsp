@@ -53,6 +53,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
         </div>
     </div>
 </div>
+</br>
 
 <g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber)?.finishDate != null}">
     <div class="ui icon positive message">
@@ -161,6 +162,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
     </g:form>
 </semui:filter>
 
+</br>
 <div class="ui pointing two item massive menu">
 
     <g:link class="item ${params.tab == 'allIEs' ? 'active' : ''}"

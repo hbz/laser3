@@ -1621,35 +1621,54 @@ class SurveyController {
         }
 
         Subscription participantSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
-        List<IssueEntitlement> ies = subscriptionService.getIssueEntitlementsUnderNegotiation(participantSub)
 
-        IssueEntitlementGroup issueEntitlementGroup
-        if(result.surveyConfig.createTitleGroups){
+        if(params.process == "preliminary" && params.list('selectedIEs')) {
+            IssueEntitlementGroup issueEntitlementGroup
+            if (params.issueEntitlementGroupNew) {
 
-            Integer countTitleGroups = IssueEntitlementGroup.findAllBySubAndNameIlike(participantSub, 'Phase').size()
+                issueEntitlementGroup = IssueEntitlementGroup.findBySubAndName(participantSub, params.issueEntitlementGroupNew) ?: new IssueEntitlementGroup(sub: participantSub, name: params.issueEntitlementGroupNew).save()
+            }
 
-            issueEntitlementGroup = new IssueEntitlementGroup(sub: participantSub, name: "Phase ${countTitleGroups+1}").save()
-        }
-        IssueEntitlement.withTransaction { TransactionStatus ts ->
-            ies.each { ie ->
-                ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-                ie.save()
 
-                if(issueEntitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)){
-                    //println(issueEntitlementGroup)
-                    IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
-                            ie: ie,
-                            ieGroup: issueEntitlementGroup)
+            if (params.issueEntitlementGroupID && params.issueEntitlementGroupID != '') {
+                issueEntitlementGroup = IssueEntitlementGroup.findById(Long.parseLong(params.issueEntitlementGroupID))
+            }
 
-                    if (!issueEntitlementGroupItem.save()) {
-                        log.error("Problem saving IssueEntitlementGroupItem by Survey ${issueEntitlementGroupItem.errors}")
+            params.list('selectedIEs').each { String ieID ->
+                IssueEntitlement.withTransaction { TransactionStatus ts ->
+                    IssueEntitlement ie = IssueEntitlement.findById(Long.parseLong(ieID))
+                    ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
+                    ie.save()
+
+                    if (issueEntitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)) {
+                        //println(issueEntitlementGroup)
+                        IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                ie: ie,
+                                ieGroup: issueEntitlementGroup)
+
+                        if (!issueEntitlementGroupItem.save()) {
+                            log.error("Problem saving IssueEntitlementGroupItem by Survey ${issueEntitlementGroupItem.errors}")
+                        }
                     }
                 }
             }
+
+            flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.accept', args: [params.list('selectedIEs').size()])
+        }
+
+        if(params.process == "reject" && params.list('selectedIEs')) {
+            params.list('selectedIEs').each { String ieID ->
+                IssueEntitlement.withTransaction { TransactionStatus ts ->
+                    IssueEntitlement ie = IssueEntitlement.findById(Long.parseLong(ieID))
+                    ie.delete()
+
+                }
+            }
+            flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.reject', args: [params.list('selectedIEs').size()])
         }
 
 
-        flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.info')
+
 
         redirect(action: 'showEntitlementsRenew', id: result.surveyConfig.id, params:[participant: result.participant.id])
 
