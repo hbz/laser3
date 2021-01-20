@@ -155,34 +155,36 @@ class PropertyService {
         Org tenant = contextService.getOrg()
 
         RefdataCategory rdc = null
+        if(params.pd_descr && params.pd_descr != "null" && params.pd_type && params.pd_type != "null") {
+            if (params.refdatacategory) {
+                rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
+            }
 
-        if (params.refdatacategory) {
-            rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
-        }
+            Map<String, Object> map = [
+                    token       : UUID.randomUUID(),
+                    category    : params.pd_descr,
+                    type        : params.pd_type,
+                    rdc         : rdc?.getDesc(),
+                    multiple    : (params.pd_multiple_occurrence ? true : false),
+                    mandatory   : (params.pd_mandatory ? true : false),
+                    i10n        : [
+                            name_de: params.pd_name?.trim(),
+                            name_en: params.pd_name?.trim(),
+                            expl_de: params.pd_expl?.trim(),
+                            expl_en: params.pd_expl?.trim()
+                    ],
+                    tenant      : tenant.globalUID]
 
-        Map<String, Object> map = [
-                token       : UUID.randomUUID(),
-                category    : params.pd_descr,
-                type        : params.pd_type,
-                rdc         : rdc?.getDesc(),
-                multiple    : (params.pd_multiple_occurrence ? true : false),
-                mandatory   : (params.pd_mandatory ? true : false),
-                i10n        : [
-                        name_de: params.pd_name?.trim(),
-                        name_en: params.pd_name?.trim(),
-                        expl_de: params.pd_expl?.trim(),
-                        expl_en: params.pd_expl?.trim()
-                ],
-                tenant      : tenant.globalUID]
-
-        PropertyDefinition privatePropDef = PropertyDefinition.construct(map)
-        Object[] args = [privatePropDef.descr, privatePropDef.getI10n('name')]
-        if (privatePropDef.save()) {
-            return ['message', messageSource.getMessage('default.created.message', args, locale)]
+            PropertyDefinition privatePropDef = PropertyDefinition.construct(map)
+            Object[] args = [privatePropDef.descr, privatePropDef.getI10n('name')]
+            if (privatePropDef.save()) {
+                return ['message', messageSource.getMessage('default.created.message', args, locale), params.pd_descr]
+            }
+            else {
+                return ['error', messageSource.getMessage('default.not.created.message', args, locale)]
+            }
         }
-        else {
-            return ['error', messageSource.getMessage('default.not.created.message', args, locale)]
-        }
+        else return ['error', messageSource.getMessage('propertyDefinition.descr.missing',null,locale)]
     }
 
     List getUsageDetails() {
@@ -249,15 +251,11 @@ class PropertyService {
         if(obj instanceof Subscription) {
             Subscription s = (Subscription) obj
             objMap.name = s.dropdownNamingConvention(contextOrg)
-            switch(s._getCalculatedType()) {
-                case CalculatedType.TYPE_PARTICIPATION: objMap.subscriber = s.getSubscriber()
-                    break
-                case CalculatedType.TYPE_CONSORTIAL:
-                case CalculatedType.TYPE_ADMINISTRATIVE:
-                    objMap.manageChildren = "propertiesMembers"
-                    objMap.manageChildrenParams = [id:s.id,filterPropDef:genericOIDService.getOID(propDef)]
-                    break
+            if(contextOrg.getCustomerType() == "ORG_CONSORTIUM") {
+                objMap.manageChildren = "propertiesMembers"
+                objMap.manageChildrenParams = [id:s.id,filterPropDef:genericOIDService.getOID(propDef)]
             }
+            else objMap.subscriber = s.getSubscriber()
             objMap.displayController = "subscription"
         }
         else if(obj instanceof License) {

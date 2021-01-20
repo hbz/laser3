@@ -672,6 +672,18 @@ class FinanceService {
                 Date invoiceTo = sdf.parse(params.filterCIInvoiceTo)
                 queryParams.filterCIInvoiceTo = invoiceTo
             }
+            //date from
+            if(params.filterCIDateFrom) {
+                costItemFilterQuery += " and ci.startDate = :filterCIDateFrom "
+                Date dateFrom = sdf.parse(params.filterCIDateFrom)
+                queryParams.filterCIDateFrom = dateFrom
+            }
+            //date to
+            if(params.filterCIDateTo) {
+                costItemFilterQuery += " and ci.endDate = :filterCIDateTo "
+                Date dateTo = sdf.parse(params.filterCIDateTo)
+                queryParams.filterCIDateTo = dateTo
+            }
             //valid on
             if(params.filterCIValidOn) {
                 costItemFilterQuery += " and (ci.startDate <= :filterCIValidOn OR ci.startDate is null) and (ci.endDate >= :filterCIValidOn OR ci.endDate is null) "
