@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3071    20.01.2021  dev     2.0         Andreas Bug         Punkte zwei-sechs des Sammeltickets
+
 3016    18.01.2021  dev     2.0         Moe     Feature     Mailtext Titelauswahl beendet
 
 3004    18.01.2021  dev     2.0         Moe     Feature     Falsche Titelzählung in Titel-Gruppen
