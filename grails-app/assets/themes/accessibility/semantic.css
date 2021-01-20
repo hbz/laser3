@@ -24093,6 +24093,34 @@ legend {
 .ui.grid > .column:not(.row).la-column-left-lessPadding {
   padding-left: 0.1rem;
 }
+
+/* Special Grid for Timeline */
+
+.ui.segment.la-dateAnnounceSegment {
+  background-color: #FFFFFF;
+  border: none;
+}
+
+.la-dateAnnounceGrid {
+  border-left: 3px dashed #f6f6f6;
+  margin: 0 10px;
+}
+
+.la-dateAnnounceGrid h2.ui.header {
+  font-size: 1.1rem;
+  padding-top: 3px;
+}
+
+.la-dateAnnounceGrid .one.wide.column {
+  position: relative;
+}
+
+.la-dateAnnounceGrid .arrow.alternate.circle.right.outline.icon {
+  position: absolute;
+  left: 1px;
+  top: 0;
+  z-index: 9;
+}
 /*
  * # Semantic - Menu
  * http://github.com/semantic-org/semantic-ui/
