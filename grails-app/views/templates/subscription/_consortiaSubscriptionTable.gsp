@@ -147,7 +147,8 @@
                 </td>
                 <g:if test="${'withCostItems' in tableConfig}">
                     <td>
-                        <g:if test="${ci.id}">
+                        <%-- because of right join in query, ci may be missing, those are subscriptions where no cost items exist --%>
+                        <g:if test="${ci?.id}">
                             <g:if test="${ci.getDerivedStartDate()}">
                                 <g:formatDate date="${ci.getDerivedStartDate()}" format="${message(code:'default.date.format.notime')}"/>
                                 <br />
@@ -156,9 +157,18 @@
                                 <g:formatDate date="${ci.getDerivedEndDate()}" format="${message(code:'default.date.format.notime')}"/>
                             </g:if>
                         </g:if>
+                        <g:else>
+                            <g:if test="${subCons.startDate}">
+                                <g:formatDate date="${subCons.startDate}" format="${message(code:'default.date.format.notime')}"/>
+                                <br />
+                            </g:if>
+                            <g:if test="${subCons.endDate}">
+                                <g:formatDate date="${subCons.endDate}" format="${message(code:'default.date.format.notime')}"/>
+                            </g:if>
+                        </g:else>
                     </td>
                     <td>
-                        <g:if test="${ci.id}">
+                        <g:if test="${ci?.id}">
                             <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}"
                                             type="currency"
                                             currencySymbol="${ci.billingCurrency ?: 'EUR'}" />
@@ -170,7 +180,7 @@
                     def elementSign = 'notSet'
                     def icon = ''
                     def dataTooltip = ""
-                    if (ci.costItemElementConfiguration) {
+                    if (ci?.costItemElementConfiguration) {
                         elementSign = ci.costItemElementConfiguration
                     }
 
@@ -195,11 +205,11 @@
                     %>
 
                     <td>
-                        <g:if test="${ci.id}">
+                        <g:if test="${ci?.id}">
                             <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${dataTooltip}">${raw(icon)}</span>
                         </g:if>
 
-                        <g:if test="${ci.isVisibleForSubscriber}">
+                        <g:if test="${ci?.isVisibleForSubscriber}">
                             <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                                 <i class="ui icon eye orange"></i>
                             </span>
@@ -217,7 +227,7 @@
                         </g:if>
                     </td>
                 </g:elseif>
-                <td>
+                <td>>
                     <g:if test="${subCons.isMultiYear}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                               data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">

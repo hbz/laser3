@@ -94,6 +94,7 @@ class AccessPointController  {
         result.user = contextService.getUser()
         Org organisation = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
         result.institution = contextService.getOrg()
+        result.contextCustomerType = result.institution.getCustomerType()
         result.orgInstance = organisation
         result.inContextOrg = result.orgInstance.id == contextService.getOrg().id
         result.availableOptions = accessPointService.availableOptions(organisation)
@@ -328,6 +329,7 @@ class AccessPointController  {
                     autofocus                         : autofocus,
                     orgInstance                       : orgAccessPoint.org,
                     inContextOrg                      : inContextOrg,
+                    contextCustomerType               : contextOrg.getCustomerType(),
                     activeSubsOnly                    : activeChecksOnly,
                     institution                       : contextOrg
             ]

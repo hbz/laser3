@@ -1256,7 +1256,7 @@ class SubscriptionController {
                 case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                     ctrlResult.result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
                     if (params.isRenewSub){
-                        if (!params.fromSurvey && result.isSubscriberVisible){
+                        if (!params.fromSurvey && ctrlResult.result.isSubscriberVisible){
                             params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
                             ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
                         } else {

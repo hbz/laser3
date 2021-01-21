@@ -140,7 +140,7 @@
                             <i class="calculator icon"></i>
                         </div>
 
-                        <g:select class="ui dropdown dk-width-auto" name="newCostCurrency" title="${message(code: 'financials.addNew.currencyType')}"
+                        <g:select class="ui dropdown dk-width-auto la-not-clearable" name="newCostCurrency" title="${message(code: 'financials.addNew.currencyType')}"
                                   from="${currency}"
                                   optionKey="id"
                                   optionValue="${{it.text.contains('-') ? it.text.split('-').first() : it.text}}"
