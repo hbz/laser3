@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3080    21.01.2021  dev     2.0         Andreas Bug         dreistufige Sortierung wieder eingeführt
+
 --      20.01.2021  dev     2.0         Andreas Feature     neue Filter Datum von/Datum bis für Finanzfilter
 
 3074    20.01.2021  dev     2.0         Andreas Feature     Akkordeon an richtiger Stelle aufklappen nach Merkmalsdefinitionserstellung
