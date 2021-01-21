@@ -2950,6 +2950,8 @@ join sub.orgRelations or_sub where
         switch(params.cmd) {
             case 'add':List rl = propertyService.addPrivatePropertyDefinition(params)
                 flash."${rl[0]}" = rl[1]
+                if(rl[2])
+                    result.desc = rl[2]
                 break
             case 'toggleMandatory':
                 PropertyDefinition.withTransaction { TransactionStatus ts ->

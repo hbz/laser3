@@ -34,7 +34,7 @@ class ControlledListService {
         if(params.orgType) {
             providerAgency << RefdataValue.get(params.orgType)
         }
-        else providerAgency.addAll([RDStore.OT_PROVIDER,RDStore.OT_AGENCY])
+        else providerAgency.addAll([RDStore.OT_PROVIDER,RDStore.OT_AGENCY,RDStore.OT_LICENSOR])
         if(params.forFinanceView) {
             //PLEASE! Do not assign providers or agencies to administrative subscriptions! That will screw up this query ...
             List subscriptions = Subscription.executeQuery('select s from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org:org,orgRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA]])
@@ -58,7 +58,7 @@ class ControlledListService {
                 filter.put("query",params.query)
                 queryString += " and genfunc_filter_matcher(o.name,:query) = true "
             }
-            List providers = Org.executeQuery(queryString+" order by o.name asc",filter)
+            Set providers = Org.executeQuery(queryString+" order by o.name asc",filter)
             providers.each { p ->
                 result.results.add([name:p.name,value:genericOIDService.getOID(p)])
             }
