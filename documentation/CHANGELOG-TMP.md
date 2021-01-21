@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3080    21.01.2021  dev     2.0         Andreas Bug         dreistufige Sortierung wieder eingeführt
+
 3071    20.01.2021  dev     2.0         Andreas Bug         Punkte zwei-sechs des Sammeltickets
 
 3016    18.01.2021  dev     2.0         Moe     Feature     Mailtext Titelauswahl beendet

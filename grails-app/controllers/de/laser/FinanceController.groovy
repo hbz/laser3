@@ -127,10 +127,10 @@ class FinanceController  {
                            message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode'),
                            message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
             SimpleDateFormat dateFormat = DateUtils.getSDF_NoTime()
-            LinkedHashMap<Subscription,List<Org>> subscribers = [:]
-            LinkedHashMap<Subscription,Set<Org>> providers = [:]
+            //LinkedHashMap<Subscription,List<Org>> subscribers = [:]
+            //LinkedHashMap<Subscription,Set<Org>> providers = [:]
             LinkedHashMap<Subscription,BudgetCode> costItemGroups = [:]
-            OrgRole.findAllByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]).each { it ->
+            /*OrgRole.findAllByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]).each { it ->
                 List<Org> orgs = subscribers.get(it.sub)
                 if(orgs == null)
                     orgs = [it.org]
@@ -143,7 +143,7 @@ class FinanceController  {
                     orgs = [it.org]
                 else orgs.add(it.org)
                 providers.put(it.sub,orgs)
-            }
+            }*/
             CostItemGroup.findAll().each{ cig -> costItemGroups.put(cig.costItem,cig.budgetCode) }
             withFormat {
                 csv {
@@ -163,7 +163,7 @@ class FinanceController  {
                                 int cellnum = 0
                                 if(viewMode == "cons") {
                                     if(ci.sub) {
-                                        List<Org> orgRoles = subscribers.get(ci.sub)
+                                        List<Org> orgRoles = ci.sub.orgRelations.findAll { OrgRole oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN] }.collect { it.org }
                                         //participants (visible?)
                                         String cellValueA = ""
                                         String cellValueB = ""
@@ -186,7 +186,7 @@ class FinanceController  {
                                     //provider
                                     cellnum++
                                     if(ci.sub) {
-                                        Set<Org> orgRoles = providers.get(ci.sub)
+                                        Set<Org> orgRoles = ci.sub.orgRelations.findAll { OrgRole oo -> oo.roleType in [RDStore.OR_PROVIDER,RDStore.OR_AGENCY] }.collect { it.org }
                                         String cellValue = ""
                                         orgRoles.each { or ->
                                             cellValue += or.name
