@@ -101,11 +101,11 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
     @Transient
     static def validTypes = [
-            'java.lang.Integer'             : ['de': 'Ganzzahl', 'en': 'Number' ],
-            'java.lang.String'              : ['de': 'Text', 'en': 'Text'],
-            'de.laser.RefdataValue'         : ['de': 'Referenzwert', 'en': 'Refdata'],
-            'java.math.BigDecimal'          : ['de': 'Dezimalzahl', 'en': 'Decimal'],
             'java.util.Date'                : ['de': 'Datum', 'en': 'Date'],
+            'java.math.BigDecimal'          : ['de': 'Dezimalzahl', 'en': 'Decimal'],
+            'java.lang.Integer'             : ['de': 'Ganzzahl', 'en': 'Number' ],
+            'de.laser.RefdataValue'         : ['de': 'Referenzwert', 'en': 'Refdata'],
+            'java.lang.String'              : ['de': 'Text', 'en': 'Text'],
             'java.net.URL'                  : ['de': 'Url', 'en': 'Url']
     ]
 

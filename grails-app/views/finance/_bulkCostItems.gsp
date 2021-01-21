@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.FinanceService; de.laser.RefdataCategory; org.springframework.context.i18n.LocaleContextHolder;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.FinanceService; de.laser.RefdataCategory; org.springframework.context.i18n.LocaleContextHolder; de.laser.helper.RDStore" %>
 <br />
 <semui:form>
 
@@ -20,7 +20,7 @@
                     <label>${message(code: 'financials.invoice_total')}</label>
                     <input title="${g.message(code: 'financials.addNew.BillingCurrency')}" type="text"
                            class="calc"
-                           style="width:50%"
+                           style="width:75%"
                            name="newCostInBillingCurrency2" id="newCostInBillingCurrency2"
                            placeholder="${g.message(code: 'financials.invoice_total')}"
                            value="<g:formatNumber
@@ -120,14 +120,26 @@
                                    minFractionDigits="2" maxFractionDigits="2"/>"/>
                 </div><!-- .field -->
             </div>
+            <div class="two fields">
+                <div class="field">
+                    <div class="ui checkbox">
+                        <label><g:message code="financials.newCosts.finalSumRounded"/></label>
+                        <input name="newFinalCostRounding2" class="hidden calc" type="checkbox"
+                               <g:if test="${costItem?.finalCostRounding}">checked="checked"</g:if>/>
+                    </div>
+                </div><!-- .field -->
 
-            <div class="field">
-                <div class="ui checkbox">
-                    <label><g:message code="financials.newCosts.finalSumRounded"/></label>
-                    <input name="newFinalCostRounding2" class="hidden calc" type="checkbox"
-                           <g:if test="${costItem?.finalCostRounding}">checked="checked"</g:if>/>
-                </div>
-            </div><!-- .field -->
+                <div class="field">
+                    <label><g:message code="financials.isVisibleForSubscriber"/></label>
+                    <g:set var="newIsVisibleForSubscriberValue2" value="${costItem?.isVisibleForSubscriber ? RDStore.YN_YES.id : RDStore.YN_NO.id}" />
+                    <laser:select name="newIsVisibleForSubscriber2" class="ui dropdown"
+                                  id="newIsVisibleForSubscriber2"
+                                  from="${yn}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  value="${newIsVisibleForSubscriberValue2}" />
+                </div><!-- .field -->
+            </div>
 
         </fieldset> <!-- 1/2 field |  .la-account-currency -->
 

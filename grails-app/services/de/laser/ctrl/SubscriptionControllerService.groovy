@@ -1767,6 +1767,25 @@ class SubscriptionControllerService {
         else [result:null,status:STATUS_ERROR]
     }
 
+    Map<String,Object> removeEntitlementWithIEGroups(GrailsParameterMap params) {
+        IssueEntitlement ie = IssueEntitlement.get(params.ieid)
+        RefdataValue oldStatus = ie.status
+        ie.status = RDStore.TIPP_STATUS_DELETED
+        if(ie.save()){
+            if(IssueEntitlementGroupItem.executeUpdate("delete from IssueEntitlementGroupItem iegi where iegi.ie = :ie", [ie: ie]))
+            {
+                return [result:null,status:STATUS_OK]
+            }else {
+                ie.status = oldStatus
+                ie.save()
+                return [result:null,status:STATUS_ERROR]
+            }
+        }
+        else {
+            return [result:null,status:STATUS_ERROR]
+        }
+    }
+
     Map<String,Object> processAddEntitlements(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if (!result) {
@@ -1852,7 +1871,7 @@ class SubscriptionControllerService {
                         }
                         if (params.titleGroup && (params.titleGroup.trim().length() > 0)) {
                             IssueEntitlementGroup entitlementGroup = IssueEntitlementGroup.get(Long.parseLong(params.titleGroup))
-                            if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie)){
+                            if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie) && !IssueEntitlementGroupItem.findByIe(ie)){
                                 IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                         ie: ie,
                                         ieGroup: entitlementGroup)
@@ -1958,7 +1977,7 @@ class SubscriptionControllerService {
                     }
                     params.list('titleGroup').each {
                         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.get(it)
-                        if(issueEntitlementGroup && !IssueEntitlementGroupItem.findByIeAndIeGroup(result.ie, issueEntitlementGroup)) {
+                        if(issueEntitlementGroup && !IssueEntitlementGroupItem.findByIeAndIeGroup(result.ie, issueEntitlementGroup) && !IssueEntitlementGroupItem.findByIe(result.ie)) {
                             IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(ie: result.ie, ieGroup: issueEntitlementGroup)
                             if (!issueEntitlementGroupItem.save()) {
                                 log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")

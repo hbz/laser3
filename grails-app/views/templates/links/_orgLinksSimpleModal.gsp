@@ -24,7 +24,7 @@
             //{query} is correct; this is the semantic ui query syntax containing the filter string
             $("#orm_orgOid_${tmplModalID}").dropdown({
                 apiSettings: {
-                    url: "<g:createLink controller="ajaxJson" action="lookupProvidersAgencies"/>?&query={query}&orgType=${tmplType.id}",
+                    url: "<g:createLink controller="ajaxJson" action="lookupProvidersAgencies"/>?&query={query}",
                     cache: false
                 },
                 clearable: true,

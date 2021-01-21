@@ -8,3 +8,27 @@
 .ui.grid>.column:not(.row).la-column-left-lessPadding {
   padding-left: 0.1rem;
 }
+
+
+/* Special Grid for Timeline */
+.ui.segment.la-dateAnnounceSegment {
+  background-color:@white;
+  border: none;
+}
+.la-dateAnnounceGrid {
+    border-left: 3px dashed #f6f6f6;
+    margin: 0 10px;
+  h2.ui.header{
+    font-size: 1.1rem;
+    padding-top:3px
+  }
+  .one.wide.column {
+    position: relative;
+  }
+  .arrow.alternate.circle.right.outline.icon {
+    position: absolute;
+    left: 1px;
+    top: 0;
+    z-index: 9;
+  }
+}

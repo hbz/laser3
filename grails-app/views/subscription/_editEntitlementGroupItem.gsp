@@ -39,7 +39,9 @@
                                                 <input type="checkbox" checked="checked" name="titleGroup" value="${titleGroup.id}" />
                                             </g:if>
                                             <g:else>
+                                                <g:if test="${!de.laser.IssueEntitlementGroupItem.findByIe(ie)}">
                                                 <input type="checkbox" name="titleGroup" value="${titleGroup.id}" />
+                                                </g:if>
                                             </g:else>
                                         </td>
                                     </tr>

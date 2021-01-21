@@ -7289,7 +7289,7 @@ body[class*="title"] .ui.icon.header .circular.icon.la-object:before {
 body[class*="Organisation"] .ui.icon.header .circular.icon.la-object,
 body[class*="organisation"] .ui.icon.header .circular.icon.la-object,
 body[class*="myPublicContacts"] .ui.icon.header .circular.icon.la-object,
-body[class*="userList"] .ui.icon.header .circular.icon.la-object {
+body[class*="myInstitution"] .ui.icon.header .circular.icon.la-object {
   display: inline-block;
   background-color: #00B5AD;
   border-color: #00B5AD;
@@ -7298,7 +7298,7 @@ body[class*="userList"] .ui.icon.header .circular.icon.la-object {
 body[class*="Organisation"] .ui.icon.header .circular.icon.la-object:before,
 body[class*="organisation"] .ui.icon.header .circular.icon.la-object:before,
 body[class*="myPublicContacts"] .ui.icon.header .circular.icon.la-object:before,
-body[class*="userList"] .ui.icon.header .circular.icon.la-object:before {
+body[class*="myInstitution"] .ui.icon.header .circular.icon.la-object:before {
   content: "\f19c";
 }
 
@@ -17453,6 +17453,11 @@ dd {
 .ui.breadcrumb ul li {
   display: inline;
 }
+
+.ui.list .list > .disabled.item,
+.ui.list > .disabled.item {
+  pointer-events: all;
+}
 /*!
  * # Semantic UI 2.4.2 - Loader
  * http://github.com/semantic-org/semantic-ui/
@@ -24087,6 +24092,34 @@ legend {
 
 .ui.grid > .column:not(.row).la-column-left-lessPadding {
   padding-left: 0.1rem;
+}
+
+/* Special Grid for Timeline */
+
+.ui.segment.la-dateAnnounceSegment {
+  background-color: #FFFFFF;
+  border: none;
+}
+
+.la-dateAnnounceGrid {
+  border-left: 3px dashed #f6f6f6;
+  margin: 0 10px;
+}
+
+.la-dateAnnounceGrid h2.ui.header {
+  font-size: 1.1rem;
+  padding-top: 3px;
+}
+
+.la-dateAnnounceGrid .one.wide.column {
+  position: relative;
+}
+
+.la-dateAnnounceGrid .arrow.alternate.circle.right.outline.icon {
+  position: absolute;
+  left: 1px;
+  top: 0;
+  z-index: 9;
 }
 /*
  * # Semantic - Menu
@@ -35066,6 +35099,13 @@ select.ui.dropdown {
 
 .la-filter .ui.selection.dropdown:hover {
   border-color: #FFFFFF;
+}
+
+/* Disabled */
+
+.ui.disabled.dropdown,
+.ui.dropdown .menu > .disabled.item {
+  pointer-events: auto!important;
 }
 /*!
  * # Semantic UI 2.4.2 - Video

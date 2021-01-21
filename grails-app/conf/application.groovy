@@ -79,3 +79,7 @@ grails.plugin.springsecurity.filterChain.chainMap = [
         [pattern: '/**/favicon.ico', filters: 'none'],
         [pattern: '/**',             filters: 'JOINED_FILTERS']
 ]
+
+//Mail
+grails.mail.poolSize = 20 //default 5 emails at a time, then que based system (prereq = async true)
+//grails.mail.port = 30//TODO: Diese Zeile nur für Lokal nutzen!!!

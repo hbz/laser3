@@ -1142,8 +1142,9 @@ class CopyElementsService {
                 Object[] args = [subscriptionPackage.pkg.name]
                 flash.error += messageSource.getMessage('subscription.err.packageAlreadyExistsInTargetSub', args, locale)
             } else {
-
-                List<OrgAccessPointLink> pkgOapls = OrgAccessPointLink.findAllByIdInList(subscriptionPackage.oapls.id)
+                List<OrgAccessPointLink> pkgOapls = []
+                if(subscriptionPackage.oapls)
+                    pkgOapls << OrgAccessPointLink.findAllByIdInList(subscriptionPackage.oapls.id)
                 subscriptionPackage.properties.oapls = null
                 subscriptionPackage.properties.pendingChangeConfig = null //copied in next step
                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
@@ -1151,7 +1152,7 @@ class CopyElementsService {
                 newSubscriptionPackage.subscription = targetObject
 
                 if (save(newSubscriptionPackage, flash)) {
-                    pkgOapls.each { oapl ->
+                    pkgOapls.each { OrgAccessPointLink oapl ->
 
                         def oaplProperties = oapl.properties
                         oaplProperties.globalUID = null
@@ -1312,7 +1313,7 @@ class CopyElementsService {
 
                     ieGroup.items.each { ieGroupItem ->
                         IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(targetObject, ieGroupItem.ie.tipp, RDStore.TIPP_STATUS_DELETED)
-                        if (ie) {
+                        if (ie && !IssueEntitlementGroupItem.findByIe(ie)) {
                             IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                     ie: ie,
                                     ieGroup: issueEntitlementGroup)

@@ -478,6 +478,13 @@ r2d2 = {
             selectOnKeydown: false,
             clearable: true,
         });
+        // all dropdowns but dropdowns la-not-clearable
+        $(ctxSel + ' .ui.dropdown.la-not-clearable').dropdown({
+            selectOnKeydown: false,
+            clearable: false
+        });
+
+
         // all search dropdowns but la-not-clearable at user/create view
         // search dropdown
         $(ctxSel + ' .ui.search.dropdown').not('.la-not-clearable').dropdown({

@@ -130,7 +130,7 @@ class FinanceService {
             catch (Exception e) {
                 elementSign = null
             }
-            boolean cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
+            boolean cost_item_isVisibleForSubscriber = Long.parseLong(params.newIsVisibleForSubscriber) == RDStore.YN_YES.id
             if (! subsToDo) {
                 subsToDo << null // Fallback for editing cost items via myInstitution/finance // TODO: ugly
             }
@@ -359,7 +359,7 @@ class FinanceService {
                         result.cons = [count:consCostRows.size()]
                         if(consCostRows) {
                             Set<Long> consCostItems = consCostRows
-                            result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) and oo.roleType in (:roleTypes) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consCostItems,roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]],[max:configMap.max,offset:configMap.offsets.consOffset])
+                            result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo join sub.orgRelations op where ci.id in (:ids) and oo.roleType in (:roleTypes) and op.roleType in (:providerRoleTypes) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', op.org.name asc, sub.name asc',[ids:consCostItems,roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],providerRoleTypes:[RDStore.OR_PROVIDER,RDStore.OR_AGENCY]],[max:configMap.max,offset:configMap.offsets.consOffset])
                             result.cons.sums = calculateResults(consCostItems)
                         }
                         break
@@ -458,14 +458,15 @@ class FinanceService {
                     result.cons = [count:consortialCostRows.size()]
                     if(consortialCostRows) {
                         List<Long> consortialCostItems = consortialCostRows
-                        //very ugly ... any ways to achieve this more elegantly are greatly appreciated!!
-                        /*if(configMap.sortConfig.consSort == 'sortname') {
-                            consortialCostItems = consortialCostItems.sort{ ciA, ciB ->
-                                ciA.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname ?:
-                                        ciA.sub?.orgRelations?.find { oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name}
-                        }*/
                         pu.setBenchmark("map assembly")
                         result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consortialCostRows],[max:configMap.max,offset:configMap.offsets.consOffset]).toSet()
+                        //very ugly ... any ways to achieve this more elegantly are greatly appreciated!!
+                        if(configMap.sortConfig.consSort == 'oo.org.sortname') {
+                            result.cons.costItems = result.cons.costItems.sort{ ciA, ciB ->
+                                ciA.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname?.toLowerCase() <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]}?.org?.sortname?.toLowerCase() ?:
+                                        ciA.sub?.orgRelations?.find { oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name?.toLowerCase() <=> ciB.sub?.orgRelations?.find{ oo -> oo.roleType in [RDStore.OR_AGENCY,RDStore.OR_PROVIDER]}?.org?.name?.toLowerCase() ?:
+                                        ciA.sub?.name?.toLowerCase() <=> ciB.sub?.name?.toLowerCase() }
+                        }
                         result.cons.sums = calculateResults(consortialCostItems)
                     }
                     break
@@ -479,10 +480,10 @@ class FinanceService {
                         'join subC.orgRelations roleC ' +
                         'join sub.orgRelations orgRoles ' +
                         'join ci.owner orgC ' +
-                        'where orgC = roleC.org and roleC.roleType in :consType and orgRoles.org = :org and orgRoles.roleType in :subscrType and ci.isVisibleForSubscriber = true'+
+                        'where orgC = roleC.org and roleC.roleType = :consType and orgRoles.org = :org and orgRoles.roleType = :subscrType and ci.isVisibleForSubscriber = true'+
                         genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
                         ' order by '+configMap.sortConfig.subscrSort+' '+configMap.sortConfig.subscrOrder,
-                        [org:org,consType:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIPTION_COLLECTIVE],subscrType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE]]+genericExcludeParams+filterQuery.filterData)
+                        [org:org,consType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:RDStore.OR_SUBSCRIBER_CONS]+genericExcludeParams+filterQuery.filterData)
                     result.subscr = [count:consortialMemberSubscriptionCostItems.size()]
                     if(consortialMemberSubscriptionCostItems) {
                         result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems)
@@ -671,6 +672,18 @@ class FinanceService {
                 costItemFilterQuery += " and (ci.invoiceDate <= :filterCIInvoiceTo AND ci.invoiceDate is not null) "
                 Date invoiceTo = sdf.parse(params.filterCIInvoiceTo)
                 queryParams.filterCIInvoiceTo = invoiceTo
+            }
+            //date from
+            if(params.filterCIDateFrom) {
+                costItemFilterQuery += " and ci.startDate = :filterCIDateFrom "
+                Date dateFrom = sdf.parse(params.filterCIDateFrom)
+                queryParams.filterCIDateFrom = dateFrom
+            }
+            //date to
+            if(params.filterCIDateTo) {
+                costItemFilterQuery += " and ci.endDate = :filterCIDateTo "
+                Date dateTo = sdf.parse(params.filterCIDateTo)
+                queryParams.filterCIDateTo = dateTo
             }
             //valid on
             if(params.filterCIValidOn) {
@@ -1375,6 +1388,7 @@ class FinanceService {
                     costItem.finalCostRounding = params.newFinalCostRounding2 ? true : false
                     costItem.currencyRate = cost_currency_rate ?: costItem.currencyRate
                     costItem.taxKey = tax_key ?: costItem.taxKey
+                    costItem.isVisibleForSubscriber = Long.parseLong(params.newIsVisibleForSubscriber2) == RDStore.YN_YES.id
                     costItem.save()
                 }
             }
