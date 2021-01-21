@@ -148,58 +148,58 @@ class SubscriptionControllerService {
                 }
             }
             //}
-            pu.setBenchmark('usage')
-            // TODO: experimental asynchronous task
-            //def task_usage = task {
-            // usage
-            pu.setBenchmark('before platform query')
-            Set suppliers = Platform.executeQuery('select plat.id from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.subscription = :sub',[sub:result.subscription])
-            if (suppliers.size() > 1) {
-                log.debug('Found different content platforms for this subscription, cannot show usage')
-            }
-            else {
-                pu.setBenchmark('before loading platform')
-                Long supplier_id = suppliers[0]
-                PlatformProperty platform = PlatformProperty.executeQuery('select pp from PlatformProperty pp join pp.type pd where pp.owner.id = :owner and pd.name = :name and pd.descr = :descr',[owner:supplier_id,name:'NatStat Supplied ID',descr:PropertyDefinition.PLA_PROP])
-                //        PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
-                pu.setBenchmark('before institutional usage identifier')
-                result.natStatSupplierId = platform?.stringValue ?: null
-                if (result.institutional_usage_identifier != OrgSetting.SETTING_NOT_FOUND) {
-                    pu.setBenchmark('before usage data')
-                    def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscription)
-                    pu.setBenchmark('before usage data sub period')
-                    def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscription)
-                    Set<RefdataValue> holdingTypes = RefdataValue.executeQuery('select ti.medium from IssueEntitlement ie join ie.tipp tipp join tipp.title ti where ie.subscription = :context',[context:result.subscription])
-                    if (!holdingTypes) {
-                        log.debug('No types found, maybe there are no issue entitlements linked to subscription')
-                    } else if (holdingTypes.size() > 1) {
-                        log.info('Different content type for this license, cannot calculate Cost Per Use.')
-                    } else if (!fsLicenseResult.isEmpty() && result.subscription.startDate) {
-                        def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')*.last()
-                        pu.setBenchmark('before total cost per use')
-                        def costPerUseMetricValuePair = factService.getTotalCostPerUse(result.subscription, holdingTypes.first(), existingReportMetrics)
-                        if (costPerUseMetricValuePair) {
-                            result.costPerUseMetric = costPerUseMetricValuePair[0]
-                            result.totalCostPerUse = costPerUseMetricValuePair[1]
-                            result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
+            if(ConfigUtils.getShowStatsInfo()) {
+                pu.setBenchmark('usage')
+                // TODO: experimental asynchronous task
+                //def task_usage = task {
+                // usage
+                pu.setBenchmark('before platform query')
+                Set suppliers = Platform.executeQuery('select plat.id from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.subscription = :sub', [sub: result.subscription])
+                if (suppliers.size() > 1) {
+                    log.debug('Found different content platforms for this subscription, cannot show usage')
+                } else {
+                    pu.setBenchmark('before loading platform')
+                    Long supplier_id = suppliers[0]
+                    PlatformProperty platform = PlatformProperty.executeQuery('select pp from PlatformProperty pp join pp.type pd where pp.owner.id = :owner and pd.name = :name and pd.descr = :descr', [owner: supplier_id, name: 'NatStat Supplied ID', descr: PropertyDefinition.PLA_PROP])
+                    //        PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
+                    pu.setBenchmark('before institutional usage identifier')
+                    result.natStatSupplierId = platform?.stringValue ?: null
+                    if (result.institutional_usage_identifier != OrgSetting.SETTING_NOT_FOUND) {
+                        pu.setBenchmark('before usage data')
+                        def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscription)
+                        pu.setBenchmark('before usage data sub period')
+                        def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscription)
+                        Set<RefdataValue> holdingTypes = RefdataValue.executeQuery('select ti.medium from IssueEntitlement ie join ie.tipp tipp join tipp.title ti where ie.subscription = :context', [context: result.subscription])
+                        if (!holdingTypes) {
+                            log.debug('No types found, maybe there are no issue entitlements linked to subscription')
+                        } else if (holdingTypes.size() > 1) {
+                            log.info('Different content type for this license, cannot calculate Cost Per Use.')
+                        } else if (!fsLicenseResult.isEmpty() && result.subscription.startDate) {
+                            def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')*.last()
+                            pu.setBenchmark('before total cost per use')
+                            def costPerUseMetricValuePair = factService.getTotalCostPerUse(result.subscription, holdingTypes.first(), existingReportMetrics)
+                            if (costPerUseMetricValuePair) {
+                                result.costPerUseMetric = costPerUseMetricValuePair[0]
+                                result.totalCostPerUse = costPerUseMetricValuePair[1]
+                                result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
+                            }
                         }
-                    }
-                    result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-                    if(result.statsWibid && result.natStatSupplierId) {
-                        result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
-                        result.usage = fsresult?.usage
-                        result.missingMonths = fsresult?.missingMonths
-                        result.missingSubscriptionMonths = fsLicenseResult?.missingMonths
-                        result.x_axis_labels = fsresult?.x_axis_labels
-                        result.y_axis_labels = fsresult?.y_axis_labels
-                        result.lusage = fsLicenseResult?.usage
-                        pu.setBenchmark('before last usage period for report type')
-                        result.lastUsagePeriodForReportType = factService.getLastUsagePeriodForReportType(result.natStatSupplierId, result.statsWibid)
-                        result.l_x_axis_labels = fsLicenseResult?.x_axis_labelsresult.l_y_axis_labels = fsLicenseResult?.y_axis_labels
-                    }
+                        result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
+                        if (result.statsWibid && result.natStatSupplierId) {
+                            result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
+                            result.usage = fsresult?.usage
+                            result.missingMonths = fsresult?.missingMonths
+                            result.missingSubscriptionMonths = fsLicenseResult?.missingMonths
+                            result.x_axis_labels = fsresult?.x_axis_labels
+                            result.y_axis_labels = fsresult?.y_axis_labels
+                            result.lusage = fsLicenseResult?.usage
+                            pu.setBenchmark('before last usage period for report type')
+                            result.lastUsagePeriodForReportType = factService.getLastUsagePeriodForReportType(result.natStatSupplierId, result.statsWibid)
+                            result.l_x_axis_labels = fsLicenseResult?.x_axis_labelsresult.l_y_axis_labels = fsLicenseResult?.y_axis_labels
+                        }
+                    } else
+                        log.info('institutional usage identifier not available')
                 }
-                else
-                    log.info('institutional usage identifier not available')
             }
             //}
             pu.setBenchmark('costs')

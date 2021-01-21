@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.auth.User
+import de.laser.helper.ConfigUtils
 import de.laser.helper.SwissKnife
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
@@ -63,7 +64,7 @@ class IssueEntitlementController  {
 
       if (title_id != null &&
            org != null &&
-           supplier_id != null ) {
+           supplier_id != null && ConfigUtils.getShowStatsInfo()) {
           def platform = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id),
               PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
           result.natStatSupplierId = platform?.stringValue ?: null

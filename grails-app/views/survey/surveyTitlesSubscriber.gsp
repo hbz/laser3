@@ -21,7 +21,7 @@
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-    <semui:actionsDropdown>
+   %{-- <semui:actionsDropdown>
         <g:if test="${surveyOrg.finishDate && surveyInfo && surveyInfo.status.id == RDStore.SURVEY_SURVEY_STARTED.id}">
             <semui:actionsDropdownItem controller="survey" action="openIssueEntitlementsSurveyAgain"
                                        params="[id: surveyConfig.id, participant: participant.id]"
@@ -40,7 +40,7 @@
                                                message="completeIssueEntitlementsSurvey.forParticipant.label"/>
         </g:else>
 
-    </semui:actionsDropdown>
+    </semui:actionsDropdown>--}%
 </semui:controlButtons>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>
@@ -129,6 +129,14 @@
                         <dt class="control-label">${message(code: 'tipp.listPrice')}</dt>
                         <dd><g:formatNumber number="${iesFixListPriceSum}" type="currency"/></dd>
                     </dl>
+
+                    <div class="ui la-vertical buttons">
+                        <g:link action="index" controller="subscription"
+                                id="${subscription.id}"
+                                class="ui button">
+                            <g:message code="renewEntitlementsWithSurvey.toCurrentFixedEntitlements"/>
+                        </g:link>
+                    </div>
                 </div>
 
                 <div class="content">
@@ -141,17 +149,16 @@
                         <dt class="control-label">${message(code: 'tipp.listPrice')}</dt>
                         <dd><g:formatNumber number="${iesListPriceSum}" type="currency"/></dd>
                     </dl>
-                </div>
 
-                <div class="content">
                     <div class="ui la-vertical buttons">
                         <g:link action="showEntitlementsRenew"
-                            id="${surveyConfig.id}" params="[participant: participant.id]"
+                                id="${surveyConfig.id}" params="[participant: participant.id]"
                                 class="ui button">
                             <g:message code="renewEntitlementsWithSurvey.toCurrentEntitlements"/>
                         </g:link>
                     </div>
                 </div>
+
             </div>
 
         </div>

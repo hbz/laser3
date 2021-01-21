@@ -19,6 +19,10 @@
 
 3071    20.01.2021  dev     2.0         Andreas Bug         Punkte zwei-sechs des Sammeltickets
 
+2498    19.01.2021  dev     2.0         Moe     Feature     Titelauswahlumfrage: Titel werden nicht von Konsortialstelle angenommen/akzeptiert
+
+3068    19.01.2021  dev     2.0         Moe     Feature     Statistik per System Flag deaktvieren/aktvieren
+
 3016    18.01.2021  dev     2.0         Moe     Feature     Mailtext Titelauswahl beendet
 
 3004    18.01.2021  dev     2.0         Moe     Feature     Falsche Titelzählung in Titel-Gruppen

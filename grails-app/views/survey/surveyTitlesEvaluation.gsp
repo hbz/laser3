@@ -65,12 +65,12 @@
 
                 <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
                         total="${participantsFinish.size()}"/></h2>
-                <g:if test="${surveyInfo && surveyInfo.status?.id == RDStore.SURVEY_IN_EVALUATION.id}">
+                %{--<g:if test="${surveyInfo && surveyInfo.status?.id == RDStore.SURVEY_IN_EVALUATION.id}">
                                 <g:link controller="survey" action="completeIssueEntitlementsSurvey" id="${surveyConfig.id}"
                                         class="ui icon button right floated">
                                     <g:message code="completeIssueEntitlementsSurvey.forFinishParticipant.label"/>
                                 </g:link>
-                </g:if>
+                </g:if>--}%
                 <br />
                 <br />
                 <semui:form>
