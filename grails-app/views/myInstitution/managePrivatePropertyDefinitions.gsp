@@ -33,11 +33,16 @@
 
         <div class="ui styled fluid accordion">
             <g:each in="${propertyDefinitions}" var="entry">
-                <div class="title">
+                <%
+                    String active = ""
+                    if(desc == entry.key)
+                        active = "active"
+                %>
+                <div class="${active} title">
                     <i class="dropdown icon"></i>
                     <g:message code="propertyDefinition.${entry.key}.label" />
                 </div>
-                <div class="content">
+                <div class="${active} content">
                     <g:form class="ui form" action="managePrivatePropertyDefinitions" method="post">
                         <table class="ui celled la-table compact table">
                             <thead>
@@ -105,10 +110,10 @@
                                         <td>
                                             <span class="ui circular label">
                                                 <g:if test="${pd.descr == PropertyDefinition.LIC_PROP}">
-                                                    <g:link controller="myInstitution" action="currentLicenses" params="${[filterPropDef:genericOIDService.getOID(pd)]}">${pd.countOwnUsages()}</g:link>
+                                                    <g:link controller="myInstitution" action="currentLicenses" params="${[filterPropDef:genericOIDService.getOID(pd),filterSubmit:true]}">${pd.countOwnUsages()}</g:link>
                                                 </g:if>
                                                 <g:elseif test="${pd.descr == PropertyDefinition.SUB_PROP}">
-                                                    <g:link controller="myInstitution" action="currentSubscriptions" params="${[filterPropDef:genericOIDService.getOID(pd)]}">${pd.countOwnUsages()}</g:link>
+                                                    <g:link controller="myInstitution" action="currentSubscriptions" params="${[filterPropDef:genericOIDService.getOID(pd),status:'FETCH_ALL']}">${pd.countOwnUsages()}</g:link>
                                                 </g:elseif>
                                                 <%-- TODO platforms and orgs do not have property filters yet, they must be built! --%>
                                                 <g:else>
@@ -193,11 +198,14 @@
                 <div class="field six wide">
                     <label class="property-label">${message(code:'propertyDefinition.descr.label')}</label>
                     <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
-                    <select name="pd_descr" id="pd_descr" class="ui dropdown">
-                        <g:each in="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}" var="pd">
-                            <option value="${pd}"><g:message code="propertyDefinition.${pd}.label" default="${pd}"/></option>
-                        </g:each>
-                    </select>
+                    <%
+                        Map<String,Object> availablePrivateDescr = [:]
+                        PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { String pd ->
+                            availablePrivateDescr[pd] = message(code:"propertyDefinition.${pd}.label")
+                        }
+                    %>
+                    <g:select name="pd_descr" id="pd_descr" class="ui dropdown" optionKey="key" optionValue="value"
+                        from="${availablePrivateDescr.entrySet()}" noSelection="${[null:message(code:'default.select.choose.label')]}"/>
                 </div>
 
                 <div class="field five wide">
@@ -205,6 +213,7 @@
                     <g:select class="ui dropdown"
                         from="${PropertyDefinition.validTypes.entrySet()}"
                         optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
+                        noSelection="${[null:message(code:'default.select.choose.label')]}"
                         name="pd_type"
                         id="cust_prop_modal_select" />
                 </div>

@@ -533,10 +533,10 @@ class ExportService {
 		POIXMLProperties xmlProps = workbook.getProperties()
 		POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
 		coreProps.setCreator(messageSource.getMessage('laser',null,locale))
-		LinkedHashMap<Subscription,List<Org>> subscribers = [:]
-		LinkedHashMap<Subscription,Set<Org>> providers = [:]
+		//LinkedHashMap<Subscription,List<Org>> subscribers = [:]
+		//LinkedHashMap<Subscription,Set<Org>> providers = [:]
 		LinkedHashMap<Subscription, BudgetCode> costItemGroups = [:]
-		OrgRole.findAllByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]).each { it ->
+		/*OrgRole.findAllByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]).each { it ->
 			List<Org> orgs = subscribers.get(it.sub)
 			if(orgs == null)
 				orgs = [it.org]
@@ -545,11 +545,11 @@ class ExportService {
 		}
 		OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
 			Set<Org> orgs = providers.get(it.sub)
-			if(orgs == null)
+			if (orgs == null)
 				orgs = [it.org]
 			else orgs.add(it.org)
-			providers.put(it.sub,orgs)
-		}
+			providers.put(it.sub, orgs)
+		}*/
 		XSSFCellStyle csPositive = workbook.createCellStyle()
 		csPositive.setFillForegroundColor(new XSSFColor(new Color(198,239,206)))
 		csPositive.setFillPattern(FillPatternType.SOLID_FOREGROUND)
@@ -580,11 +580,11 @@ class ExportService {
 			headerRow.setHeightInPoints(16.75f)
 			ArrayList titles = [messageSource.getMessage( 'sidewide.number',null,locale)]
 			if(viewMode == "cons")
-				titles.addAll([messageSource('org.sortName.label',null,locale),messageSource('financials.newCosts.costParticipants',null,locale),messageSource('financials.isVisibleForSubscriber',null,locale)])
-			titles.add(messageSource.getMessage( 'financials.newCosts.costTitle'),null,locale)
+				titles.addAll([messageSource.getMessage('org.sortName.label',null,locale),messageSource.getMessage('financials.newCosts.costParticipants',null,locale),messageSource.getMessage('financials.isVisibleForSubscriber',null,locale)])
+			titles.add(messageSource.getMessage( 'financials.newCosts.costTitle',null,locale))
 			if(viewMode == "cons")
 				titles.add(messageSource.getMessage('default.provider.label',null,locale))
-			titles.addAll([messageSource.getMessage('default.subscription.label',null,locale), messageSource.getMessage('subscription.startDate.label',null.locale), messageSource.getMessage('subscription.endDate.label',null,locale),
+			titles.addAll([messageSource.getMessage('default.subscription.label',null,locale), messageSource.getMessage('subscription.startDate.label',null,locale), messageSource.getMessage('subscription.endDate.label',null,locale),
 						   messageSource.getMessage('financials.costItemConfiguration',null,locale), messageSource.getMessage('package.label',null,locale), messageSource.getMessage('issueEntitlement.label',null,locale),
 						   messageSource.getMessage('financials.datePaid',null,locale), messageSource.getMessage('financials.dateFrom',null,locale), messageSource.getMessage('financials.dateTo',null,locale), messageSource.getMessage('financials.financialYear',null,locale),
 						   messageSource.getMessage('default.status.label',null,locale), messageSource.getMessage('financials.billingCurrency',null,locale), messageSource.getMessage('financials.costInBillingCurrency',null,locale),"EUR",
@@ -609,7 +609,8 @@ class ExportService {
 			int sumCurrencyAfterTaxCell = -1
 			HashSet<String> currencies = new HashSet<String>()
 			if(cit.getValue().count > 0) {
-				cit.getValue().costItems.each { ci ->
+				cit.getValue().costItems.eachWithIndex { ci, int i ->
+					//log.debug("now processing entry #${i}")
 					BudgetCode codes = costItemGroups.get(ci)
 					String start_date   = ci.startDate ? dateFormat.format(ci?.startDate) : ''
 					String end_date     = ci.endDate ? dateFormat.format(ci?.endDate) : ''
@@ -621,20 +622,20 @@ class ExportService {
 					cell.setCellValue(rownum)
 					if(viewMode == "cons") {
 						if(ci.sub) {
-							List<Org> orgRoles = subscribers.get(ci.sub)
+							List<Org> orgRoles = ci.sub.orgRelations.findAll { OrgRole oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN] }.collect { it.org }
 							//participants (visible?)
 							Cell cellA = row.createCell(cellnum++)
 							Cell cellB = row.createCell(cellnum++)
 							String cellValueA = ""
 							String cellValueB = ""
-							orgRoles.each { or ->
+							orgRoles.each { Org or ->
 								cellValueA += or.sortname
 								cellValueB += or.name
 							}
 							cellA.setCellValue(cellValueA)
 							cellB.setCellValue(cellValueB)
 							cell = row.createCell(cellnum++)
-							cell.setCellValue(ci.isVisibleForSubscriber ? message(code:'financials.isVisibleForSubscriber') : "")
+							cell.setCellValue(ci.isVisibleForSubscriber ? messageSource.getMessage('financials.isVisibleForSubscriber',null,locale) : "")
 						}
 					}
 					//cost title
@@ -644,9 +645,9 @@ class ExportService {
 						//provider
 						cell = row.createCell(cellnum++)
 						if(ci.sub) {
-							Set<Org> orgRoles = providers.get(ci.sub)
+							Set<Org> orgRoles = ci.sub.orgRelations.findAll { OrgRole oo -> oo.roleType in [RDStore.OR_PROVIDER,RDStore.OR_AGENCY] }.collect { it.org }
 							String cellValue = ""
-							orgRoles.each { or ->
+							orgRoles.each { Org or ->
 								cellValue += or.name
 							}
 							cell.setCellValue(cellValue)
@@ -676,7 +677,7 @@ class ExportService {
 						cell.setCellValue(ci.costItemElementConfiguration.getI10n("value"))
 					}
 					else
-						cell.setCellValue(message(code:'financials.costItemConfiguration.notSet'))
+						cell.setCellValue(messageSource.getMessage('financials.costItemConfiguration.notSet',null,locale))
 					//subscription package
 					cell = row.createCell(cellnum++)
 					cell.setCellValue(ci?.subPkg ? ci.subPkg.pkg.name:'')
@@ -742,7 +743,7 @@ class ExportService {
 						else if(ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE) {
 							taxString = "${ci.taxKey.taxType.getI10n('value')}"
 						}
-						else taxString = message(code:'financials.taxRate.notSet')
+						else taxString = messageSource.getMessage('financials.taxRate.notSet',null,locale)
 						cell.setCellValue(taxString)
 					}
 					//billing currency and value
@@ -804,7 +805,7 @@ class ExportService {
 				sheet.createRow(rownum)
 				Row sumRow = sheet.createRow(rownum)
 				cell = sumRow.createCell(sumTitleCell)
-				cell.setCellValue(message(code:'financials.export.sums'))
+				cell.setCellValue(messageSource.getMessage('financials.export.sums',null,locale))
 				if(sumcell > 0) {
 					cell = sumRow.createCell(sumcell)
 					BigDecimal localSum = BigDecimal.valueOf(cit.getValue().sums.localSums.localSum)
@@ -832,7 +833,7 @@ class ExportService {
 			else {
 				row = sheet.createRow(rownum)
 				cell = row.createCell(0)
-				cell.setCellValue(message(code:"finance.export.empty"))
+				cell.setCellValue(messageSource.getMessage("finance.export.empty",null,locale))
 			}
 
 			for(int i = 0; i < titles.size(); i++) {
