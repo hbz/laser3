@@ -13,7 +13,7 @@
         <semui:crumb controller="user" action="list" message="user.show_all.label" />
     </g:elseif>
 
-    <g:if test="${actionName == 'create'}">
+    <g:if test="${actionName in ['create', 'createUser']}">
         <semui:crumb class="active" message="user.create_new.label" />
     </g:if>
     <g:if test="${actionName in ['delete', 'deleteUser']}">

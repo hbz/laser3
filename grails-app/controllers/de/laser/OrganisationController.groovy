@@ -913,7 +913,7 @@ class OrganisationController  {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         if (! result.orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
             redirect action: 'list'
             return
         }
@@ -974,12 +974,12 @@ class OrganisationController  {
                     [user: result.user, status: UserOrg.STATUS_APPROVED])
 
             if (affils.size() > 1) {
-                flash.error = 'Dieser Nutzer ist mehreren Organisationen zugeordnet und kann daher nicht gelöscht werden.'
+                flash.error = message(code: 'user.delete.error.multiAffils') as String
                 redirect action: 'editUser', params: [uoid: params.uoid, id: params.id]
                 return
             }
             else if (affils.size() == 1 && (affils.get(0).id != contextService.getOrg().id)) {
-                flash.error = 'Dieser Nutzer ist nicht ihrer Organisationen zugeordnet und kann daher nicht gelöscht werden.'
+                flash.error = message(code: 'user.delete.error.foreignOrg') as String
                 redirect action: 'editUser', params: [uoid: params.uoid, id: params.id]
                 return
             }
@@ -1033,7 +1033,7 @@ class OrganisationController  {
         def success = userService.addNewUser(params, flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
         if(success instanceof User) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label'), success.id])
+            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label'), success.id]) as String
             redirect action: 'editUser', params: [uoid: genericOIDService.getOID(success), id: params.id]
         }
         else if(success instanceof List) {
@@ -1047,7 +1047,7 @@ class OrganisationController  {
     def addAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         if (! result.editable) {
-            flash.error = message(code: 'default.noPermissions')
+            flash.error = message(code: 'default.noPermissions') as String
             redirect action: 'editUser', params: [id: params.id, uoid: params.uoid]
             return
         }
@@ -1301,7 +1301,7 @@ class OrganisationController  {
         Org orgInstance = Org.get(params.org)
 
         if (!orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
             redirect action: 'list'
             return
         }
@@ -1323,7 +1323,7 @@ class OrganisationController  {
         Org orgInstance = Org.get(params.org)
 
         if (!orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
             redirect action: 'list'
             return
         }

@@ -1,5 +1,5 @@
 <%@ page import="de.laser.auth.*" %>
-
+<laser:serviceInjection />
 <g:if test="${tmplProfile}"><%-- /profile/index --%>
     <g:form name="affiliationRequestForm" controller="profile" action="processJoinRequest" class="ui form" method="get">
 
@@ -32,7 +32,17 @@
 </g:if>
 
 <g:if test="${tmplUserEdit}"><%-- /user/edit --%>
-    <g:form controller="${controllerName}" action="addAffiliation" class="ui form" method="get" params="${[id: userInstance.id]}">
+    <g:form controller="${controllerName}" action="addAffiliation" class="ui form" method="get">
+
+        <g:if test="${controllerName == 'myInstitution'}">
+            <input type="hidden" name="uoid" value="${genericOIDService.getOID(userInstance)}" />
+        </g:if>
+        <g:if test="${controllerName == 'organisation'}">
+            <input type="hidden" name="uoid" value="${genericOIDService.getOID(userInstance)}" />
+        </g:if>
+        <g:if test="${controllerName == 'user'}">
+            <input type="hidden" name="id" value="${userInstance.id}" />
+        </g:if>
 
         <div class="two fields">
             <div class="field">

@@ -211,6 +211,59 @@ class SemanticUiInplaceTagLib {
         }
     }
 
+    def xEditableRole = { attrs, body ->
+        try {
+            boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
+
+            if ( true || editable ) {
+
+                String oid = "${attrs.owner.class.name}:${attrs.owner.id}"
+
+                Map<String, Object> lp = [type:attrs.type, oid:oid]
+
+                String data_link   = createLink( controller:'ajaxJson', action:'lookupRoles', params: lp ).encodeAsHTML()
+                String update_link = createLink( controller:'ajax', action:'setRole', params: lp ).encodeAsHTML()
+
+                String id = attrs.id ?: "${oid}:${attrs.field}"
+                String default_empty = message(code:'default.button.edit.label')
+                String emptyText = attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
+
+                out << "<span>"
+
+                String dataValue = ""
+                def obj = genericOIDService.resolveOID(oid)
+
+                if (obj && obj."${attrs.field}") {
+                    def tmpId = obj."${attrs.field}".id
+                    dataValue = " data-value=\"${RefdataValue.class.name}:${tmpId}\" "
+                }
+
+                // Output an editable link
+                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\" "
+                if(attrs.owner instanceof SurveyResult){
+                    out << "data-onblur=\"submit\" "
+                }else {
+                    out << "data-onblur=\"ignore\" "
+                }
+                out << dataValue + "data-pk=\"${oid}\" data-type=\"select\" data-name=\"${attrs.field}\" " +
+                        "data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
+
+                // Here we can register different ways of presenting object references. The most pressing need to be
+                // outputting a a containing an icon for refdata fields.
+
+                out << renderObjectValue(attrs.owner[attrs.field])
+
+                out << "</a></span>"
+            }
+            else {
+                out << renderObjectValue(attrs.owner[attrs.field])
+            }
+        }
+        catch ( Throwable e ) {
+            log.error("Problem processing editable refdata ${attrs}",e)
+        }
+    }
+
     /**
      *   Attributes:
      *   overwriteEditable - if existing, value overwrites global editable

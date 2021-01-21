@@ -2,6 +2,7 @@ package de.laser.ajax
 
 import de.laser.IssueEntitlement
 import de.laser.License
+import de.laser.auth.Role
 import de.laser.properties.LicenseProperty
 import de.laser.Org
 import de.laser.properties.OrgProperty
@@ -471,6 +472,17 @@ class AjaxJsonController {
     @Secured(['ROLE_USER'])
     def lookupReferences() {
         render controlledListService.getReferences(params) as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def lookupRoles() {
+        List result = []
+        List<Role> roles = params.type ? Role.findAllByAuthority(params.type.toLowerCase()) :  Role.findAll()
+
+        roles.each { r ->
+            result.add([text: r.getI10n('authority'), value: r.class.name + ':' + r.id])
+        }
+        render result as JSON
     }
 
     @Secured(['ROLE_USER'])
