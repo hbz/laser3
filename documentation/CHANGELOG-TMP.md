@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      20.01.2021  dev     2.0         Andreas Feature     neue Filter Datum von/Datum bis für Finanzfilter
+
+3074    20.01.2021  dev     2.0         Andreas Feature     Akkordeon an richtiger Stelle aufklappen nach Merkmalsdefinitionserstellung
+
+3073    20.01.2021  dev     2.0         Andreas Bug         Lizenzgeber/Anbieter-Dropdown korrigiert
+
+3071    20.01.2021  dev     2.0         Andreas Feature     diverse Merkmalsverwaltungspunkte
+
 3071    20.01.2021  dev     2.0         Andreas Bug         Punkte zwei-sechs des Sammeltickets
 
 3016    18.01.2021  dev     2.0         Moe     Feature     Mailtext Titelauswahl beendet
