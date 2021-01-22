@@ -8,7 +8,7 @@ buildscript {
         classpath "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
         classpath 'org.grails.plugins:database-migration:3.0.3'
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:2.15.1'
-        classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.2.4"
+        classpath 'gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.2.4'
     }
 }
 
@@ -21,8 +21,7 @@ apply plugin:'war'
 apply plugin:'org.grails.grails-web'
 apply plugin:'asset-pipeline'
 apply plugin:'org.grails.grails-gsp'
-
-apply plugin: "com.gorylenko.gradle-git-properties"
+apply plugin:'com.gorylenko.gradle-git-properties'
 
 repositories {
     mavenLocal()
@@ -115,11 +114,31 @@ buildProperties {
     inputs.property('info.app.build.host', InetAddress.localHost.hostName)
     inputs.property('info.app.build.javaVersion', System.getProperty('java.version'))
 }
-
-// war-file creation
 war {
     baseName = 'laser2'
     archiveName = 'laser2.war'
+}
+
+// gradle-git-properties
+gitProperties {
+    //keys = ['git.branch','git.commit.id','git.commit.time']
+    dateFormat = "dd-MM-yyyy'T'HH:mm:ssZ"
+    //dateFormatTimeZone = "PST"
+    gitPropertiesDir = new File("${project.rootDir}/")
+}
+buildProperties.doLast {
+    File grailsBuildInfoFile = it.outputs.files.files.find { it.name == 'grails.build.info' }
+    if (!grailsBuildInfoFile) return
+
+    Properties properties = new Properties()
+    // Read properties from the file
+    grailsBuildInfoFile.withInputStream { properties.load(it) }
+    File BuildInfoFile = new File("${project.rootDir}/git.properties")
+    BuildInfoFile.withInputStream {properties.load(it) }
+    // Add new properties from various sources
+    properties.setProperty('build.time', new Date().format("dd.MM.yyyy HH:mm:ss"))
+    // Write the properties back to the file
+    grailsBuildInfoFile.withOutputStream {properties.store(it, null) }
 }
 
 // windows limitation of command line length
@@ -127,6 +146,7 @@ grails {
     pathingJar = true
 }
 
+// ..
 tasks.withType(Test) {
     systemProperty 'geb.env', System.getProperty('geb.env')
     systemProperty 'geb.build.reportsDir', reporting.file('geb/integrationTest')
@@ -172,36 +192,4 @@ sourceSets {
             srcDir 'grails-app/migrations'
         }
     }
-}
-
-//MD
-gitProperties {
-    //keys = ['git.branch','git.commit.id','git.commit.time']
-    dateFormat = "dd-MM-yyyy'T'HH:mm:ssZ"
-    //dateFormatTimeZone = "PST"
-    gitPropertiesDir = new File("${project.rootDir}/")
-}
-
-//MD
-buildProperties.doLast {
-    // Find the right file
-    File grailsBuildInfoFile = it.outputs.files.files.find { it.name == 'grails.build.info' }
-    if(!grailsBuildInfoFile) return // No need to continue if the file is not there
-    Properties properties = new Properties()
-    // Read properties from the file
-    grailsBuildInfoFile.withInputStream {
-        properties.load(it)
-    }
-    File BuildInfoFile = new File("${project.rootDir}/git.properties")
-    BuildInfoFile.withInputStream {
-        properties.load(it)
-    }
-    // Add new properties from various sources
-    properties.setProperty('build.time', new Date().format("dd.MM.yyyy HH:mm:ss"))
-    // Write the properties back to the file
-    grailsBuildInfoFile.withOutputStream {
-        properties.store(it,null)
-    }
-
-
 }

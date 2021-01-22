@@ -67,10 +67,8 @@
                         <g:sortableColumn property="platformName" title="${message(code: 'package.nominalPlatform')}"
                                           params="${params}"/>
                         <th>${message(code: 'package.curatoryGroup.label')}</th>
-                        <th>${message(code: 'package.listVerifiedDate.label')}</th>
-                        <th>${message(code: 'package.scope')}</th>
+                        <th>${message(code: 'package.source.label')}</th>
                         <th>${message(code: 'package.contentType.label')}</th>
-                        <th>${message(code: 'package.packageListStatus')}</th>
                         <sec:ifAllGranted roles="ROLE_YODA">
                             <th class="x"></th>
                         </sec:ifAllGranted>
@@ -139,21 +137,9 @@
                                 </g:each>
                                 </div>
                             </td>
-                            <td>${record.listVerifiedDate}</td>
-                            <td>${record.scope}</td>
+                            <%-- TODO GOKb needs to deliver output --%>
+                            <td>${record.source ?: ""}</td>
                             <td>${record.contentType}</td>
-                            <td class="center aligned">
-                                <g:if test="${record.listStatus == 'In Progress'}">
-                                    <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${message(code:'package.show.record.listStatus.inProgress')}">
-                                        <i class="exclamation triangle yellow icon"></i>
-                                    </span>
-                                </g:if>
-                                <g:elseif test="${record.listStatus == 'Checked'}">
-                                    <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${message(code:'package.show.record.listStatus.Checked')}">
-                                        <i class="check green circle icon"></i>
-                                    </span>
-                                </g:elseif>
-                            </td>
                             <sec:ifAllGranted roles="ROLE_YODA">
                                 <td>
                                     <g:link class="ui button" controller="yoda" action="retriggerPendingChanges" params="${[packageUUID:record.uuid]}"><g:message code="menu.yoda.retriggerPendingChanges"/></g:link>

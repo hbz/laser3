@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3086    22.01.2021  dev     2.0         Andreas Feature     Darstellung "Alle Pakete" angepasst
+
+3085    22.01.2021  dev     2.0         Andreas Feature     Darstellung verknüpfter Pakete angepasst
+
 3080    21.01.2021  dev     2.0         Andreas Bug         dreistufige Sortierung wieder eingeführt
 
 --      20.01.2021  dev     2.0         Andreas Feature     neue Filter Datum von/Datum bis für Finanzfilter
