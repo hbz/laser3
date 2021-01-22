@@ -56,7 +56,7 @@
                         <div class="field">
                             <label for="userRole">${message(code:'user.role')}</label>
                             <g:select id="userRole" name="formalRole"
-                                      from="${availableOrgRoles}"
+                                      from="${Role.findAllByRoleType('user')}"
                                       optionKey="id"
                                       optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
                                       value="${Role.findByAuthority('INST_EDITOR').id}"

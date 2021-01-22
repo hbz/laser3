@@ -16,6 +16,7 @@ class InstAdmService {
 
     GrailsApplication grailsApplication
     def accessService
+    def contextService
 
     def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
     def mailService = Holders.grailsApplication.mainContext.getBean('mailService')
@@ -88,10 +89,19 @@ class InstAdmService {
     void createAffiliation(User user, Org org, Role formalRole, def uoStatus, def flash) {
 
         try {
-            def check = UserOrg.findByOrgAndUserAndFormalRole(org, user, formalRole)
+            Locale loc = LocaleContextHolder.getLocale()
+            UserOrg check = UserOrg.findByOrgAndUserAndFormalRole(org, user, formalRole)
+
+            if (formalRole.roleType == 'user') {
+                check = UserOrg.findByOrgAndUserAndFormalRoleInList(org, user, Role.findAllByRoleType('user'))
+            }
 
             if (check) {
-                flash?.error = messageSource.getMessage('profile.processJoinRequest.error', null, LocaleContextHolder.getLocale())
+                if (user == contextService.getUser()) {
+                    flash?.error = messageSource.getMessage('user.affiliation.request.error2', null, loc)
+                } else {
+                    flash?.error = messageSource.getMessage('user.affiliation.request.error1', null, loc)
+                }
             }
             else {
                 log.debug("Create new user_org entry....");
@@ -106,7 +116,7 @@ class InstAdmService {
                     uo.dateActioned = uo.dateRequested
                 }
                 if (uo.save()) {
-                    flash?.message = "Die neue Organisations-Zugehörigkeit wurde angelegt."
+                    flash?.message = messageSource.getMessage('user.affiliation.request.success', null, loc)
 
                     if (uoStatus == UserOrg.STATUS_APPROVED) {
                         // TODO: only send if manually approved
@@ -115,12 +125,12 @@ class InstAdmService {
                     }
                 }
                 else {
-                    flash?.error = "Die neue Organisations-Zugehörigkeit konnte nicht angelegt werden."
+                    flash?.error = messageSource.getMessage('user.affiliation.request.failed', null, loc)
                 }
             }
         }
         catch (Exception e) {
-            flash?.error = "Problem requesting affiliation"
+            flash?.error = messageSource.getMessage('user.affiliation.request.failed', null, loc)
         }
     }
 

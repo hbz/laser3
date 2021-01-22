@@ -153,12 +153,6 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     @Transactional
-    def getRoles() {
-
-    }
-
-    @Secured(['ROLE_USER'])
-    @Transactional
     def genericSetRel() {
         String result = ''
 

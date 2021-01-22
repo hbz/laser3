@@ -477,11 +477,12 @@ class AjaxJsonController {
     @Secured(['ROLE_USER'])
     def lookupRoles() {
         List result = []
-        List<Role> roles = params.type ? Role.findAllByAuthority(params.type.toLowerCase()) :  Role.findAll()
+        List<Role> roles = params.type ? Role.findAllByRoleType(params.type.toLowerCase()) :  Role.findAll()
 
         roles.each { r ->
-            result.add([text: r.getI10n('authority'), value: r.class.name + ':' + r.id])
+            result.add([text: message(code:'cv.roles.' + r.authority), key: "${r.getI10n('authority')}", value: "${r.class.name}:${r.id}"])
         }
+
         render result as JSON
     }
 

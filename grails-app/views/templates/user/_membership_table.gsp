@@ -35,8 +35,6 @@
                         <g:link controller="organisation" action="show" id="${aff.org.id}">${aff.org.name}</g:link>
                     </td>
                     <td>
-                        <semui:xEditableRole owner="${aff}" field="formalRole" type="user" /> x
-
                         <g:message code="cv.roles.${aff.formalRole?.authority}"/>
                     </td>
                     <td>

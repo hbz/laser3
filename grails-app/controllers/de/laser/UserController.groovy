@@ -115,7 +115,6 @@ class UserController  {
                     "select o from Org o left join o.status s where exists (select os.org from OrgSetting os where os.org = o and os.key = :customerType) and (s = null or s.value != 'Deleted') and o not in ( select c.fromOrg from Combo c where c.type = :type ) order by o.sortname",
                         [customerType: OrgSetting.KEYS.CUSTOMER_TYPE, type: RDStore.COMBO_TYPE_DEPARTMENT]
                 )
-            result.availableOrgRoles = Role.findAllByRoleType('user')
             result.manipulateAffiliations = true
         }
         render view: '/user/global/edit', model: result
@@ -192,7 +191,6 @@ class UserController  {
         }
 
         result.availableOrgs = Org.executeQuery('from Org o where o.sector = :sector order by o.name', [sector: RDStore.O_SECTOR_HIGHER_EDU])
-        result.availableOrgRoles = Role.findAllByRoleType('user')
 
         render view: '/user/global/create', model: result
     }

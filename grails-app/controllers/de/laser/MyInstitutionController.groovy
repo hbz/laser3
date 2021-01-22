@@ -1934,13 +1934,15 @@ join sub.orgRelations or_sub where
                 manipulateAffiliations: true
         ]
         result.orgInstance = result.institution
+
         result.availableComboDeptOrgs = Combo.executeQuery("select c.fromOrg from Combo c where (c.fromOrg.status = null or c.fromOrg.status = :current) and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name",
                 [ctxOrg: result.institution, current: RDStore.O_STATUS_CURRENT, type: RDStore.COMBO_TYPE_DEPARTMENT])
+
         result.availableComboDeptOrgs << result.institution
+
         if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
             result.orgLabel = message(code:'collective.member.plural')
         else result.orgLabel = message(code:'default.institution')
-        result.availableOrgRoles = Role.findAllByRoleType('user')
 
         render view: '/user/global/edit', model: result
     }
@@ -1955,8 +1957,6 @@ join sub.orgRelations or_sub where
 
         result.availableOrgs = Combo.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg and c.type = :dept order by c.fromOrg.name', [ctxOrg: result.orgInstance, dept: RDStore.COMBO_TYPE_DEPARTMENT])
         result.availableOrgs.add(result.orgInstance)
-
-        result.availableOrgRoles = Role.findAllByRoleType('user')
 
         render view: '/user/global/create', model: result
     }

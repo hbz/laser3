@@ -16,7 +16,7 @@
             <div class="field">
                 <label>Role</label>
                 <g:select name="formalRole"
-                          from="${availableOrgRoles}"
+                          from="${Role.findAllByRoleType('user')}"
                           optionKey="id"
                           optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
                           value="${Role.findByAuthority('INST_USER').id}"
@@ -39,6 +39,7 @@
         </g:if>
         <g:if test="${controllerName == 'organisation'}">
             <input type="hidden" name="uoid" value="${genericOIDService.getOID(userInstance)}" />
+            <input type="hidden" name="id" value="${orgInstance.id}" />
         </g:if>
         <g:if test="${controllerName == 'user'}">
             <input type="hidden" name="id" value="${userInstance.id}" />
@@ -57,7 +58,7 @@
             <div class="field">
                 <label>Role</label>
                 <g:select name="formalRole"
-                          from="${availableOrgRoles}"
+                          from="${Role.findAllByRoleType('user')}"
                           optionKey="id"
                           optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
                           value="${Role.findByAuthority('INST_USER').id}"

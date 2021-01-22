@@ -1009,9 +1009,10 @@ class OrganisationController  {
                 user: genericOIDService.resolveOID(params.uoid),
                 editor: contextService.getUser(),
                 orgInstance: Org.get(params.id),
-                manipulateAffiliations: false
+                manipulateAffiliations: contextService.getUser().hasRole(['ROLE_ADMIN', 'ROLE_YODA'])
         ]
         result.editable = checkIsEditable(result.user, contextService.getOrg())
+        result.availableOrgs = [ result.orgInstance ]
 
         render view: '/user/global/edit', model: result
     }
@@ -1021,7 +1022,6 @@ class OrganisationController  {
     def createUser() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         result.availableOrgs = Org.get(params.id)
-        result.availableOrgRoles = Role.findAllByRoleType('user')
         result.editor = result.user
 
         render view: '/user/global/create', model: result
