@@ -21,7 +21,7 @@
     <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_ADMINISTRATIVE]}">
         <div class="ui card la-dl-no-table">
             <div class="content">
-                <h5 class="ui header">${message(code:'subscription.properties.consortium')}</h5>
+                <h2 class="ui header">${message(code:'subscription.properties.consortium')}</h2>
                 <div id="member_props_div">
                     <g:render template="/templates/properties/members" model="${[
                             prop_desc: PropertyDefinition.SUB_PROP,
@@ -131,7 +131,7 @@
 <!-- TODO div class="ui card la-dl-no-table la-js-hideable" -->
 <div class="ui card la-dl-no-table ">
     <div class="content">
-        <h5 class="ui header">${message(code:'subscription.properties.private')} ${contextOrg.name}</h5>
+        <h2 class="ui header">${message(code:'subscription.properties.private')} ${contextOrg.name}</h2>
         <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
         <div id="${propertyWrapper}">
             <g:render template="/templates/properties/private" model="${[

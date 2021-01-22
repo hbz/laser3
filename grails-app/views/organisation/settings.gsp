@@ -32,9 +32,9 @@
 
                     <div class="ui card la-dl-no-table la-js-hideable">
                         <div class="content">
-                            <h5 class="ui header">
+                            <h2 class="ui header">
                                 ${message(code:'org.orgSettings')}
-                            </h5>
+                            </h2>
 
                             <table class="ui la-table table">
                                 <thead>
@@ -135,9 +135,9 @@
 
                     <div class="ui card la-dl-no-table la-js-hideable">
                         <div class="content">
-                            <h5 class="ui header">
+                            <h2 class="ui header">
                                 ${message(code:'org.confProperties')}
-                            </h5>
+                            </h2>
 
                             <div id="custom_props_div_1">
                                 <g:render template="/templates/properties/custom" model="${[

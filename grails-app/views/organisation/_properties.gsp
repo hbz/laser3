@@ -71,14 +71,14 @@
 
     <%--<div class="ui card la-dl-no-table la-js-hideable">--%>
     <div class="content">
-        <h5 class="ui header">
+        <h2 class="ui header">
             <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
                 ${message(code:'subscription.properties.orphaned')}
             </g:if>
             <g:else>
                 ${message(code:'org.properties')}
             </g:else>
-        </h5>
+        </h2>
 
         <div id="custom_props_div_props">
             <g:render template="/templates/properties/custom" model="${[
@@ -103,7 +103,7 @@
     <g:if test="${authOrg.name == contextOrg?.name}">
         <div class="ui card la-dl-no-table">
             <div class="content">
-                <h5 class="ui header">${message(code:'org.properties.private')} ${authOrg.name}</h5>
+                <h2 class="ui header">${message(code:'org.properties.private')} ${authOrg.name}</h2>
                 <g:set var="propertyWrapper" value="private-property-wrapper-${authOrg.id}" />
                 <div id="${propertyWrapper}">
                     <g:render template="/templates/properties/private" model="${[
