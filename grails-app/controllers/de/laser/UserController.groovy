@@ -41,12 +41,12 @@ class UserController  {
                     [user: result.user, status: UserOrg.STATUS_APPROVED])
 
             if (affils.size() > 1) {
-                flash.error = 'Dieser Nutzer ist mehreren Organisationen zugeordnet und kann daher nicht gelöscht werden.'
+                flash.error = message(code: 'user.delete.error.multiAffils') as String
                 redirect action: 'edit', params: [id: params.id]
                 return
             }
             else if (affils.size() == 1 && (affils.get(0).id != contextService.getOrg().id)) {
-                flash.error = 'Dieser Nutzer ist nicht ihrer Organisationen zugeordnet und kann daher nicht gelöscht werden.'
+                flash.error = message(code: 'user.delete.error.foreignOrg') as String
                 redirect action: 'edit', params: [id: params.id]
                 return
             }
@@ -66,7 +66,7 @@ class UserController  {
             )
         }
 
-        render view: 'delete', model: result
+        render view: '/user/global/delete', model: result
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -78,23 +78,23 @@ class UserController  {
         params.max = params.max ?: result.editor?.getDefaultPageSize() // TODO
 
         result.users = userService.getUserSet(filterParams)
-        result.titleMessage = message(code:'user.show_all.label')
-        result.breadcrumb = 'breadcrumb'
+        result.titleMessage = message(code:'user.show_all.label') as String
         Set<Org> availableComboOrgs = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name asc', [ctxOrg:contextService.getOrg()])
         availableComboOrgs.add(contextService.getOrg())
         result.filterConfig = [filterableRoles:Role.findAllByRoleTypeInList(['user','global']), orgField: true, availableComboOrgs: availableComboOrgs]
-        result.tableConfig = [
+
+        result.tmplConfig = [
                 editable:result.editable,
                 editor: result.editor,
                 editLink: 'edit',
+                deleteLink: 'delete',
                 users: result.users,
                 showAllAffiliations: true,
-                showAffiliationDeleteLink: false,
                 modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')
         ]
         result.total = result.users.size()
 
-        render view: '/globals/user/list', model: result
+        render view: '/user/global/list', model: result
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -106,7 +106,7 @@ class UserController  {
             return
         }
         else if (! result.user) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label'), params.id]) as String
             redirect action: 'list'
             return
         }
@@ -115,10 +115,9 @@ class UserController  {
                     "select o from Org o left join o.status s where exists (select os.org from OrgSetting os where os.org = o and os.key = :customerType) and (s = null or s.value != 'Deleted') and o not in ( select c.fromOrg from Combo c where c.type = :type ) order by o.sortname",
                         [customerType: OrgSetting.KEYS.CUSTOMER_TYPE, type: RDStore.COMBO_TYPE_DEPARTMENT]
                 )
-            result.availableOrgRoles = Role.findAllByRoleType('user')
             result.manipulateAffiliations = true
         }
-        render view: '/globals/user/edit', model: result
+        render view: '/user/global/edit', model: result
     }
 
     @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
@@ -139,14 +138,14 @@ class UserController  {
             Map<String, Object> result = userControllerService.getResultGenerics(params)
 
             if (!result.editable) {
-                flash.error = message(code: 'default.noPermissions')
+                flash.error = message(code: 'default.noPermissions') as String
                 redirect url: request.getHeader('referer'), id: params.id
             }
             if (result.user) {
                 String newPassword = User.generateRandomPassword()
                 result.user.password = newPassword
                 if (result.user.save()) {
-                    flash.message = message(code: 'user.newPassword.success')
+                    flash.message = message(code: 'user.newPassword.success') as String
 
                     instAdmService.sendMail(result.user, 'Passwortänderung',
                             '/mailTemplates/text/newPassword', [user: result.user, newPass: newPassword])
@@ -156,7 +155,7 @@ class UserController  {
                 }
             }
 
-            flash.error = message(code: 'user.newPassword.fail')
+            flash.error = message(code: 'user.newPassword.fail') as String
             redirect url: request.getHeader('referer'), id: params.id
         }
     }
@@ -167,7 +166,7 @@ class UserController  {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
 
         if (! result.editable) {
-            flash.error = message(code: 'default.noPermissions')
+            flash.error = message(code: 'default.noPermissions') as String
             redirect controller: 'user', action: 'edit', id: params.id
             return
         }
@@ -186,16 +185,14 @@ class UserController  {
     def create() {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
         if (! result.editable) {
-            flash.error = message(code: 'default.noPermissions')
+            flash.error = message(code: 'default.noPermissions') as String
             redirect controller: 'user', action: 'list'
             return
         }
 
-        result.breadcrumb = 'breadcrumb'
         result.availableOrgs = Org.executeQuery('from Org o where o.sector = :sector order by o.name', [sector: RDStore.O_SECTOR_HIGHER_EDU])
-        result.availableOrgRoles = Role.findAllByRoleType('user')
 
-        render view: '/globals/user/create', model: result
+        render view: '/user/global/create', model: result
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -204,7 +201,7 @@ class UserController  {
         def success = userService.addNewUser(params,flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
         if(success instanceof User) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label'), success.id])
+            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label'), success.id]) as String
             redirect action: 'edit', id: success.id
         }
         else if(success instanceof List) {

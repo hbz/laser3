@@ -31,7 +31,7 @@
     </g:if>
     <g:if test="${!isProviderOrAgency}">
         <g:if test="${inContextOrg}">
-            <semui:securedSubNavItem controller="myInstitution" action="userList" message="org.nav.users" affiliation="INST_ADM"/>
+            <semui:securedSubNavItem controller="myInstitution" action="users" message="org.nav.users" affiliation="INST_ADM"/>
         </g:if>
         <%-- deactivated as of ERMS-2934
         <g:elseif test="${ accessService.checkForeignOrgComboPermAffiliation([

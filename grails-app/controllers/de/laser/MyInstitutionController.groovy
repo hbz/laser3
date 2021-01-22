@@ -47,35 +47,34 @@ import org.springframework.transaction.TransactionStatus
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import javax.servlet.ServletOutputStream
-import java.nio.charset.Charset
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MyInstitutionController  {
 
-    def dataSource
-    def userService
-    def genericOIDService
-    def escapeService
-    def institutionsService
-    def docstoreService
-    def addressbookService
     def accessService
+    def addressbookService
     def contextService
-    def taskService
+    def dataSource
+    def deletionService
+    def docstoreService
+    def escapeService
     def filterService
+    def financeService
+    def formService
+    def genericOIDService
+    def institutionsService
+    def organisationService
+    def orgTypeService
     def propertyService
     def subscriptionsQueryService
-    def orgTypeService
     def subscriptionService
-    def organisationService
-    def financeService
     def surveyService
-    def formService
+    def userService
+    def taskService
     ComparisonService comparisonService
     ExportService exportService
     LinksGenerationService linksGenerationService
@@ -1852,7 +1851,7 @@ join sub.orgRelations or_sub where
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
-    def userList() {
+    def users() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         Map filterParams = params
@@ -1860,42 +1859,92 @@ join sub.orgRelations or_sub where
         filterParams.org = result.institution
 
         result.users = userService.getUserSet(filterParams)
-        result.breadcrumb = '/organisation/breadcrumb'
         result.titleMessage = "${result.institution}"
         result.inContextOrg = true
         result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, result.institution, [sort:'dateRequested', order:'desc'])
         result.orgInstance = result.institution
-        result.navPath = "/organisation/nav"
-        result.navConfiguration = [orgInstance: result.institution, inContextOrg: true]
         result.multipleAffiliationsWarning = true
-        result.filterConfig = [filterableRoles:Role.findAllByRoleType('user'), orgField: false]
-        result.tableConfig = [
+
+        result.navConfig = [
+                orgInstance: result.institution, inContextOrg: result.inContextOrg
+        ]
+        result.filterConfig = [
+                filterableRoles:Role.findAllByRoleType('user'), orgField: false
+        ]
+        result.tmplConfig = [
                 editable: result.editable,
                 editor: result.user,
                 editLink: 'editUser',
+                deleteLink: 'deleteUser',
                 users: result.users,
                 showAllAffiliations: false,
-                showAffiliationDeleteLink: true,
                 modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')
         ]
         result.total = result.users.size()
 
-        render view: '/globals/user/list', model: result
+        render view: '/user/global/list', model: result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
+    def deleteUser() {
+        Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
+
+        if (result.user) {
+            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user and uo.status = :status',
+                    [user: result.user, status: UserOrg.STATUS_APPROVED])
+
+            if (affils.size() > 1) {
+                flash.error = message(code: 'user.delete.error.multiAffils') as String
+                redirect action: 'editUser', params: [uoid: params.uoid]
+                return
+            }
+            else if (affils.size() == 1 && (affils.get(0).id != contextService.getOrg().id)) {
+                flash.error = message(code: 'user.delete.error.foreignOrg') as String
+                redirect action: 'editUser', params: [uoid: params.uoid]
+                return
+            }
+
+            if (params.process && result.editable) {
+                User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
+
+                result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
+            }
+            else {
+                result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
+            }
+
+            result.substituteList = User.executeQuery(
+                    'select distinct u from User u join u.affiliations ua where ua.status = :uaStatus and ua.org = :ctxOrg and u != :self',
+                    [uaStatus: UserOrg.STATUS_APPROVED, ctxOrg: contextService.getOrg(), self: result.user]
+            )
+        }
+
+        render view: '/user/global/delete', model: result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def editUser() {
-        Map result = [user: User.get(params.id), editor: contextService.getUser(), editable: true, institution: contextService.getOrg(), manipulateAffiliations: true]
+        Map result = [
+                user: genericOIDService.resolveOID(params.uoid),
+                editor: contextService.getUser(),
+                editable: true,
+                institution: contextService.getOrg(),
+                manipulateAffiliations: true
+        ]
+        result.orgInstance = result.institution
+
         result.availableComboDeptOrgs = Combo.executeQuery("select c.fromOrg from Combo c where (c.fromOrg.status = null or c.fromOrg.status = :current) and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name",
                 [ctxOrg: result.institution, current: RDStore.O_STATUS_CURRENT, type: RDStore.COMBO_TYPE_DEPARTMENT])
+
         result.availableComboDeptOrgs << result.institution
+
         if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
             result.orgLabel = message(code:'collective.member.plural')
         else result.orgLabel = message(code:'default.institution')
-        result.availableOrgRoles = Role.findAllByRoleType('user')
 
-        render view: '/globals/user/edit', model: result
+        render view: '/user/global/edit', model: result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
@@ -1905,14 +1954,11 @@ join sub.orgRelations or_sub where
         result.orgInstance = result.institution
         result.editor = result.user
         result.inContextOrg = true
-        result.breadcrumb = '/organisation/breadcrumb'
 
         result.availableOrgs = Combo.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg and c.type = :dept order by c.fromOrg.name', [ctxOrg: result.orgInstance, dept: RDStore.COMBO_TYPE_DEPARTMENT])
         result.availableOrgs.add(result.orgInstance)
 
-        result.availableOrgRoles = Role.findAllByRoleType('user')
-
-        render view: '/globals/user/create', model: result
+        render view: '/user/global/create', model: result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
@@ -1921,8 +1967,8 @@ join sub.orgRelations or_sub where
         def success = userService.addNewUser(params,flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
         if(success instanceof User) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label'), success.id])
-            redirect action: 'editUser', id: success.id
+            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label'), success.id]) as String
+            redirect action: 'editUser', params: [uoid: genericOIDService.getOID(success)]
         }
         else if(success instanceof List) {
             flash.error = success.join('<br>')
@@ -1933,14 +1979,14 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def addAffiliation() {
-        Map<String, Object> result = userControllerService.getResultGenerics(params)
+        Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         if (! result.editable) {
-            flash.error = message(code: 'default.noPermissions')
-            redirect action: 'editUser', id: params.id
+            flash.error = message(code: 'default.noPermissions') as String
+            redirect action: 'editUser', params: [uoid: params.uoid]
             return
         }
         userService.addAffiliation(result.user,params.org,params.formalRole,flash)
-        redirect action: 'editUser', id: params.id
+        redirect action: 'editUser', params: [uoid: params.uoid]
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")

@@ -21,7 +21,7 @@
                         <i class="icon tags la-list-icon"></i>
                     </g:if>
                 %{--${dashDueDate.id} &nbsp--}%
-                    <g:if test="${Locale.GERMAN.getLanguage() == org.springframework.context.i18n.LocaleContextHolder.getLocale().getLanguage()}">
+                    <g:if test="${Locale.GERMAN.getLanguage() == LocaleContextHolder.getLocale().getLanguage()}">
                         ${dashDueDate.dueDateObject.attribute_value_de}
                     </g:if>
                     <g:else>
