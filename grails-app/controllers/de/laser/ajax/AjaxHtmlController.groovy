@@ -149,6 +149,7 @@ class AjaxHtmlController {
 
     @Secured(['ROLE_USER'])
     def getPackageData() {
+        Long start = System.currentTimeMillis()
         Map<String,Object> result = [subscription:Subscription.get(params.subscription), curatoryGroups: []], packageMetadata
         Org contextOrg = contextService.getOrg()
         result.contextCustomerType = contextOrg.getCustomerType()
@@ -164,11 +165,13 @@ class AjaxHtmlController {
                 result.curatoryGroups.addAll(packageMetadata.records.get(0).curatoryGroups)
             }
         }
+        log.debug("after curatory groups: ${System.currentTimeMillis()-start}")
         result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]) }
         result.roleObject = result.subscription
         result.roleRespValue = 'Specific subscription editor'
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
         result.accessConfigEditable = accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
+        log.debug("rendering template: ${System.currentTimeMillis()-start}")
         render template: '/subscription/packages', model: result
     }
 

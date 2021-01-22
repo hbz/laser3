@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.IssueEntitlement; de.laser.Person;de.laser.RefdataValue" %>
+<%@ page import="de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.Platform; de.laser.Person;de.laser.RefdataValue" %>
 <laser:serviceInjection/>
 
     <table class="ui three column table">
@@ -55,8 +55,8 @@
                                 <strong>${message(code: 'subscription.details.linkAccessPoint.platform.label')}</strong>
                             </div>
                         </div>
-                        <g:if test="${sp.pkg.tipps}">
-                            <g:each in="${sp.pkg.tipps.platform.unique()}" var="platform">
+                        <%--<g:if test="${sp.pkg.tipps}">--%>
+                            <g:each in="${Platform.executeQuery('select distinct tipp.platform from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg:sp.pkg])}" var="platform">
                                 <div class="item">
                                     <div class="right floated content">
                                         <g:each in="${sp.getAccessPointListForOrgAndPlatform(subscription.getSubscriber(), platform)?.collect()}" var="orgap">
@@ -129,7 +129,7 @@
                                     </div>
                                 </div>
                             </g:each>
-                        </g:if>
+                        <%--</g:if>--%>
                     </div>
                 </td>
             </tr>
