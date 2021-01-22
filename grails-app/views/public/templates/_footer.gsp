@@ -103,8 +103,8 @@
                         Version: ${grailsApplication.metadata['info.app.version']}
                     </a>
 
-                    <g:if test="${grailsApplication.metadata['git.commit.id']}">
-                        <a target="_blank" class="item" href="https://github.com/hbz/laser2/tree/${grailsApplication.metadata['git.commit.id']}">
+                    <g:if test="${grailsApplication.metadata['git.branch']}">
+                        <a target="_blank" class="item" href="https://github.com/hbz/laser2/tree/${grailsApplication.metadata['git.branch']}">
                             Branch: ${grailsApplication.metadata['git.branch']}
                         </a>
                     </g:if>
