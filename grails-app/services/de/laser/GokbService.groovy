@@ -61,8 +61,13 @@ class GokbService {
                     //pkg.global = r.global
 
                     pkg.curatoryGroups = []
-                    r.curatoryGroups?.each{ curatoryGroup ->
-                        pkg.curatoryGroups.add(curatoryGroup);
+                    r.curatoryGroups.each{ curatoryGroup ->
+                        pkg.curatoryGroups.add(curatoryGroup)
+                    }
+                    //TODO GOKb needs to deliver the counterpoint
+                    pkg.source = [:]
+                    r.sources.each { source ->
+                        //pkg.sources.add(source)
                     }
 
                     pkg.titleCount = r.titleCount
@@ -125,6 +130,11 @@ class GokbService {
                     pkg.curatoryGroups = []
                     r.curatoryGroups?.each{ curatoryGroup ->
                         pkg.curatoryGroups.add(curatoryGroup);
+                    }
+                    //TODO GOKb needs to deliver the counterpoint
+                    pkg.source = [:]
+                    r.sources.each { source ->
+
                     }
 
                     pkg.titleCount = r.titleCount
