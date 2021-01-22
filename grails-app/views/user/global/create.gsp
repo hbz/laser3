@@ -2,13 +2,22 @@
 <laser:serviceInjection />
 <!doctype html>
 <html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'user.create_new.label')}</title>
-    </head>
-    <body>
+<head>
+    <meta name="layout" content="laser">
+    <title>${message(code:'laser')} : ${message(code:'user.create_new.label')}</title>
+</head>
+<body>
 
-        <g:render template="${breadcrumb}" model="${[inContextOrg: inContextOrg, orgInstance: orgInstance, departmentalView: departmentalView, institutionalView: institutionalView,  params:params ]}"/>
+    %{--<g:if test="${controllerName == 'myInstitution'}">
+        // myInstitution has no breadcrumb yet
+        <g:render template="/organisation/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
+    </g:if>
+    <g:if test="${controllerName == 'organisation'}">
+        <g:render template="/organisation/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
+    </g:if>--}%
+    %{--<g:if test="${controllerName == 'user'}">--}%
+        <g:render template="/user/global/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
+    %{--</g:if>--}%
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'user.create_new.label')}</h1>
 
@@ -47,7 +56,7 @@
                         <div class="field">
                             <label for="userRole">${message(code:'user.role')}</label>
                             <g:select id="userRole" name="formalRole"
-                                      from="${availableOrgRoles}"
+                                      from="${Role.findAllByRoleType('user')}"
                                       optionKey="id"
                                       optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
                                       value="${Role.findByAuthority('INST_EDITOR').id}"
@@ -56,6 +65,9 @@
                     </div>
 
                     <div class="field">
+                        <g:if test="${controllerName == 'organisation'}">
+                            <input type="hidden" name="id" value="${orgInstance.id}" />
+                        </g:if>
                         <input id="userSubmit" type="submit" value="${message(code:'user.create_new.label')}" class="ui button" disabled/>
                         <input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
                     </div>
@@ -63,8 +75,7 @@
                 </fieldset>
             </g:form>
         </g:if>
-    </body>
-</html>
+
 <laser:script file="${this.getGroovyPageFileName()}">
 
     $("#username").keyup(function() {
@@ -132,3 +143,6 @@
             clearable: false,
         });
 </laser:script>
+
+</body>
+</html>

@@ -52,11 +52,6 @@
 
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
-
-%{--<g:if test="${departmentalView == false}">
-    <g:render template="/templates/meta/identifier" model="${[object: orgInstance, editable: editable]}"/>
-</g:if>--}%
-
 <semui:messages data="${flash}"/>
 
 <div class="ui stackable grid">

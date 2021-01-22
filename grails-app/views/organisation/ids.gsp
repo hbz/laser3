@@ -15,9 +15,6 @@
     %{--<g:elseif test="${institutionalView}">--}%
         %{--<g:set var="entityName" value="${message(code: 'org.institution.label')}"/>--}%
     %{--</g:elseif>--}%
-    %{--<g:elseif test="${departmentalView}">--}%
-        %{--<g:set var="entityName" value="${message(code: 'org.department.label')}"/>--}%
-    %{--</g:elseif>--}%
     %{--<g:else>--}%
         %{--<g:set var="entityName" value="${message(code: 'org.label')}"/>--}%
     %{--</g:else>--}%
@@ -53,10 +50,6 @@
 <g:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
-
-%{--<g:if test="${departmentalView == false}">--}%
-    %{--<g:render template="/templates/meta/identifier" model="${[object: orgInstance, editable: editable_identifier]}"/>--}%
-%{--</g:if>--}%
 
 <semui:messages data="${flash}"/>
 %{---------------IDENTIFIERS-----------------------}%
