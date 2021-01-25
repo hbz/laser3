@@ -331,7 +331,7 @@
             <div class="ui card">
                 <div class="content">
                     <g:if test="${!isProviderOrAgency}">
-                        <h5 class="ui header"><g:message code="org.contactpersons.and.addresses.label"/></h5>
+                        <h2 class="ui header"><g:message code="org.contactpersons.and.addresses.label"/></h2>
                     </g:if>
 
                         <g:if test="${(orgInstance.id == institution.id && user.hasAffiliation('INST_EDITOR'))}">

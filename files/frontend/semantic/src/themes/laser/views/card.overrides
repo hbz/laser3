@@ -19,8 +19,8 @@
 }
 .ui.cards > .card > .content > .header,
 .ui.card > .content > .header {
-
   color: @headerColor;
+  font-size: @headerFontSize;
 }
 /* Default Header Size */
 .ui.cards > .card > .content > .header:not(.ui),

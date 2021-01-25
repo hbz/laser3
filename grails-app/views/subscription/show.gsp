@@ -246,16 +246,16 @@
                         <div class="content">
                             <g:if test="${costItemSums.ownCosts}">
                                 <g:if test="${(contextOrg.id != subscription.getConsortia()?.id && subscription.instanceOf) || !subscription.instanceOf}">
-                                    <h5 class="ui header">${message(code:'financials.label')} : ${message(code:'financials.tab.ownCosts')}</h5>
+                                    <h2 class="ui header">${message(code:'financials.label')} : ${message(code:'financials.tab.ownCosts')}</h2>
                                     <g:render template="financials" model="[data:costItemSums.ownCosts]"/>
                                 </g:if>
                             </g:if>
                             <g:if test="${costItemSums.consCosts}">
-                                <h5 class="ui header">${message(code:'financials.label')} : ${message(code:'financials.tab.consCosts')}</h5>
+                                <h2 class="ui header">${message(code:'financials.label')} : ${message(code:'financials.tab.consCosts')}</h2>
                                 <g:render template="financials" model="[data:costItemSums.consCosts]"/>
                             </g:if>
                             <g:elseif test="${costItemSums.subscrCosts}">
-                                <h5 class="ui header">${message(code:'financials.label')} : ${message(code:'financials.tab.subscrCosts')}</h5>
+                                <h2 class="ui header">${message(code:'financials.label')} : ${message(code:'financials.tab.subscrCosts')}</h2>
                                 <g:render template="financials" model="[data:costItemSums.subscrCosts]"/>
                             </g:elseif>
                         </div>

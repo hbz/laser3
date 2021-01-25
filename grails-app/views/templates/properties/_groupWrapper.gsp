@@ -4,7 +4,7 @@
 <%-- SHOW --%>
 <%--<div class="ui card la-dl-no-table">--%>
     <div class="content">
-        <h5 class="ui header">
+        <h2 class="ui header">
             ${message(code: 'subscription.properties.public')}
             (${propDefGroup.name})
 
@@ -17,7 +17,7 @@
                     </g:if>
                 </g:if>
             </g:if>
-        </h5>
+        </h2>
 
         <div id="grouped_custom_props_div_${propDefGroup.id}">
              <%--!!!!Die Editable Prüfung dient dazu, dass für die Umfrag Lizenz-Merkmal nicht editierbar sind !!!!--%>
