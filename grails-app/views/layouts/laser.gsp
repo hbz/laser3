@@ -10,7 +10,6 @@
 <g:set var="contextUser" scope="page" />
 <g:set var="contextMemberships" scope="page" />
 <g:set var="newTickets" scope="page" />
-<g:set var="myInstNewAffils" scope="page" />
 <tmpl:/layouts/initVars />
 
 <html lang="${currentLang}">
@@ -147,7 +146,7 @@
                                 <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
 
                                 <div class="divider"></div>
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="users" message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils.size()}" />
+                                <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="users" message="menu.institutions.users" />
 
                                 <sec:ifAnyGranted roles="ROLE_YODA">
                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</semui:link>
@@ -226,19 +225,6 @@
                                     ${message(code: "menu.user.errorReport")}
                                     <g:if test="${newTickets.size() > 0}">
                                         <div class="ui floating red circular label">${newTickets.size()}</div>
-                                    </g:if>
-                                </semui:link>
-
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageAffiliationRequests">
-                                    ${message(code: "menu.institutions.affiliation_requests")}
-                                    <%--<g:set var="newAffiliationRequests" value="${de.laser.auth.UserOrg.findAllByStatus(0).size()}" />--%>
-                                    <%
-                                        Object organisationService = grailsApplication.mainContext.getBean("organisationService")
-                                        Map affilRequestMap = organisationService.getPendingRequests(contextUser, contextOrg)
-                                        int newAffiliationRequests = affilRequestMap?.pendingRequests?.size()
-                                    %>
-                                    <g:if test="${newAffiliationRequests > 0}">
-                                        <div class="ui floating red circular label">${newAffiliationRequests}</div>
                                     </g:if>
                                 </semui:link>
 

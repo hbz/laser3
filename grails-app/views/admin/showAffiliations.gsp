@@ -31,7 +31,7 @@
               <td>
                 <ul>
                   <g:each in="${u.affiliations}" var="ua">
-                    <li>${ua.org.shortcode}:${ua.status}:${ua.formalRole?.authority}</li>
+                    <li>${ua.org.shortcode} :: ${ua.formalRole?.authority}</li>
                   </g:each>
                 </ul>
               </td>

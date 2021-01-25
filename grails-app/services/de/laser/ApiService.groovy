@@ -781,15 +781,9 @@ class ApiService {
             //insert all user affiliations
             orgBase.affiliations.affiliation.each { affData ->
                 log.debug("----- processing affiliation ${affData.user.text()} <-> ${affData.org.text()} -----")
-                UserOrg affiliation = new UserOrg(user: User.findByUsername(affData.user.text()), org: Org.findByGlobalUID(affData.org.text()), status: affData.status.text())
+                UserOrg affiliation = new UserOrg(user: User.findByUsername(affData.user.text()), org: Org.findByGlobalUID(affData.org.text()))
                 if (affData.formalRole.text()) {
                     affiliation.formalRole = Role.findByAuthority(affData.formalRole.text())
-                }
-                if (affData.dateActioned.text()) {
-                    affiliation.dateActioned = Long.parseLong(affData.dateActioned.text())
-                }
-                if (affData.dateRequested.text()) {
-                    affiliation.dateRequested = Long.parseLong(affData.dateRequested.text())
                 }
                 if (!affiliation.save() && affiliation.hasErrors()) {
                     log.error("error on saving affiliation: ${affiliation.errors}")

@@ -37,8 +37,7 @@ class UserController  {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
 
         if (result.user) {
-            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user and uo.status = :status',
-                    [user: result.user, status: UserOrg.STATUS_APPROVED])
+            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user', [user: result.user])
 
             if (affils.size() > 1) {
                 flash.error = message(code: 'user.delete.error.multiAffils') as String
@@ -61,8 +60,8 @@ class UserController  {
             }
 
             result.substituteList = User.executeQuery(
-                    'select distinct u from User u join u.affiliations ua where ua.status = :uaStatus and ua.org = :ctxOrg and u != :self',
-                    [uaStatus: UserOrg.STATUS_APPROVED, ctxOrg: contextService.getOrg(), self: result.user]
+                    'select distinct u from User u join u.affiliations ua where ua.org = :ctxOrg and u != :self',
+                    [ctxOrg: contextService.getOrg(), self: result.user]
             )
         }
 
@@ -175,7 +174,7 @@ class UserController  {
         Role formalRole = Role.get(params.formalRole)
 
         if (result.user && org && formalRole) {
-            instAdmService.createAffiliation(result.user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+            instAdmService.createAffiliation(result.user, org, formalRole, flash)
         }
 
         redirect controller: 'user', action: 'edit', id: params.id
