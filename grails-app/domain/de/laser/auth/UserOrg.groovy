@@ -7,15 +7,6 @@ import javax.persistence.Transient
 //@GrailsCompileStatic
 class UserOrg implements Comparable {
 
-    static STATUS_PENDING       = 0
-    static STATUS_APPROVED      = 1
-    static STATUS_REJECTED      = 2
-
-    int status
-
-    Long dateRequested
-    Long dateActioned
-
     Date dateCreated
     Date lastUpdated
 
@@ -30,8 +21,6 @@ class UserOrg implements Comparable {
     }
 
     static constraints = {
-        dateActioned    nullable: true
-        dateRequested   nullable: true
         lastUpdated     nullable: true
         dateCreated     nullable: true
     }

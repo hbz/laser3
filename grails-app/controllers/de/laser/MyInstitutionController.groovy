@@ -114,21 +114,6 @@ class MyInstitutionController  {
         result
     }
 
-    @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
-    def manageAffiliationRequests() {
-        redirect controller: 'organisation', action: 'users', id: contextService.getOrg().id
-
-        Map<String, Object> result = [:]
-        result.institution        = contextService.getOrg()
-        result.user               = contextService.getUser()
-        result.editable           = true // inherit
-        result.pendingRequestsOrg = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, contextService.getOrg(), [sort:'dateRequested'])
-
-        result
-    }
-
     @Secured(['ROLE_USER'])
     def currentPlatforms() {
 
@@ -1855,13 +1840,11 @@ join sub.orgRelations or_sub where
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         Map filterParams = params
-        filterParams.status = UserOrg.STATUS_APPROVED
         filterParams.org = result.institution
 
         result.users = userService.getUserSet(filterParams)
         result.titleMessage = "${result.institution}"
         result.inContextOrg = true
-        result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, result.institution, [sort:'dateRequested', order:'desc'])
         result.orgInstance = result.institution
         result.multipleAffiliationsWarning = true
 
@@ -1890,9 +1873,14 @@ join sub.orgRelations or_sub where
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
 
+        if (! result.editable) {
+            redirect controller: 'myInstitution', action: 'users'
+            return
+        }
+
         if (result.user) {
-            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user and uo.status = :status',
-                    [user: result.user, status: UserOrg.STATUS_APPROVED])
+            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user',
+                    [user: result.user])
 
             if (affils.size() > 1) {
                 flash.error = message(code: 'user.delete.error.multiAffils') as String
@@ -1915,8 +1903,8 @@ join sub.orgRelations or_sub where
             }
 
             result.substituteList = User.executeQuery(
-                    'select distinct u from User u join u.affiliations ua where ua.status = :uaStatus and ua.org = :ctxOrg and u != :self',
-                    [uaStatus: UserOrg.STATUS_APPROVED, ctxOrg: contextService.getOrg(), self: result.user]
+                    'select distinct u from User u join u.affiliations ua where ua.org = :ctxOrg and u != :self',
+                    [ctxOrg: contextService.getOrg(), self: result.user]
             )
         }
 
@@ -1926,19 +1914,18 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def editUser() {
-        Map result = [
-                user: genericOIDService.resolveOID(params.uoid),
-                editor: contextService.getUser(),
-                editable: true,
-                institution: contextService.getOrg(),
-                manipulateAffiliations: true
-        ]
-        result.orgInstance = result.institution
+        Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
+
+        if (! result.user || ! result.editable) {
+            redirect controller: 'myInstitution', action: 'users'
+            return
+        }
 
         result.availableComboDeptOrgs = Combo.executeQuery("select c.fromOrg from Combo c where (c.fromOrg.status = null or c.fromOrg.status = :current) and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name",
-                [ctxOrg: result.institution, current: RDStore.O_STATUS_CURRENT, type: RDStore.COMBO_TYPE_DEPARTMENT])
+                [ctxOrg: result.orgInstance, current: RDStore.O_STATUS_CURRENT, type: RDStore.COMBO_TYPE_DEPARTMENT])
 
-        result.availableComboDeptOrgs << result.institution
+        result.availableComboDeptOrgs << result.orgInstance
+        result.manipulateAffiliations = true
 
         if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
             result.orgLabel = message(code:'collective.member.plural')

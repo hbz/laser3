@@ -133,7 +133,7 @@ class ProfileController {
         Role formalRole = Role.get(params.formalRole)
 
         if (user && org && formalRole) {
-            instAdmService.createAffiliation(user, org, formalRole, UserOrg.STATUS_PENDING, flash)
+            instAdmService.createAffiliation(user, org, formalRole, flash)
         }
 
         redirect(action: "index")

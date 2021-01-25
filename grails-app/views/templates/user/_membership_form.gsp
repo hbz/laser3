@@ -31,7 +31,7 @@
     </g:form>
 </g:if>
 
-<g:if test="${tmplUserEdit}"><%-- /user/edit --%>
+<g:if test="${tmplUserEdit}"><%-- /user/global/edit --%>
     <g:form controller="${controllerName}" action="addAffiliation" class="ui form" method="get">
 
         <g:if test="${controllerName == 'myInstitution'}">
