@@ -117,7 +117,7 @@ class SurveyProperty implements I10nTrait {
 
         def propertyType = SurveyProperty.getLocalizedValue(this.type)
         List refdataValues = []
-        if(this.type == RefdataValue.CLASS){
+        if(this.type == RefdataValue.class.name){
 
                 RefdataCategory.getAllRefdataValues(this.refdataCategory).each {
                     refdataValues << it?.getI10n('value')

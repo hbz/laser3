@@ -53,23 +53,26 @@
 
 <br />
 
+<h2 class="ui icon header la-clear-before la-noMargin-top">
+    <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
+        <i class="icon clipboard outline la-list-icon"></i>
+        <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
+            ${surveyConfig.subscription?.name}
+        </g:link>
+
+    </g:if>
+    <g:else>
+        ${surveyConfig.getConfigNameShort()}
+    </g:else>
+    : ${message(code: 'surveyEvaluation.label')}
+</h2>
+
 <g:if test="${surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
     <div class="ui segment">
         <strong>${message(code: 'surveyEvaluation.notOpenSurvey')}</strong>
     </div>
 </g:if>
 <g:else>
-    <h2 class="ui icon header la-clear-before la-noMargin-top">
-        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
-            <i class="icon clipboard outline la-list-icon"></i>
-            <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
-                ${surveyConfig.subscription?.name}
-            </g:link>
-        </g:if>
-        <g:else>
-            ${surveyConfig.getConfigNameShort()}
-        </g:else>: ${message(code: 'surveyEvaluation.label')}
-    </h2>
     <br />
 
     <div class="ui grid">

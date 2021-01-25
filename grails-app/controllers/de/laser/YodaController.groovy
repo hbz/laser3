@@ -106,7 +106,7 @@ class YodaController {
         Map<String, Object> map1 = [
                 token       : "Quellensteuer-Befreiung",
                 category    : PropertyDefinition.SUB_PROP,
-                type        : RefdataValue.CLASS,
+                type        : RefdataValue.class.name,
                 rdc         : RDConstants.Y_N_O,
                 tenant      : contextService.getOrg().globalUID,
                 i10n        : [
@@ -120,7 +120,7 @@ class YodaController {
         Map<String, Object> map2 = [
                 token       : "BGA",
                 category    : PropertyDefinition.ORG_PROP,
-                type        : RefdataValue.CLASS,
+                type        : RefdataValue.class.name,
                 rdc         : RDConstants.Y_N,
                 tenant      : contextService.getOrg().globalUID,
                 i10n        : [
@@ -1777,7 +1777,7 @@ class YodaController {
                     }
 
                 } else {
-                   /* if (property?.type == RefdataValue.CLASS) {
+                   /* if (property?.type == RefdataValue.class.name) {
                         if (sub?.propertySet?.find {
                             it?.type?.id == property?.id
                         }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {

@@ -377,8 +377,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     Set<License> getLicenses() {
         Set<License> result = []
-        Links.findAllByDestinationAndLinkType(genericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
-            result << genericOIDService.resolveOID(l.source)
+        Links.findAllByDestinationSubscriptionAndLinkType(genericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
+            result << genericOIDService.resolveOID(l.sourceLicense)
         }
         result
     }
