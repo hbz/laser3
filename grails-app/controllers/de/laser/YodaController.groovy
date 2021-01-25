@@ -1352,15 +1352,8 @@ class YodaController {
                             affiliation {
                                 user(userOrg.user.username)
                                 org(userOrg.org.globalUID)
-                                status(userOrg.status)
                                 if(userOrg.formalRole) {
                                     formalRole(userOrg.formalRole.authority)
-                                }
-                                if(userOrg.dateActioned) {
-                                    dateActioned(userOrg.dateActioned)
-                                }
-                                if(userOrg.dateRequested) {
-                                    dateRequested(userOrg.dateRequested)
                                 }
                             }
                         }

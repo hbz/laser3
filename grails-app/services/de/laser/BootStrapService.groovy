@@ -202,11 +202,7 @@ class BootStrapService {
                                 new UserOrg(
                                         user: user,
                                         org: org,
-                                        formalRole: role,
-                                        status: UserOrg.STATUS_APPROVED,
-                                        dateRequested: System.currentTimeMillis(),
-                                        dateActioned: System.currentTimeMillis()
-
+                                        formalRole: role
                                 ).save(failOnError: true)
                             }
                         }

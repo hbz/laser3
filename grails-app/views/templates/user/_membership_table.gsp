@@ -8,8 +8,7 @@
         <tr>
             <th>${message(code: 'profile.membership.org')}</th>
             <th>${message(code: 'profile.membership.role')}</th>
-            <th>${message(code: 'default.status.label')}</th>
-            <th>${message(code: 'profile.membership.date')}</th>
+            <th>${message(code: 'profile.membership.dates')}</th>
             <g:if test="${tmplUserEdit}">
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </g:if>
@@ -38,12 +37,9 @@
                         <g:message code="cv.roles.${aff.formalRole?.authority}"/>
                     </td>
                     <td>
-                        <g:message code="cv.membership.status.${aff.status}"/>
-                    </td>
-                    <td>
-                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${aff.dateRequested}"/>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${aff.dateCreated}"/>
                         /
-                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${aff.dateActioned}"/>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${aff.lastUpdated}"/>
                     </td>
 
                         %{--<g:if test="${tmplProfile}">

@@ -931,10 +931,7 @@ class OrganisationController  {
             redirect controller: 'organisation', action: 'show', id: result.orgInstance.id
         }
 
-        result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, result.orgInstance, [sort:'dateRequested', order:'desc'])
-
         Map filterParams = params
-        filterParams.status = UserOrg.STATUS_APPROVED
         filterParams.org = result.orgInstance
 
         result.users = userService.getUserSet(filterParams)
@@ -970,8 +967,7 @@ class OrganisationController  {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
 
         if (result.user) {
-            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user and uo.status = :status',
-                    [user: result.user, status: UserOrg.STATUS_APPROVED])
+            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user', [user: result.user])
 
             if (affils.size() > 1) {
                 flash.error = message(code: 'user.delete.error.multiAffils') as String
@@ -994,8 +990,8 @@ class OrganisationController  {
             }
 
             result.substituteList = User.executeQuery(
-                    'select distinct u from User u join u.affiliations ua where ua.status = :uaStatus and ua.org = :ctxOrg and u != :self',
-                    [uaStatus: UserOrg.STATUS_APPROVED, ctxOrg: contextService.getOrg(), self: result.user]
+                    'select distinct u from User u join u.affiliations ua where ua.org = :ctxOrg and u != :self',
+                    [ctxOrg: contextService.getOrg(), self: result.user]
             )
         }
 
@@ -1087,39 +1083,6 @@ class OrganisationController  {
         }
 
         render view: 'delete', model: result
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")', wtc = 2)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
-    def processAffiliation() {
-        UserOrg.withTransaction {
-            Map<String, Object> result = [:]
-            result.user = contextService.getUser()
-
-            // ERMS-2370 -> support multiple assocs
-            UserOrg uo = UserOrg.get(params.assoc)
-
-            // ERMS-2370 -> what about ADMIN and YODA?
-            if (instAdmService.hasInstAdmPivileges(result.user, Org.get(params.id), [
-                    RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM
-            ])) {
-
-                if (params.cmd == 'approve') {
-                    uo.status = UserOrg.STATUS_APPROVED
-                    uo.dateActioned = System.currentTimeMillis()
-                    uo.save()
-                }
-                else if (params.cmd == 'reject') {
-                    uo.status = UserOrg.STATUS_REJECTED
-                    uo.dateActioned = System.currentTimeMillis()
-                    uo.save()
-                }
-                else if (params.cmd == 'delete') {
-                    uo.delete()
-                }
-            }
-            redirect action: 'users', id: params.id
-        }
     }
 
     @Secured(['ROLE_USER'])

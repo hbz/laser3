@@ -20,7 +20,6 @@
             <th>${message(code:'user.id')}</th>
             <th>${message(code:'user.org')}</th>
             <th>${message(code:'user.role')}</th>
-            <th>${message(code:'user.status')}</th>
           </tr>
         </thead>
         <tbody>
@@ -28,8 +27,7 @@
             <tr>
               <td>${af.id}</td>
               <td>${af.org.name}</td>
-              <td>${af.formalRole?.authority}</td>
-              <td>${message(code:"cv.membership.status.${af.status}")}</td>
+              <td>${message(code:"cv.roles.${af.formalRole.authority}")}</td>
             </tr>
           </g:each>
         </tbody>

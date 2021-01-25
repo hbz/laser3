@@ -604,7 +604,7 @@ class SurveyService {
         if(surveyInfo.owner)
         {
             //Only User that approved
-            List<UserOrg> userOrgs = UserOrg.findAllByOrgAndStatus(surveyInfo.owner, 1)
+            List<UserOrg> userOrgs = UserOrg.findAllByOrg(surveyInfo.owner)
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
@@ -816,7 +816,7 @@ class SurveyService {
         if(orgs)
         {
             //Only User that approved
-            List<UserOrg> userOrgs = UserOrg.findAllByOrgInListAndStatus(orgs, 1)
+            List<UserOrg> userOrgs = UserOrg.findAllByOrgInList(orgs)
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
@@ -841,7 +841,7 @@ class SurveyService {
     def emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org, boolean reminderMail){
 
         //Only User that approved
-        List<UserOrg> userOrgs = UserOrg.findAllByOrgAndStatus(org, UserOrg.STATUS_APPROVED)
+        List<UserOrg> userOrgs = UserOrg.findAllByOrg(org)
 
         //Only User with Notification by Email and for Surveys Start
         userOrgs.each { userOrg ->
