@@ -2262,21 +2262,22 @@ join sub.orgRelations or_sub where
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
         ProfilerUtils pu = result.pu
         pu.setBenchmark("after subscription loading, before providers")
-        LinkedHashMap<Subscription,List<Org>> providers = [:]
+        //LinkedHashMap<Subscription,List<Org>> providers = [:]
         Map<Org,Set<String>> mailAddresses = [:]
         BidiMap subLinks = new DualHashBidiMap()
         if(params.format || params.exportXLS) {
-            Links.findAllByLinkType(RDStore.LINKTYPE_FOLLOWS).each { Links link ->
+            List<Subscription> subscriptions = result.entries.collect { entry -> (Subscription) entry[1] } as List<Subscription>
+            Links.executeQuery("select l from Links l where (l.sourceSubscription in (:targetSubscription) or l.destinationSubscription in (:targetSubscription)) and l.linkType = :linkType",[targetSubscription:subscriptions,linkType:RDStore.LINKTYPE_FOLLOWS]).each { Links link ->
                 if(link.sourceSubscription && link.destinationSubscription)
                 subLinks.put(link.sourceSubscription,link.destinationSubscription)
             }
-            OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
+            /*OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
                 List<Org> orgs = providers.get(it.sub)
                 if(orgs == null)
                     orgs = [it.org]
                 else orgs.add(it.org)
                 providers.put(it.sub,orgs)
-            }
+            }*/
             List persons = Person.executeQuery("select c.content,c.prs from Contact c where c.prs in (select p from Person as p inner join p.roleLinks pr where " +
                     "( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType = :roleType) and c.contentType = :email",
                     [ctx: result.institution,
@@ -2284,7 +2285,7 @@ join sub.orgRelations or_sub where
                      email: RDStore.CCT_EMAIL])
             persons.each {  personRow ->
                 Person person = (Person) personRow[1]
-                PersonRole pr = person.roleLinks.find{ p -> p.org != result.institution}
+                PersonRole pr = person.roleLinks.find{ PersonRole p -> p.org != result.institution}
                 if(pr) {
                     Org org = pr.org
                     Set<String> addresses = mailAddresses.get(org)
@@ -2394,9 +2395,9 @@ join sub.orgRelations or_sub where
                 cell = row.createCell(cellnum++)
                 cell.setCellStyle(lineBreaks)
                 List<String> providerNames = []
-                providers.get(subCons).each { p ->
-                    log.debug("Getting provider ${p}")
-                    providerNames << p.name
+                subCons.orgRelations.findAll{ OrgRole oo -> oo.roleType in [RDStore.OR_PROVIDER,RDStore.OR_AGENCY] }.each { OrgRole p ->
+                    log.debug("Getting provider ${p.org}")
+                    providerNames << p.org.name
                 }
                 cell.setCellValue(providerNames.join("\n"))
                 //running time from / to
