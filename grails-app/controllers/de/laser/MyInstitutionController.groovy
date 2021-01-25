@@ -1873,6 +1873,11 @@ join sub.orgRelations or_sub where
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
 
+        if (! result.editable) {
+            redirect controller: 'myInstitution', action: 'users'
+            return
+        }
+
         if (result.user) {
             List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user',
                     [user: result.user])
@@ -1909,19 +1914,18 @@ join sub.orgRelations or_sub where
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def editUser() {
-        Map result = [
-                user: genericOIDService.resolveOID(params.uoid),
-                editor: contextService.getUser(),
-                editable: true,
-                institution: contextService.getOrg(),
-                manipulateAffiliations: true
-        ]
-        result.orgInstance = result.institution
+        Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
+
+        if (! result.user || ! result.editable) {
+            redirect controller: 'myInstitution', action: 'users'
+            return
+        }
 
         result.availableComboDeptOrgs = Combo.executeQuery("select c.fromOrg from Combo c where (c.fromOrg.status = null or c.fromOrg.status = :current) and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name",
-                [ctxOrg: result.institution, current: RDStore.O_STATUS_CURRENT, type: RDStore.COMBO_TYPE_DEPARTMENT])
+                [ctxOrg: result.orgInstance, current: RDStore.O_STATUS_CURRENT, type: RDStore.COMBO_TYPE_DEPARTMENT])
 
-        result.availableComboDeptOrgs << result.institution
+        result.availableComboDeptOrgs << result.orgInstance
+        result.manipulateAffiliations = true
 
         if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
             result.orgLabel = message(code:'collective.member.plural')

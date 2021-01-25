@@ -966,6 +966,11 @@ class OrganisationController  {
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
 
+        if (! result.editable) {
+            redirect controller: 'organisation', action: 'users', params: params
+            return
+        }
+
         if (result.user) {
             List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user', [user: result.user])
 

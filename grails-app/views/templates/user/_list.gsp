@@ -71,7 +71,7 @@
                             <g:link controller="${controllerName}" action="${editLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon button"><i class="write icon"></i></g:link>
                         </g:if>
 
-                        <g:if test="${!instAdmService.isUserLastInstAdminForOrg(us, orgInstance) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                        <g:if test="${! instAdmService.isUserLastInstAdminForOrg(us, orgInstance)}">
                             <g:if test="${controllerName == 'user'}">
                                 <g:link controller="${controllerName}" action="${deleteLink}" params="${[id: us.id]}" class="ui icon negative button"><i class="trash alternate icon"></i></g:link>
                             </g:if>
@@ -94,7 +94,7 @@
                             </g:if>
                         </g:if>
                         <g:else>
-                            <span  class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg', args: [us.getDisplayName()])}">
+                            <span  class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg1', args: [us.getDisplayName()])}">
                                 <button class="ui icon negative button" disabled="disabled">
                                     <i class="trash alternate icon"></i>
                                 </button>
