@@ -130,7 +130,7 @@ class FinanceService {
             catch (Exception e) {
                 elementSign = null
             }
-            boolean cost_item_isVisibleForSubscriber = Long.parseLong(params.newIsVisibleForSubscriber) == RDStore.YN_YES.id
+            boolean cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber && Long.parseLong(params.newIsVisibleForSubscriber) == RDStore.YN_YES.id)
             if (! subsToDo) {
                 subsToDo << null // Fallback for editing cost items via myInstitution/finance // TODO: ugly
             }
@@ -253,6 +253,10 @@ class FinanceService {
             ci.costItemStatus = RDStore.COST_ITEM_DELETED
             ci.invoice = null
             ci.order = null
+            ci.sub = null
+            ci.subPkg = null
+            ci.issueEntitlement = null
+            ci.issueEntitlementGroup = null
             if(ci.save()) {
                 if (!CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(order, ci.id, RDStore.COST_ITEM_DELETED))
                     order.delete()
@@ -359,7 +363,7 @@ class FinanceService {
                         result.cons = [count:consCostRows.size()]
                         if(consCostRows) {
                             Set<Long> consCostItems = consCostRows
-                            result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo join sub.orgRelations op where ci.id in (:ids) and oo.roleType in (:roleTypes) and op.roleType in (:providerRoleTypes) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', op.org.name asc, sub.name asc',[ids:consCostItems,roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],providerRoleTypes:[RDStore.OR_PROVIDER,RDStore.OR_AGENCY]],[max:configMap.max,offset:configMap.offsets.consOffset])
+                            result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) and oo.roleType in (:roleTypes) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consCostItems,roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]],[max:configMap.max,offset:configMap.offsets.consOffset])
                             result.cons.sums = calculateResults(consCostItems)
                         }
                         break

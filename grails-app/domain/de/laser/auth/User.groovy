@@ -123,11 +123,11 @@ class User {
     }
 
     List<UserOrg> getAuthorizedAffiliations() {
-        UserOrg.findAllByUserAndStatus(this, UserOrg.STATUS_APPROVED)
+        UserOrg.findAllByUser(this)
     }
     List<Org> getAuthorizedOrgs() {
-        String qry = "select distinct(o) from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user and uo.status = :approved ) order by o.name"
-        Org.executeQuery(qry, [user: this, approved: UserOrg.STATUS_APPROVED])
+        String qry = "select distinct(o) from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user ) order by o.name"
+        Org.executeQuery(qry, [user: this])
     }
     List<Long> getAuthorizedOrgsIds() {
         getAuthorizedOrgs().collect{ it.id }

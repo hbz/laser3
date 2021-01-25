@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3071    25.01.2021  dev     2.0         Andreas Bug         Bugfixes in Meine Lizenzen pro Einrichtung
+
+3087    25.01.2021  dev     2.0         Andreas Bug         Beim Markieren eines Kostens als gelöscht wurden Fremdschlüssel nicht aufgehoben
+
+3086    22.01.2021  dev     2.0         Andreas Feature     Darstellung "Alle Pakete" angepasst
+
+3085    22.01.2021  dev     2.0         Andreas Feature     Darstellung verknüpfter Pakete angepasst
+
 3080    21.01.2021  dev     2.0         Andreas Bug         dreistufige Sortierung wieder eingeführt
 
 --      20.01.2021  dev     2.0         Andreas Feature     neue Filter Datum von/Datum bis für Finanzfilter

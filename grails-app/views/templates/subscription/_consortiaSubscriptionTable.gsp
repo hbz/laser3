@@ -227,7 +227,7 @@
                         </g:if>
                     </td>
                 </g:elseif>
-                <td>>
+                <td>
                     <g:if test="${subCons.isMultiYear}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                               data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">

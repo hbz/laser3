@@ -1,11 +1,11 @@
 <div class="ui card">
     <div class="content">
-        <h5 class="ui header">${message(code: 'accessPoint.link.with.platform')}
+        <h2 class="ui header">${message(code: 'accessPoint.link.with.platform')}
             <span class="la-long-tooltip la-popup-tooltip la-delay"
                   data-content="${message(code: 'accessPoint.platformHelp')}">
                 <i class="question circle icon la-popup"></i>
             </span>
-        </h5>
+        </h2>
 
         <g:form class="ui form" url="[controller: 'accessPoint', action: 'linkPlatform']" id="linkPlatform"
                 method="POST">

@@ -387,11 +387,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     List<User> getAllValidInstAdmins() {
         List<User> admins = User.executeQuery(
                 "select u from User u join u.affiliations uo where " +
-                        "uo.org = :org and uo.formalRole = :role and uo.status = :approved and u.enabled = true",
+                        "uo.org = :org and uo.formalRole = :role and u.enabled = true",
                 [
-                        org: this,
-                        role: Role.findByAuthority('INST_ADM'),
-                        approved: UserOrg.STATUS_APPROVED
+                        org: this, role: Role.findByAuthority('INST_ADM')
                 ]
         )
         admins
@@ -548,7 +546,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     //Only INST_ADM
     boolean hasAccessOrg(){
-        if (UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_ADM'))) {
+        if (UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))) {
             return true
         }
         else {
@@ -560,9 +558,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
         Map<String, Object> result = [:]
 
-        result.instAdms = UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_ADM'))
-        result.instEditors = UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_EDITOR'))
-        result.instUsers = UserOrg.findAllByOrgAndStatusAndFormalRole(this, UserOrg.STATUS_APPROVED, Role.findByAuthority('INST_USER'))
+        result.instAdms = UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))
+        result.instEditors = UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_EDITOR'))
+        result.instUsers = UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_USER'))
 
         return result
     }

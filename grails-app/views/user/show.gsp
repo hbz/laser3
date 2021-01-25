@@ -1,19 +1,14 @@
 <%@ page import="de.laser.Org" %>
 <!doctype html>
 <html>
-  <head>
+<head>
     <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${user.display}</title>
-  </head>
-  <body>
-
+</head>
+<body>
       <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
-      <semui:controlButtons>
-        <g:render template="actions" />
-      </semui:controlButtons>
-
-      <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${user.username} : ${user.displayName?:'No username'}</h1>
+      <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${user.username} : ${user.displayName ?: 'No username'}</h1>
 
       <semui:messages data="${flash}" />
 
@@ -25,7 +20,6 @@
             <th>${message(code:'user.id')}</th>
             <th>${message(code:'user.org')}</th>
             <th>${message(code:'user.role')}</th>
-            <th>${message(code:'user.status')}</th>
           </tr>
         </thead>
         <tbody>
@@ -33,8 +27,7 @@
             <tr>
               <td>${af.id}</td>
               <td>${af.org.name}</td>
-              <td>${af.formalRole?.authority}</td>
-              <td>${message(code:"cv.membership.status.${af.status}")}</td>
+              <td>${message(code:"cv.roles.${af.formalRole.authority}")}</td>
             </tr>
           </g:each>
         </tbody>
@@ -56,5 +49,5 @@
           </g:each>
         </tbody>
       </table>
-  </body>
+</body>
 </html>
