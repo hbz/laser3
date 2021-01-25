@@ -19577,6 +19577,10 @@ dd {
   border: none;
 }
 
+.ui.segment.la-filter:last-child {
+  margin-bottom: 1em;
+}
+
 .ui.segment.la-filter-temp {
   background: #004678;
   border: none;
