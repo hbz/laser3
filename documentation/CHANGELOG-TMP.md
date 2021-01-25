@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3071    25.01.2021  dev     2.0         Andreas Bug         Bugfixes in Meine Lizenzen pro Einrichtung
+
 3086    22.01.2021  dev     2.0         Andreas Feature     Darstellung "Alle Pakete" angepasst
 
 3085    22.01.2021  dev     2.0         Andreas Feature     Darstellung verknüpfter Pakete angepasst
