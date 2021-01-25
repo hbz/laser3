@@ -6,9 +6,9 @@
 <g:if test="${customProperties?.size() > 0}">
     <div class="ui card la-dl-no-table">
         <div class="content">
-            <h5 class="ui header">
+            <h2 class="ui header">
                 ${message(code: 'survey.subscription.propertiesChange')}
-            </h5>
+            </h2>
         </div>
         <div class="content">
 
