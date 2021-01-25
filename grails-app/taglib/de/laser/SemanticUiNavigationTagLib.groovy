@@ -20,7 +20,7 @@ class SemanticUiNavigationTagLib {
 
     def breadcrumbs = { attrs, body ->
 
-        out <<   '<nav class="ui breadcrumb" aria-label="Sie sind hier:">'
+        out <<   '<nav class="ui tiny breadcrumb" aria-label="Sie sind hier:">'
         out <<      '<ul>'
         out <<      crumb([controller: 'home', ariaLabel:'Home', text:'<i class="home icon"></i>'])
         out <<          body()
