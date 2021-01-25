@@ -130,7 +130,7 @@ class FinanceService {
             catch (Exception e) {
                 elementSign = null
             }
-            boolean cost_item_isVisibleForSubscriber = Long.parseLong(params.newIsVisibleForSubscriber) == RDStore.YN_YES.id
+            boolean cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber && Long.parseLong(params.newIsVisibleForSubscriber) == RDStore.YN_YES.id)
             if (! subsToDo) {
                 subsToDo << null // Fallback for editing cost items via myInstitution/finance // TODO: ugly
             }
@@ -253,6 +253,10 @@ class FinanceService {
             ci.costItemStatus = RDStore.COST_ITEM_DELETED
             ci.invoice = null
             ci.order = null
+            ci.sub = null
+            ci.subPkg = null
+            ci.issueEntitlement = null
+            ci.issueEntitlementGroup = null
             if(ci.save()) {
                 if (!CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(order, ci.id, RDStore.COST_ITEM_DELETED))
                     order.delete()
