@@ -174,8 +174,8 @@ class ProfileController {
         }
 
         result.substituteList = User.executeQuery(
-                'select distinct u from User u join u.affiliations ua where ua.status = :uaStatus and ua.org = :ctxOrg and u != :self',
-                [uaStatus: UserOrg.STATUS_APPROVED, ctxOrg: contextService.getOrg(), self: result.user]
+                'select distinct u from User u join u.affiliations ua where ua.org = :ctxOrg and u != :self',
+                [ctxOrg: contextService.getOrg(), self: result.user]
         )
 
         render view: 'deleteProfile', model: result
