@@ -230,9 +230,11 @@
                                                         <g:if test="${personInstance.roleLinks?.size() > 1}">
                                                             <div class="ui mini icon buttons">
                                                                 <g:link class="ui negative button js-open-confirm-modal"
-                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: [link.positionType?.getI10n('value')])}"
+                                                                        data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.function', args: [link.positionType?.getI10n('value')])}"
                                                                         data-confirm-term-how="unlink"
-                                                                        controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]">
+                                                                        controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]"
+                                                                        role="button"
+                                                                        aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                                                     <i class="unlink icon"></i>
                                                                 </g:link>
                                                             </div>

@@ -107,7 +107,9 @@
                                     <g:link class="ui mini icon negative button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.function.contact", args: [personRoleLink.functionType.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="unlink"
-                                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                         <i class="unlink icon"></i>
                                     </g:link>
                                 </g:if>
@@ -154,7 +156,9 @@
                                     <g:link class="ui mini icon negative button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.position.contact", args: [personRole.positionType.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="unlink"
-                                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                         <i class="unlink icon"></i>
                                     </g:link>
                                 </g:if>
@@ -191,7 +195,9 @@
                                 <g:link class="ui mini icon negative button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                                         data-confirm-term-how="unlink"
-                                        controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                                        controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                     <i class="unlink icon"></i>
                                 </g:link>
                             </g:if>
@@ -209,7 +215,9 @@
             <g:link class="ui icon negative button js-open-confirm-modal"
                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact")}"
                     data-confirm-term-how="unlink"
-                    controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                    controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
+                    role="button"
+                    aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                 <i class="unlink icon"></i>
             </g:link>
         </td>

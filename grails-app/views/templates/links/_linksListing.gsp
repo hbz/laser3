@@ -84,7 +84,9 @@
                                                 <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                         data-confirm-term-how="unlink"
-                                                        controller="subscription" action="unlinkLicense" params="${[license: link.sourceLicense.id, id:subscription.id]}">
+                                                        controller="subscription" action="unlinkLicense" params="${[license: link.sourceLicense.id, id:subscription.id]}"
+                                                        role="button"
+                                                        aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                                     <i class="unlink icon"></i>
                                                 </g:link>
                                             </span>
@@ -95,7 +97,9 @@
                                             <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                     data-confirm-term-how="unlink"
-                                                    controller="myInstitution" action="unlinkObjects" params="${[oid : genericOIDService.getOID(link)]}">
+                                                    controller="myInstitution" action="unlinkObjects" params="${[oid : genericOIDService.getOID(link)]}"
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                                 <i class="unlink icon"></i>
                                             </g:link>
                                         </span>

@@ -67,7 +67,8 @@
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
                                     data-confirm-term-how="delete"
                                     class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
-                                    role="button">
+                                    role="button"
+                                    aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                 <i aria-hidden="true" class="trash alternate icon"></i>
                             </g:link>
                         </g:if>
