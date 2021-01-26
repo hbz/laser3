@@ -108,13 +108,13 @@ class LinksGenerationService {
             //IN is from the point of view of the context object (= obj)
 
             sources.each { Links link ->
-                Subscription destination = (Subscription) genericOIDService.resolveOID(link.destination)
+                Subscription destination = (Subscription) genericOIDService.resolveOID(link.destinationSubscription)
                 if (destination.isVisibleBy(user)) {
                     result.add(destination)
                 }
             }
             destinations.each { Links link ->
-                Subscription source = (Subscription) genericOIDService.resolveOID(link.source)
+                Subscription source = (Subscription) genericOIDService.resolveOID(link.sourceSubscription)
                 if (source.isVisibleBy(user)) {
                     result.add(source)
                 }

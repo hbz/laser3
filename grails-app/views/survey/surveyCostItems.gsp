@@ -135,6 +135,7 @@
             </g:form>
             </semui:filter>
 
+            <br>
 
             <g:form action="processSurveyCostItemsBulk" name="surveyCostItemsBulk" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">

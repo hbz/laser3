@@ -135,7 +135,7 @@
 
         <div class="ui two fields">
             <div class="field">
-                <label><g:message code="myinst.copyLicense"/></label>
+                <label><g:message code="surveyInfo.transferParticipants.copyMemberLicenses"/></label>
                 <g:if test="${memberLicenses}">
                     <div class="ui radio checkbox">
                         <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics" value="no">
@@ -171,7 +171,7 @@
                     </laser:script>
                 </g:if>
                 <g:else>
-                    <semui:msg class="info" text="${message(code:'myinst.noSubscriptionOwner')}"/>
+                    <semui:msg class="info" text="${message(code:'surveyInfo.transferParticipants.noMemberLicenses')}"/>
                 </g:else>
             </div>
         </div>

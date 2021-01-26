@@ -35,7 +35,7 @@
     </g:form>
 </semui:filter>
 
-
+<br>
 <g:form action="deleteSurveyParticipants" controller="survey" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
 

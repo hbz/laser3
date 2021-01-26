@@ -405,4 +405,13 @@ class AjaxHtmlController {
     def addressFields() {
         render template: "/templates/cpa/addressFields", model: [multipleAddresses: params.multipleAddresses]
     }
+
+    @Secured(['ROLE_USER'])
+    def getLicensePropertiesForSubscription() {
+        License loadFor = License.get(params.loadFor)
+        if (loadFor) {
+            Map<String, Object> derivedPropDefGroups = loadFor.getCalculatedPropDefGroups(contextService.org)
+            render view: '/subscription/_licProp', model: [license: loadFor, derivedPropDefGroups: derivedPropDefGroups, linkId: params.linkId]
+        }
+    }
 }

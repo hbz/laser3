@@ -342,9 +342,15 @@ ${surveyInfo.name}
 
                     <tr class="">
                         <td>
-                            <g:if test="${!participant.newCustomProperty && !participant.newPrivateProperty}">
+                            <g:if test="${params.tab == 'customProperties' && ((!participant.newCustomProperty && participant.oldCustomProperty) || (participant.newPrivateProperty && participant.oldCustomProperty && participant.oldCustomProperty.type.multipleOccurrence))}">
                                 <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                             </g:if>
+                            <g:elseif test="${params.tab == 'privateProperties' && ((!participant.newPrivateProperty && participant.oldPrivateProperty) || (participant.newPrivateProperty && participant.oldPrivateProperty && participant.oldPrivateProperty.type.multipleOccurrence))}">
+                                <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
+                            </g:elseif>
+                            <g:elseif test="${params.tab == 'surveyProperties' && ((!participant.newCustomProperty && participant.surveyProperty) || (participant.newCustomProperty && participant.newCustomProperty.type.multipleOccurrence))}">
+                                <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
+                            </g:elseif>
                         </td>
                         <td>${i + 1}</td>
                         <td class="titleCell">

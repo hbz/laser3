@@ -97,7 +97,7 @@
                               ]"/>
                 </g:form>
             </semui:filter>
-
+            <br>
             <g:form action="processOpenParticipantsAgain" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
                 <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>

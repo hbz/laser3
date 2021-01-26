@@ -38,9 +38,18 @@ ${surveyInfo.name}
 
 <semui:messages data="${flash}"/>
 
+<h2 class="ui icon header la-clear-before la-noMargin-top">
+    <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
+        <i class="icon clipboard outline la-list-icon"></i>
+        <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
+            ${surveyConfig.subscription?.name}
+        </g:link>
 
-<h2 class="ui header">
-    ${message(code: 'surveyInfo.renewalOverView')}
+    </g:if>
+    <g:else>
+        ${surveyConfig.getConfigNameShort()}
+    </g:else>
+    : ${message(code: 'surveyInfo.renewalOverView')}
 </h2>
 
 <g:if test="${!(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
@@ -54,32 +63,34 @@ ${surveyInfo.name}
 
     <semui:form>
 
-        <semui:controlButtons>
-            <semui:exportDropdown>
-                <semui:exportDropdownItem>
-                    <g:link class="item" action="renewalWithSurvey" id="${surveyInfo.id}"
-                            params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'renewalWithSurvey.exportRenewal')}</g:link>
-                </semui:exportDropdownItem>
-            </semui:exportDropdown>
-            <semui:actionsDropdown>
-                <g:if test="${parentSuccessorSubscription}">
+        <div style="text-align: right">
+            <semui:controlButtons>
+                <semui:exportDropdown>
+                    <semui:exportDropdownItem>
+                        <g:link class="item" action="renewalWithSurvey" id="${surveyInfo.id}"
+                                params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'renewalWithSurvey.exportRenewal')}</g:link>
+                    </semui:exportDropdownItem>
+                </semui:exportDropdown>
+                <semui:actionsDropdown>
+                    <g:if test="${parentSuccessorSubscription}">
 
-                    <semui:actionsDropdownItem data-semui="modal" href="#transferParticipantsModal"
-                                               message="surveyInfo.transferParticipants"/>
+                        <semui:actionsDropdownItem data-semui="modal" href="#transferParticipantsModal"
+                                                   message="surveyInfo.transferParticipants"/>
 
 
-                    <semui:actionsDropdownItem controller="survey" action="compareMembersOfTwoSubs"
-                                               params="[id: params.id, surveyConfigID: surveyConfig.id]"
-                                               message="surveyInfo.transferOverView"/>
-                </g:if>
-                <g:else>
-                    <semui:actionsDropdownItemDisabled data-semui="modal" href="#transferParticipantsModal"
-                                                       message="surveyInfo.transferParticipants"
-                                                       tooltip="${message(code: 'renewalWithSurvey.noParentSuccessorSubscription')}"/>
-                </g:else>
+                        <semui:actionsDropdownItem controller="survey" action="compareMembersOfTwoSubs"
+                                                   params="[id: params.id, surveyConfigID: surveyConfig.id]"
+                                                   message="surveyInfo.transferOverView"/>
+                    </g:if>
+                    <g:else>
+                        <semui:actionsDropdownItemDisabled data-semui="modal" href="#transferParticipantsModal"
+                                                           message="surveyInfo.transferParticipants"
+                                                           tooltip="${message(code: 'renewalWithSurvey.noParentSuccessorSubscription')}"/>
+                    </g:else>
 
-            </semui:actionsDropdown>
-        </semui:controlButtons>
+                </semui:actionsDropdown>
+            </semui:controlButtons>
+        </div>
 
         <h3 class="ui header">
         <g:message code="renewalWithSurvey.parentSubscription"/>:
@@ -88,8 +99,8 @@ ${surveyInfo.name}
                     id="${parentSubscription.id}">${parentSubscription.dropdownNamingConvention()}</g:link>
         </g:if>
 
-        <br />
-        <br />
+        <br/>
+        <br/>
         <g:message code="renewalWithSurvey.parentSuccessorSubscription"/>:
         <g:if test="${parentSuccessorSubscription}">
             <g:link controller="subscription" action="show"
@@ -244,7 +255,7 @@ ${surveyInfo.name}
                         <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
                             <td>
                                 ${subscriberOrg.sortname}
-                                <br />
+                                <br/>
 
                                 <g:link controller="organisation" action="show"
                                         id="${subscriberOrg.id}">(${fieldValue(bean: subscriberOrg, field: "name")})</g:link>
@@ -258,7 +269,8 @@ ${surveyInfo.name}
                                             class="ui button icon"><i class="icon clipboard"></i></g:link>
                                 </g:if>
                                 <g:if test="${sub._getCalculatedSuccessor()}">
-                                    <br />
+                                    <br/>
+                                    <br/>
                                     <g:link controller="subscription" action="show"
                                             id="${sub._getCalculatedSuccessor()?.id}"
                                             class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
@@ -297,7 +309,7 @@ ${surveyInfo.name}
                         <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
                             <td>
                                 ${subscriberOrg.sortname}
-                                <br />
+                                <br/>
                                 <g:link controller="organisation" action="show"
                                         id="${subscriberOrg.id}">(${fieldValue(bean: subscriberOrg, field: "name")})</g:link>
                             </td>
@@ -310,7 +322,8 @@ ${surveyInfo.name}
                                             class="ui button icon"><i class="icon clipboard"></i></g:link>
                                 </g:if>
                                 <g:if test="${sub._getCalculatedSuccessor()}">
-                                    <br />
+                                    <br/>
+                                    <br/>
                                     <g:link controller="subscription" action="show"
                                             id="${sub._getCalculatedSuccessor()?.id}"
                                             class="ui button icon"><i class="icon yellow clipboard"></i></g:link>

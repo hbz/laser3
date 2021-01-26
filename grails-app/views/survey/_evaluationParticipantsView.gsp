@@ -52,7 +52,7 @@
 <semui:form>
 
     <semui:filter>
-        <g:form action="surveyEvaluation" method="post" class="ui form"
+        <g:form action="${actionName}" method="post" class="ui form"
                 params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
             <g:render template="/templates/filter/orgFilter"
                       model="[
@@ -62,6 +62,7 @@
         </g:form>
     </semui:filter>
 
+    <br>
     <g:form action="processTransferParticipants" controller="survey" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
 
