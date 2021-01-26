@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3022    26.01.2021  dev     2.0         Moe     Bug         GokbService anpassen wenn keine Verbindung oder Verbindung mit einer Fehlermeldung entsteht
+
 --      26.01.2021  dev     2.0         Moe     Bug         DataloadService FT Update Umstrukierung
 
 3072    25.01.2021  dev     2.0         Moe     Bug/Feature Umfrage-Bugs in 2.0 

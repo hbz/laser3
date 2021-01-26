@@ -1,9 +1,10 @@
 package de.laser
 
-
+import de.laser.system.SystemEvent
 import grails.gorm.transactions.Transactional
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
+import org.apache.http.conn.ConnectTimeoutException
 
 @Transactional
 class GokbService {
@@ -187,27 +188,30 @@ class GokbService {
     Map queryElasticsearch(String url){
         log.info("querying: " + url)
         Map result = [:]
-        def http = new HTTPBuilder(url)
+        try {
+            def http = new HTTPBuilder(url)
 //         http.auth.basic user, pwd
-        http.request(Method.GET) { req ->
-            headers.'User-Agent' = 'laser'
-            response.success = { resp, html ->
-                log.info("server response: ${resp.statusLine}")
-                log.debug("server:          ${resp.headers.'Server'}")
-                log.debug("content length:  ${resp.headers.'Content-Length'}")
-                if(resp.status < 400){
-                    result = ['warning':html]
+            http.request(Method.GET) { req ->
+                headers.'User-Agent' = 'laser'
+                response.success = { resp, html ->
+                    log.info("server response: ${resp.statusLine}")
+                    log.debug("server:          ${resp.headers.'Server'}")
+                    log.debug("content length:  ${resp.headers.'Content-Length'}")
+                    if (resp.status < 400) {
+                        result = ['warning': html]
+                    } else {
+                        result = ['info': html]
+                    }
                 }
-                else {
-                    result = ['info':html]
+                response.failure = { resp ->
+                    log.error("server response: ${resp.statusLine}")
+                    result = ['error': resp.statusLine]
                 }
             }
-            response.failure = { resp ->
-                log.error("server response: ${resp.statusLine}")
-                result = ['error':resp.statusLine]
-            }
+            http.shutdown()
+        } catch (Exception e) {
+        log.error("Problem with queryElasticsearch by GokbService: "+ e)
         }
-        http.shutdown()
         result
     }
 
