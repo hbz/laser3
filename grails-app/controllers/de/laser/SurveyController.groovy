@@ -636,7 +636,7 @@ class SurveyController {
                         pickAndChoose: true
                 )
                 surveyConfig.save()
-                addSubMembers(surveyConfig)
+                surveyService.addSubMembers(surveyConfig)
             }
             else {
                 surveyInfo.delete()
@@ -663,7 +663,7 @@ class SurveyController {
 
             result.navigation = surveyService.getConfigNavigation(result.surveyInfo,  result.surveyConfig)
 
-            if ( result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION) {
+            if ( result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
                 result.authorizedOrgs = result.user.authorizedOrgs
 
                 // restrict visible for templates/links/orgLinksAsList
@@ -1783,7 +1783,7 @@ class SurveyController {
 
         result.ownerId = result.surveyResults[0].owner.id
 
-        if(result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION) {
+        if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
