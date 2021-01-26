@@ -4,7 +4,6 @@
 /*******************************
         LATO Local Font
 *******************************/
-/*
 @font-face {
     font-family: 'Lato';
     src: url('../assets/fonts/LatoLatin-Regular.woff') format('woff');
@@ -29,34 +28,7 @@
     font-style: italic;
     font-weight: 700;
 }
-*/
-/*******************************
-        Poppins Local Font
-*******************************/
-@font-face {
-    font-family: 'Poppins';
-    src: url('../assets/fonts/poppins-v15-latin-regular.woff') format('woff');
-    font-style: normal;
-    font-weight: 400;
-}
-@font-face {
-    font-family: 'Poppins';
-    src: url('../assets/fonts/poppins-v15-latin-700.woff') format('woff');
-    font-style: normal;
-    font-weight: 700;
-}
-@font-face {
-    font-family: 'Poppins';
-    src: url('../assets/fonts/poppins-v15-latin-italic.woff') format('woff');
-    font-style: italic;
-    font-weight: 400;
-}
-@font-face {
-    font-family: 'Poppins';
-    src: url('../assets/fonts/poppins-v15-latin-700italic.woff') format('woff'),;
-    font-style: italic;
-    font-weight: 700;
-}
+
 /*******************************
         PRINT
 *******************************/
@@ -139,9 +111,6 @@ aside.ui.accordion .title:not(.ui) {
 *******************************/
 .landingpage {
     background-color: #f1ebe5;
-    .ui.menu .item {
-        font-weight: 900;
-    }
     .hidden.menu {
         display: none;
     }

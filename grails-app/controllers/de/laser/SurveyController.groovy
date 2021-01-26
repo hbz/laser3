@@ -350,8 +350,8 @@ class SurveyController {
         result.allLinkedLicenses = [:]
         Set<Links> allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndLinkType(result.subscriptions ,RDStore.LINKTYPE_LICENSE)
         allLinkedLicenses.each { Links li ->
-            Subscription s = (Subscription) genericOIDService.resolveOID(li.destinationSubscription)
-            License l = (License) genericOIDService.resolveOID(li.sourceLicense)
+            Subscription s = li.destinationSubscription
+            License l = li.sourceLicense
             Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
             if(!linkedLicenses)
                 linkedLicenses = []
@@ -2557,7 +2557,7 @@ class SurveyController {
 
         result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
         if(result.parentSuccessorSubscription) {
-            String query = "select li.sourceLicense.instanceOf from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
+            String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
             result.memberLicenses = License.executeQuery(query, [subscription: result.parentSuccessorSubscription, linkType: RDStore.LINKTYPE_LICENSE])
         }
 

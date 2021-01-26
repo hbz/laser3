@@ -13,6 +13,8 @@
 
 --      26.01.2021  dev     2.0         Moe     Bug         DataloadService FT Update Umstrukierung
 
+3072    26.02.2021  dev     2.0         Andreas Bug         Links-Änderungen aus Pull Request #46 nachgezogen
+
 3072    25.01.2021  dev     2.0         Moe     Bug/Feature Umfrage-Bugs in 2.0 
 
 3071    25.01.2021  dev     2.0         Andreas Bug         Bugfixes in Meine Lizenzen pro Einrichtung

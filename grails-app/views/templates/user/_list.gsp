@@ -72,26 +72,18 @@
                         </g:if>
 
                         <g:if test="${! instAdmService.isUserLastInstAdminForOrg(us, orgInstance)}">
-                            <g:if test="${controllerName == 'user'}">
+                            <g:if test="${us == contextService.getUser()}">
+                                <g:link controller="profile" action="deleteProfile" class="ui icon negative button"><i class="trash alternate icon"></i></g:link>
+                            </g:if>
+                            <g:elseif test="${controllerName == 'user'}">
                                 <g:link controller="${controllerName}" action="${deleteLink}" params="${[id: us.id]}" class="ui icon negative button"><i class="trash alternate icon"></i></g:link>
-                            </g:if>
-                            <g:if test="${controllerName == 'myInstitution'}">
+                            </g:elseif>
+                            <g:elseif test="${controllerName == 'myInstitution'}">
                                 <g:link controller="${controllerName}" action="${deleteLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button"><i class="trash alternate icon"></i></g:link>
-                                %{--
-                                <g:link class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
-                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user.organisation", args: [us.displayName, orgInstance.name ])}"
-                                        data-confirm-term-how="delete"
-                                        controller="organisation"
-                                        action="processAffiliation"
-                                        params="${[assoc:uoId, id:orgInstance?.id, cmd:'delete']}"
-                                        data-content="${message(code:'profile.membership.delete.button')}" data-position="top left" >
-                                    <i class="trash alternate icon"></i>
-                                </g:link>
-                                --}%
-                            </g:if>
-                            <g:if test="${controllerName == 'organisation'}">
+                            </g:elseif>
+                            <g:elseif test="${controllerName == 'organisation'}">
                                 <g:link controller="${controllerName}" action="${deleteLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button"><i class="trash alternate icon"></i></g:link>
-                            </g:if>
+                            </g:elseif>
                         </g:if>
                         <g:else>
                             <span  class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg1', args: [us.getDisplayName()])}">
