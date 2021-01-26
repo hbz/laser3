@@ -31,29 +31,30 @@
 }
 */
 /*******************************
-        Poppins Local Font
+        LATO Local Font
 *******************************/
+
 @font-face {
-    font-family: 'Poppins';
-    src: url('../assets/fonts/poppins-v15-latin-regular.woff') format('woff');
+    font-family: 'Lato';
+    src: url('../assets/fonts/LatoLatin-Regular.woff') format('woff');
     font-style: normal;
     font-weight: 400;
 }
 @font-face {
-    font-family: 'Poppins';
-    src: url('../assets/fonts/poppins-v15-latin-700.woff') format('woff');
+    font-family: 'Lato';
+    src: url('../assets/fonts/LatoLatin-Bold.woff') format('woff');
     font-style: normal;
     font-weight: 700;
 }
 @font-face {
-    font-family: 'Poppins';
-    src: url('../assets/fonts/poppins-v15-latin-italic.woff') format('woff');
+    font-family: 'Lato';
+    src: url('../assets/fonts/LatoLatin-Italic.woff') format('woff');
     font-style: italic;
     font-weight: 400;
 }
 @font-face {
-    font-family: 'Poppins';
-    src: url('../assets/fonts/poppins-v15-latin-700italic.woff') format('woff'),;
+    font-family: 'Lato';
+    src: url('../assets/fonts/LatoLatin-BoldItalic.woff') format('woff');
     font-style: italic;
     font-weight: 700;
 }
