@@ -111,9 +111,6 @@ aside.ui.accordion .title:not(.ui) {
 *******************************/
 .landingpage {
     background-color: #f1ebe5;
-    .ui.menu .item {
-        font-weight: 900;
-    }
     .hidden.menu {
         display: none;
     }
