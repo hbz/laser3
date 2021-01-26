@@ -2085,7 +2085,7 @@ class SubscriptionControllerService {
                     try {
                         if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItem != null), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)) {
                             log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
-                            countIEsToAdd++
+                            ++countIEsToAdd
                         }
                     }
                     catch (EntitlementCreationException e) {
@@ -2104,16 +2104,12 @@ class SubscriptionControllerService {
                 List iesToAdd = params."iesToAdd".split(",")
                 Integer countIEsToDelete = 0
                 iesToAdd.each { ieID ->
-                    IssueEntitlement ie = IssueEntitlement.findById(ieID)
-                    TitleInstancePackagePlatform tipp = ie.tipp
                     try {
-                        if (subscriptionService.deleteEntitlement(result.subscription, tipp.gokbId)) {
-                            log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
-                            countIEsToDelete++
+                        if (subscriptionService.deleteEntitlementbyID(result.subscription, ieID)) {
+                            ++countIEsToDelete
                         }
                     }
                     catch (EntitlementCreationException e) {
-                        log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
                         result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps',null,locale)
                         [result:result,status:STATUS_ERROR]
                     }
