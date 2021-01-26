@@ -2794,7 +2794,7 @@ class SurveyController {
             result.orgsWithoutResult.each { surveyResult ->
                 if (surveyResult.participant.id in currentParticipantIDs && surveyResult.sub) {
 
-                    if (property.type == RefdataValue.class.name) {
+                    if (property.isRefdataValueType()) {
                         if (surveyResult.sub.propertySet.find {
                             it.type.id == property.id
                         }?.refValue == RefdataValue.getByValueAndCategory('Yes', property.refdataCategory)) {

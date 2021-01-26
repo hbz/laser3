@@ -96,7 +96,7 @@
                 </td>
                 <td>
                     ${PropertyDefinition.getLocalizedValue(property.type)}
-                    <g:if test="${property.type == RefdataValue.class.name}">
+                    <g:if test="${property.isRefdataValueType()}">
                         <g:set var="refdataValues" value="${[]}"/>
                         <g:each in="${RefdataCategory.getAllRefdataValues(property.refdataCategory)}"
                                 var="refdataValue">

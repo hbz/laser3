@@ -44,7 +44,7 @@
                             <td>${pd.getI10n('expl', 'en')}</td>
                             <td>
                                 <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
-                                <g:if test="${pd?.type == RefdataValue.class.name}">
+                                <g:if test="${pd?.isRefdataValueType()}">
 
                                     <g:set var="refdataValues" value="${[]}"/>
                                     <g:each in="${RefdataCategory.getAllRefdataValues(pd.refdataCategory)}" var="refdataValue">

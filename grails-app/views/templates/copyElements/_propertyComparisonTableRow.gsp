@@ -203,7 +203,7 @@
                             <div class="la-copyElements-flex-container la-multi-sources la-colorCode-source">
                                 <div class="la-copyElements-flex-item">
                                     ${PropertyDefinition.getLocalizedValue(propValue.type)}
-                                    <g:if test="${propValue.type == RefdataValue.class.name}">
+                                    <g:if test="${propValue.isRefdataValueType()}">
                                         <g:set var="refdataValues" value="${[]}"/>
                                         <g:each in="${RefdataCategory.getAllRefdataValues(propValue.refdataCategory)}"
                                                 var="refdataValue">
@@ -361,7 +361,7 @@
                                 <div class="la-copyElements-flex-container la-colorCode-target la-multi-sources">
                                     <div class="la-copyElements-flex-item">
                                         ${PropertyDefinition.getLocalizedValue(propValue.type)}
-                                        <g:if test="${propValue.type == RefdataValue.class.name}">
+                                        <g:if test="${propValue.isRefdataValueType()}">
                                             <g:set var="refdataValues" value="${[]}"/>
                                             <g:each in="${RefdataCategory.getAllRefdataValues(propValue.refdataCategory)}"
                                                     var="refdataValue">

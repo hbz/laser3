@@ -1777,7 +1777,7 @@ class YodaController {
                     }
 
                 } else {
-                   /* if (property?.type == RefdataValue.class.name) {
+                   /* if (property?.isRefdataValueType()) {
                         if (sub?.propertySet?.find {
                             it?.type?.id == property?.id
                         }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
