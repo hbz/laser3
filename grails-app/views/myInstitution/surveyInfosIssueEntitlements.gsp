@@ -127,6 +127,15 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
                         <dt class="control-label">${message(code: 'tipp.listPrice')}</dt>
                         <dd><g:formatNumber number="${iesFixListPriceSum}" type="currency"/></dd>
                     </dl>
+
+                    <div class="ui la-vertical buttons">
+                        <g:link action="index" controller="subscription"
+                                id="${subscription.id}"
+                                class="ui button">
+                            <g:message code="renewEntitlementsWithSurvey.toCurrentFixedEntitlements"/>
+                        </g:link>
+                    </div>
+
                 </div>
 
                 <div class="content">

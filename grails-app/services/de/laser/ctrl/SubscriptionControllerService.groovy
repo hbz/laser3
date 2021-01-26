@@ -2071,7 +2071,12 @@ class SubscriptionControllerService {
             if(!result.editable) {
                 [result:null,status:STATUS_ERROR]
             }
-            if(params."iesToAdd") {
+
+            if(!params."iesToAdd"){
+                result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps',null,locale)
+                [result:result,status:STATUS_ERROR]
+
+            }else if(params.process == "preliminary" && params."iesToAdd") {
                 List iesToAdd = params."iesToAdd".split(",")
                 Integer countIEsToAdd = 0
                 iesToAdd.each { ieID ->
@@ -2094,10 +2099,30 @@ class SubscriptionControllerService {
                     result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd',args,locale)
                 }
                 [result:result,status:STATUS_OK]
-            }
-            else {
-                result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps',null,locale)
-                [result:result,status:STATUS_ERROR]
+
+            } else if(params.process == "remove" && params."iesToAdd") {
+                List iesToAdd = params."iesToAdd".split(",")
+                Integer countIEsToDelete = 0
+                iesToAdd.each { ieID ->
+                    IssueEntitlement ie = IssueEntitlement.findById(ieID)
+                    TitleInstancePackagePlatform tipp = ie.tipp
+                    try {
+                        if (subscriptionService.deleteEntitlement(result.subscription, tipp.gokbId)) {
+                            log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
+                            countIEsToDelete++
+                        }
+                    }
+                    catch (EntitlementCreationException e) {
+                        log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
+                        result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps',null,locale)
+                        [result:result,status:STATUS_ERROR]
+                    }
+                }
+                if(countIEsToDelete > 0){
+                    Object[] args = [countIEsToDelete]
+                    result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToDelete',args,locale)
+                }
+                [result:result,status:STATUS_OK]
             }
         }
     }

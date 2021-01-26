@@ -288,7 +288,6 @@
                                                                             type="currency"/><br />
                         %{--<g:message code="tipp.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>--}%
                     </th>
-                    <th></th>
                 </tr>
                 </tfoot>
             </table>

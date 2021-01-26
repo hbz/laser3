@@ -966,11 +966,14 @@ class SubscriptionController {
         if(params.tab == 'selectedIEs') {
             sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, params+[ieAcceptStatusNotFixed: true])
         }
+
         List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, [max: 5000, offset: 0])
         List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
+        List<IssueEntitlement> notFixedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub)
+
         result.subjects = subscriptionService.getSubjects(allIEs.collect {it.tipp.title.id})
         result.seriesNames = subscriptionService.getSeriesNames(allIEs.collect {it.tipp.title.id})
-        result.countSelectedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub).size()
+        result.countSelectedIEs = notFixedIEs.size()
         result.countAllIEs = allIEs.size()
         result.countAllSourceIEs = sourceIEs.size()
         result.num_ies_rows = sourceIEs.size()//subscriptionService.getIssueEntitlementsFixed(baseSub).size()
@@ -1018,6 +1021,9 @@ class SubscriptionController {
                 response.sendError(401)
             }
             else flash.error = ctrlResult.result.error
+        }
+        else {
+            flash.message = ctrlResult.result.message
         }
         redirect action: 'renewEntitlementsWithSurvey', id: params.id, params: [targetObjectId: params.id, surveyConfigID: ctrlResult.result.surveyConfig?.id]
     }

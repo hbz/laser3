@@ -1,6 +1,6 @@
 <%@ page import="de.laser.titles.BookInstance; de.laser.helper.RDStore; de.laser.ApiSource" %>
 <div class="sixteen wide column">
-    <g:set var="counter" value="${1}"/>
+    <g:set var="counter" value="${offset + 1}"/>
     <g:set var="sumlistPrice" value="${0}"/>
     <g:set var="sumlocalPrice" value="${0}"/>
 
@@ -29,13 +29,15 @@
             <g:set var="targetIE" value="${ies.targetIEs.find { it.tipp == tipp }}"/>
             <tr data-gokbId="${tipp.gokbId}" data-ieId="${ie?.id}" data-index="${counter}">
                 <td>
-
-                    <g:if test="${!isContainedByTarget && editable}">
+                    <g:if test="${params.tab == 'selectedIEs' && isContainedByTarget && targetIE?.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
                         <input type="checkbox" name="bulkflag" data-index="${ie.id}" class="bulkcheck">
                     </g:if>
+                    <g:elseif test="${!isContainedByTarget && editable}">
+                        <input type="checkbox" name="bulkflag" data-index="${ie.id}" class="bulkcheck">
+                    </g:elseif>
 
                 </td>
-                <td>${params.offset ? params.offset + counter++ : counter++}</td>
+                <td>${counter++}</td>
                 <td class="titleCell">
 
                     <g:if test="${targetIE}">

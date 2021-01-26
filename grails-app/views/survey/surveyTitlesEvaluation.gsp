@@ -37,7 +37,7 @@
 
 <semui:messages data="${flash}"/>
 
-<br />
+<br/>
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
     <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
@@ -53,31 +53,41 @@
     : ${message(code: 'surveyTitlesEvaluation.label')}
 </h2>
 
-<div class="ui grid">
+<g:if test="${surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
+    <div class="ui segment">
+        <strong>${message(code: 'surveyEvaluation.notOpenSurvey')}</strong>
+    </div>
+</g:if>
+<g:else>
 
-    <div class="sixteen wide stretched column">
-        <div class="ui top attached tabular menu">
+    <div class="ui grid">
 
-            <a class="item ${surveyConfig.surveyProperties?.size() > 0 ? 'active' : ''}" data-tab="participantsViewAllFinish">
-                ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
-                <div class="ui floating circular label">${participantsFinish.size() ?: 0}</div>
-            </a>
+        <div class="sixteen wide stretched column">
+            <div class="ui top attached tabular menu">
 
-            <a class="item" data-tab="participantsViewAllNotFinish">
-                ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
-                <div class="ui floating circular label">${participantsNotFinish.size() ?: 0}</div>
-            </a>
+                <a class="item ${surveyConfig.surveyProperties?.size() > 0 ? 'active' : ''}"
+                   data-tab="participantsViewAllFinish">
+                    ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
+                    <div class="ui floating circular label">${participantsFinish.size() ?: 0}</div>
+                </a>
 
-            <a class="item" data-tab="participantsView">
-                ${message(code: 'surveyEvaluation.participantsView')}
-                <div class="ui floating circular label">${participants?.size() ?: 0}</div>
-            </a>
+                <a class="item" data-tab="participantsViewAllNotFinish">
+                    ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
+                    <div class="ui floating circular label">${participantsNotFinish.size() ?: 0}</div>
+                </a>
 
-        </div>
+                <a class="item" data-tab="participantsView">
+                    ${message(code: 'surveyEvaluation.participantsView')}
+                    <div class="ui floating circular label">${participants?.size() ?: 0}</div>
+                </a>
 
-        <div class="ui bottom attached tab segment ${surveyConfig.surveyProperties?.size() > 0 ? 'active' : ''}" data-tab="participantsViewAllFinish">
+            </div>
 
-                <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
+            <div class="ui bottom attached tab segment ${surveyConfig.surveyProperties?.size() > 0 ? 'active' : ''}"
+                 data-tab="participantsViewAllFinish">
+
+                <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message
+                        code="surveyEvaluation.participants"/><semui:totalNumber
                         total="${participantsFinish.size()}"/></h2>
                 %{--<g:if test="${surveyInfo && surveyInfo.status?.id == RDStore.SURVEY_IN_EVALUATION.id}">
                                 <g:link controller="survey" action="completeIssueEntitlementsSurvey" id="${surveyConfig.id}"
@@ -85,8 +95,8 @@
                                     <g:message code="completeIssueEntitlementsSurvey.forFinishParticipant.label"/>
                                 </g:link>
                 </g:if>--}%
-                <br />
-                <br />
+                <br/>
+                <br/>
                 <semui:form>
 
                     <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
@@ -97,15 +107,17 @@
                            }}"/>
 
                     <div class="four wide column">
-                    <g:if test="${surveyParticipantsHasAccess}">
-                        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
-                            <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
-                        </a>
-                    </g:if>
+                        <g:if test="${surveyParticipantsHasAccess}">
+                            <a data-semui="modal" class="ui icon button right floated"
+                               data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}"
+                               href="#copyEmailaddresses_static">
+                                <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
+                            </a>
+                        </g:if>
                     </div>
 
-                    <br />
-                    <br />
+                    <br/>
+                    <br/>
 
                     <table class="ui celled sortable table la-table">
                         <thead>
@@ -138,7 +150,8 @@
                                     ${i + 1}
                                 </td>
                                 <td>
-                                    <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant?.id}">
+                                    <g:link controller="myInstitution" action="manageParticipantSurveys"
+                                            id="${participant?.id}">
                                         ${participant?.sortname}
                                     </g:link>
                                 </td>
@@ -148,12 +161,14 @@
                                     </g:link>
                                 </td>
                                 <td>
-                                    <semui:surveyFinishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
+                                    <semui:surveyFinishDate participant="${participant}"
+                                                            surveyConfig="${surveyConfig}"/>
                                 </td>
                                 <td class="center aligned">
-                                    <g:set var="subParticipant" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                    <g:set var="subParticipant"
+                                           value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
                                     <div class="ui circular label">
-                                    ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size()?:0 } / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size()?:0 }
+                                        ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size() ?: 0} / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size() ?: 0}
                                     </div>
 
                                 </td>
@@ -175,18 +190,21 @@
 
                     <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
-                    <g:set var="surveyParticipantsHasNotAccess" value="${participantsFinish.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
+                    <g:set var="surveyParticipantsHasNotAccess"
+                           value="${participantsFinish.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
 
                     <div class="four wide column">
-                    <g:if test="${surveyParticipantsHasNotAccess}">
-                        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
-                            <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-                        </a>
-                    </g:if>
+                        <g:if test="${surveyParticipantsHasNotAccess}">
+                            <a data-semui="modal" class="ui icon button right floated"
+                               data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}"
+                               href="#copyEmailaddresses_static">
+                                <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
+                            </a>
+                        </g:if>
                     </div>
 
-                    <br />
-                    <br />
+                    <br/>
+                    <br/>
 
                     <table class="ui celled sortable table la-table">
                         <thead>
@@ -206,7 +224,7 @@
                             <th>
                                 ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
                             </th>
-                            <th> ${message(code: 'default.actions.label')}</th>
+                            <th>${message(code: 'default.actions.label')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -216,7 +234,8 @@
                                     ${i + 1}
                                 </td>
                                 <td>
-                                    <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant?.id}">
+                                    <g:link controller="myInstitution" action="manageParticipantSurveys"
+                                            id="${participant?.id}">
                                         ${participant?.sortname}
                                     </g:link>
                                 </td>
@@ -226,12 +245,14 @@
                                     </g:link>
                                 </td>
                                 <td>
-                                    <semui:surveyFinishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
+                                    <semui:surveyFinishDate participant="${participant}"
+                                                            surveyConfig="${surveyConfig}"/>
                                 </td>
                                 <td class="center aligned">
-                                    <g:set var="subParticipant" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                    <g:set var="subParticipant"
+                                           value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
                                     <div class="ui circular label">
-                                        ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size()?:0 } / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size()?:0 }
+                                        ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size() ?: 0} / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size() ?: 0}
                                     </div>
                                 </td>
                                 <td>
@@ -251,352 +272,377 @@
 
                 </semui:form>
 
+            </div>
+
+            <div class="ui bottom attached tab segment" data-tab="participantsViewAllNotFinish">
+
+                <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message
+                        code="surveyEvaluation.participants"/><semui:totalNumber
+                        total="${participantsNotFinish?.size()}"/></h2>
+                <br/>
+
+                <semui:form>
+
+                    <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
+
+                    <g:set var="surveyParticipantsHasAccess"
+                           value="${participantsNotFinish?.findAll { it?.hasAccessOrg() }?.sort {
+                               it?.sortname
+                           }}"/>
+
+                    <div class="four wide column">
+                        <g:if test="${surveyParticipantsHasAccess}">
+                            <a data-semui="modal" class="ui icon button right floated"
+                               data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}"
+                               href="#copyEmailaddresses_static">
+                                <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
+                            </a>
+                        </g:if>
+                    </div>
+
+                    <br/>
+                    <br/>
+
+                    <table class="ui celled sortable table la-table">
+                        <thead>
+                        <tr>
+                            <th class="center aligned">
+                                ${message(code: 'sidewide.number')}
+                            </th>
+                            <th>
+                                ${message(code: 'org.sortname.label')}
+                            </th>
+                            <th>
+                                ${message(code: 'default.name.label')}
+                            </th>
+                            <th>
+                                ${message(code: 'surveyInfo.finishedDate')}
+                            </th>
+                            <th>
+                                ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
+                            </th>
+                            <th>
+                                ${message(code: 'default.actions.label')}
+                            </th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <g:each in="${surveyParticipantsHasAccess}" var="participant" status="i">
+                            <tr>
+                                <td>
+                                    ${i + 1}
+                                </td>
+                                <td>
+                                    <g:link controller="myInstitution" action="manageParticipantSurveys"
+                                            id="${participant?.id}">
+                                        ${participant?.sortname}
+                                    </g:link>
+                                </td>
+                                <td>
+                                    <g:link controller="organisation" action="show" id="${participant.id}">
+                                        ${fieldValue(bean: participant, field: "name")}
+                                    </g:link>
+                                </td>
+                                <td>
+                                    <semui:surveyFinishDate participant="${participant}"
+                                                            surveyConfig="${surveyConfig}"/>
+                                </td>
+                                <td class="center aligned">
+                                    <g:set var="subParticipant"
+                                           value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                    <div class="ui circular label">
+                                        ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size() ?: 0} / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size() ?: 0}
+                                    </div>
+                                </td>
+                                <td>
+
+                                    <g:link action="surveyTitlesSubscriber"
+                                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
+                                            class="ui icon button"><i
+                                            class="write icon"></i>
+                                    </g:link>
+
+                                </td>
+
+                            </tr>
+
+                        </g:each>
+                        </tbody>
+                    </table>
+
+                    <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
+
+                    <g:set var="surveyParticipantsHasNotAccess"
+                           value="${participantsNotFinish.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
+
+                    <div class="four wide column">
+                        <g:if test="${surveyParticipantsHasNotAccess}">
+                            <a data-semui="modal" class="ui icon button right floated"
+                               data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}"
+                               href="#copyEmailaddresses_static">
+                                <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
+                            </a>
+                        </g:if>
+                    </div>
+
+                    <br/>
+                    <br/>
+
+                    <table class="ui celled sortable table la-table">
+                        <thead>
+                        <tr>
+                            <th class="center aligned">
+                                ${message(code: 'sidewide.number')}
+                            </th>
+                            <th>
+                                ${message(code: 'org.sortname.label')}
+                            </th>
+                            <th>
+                                ${message(code: 'default.name.label')}
+                            </th>
+                            <th>
+                                ${message(code: 'surveyInfo.finishedDate')}
+                            </th>
+                            <th>
+                                ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
+                            </th>
+                            <th>${message(code: 'default.actions.label')}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <g:each in="${surveyParticipantsHasNotAccess}" var="participant" status="i">
+                            <tr>
+                                <td>
+                                    ${i + 1}
+                                </td>
+                                <td>
+                                    <g:link controller="myInstitution" action="manageParticipantSurveys"
+                                            id="${participant?.id}">
+                                        ${participant?.sortname}
+                                    </g:link>
+                                </td>
+                                <td>
+                                    <g:link controller="organisation" action="show" id="${participant.id}">
+                                        ${fieldValue(bean: participant, field: "name")}
+                                    </g:link>
+                                </td>
+                                <td>
+                                    <semui:surveyFinishDate participant="${participant}"
+                                                            surveyConfig="${surveyConfig}"/>
+                                </td>
+                                <td class="center aligned">
+                                    <g:set var="subParticipant"
+                                           value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                    <div class="ui circular label">
+                                        ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size() ?: 0} / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size() ?: 0}
+                                    </div>
+                                </td>
+                                <td>
+
+                                    <g:link action="surveyTitlesSubscriber"
+                                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
+                                            class="ui icon button"><i
+                                            class="write icon"></i>
+                                    </g:link>
+
+                                </td>
+                            </tr>
+
+                        </g:each>
+                        </tbody>
+                    </table>
+
+                </semui:form>
+
+            </div>
+
+            <div class="ui bottom attached tab segment" data-tab="participantsView">
+
+                <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message
+                        code="surveyEvaluation.participants"/><semui:totalNumber
+                        total="${participants?.size()}"/></h2>
+                <br/>
+
+                <semui:form>
+
+                    <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
+
+                    <g:set var="surveyParticipantsHasAccess"
+                           value="${participants?.findAll { it?.hasAccessOrg() }?.sort {
+                               it?.sortname
+                           }}"/>
+
+                    <div class="four wide column">
+                        <g:if test="${surveyParticipantsHasAccess}">
+                            <a data-semui="modal" class="ui icon button right floated"
+                               data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}"
+                               href="#copyEmailaddresses_static">
+                                <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
+                            </a>
+                        </g:if>
+                    </div>
+
+                    <br/>
+                    <br/>
+
+                    <table class="ui celled sortable table la-table">
+                        <thead>
+                        <tr>
+                            <th class="center aligned">
+                                ${message(code: 'sidewide.number')}
+                            </th>
+                            <th>
+                                ${message(code: 'org.sortname.label')}
+                            </th>
+                            <th>
+                                ${message(code: 'default.name.label')}
+                            </th>
+                            <th>
+                                ${message(code: 'surveyInfo.finishedDate')}
+                            </th>
+                            <th>
+                                ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
+                            </th>
+                            <th>
+                                ${message(code: 'default.actions.label')}
+                            </th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <g:each in="${surveyParticipantsHasAccess}" var="participant" status="i">
+                            <tr>
+                                <td>
+                                    ${i + 1}
+                                </td>
+                                <td>
+                                    <g:link controller="myInstitution" action="manageParticipantSurveys"
+                                            id="${participant?.id}">
+                                        ${participant?.sortname}
+                                    </g:link>
+                                </td>
+                                <td>
+                                    <g:link controller="organisation" action="show" id="${participant.id}">
+                                        ${fieldValue(bean: participant, field: "name")}
+                                    </g:link>
+                                </td>
+                                <td>
+                                    <semui:surveyFinishDate participant="${participant}"
+                                                            surveyConfig="${surveyConfig}"/>
+                                </td>
+                                <td class="center aligned">
+                                    <g:set var="subParticipant"
+                                           value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                    <div class="ui circular label">
+                                        ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size() ?: 0} / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size() ?: 0}
+                                    </div>
+                                </td>
+                                <td>
+
+                                    <g:link action="surveyTitlesSubscriber"
+                                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
+                                            class="ui icon button"><i
+                                            class="write icon"></i>
+                                    </g:link>
+
+                                </td>
+
+                            </tr>
+
+                        </g:each>
+                        </tbody>
+                    </table>
+
+                    <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
+
+                    <g:set var="surveyParticipantsHasNotAccess"
+                           value="${participants.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
+
+                    <div class="four wide column">
+                        <g:if test="${surveyParticipantsHasNotAccess}">
+                            <a data-semui="modal" class="ui icon button right floated"
+                               data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}"
+                               href="#copyEmailaddresses_static">
+                                <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
+                            </a>
+                        </g:if>
+                    </div>
+
+                    <br/>
+                    <br/>
+
+                    <table class="ui celled sortable table la-table">
+                        <thead>
+                        <tr>
+                            <th class="center aligned">
+                                ${message(code: 'sidewide.number')}
+                            </th>
+                            <th>
+                                ${message(code: 'org.sortname.label')}
+                            </th>
+                            <th>
+                                ${message(code: 'default.name.label')}
+                            </th>
+                            <th>
+                                ${message(code: 'surveyInfo.finishedDate')}
+                            </th>
+                            <th>
+                                ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
+                            </th>
+                            <th>${message(code: 'default.actions.label')}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <g:each in="${surveyParticipantsHasNotAccess}" var="participant" status="i">
+                            <tr>
+                                <td>
+                                    ${i + 1}
+                                </td>
+                                <td>
+                                    <g:link controller="myInstitution" action="manageParticipantSurveys"
+                                            id="${participant?.id}">
+                                        ${participant?.sortname}
+                                    </g:link>
+                                </td>
+                                <td>
+                                    <g:link controller="organisation" action="show" id="${participant.id}">
+                                        ${fieldValue(bean: participant, field: "name")}
+                                    </g:link>
+                                </td>
+                                <td>
+                                    <semui:surveyFinishDate participant="${participant}"
+                                                            surveyConfig="${surveyConfig}"/>
+                                </td>
+                                <td class="center aligned">
+                                    <g:set var="subParticipant"
+                                           value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
+                                    <div class="ui circular label">
+                                        ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size() ?: 0} / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size() ?: 0}
+                                    </div>
+                                </td>
+                                <td>
+
+                                    <g:link action="surveyTitlesSubscriber"
+                                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
+                                            class="ui icon button"><i
+                                            class="write icon"></i>
+                                    </g:link>
+
+                                </td>
+                            </tr>
+
+                        </g:each>
+                        </tbody>
+                    </table>
+
+                </semui:form>
+
+            </div>
+
         </div>
-
-        <div class="ui bottom attached tab segment" data-tab="participantsViewAllNotFinish">
-
-            <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
-                    total="${participantsNotFinish?.size()}"/></h2>
-            <br />
-
-            <semui:form>
-
-                <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
-
-                <g:set var="surveyParticipantsHasAccess"
-                       value="${participantsNotFinish?.findAll { it?.hasAccessOrg() }?.sort {
-                           it?.sortname
-                       }}"/>
-
-                <div class="four wide column">
-                <g:if test="${surveyParticipantsHasAccess}">
-                    <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
-                        <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
-                    </a>
-                </g:if>
-                </div>
-
-                <br />
-                <br />
-
-                <table class="ui celled sortable table la-table">
-                    <thead>
-                    <tr>
-                        <th class="center aligned">
-                            ${message(code: 'sidewide.number')}
-                        </th>
-                        <th>
-                            ${message(code: 'org.sortname.label')}
-                        </th>
-                        <th>
-                            ${message(code: 'default.name.label')}
-                        </th>
-                        <th>
-                            ${message(code: 'surveyInfo.finishedDate')}
-                        </th>
-                        <th>
-                            ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
-                        </th>
-                        <th>
-                            ${message(code: 'default.actions.label')}
-                        </th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <g:each in="${surveyParticipantsHasAccess}" var="participant" status="i">
-                        <tr>
-                            <td>
-                                ${i + 1}
-                            </td>
-                            <td>
-                                <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant?.id}">
-                                    ${participant?.sortname}
-                                </g:link>
-                            </td>
-                            <td>
-                                <g:link controller="organisation" action="show" id="${participant.id}">
-                                    ${fieldValue(bean: participant, field: "name")}
-                                </g:link>
-                            </td>
-                            <td>
-                                <semui:surveyFinishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
-                            </td>
-                            <td class="center aligned">
-                                <g:set var="subParticipant" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
-                                <div class="ui circular label">
-                                    ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size()?:0 } / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size()?:0 }
-                                </div>
-                            </td>
-                            <td>
-
-                                <g:link action="surveyTitlesSubscriber"
-                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
-                                        class="ui icon button"><i
-                                        class="write icon"></i>
-                                </g:link>
-
-                            </td>
-
-                        </tr>
-
-                    </g:each>
-                    </tbody>
-                </table>
-
-                <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
-
-                <g:set var="surveyParticipantsHasNotAccess" value="${participantsNotFinish.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
-
-                <div class="four wide column">
-                <g:if test="${surveyParticipantsHasNotAccess}">
-                    <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
-                        <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-                    </a>
-                </g:if>
-                </div>
-
-                <br />
-                <br />
-
-                <table class="ui celled sortable table la-table">
-                    <thead>
-                    <tr>
-                        <th class="center aligned">
-                            ${message(code: 'sidewide.number')}
-                        </th>
-                        <th>
-                            ${message(code: 'org.sortname.label')}
-                        </th>
-                        <th>
-                            ${message(code: 'default.name.label')}
-                        </th>
-                        <th>
-                            ${message(code: 'surveyInfo.finishedDate')}
-                        </th>
-                        <th>
-                            ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
-                        </th>
-                        <th> ${message(code: 'default.actions.label')}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <g:each in="${surveyParticipantsHasNotAccess}" var="participant" status="i">
-                        <tr>
-                            <td>
-                                ${i + 1}
-                            </td>
-                            <td>
-                                <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant?.id}">
-                                    ${participant?.sortname}
-                                </g:link>
-                            </td>
-                            <td>
-                                <g:link controller="organisation" action="show" id="${participant.id}">
-                                    ${fieldValue(bean: participant, field: "name")}
-                                </g:link>
-                            </td>
-                            <td>
-                                <semui:surveyFinishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
-                            </td>
-                            <td class="center aligned">
-                                <g:set var="subParticipant" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
-                                <div class="ui circular label">
-                                    ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size()?:0 } / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size()?:0 }
-                                </div>
-                            </td>
-                            <td>
-
-                                <g:link action="surveyTitlesSubscriber"
-                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
-                                        class="ui icon button"><i
-                                        class="write icon"></i>
-                                </g:link>
-
-                            </td>
-                        </tr>
-
-                    </g:each>
-                    </tbody>
-                </table>
-
-            </semui:form>
-
-        </div>
-
-        <div class="ui bottom attached tab segment" data-tab="participantsView">
-
-            <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
-                    total="${participants?.size()}"/></h2>
-            <br />
-
-            <semui:form>
-
-                <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
-
-                <g:set var="surveyParticipantsHasAccess"
-                       value="${participants?.findAll { it?.hasAccessOrg() }?.sort {
-                           it?.sortname
-                       }}"/>
-
-                <div class="four wide column">
-                <g:if test="${surveyParticipantsHasAccess}">
-                    <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
-                        <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
-                    </a>
-                </g:if>
-                </div>
-
-                <br />
-                <br />
-
-                <table class="ui celled sortable table la-table">
-                    <thead>
-                    <tr>
-                        <th class="center aligned">
-                            ${message(code: 'sidewide.number')}
-                        </th>
-                        <th>
-                            ${message(code: 'org.sortname.label')}
-                        </th>
-                        <th>
-                            ${message(code: 'default.name.label')}
-                        </th>
-                        <th>
-                            ${message(code: 'surveyInfo.finishedDate')}
-                        </th>
-                        <th>
-                            ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
-                        </th>
-                        <th>
-                            ${message(code: 'default.actions.label')}
-                        </th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <g:each in="${surveyParticipantsHasAccess}" var="participant" status="i">
-                        <tr>
-                            <td>
-                                ${i + 1}
-                            </td>
-                            <td>
-                                <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant?.id}">
-                                    ${participant?.sortname}
-                                </g:link>
-                            </td>
-                            <td>
-                                <g:link controller="organisation" action="show" id="${participant.id}">
-                                    ${fieldValue(bean: participant, field: "name")}
-                                </g:link>
-                            </td>
-                            <td>
-                                <semui:surveyFinishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
-                            </td>
-                            <td class="center aligned">
-                                <g:set var="subParticipant" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
-                                <div class="ui circular label">
-                                    ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size()?:0 } / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size()?:0 }
-                                </div>
-                            </td>
-                            <td>
-
-                                <g:link action="surveyTitlesSubscriber"
-                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
-                                        class="ui icon button"><i
-                                        class="write icon"></i>
-                                </g:link>
-
-                            </td>
-
-                        </tr>
-
-                    </g:each>
-                    </tbody>
-                </table>
-
-                <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
-
-                <g:set var="surveyParticipantsHasNotAccess" value="${participants.findAll { !it?.hasAccessOrg() }.sort { it?.sortname }}"/>
-
-                <div class="four wide column">
-                <g:if test="${surveyParticipantsHasNotAccess}">
-                    <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
-                        <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-                    </a>
-                </g:if>
-                </div>
-
-                <br />
-                <br />
-
-                <table class="ui celled sortable table la-table">
-                    <thead>
-                    <tr>
-                        <th class="center aligned">
-                            ${message(code: 'sidewide.number')}
-                        </th>
-                        <th>
-                            ${message(code: 'org.sortname.label')}
-                        </th>
-                        <th>
-                            ${message(code: 'default.name.label')}
-                        </th>
-                        <th>
-                            ${message(code: 'surveyInfo.finishedDate')}
-                        </th>
-                        <th>
-                            ${message(code: 'surveyTitlesEvaluation.currentAndFixedEntitlements')}
-                        </th>
-                        <th> ${message(code: 'default.actions.label')}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <g:each in="${surveyParticipantsHasNotAccess}" var="participant" status="i">
-                        <tr>
-                            <td>
-                                ${i + 1}
-                            </td>
-                            <td>
-                                <g:link controller="myInstitution" action="manageParticipantSurveys" id="${participant?.id}">
-                                    ${participant?.sortname}
-                                </g:link>
-                            </td>
-                            <td>
-                                <g:link controller="organisation" action="show" id="${participant.id}">
-                                    ${fieldValue(bean: participant, field: "name")}
-                                </g:link>
-                            </td>
-                            <td>
-                                <semui:surveyFinishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
-                            </td>
-                            <td class="center aligned">
-                                <g:set var="subParticipant" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
-                                <div class="ui circular label">
-                                    ${subscriptionService.getIssueEntitlementsFixed(subParticipant)?.size()?:0 } / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant)?.size()?:0 }
-                                </div>
-                            </td>
-                            <td>
-
-                                <g:link action="surveyTitlesSubscriber"
-                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
-                                        class="ui icon button"><i
-                                        class="write icon"></i>
-                                </g:link>
-
-                            </td>
-                        </tr>
-
-                    </g:each>
-                    </tbody>
-                </table>
-
-            </semui:form>
-
-        </div>
-
     </div>
-</div>
+</g:else>
 
 </body>
 </html>
