@@ -61,7 +61,7 @@ class LicenseController {
 
         //used for showing/hiding the License Actions menus
         def admin_role = Role.findAllByAuthority("INST_ADM")
-        result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) and uo.status in (:status)", [user: result.user, role: admin_role, status: [1, 3]])
+        result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) ", [user: result.user, role: admin_role])
 
         //def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
 
