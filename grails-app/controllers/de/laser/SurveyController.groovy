@@ -633,8 +633,7 @@ class SurveyController {
                         type: 'IssueEntitlementsSurvey',
                         surveyInfo: surveyInfo,
                         subSurveyUseForTransfer: false,
-                        pickAndChoose: true,
-                        createTitleGroups: params.createTitleGroups ? true : false
+                        pickAndChoose: true
                 )
                 surveyConfig.save()
                 addSubMembers(surveyConfig)
