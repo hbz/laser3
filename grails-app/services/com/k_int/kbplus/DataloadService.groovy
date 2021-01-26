@@ -86,10 +86,10 @@ class DataloadService {
             if(!(activeFuture) || activeFuture.isDone()) {
 
                 activeFuture = executorService.submit({
-                    Thread.currentThread().setName("DataloadService UpdateFTIndexes")
+                    Thread.currentThread().setName("DataloadServiceUpdateFTIndexes")
                     doFTUpdate()
-                } as java.util.concurrent.Callable)
-                //log.debug("updateFTIndexes returning")
+                })
+                 log.debug("updateFTIndexes returning")
             }else{
                 log.debug("FT update already running")
                 return false
@@ -944,48 +944,21 @@ class DataloadService {
                     Date from = new Date(latest_ft_record.lastTimestamp)
                     // def qry = domain.findAllByLastUpdatedGreaterThan(from,[sort:'lastUpdated'])
 
-                    def c = domain.createCriteria()
-                    c.setReadOnly(true)
-                    c.setCacheable(false)
-                    c.setFetchSize(Integer.MIN_VALUE)
-
+                    def query
 
                     Class domainClass = grailsApplication.getDomainClass(domain.name).clazz
                     if (org.apache.commons.lang.ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
-                        c.buildCriteria {
-                            or {
-                                and {
-                                    isNotNull('lastUpdatedCascading')
-                                    gt('lastUpdatedCascading', from)
-                                }
-                                gt('lastUpdated', from)
-                                and {
-                                    gt('dateCreated', from)
-                                    isNull('lastUpdated')
-                                }
-                            }
-                            order("lastUpdated", "asc")
-                        }
+                        query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true])
                     } else {
-                        c.buildCriteria {
-                            or {
-                                gt('lastUpdated', from)
-                                and {
-                                    gt('dateCreated', from)
-                                    isNull('lastUpdated')
-                                }
-                            }
-                            order("lastUpdated", "asc")
-                        }
+                        query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true]);
                     }
-
-                    def results = c.scroll(ScrollMode.FORWARD_ONLY)
 
                     //log.debug("Query completed .. processing rows ..")
 
                     String rectype
-                    while (results.next()) {
-                        Object r = results.get(0);
+
+                    for(domain_id in query){
+                        Object r = domain.get(domain_id)
                         def idx_record = recgen_closure(r)
                         def future
                         if (idx_record['_id'] == null) {
@@ -1043,7 +1016,6 @@ class DataloadService {
                             //globalService.cleanUpGorm();
                         }
                     }
-                    results.close();
 
                     log.debug("Processed ${total} records for ${domain.name}")
 
@@ -1261,7 +1233,7 @@ class DataloadService {
                             query_str = "rectype:'TitleInstance' OR rectype:'BookInstance' OR rectype:'JournalInstance' OR rectype:'DatabaseInstance'"
                         }
 
-                        //println(query_str)
+                        println(query_str)
 
                         String index = ESWrapperService.getESSettings().indexName
 
