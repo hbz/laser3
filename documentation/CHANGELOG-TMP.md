@@ -7,6 +7,16 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3093    26.01.2021  dev     2.0         David   Feature     Übertragung von Dateien bei Löschung eines Nutzers
+
+3058    26.01.2021  dev     2.0         David   Feature     Panels ohne Inhalt ausblenden
+
+3091    26.01.2021  dev     2.0         David   Feature     Confirm-Dialog für das Löschen eines Nutzern überarbeiten
+
+3079    26.01.2021  dev     2.0         David   Feature     Überarbeitung: Zugehörigkeiten
+
+2944    26.01.2021  dev     2.0         David               Andere Meldung, wenn man sich selbst über Nutzerverwaltung löschen will
+
 3072    26.02.2021  dev     2.0         Andreas Bug         Links-Änderungen aus Pull Request #46 nachgezogen
 
 3072    25.01.2021  dev     2.0         Moe     Bug/Feature Umfrage-Bugs in 2.0 
@@ -14,6 +24,10 @@
 3071    25.01.2021  dev     2.0         Andreas Bug         Bugfixes in Meine Lizenzen pro Einrichtung
 
 3087    25.01.2021  dev     2.0         Andreas Bug         Beim Markieren eines Kostens als gelöscht wurden Fremdschlüssel nicht aufgehoben
+
+3070    25.01.2021  dev     2.0         David   Bug         Breadcrumb auf allen Seiten der Nutzerverwaltung reparieren
+
+2983    23.01.2021  dev     2.0         David   Bug         Nutzerverwaltung: Großbuchstaben innerhalb des Nutzernamens verhindern korrekte Dublettenprüfung
 
 3086    22.01.2021  dev     2.0         Andreas Feature     Darstellung "Alle Pakete" angepasst
 
@@ -31,11 +45,15 @@
 
 3071    20.01.2021  dev     2.0         Andreas Bug         Punkte zwei-sechs des Sammeltickets
 
+1528    20.01.2021  dev     2.0         David               LAS:eR Upgrade auf Grails 3
+
 2498    19.01.2021  dev     2.0         Moe     Feature     Titelauswahlumfrage: Titel werden nicht von Konsortialstelle angenommen/akzeptiert
 
 3068    19.01.2021  dev     2.0         Moe     Feature     Statistik per System Flag deaktvieren/aktvieren
 
 3016    18.01.2021  dev     2.0         Moe     Feature     Mailtext Titelauswahl beendet
+
+3065    18.01.2021  dev     2.0         David   Bug         Fehler nach Einloggen eines neuen Nutzer
 
 3004    18.01.2021  dev     2.0         Moe     Feature     Falsche Titelzählung in Titel-Gruppen
 
@@ -47,7 +65,11 @@
 
 2955    18.01.2021  dev     2.0         Moe     Feature     Umfrage Link bei Spotlight-Suche verbessern
 
-3047    18.01.2021  dev     2.0         Moe     Feature     Quelllizenz ist nicht gesetzt bei Elemente kopieren in andere Lizenz 
+3047    18.01.2021  dev     2.0         Moe     Feature     Quelllizenz ist nicht gesetzt bei Elemente kopieren in andere Lizenz
+
+2989    15.01.2021  dev     2.0         David   Bug         Fehlermeldung zu ausgeblendeten Erinnerungsoptionen für Konsorten
+
+3057    14.01.2021  dev     2.0         David   Bug         Schaltschrank Paketeinstellungen
 
 3054    12.01.2021  rc1.6   1.6.7       Andreas Bug         Kontaktadressen konnten bei bestehenden Kontakten nicht bearbeitet werden
 
@@ -57,21 +79,69 @@
 
 --      12.01.2021  rc1.6   1.6.7       Andreas Bug         Paketverknüpfung neu priorisiert (d.h. zuerst LAS:eR, dann GOKb, falls Paket noch nicht übertragen)
 
+3015    12.01.2021  dev     2.0         David   Bug         "Mailadressen kopieren" funktioniert nicht
+
 2764    12.01.2021  rc1.6   1.6.7       David   Bug         Sicherheitslücke
+
+3027    11.01.2021  dev     2.0         David               Performance-Problem: PackageController
+
+3049    07.01.2021  dev     2.0         David               Markup aufräumen: Seiten-Header
+
+3048    05.01.2021  dev     2.0         David               Fehler auf der Seite "Zugangskonfigurationen bearbeiten"
+
+3043    22.12.2020  dev     2.0         David               Assets-Pipeline für Produktivbetrieb konfigurieren
+
+3046    18.12.2020  dev     2.0         David               DataTables-Plugin reparieren
+
+3041    16.12.2020  dev     2.0         David               Kacheln der Seitenleiste überarbeiten
+
+3039    16.12.2020  dev     2.0         David               InplaceTagLib aktualisieren/entfernen
+
+2979    15.12.2020  dev     2.0         David   Bug         x-Editable ruft mehrfach die gleichen Javascript-Methoden auf
+
+3028    14.12.2020  dev     2.0         David               Performance-Problem: PlatformController
 
 --      14.12.2020  rc1.6   1.6.6       Andreas Feature     neues Verfahrensverzeichnis eingehängt
 
 3036    14.12.2020  rc1.6   1.6.6       Andreas Bug         Darstellungs- und Fallbackfehler bei Kosten behoben
 
+3025    11.12.2020  dev     2.0         David               Doppelte ID-Attribute in der Hauptnavigation
+
 3030    11.12.2020  rc1.6   1.6.6       Moe     Bug         Titelumfrage: Bestand kann nicht übernommen wenn Umfrage Status "Umfrage beendet" hat
 
+2953    10.12.2020  dev     2.0         David               Sammelsurium: Fehler @ Grails3
+
+3020    09.12.2020  dev     2.0         David               Auto-Layouter für OrgFilter reparieren
+
+2998    09.12.2020  dev     2.0         David               Mehrfachzuweisung von Eventlistenern unterbinden
+
+2995    07.12.2020  dev     2.0         David               Ausführungsreihenfolge vereinheitlichen (JavaScript)
+
 3011    04.12.2020  rc1.6   1.6.6       Andreas Bug         verschiedene Bugs im Sync korrigiert
+
+3012    04.12.2020  dev     2.0         David               $.fn-Konfigurationen prüfen, bzw. reparieren
+
+3002    03.12.2020  dev     2.0         David               Javascript-Module kontextabhängig initialisieren
+
+2996    02.12.2020  dev     2.0         David               JavaScript in Templates muss statisch und XHR-kompatibel laufen
+
+2997    01.12.2020  dev     2.0         David               Seitenbasierte JavaScript-Controller als Namensraum einbauen
+
+2408    26.11.2020  dev     2.0         David   Bug         Nach Ausführen eines X-Editable-Elements geht ein Eventhändler für das Bedienen des Menues verloren
+
+2986    19.11.2020  dev     2.0         David               Daten-/Schemakorrektur: timestamp with time zone
+
+2964    16.11.2020  dev     2.0         David               Cache-Plugins anpassen, bzw. neu konfigurieren
+
+2880    13.11.2020  dev     2.0         David               Refactoring: Angleichung persistierter Klassenbezeichner
 
 --      13.11.2020  rc1.6   1.6.5       Moe     Bug         Titelumfrage für Teilnehmer wird nicht angezeigt
 
 --      13.11.2020  rc1.6   1.6.5       Moe     Bug         Beim Import von Kbart-File werden Zahlen nicht richtig übernommen (Probleme beim Anreicherung von PriceItems)
 
 2978    04.11.2020  rc1.6   1.6.5       Andreas Bug         falsche Berechtigungsprüfung in Lizenztabelle unter "Meine Lizenzen"
+
+2974    03.11.2020  dev     2.0         David   Feature     Session Timeouts für AjaxCalls abfangen
 
 --      03.11.2020  rc1.6   1.6.3       Moe     Bug         Lizenzen werden für Vollnutzer nicht als Lokal Lizenz geflagt
 
@@ -106,6 +176,8 @@ R26     20.10.2020  rc1.6   1.6.2       Moe     Bug         Merkmale aus LAS:eR 
 2943    19.10.2020  rc1.6   1.6.2       Moe     Bug         Sortierung Mein Adressbuch noch nach Name statt Org: sortierbar machen
 
 2946    19.10.2020  rc1.6   1.6.2       Moe     Bug         Excel-Export von Lizenzteilnehmern funktioniert nicht
+
+2905    16.10.2020  dev     2.0         David               DatabaseMigrationPlugin / Postgresql 12
 
 2501    14.10.2020  hbz-dev             Andreas Feature     Verantwortlichkeit einer neuen Aufgabe muss jetzt explizit definiert werden
 
