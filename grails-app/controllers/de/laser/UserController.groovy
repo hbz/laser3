@@ -59,10 +59,15 @@ class UserController  {
                 result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
             }
 
-            result.substituteList = User.executeQuery(
-                    'select distinct u from User u join u.affiliations ua where ua.org = :ctxOrg and u != :self',
-                    [ctxOrg: contextService.getOrg(), self: result.user]
-            )
+            List<Org> orgList = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :self', [self: result.user])
+            result.substituteList = orgList ? User.executeQuery(
+                    'select distinct u from User u join u.affiliations ua where ua.org in :orgList and u != :self and ua.formalRole = :instAdm order by u.username',
+                    [orgList: orgList, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]
+            ) : []
+        }
+        else {
+            redirect controller: 'user', action: 'list'
+            return
         }
 
         render view: '/user/global/delete', model: result

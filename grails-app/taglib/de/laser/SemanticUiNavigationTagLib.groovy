@@ -20,7 +20,7 @@ class SemanticUiNavigationTagLib {
 
     def breadcrumbs = { attrs, body ->
 
-        out <<   '<nav class="ui breadcrumb" aria-label="Sie sind hier:">'
+        out <<   '<nav class="ui tiny breadcrumb" aria-label="Sie sind hier:">'
         out <<      '<ul>'
         out <<      crumb([controller: 'home', ariaLabel:'Home', text:'<i class="home icon"></i>'])
         out <<          body()
@@ -53,7 +53,7 @@ class SemanticUiNavigationTagLib {
                     id: attrs.id
             )
             if (! "active".equalsIgnoreCase(attrs.class.toString())) {
-                out << '<span aria-hidden="true"> </span><div class="divider">/</div><span aria-hidden="true"> </span>'
+                out << '<span aria-hidden="true"> </span><i class="right angle icon divider"></i><span aria-hidden="true"> </span>'
             }
             out << '</li>'
         }

@@ -13,3 +13,4 @@
 .ui.breadcrumb a:hover {
   color: @linkHoverColor;
 }
+

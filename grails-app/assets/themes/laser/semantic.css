@@ -888,10 +888,6 @@ aside.ui.accordion .title:not(.ui) {
   background-color: #f1ebe5;
 }
 
-.landingpage .ui.menu .item {
-  font-weight: 900;
-}
-
 .landingpage .hidden.menu {
   display: none;
 }
@@ -19375,6 +19371,10 @@ dd {
   border: none;
 }
 
+.ui.segment.la-filter:last-child {
+  margin-bottom: 1em;
+}
+
 .ui.segment.la-filter-temp {
   background: #e6eaef;
   border: none;
@@ -20159,7 +20159,7 @@ dd {
 .ui.breadcrumb .divider {
   display: inline-block;
   opacity: 0.7;
-  margin: 0em 0.21428571rem 0em;
+  margin: 0em 0.57142857rem 0em;
   font-size: 0.92857143em;
   color: rgba(0, 0, 0, 0.4);
   vertical-align: baseline;
