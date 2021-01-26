@@ -50,7 +50,7 @@
                 <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
-            <g:form action="deleteUser" params="${[process: true]}">
+            <g:form action="deleteUser" data-confirm-id="deleteUserForm_form" params="${[process: true]}">
 
                 <g:if test="${controllerName == 'myInstitution'}">
                     <g:link action="users" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
@@ -69,8 +69,12 @@
 
                     <g:if test="${delResult.deletable}">
                         <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
-                            <input type="submit" class="ui button red" value="${message(code:'deletion.user')}"
-                                   onclick="return confirm('${message(code:'user.delete.confirm')}')" />
+                            <div class="ui negative button js-open-confirm-modal"
+                                 data-confirm-id="deleteUserForm"
+                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user", args: [user.displayName ])}"
+                                 data-confirm-term-how="delete">
+                                ${message(code:'deletion.user')}
+                            </div>
 
                             <br /><br />${message(code:'user.delete.moveToNewUser')}<br />
 
@@ -80,12 +84,16 @@
                                       optionValue="${{it.displayName + ' (' + it.username + ')'}}" />
                         </g:if>
                         <g:elseif test="${delResult.status != DeletionService.RESULT_ERROR}">
-                            <input type="submit" class="ui button red" value="${message(code:'deletion.user')}"
-                                   onclick="return confirm('${message(code:'user.delete.confirm')}')" />
+                            <div class="ui negative button js-open-confirm-modal"
+                                 data-confirm-id="deleteUserForm"
+                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user", args: [user.displayName ])}"
+                                 data-confirm-term-how="delete">
+                                ${message(code:'deletion.user')}
+                            </div>
                         </g:elseif>
                     </g:if>
                     <g:else>
-                        <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
+                        <input disabled type="submit" class="ui button negative" value="${message(code:'deletion.user')}" />
                     </g:else>
 
                 </g:if>
