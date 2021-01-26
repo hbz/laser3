@@ -776,7 +776,7 @@ class SubscriptionController {
         } else {
             log.error("Unable to locate subscription instance")
         }
-        redirect action: 'renewEntitlementsWithSurvey', params: [targetObjectId: result.subscription.id, surveyConfigID: result.surveyConfig.id]
+        redirect(url: request.getHeader("referer"))
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
@@ -787,7 +787,7 @@ class SubscriptionController {
         result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
         if(subscriptionService.deleteEntitlementbyID(result.subscription,params.singleTitle))
             log.debug("Deleted ie ${params.singleTitle} from sub ${result.subscription.id}")
-        redirect action: 'renewEntitlementsWithSurvey', params: [targetObjectId: result.subscription.id, surveyConfigID: result.surveyConfig?.id]
+        redirect(url: request.getHeader("referer"))
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
@@ -1025,7 +1025,7 @@ class SubscriptionController {
         else {
             flash.message = ctrlResult.result.message
         }
-        redirect action: 'renewEntitlementsWithSurvey', id: params.id, params: [targetObjectId: params.id, surveyConfigID: ctrlResult.result.surveyConfig?.id]
+        redirect(url: request.getHeader("referer"))
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
