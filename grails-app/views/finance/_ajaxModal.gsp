@@ -140,7 +140,7 @@
                             <i class="calculator icon"></i>
                         </div>
 
-                        <g:select class="ui dropdown dk-width-auto" name="newCostCurrency" title="${message(code: 'financials.addNew.currencyType')}"
+                        <g:select class="ui dropdown dk-width-auto la-not-clearable" name="newCostCurrency" title="${message(code: 'financials.addNew.currencyType')}"
                                   from="${currency}"
                                   optionKey="id"
                                   optionValue="${{it.text.contains('-') ? it.text.split('-').first() : it.text}}"
@@ -484,7 +484,7 @@
                             alert("${message(code:'financials.newCosts.entitlementError')}");
                         else {
                             if($("[name='newLicenseeTarget']").length === 1 && $("[name='newLicenseeTarget']").val()[0] === '') {
-                                alert("${message(code:'financials.newCosts.noSubscriptionError')}") //continue here: a confirm if the consortial user wants really to attach cost items to the parent subscription
+                                alert("${message(code:'financials.newCosts.noSubscriptionError')}")
                             }
                             else {
                                 if($("[name='newLicenseeTarget']").val() && $("[name='newLicenseeTarget']").val().join(";").indexOf('forParent') > -1) {

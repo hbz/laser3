@@ -183,51 +183,11 @@ class AdminController  {
         result
     }
 
-    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
-    @Secured(closure = {
-        ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
-    })
-    def manageAffiliationRequests() {
-        Map<String, Object> result = [:]
-
-        result.user = contextService.getUser()
-        result << organisationService.getPendingRequests(result.user, contextService.getOrg())
-
-        result
-    }
-
     @Secured(['ROLE_ADMIN'])
     def serverDifferences() {
       Map<String, Object> result = [:]
       result
     }
-
-  @Secured(['ROLE_ADMIN'])
-  @Transactional
-  def actionAffiliationRequest() {
-      log.debug("actionMembershipRequest")
-      UserOrg req = UserOrg.get(params.req)
-
-    if ( req != null ) {
-      switch(params.act) {
-        case 'approve':
-          req.status = UserOrg.STATUS_APPROVED
-          break;
-        case 'deny':
-          req.status = UserOrg.STATUS_REJECTED
-          break;
-        default:
-          log.error("FLASH UNKNOWN CODE")
-          break;
-      }
-      req.dateActioned = System.currentTimeMillis();
-      req.save()
-    }
-    else {
-      log.error("FLASH")
-    }
-    redirect(action: "manageAffiliationRequests")
-  }
 
     @Secured(['ROLE_ADMIN'])
     def hardDeletePkgs(){
@@ -421,7 +381,7 @@ class AdminController  {
 
         if ( existing_affil_check == null ) {
             log.debug("No existing affiliation")
-            UserOrg newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole,status:affil.status)
+            UserOrg newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole)
             if(!newAffil.save(failOnError:true)){
                 log.error("Probem saving user roles")
                 newAffil.errors.each { e ->
@@ -430,13 +390,14 @@ class AdminController  {
                 return false
             }
         }
+        /* -- removed UserOrg.status --
         else {
           if (affil.status != existing_affil_check.status) {
             existing_affil_check.status = affil.status
             existing_affil_check.save()
           }
           log.debug("Affiliation already present - skipping ${existing_affil_check}")
-        }
+        } */
       }
     }
     log.debug("copyUserRoles returning true");
@@ -467,7 +428,7 @@ class AdminController  {
                     row.passwordExpired = u.passwordExpired
                     row.affiliations = []
                     u.affiliations.each { ua ->
-                        row.affiliations.add( [org: ua.org.shortcode, status: ua.status, formalRole:formalRole?.authority] )
+                        row.affiliations.add( [org: ua.org.shortcode, formalRole:formalRole?.authority] )
                     }
                     r2.add(row)
                 }
@@ -521,6 +482,38 @@ class AdminController  {
     Map<String, Object> result = [:]
 
         result.items = ContentItem.list()
+
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def databaseCollations() {
+        Map<String, Object> result = [:]
+
+        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+        Sql sql = new Sql(dataSource)
+
+        result.table_columns = sql.rows("""
+            SELECT table_schema, table_name, column_name, data_type, collation_catalog, collation_schema, collation_name
+            FROM information_schema.columns
+            where data_type in ('text', 'character varying') and table_schema = 'public'
+            order by  table_schema, table_name, column_name;
+            """)
+
+        result.laser_german_phonebook = "DIN 5007 Var.2"
+        result.default_collate = sql.rows("show LC_COLLATE;").get(0).get('lc_collate')
+
+        result.examples = [
+                'default' : sql.rows(
+                        "select rdv.rdv_value_de from refdata_value rdv, refdata_category rdc " +
+                                "where rdv.rdv_owner = rdc.rdc_id and rdc.rdc_description = 'country' " +
+                                "order by rdv.rdv_value_de COLLATE \"default\" limit 20;"
+                ).collect{ it.rdv_value_de },
+                // works because RefdataValue.value_de is set to laser_german_phonebook
+                'laser_german_phonebook' : RefdataValue.executeQuery(
+                        "select rdv.value_de from RefdataValue rdv where rdv.owner.desc = 'country' order by rdv.value_de", [max: 20]
+                )
+        ]
 
         result
     }
@@ -1089,15 +1082,8 @@ class AdminController  {
                                     affiliation {
                                         user(userOrg.user.username)
                                         org(userOrg.org.globalUID)
-                                        status(userOrg.status)
                                         if(userOrg.formalRole) {
                                             formalRole(userOrg.formalRole.authority)
-                                        }
-                                        if(userOrg.dateActioned) {
-                                            dateActioned(userOrg.dateActioned)
-                                        }
-                                        if(userOrg.dateRequested) {
-                                            dateRequested(userOrg.dateRequested)
                                         }
                                     }
                                 }

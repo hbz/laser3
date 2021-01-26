@@ -12,7 +12,7 @@ class ServerCodesController {
 
     def error() {
         Map<String, Object> result = [
-                exception: request.getAttribute('exception'),
+                exception: request.getAttribute('exception') ?: request.getAttribute('javax.servlet.error.exception'),
                 status: request.getAttribute('javax.servlet.error.status_code'),
                 mailString: ''
         ]
@@ -30,8 +30,8 @@ class ServerCodesController {
                     "URI: " + request.forwardURI + nl +
                     "Zeitpunkt: " + new Date().format( 'dd.MM.yyyy HH:mm:ss' ) + nl +
                     "System: " + ConfigUtils.getLaserSystemId() + nl +
-                    "Branch: " + grailsApplication.metadata['repository.branch'] + nl +
-                    "Commit: " + grailsApplication.metadata['repository.revision.number'] + nl +
+                    "Branch: " + grailsApplication.metadata['git.branch'] + nl +
+                    "Commit: " + grailsApplication.metadata['git,commit.id'] + nl +
                     "Class: " + (root?.class?.name ?: exception.class.name) + nl
 
             if (exception.message) {

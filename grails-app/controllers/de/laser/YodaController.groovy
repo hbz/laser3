@@ -106,7 +106,7 @@ class YodaController {
         Map<String, Object> map1 = [
                 token       : "Quellensteuer-Befreiung",
                 category    : PropertyDefinition.SUB_PROP,
-                type        : RefdataValue.CLASS,
+                type        : RefdataValue.class.name,
                 rdc         : RDConstants.Y_N_O,
                 tenant      : contextService.getOrg().globalUID,
                 i10n        : [
@@ -120,7 +120,7 @@ class YodaController {
         Map<String, Object> map2 = [
                 token       : "BGA",
                 category    : PropertyDefinition.ORG_PROP,
-                type        : RefdataValue.CLASS,
+                type        : RefdataValue.class.name,
                 rdc         : RDConstants.Y_N,
                 tenant      : contextService.getOrg().globalUID,
                 i10n        : [
@@ -1140,21 +1140,11 @@ class YodaController {
         List<ApiSource> apiSources = ApiSource.findAllByEditUrlIsNull()
         List<GlobalRecordSource> globalRecordSources = GlobalRecordSource.findAllByEditUriIsNull()
         apiSources.each { ApiSource aps ->
-            if(aps.baseUrl.contains('phaeton.hbz-nrw')) {
-                aps.editUrl = 'https://gokb.org'
-            }
-            else {
-                aps.editUrl = aps.baseUrl
-            }
+            aps.editUrl = aps.baseUrl
             aps.save()
         }
         globalRecordSources.each { GlobalRecordSource grs ->
-            if(grs.uri.contains('phaeton.hbz-nrw')) {
-                grs.editUri = 'https://gokb.org/gokb/oai/packages'
-            }
-            else {
-                grs.editUri = grs.uri
-            }
+            grs.editUri = grs.uri
             grs.save()
         }
         flash.message = "${apiSources.size()} ApiSources und ${globalRecordSources.size()} GlobalRecordSources angepasst!"
@@ -1362,15 +1352,8 @@ class YodaController {
                             affiliation {
                                 user(userOrg.user.username)
                                 org(userOrg.org.globalUID)
-                                status(userOrg.status)
                                 if(userOrg.formalRole) {
                                     formalRole(userOrg.formalRole.authority)
-                                }
-                                if(userOrg.dateActioned) {
-                                    dateActioned(userOrg.dateActioned)
-                                }
-                                if(userOrg.dateRequested) {
-                                    dateRequested(userOrg.dateRequested)
                                 }
                             }
                         }
@@ -1794,7 +1777,7 @@ class YodaController {
                     }
 
                 } else {
-                   /* if (property?.type == RefdataValue.CLASS) {
+                   /* if (property?.isRefdataValueType()) {
                         if (sub?.propertySet?.find {
                             it?.type?.id == property?.id
                         }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {

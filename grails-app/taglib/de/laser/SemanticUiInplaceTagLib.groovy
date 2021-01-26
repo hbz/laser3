@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.auth.Role
 import de.laser.helper.RDStore
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -213,6 +213,66 @@ class SemanticUiInplaceTagLib {
 
     /**
      *   Attributes:
+     *   owner - UserOrg
+     *   type - Role.roleType
+     *   overwriteEditable - if existing, value overwrites global editable
+     */
+    def xEditableRole = { attrs, body ->
+        try {
+            boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
+
+            if ( editable ) {
+
+                String oid = "${attrs.owner.class.name}:${attrs.owner.id}"
+                String type = attrs.type ?: 'user'
+
+                Map<String, Object> params = [type:type, oid:oid]
+
+                if (attrs.constraint) {
+                    params.put('constraint', attrs.constraint)
+                }
+
+                String data_link = createLink(
+                        controller: 'ajaxJson',
+                        action: 'lookupRoles',
+                        params: params
+                ).encodeAsHTML()
+
+                String update_link = createLink(controller:'ajax', action: 'genericSetRel').encodeAsHTML()
+                String id = attrs.id ?: "${oid}:${attrs.field}"
+                String default_empty = message(code:'default.button.edit.label')
+                String emptyText = attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
+
+                out << '<span>'
+
+                String dataValue = ""
+                def obj = genericOIDService.resolveOID(oid)
+
+                if (obj && obj."${attrs.field}") {
+                    def tmpId = obj."${attrs.field}".id
+                    dataValue = " data-value=\"${RefdataValue.class.name}:${tmpId}\" "
+                }
+
+                // Output an editable link
+                out << '<a href="#" id="' + id + '" class="xEditableManyToOne" '
+                out << 'data-onblur="ignore" ' + dataValue + ' data-type="select" '
+                out << 'data-pk="' + oid + '" data-name="' + attrs.field + '" '
+                out << 'data-source="' + data_link + '" data-url="' + update_link + '" ' + emptyText + '>'
+
+                out << renderObjectValue(attrs.owner[attrs.field])
+                out << '</a></span>'
+            }
+            else {
+                out << renderObjectValue(attrs.owner[attrs.field])
+            }
+        }
+        catch ( Throwable e ) {
+            log.error("Problem processing editable refdata ${attrs}",e)
+        }
+    }
+
+    /**
+     *   Attributes:
      *   overwriteEditable - if existing, value overwrites global editable
      */
     def xEditableBoolean = { attrs, body ->
@@ -303,28 +363,27 @@ class SemanticUiInplaceTagLib {
 
         if ( value ) {
             switch ( value.class ) {
+                case Role.class:
+                    result = message(code: "cv.roles." + value.authority)
+                    break
                 case RefdataValue.class:
-
-                    if ( value.icon != null ) {
+                    if (value.icon != null) {
                         result = "<span class=\"select-icon ${value.icon}\"></span>";
                         result += value.value ? value.getI10n('value') : not_set
                     }
                     else {
                         result = value.value ? value.getI10n('value') : not_set
                     }
-                    break;
+                    break
                 default:
-                    if(value instanceof String){
-
-                    }else{
+                    if (! (value instanceof String)){
                         value = value.toString()
                     }
-                    def no_ws = value.replaceAll(' ','')
-
-                    result = message(code:"refdata.${no_ws}", default:"${value ?: not_set}")
+                    String no_ws = value.replaceAll(' ','')
+                    result = message(code: "refdata.${no_ws}", default: "${value ?: not_set}")
             }
         }
-        result;
+        result
     }
 
     private boolean isEditable (editable, overwrite) {

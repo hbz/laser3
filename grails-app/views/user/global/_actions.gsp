@@ -5,12 +5,12 @@
         <semui:actionsDropdownItem controller="user" action="create" message="user.create_new.label" />
     </semui:actionsDropdown>
 </g:if>
-<g:elseif test="${actionName == 'userList'}">
+<g:elseif test="${controllerName == 'myInstitution' && actionName == 'users'}">
     <semui:actionsDropdown>
         <semui:actionsDropdownItem controller="myInstitution" action="createUser" message="user.create_new.label" />
     </semui:actionsDropdown>
 </g:elseif>
-<g:elseif test="${actionName == 'users'}">
+<g:elseif test="${controllerName == 'organisation' && actionName == 'users'}">
     <semui:actionsDropdown>
         <semui:actionsDropdownItem controller="organisation" action="createUser" message="user.create_new.label" params="${[id:params.id]}"/>
     </semui:actionsDropdown>

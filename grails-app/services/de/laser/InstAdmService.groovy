@@ -16,6 +16,7 @@ class InstAdmService {
 
     GrailsApplication grailsApplication
     def accessService
+    def contextService
 
     def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
     def mailService = Holders.grailsApplication.mainContext.getBean('mailService')
@@ -23,10 +24,9 @@ class InstAdmService {
     boolean hasInstAdmin(Org org) {
         //selecting IDs is much more performant than whole objects
         List<Long> admins = User.executeQuery("select u.id from User u join u.affiliations uo join uo.formalRole role where " +
-                "uo.org = :org and role.authority = :role and uo.status = :approved and u.enabled = true",
+                "uo.org = :org and role.authority = :role and u.enabled = true",
                 [org: org,
-                 role: 'INST_ADM',
-                 approved: UserOrg.STATUS_APPROVED])
+                 role: 'INST_ADM'])
         admins.size() > 0
     }
 
@@ -65,10 +65,9 @@ class InstAdmService {
 
     boolean isUserLastInstAdminForOrg(User user, Org org){
 
-        List<UserOrg> userOrgs = UserOrg.findAllByOrgAndFormalRoleAndStatus(
+        List<UserOrg> userOrgs = UserOrg.findAllByOrgAndFormalRole(
                 org,
-                Role.findByAuthority("INST_ADM"),
-                UserOrg.STATUS_APPROVED
+                Role.findByAuthority("INST_ADM")
         )
 
         return (userOrgs.size() == 1 && userOrgs[0].user == user)
@@ -85,42 +84,40 @@ class InstAdmService {
 		roleAdmin || (instAdmin && orgMatch)
 	}
 
-    void createAffiliation(User user, Org org, Role formalRole, def uoStatus, def flash) {
+    void createAffiliation(User user, Org org, Role formalRole, def flash) {
 
         try {
-            def check = UserOrg.findByOrgAndUserAndFormalRole(org, user, formalRole)
+            Locale loc = LocaleContextHolder.getLocale()
+            UserOrg check = UserOrg.findByOrgAndUserAndFormalRole(org, user, formalRole)
+
+            if (formalRole.roleType == 'user') {
+                check = UserOrg.findByOrgAndUserAndFormalRoleInList(org, user, Role.findAllByRoleType('user'))
+            }
 
             if (check) {
-                flash?.error = messageSource.getMessage('profile.processJoinRequest.error', null, LocaleContextHolder.getLocale())
+                if (user == contextService.getUser()) {
+                    flash?.error = messageSource.getMessage('user.affiliation.request.error2', null, loc)
+                } else {
+                    flash?.error = messageSource.getMessage('user.affiliation.request.error1', null, loc)
+                }
             }
             else {
                 log.debug("Create new user_org entry....");
                 def uo = new UserOrg(
-                        dateRequested:System.currentTimeMillis(),
-                        status: uoStatus,
                         org: org,
                         user: user,
                         formalRole: formalRole)
 
-                if (uoStatus == UserOrg.STATUS_APPROVED) {
-                    uo.dateActioned = uo.dateRequested
-                }
                 if (uo.save()) {
-                    flash?.message = "Die neue Organisations-Zugehörigkeit wurde angelegt."
-
-                    if (uoStatus == UserOrg.STATUS_APPROVED) {
-                        // TODO: only send if manually approved
-                        //sendMail(uo.user, 'Änderung der Organisationszugehörigkeit',
-                        //        '/mailTemplates/text/newMembership', [userOrg: uo])
-                    }
+                    flash?.message = messageSource.getMessage('user.affiliation.request.success', null, loc)
                 }
                 else {
-                    flash?.error = "Die neue Organisations-Zugehörigkeit konnte nicht angelegt werden."
+                    flash?.error = messageSource.getMessage('user.affiliation.request.failed', null, loc)
                 }
             }
         }
         catch (Exception e) {
-            flash?.error = "Problem requesting affiliation"
+            flash?.error = messageSource.getMessage('user.affiliation.request.failed', null, loc)
         }
     }
 

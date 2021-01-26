@@ -51,7 +51,7 @@
                         id="${participantResult.participant.id}">
                     ${participantResult.participant.sortname}
                 </g:link>
-                <br />
+                <br/>
                 <g:link controller="organisation" action="show"
                         id="${participantResult.participant.id}">(${fieldValue(bean: participantResult.participant, field: "name")})</g:link>
 
@@ -121,7 +121,7 @@
             <g:if test="${multiYearTermTwoSurvey}">
                 <g:formatDate formatName="default.date.format.notime"
                               date="${participantResult.newSubPeriodTwoStartDate}"/>
-                <br />
+                <br/>
                 <g:formatDate formatName="default.date.format.notime"
                               date="${participantResult.newSubPeriodTwoEndDate}"/>
 
@@ -136,7 +136,7 @@
             <g:if test="${multiYearTermThreeSurvey}">
                 <g:formatDate formatName="default.date.format.notime"
                               date="${participantResult.newSubPeriodThreeStartDate}"/>
-                <br />
+                <br/>
                 <g:formatDate formatName="default.date.format.notime"
                               date="${participantResult.newSubPeriodThreeEndDate}"/>
 
@@ -182,7 +182,7 @@
 
                 <g:if test="${costItem}">
                     <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                       maxFractionDigits="2" type="number"/></strong>
+                                            maxFractionDigits="2" type="number"/></strong>
 
                     (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
                                      maxFractionDigits="2" type="number"/>)
@@ -198,7 +198,7 @@
                 </g:link>
 
                 <g:if test="${participantResult.sub}">
-                    <br />
+                    <br/>
                     <g:link controller="subscription" action="show" id="${participantResult.sub?.id}"
                             class="ui button icon"><i class="icon clipboard"></i></g:link>
                 </g:if>

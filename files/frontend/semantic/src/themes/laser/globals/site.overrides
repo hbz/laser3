@@ -1,6 +1,9 @@
 /*******************************
         Global Overrides
 *******************************/
+/*******************************
+        LATO Local Font
+*******************************/
 @font-face {
     font-family: 'Lato';
     src: url('../assets/fonts/LatoLatin-Regular.woff') format('woff');
@@ -25,6 +28,7 @@
     font-style: italic;
     font-weight: 700;
 }
+
 /*******************************
         PRINT
 *******************************/

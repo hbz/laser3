@@ -96,7 +96,7 @@
                 </td>
                 <td>
                     ${PropertyDefinition.getLocalizedValue(property.type)}
-                    <g:if test="${property.type == RefdataValue.CLASS}">
+                    <g:if test="${property.isRefdataValueType()}">
                         <g:set var="refdataValues" value="${[]}"/>
                         <g:each in="${RefdataCategory.getAllRefdataValues(property.refdataCategory)}"
                                 var="refdataValue">
@@ -218,7 +218,7 @@ $('#pd_descr').change(function() {
 
 $('#cust_prop_modal_select').change(function() {
 var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
-if( selectedText == "${RefdataValue.CLASS}") {
+if( selectedText == "${RefdataValue.class.name}") {
 $("#cust_prop_ref_data_name").show();
 
 var $pMatch = $( "p[data-prop-def-desc='" + $( "#pd_descr option:selected" ).val() + "']" )

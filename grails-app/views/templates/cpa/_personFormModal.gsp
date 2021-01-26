@@ -323,7 +323,7 @@
                     <div class="ui card">
                         <div class="content">
                             <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
-                            <h5 class="ui header">${message(code: 'org.properties.private')} ${contextOrg.name}</h5>
+                            <h2 class="ui header">${message(code: 'org.properties.private')} ${contextOrg.name}</h2>
                             <div id="${propertyWrapper}">
                                 <g:render template="/templates/properties/private" model="${[
                                         prop_desc       : PropertyDefinition.PRS_PROP,

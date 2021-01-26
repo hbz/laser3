@@ -97,7 +97,7 @@
                               ]"/>
                 </g:form>
             </semui:filter>
-
+            <br>
             <g:form action="processOpenParticipantsAgain" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
                 <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
@@ -134,15 +134,15 @@
                             it.type.id
                         }.sort { it.value[0].type.name }}" var="property">
                             <g:set var="surveyProperty" value="${PropertyDefinition.get(property.key)}"/>
-                            <semui:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}"
-                                                  property="surResult.${surveyProperty.getImplClassValueProperty()}, surResult.participant.sortname ASC">
+                            <g:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}"
+                                                  property="surResult.${surveyProperty.getImplClassValueProperty()}, surResult.participant.sortname ">
                                 <g:if test="${surveyProperty.getI10n('expl')}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                           data-content="${surveyProperty.getI10n('expl')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </g:if>
-                            </semui:sortableColumn>
+                            </g:sortableColumn>
                         </g:each>
                     </tr>
                     </thead>
@@ -334,15 +334,15 @@
                             it.type.id
                         }.sort { it.value[0].type.name }}" var="property">
                             <g:set var="surveyProperty" value="${PropertyDefinition.get(property.key)}"/>
-                            <semui:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}"
-                                                  property="surResult.${surveyProperty.getImplClassValueProperty()}, surResult.participant.sortname ASC">
+                            <g:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}"
+                                                  property="surResult.${surveyProperty.getImplClassValueProperty()}, surResult.participant.sortname ">
                                 <g:if test="${surveyProperty.getI10n('expl')}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                           data-content="${surveyProperty.getI10n('expl')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </g:if>
-                            </semui:sortableColumn>
+                            </g:sortableColumn>
                         </g:each>
                     </tr>
                     </thead>

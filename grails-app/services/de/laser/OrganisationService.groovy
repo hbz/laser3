@@ -191,61 +191,6 @@ class OrganisationService {
     }
 
     /**
-     * Fetches for the given user and context org the pending requests which is a map of lists with users having made a request to join the context org.
-     * Here is distinct between local INST_ADMins and global admins.
-     * @param user - the {@link User} requesting the requests
-     * @param ctxOrg - the context {@link Org} for
-     * @return a {@link Map} of structure [pendingRequests: {@link List}<{@link User}>,pendingRequestsForGivenInstAdmins:{@link List}<{@link User}>]
-     */
-    Map<String, Object> getPendingRequests(User user, Org ctxOrg) {
-
-        Map<String, Object> result = [
-                pendingRequests: [],
-                pendingRequestsForGivenInstAdmins: []
-                ]
-
-        if (!user || !ctxOrg) {
-            return result
-        }
-
-        if (!user.hasRole('ROLE_ADMIN')) {
-            // INST_ADM: contextOrg and combo referenced orgs
-
-            List<Org> orgList = Org.executeQuery('SELECT c.fromOrg from Combo c WHERE c.toOrg = :ctx', [ctx: ctxOrg])
-            orgList.add(ctxOrg)
-
-            result.pendingRequests = UserOrg.executeQuery(
-                    'SELECT uo FROM UserOrg uo WHERE uo.status = :status AND uo.org in (:orgList)',
-                    [status: UserOrg.STATUS_PENDING, orgList: orgList],
-                    [sort: 'dateRequested']
-            )
-        }
-        else {
-            // ROLE_ADMIN, ROLE_YODA
-
-            List<UserOrg> pendingRequests = UserOrg.findAllByStatus(UserOrg.STATUS_PENDING, [sort: 'dateRequested'])
-
-            pendingRequests.each { pr ->
-                def instAdmGiven = User.executeQuery(
-                        "SELECT admin FROM UserOrg uo JOIN uo.user admin " +
-                                "WHERE uo.org = :prOrg AND uo.formalRole = :instAdmRole AND uo.status = :frStatus", [
-                        prOrg      : pr.org,
-                        instAdmRole: Role.findByAuthorityAndRoleType('INST_ADM', 'user'),
-                        frStatus   : UserOrg.STATUS_APPROVED
-                ]
-                )
-                if (!instAdmGiven) {
-                    result.pendingRequests << pr
-                } else {
-                    result.pendingRequestsForGivenInstAdmins << pr
-                }
-            }
-        }
-
-        result
-    }
-
-    /**
      * Dumps the errors occurred during creation as an outputable string
      * @return the error list as a string joined by HTML line breaks for frontend display
      */
@@ -273,7 +218,7 @@ class OrganisationService {
                 OrgSetting.add(hbz,OrgSetting.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
                 grailsApplication.config.systemUsers.each { su ->
                     User admin = User.findByUsername(su.name)
-                    instAdmService.createAffiliation(admin,hbz,Role.findByAuthority('INST_ADM'),UserOrg.STATUS_APPROVED,null)
+                    instAdmService.createAffiliation(admin, hbz, Role.findByAuthority('INST_ADM'), null)
                     admin.getSetting(UserSetting.KEYS.DASHBOARD,hbz)
                 }
             }

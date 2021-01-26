@@ -241,8 +241,8 @@ class TaskService {
 
     private List<User> getUserDropdown(Org contextOrg) {
         List<User> validResponsibleUsers   = contextOrg ? User.executeQuery(
-                "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = :org and uo.status = :approved) order by lower(u.display)",
-                [org: contextOrg, approved: UserOrg.STATUS_APPROVED]) : []
+                "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = :org) order by lower(u.display)",
+                [org: contextOrg]) : []
 
         validResponsibleUsers
     }
@@ -433,8 +433,8 @@ class TaskService {
     Map<String, Object> getPreconditionsWithoutTargets(Org contextOrg) {
         Map<String, Object> result = [:]
         def validResponsibleUsers   = contextOrg ? User.executeQuery(
-                "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = :org and uo.status = :approved) order by lower(u.display)",
-                [org: contextOrg, approved: UserOrg.STATUS_APPROVED]) : []
+                "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = :org) order by lower(u.display)",
+                [org: contextOrg]) : []
         result.taskCreator          = contextService.getUser()
         result.validResponsibleUsers = validResponsibleUsers
         result

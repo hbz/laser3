@@ -647,7 +647,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                     </span>
 
                                     <g:link controller="myInstitution" action="currentSurveys"
-                                            params="${[name: '"'+hit.getSourceAsMap().name+'"']}">${hit.getSourceAsMap().name}</g:link>
+                                            params="${[name: '"'+hit.getSourceAsMap().name+'"', startDate: '"'+hit.getSourceAsMap().startDate+'"']}">${hit.getSourceAsMap().name}</g:link>
 
                                     <div class="ui grid">
                                         <div class="right aligned wide column">

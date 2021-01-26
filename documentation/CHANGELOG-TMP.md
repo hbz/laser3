@@ -7,6 +7,58 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3072    26.02.2021  dev     2.0         Andreas Bug         Links-Änderungen aus Pull Request #46 nachgezogen
+
+3072    25.01.2021  dev     2.0         Moe     Bug/Feature Umfrage-Bugs in 2.0 
+
+3071    25.01.2021  dev     2.0         Andreas Bug         Bugfixes in Meine Lizenzen pro Einrichtung
+
+3087    25.01.2021  dev     2.0         Andreas Bug         Beim Markieren eines Kostens als gelöscht wurden Fremdschlüssel nicht aufgehoben
+
+3086    22.01.2021  dev     2.0         Andreas Feature     Darstellung "Alle Pakete" angepasst
+
+3085    22.01.2021  dev     2.0         Andreas Feature     Darstellung verknüpfter Pakete angepasst
+
+3080    21.01.2021  dev     2.0         Andreas Bug         dreistufige Sortierung wieder eingeführt
+
+--      20.01.2021  dev     2.0         Andreas Feature     neue Filter Datum von/Datum bis für Finanzfilter
+
+3074    20.01.2021  dev     2.0         Andreas Feature     Akkordeon an richtiger Stelle aufklappen nach Merkmalsdefinitionserstellung
+
+3073    20.01.2021  dev     2.0         Andreas Bug         Lizenzgeber/Anbieter-Dropdown korrigiert
+
+3071    20.01.2021  dev     2.0         Andreas Feature     diverse Merkmalsverwaltungspunkte
+
+3071    20.01.2021  dev     2.0         Andreas Bug         Punkte zwei-sechs des Sammeltickets
+
+2498    19.01.2021  dev     2.0         Moe     Feature     Titelauswahlumfrage: Titel werden nicht von Konsortialstelle angenommen/akzeptiert
+
+3068    19.01.2021  dev     2.0         Moe     Feature     Statistik per System Flag deaktvieren/aktvieren
+
+3016    18.01.2021  dev     2.0         Moe     Feature     Mailtext Titelauswahl beendet
+
+3004    18.01.2021  dev     2.0         Moe     Feature     Falsche Titelzählung in Titel-Gruppen
+
+3005    18.01.2021  dev     2.0         Moe     Feature     Titelzuordnung zu Titel-Gruppen
+
+3007    18.01.2021  dev     2.0         Moe     Feature     Titel aus Titel-Gruppe entfernen
+
+2957    18.01.2021  dev     2.0         Moe     Feature     g:sortableColumn umwandeln in semui:sortableColumn
+
+2955    18.01.2021  dev     2.0         Moe     Feature     Umfrage Link bei Spotlight-Suche verbessern
+
+3047    18.01.2021  dev     2.0         Moe     Feature     Quelllizenz ist nicht gesetzt bei Elemente kopieren in andere Lizenz 
+
+3054    12.01.2021  rc1.6   1.6.7       Andreas Bug         Kontaktadressen konnten bei bestehenden Kontakten nicht bearbeitet werden
+
+--      12.01.2021  rc1.6   1.6.7       Andreas Feature     Rückverweise korrigiert auf neue Domain
+
+--      12.01.2021  rc1.6   1.6.7       Andreas Feature     Rückverweis im Menü angepasst
+
+--      12.01.2021  rc1.6   1.6.7       Andreas Bug         Paketverknüpfung neu priorisiert (d.h. zuerst LAS:eR, dann GOKb, falls Paket noch nicht übertragen)
+
+2764    12.01.2021  rc1.6   1.6.7       David   Bug         Sicherheitslücke
+
 --      14.12.2020  rc1.6   1.6.6       Andreas Feature     neues Verfahrensverzeichnis eingehängt
 
 3036    14.12.2020  rc1.6   1.6.6       Andreas Bug         Darstellungs- und Fallbackfehler bei Kosten behoben

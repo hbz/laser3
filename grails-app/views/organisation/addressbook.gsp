@@ -105,7 +105,6 @@ ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
             restrictToOrg : orgInstance,
             showContacts: true,
             showAddresses: true,
-            showAddresses: true,
             tmplConfigShow: ['lineNumber', 'name', 'function', 'position',  'showContacts', 'showAddresses']
     ]}"/>
 

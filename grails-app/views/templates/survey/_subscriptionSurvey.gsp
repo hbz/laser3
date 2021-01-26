@@ -414,7 +414,7 @@
                                 <g:set var="editable" value="${false}" scope="request"/>
                                 <g:set var="editable" value="${false}" scope="page"/>
                                 <g:render template="/subscription/properties" model="${[
-                                        subscription: subscription
+                                        subscription: subscription, calledFromSurvey: true
                                 ]}"/>
 
                             </div>
@@ -426,9 +426,9 @@
 
                         <div class="ui card">
                             <div class="content">
-                                <h5 class="ui header">
+                                <h2 class="ui header">
                                     <g:message code="license.plural"/>
-                                </h5>
+                                </h2>
 
                                 <g:if test="${links && links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}">
                                     <table class="ui fixed table">
@@ -829,12 +829,12 @@
             <div class="content">
                 <g:if test="${costItemSums.ownCosts}">
                     <g:if test="${(contextOrg.id != subscription.getConsortia()?.id && subscription.instanceOf) || !subscription.instanceOf}">
-                        <h5 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.ownCosts')}</h5>
+                        <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.ownCosts')}</h2>
                         <g:render template="/subscription/financials" model="[data: costItemSums.ownCosts]"/>
                     </g:if>
                 </g:if>
                 <g:if test="${costItemSums.consCosts}">
-                    <h5 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.consCosts')}</h5>
+                    <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.consCosts')}</h2>
                     <g:render template="/subscription/financials" model="[data: costItemSums.consCosts]"/>
                 </g:if>
             </div>
@@ -890,7 +890,7 @@
                     </td>
                     <td>
                         ${PropertyDefinition.getLocalizedValue(surveyProperty.surveyProperty.type)}
-                        <g:if test="${surveyProperty.surveyProperty.type == RefdataValue.CLASS}">
+                        <g:if test="${surveyProperty.surveyProperty.isRefdataValueType()}">
                             <g:set var="refdataValues" value="${[]}"/>
                             <g:each in="${RefdataCategory.getAllRefdataValues(surveyProperty.surveyProperty.refdataCategory)}"
                                     var="refdataValue">

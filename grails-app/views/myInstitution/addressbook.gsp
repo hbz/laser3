@@ -44,7 +44,7 @@
 
 <g:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'menu.institutions.myAddressbook')}
+<h1 class="ui left floated aligned icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'menu.institutions.myAddressbook')}
 <semui:totalNumber total="${num_visiblePersons}"/>
 </h1>
 

@@ -39,6 +39,20 @@
 
 <br />
 
+<h2 class="ui icon header la-clear-before la-noMargin-top">
+    <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
+        <i class="icon clipboard outline la-list-icon"></i>
+        <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
+            ${surveyConfig.subscription?.name}
+        </g:link>
+
+    </g:if>
+    <g:else>
+        ${surveyConfig.getConfigNameShort()}
+    </g:else>
+    : ${message(code: 'surveyTitlesEvaluation.label')}
+</h2>
+
 <div class="ui grid">
 
     <div class="sixteen wide stretched column">
@@ -65,12 +79,12 @@
 
                 <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="surveyEvaluation.participants"/><semui:totalNumber
                         total="${participantsFinish.size()}"/></h2>
-                <g:if test="${surveyInfo && surveyInfo.status?.id == RDStore.SURVEY_IN_EVALUATION.id}">
+                %{--<g:if test="${surveyInfo && surveyInfo.status?.id == RDStore.SURVEY_IN_EVALUATION.id}">
                                 <g:link controller="survey" action="completeIssueEntitlementsSurvey" id="${surveyConfig.id}"
                                         class="ui icon button right floated">
                                     <g:message code="completeIssueEntitlementsSurvey.forFinishParticipant.label"/>
                                 </g:link>
-                </g:if>
+                </g:if>--}%
                 <br />
                 <br />
                 <semui:form>

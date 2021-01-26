@@ -500,11 +500,20 @@
                                 </g:if>
                                 <td class="x">
                                     <g:if test="${editable}">
+                                        <g:if test="${subscription.ieGroups.size() > 0}">
+                                            <g:link action="removeEntitlementWithIEGroups" class="ui icon negative button"
+                                                    params="${[ieid: ie.id, sub: subscription.id]}"
+                                                    onClick="return confirm('${message(code: 'subscription.details.removeEntitlementWithIEGroups.confirm')}');">
+                                                <i class="trash alternate icon"></i>
+                                            </g:link>
+                                        </g:if>
+                                        <g:else>
                                         <g:link action="removeEntitlement" class="ui icon negative button"
                                                 params="${[ieid: ie.id, sub: subscription.id]}"
                                                 onClick="return confirm('${message(code: 'subscription.details.removeEntitlement.confirm')}');">
                                             <i class="trash alternate icon"></i>
                                         </g:link>
+                                        </g:else>
                                     </g:if>
                                 </td>
                             </tr>

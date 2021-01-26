@@ -75,8 +75,8 @@ class SemanticUiSubNavTagLib {
 
     def securedSubNavItem = { attrs, body ->
 
-        def (text, message) = SwissKnife.getTextAndMessage(attrs)
-        String linkBody = (text && message) ? text + " - " + message : text + message
+        def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
+        String linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
         String aClass = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         String tooltip = attrs.tooltip ?: ""
@@ -101,7 +101,10 @@ class SemanticUiSubNavTagLib {
             }
         }
         else {
-            out << '<div class="item disabled">' + linkBody + '</div>'
+            if (attrs.affiliation && contextService.getUser().hasAffiliation(attrs.affiliation)) {
+                out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="menuitem">' + linkBody + '</div>'
+            }
+            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'
         }
     }
 }

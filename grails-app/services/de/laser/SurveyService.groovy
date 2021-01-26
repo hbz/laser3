@@ -32,6 +32,7 @@ class SurveyService {
     GrailsApplication grailsApplication
     String replyTo
     GenericOIDService genericOIDService
+    SubscriptionService subscriptionService
 
     SimpleDateFormat formatter = DateUtils.getSDF_dmy()
     String from
@@ -270,8 +271,8 @@ class SurveyService {
                         row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
                         List licenseNames = []
-                        Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
-                            License l = (License) genericOIDService.resolveOID(li.source)
+                        Links.findAllByDestinationSubscriptionAndLinkType(subscription,RDStore.LINKTYPE_LICENSE).each { Links li ->
+                            License l = li.sourceLicense
                             licenseNames << l.reference
                         }
                         row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
@@ -346,8 +347,8 @@ class SurveyService {
                     row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
                     List licenseNames = []
-                    Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
-                        License l = (License) genericOIDService.resolveOID(li.source)
+                    Links.findAllByDestinationSubscriptionAndLinkType(genericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
+                        License l = (License) genericOIDService.resolveOID(li.sourceLicense)
                         licenseNames << l.reference
                     }
                     row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
@@ -604,7 +605,7 @@ class SurveyService {
         if(surveyInfo.owner)
         {
             //Only User that approved
-            List<UserOrg> userOrgs = UserOrg.findAllByOrgAndStatus(surveyInfo.owner, 1)
+            List<UserOrg> userOrgs = UserOrg.findAllByOrg(surveyInfo.owner)
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
@@ -734,9 +735,8 @@ class SurveyService {
                             row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
                             List licenseNames = []
-                            Links.findAllByDestinationAndLinkType(genericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
-                                License l = (License) genericOIDService.resolveOID(li.source)
-                                licenseNames << l.reference
+                            Links.findAllByDestinationSubscriptionAndLinkType(subscription,RDStore.LINKTYPE_LICENSE).each { Links li ->
+                                licenseNames << li.sourceLicense.reference
                             }
                             row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])
 
@@ -816,7 +816,7 @@ class SurveyService {
         if(orgs)
         {
             //Only User that approved
-            List<UserOrg> userOrgs = UserOrg.findAllByOrgInListAndStatus(orgs, 1)
+            List<UserOrg> userOrgs = UserOrg.findAllByOrgInList(orgs)
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
@@ -841,7 +841,7 @@ class SurveyService {
     def emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org, boolean reminderMail){
 
         //Only User that approved
-        List<UserOrg> userOrgs = UserOrg.findAllByOrgAndStatus(org, UserOrg.STATUS_APPROVED)
+        List<UserOrg> userOrgs = UserOrg.findAllByOrg(org)
 
         //Only User with Notification by Email and for Surveys Start
         userOrgs.each { userOrg ->

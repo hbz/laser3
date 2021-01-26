@@ -56,11 +56,6 @@ class UserService {
             queryParams.org = params.org
         }
 
-        if (params.status) {
-            whereQuery << 'uo.status = :status'
-            queryParams.status = params.status
-        }
-
         if (params.authority) {
             baseQuery.add('UserRole ur')
             whereQuery.add('ur.user = u and ur.role = :role')
@@ -102,7 +97,7 @@ class UserService {
             if (org && formalRole) {
                 def existingUserOrgs = UserOrg.findAllByOrgAndFormalRole(org, formalRole).size()
 
-                instAdmService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+                instAdmService.createAffiliation(user, org, formalRole, flash)
 
                 if (formalRole.authority == 'INST_ADM' && existingUserOrgs == 0 && ! org.legallyObligedBy) { // only if new instAdm
                     if (UserOrg.findByOrgAndUserAndFormalRole(org, user, formalRole)) { // only on success
@@ -125,7 +120,7 @@ class UserService {
         Role formalRole = Role.get(formalRoleId)
 
         if (user && org && formalRole) {
-            instAdmService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+            instAdmService.createAffiliation(user, org, formalRole, flash)
         }
     }
 
@@ -202,7 +197,7 @@ class UserService {
                         if (user && orgs[customerKey]) {
                             if (! user.hasAffiliationForForeignOrg(rightKey, orgs[customerKey])) {
 
-                                instAdmService.createAffiliation(user, orgs[customerKey], userRole, UserOrg.STATUS_APPROVED, null)
+                                instAdmService.createAffiliation(user, orgs[customerKey], userRole, null)
                                 user.getSetting(UserSetting.KEYS.DASHBOARD, orgs[customerKey])
                             }
                         }

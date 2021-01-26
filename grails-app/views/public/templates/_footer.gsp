@@ -99,19 +99,19 @@
                 <h2 class="ui inverted header">${message(code: 'landingpage.footer.3.head')}</h2>
                 <div class="ui inverted link list">
 
-                    <a target="_blank" class="item" href="https://github.com/hbz/laser/releases">
+                    <a target="_blank" class="item" href="https://github.com/hbz/laser2/releases">
                         Version: ${grailsApplication.metadata['info.app.version']}
                     </a>
 
-                    <g:if test="${grailsApplication.metadata['repository.revision.number']}">
-                        <a target="_blank" class="item" href="https://github.com/hbz/laser/tree/${grailsApplication.metadata['repository.branch']}">
-                            Branch: ${grailsApplication.metadata['repository.branch']}
+                    <g:if test="${grailsApplication.metadata['git.branch']}">
+                        <a target="_blank" class="item" href="https://github.com/hbz/laser2/tree/${grailsApplication.metadata['git.branch']}">
+                            Branch: ${grailsApplication.metadata['git.branch']}
                         </a>
                     </g:if>
 
                     <div class="item">
-                        <g:if test="${grailsApplication.metadata['repository.revision.number']}">
-                            <a target="_blank" class="item" href="https://github.com/hbz/laser/tree/${grailsApplication.metadata['repository.revision.number']}">
+                        <g:if test="${grailsApplication.metadata['git.commit.id']}">
+                            <a target="_blank" class="item" href="https://github.com/hbz/laser2/tree/${grailsApplication.metadata['git.commit.id']}">
                                 Build: ${grailsApplication.metadata['info.app.build.date']}
                             </a>
                         </g:if>

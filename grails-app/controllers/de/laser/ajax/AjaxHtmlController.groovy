@@ -152,18 +152,6 @@ class AjaxHtmlController {
         Map<String,Object> result = [subscription:Subscription.get(params.subscription), curatoryGroups: []], packageMetadata
         Org contextOrg = contextService.getOrg()
         result.contextCustomerType = contextOrg.getCustomerType()
-        ApiSource api = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true) //it is not intended to use several api sources, we take the first one
-        result.subscription.packages.each { SubscriptionPackage sp ->
-            packageMetadata = gokbService.geElasticsearchFindings(api.baseUrl+api.fixToken, "&uuid=${sp.pkg.gokbId}", "Package", null, 1)
-            result.link = api.editUrl+"/resource/show/"
-            if(packageMetadata.warning)
-                packageMetadata = packageMetadata.warning
-            else if(packageMetadata.info)
-                packageMetadata = packageMetadata.info
-            if (packageMetadata.records.size() > 0) {
-                result.curatoryGroups.addAll(packageMetadata.records.get(0).curatoryGroups)
-            }
-        }
         result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]) }
         result.roleObject = result.subscription
         result.roleRespValue = 'Specific subscription editor'
@@ -178,16 +166,14 @@ class AjaxHtmlController {
         User user = contextService.getUser()
         if(params.subscription) {
             Subscription subscription = Subscription.get(params.subscription)
-            render template: "/subscription/properties", model: [calledFrom: 'subscription',
-                                                                 subscription: subscription,
+            render template: "/subscription/properties", model: [subscription: subscription,
                                                                  showConsortiaFunctions: subscriptionService.showConsortiaFunctions(contextOrg, subscription),
                                                                  contextOrg: contextOrg,
                                                                  editable: subscription.isEditableBy(user)]
         }
         else if(params.license) {
             License license = License.get(params.license)
-            render template: "/license/properties", model: [calledFrom: 'license',
-                                                            license: license,
+            render template: "/license/properties", model: [license: license,
                                                             showConsortiaFunctions: licenseControllerService.showConsortiaFunctions(license),
                                                             contextOrg: contextOrg,
                                                             institution: contextOrg,
@@ -418,5 +404,14 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def addressFields() {
         render template: "/templates/cpa/addressFields", model: [multipleAddresses: params.multipleAddresses]
+    }
+
+    @Secured(['ROLE_USER'])
+    def getLicensePropertiesForSubscription() {
+        License loadFor = License.get(params.loadFor)
+        if (loadFor) {
+            Map<String, Object> derivedPropDefGroups = loadFor.getCalculatedPropDefGroups(contextService.org)
+            render view: '/subscription/_licProp', model: [license: loadFor, derivedPropDefGroups: derivedPropDefGroups, linkId: params.linkId]
+        }
     }
 }

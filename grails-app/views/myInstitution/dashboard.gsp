@@ -257,32 +257,36 @@
 
             <g:message code="profile.dashboardSysAnnTimeWindow"
                        args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
-
-            <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
-                <g:each in="${systemAnnouncements}" var="sa">
-                    <div class="item">
-
-                        <div class="ui internally celled grid">
-                            <div class="row">
-                                <div class="two wide column">
-                                    <g:formatDate date="${sa.lastPublishingDate}" formatName="default.date.format.noZ"/>
-                                </div><!-- .column -->
-                                <div class="fourteen wide column">
-
-                                    <div class="header" style="margin:0 0 1em 0">
-                                        <% print sa.title; /* avoid auto encodeAsHTML() */ %>
-                                    </div>
-                                    <div>
-                                        <div class="widget-content"><% print sa.content; /* avoid auto encodeAsHTML() */ %></div>
-                                    </div>
-
-                                </div><!-- .column -->
-                            </div><!-- .row -->
+            <g:if test="${systemAnnouncements.size() > 0 }">
+                <div class="ui segment la-dateAnnounceSegment">
+                    <div class="la-dateAnnounceGrid">
+                        <div class="ui grid stackable">
+                            <g:each in="${systemAnnouncements}" var="sa">
+                                <div class="row">
+                                    <div class="one wide column">
+                                        <i class="arrow alternate circle right outline large icon"></i>
+                                    </div><!-- .column -->
+                                    <div class="two wide column">
+                                        <h2 class="ui header">
+                                            <g:formatDate date="${sa.lastPublishingDate}" formatName="default.date.format.notime"/>
+                                        </h2>
+                                        <g:formatDate date="${sa.lastPublishingDate}" formatName="default.date.format.onlytime"/>
+                                    </div><!-- .column -->
+                                    <div class="one wide column">
+                                        <i class="arrow right small icon"></i>
+                                    </div><!-- .column -->
+                                    <div class="twelve wide column">
+                                        <h2 class="ui header">
+                                            <% print sa.title; /* avoid auto encodeAsHTML() */ %>
+                                        </h2>
+                                        <% print sa.content; /* avoid auto encodeAsHTML() */ %>
+                                    </div><!-- .column -->
+                                </div><!-- .row -->
+                            </g:each>
                         </div><!-- .grid -->
-
                     </div>
-                </g:each>
-            </div>
+                </div>
+            </g:if>
         </div>
 
         <%--<div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active':''}" data-tab="news">

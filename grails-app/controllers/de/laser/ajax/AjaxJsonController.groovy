@@ -2,6 +2,7 @@ package de.laser.ajax
 
 import de.laser.IssueEntitlement
 import de.laser.License
+import de.laser.auth.Role
 import de.laser.properties.LicenseProperty
 import de.laser.Org
 import de.laser.properties.OrgProperty
@@ -474,6 +475,18 @@ class AjaxJsonController {
     }
 
     @Secured(['ROLE_USER'])
+    def lookupRoles() {
+        List result = []
+        List<Role> roles = params.type ? Role.findAllByRoleType(params.type.toLowerCase()) :  Role.findAll()
+
+        roles.each { r ->
+            result.add([text: message(code:'cv.roles.' + r.authority), key: "${r.getI10n('authority')}", value: "${r.class.name}:${r.id}"])
+        }
+
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
     def lookupSubscriptions() {
         render controlledListService.getSubscriptions(params) as JSON
     }
@@ -591,8 +604,7 @@ class AjaxJsonController {
         Map<String, Object> result = [result: false]
 
         if (params.input) {
-            List<User> checkList = User.executeQuery("select u from User u where u.username = lower(:searchTerm)", [searchTerm:params.input])
-            result.result = checkList.size() > 0
+            result.result = null != User.findByUsernameIlike(params.input)
         }
         render result as JSON
     }

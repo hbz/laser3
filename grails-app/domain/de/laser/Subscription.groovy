@@ -377,8 +377,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     Set<License> getLicenses() {
         Set<License> result = []
-        Links.findAllByDestinationAndLinkType(genericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
-            result << genericOIDService.resolveOID(l.source)
+        Links.findAllByDestinationSubscriptionAndLinkType(this,RDStore.LINKTYPE_LICENSE).each { l ->
+            result << l.sourceLicense
         }
         result
     }
@@ -421,7 +421,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     Org getConsortia() {
-        Org result = orgRelations.find { OrgRole oo -> oo.roleType == RDStore.OR_SUBSCRIPTION_CONSORTIA }.org
+        Org result = orgRelations.find { OrgRole oo -> oo.roleType == RDStore.OR_SUBSCRIPTION_CONSORTIA }?.org //null check necessary because of single users!
         result
     }
 

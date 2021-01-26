@@ -81,6 +81,9 @@ class ConfigUtils {
     static boolean getShowSystemInfo(boolean validate = false) {
         readConfig('showSystemInfo', validate)
     }
+    static boolean getShowStatsInfo(boolean validate = false) {
+        readConfig('showStatsInfo', validate)
+    }
     static String getStatsApiUrl(boolean validate = false) {
         readConfig('statsApiUrl', validate)
     }

@@ -52,7 +52,7 @@
 <semui:form>
 
     <semui:filter>
-        <g:form action="surveyEvaluation" method="post" class="ui form"
+        <g:form action="${actionName}" method="post" class="ui form"
                 params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
             <g:render template="/templates/filter/orgFilter"
                       model="[
@@ -62,6 +62,7 @@
         </g:form>
     </semui:filter>
 
+    <br>
     <g:form action="processTransferParticipants" controller="survey" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
 
@@ -103,15 +104,15 @@
                     it.type.id
                 }.sort { it.value[0].type.name }}" var="property">
                     <g:set var="surveyProperty" value="${PropertyDefinition.get(property.key)}"/>
-                    <semui:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}"
-                                          property="surResult.${surveyProperty.getImplClassValueProperty()}, surResult.participant.sortname ASC">
+                    <g:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}"
+                                          property="surResult.${surveyProperty.getImplClassValueProperty()}, surResult.participant.sortname ">
                         <g:if test="${surveyProperty.getI10n('expl')}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${surveyProperty.getI10n('expl')}">
                                 <i class="question circle icon"></i>
                             </span>
                         </g:if>
-                    </semui:sortableColumn>
+                    </g:sortableColumn>
                 </g:each>
                 <th>${message(code: 'surveyResult.commentOnlyForOwner')}
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
@@ -304,15 +305,15 @@
                     it.type.id
                 }.sort { it.value[0].type.name }}" var="property">
                     <g:set var="surveyProperty" value="${PropertyDefinition.get(property.key)}"/>
-                    <semui:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}"
-                                          property="surResult.${surveyProperty.getImplClassValueProperty()}, surResult.participant.sortname ASC">
+                    <g:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}"
+                                          property="surResult.${surveyProperty.getImplClassValueProperty()}, surResult.participant.sortname ">
                         <g:if test="${surveyProperty.getI10n('expl')}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${surveyProperty.getI10n('expl')}">
                                 <i class="question circle icon"></i>
                             </span>
                         </g:if>
-                    </semui:sortableColumn>
+                    </g:sortableColumn>
                 </g:each>
                 <th>${message(code: 'surveyResult.commentOnlyForOwner')}
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"

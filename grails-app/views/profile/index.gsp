@@ -502,7 +502,7 @@
                             <g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser')} team for support." />
                         </p>
 
-                        <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, tmplProfile: true]" />
+                        <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, tmplProfile: true]" />
                     </div><!-- .content -->
                 </div><!-- .card -->
 

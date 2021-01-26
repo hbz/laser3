@@ -8,15 +8,13 @@
         <tr>
             <th>${message(code: 'profile.membership.org')}</th>
             <th>${message(code: 'profile.membership.role')}</th>
-            <th>${message(code: 'default.status.label')}</th>
-            <th>${message(code: 'profile.membership.date')}</th>
-            <g:if test="${tmplUserEdit}">
+            <th>${message(code: 'profile.membership.dates')}</th>
+            <g:if test="${tmplUserEdit && editor.hasRole('ROLE_ADMIN')}">
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </g:if>
         </tr>
         </thead>
         <tbody>
-
         <%
             int affiCount = 0
             List comboOrgIds = []
@@ -35,41 +33,40 @@
                         <g:link controller="organisation" action="show" id="${aff.org.id}">${aff.org.name}</g:link>
                     </td>
                     <td>
-                        <g:message code="cv.roles.${aff.formalRole?.authority}"/>
+                        <%
+                            boolean check = tmplUserEdit &&
+                                (editor.hasRole('ROLE_ADMIN') || (aff.org.id == contextService.getOrg().id) || (aff.org.id in comboOrgIds)) &&
+                                ! instAdmService.isUserLastInstAdminForOrg(userInstance, aff.org)
+                        %>
+                        <g:if test="${check}">
+                            <semui:xEditableRole owner="${aff}" field="formalRole" type="user" />
+                        </g:if>
+                        <g:else>
+                            <g:message code="cv.roles.${aff.formalRole?.authority}"/>
+                        </g:else>
                     </td>
                     <td>
-                        <g:message code="cv.membership.status.${aff.status}"/>
-                    </td>
-                    <td>
-                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${aff.dateRequested}"/>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${aff.dateCreated}"/>
                         /
-                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${aff.dateActioned}"/>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${aff.lastUpdated}"/>
                     </td>
-
-                        %{--<g:if test="${tmplProfile}">
-                            <td class="x">
-                            <g:link class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:aff.id]}">${message(code:'default.button.revoke.label')}</g:link>
-                            </td>
-                        </g:if>--}%
-                        <g:if test="${tmplUserEdit}">
-                            <td class="x">
-                            <g:if test="${(editor.hasRole('ROLE_ADMIN') || (aff.org.id == contextService.getOrg().id) || (aff.org.id in comboOrgIds))}">
-                                <g:if test="${!instAdmService.isUserLastInstAdminForOrg(userInstance, aff.org) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                    <g:if test="${tmplUserEdit && editor.hasRole('ROLE_ADMIN')}">
+                        <td class="x">
+                                <g:if test="${! instAdmService.isUserLastInstAdminForOrg(userInstance, aff.org)}">
                                     <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${userInstance.class.name}:${userInstance.id}",contextProperty:"affiliations",targetOid:"${aff.class.name}:${aff.id}"]}'
                                             class="ui icon negative button">
-                                        <i class="trash alternate icon"></i>
+                                        <i class="unlink icon"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg', args: [userInstance.getDisplayName()])}">
+                                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg2', args: [userInstance.getDisplayName()])}">
                                         <button class="ui icon negative button" disabled="disabled">
-                                            <i class="trash alternate icon"></i>
+                                            <i class="unlink icon"></i>
                                         </button>
                                     </span>
                                 </g:else>
-                            </g:if>
-                            </td>
-                        </g:if>
+                        </td>
+                    </g:if>
                 </tr>
             </g:if>
         </g:each>

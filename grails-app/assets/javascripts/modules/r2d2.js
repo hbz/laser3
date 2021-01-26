@@ -418,7 +418,7 @@ r2d2 = {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                 },
                 detachable: true,
-                autofocus: false,
+                autofocus: true,
                 closable: false,
                 transition: 'scale',
                 onApprove : function() {
@@ -427,9 +427,24 @@ r2d2 = {
                 },
                 onShow : function() {
                     var modalCallbackFunction = JSPC.callbacks.modal.show[$(this).attr('id')];
+                    a11yModal.go({
+                        el: document.getElementById($(this).attr('id')),
+                        focusElement: '',
+                        escCallback:''
+                    });
+                    keyboardHandler = function (e) {
+                        if (e.keyCode === 27) {
+                            $(this).modal('hide');
+                        }
+                    }
+                    this.addEventListener('keyup', keyboardHandler);
                     if (typeof modalCallbackFunction === "function") {
                         modalCallbackFunction(triggerElement)
                     }
+
+                },
+                onHide : function() {
+                    this.removeEventListener('keyup', keyboardHandler);
                 }
             }).modal('show')
         });
@@ -463,6 +478,13 @@ r2d2 = {
             selectOnKeydown: false,
             clearable: true,
         });
+        // all dropdowns but dropdowns la-not-clearable
+        $(ctxSel + ' .ui.dropdown.la-not-clearable').dropdown({
+            selectOnKeydown: false,
+            clearable: false
+        });
+
+
         // all search dropdowns but la-not-clearable at user/create view
         // search dropdown
         $(ctxSel + ' .ui.search.dropdown').not('.la-not-clearable').dropdown({
@@ -601,7 +623,12 @@ r2d2 = {
                 $('.tiny.modal')
                     .modal({
                         onShow : function() {
-                            keyboardHandler = function keyboardHandler(e) {
+                            a11yModal.go({
+                                el: document.getElementById($(this).attr('id')),
+                                focusElement: '',
+                                escCallback:''
+                            });
+                            keyboardHandler = function (e) {
                                 if (e.keyCode === 27) {
                                     $(this).modal('hide');
                                 }

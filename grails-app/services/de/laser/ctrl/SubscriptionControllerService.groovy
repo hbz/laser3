@@ -148,58 +148,58 @@ class SubscriptionControllerService {
                 }
             }
             //}
-            pu.setBenchmark('usage')
-            // TODO: experimental asynchronous task
-            //def task_usage = task {
-            // usage
-            pu.setBenchmark('before platform query')
-            Set suppliers = Platform.executeQuery('select plat.id from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.subscription = :sub',[sub:result.subscription])
-            if (suppliers.size() > 1) {
-                log.debug('Found different content platforms for this subscription, cannot show usage')
-            }
-            else {
-                pu.setBenchmark('before loading platform')
-                Long supplier_id = suppliers[0]
-                PlatformProperty platform = PlatformProperty.executeQuery('select pp from PlatformProperty pp join pp.type pd where pp.owner.id = :owner and pd.name = :name and pd.descr = :descr',[owner:supplier_id,name:'NatStat Supplied ID',descr:PropertyDefinition.PLA_PROP])
-                //        PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
-                pu.setBenchmark('before institutional usage identifier')
-                result.natStatSupplierId = platform?.stringValue ?: null
-                if (result.institutional_usage_identifier != OrgSetting.SETTING_NOT_FOUND) {
-                    pu.setBenchmark('before usage data')
-                    def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscription)
-                    pu.setBenchmark('before usage data sub period')
-                    def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscription)
-                    Set<RefdataValue> holdingTypes = RefdataValue.executeQuery('select ti.medium from IssueEntitlement ie join ie.tipp tipp join tipp.title ti where ie.subscription = :context',[context:result.subscription])
-                    if (!holdingTypes) {
-                        log.debug('No types found, maybe there are no issue entitlements linked to subscription')
-                    } else if (holdingTypes.size() > 1) {
-                        log.info('Different content type for this license, cannot calculate Cost Per Use.')
-                    } else if (!fsLicenseResult.isEmpty() && result.subscription.startDate) {
-                        def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')*.last()
-                        pu.setBenchmark('before total cost per use')
-                        def costPerUseMetricValuePair = factService.getTotalCostPerUse(result.subscription, holdingTypes.first(), existingReportMetrics)
-                        if (costPerUseMetricValuePair) {
-                            result.costPerUseMetric = costPerUseMetricValuePair[0]
-                            result.totalCostPerUse = costPerUseMetricValuePair[1]
-                            result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
+            if(ConfigUtils.getShowStatsInfo()) {
+                pu.setBenchmark('usage')
+                // TODO: experimental asynchronous task
+                //def task_usage = task {
+                // usage
+                pu.setBenchmark('before platform query')
+                Set suppliers = Platform.executeQuery('select plat.id from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.subscription = :sub', [sub: result.subscription])
+                if (suppliers.size() > 1) {
+                    log.debug('Found different content platforms for this subscription, cannot show usage')
+                } else {
+                    pu.setBenchmark('before loading platform')
+                    Long supplier_id = suppliers[0]
+                    PlatformProperty platform = PlatformProperty.executeQuery('select pp from PlatformProperty pp join pp.type pd where pp.owner.id = :owner and pd.name = :name and pd.descr = :descr', [owner: supplier_id, name: 'NatStat Supplied ID', descr: PropertyDefinition.PLA_PROP])
+                    //        PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
+                    pu.setBenchmark('before institutional usage identifier')
+                    result.natStatSupplierId = platform?.stringValue ?: null
+                    if (result.institutional_usage_identifier != OrgSetting.SETTING_NOT_FOUND) {
+                        pu.setBenchmark('before usage data')
+                        def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscription)
+                        pu.setBenchmark('before usage data sub period')
+                        def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscription)
+                        Set<RefdataValue> holdingTypes = RefdataValue.executeQuery('select ti.medium from IssueEntitlement ie join ie.tipp tipp join tipp.title ti where ie.subscription = :context', [context: result.subscription])
+                        if (!holdingTypes) {
+                            log.debug('No types found, maybe there are no issue entitlements linked to subscription')
+                        } else if (holdingTypes.size() > 1) {
+                            log.info('Different content type for this license, cannot calculate Cost Per Use.')
+                        } else if (!fsLicenseResult.isEmpty() && result.subscription.startDate) {
+                            def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')*.last()
+                            pu.setBenchmark('before total cost per use')
+                            def costPerUseMetricValuePair = factService.getTotalCostPerUse(result.subscription, holdingTypes.first(), existingReportMetrics)
+                            if (costPerUseMetricValuePair) {
+                                result.costPerUseMetric = costPerUseMetricValuePair[0]
+                                result.totalCostPerUse = costPerUseMetricValuePair[1]
+                                result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
+                            }
                         }
-                    }
-                    result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-                    if(result.statsWibid && result.natStatSupplierId) {
-                        result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
-                        result.usage = fsresult?.usage
-                        result.missingMonths = fsresult?.missingMonths
-                        result.missingSubscriptionMonths = fsLicenseResult?.missingMonths
-                        result.x_axis_labels = fsresult?.x_axis_labels
-                        result.y_axis_labels = fsresult?.y_axis_labels
-                        result.lusage = fsLicenseResult?.usage
-                        pu.setBenchmark('before last usage period for report type')
-                        result.lastUsagePeriodForReportType = factService.getLastUsagePeriodForReportType(result.natStatSupplierId, result.statsWibid)
-                        result.l_x_axis_labels = fsLicenseResult?.x_axis_labelsresult.l_y_axis_labels = fsLicenseResult?.y_axis_labels
-                    }
+                        result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
+                        if (result.statsWibid && result.natStatSupplierId) {
+                            result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
+                            result.usage = fsresult?.usage
+                            result.missingMonths = fsresult?.missingMonths
+                            result.missingSubscriptionMonths = fsLicenseResult?.missingMonths
+                            result.x_axis_labels = fsresult?.x_axis_labels
+                            result.y_axis_labels = fsresult?.y_axis_labels
+                            result.lusage = fsLicenseResult?.usage
+                            pu.setBenchmark('before last usage period for report type')
+                            result.lastUsagePeriodForReportType = factService.getLastUsagePeriodForReportType(result.natStatSupplierId, result.statsWibid)
+                            result.l_x_axis_labels = fsLicenseResult?.x_axis_labelsresult.l_y_axis_labels = fsLicenseResult?.y_axis_labels
+                        }
+                    } else
+                        log.info('institutional usage identifier not available')
                 }
-                else
-                    log.info('institutional usage identifier not available')
             }
             //}
             pu.setBenchmark('costs')
@@ -1161,13 +1161,13 @@ class SubscriptionControllerService {
                 log.debug("linkPackage. Global Record Source URL: " +source.baseUrl)
                 globalSourceSyncService.source = source
                 String addType = params.addType
-                GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord', metadataPrefix:'gokb', identifier:params.addUUID])
-                if(packageRecord && packageRecord.record?.header?.status?.text() != 'deleted') {
-                    result.packageName = packageRecord.record.metadata.gokb.package.name
-                    if(!Package.findByGokbId(pkgUUID)) {
-                        executorService.execute({
-                            Thread.currentThread().setName("PackageSync_"+result.subscription.id)
-                            try {
+                if(!Package.findByGokbId(pkgUUID)) {
+                    executorService.execute({
+                        Thread.currentThread().setName("PackageSync_"+result.subscription.id)
+                        try {
+                            GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord', metadataPrefix:'gokb', identifier:params.addUUID])
+                            if(packageRecord && packageRecord.record?.header?.status?.text() != 'deleted') {
+                                result.packageName = packageRecord.record.metadata.gokb.package.name
                                 globalSourceSyncService.defineMapFields()
                                 globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
                                 globalSourceSyncService.createOrUpdatePackageOAI(packageRecord.record.metadata.gokb.package)
@@ -1180,25 +1180,22 @@ class SubscriptionControllerService {
                                     pkgToLink.addToSubscription(result.subscription, false)
                                 }
                             }
-                            catch (Exception e) {
-                                log.error("sync job has failed, please consult stacktrace as follows: ")
-                                e.printStackTrace()
-                            }
-                        })
-                    }
-                    else {
-                        Package pkgToLink = Package.findByGokbId(pkgUUID)
-                        log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                        if (addType == 'With') {
-                            pkgToLink.addToSubscription(result.subscription, true)
                         }
-                        else if (addType == 'Without') {
-                            pkgToLink.addToSubscription(result.subscription, false)
+                        catch (Exception e) {
+                            log.error("sync job has failed, please consult stacktrace as follows: ")
+                            e.printStackTrace()
                         }
-                    }
+                    })
                 }
                 else {
-                    result.error = messageSource.getMessage('subscription.details.link.packageNotFound',null,locale)
+                    Package pkgToLink = Package.findByGokbId(pkgUUID)
+                    log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
+                    if (addType == 'With') {
+                        pkgToLink.addToSubscription(result.subscription, true)
+                    }
+                    else if (addType == 'Without') {
+                        pkgToLink.addToSubscription(result.subscription, false)
+                    }
                 }
             }
             if (result.subscription.packages) {
@@ -1770,6 +1767,25 @@ class SubscriptionControllerService {
         else [result:null,status:STATUS_ERROR]
     }
 
+    Map<String,Object> removeEntitlementWithIEGroups(GrailsParameterMap params) {
+        IssueEntitlement ie = IssueEntitlement.get(params.ieid)
+        RefdataValue oldStatus = ie.status
+        ie.status = RDStore.TIPP_STATUS_DELETED
+        if(ie.save()){
+            if(IssueEntitlementGroupItem.executeUpdate("delete from IssueEntitlementGroupItem iegi where iegi.ie = :ie", [ie: ie]))
+            {
+                return [result:null,status:STATUS_OK]
+            }else {
+                ie.status = oldStatus
+                ie.save()
+                return [result:null,status:STATUS_ERROR]
+            }
+        }
+        else {
+            return [result:null,status:STATUS_ERROR]
+        }
+    }
+
     Map<String,Object> processAddEntitlements(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if (!result) {
@@ -1855,7 +1871,7 @@ class SubscriptionControllerService {
                         }
                         if (params.titleGroup && (params.titleGroup.trim().length() > 0)) {
                             IssueEntitlementGroup entitlementGroup = IssueEntitlementGroup.get(Long.parseLong(params.titleGroup))
-                            if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie)){
+                            if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie) && !IssueEntitlementGroupItem.findByIe(ie)){
                                 IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                         ie: ie,
                                         ieGroup: entitlementGroup)
@@ -1961,7 +1977,7 @@ class SubscriptionControllerService {
                     }
                     params.list('titleGroup').each {
                         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.get(it)
-                        if(issueEntitlementGroup && !IssueEntitlementGroupItem.findByIeAndIeGroup(result.ie, issueEntitlementGroup)) {
+                        if(issueEntitlementGroup && !IssueEntitlementGroupItem.findByIeAndIeGroup(result.ie, issueEntitlementGroup) && !IssueEntitlementGroupItem.findByIe(result.ie)) {
                             IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(ie: result.ie, ieGroup: issueEntitlementGroup)
                             if (!issueEntitlementGroupItem.save()) {
                                 log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
@@ -2350,7 +2366,7 @@ class SubscriptionControllerService {
             result.subscriptionConsortia = result.subscription.getConsortia()
             result.licenses = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription, RDStore.LINKTYPE_LICENSE).collect { Links li -> li.sourceLicense }
             LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.subscription)
-            result.hasPrevious = links.prevLink.size() > 0
+            result.hasNext = links.nextLink.size() > 0
             result.navPrevSubscription = links.prevLink
             result.navNextSubscription = links.nextLink
             if(result.subscription.instanceOf)

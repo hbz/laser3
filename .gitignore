@@ -7,6 +7,7 @@
 *.iws
 .project
 .settings
+git.properties
 Thumbs.db
 build/
 logs/

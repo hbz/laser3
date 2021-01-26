@@ -21,7 +21,6 @@ $(function () {
     tooltip.go();
     a11yMenu.go();
     a11yIcon.go();
-    a11yModal.go();
 
     $('main.ui.main').removeClass('hidden');
 })

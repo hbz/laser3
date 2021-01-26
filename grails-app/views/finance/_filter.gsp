@@ -227,7 +227,22 @@
                     <semui:datepicker label="financials.paid_to" id="filterCIPaidTo" name="filterCIPaidTo" placeholder="filter.placeholder" value="${filterPresets?.filterCIPaidTo}"/>
                 </div>
             </div>
+            <div class="three fields">
 
+                <div class="field">
+                    <semui:datepicker label="financials.dateFrom" id="filterCIDateFrom" name="filterCIDateFrom" placeholder="filter.placeholder" value="${filterPresets?.filterCIDateFrom}"/>
+                </div>
+
+                <div class="field">
+                    <semui:datepicker label="financials.dateTo" id="filterCIDateTo" name="filterCIDateTo" placeholder="filter.placeholder" value="${filterPresets?.filterCIDateTo}"/>
+                </div>
+                <div class="field">
+                    <div class="ui checkbox">
+                        <label for="filterCIUnpaid"><g:message code="financials.costItemUnpaid"/></label>
+                        <input id="filterCIUnpaid" name="filterCIUnpaid" type="checkbox" value="true" <g:if test="${params.filterCIUnpaid}">checked="checked"</g:if>>
+                    </div>
+                </div>
+            </div>
             <div class="three fields">
                 <div class="field">
                     <label for="filterCITaxType"><g:message code="financials.newCosts.taxTypeAndRate"/></label>
@@ -250,10 +265,14 @@
                               noSelection="${['':message(code:'default.select.all.label')]}"/>
                 </div>
                 <div class="field">
-                    <div class="ui checkbox">
-                        <label for="filterCIUnpaid"><g:message code="financials.costItemUnpaid"/></label>
-                        <input id="filterCIUnpaid" name="filterCIUnpaid" type="checkbox" value="true" <g:if test="${params.filterCIUnpaid}">checked="checked"</g:if>>
-                    </div>
+                    <label for="filterCICurrency"><g:message code="financials.currency"/></label>
+                    <g:select id="filterCICurrency" class="ui dropdown selection search"
+                              name="filterCICurrency"
+                              from="${currenciesList}"
+                              optionKey="${{it.id}}"
+                              optionValue="${{it.text}}"
+                              value="${filterPresets?.filterCICurrency?.id}"
+                              noSelection="${['':message(code:'default.select.all.label')]}"/>
                 </div>
                 <div class="field la-field-right-aligned">
                     <a href="${request.forwardURI}?reset=true" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>

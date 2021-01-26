@@ -11,12 +11,18 @@
         <div class="fields" style="justify-content: flex-end;">
             <div class="eight wide field">
                 <label>${message(code: 'copyElementsIntoObject.sourceObject.name', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}:</label>
-                <g:select class="ui search selection dropdown"
+                <g:if test="${sourceObject}">
+                    <g:hiddenField name="sourceObjectId" value="${genericOIDService.getOID(sourceObject)}"/>
+                    <input type="text" name="readonlyFeld" value="${sourceObject.dropdownNamingConvention()}" disabled/>
+                </g:if>
+                <g:else>
+                    <g:select class="ui search dropdown"
                           name="sourceObjectId"
                           from="${((List<Object>) allObjects_readRights)?.sort { it.dropdownNamingConvention() }}"
                           optionValue="${{ it.dropdownNamingConvention() }}"
                           optionKey="${{ genericOIDService.getOID(it) }}"
                           value="${genericOIDService.getOID(sourceObject)}"/>
+                </g:else>
             </div>
 
             <div class="eight wide field">
@@ -78,7 +84,7 @@
                     <br />
                 </g:if>
                 <g:if test="${sourceObject instanceof SurveyConfig}">
-                    <g:select class="ui search selection dropdown"
+                    <g:select class="ui search dropdown"
                               name="targetObjectId"
                               from="${((List<Object>) allObjects_writeRights)?.sort { it.dropdownNamingConvention() }}"
                               optionValue="${{ it.dropdownNamingConvention() }}"

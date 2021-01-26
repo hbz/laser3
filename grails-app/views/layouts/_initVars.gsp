@@ -38,6 +38,5 @@
     // -- set in semanticUI.gsp (scope: page)
 
     newTickets      = SystemTicket.getNew()
-    myInstNewAffils = UserOrg.findAllByStatusAndOrg(0, contextOrg, [sort: 'dateRequested'])
 
 %>
