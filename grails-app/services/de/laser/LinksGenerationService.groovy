@@ -98,23 +98,22 @@ class LinksGenerationService {
         List<Subscription> result = []
 
         // links
-        List oIDs = ownerSubscriptions.collect {genericOIDService.getOID(it)}
-        if (oIDs) {
-            String srcQuery = "from Links where source in (:oIDs) and destination like '${Subscription.class.name}%'"
-            String dstQuery = "from Links where destination in (:oIDs) and source like '${Subscription.class.name}%'"
-            sources = Links.executeQuery( srcQuery, [oIDs: oIDs])
-            destinations = Links.executeQuery( dstQuery, [oIDs: oIDs])
+        if (ownerSubscriptions) {
+            String srcQuery = "from Links where sourceSubscription in (:subs) and destinationSubscription != null"
+            String dstQuery = "from Links where destinationSubscription in (:subs) and sourceSubscription != null"
+            sources = Links.executeQuery( srcQuery, [subs: ownerSubscriptions])
+            destinations = Links.executeQuery( dstQuery, [subs: ownerSubscriptions])
 
             //IN is from the point of view of the context object (= obj)
 
             sources.each { Links link ->
-                Subscription destination = (Subscription) genericOIDService.resolveOID(link.destinationSubscription)
+                Subscription destination = link.destinationSubscription
                 if (destination.isVisibleBy(user)) {
                     result.add(destination)
                 }
             }
             destinations.each { Links link ->
-                Subscription source = (Subscription) genericOIDService.resolveOID(link.sourceSubscription)
+                Subscription source = link.sourceSubscription
                 if (source.isVisibleBy(user)) {
                     result.add(source)
                 }
