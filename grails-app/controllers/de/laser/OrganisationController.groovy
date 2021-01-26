@@ -996,7 +996,7 @@ class OrganisationController  {
 
             result.substituteList = User.executeQuery(
                     'select distinct u from User u join u.affiliations ua where ua.org = :ctxOrg and u != :self',
-                    [ctxOrg: contextService.getOrg(), self: result.user]
+                    [ctxOrg: result.orgInstance, self: result.user]
             )
         }
 

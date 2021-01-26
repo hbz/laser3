@@ -35,26 +35,30 @@
 
             <g:if test="${delResult.deletable}">
                 <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
-                    <div class="ui negative button js-open-confirm-modal"
-                         data-confirm-id="deleteProfileForm"
-                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.profile")}"
-                         data-confirm-term-how="delete">
-                        ${message(code:'deletion.user')}
-                    </div>
+                    <g:if test="${substituteList}">
+                        <div class="ui negative button js-open-confirm-modal" data-confirm-id="deleteProfileForm"
+                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.profile")}" data-confirm-term-how="delete">
+                                ${message(code:'deletion.user')}
+                        </div>
 
-                    <br /><br />${message(code:'user.delete.moveToNewUser')}<br />
-
-                    <g:select id="userReplacement" name="userReplacement" class="ui dropdown selection"
-                              from="${substituteList.sort()}"
-                              optionKey="${{User.class.name + ':' + it.id}}"
-                              optionValue="${{it.displayName + ' (' + it.username + ')'}}" />
+                        <div class="ui segment">
+                            ${message(code:'user.delete.moveToNewUser')}
+                            &nbsp;
+                            <g:select id="userReplacement" name="userReplacement" class="ui dropdown selection la-not-clearable"
+                                      from="${substituteList}"
+                                      optionKey="${{User.class.name + ':' + it.id}}"
+                                      optionValue="${{'(' + it.username + ') ' + it.displayName}}" />
+                        </div>
+                    </g:if>
+                    <g:else>
+                        <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
+                        <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
+                    </g:else>
                 </g:if>
                 <g:elseif test="${delResult.status != DeletionService.RESULT_ERROR}">
-                    <div class="ui negative button js-open-confirm-modal"
-                         data-confirm-id="deleteProfileForm"
-                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.profile")}"
-                         data-confirm-term-how="delete">
-                        ${message(code:'deletion.user')}
+                    <div class="ui negative button js-open-confirm-modal" data-confirm-id="deleteProfileForm"
+                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.profile")}" data-confirm-term-how="delete">
+                            ${message(code:'deletion.user')}
                     </div>
                 </g:elseif>
             </g:if>
