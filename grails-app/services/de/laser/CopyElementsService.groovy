@@ -229,7 +229,7 @@ class CopyElementsService {
 //                diffs.add(message(code:'pendingChange.message_CI01',args:[costTitle,g.createLink(mapping:'subfinance',controller:'subscription',action:'index',params:[sub:cci.sub.id]),cci.sub.name,cci.costInBillingCurrency,newCostItem
             } else {
                 //ChildSub Exist
-//                ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id, RDStore.LINKTYPE_FOLLOWS, Subscription.class.name)
+//                ArrayList<Links> prevLinks = Links.findAllByDestinationSubscriptionAndLinkType(subMember.id, RDStore.LINKTYPE_FOLLOWS)
 //                if (prevLinks.size() == 0) {
 
                 /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",

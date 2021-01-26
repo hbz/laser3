@@ -31,6 +31,22 @@
                 </g:each>
             </semui:menuDropdownItems>
 
+            <semui:menuDropdownItems actionName="tasks" message="task.plural">
+                <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
+                    <semui:menuDropdownItem controller="survey" action="tasks"
+                                            params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                                            text="${surveyConfig.getConfigNameShort()}"/>
+                </g:each>
+            </semui:menuDropdownItems>
+
+            <semui:menuDropdownItems actionName="notes" message="default.notes.label">
+                <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
+                    <semui:menuDropdownItem controller="survey" action="notes"
+                                            params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                                            text="${surveyConfig.getConfigNameShort()}"/>
+                </g:each>
+            </semui:menuDropdownItems>
+
             <semui:menuDropdownItems actionName="surveyParticipants" message="surveyParticipants.label">
                 <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
                     <semui:menuDropdownItem controller="survey" action="surveyParticipants"
@@ -80,6 +96,14 @@
             <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyConfigDocs"
                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                               message="surveyConfigDocs.label"/>
+
+            <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="tasks"
+                              params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                              message="task.plural"/>
+
+            <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="notes"
+                              params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                              message="default.notes.label"/>
 
             <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyParticipants"
                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}"

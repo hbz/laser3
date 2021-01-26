@@ -35,9 +35,19 @@
 
 <semui:messages data="${flash}"/>
 
+<br />
+<h2 class="ui icon header la-clear-before la-noMargin-top">
+    <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
+        <i class="icon clipboard outline la-list-icon"></i>
+        <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
+            ${surveyConfig.subscription?.name}
+        </g:link>
 
-<h2 class="ui header">
-    ${message(code: 'surveyInfo.transfer')}
+    </g:if>
+    <g:else>
+        ${surveyConfig.getConfigNameShort()}
+    </g:else>
+    : ${message(code: 'surveyInfo.transfer')}
 </h2>
 
 <g:if test="${(surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">

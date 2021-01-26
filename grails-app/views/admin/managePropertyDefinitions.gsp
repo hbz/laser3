@@ -309,7 +309,7 @@
 
 		<laser:script file="${this.getGroovyPageFileName()}">
 
-            if( $( "#cust_prop_modal_select option:selected" ).val() == "${RefdataValue.CLASS}") {
+            if( $( "#cust_prop_modal_select option:selected" ).val() == "${RefdataValue.class.name}") {
                 $("#cust_prop_ref_data_name").show();
             } else {
                  $("#cust_prop_ref_data_name").hide();
@@ -317,7 +317,7 @@
 
 			$('#cust_prop_modal_select').change(function() {
 				var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
-				if( selectedText == "${RefdataValue.CLASS}") {
+				if( selectedText == "${RefdataValue.class.name}") {
 					$("#cust_prop_ref_data_name").show();
 				}else{
 					$("#cust_prop_ref_data_name").hide();

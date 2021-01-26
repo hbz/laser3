@@ -183,7 +183,7 @@
                                     <td>
 
                                         ${PropertyDefinition.getLocalizedValue(surveyProperty.surveyProperty.type)}
-                                        <g:if test="${surveyProperty.surveyProperty.type == RefdataValue.CLASS}">
+                                        <g:if test="${surveyProperty.surveyProperty.isRefdataValueType()}">
                                             <g:set var="refdataValues" value="${[]}"/>
                                             <g:each in="${RefdataCategory.getAllRefdataValues(surveyProperty.surveyProperty.refdataCategory)}"
                                                     var="refdataValue">

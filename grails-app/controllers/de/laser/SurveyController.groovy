@@ -5,6 +5,8 @@ import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GenericOIDService
 import de.laser.annotations.DebugAnnotation
 import de.laser.ctrl.FinanceControllerService
+import de.laser.ctrl.LicenseControllerService
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.SurveyControllerService
 import de.laser.properties.SubscriptionProperty
 import de.laser.auth.User
@@ -242,9 +244,9 @@ class SurveyController {
                 return
             }
         }
-
+        SurveyInfo surveyInfo
         SurveyInfo.withTransaction { TransactionStatus ts ->
-            SurveyInfo surveyInfo = new SurveyInfo(
+                surveyInfo = new SurveyInfo(
                     name: params.name,
                     startDate: startDate,
                     endDate: endDate,
@@ -322,8 +324,9 @@ class SurveyController {
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
         List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
+
         result.filterSet = tmpQ[2]
-        List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
+        List subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
         //,[max: result.max, offset: result.offset]
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
@@ -345,10 +348,10 @@ class SurveyController {
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
         result.allLinkedLicenses = [:]
-        Set<Links> allLinkedLicenses = Links.findAllByDestinationInListAndLinkType(result.subscriptions.collect { Subscription s -> genericOIDService.getOID(s) },RDStore.LINKTYPE_LICENSE)
+        Set<Links> allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndLinkType(result.subscriptions ,RDStore.LINKTYPE_LICENSE)
         allLinkedLicenses.each { Links li ->
-            Subscription s = (Subscription) genericOIDService.resolveOID(li.destination)
-            License l = (License) genericOIDService.resolveOID(li.source)
+            Subscription s = li.destinationSubscription
+            License l = li.sourceLicense
             Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
             if(!linkedLicenses)
                 linkedLicenses = []
@@ -402,7 +405,7 @@ class SurveyController {
 
         List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
         result.filterSet = tmpQ[2]
-        List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
+        List subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
         //,[max: result.max, offset: result.offset]
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
@@ -519,9 +522,9 @@ class SurveyController {
 
         Subscription subscription = Subscription.get(Long.parseLong(params.sub))
         boolean subSurveyUseForTransfer = (SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true)) ? false : (params.subSurveyUseForTransfer ? true : false)
-
+        SurveyInfo surveyInfo
         SurveyInfo.withTransaction { TransactionStatus ts ->
-            SurveyInfo surveyInfo = new SurveyInfo(
+                    surveyInfo = new SurveyInfo(
                     name: params.name,
                     startDate: startDate,
                     endDate: endDate,
@@ -604,8 +607,9 @@ class SurveyController {
             }
         }
 
+        SurveyInfo surveyInfo
         SurveyInfo.withTransaction { TransactionStatus ts ->
-            SurveyInfo surveyInfo = new SurveyInfo(
+            surveyInfo = new SurveyInfo(
                     name: params.name,
                     startDate: startDate,
                     endDate: endDate,
@@ -1189,7 +1193,7 @@ class SurveyController {
             Date endDate = params.endDate ? sdf.parse(params.endDate) : null
             params.list('selectedOrgs').each { orgId ->
                 Org org = Org.get(orgId)
-                if(org && result.parentSubscription && result.targetParentSub && !(org in result.targetParentSubParticipantsList)){
+                if(org && result.targetParentSub && !(org in result.targetParentSubParticipantsList)){
                     log.debug("Generating seperate slaved instances for members")
                     Subscription memberSub = new Subscription(
                             type: result.targetParentSub.type ?: null,
@@ -1674,6 +1678,7 @@ class SurveyController {
 
     }
 
+    @Deprecated
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -1693,7 +1698,7 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        IssueEntitlement.withTransaction { TransactionStatus ->
+        /*IssueEntitlement.withTransaction { TransactionStatus ->
             Set participantsFinish = SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(result.surveyConfig)?.org?.flatten().unique { a, b -> a.id <=> b.id }
 
             participantsFinish.each { org ->
@@ -1724,7 +1729,7 @@ class SurveyController {
                     }
                 }
             }
-        }
+        }*/
 
         flash.message = message(code: 'completeIssueEntitlementsSurvey.forFinishParticipant.info')
 
@@ -2311,16 +2316,11 @@ class SurveyController {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
      Map<String,Object> deleteDocuments() {
-        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-        if (!result.editable) {
-            response.sendError(401); return
-        }
-
         log.debug("deleteDocuments ${params}");
 
         docstoreService.unifiedDeleteDocuments(params)
 
-        redirect action: 'surveyConfigDocs', id: result.surveyInfo.id, params: [surveyConfigID: result.surveyConfig.id]
+        redirect(uri: request.getHeader('referer'))
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
@@ -2558,7 +2558,7 @@ class SurveyController {
 
         result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
         if(result.parentSuccessorSubscription) {
-            String query = "select li.sourceLicense.instanceOf from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
+            String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
             result.memberLicenses = License.executeQuery(query, [subscription: result.parentSuccessorSubscription, linkType: RDStore.LINKTYPE_LICENSE])
         }
 
@@ -2630,8 +2630,12 @@ class SurveyController {
                          participant: it.participant
                         ])[0]
                 if(result.properties) {
-                    newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it.participant, result.institution, result.surveyConfig, result.properties).sort {
-                        it.type.getI10n('name')
+                    if(result.properties) {
+                        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+                        //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
+                        //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
+                        String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
+                        newSurveyResult.properties = SurveyResult.executeQuery(query,[participant: it.participant,context: result.institution,cfg: result.surveyConfig,properties: result.properties])
                     }
                 }
 
@@ -2757,7 +2761,11 @@ class SurveyController {
                 newSurveyResult.resultOfParticipation = it
                 newSurveyResult.surveyConfig = result.surveyConfig
                 if(result.properties) {
-
+                    String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+                    //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
+                    //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
+                    String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
+                    newSurveyResult.properties = SurveyResult.executeQuery(query,[participant: it.participant,context: result.institution,cfg: result.surveyConfig,properties: result.properties])
                 }
 
 
@@ -2786,7 +2794,7 @@ class SurveyController {
             result.orgsWithoutResult.each { surveyResult ->
                 if (surveyResult.participant.id in currentParticipantIDs && surveyResult.sub) {
 
-                    if (property.type == RefdataValue.CLASS) {
+                    if (property.isRefdataValueType()) {
                         if (surveyResult.sub.propertySet.find {
                             it.type.id == property.id
                         }?.refValue == RefdataValue.getByValueAndCategory('Yes', property.refdataCategory)) {
@@ -2887,7 +2895,7 @@ class SurveyController {
 
             List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
             result.filterSet = tmpQ[2]
-            List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
+            List subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
             //,[max: result.max, offset: result.offset]
 
             result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
@@ -2962,7 +2970,7 @@ class SurveyController {
                         SurveyInfo newSurveyInfo = new SurveyInfo(
                                 name: sub.name,
                                 status: RDStore.SURVEY_IN_PROCESSING,
-                                type: baseSurveyInfo.type,
+                                type: (baseSurveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL) ? (SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sub, true) ? RDStore.SURVEY_TYPE_SUBSCRIPTION : baseSurveyInfo.type) : baseSurveyInfo.type,
                                 startDate: params.copySurvey.copyDates ? baseSurveyInfo.startDate : null,
                                 endDate: params.copySurvey.copyDates ? baseSurveyInfo.endDate : null,
                                 comment: params.copySurvey.copyComment ? baseSurveyInfo.comment : null,
@@ -3541,13 +3549,12 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        result.parentSubscription = result.surveyConfig.subscription
-
         if(result.surveyConfig.subSurveyUseForTransfer){
             result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessor()
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         }
+
         result.targetSubscription =  result.parentSuccessorSubscription
 
         Integer countNewCostItems = 0
@@ -3691,6 +3698,11 @@ class SurveyController {
         }else{
             result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         }
+
+        if(!result.parentSubscription){
+            result.parentSubscription = result.parentSuccessorSubscription
+        }
+
         result.targetSubscription =  result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
@@ -3723,7 +3735,9 @@ class SurveyController {
                 newMap.sortname = org.sortname
                 newMap.name = org.name
                 newMap.newSub = sub
-                newMap.oldSub = sub._getCalculatedPrevious()
+                newMap.oldSub = result.surveyConfig.subSurveyUseForTransfer ? sub._getCalculatedPrevious() : result.parentSubscription.getDerivedSubscriptionBySubscribers(org)
+
+                println("new: ${newMap.newSub}, old: ${newMap.oldSub}")
 
 
                 if (params.tab == 'surveyProperties') {
@@ -4682,6 +4696,34 @@ class SurveyController {
         }
         result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
         result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+
+        result
+    }
+
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = 2)
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    def tasks() {
+        Map<String,Object> ctrlResult = surveyControllerService.tasks(this,params)
+        if(ctrlResult.error == SurveyControllerService.STATUS_ERROR) {
+            if(!ctrlResult.result)
+                response.sendError(401)
+            else {
+                flash.error = ctrlResult.result.error
+            }
+        }
+        else {
+            flash.message = ctrlResult.result.message
+        }
+        ctrlResult.result
+    }
+
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = 2)
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    def notes() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result) {
+            response.sendError(401); return
+        }
 
         result
     }
