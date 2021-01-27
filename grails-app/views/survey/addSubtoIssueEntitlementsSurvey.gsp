@@ -38,13 +38,6 @@
         </div>
 
         <div class="field">
-            <label>${message(code: 'surveyconfig.createTitleGroups.label.info')}</label>
-            <div>
-                <input type="checkbox" id="createTitleGroups" name="createTitleGroups" ${params.createTitleGroups? 'checked':''}>
-            </div>
-        </div>
-
-        <div class="field">
             <label>${message(code: 'surveyInfo.isMandatory.label.info')}</label>
             <div>
                 <input type="checkbox" id="mandatory" name="mandatory" ${params.mandatory? 'checked':''}>

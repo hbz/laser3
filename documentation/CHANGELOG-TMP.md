@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3029    26.01.2021  dev     2.0         Moe     Feature     Umfrage: Konsortialstelle soll es möglich sein einzele Teilnehmer-Umfrage abzuschließen
+
+3019    26.01.2021  dev     2.0         Moe     Feature     Titelumfrage: Komforfunktion für Löschen von Titel für Umfrageteilnehmer
+
+3022    26.01.2021  dev     2.0         Moe     Bug         GokbService anpassen wenn keine Verbindung oder Verbindung mit einer Fehlermeldung entsteht
+
 3093    26.01.2021  dev     2.0         David   Feature     Übertragung von Dateien bei Löschung eines Nutzers
 
 3058    26.01.2021  dev     2.0         David   Feature     Panels ohne Inhalt ausblenden

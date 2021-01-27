@@ -633,11 +633,10 @@ class SurveyController {
                         type: 'IssueEntitlementsSurvey',
                         surveyInfo: surveyInfo,
                         subSurveyUseForTransfer: false,
-                        pickAndChoose: true,
-                        createTitleGroups: params.createTitleGroups ? true : false
+                        pickAndChoose: true
                 )
                 surveyConfig.save()
-                addSubMembers(surveyConfig)
+                surveyService.addSubMembers(surveyConfig)
             }
             else {
                 surveyInfo.delete()
@@ -664,7 +663,7 @@ class SurveyController {
 
             result.navigation = surveyService.getConfigNavigation(result.surveyInfo,  result.surveyConfig)
 
-            if ( result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION) {
+            if ( result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
                 result.authorizedOrgs = result.user.authorizedOrgs
 
                 // restrict visible for templates/links/orgLinksAsList
@@ -1604,6 +1603,38 @@ class SurveyController {
 
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    Map<String,Object> finishSurveyForParticipant() {
+        Map<String, Object> result = [:]
+        result.institution = contextService.getOrg()
+        result.user = contextService.getUser()
+        result.participant = params.participant ? Org.get(params.participant) : null
+
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.surveyInfo = result.surveyConfig.surveyInfo
+
+        result.editable = result.surveyInfo.isEditable() ?: false
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        SurveyResult.withTransaction { TransactionStatus ts ->
+            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
+            surveyResults.each {
+                it.finishDate = new Date()
+                it.save()
+            }
+        }
+
+        redirect(action: 'evaluationParticipant', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
+
+    }
+
     @DebugAnnotation(perm = "ORG_CONSORTIUM_SURVEY", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_SURVEY", "INST_EDITOR", "ROLE_ADMIN")
@@ -1784,7 +1815,7 @@ class SurveyController {
 
         result.ownerId = result.surveyResults[0].owner.id
 
-        if(result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION) {
+        if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = []
