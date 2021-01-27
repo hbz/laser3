@@ -1840,7 +1840,7 @@ join sub.orgRelations or_sub where
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         Map filterParams = params
-        filterParams.org = result.institution
+        filterParams.org = genericOIDService.getOID(result.institution)
 
         result.users = userService.getUserSet(filterParams)
         result.titleMessage = "${result.institution}"

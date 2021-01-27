@@ -41,9 +41,7 @@
 
         <semui:messages data="${flash}" />
 
-        <g:render template="/templates/user/list" model="${tmplConfig}"/>
-
-          <%-- <semui:paginate total="${total}" params="${params}" /> --%>
+        <g:render template="/templates/user/list" model="${tmplConfig}" />
 
 </body>
 </html>
