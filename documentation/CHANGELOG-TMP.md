@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3095    27.01.2021  rc2.0   2.0         David   Bug         Filter funktioniert nicht: Nutzerverwaltung
+
+3069    27.01.2021  rc2.0   2.0         David               Performance-Problem: AdminController > Nutzerverwaltung
+
 3029    26.01.2021  dev     2.0         Moe     Feature     Umfrage: Konsortialstelle soll es möglich sein einzele Teilnehmer-Umfrage abzuschließen
 
 3019    26.01.2021  dev     2.0         Moe     Feature     Titelumfrage: Komforfunktion für Löschen von Titel für Umfrageteilnehmer
@@ -21,7 +25,7 @@
 
 3079    26.01.2021  dev     2.0         David   Feature     Überarbeitung: Zugehörigkeiten
 
-2944    26.01.2021  dev     2.0         David               Andere Meldung, wenn man sich selbst über Nutzerverwaltung löschen will
+2944    26.01.2021  dev     2.0         David   Feature     Andere Meldung, wenn man sich selbst über Nutzerverwaltung löschen will
 
 --      26.01.2021  dev     2.0         Moe     Bug         DataloadService FT Update Umstrukierung
 
@@ -95,13 +99,13 @@
 
 3049    07.01.2021  dev     2.0         David               Markup aufräumen: Seiten-Header
 
-3048    05.01.2021  dev     2.0         David               Fehler auf der Seite "Zugangskonfigurationen bearbeiten"
+3048    05.01.2021  dev     2.0         David   Bug         Fehler auf der Seite "Zugangskonfigurationen bearbeiten"
 
 3043    22.12.2020  dev     2.0         David               Assets-Pipeline für Produktivbetrieb konfigurieren
 
 3046    18.12.2020  dev     2.0         David               DataTables-Plugin reparieren
 
-3041    16.12.2020  dev     2.0         David               Kacheln der Seitenleiste überarbeiten
+3041    16.12.2020  dev     2.0         David   Bug         Kacheln der Seitenleiste überarbeiten
 
 3039    16.12.2020  dev     2.0         David               InplaceTagLib aktualisieren/entfernen
 
@@ -119,7 +123,7 @@
 
 2953    10.12.2020  dev     2.0         David               Sammelsurium: Fehler @ Grails3
 
-3020    09.12.2020  dev     2.0         David               Auto-Layouter für OrgFilter reparieren
+3020    09.12.2020  dev     2.0         David   Bug         Auto-Layouter für OrgFilter reparieren
 
 2998    09.12.2020  dev     2.0         David               Mehrfachzuweisung von Eventlistenern unterbinden
 
