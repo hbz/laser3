@@ -172,7 +172,9 @@
                         <g:if test="${editable}">
                             <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ showView:'own']" class="ui icon negative button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem",args: [ci.costTitle])}"
-                                        data-confirm-term-how="delete">
+                                        data-confirm-term-how="delete"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>

@@ -38,8 +38,8 @@
                     class="ui button icon red js-open-confirm-modal"
                     params='${[owner: "${orgInstance.class.name}:${orgInstance.id}", target: "${id.class.name}:${id.id}"]}'
                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [id?.ns?.ns+": "+id.value])}"
-                    data-confirm-term-how="delete"
-            >
+                    role="button"
+                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
                 <i class="trash alternate icon"></i>
             </g:link>
         </g:if>

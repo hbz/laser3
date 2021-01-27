@@ -205,7 +205,9 @@
                         <div class="ui icon negative button js-open-confirm-modal"
                              data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact.addressbook", args: [person.toString()])}"
                              data-confirm-term-how="delete"
-                             data-confirm-id="${person.id}">
+                             data-confirm-id="${person.id}"
+                             role="button"
+                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
                             <i class="trash alternate icon"></i>
                         </div>
                     </g:form>

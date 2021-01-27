@@ -167,7 +167,9 @@
                                                                 <g:link class="ui negative button js-open-confirm-modal"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: [link.functionType?.getI10n('value')])}"
                                                                         data-confirm-term-how="delete"
-                                                                        controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]">
+                                                                        controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]"
+                                                                        role="button"
+                                                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                                     <i class="trash alternate icon"></i>
                                                                 </g:link>
                                                             </div>
@@ -180,7 +182,9 @@
                                                                         id="${personInstance?.id}"
                                                                         params="[previousReferer: request.getHeader('referer')]"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.function", args:[link?.functionType?.getI10n('value'), personInstance.toString()])}"
-                                                                        data-confirm-term-how="delete">
+                                                                        data-confirm-term-how="delete"
+                                                                        role="button"
+                                                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                                     <i class="trash alternate icon"></i>
                                                                 </g:link>
                                                                 %{--<g:form controller="person" action="delete" data-confirm-id="${personInstance?.id?.toString()+ '_form'}">--}%
@@ -188,7 +192,9 @@
                                                                 %{--<div class="ui icon negative button js-open-confirm-modal"--}%
                                                                 %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [personInstance?.toString()])}"--}%
                                                                 %{--data-confirm-term-how="delete"--}%
-                                                                %{--data-confirm-id="${personInstance?.id}" >--}%
+                                                                %{--data-confirm-id="${personInstance?.id}" --}%
+                                                                %{--role="button"--}%
+                                                                %{--aria-label="${message(code: 'ariaLabel.delete.universal')}"> --}%
                                                                 %{--<i class="trash alternate icon"></i>--}%
                                                                 %{--</div>--}%
                                                                 %{--</g:form>--}%
@@ -247,7 +253,9 @@
                                                                         id="${personInstance?.id}"
                                                                         params="[previousReferer: request.getHeader('referer')]"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.function", args:[link.positionType?.getI10n('value'), personInstance.toString()])}"
-                                                                        data-confirm-term-how="delete">
+                                                                        data-confirm-term-how="delete"
+                                                                        role="button"
+                                                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                                     <i class="trash alternate icon"></i>
                                                                 </g:link>
                                                                 %{--<g:form controller="person" action="delete" data-confirm-id="${personInstance?.id?.toString()+ '_form'}">--}%
@@ -255,7 +263,9 @@
                                                                     %{--<div class="ui icon negative button js-open-confirm-modal"--}%
                                                                          %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [personInstance?.toString()])}"--}%
                                                                          %{--data-confirm-term-how="delete"--}%
-                                                                         %{--data-confirm-id="${personInstance?.id}" >--}%
+                                                                         %{--data-confirm-id="${personInstance?.id}" --}%
+                                                                        %{--role="button"--}%
+                                                                        %{--aria-label="${message(code: 'ariaLabel.delete.universal')}"> --}%
                                                                 %{--<i class="trash alternate icon"></i>--}%
                                                                     %{--</div>--}%
                                                                 %{--</g:form>--}%

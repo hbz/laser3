@@ -73,7 +73,8 @@
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.prop_groups", args: [fieldValue(bean: pdGroup, field: "name")])}"
                                             data-confirm-term-how="delete"
                                             class="ui icon negative button js-open-confirm-modal"
-                                            role="button">
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </td>

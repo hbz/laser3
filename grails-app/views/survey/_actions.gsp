@@ -132,7 +132,9 @@
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.survey", args: [surveyConfig.getSurveyName()])}"
                         data-confirm-term-how="delete"
                         controller="survey" action="deleteSurveyInfo"
-                        id="${surveyInfo.id}">
+                        id="${surveyInfo.id}"
+                        role="button"
+                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
                     <i class="trash alternate icon"></i> ${message(code:'deletion.survey')}
                 </g:link>
 

@@ -131,7 +131,9 @@
                                         <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}"
                                                 class="ui negative icon button js-open-confirm-modal"
                                                 data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint', args: [accessPoint.name])}"
-                                                data-confirm-term-how="delete">
+                                                data-confirm-term-how="delete"
+                                                role="button"
+                                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                             <i class="trash alternate icon"></i>
                                         </g:link>
                                     </g:if>

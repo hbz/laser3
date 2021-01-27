@@ -133,7 +133,8 @@
                                                     class="ui button icon red js-open-confirm-modal"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.customeridentifier", args: [""+ci.getProvider()+" : "+ci.platform+" "+ci.value])}"
                                                     data-confirm-term-how="delete"
-                                            >
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                 <i class="trash alternate icon"></i>
                                             </g:link>
                                         </g:if>

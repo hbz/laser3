@@ -119,7 +119,9 @@
                                             action="delete"
                                             id="${person.id}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.function", args: [personRoleLink.functionType.getI10n('value'), person.toString()])}"
-                                            data-confirm-term-how="delete">
+                                            data-confirm-term-how="delete"
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                     %{--<g:form controller="person" action="delete" data-confirm-id="${person.id.toString()+ '_form'}">--}%
@@ -127,7 +129,9 @@
                                         %{--<div class="ui mini icon negative button js-open-confirm-modal"--}%
                                              %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [person.toString()])}"--}%
                                              %{--data-confirm-term-how="delete"--}%
-                                             %{--data-confirm-id="${person.id}" >--}%
+                                             %{--data-confirm-id="${person.id}" --}%
+                                            %{--role="button"--}%
+                                            %{--aria-label="${message(code: 'ariaLabel.delete.universal')}"> --}%
                                             %{--<i class="unlink icon"></i>--}%
                                         %{--</div>--}%
                                     %{--</g:form>--}%
@@ -168,7 +172,9 @@
                                             action="delete"
                                             id="${person.id}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.position", args: [personRole.positionType.getI10n('value'), person.toString()])}"
-                                            data-confirm-term-how="delete">
+                                            data-confirm-term-how="delete"
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </g:else>
