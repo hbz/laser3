@@ -9,7 +9,8 @@
 <body>
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
-    <semui:crumb message="issueEntitlementsSurvey.label"/>
+    <semui:crumb controller="myInstitution" action="surveyInfosIssueEntitlements"
+                 id="${surveyConfig?.id}" message="issueEntitlementsSurvey.label"/>
     <semui:crumb controller="subscription" action="index" id="${subscription.id}"
                  text="${subscription.name}"/>
     <semui:crumb class="active" text="${message(code: 'subscription.details.renewEntitlements.label')}"/>
@@ -288,7 +289,6 @@
                                                                             type="currency"/><br />
                         %{--<g:message code="tipp.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>--}%
                     </th>
-                    <th></th>
                 </tr>
                 </tfoot>
             </table>

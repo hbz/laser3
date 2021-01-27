@@ -539,11 +539,15 @@ class SubscriptionService {
                 [RDStore.SUBSCRIPTION_CURRENT, RDStore.SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION]
         )
 
-        List orgs = OrgRole.findAllBySubInListAndRoleType(validSubChilds, RDStore.OR_SUBSCRIBER_CONS)
+        if(validSubChilds) {
+            List orgs = OrgRole.findAllBySubInListAndRoleType(validSubChilds, RDStore.OR_SUBSCRIBER_CONS)
 
-        if(orgs){
-            return orgs.org
-        }else{
+            if (orgs) {
+                return orgs.org
+            } else {
+                return []
+            }
+        }else {
             return []
         }
     }

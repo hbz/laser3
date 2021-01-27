@@ -13,7 +13,8 @@
 <semui:breadcrumbs>
 
     <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
-    <semui:crumb message="issueEntitlementsSurvey.label"/>
+    <semui:crumb controller="myInstitution" action="surveyInfosIssueEntitlements"
+                 id="${surveyConfig?.id}" message="issueEntitlementsSurvey.label"/>
     <semui:crumb controller="subscription" action="index" id="${subscription.id}"
                  text="${subscription.name}" class="active"/>
 </semui:breadcrumbs>
@@ -127,6 +128,15 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
                         <dt class="control-label">${message(code: 'tipp.listPrice')}</dt>
                         <dd><g:formatNumber number="${iesFixListPriceSum}" type="currency"/></dd>
                     </dl>
+
+                    <div class="ui la-vertical buttons">
+                        <g:link action="index" controller="subscription"
+                                id="${subscription.id}"
+                                class="ui button">
+                            <g:message code="renewEntitlementsWithSurvey.toCurrentFixedEntitlements"/>
+                        </g:link>
+                    </div>
+
                 </div>
 
                 <div class="content">
