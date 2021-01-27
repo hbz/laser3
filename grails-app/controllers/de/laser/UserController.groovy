@@ -44,11 +44,6 @@ class UserController  {
                 redirect action: 'edit', params: [id: params.id]
                 return
             }
-            else if (affils.size() == 1 && (affils.get(0).id != contextService.getOrg().id)) {
-                flash.error = message(code: 'user.delete.error.foreignOrg') as String
-                redirect action: 'edit', params: [id: params.id]
-                return
-            }
 
             if (params.process && result.editable) {
                 User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
@@ -79,13 +74,13 @@ class UserController  {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
         Map filterParams = params
 
-        params.max = params.max ?: result.editor?.getDefaultPageSize() // TODO
-
         result.users = userService.getUserSet(filterParams)
+        result.total = result.users.size()
+
         result.titleMessage = message(code:'user.show_all.label') as String
         Set<Org> availableComboOrgs = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name asc', [ctxOrg:contextService.getOrg()])
         availableComboOrgs.add(contextService.getOrg())
-        result.filterConfig = [filterableRoles:Role.findAllByRoleTypeInList(['user','global']), orgField: true, availableComboOrgs: availableComboOrgs]
+        result.filterConfig = [filterableRoles:Role.findAllByRoleTypeInList(['user']), orgField: true, availableComboOrgs: availableComboOrgs]
 
         result.tmplConfig = [
                 editable:result.editable,
@@ -96,7 +91,7 @@ class UserController  {
                 showAllAffiliations: true,
                 modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')
         ]
-        result.total = result.users.size()
+
 
         render view: '/user/global/list', model: result
     }

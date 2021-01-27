@@ -17,6 +17,7 @@ class UserService {
 
     def instAdmService
     def contextService
+    def genericOIDService
     def messageSource
     def grailsApplication
 
@@ -50,23 +51,26 @@ class UserService {
         List baseQuery = ['select distinct u from User u']
         List whereQuery = []
         Map queryParams = [:]
-        if (params.org) {
-            baseQuery << 'UserOrg uo'
-            whereQuery << 'uo.user = u and uo.org = :org'
-            queryParams.org = params.org
-        }
 
-        if (params.authority) {
-            baseQuery.add('UserRole ur')
-            whereQuery.add('ur.user = u and ur.role = :role')
-            queryParams.put('role', Role.get(params.authority.toLong()))
+        if (params.org || params.authority) {
+            baseQuery.add( 'UserOrg uo' )
+
+            if (params.org) {
+                whereQuery.add( 'uo.user = u and uo.org = :org' )
+                queryParams.put( 'org', genericOIDService.resolveOID(params.org) )
+            }
+            if (params.role) {
+                whereQuery.add( 'uo.user = u and uo.formalRole = :role' )
+                queryParams.put('role', genericOIDService.resolveOID(params.role) )
+            }
         }
 
         if (params.name && params.name != '' ) {
-            whereQuery.add('(genfunc_filter_matcher(u.username, :name) = true or genfunc_filter_matcher(u.display, :name) = true)')
+            whereQuery.add( '(genfunc_filter_matcher(u.username, :name) = true or genfunc_filter_matcher(u.display, :name) = true)' )
             queryParams.put('name', "%${params.name.toLowerCase()}%")
         }
-        User.executeQuery(baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') , queryParams /*,params */)
+        String query = baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') + ' order by u.username'
+        User.executeQuery(query, queryParams /*,params */)
     }
 
     User addNewUser(Map params, FlashScope flash) {

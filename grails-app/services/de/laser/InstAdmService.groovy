@@ -49,18 +49,35 @@ class InstAdmService {
 
     // all user.userOrg must be accessible from editor as INST_ADMIN
     boolean isUserEditableForInstAdm(User user, User editor) {
-        boolean result = false
-        List<Org> userOrgs = user.getAuthorizedAffiliations().collect{ it.org }
+        List<Org> userOrgs = user.getAuthorizedOrgs()
 
         if (! userOrgs.isEmpty()) {
-            result = true
+            boolean result = true
 
             userOrgs.each { org ->
-                result = result && hasInstAdmPivileges(editor, org, [RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM])
+                if (result) {
+                    result = hasInstAdmPivileges(editor, org, [RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM])
+                }
+                else {
+                    result = false
+                }
+            }
+            return result
+        }
+        else {
+            return accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_ADM")
+        }
+    }
+
+    boolean isUserLastInstAdminForAnyOrgInList(User user, List<Org> orgList){
+        boolean match = false
+
+        orgList.each{ org ->
+            if (! match) {
+                match = isUserLastInstAdminForOrg(user, org)
             }
         }
-        else result = accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM","INST_ADM")
-        result
+        return match
     }
 
     boolean isUserLastInstAdminForOrg(User user, Org org){
