@@ -132,7 +132,9 @@
                                             class="ui icon negative button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
-                                            params='[surveyConfigID: surveyConfig.id, id: surveyInfo.id, deleteId: "${docctx.id}", redirectAction: "${actionName}"]'>
+                                            params='[surveyConfigID: surveyConfig.id, id: surveyInfo.id, deleteId: "${docctx.id}", redirectAction: "${actionName}"]'
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </g:if>

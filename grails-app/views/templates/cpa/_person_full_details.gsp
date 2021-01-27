@@ -107,7 +107,9 @@
                                     <g:link class="ui mini icon negative button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.function.contact", args: [personRoleLink.functionType.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="unlink"
-                                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                         <i class="unlink icon"></i>
                                     </g:link>
                                 </g:if>
@@ -117,7 +119,9 @@
                                             action="delete"
                                             id="${person.id}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.function", args: [personRoleLink.functionType.getI10n('value'), person.toString()])}"
-                                            data-confirm-term-how="delete">
+                                            data-confirm-term-how="delete"
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                     %{--<g:form controller="person" action="delete" data-confirm-id="${person.id.toString()+ '_form'}">--}%
@@ -125,7 +129,9 @@
                                         %{--<div class="ui mini icon negative button js-open-confirm-modal"--}%
                                              %{--data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [person.toString()])}"--}%
                                              %{--data-confirm-term-how="delete"--}%
-                                             %{--data-confirm-id="${person.id}" >--}%
+                                             %{--data-confirm-id="${person.id}" --}%
+                                            %{--role="button"--}%
+                                            %{--aria-label="${message(code: 'ariaLabel.delete.universal')}"> --}%
                                             %{--<i class="unlink icon"></i>--}%
                                         %{--</div>--}%
                                     %{--</g:form>--}%
@@ -154,7 +160,9 @@
                                     <g:link class="ui mini icon negative button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.position.contact", args: [personRole.positionType.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="unlink"
-                                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                         <i class="unlink icon"></i>
                                     </g:link>
                                 </g:if>
@@ -164,7 +172,9 @@
                                             action="delete"
                                             id="${person.id}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.position", args: [personRole.positionType.getI10n('value'), person.toString()])}"
-                                            data-confirm-term-how="delete">
+                                            data-confirm-term-how="delete"
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </g:else>
@@ -191,7 +201,9 @@
                                 <g:link class="ui mini icon negative button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                                         data-confirm-term-how="unlink"
-                                        controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                                        controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                     <i class="unlink icon"></i>
                                 </g:link>
                             </g:if>
@@ -209,7 +221,9 @@
             <g:link class="ui icon negative button js-open-confirm-modal"
                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact")}"
                     data-confirm-term-how="unlink"
-                    controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                    controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
+                    role="button"
+                    aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                 <i class="unlink icon"></i>
             </g:link>
         </td>

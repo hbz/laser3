@@ -61,7 +61,9 @@
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItemElementConfiguration", args: [ciec.costItemElement.getI10n("value")])}"
                                             data-confirm-term-how="delete"
                                             controller="costConfiguration" action="deleteCostConfiguration"
-                                            params="${[ciec: ciec.id]}">
+                                            params="${[ciec: ciec.id]}"
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </td>

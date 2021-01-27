@@ -109,7 +109,7 @@
                                               data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${propertyWrapper}', ${tenant?.id})"
                                               data-update="${propertyWrapper}"
                                               role="button"
-                            >
+                                              aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate icon"></i>
                             </laser:remoteLink>
                         </g:if>

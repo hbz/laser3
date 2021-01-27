@@ -42,7 +42,9 @@
                             <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.unlinkProviderAgency')}">
                                 <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal" controller="ajax" action="delOrgRole" id="${role.id}"
                                     data-confirm-tokenMsg = "${message(code:'confirm.dialog.unlink.provider-agency.subscription')}"
-                                    data-confirm-how = "unlink">
+                                    data-confirm-how = "unlink"
+                                    role="button"
+                                    aria-label="${message(code:'ariaLabel.unlink.provider-agency.subscription')}">
                                     <i class="unlink icon"></i>
                                 </g:link>
                             </span>
@@ -55,11 +57,10 @@
                         </g:if>
 
                         <g:if test="${showPersons}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.addNewContact')}">
-                                <button class="ui icon button la-selectable-button" data-semui="modal" data-href="#${cssId}">
+                                <button class="ui icon button la-selectable-button la-popup-tooltip la-delay" data-semui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
                                     <i class="address plus icon"></i>
                                 </button>
-                            </span>
+
                         <g:render template="/templates/links/orgLinksAsListAddPrsModal"
                                   model="['cssId': cssId,
                                           'orgRole': role,

@@ -205,7 +205,8 @@
                                                       data-confirm-term-how="delete"
                                                       data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                       data-update="${custom_props_div}"
-                                                      role="button">
+                                                      role="button"
+                                                      aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="trash alternate icon"></i>
                                     </laser:remoteLink>
                                 </g:if>
@@ -251,7 +252,8 @@
                                                   data-confirm-term-how="delete"
                                                   data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                   data-update="${custom_props_div}"
-                                                  role="button">
+                                                  role="button"
+                                                  aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="trash alternate icon"></i>
                                 </laser:remoteLink>
                             </g:elseif>

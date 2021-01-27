@@ -65,7 +65,9 @@
                         <g:link class="ui icon negative button js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                 data-confirm-term-how="delete"
-                                controller="myInstitution" action="tasks" params="[deleteId:taskInstance.id]" >
+                                controller="myInstitution" action="tasks" params="[deleteId:taskInstance.id]"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.delete.task')}">
                             <i class="trash alternate icon"></i>
                         </g:link>
                 </tr>

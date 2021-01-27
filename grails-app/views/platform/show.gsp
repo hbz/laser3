@@ -126,7 +126,8 @@
                                     <g:link class="ui negative icon button button js-open-confirm-modal" controller="accessPoint" action="unlinkPlatform" id="${orgAccessPoint.id}"
                                             data-confirm-tokenMsg="${message(code: 'confirm.dialog.unlink.accessPoint.platform', args: [orgAccessPoint.oap.name, platformInstance.name])}"
                                             data-confirm-term-how="unlink"
-                                    >
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                         <i class="unlink icon"></i>
                                     </g:link>
                                 </g:if>
