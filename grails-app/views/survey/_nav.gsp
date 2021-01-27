@@ -146,6 +146,14 @@
                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                           message="surveyConfigDocs.label"/>
 
+        <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="tasks"
+                          params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                          message="task.plural"/>
+
+        <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="notes"
+                          params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                          message="default.notes.label"/>
+
         <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyParticipants"
                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                           message="surveyParticipants.label"/>

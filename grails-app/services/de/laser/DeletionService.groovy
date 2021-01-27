@@ -675,15 +675,6 @@ class DeletionService {
 
         List ddds = DashboardDueDate.findAllByResponsibleUser(user)
 
-        /*
-        List docs_private = Doc.executeQuery(
-                'select x from DocContext dc join dc.owner x where x.creator = :user and dc.shareConf = :creatorOnly',
-                [user: user, creatorOnly: RDStore.SHARE_CONF_CREATOR])
-
-        List docs = Doc.executeQuery('select x from Doc x where x.creator = :user or x.user = :user', [user: user])
-        docs.removeAll(docs_private)
-         */
-
         List systemTickets = SystemTicket.findAllByAuthor(user)
 
         List tasks = Task.executeQuery(
@@ -698,10 +689,8 @@ class DeletionService {
         result.info << ['Einstellungen', userSettings]
 
         result.info << ['DashboardDueDate', ddds]
-        //result.info << ['Dokumente', docs, FLAG_SUBSTITUTE]
-        //result.info << ['Dokumente (private)', docs_private, FLAG_WARNING]
         result.info << ['Tickets', systemTickets]
-        result.info << ['Aufgaben', tasks, FLAG_WARNING]
+        result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
 
         // checking constraints and/or processing
 
@@ -745,26 +734,15 @@ class DeletionService {
 
                     ddds.each { tmp -> tmp.delete() }
 
-                    tasks.each { tmp -> tmp.delete() }
-
-                    /* docs - deleted as of ERMS-2603
-                    docs_private.each { tmp ->
-                        DocContext.findAllByOwner(tmp).each{ dc ->
-                            dc.delete()
-                        }
-                        tmp.delete()
-                    }
-
-                    docs.each { tmp ->
-                        if (tmp.creator?.id == user.id) {
+                    tasks.each { tmp ->
+                        if (tmp.creator.id == user.id) {
                             tmp.creator = replacement
                         }
-                        if (tmp.user?.id == user.id) {
-                            tmp.user = replacement
+                        if (tmp.responsibleUser?.id == user.id) {
+                            tmp.responsibleUser = replacement
                         }
                         tmp.save()
                     }
-                     */
 
                     user.delete()
                     status.flush()
