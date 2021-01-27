@@ -179,7 +179,7 @@
 
             <br />
             <g:if test="${surveyConfig}">
-                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
+                <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
 
                     <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
                                                                 costItemSums: costItemSums,
@@ -189,14 +189,6 @@
                                                                 properties: properties]"/>
                 </g:if>
 
-                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
-
-                    <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig: surveyConfig,
-                                                                                      subscription: surveyConfig.subscription,
-                                                                                      tasks: tasks,
-                                                                                      visibleOrgRelations: visibleOrgRelations,
-                                                                                      properties: properties]"/>
-                </g:if>
 
                 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
 

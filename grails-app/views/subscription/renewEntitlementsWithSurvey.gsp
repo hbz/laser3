@@ -10,9 +10,9 @@
 <body>
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
-    <semui:crumb message="issueEntitlementsSurvey.label"/>
-    <semui:crumb controller="subscription" action="index" id="${newSub.id}" class="active"
-                 text="${newSub.name}"/>
+    <semui:crumb controller="myInstitution" action="surveyInfosIssueEntitlements"
+                 id="${surveyConfig?.id}" message="issueEntitlementsSurvey.label"/>
+    <semui:crumb controller="subscription" action="index" id="${newSub.id}" class="active" text="${newSub.name}"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
@@ -170,7 +170,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             id="${newSub.id}"
             params="[surveyConfigID: surveyConfig.id, tab: 'allIEs']">
         <g:message code="renewEntitlementsWithSurvey.selectableTitles"/>
-        <div class="ui circular label">${countAllSourceIEs}/${countAllIEs}</div>
+        <div class="ui circular label">${countSelectedIEs}/${countAllIEs}</div>
     </g:link>
 
     <g:link class="item ${params.tab == 'selectedIEs' ? 'active' : ''}"
@@ -238,6 +238,11 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                     <button type="submit" name="process" value="preliminary" class="ui green button"><g:message
                             code="renewEntitlementsWithSurvey.preliminary"/></button>
                 </g:if>
+
+                <g:if test="${editable && params.tab == 'selectedIEs'}">
+                    <button type="submit" name="process" value="remove" class="ui red button"><g:message
+                            code="renewEntitlementsWithSurvey.remove"/></button>
+                </g:if>
             </div>
 
 
@@ -255,7 +260,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
     <g:if test="${sourceIEs}">
         <semui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
                         next="${message(code: 'default.paginate.next')}"
-                        prev="${message(code: 'default.paginate.prev')}" max="${params.max}"
+                        prev="${message(code: 'default.paginate.prev')}" max="${max}"
                         total="${num_ies_rows}"/>
     </g:if>
 

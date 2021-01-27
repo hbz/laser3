@@ -29,6 +29,12 @@
                                        message="openSurveyAgainForParticipant.button"/>
             </semui:actionsDropdown>
         </g:if>
+        <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_SURVEY_COMPLETED.id] && !surveyConfig.isResultsSetFinishByOrg(participant)}">
+            <semui:actionsDropdown>
+                <semui:actionsDropdownItem controller="survey" action="finishSurveyForParticipant" params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+                                           message="openSurveyAgainForParticipant.button"/>
+            </semui:actionsDropdown>
+        </g:if>
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>

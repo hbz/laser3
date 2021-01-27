@@ -150,7 +150,7 @@ class SurveyService {
                 titles.addAll([messageSource.getMessage('org.sortname.label', null, LocaleContextHolder.getLocale()),
                                messageSource.getMessage('surveyParticipants.label', null, LocaleContextHolder.getLocale()),
                                messageSource.getMessage('surveyOrg.ownerComment.label', null, LocaleContextHolder.getLocale())])
-                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+                if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
                     titles.push(messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()))
                 }
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
@@ -166,7 +166,7 @@ class SurveyService {
                         messageSource.getMessage('surveyconfig.urlComment3.label', null, LocaleContextHolder.getLocale()),
                         messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale())])
 
-                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+                if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
                     titles.addAll([messageSource.getMessage('subscription.comment.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
@@ -199,7 +199,7 @@ class SurveyService {
                 titles.push(messageSource.getMessage('surveyInfo.owner.label', null, LocaleContextHolder.getLocale()))
                 titles.push(messageSource.getMessage('surveyConfigsInfo.comment', null, LocaleContextHolder.getLocale()))
                 titles.push(messageSource.getMessage('surveyInfo.endDate.label', null, LocaleContextHolder.getLocale()))
-                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+                if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
                     titles.addAll([messageSource.getMessage('surveyconfig.url.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyconfig.urlComment.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyconfig.url2.label', null, LocaleContextHolder.getLocale()),
@@ -247,7 +247,7 @@ class SurveyService {
                     row.add([field: surveyOrg.org.name ?: '', style: null])
                     row.add([field: surveyOrg.ownerComment ?: '', style: null])
 
-                    if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+                    if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
 
                         OrgRole orgRole = Subscription.findAllByInstanceOf(surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription)) : null
                         subscription =  orgRole ? orgRole.sub : null
@@ -264,7 +264,7 @@ class SurveyService {
                     row.add([field: surveyConfig.urlComment3 ?: '', style: null])
                     row.add([field: surveyConfig.comment ?: '', style: null])
 
-                    if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+                    if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
                         row.add([field: subscription?.comment ? subscription.comment : '', style: null])
                         //Performance lastig providers und agencies
                         row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
@@ -334,7 +334,7 @@ class SurveyService {
                 row.add([field: surveyConfig.comment ?: '', style: null])
                 row.add([field: surveyConfig.surveyInfo.endDate ? Date.parse('yyyy-MM-dd hh:mm:SS.S', surveyConfig.surveyInfo.endDate.toString()).format("dd.MM.yyy") : '', style: null])
 
-                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+                if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
                     row.add([field: surveyConfig.url ?: '', style: null])
                     row.add([field: surveyConfig.urlComment ?: '', style: null])
                     row.add([field: surveyConfig.url2 ?: '', style: null])
@@ -444,7 +444,7 @@ class SurveyService {
 
                 titles.addAll([messageSource.getMessage('org.sortname.label', null, LocaleContextHolder.getLocale()),
                                messageSource.getMessage('surveyParticipants.label', null, LocaleContextHolder.getLocale())])
-                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT ) {
+                if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT] ) {
                     titles.push(messageSource.getMessage('surveyProperty.subName', null, LocaleContextHolder.getLocale()))
                 }
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
@@ -458,7 +458,7 @@ class SurveyService {
                                messageSource.getMessage('surveyconfig.url3.label', null, LocaleContextHolder.getLocale()),
                                messageSource.getMessage('surveyconfig.urlComment3.label', null, LocaleContextHolder.getLocale())])
 
-                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT ) {
+                if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT] ) {
                     titles.addAll([messageSource.getMessage('surveyProperty.subProvider', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyProperty.subAgency', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('default.status.label', null, LocaleContextHolder.getLocale()),
@@ -481,7 +481,7 @@ class SurveyService {
                     row.add([field: surveyOrg.org.sortname ?: '', style: null])
                     row.add([field: surveyOrg.org.name ?: '', style: null])
 
-                    if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+                    if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
 
                         OrgRole orgRole = Subscription.findAllByInstanceOf(surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription)) : null
                         subscription =  orgRole ? orgRole.sub : null
@@ -498,7 +498,7 @@ class SurveyService {
                     row.add([field: surveyConfig.url3 ?: '', style: null])
                     row.add([field: surveyConfig.urlComment3 ?: '', style: null])
 
-                    if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+                    if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
                         row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                         row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
@@ -565,7 +565,7 @@ class SurveyService {
                 row.add([field: surveyName ?: '', style: null])
                 row.add([field: surveyConfig.surveyInfo.type?.getI10n('value') ?: '', style: null])
 
-                if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+                if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
                     subscription = surveyConfig.subscription.getDerivedSubscriptionBySubscribers(contextOrg) ?: null
                     row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                     row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
@@ -711,7 +711,7 @@ class SurveyService {
                         row.add([field: surveyResult.participant.sortname ?: '', style: null])
                         row.add([field: surveyResult.participant.name ?: '', style: null])
 
-                        if (surveyResult.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyResult.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+                        if (surveyResult.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
 
                             OrgRole orgRole = Subscription.findAllByInstanceOf(surveyResult.surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(participant, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyResult.surveyConfig.subscription)) : null
                             subscription =  orgRole ? orgRole.sub : null
@@ -729,7 +729,7 @@ class SurveyService {
                         row.add([field: surveyResult.surveyConfig.urlComment3 ?: '', style: null])
                         row.add([field: surveyResult.surveyConfig.comment ?: '', style: null])
 
-                        if (surveyResult.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION || surveyResult.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+                        if (surveyResult.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
                             //Performance lastig providers und agencies
                             row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                             row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])

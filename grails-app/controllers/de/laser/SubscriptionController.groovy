@@ -776,7 +776,7 @@ class SubscriptionController {
         } else {
             log.error("Unable to locate subscription instance")
         }
-        redirect action: 'renewEntitlementsWithSurvey', params: [targetObjectId: result.subscription.id, surveyConfigID: result.surveyConfig.id]
+        redirect(url: request.getHeader("referer"))
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
@@ -787,7 +787,7 @@ class SubscriptionController {
         result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
         if(subscriptionService.deleteEntitlementbyID(result.subscription,params.singleTitle))
             log.debug("Deleted ie ${params.singleTitle} from sub ${result.subscription.id}")
-        redirect action: 'renewEntitlementsWithSurvey', params: [targetObjectId: result.subscription.id, surveyConfigID: result.surveyConfig?.id]
+        redirect(url: request.getHeader("referer"))
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
@@ -966,11 +966,14 @@ class SubscriptionController {
         if(params.tab == 'selectedIEs') {
             sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, params+[ieAcceptStatusNotFixed: true])
         }
+
         List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, [max: 5000, offset: 0])
         List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
+        List<IssueEntitlement> notFixedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub)
+
         result.subjects = subscriptionService.getSubjects(allIEs.collect {it.tipp.title.id})
         result.seriesNames = subscriptionService.getSeriesNames(allIEs.collect {it.tipp.title.id})
-        result.countSelectedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub).size()
+        result.countSelectedIEs = notFixedIEs.size()
         result.countAllIEs = allIEs.size()
         result.countAllSourceIEs = sourceIEs.size()
         result.num_ies_rows = sourceIEs.size()//subscriptionService.getIssueEntitlementsFixed(baseSub).size()
@@ -1019,7 +1022,10 @@ class SubscriptionController {
             }
             else flash.error = ctrlResult.result.error
         }
-        redirect action: 'renewEntitlementsWithSurvey', id: params.id, params: [targetObjectId: params.id, surveyConfigID: ctrlResult.result.surveyConfig?.id]
+        else {
+            flash.message = ctrlResult.result.message
+        }
+        redirect(url: request.getHeader("referer"))
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)

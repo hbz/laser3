@@ -52,6 +52,7 @@ class SurveyConfig {
     boolean costItemsFinish
     boolean evaluationFinish
     boolean subSurveyUseForTransfer
+    //Nicht mehr nötig?
     boolean createTitleGroups = false
 
     String transferWorkflow

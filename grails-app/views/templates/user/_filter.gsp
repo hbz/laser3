@@ -11,18 +11,18 @@
             </div>
 
             <div class="field">
-                <label for="authority"><g:message code="user.role"/></label>
+                <label for="role"><g:message code="user.role"/></label>
                 <g:select from="${filterableRoles}"
                           noSelection="${['' : message(code:'accessMethod.all')]}"
                           class="ui dropdown"
-                          value="${params.authority}" optionKey="id" optionValue="${{message(code:'cv.roles.'+it.authority)}}" id="authority" name="authority" />
+                          value="${params.role}" optionKey="${{genericOIDService.getOID(it)}}" optionValue="${{message(code:'cv.roles.'+it.authority)}}" id="role" name="role" />
             </div>
 
             <g:if test="${orgField}">
                 <div class="field">
                     <label for="org"><g:message code="user.org"/></label>
                     <g:select from="${availableComboOrgs}" noSelection="${['':"${contextService.getOrg().getDesignation()}"]}" class="ui search dropdown"
-                              value="${params.org}" optionKey="id" optionValue="${{it.getDesignation()}}" id="org" name="org" />
+                              value="${params.org}" optionKey="${{genericOIDService.getOID(it)}}" optionValue="${{it.getDesignation()}}" id="org" name="org" />
                 </div>
             </g:if>
 

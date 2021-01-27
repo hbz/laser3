@@ -932,7 +932,7 @@ class OrganisationController  {
         }
 
         Map filterParams = params
-        filterParams.org = result.orgInstance
+        filterParams.org = genericOIDService.getOID(result.orgInstance)
 
         result.users = userService.getUserSet(filterParams)
         result.titleMessage = "${result.orgInstance.name} - ${message(code:'org.nav.users')}"
@@ -979,7 +979,7 @@ class OrganisationController  {
                 redirect action: 'editUser', params: [uoid: params.uoid, id: params.id]
                 return
             }
-            else if (affils.size() == 1 && (affils.get(0).id != contextService.getOrg().id)) {
+            else if (affils.size() == 1 && ! result.editable) {
                 flash.error = message(code: 'user.delete.error.foreignOrg') as String
                 redirect action: 'editUser', params: [uoid: params.uoid, id: params.id]
                 return
