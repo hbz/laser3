@@ -294,8 +294,10 @@
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
                                 <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig.id}"
-                                        params="${[targetObjectId: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(institution)?.id]}" class="ui icon button">
-                                    <i class="write icon"></i>
+                                        params="${[targetObjectId: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(institution)?.id]}" class="ui icon button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                    <i aria-hidden="true" class="write icon"></i>
                                 </g:link>
                             </span>
                         </g:if>
@@ -303,8 +305,10 @@
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"
-                                        class="ui icon button">
-                                    <i class="write icon"></i>
+                                        class="ui icon button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                    <i aria-hidden="true" class="write icon"></i>
                                 </g:link>
                             </span>
                         </g:else>

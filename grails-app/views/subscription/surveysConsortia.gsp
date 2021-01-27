@@ -205,8 +205,10 @@
                           data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                         <g:link controller="survey" action="show" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig?.id]"
-                                class="ui button icon">
-                            <i class="write icon"></i>
+                                class="ui icon button"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.change.universal')}">
+                            <i aria-hidden="true" class="write icon"></i>
                         </g:link>
                     </span>
                 </td>

@@ -250,8 +250,10 @@
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="survey" action="evaluationParticipant"
-                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]" class="ui icon button">
-                                    <i class="write icon"></i>
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]" class="ui icon button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                    <i aria-hidden="true" class="write icon"></i>
                                 </g:link>
                             </span>
                         </g:if>
@@ -259,8 +261,10 @@
                         <g:if test="${surveyConfig.pickAndChoose}">
                             <g:link controller="survey" action="surveyTitlesSubscriber"
                                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
-                                    class="ui icon button"><i
-                                    class="write icon"></i>
+                                    class="ui icon button"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                <i aria-hidden="true" class="write icon"></i>
                             </g:link>
                         </g:if>
 

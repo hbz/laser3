@@ -174,7 +174,7 @@
                                 data-tooltip="${message(code:'subscription.details.viewMember.label')}"
                                 data-position="left center"
                         >
-                            <i class="write icon"></i></g:link>
+                            <i aria-hidden="true" class="write icon"></i></g:link>
                     </td>
                 </tr>
             </g:each>

@@ -15,8 +15,10 @@
 
             <g:if test="${overwriteEditable}">
                         <div class="content la-space-right">
-                        <button class="ui mini icon button" type="button" onclick="JSPC.app.editPerson(${person.id})" >
-                            <i class="write icon"></i>
+                        <button class="ui mini icon button" type="button" onclick="JSPC.app.editPerson(${person.id})"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.change.universal')}">
+                            <i aria-hidden="true" class="write icon"></i>
                         </button>
                         </div>
             </g:if>

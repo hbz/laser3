@@ -56,8 +56,11 @@
 							<td>${fieldValue(bean: taskInstance, field: "endDate")}</td>
 
 							<td class="x">
-								<g:link action="show" id="${taskInstance.id}" class="ui icon button">
-									<i class="write icon"></i>
+								<g:link action="show" id="${taskInstance.id}"
+									class="ui icon button"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.change.universal')}">
+									<i aria-hidden="true" class="write icon"></i>
 								</g:link>
 							</td>
 						</tr>

@@ -130,7 +130,10 @@
                     </g:if>
                 </td>
                 <td>
-                    <g:link controller="license" action="show" id="${lic.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                    <g:link controller="license" action="show" id="${lic.id}" class="ui icon button"
+                            role="button"
+                            aria-label="${message(code: 'ariaLabel.change.universal')}">
+                        <i aria-hidden="true" class="write icon"></i></g:link>
                 </td>
                 <td>
                     <g:link action="linkMemberLicensesToSubs" id="${lic.id}"><semui:totalNumber total="${row.subs ?: 0}"/></g:link>

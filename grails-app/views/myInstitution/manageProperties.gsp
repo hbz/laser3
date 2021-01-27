@@ -264,7 +264,11 @@
                                 </div>
                             </td>
                             <td class="x">
-                                <g:link controller="${objWithoutProp.displayController}" action="show" id="${objWithoutProp.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                                <g:link controller="${objWithoutProp.displayController}" action="show" id="${objWithoutProp.id}" class="ui icon button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                    <i aria-hidden="true" class="write icon"></i>
+                                </g:link>
                             </td>
                         </tr>
                     </g:each>
@@ -502,7 +506,11 @@
                             </td>
 
                             <td class="x">
-                                <g:link controller="${row.displayController}" action="${row.displayAction}" id="${row.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                                <g:link controller="${row.displayController}" action="${row.displayAction}" id="${row.id}" class="ui icon button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                    <i aria-hidden="true" class="write icon"></i>
+                                </g:link>
                                 <g:if test="${row.manageChildren}">
                                     <g:link controller="${row.displayController}" action="${row.manageChildren}" params="${row.manageChildrenParams}" class="ui icon button"><i class="users icon"></i></g:link>
                                 </g:if>

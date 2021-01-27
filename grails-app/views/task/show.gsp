@@ -78,9 +78,11 @@
 				<g:form>
 					<g:hiddenField id="task_id_${taskInstance?.id}" name="id" value="${taskInstance?.id}" />
 					<div class="ui form-actions">
-						<g:link class="ui button" action="edit" id="${taskInstance?.id}">
-							<i class="write icon"></i>
-							<g:message code="default.button.edit.label" />
+						<g:link action="edit" id="${taskInstance?.id}"
+								class="ui icon button"
+								role="button"
+								aria-label="${message(code: 'ariaLabel.change.universal')}">
+							<i aria-hidden="true" class="write icon"></i>
 						</g:link>
 						<button class="ui negative button" type="submit" name="_action_delete">
 							<i class="trash alternate icon"></i>

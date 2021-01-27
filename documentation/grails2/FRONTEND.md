@@ -81,7 +81,7 @@ Mind the convention of data-confirm-id in form element and inner button element
 <g:form controller="person" action="delete" data-confirm-id="${person?.id?.toString()+ '_form'}">
     <g:hiddenField name="id" value="${person?.id}" />
         <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
-            <i class="write icon"></i>
+            <i aria-hidden="true" class="write icon"></i>
         </g:link>
         <div class="ui icon negative button js-open-confirm-modal"
              data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact.addressbook", args: [person?.toString()])}"

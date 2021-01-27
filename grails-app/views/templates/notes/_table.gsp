@@ -53,8 +53,10 @@
                         </g:if>
 
                         <g:if test="${! docctx.sharedFrom}">
-                            <a onclick="JSPC.app.noteedit(${docctx.owner.id});" class="ui icon button">
-                                <i class="write icon"></i>
+                            <a onclick="JSPC.app.noteedit(${docctx.owner.id});" class="ui icon button"
+                               role="button"
+                               aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                <i aria-hidden="true" class="write icon"></i>
                             </a>
                             <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button"
                                     params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'>
