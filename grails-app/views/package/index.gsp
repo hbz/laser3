@@ -137,9 +137,19 @@
                                 </g:each>
                                 </div>
                             </td>
-                            <%-- TODO GOKb needs to deliver output --%>
-                            <td>${record.source ?: ""}</td>
-                            <td>${record.contentType}</td>
+                            <td>
+                                <g:if test="${record.source.automaticUpdates}">
+                                    <g:message code="package.index.result.automaticUpdates"/>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${record.source.frequency}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <g:message code="package.index.result.noAutomaticUpdates"/>
+                                </g:else>
+                            </td>
+                            <td><semui:listIcon type="${record.contentType}"/></td>
                             <sec:ifAllGranted roles="ROLE_YODA">
                                 <td>
                                     <g:link class="ui button" controller="yoda" action="retriggerPendingChanges" params="${[packageUUID:record.uuid]}"><g:message code="menu.yoda.retriggerPendingChanges"/></g:link>
