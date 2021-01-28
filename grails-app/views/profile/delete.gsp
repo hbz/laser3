@@ -29,14 +29,14 @@
             <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
         </g:if>
 
-        <g:form controller="profile" action="deleteProfile" data-confirm-id="deleteProfileForm_form" params="${[id: user.id, process: true]}">
+        <g:form controller="profile" action="delete" data-confirm-id="deleteProfile_form" params="${[id: user.id, process: true]}">
 
             <g:link controller="profile" action="index" class="ui button">${message(code: 'default.button.cancel.label')}</g:link>
 
             <g:if test="${delResult.deletable}">
                 <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
                     <g:if test="${substituteList}">
-                        <div class="ui negative button js-open-confirm-modal" data-confirm-id="deleteProfileForm"
+                        <div class="ui negative button js-open-confirm-modal" data-confirm-id="deleteProfile"
                              data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.profile")}" data-confirm-term-how="delete">
                                 ${message(code:'deletion.user')}
                         </div>
@@ -56,7 +56,7 @@
                     </g:else>
                 </g:if>
                 <g:elseif test="${delResult.status != DeletionService.RESULT_ERROR}">
-                    <div class="ui negative button js-open-confirm-modal" data-confirm-id="deleteProfileForm"
+                    <div class="ui negative button js-open-confirm-modal" data-confirm-id="deleteProfile"
                          data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.profile")}" data-confirm-term-how="delete">
                             ${message(code:'deletion.user')}
                     </div>

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3064    28.01.2021  rc2.0   2.0         David   Feature     Aussagekräftige (Fehler-)Meldungen im Benutzerprofil
+
 3095    27.01.2021  rc2.0   2.0         David   Bug         Filter funktioniert nicht: Nutzerverwaltung
 
 3069    27.01.2021  rc2.0   2.0         David               Performance-Problem: AdminController > Nutzerverwaltung

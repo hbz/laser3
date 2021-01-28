@@ -54,6 +54,24 @@ jsqtk = {
         console.groupEnd()
     },
 
+    help: function() {
+        console.log(
+            'jsqtk.help()      -> returns this help \n' +
+            '  \n' +
+            'jsqtk.history()   -> returns existing history \n' +
+            'jsqtk.info(id)    -> returns $(*[data-jsqtk-id="jsqtk-<id>"]) \n' +
+            'jsqtk.forms()     -> returns $(forms) \n' +
+            'jsqtk.headlines() -> returns $(h{1..6}) \n'
+        )
+    },
+
+    history: function () {
+        console.log('jsqtk.history()')
+        $.each(jsqtk.el_keys, function (i, e) {
+            console.log(e)
+        })
+    },
+
     info: function (id) {
         console.log('jsqtk.info()')
         let elem = $('*[data-jsqtk-id="jsqtk-' + id + '"]')
@@ -69,10 +87,17 @@ jsqtk = {
         }
     },
 
-    history: function () {
-        console.log('jsqtk.history()')
-        $.each(jsqtk.el_keys, function (i, e) {
-            console.log(e)
+    forms: function() {
+        console.log('jsqtk.forms()')
+        $.each($('form'), function (i, elem) {
+            console.log(elem)
+        })
+    },
+
+    headlines: function() {
+        console.log('jsqtk.headlines()')
+        $.each($('h1,h2,h3,h4,h5,h6'), function (i, elem) {
+            console.log(elem)
         })
     },
 
@@ -160,3 +185,5 @@ jsqtk = {
         })
     }
 }
+
+window.$$$ = jsqtk // tmp. shortcut
