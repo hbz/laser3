@@ -13,6 +13,8 @@
 
 3069    27.01.2021  rc2.0   2.0         David               Performance-Problem: AdminController > Nutzerverwaltung
 
+3086    27.01.2021  rc2.0   2.0         Andreas Feature     verbleibende Ausgaben in Alle Pakete nachgereicht
+
 3029    26.01.2021  dev     2.0         Moe     Feature     Umfrage: Konsortialstelle soll es möglich sein einzele Teilnehmer-Umfrage abzuschließen
 
 3019    26.01.2021  dev     2.0         Moe     Feature     Titelumfrage: Komforfunktion für Löschen von Titel für Umfrageteilnehmer
