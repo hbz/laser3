@@ -21,7 +21,7 @@
             <g:if test="${orgField}">
                 <div class="field">
                     <label for="org"><g:message code="user.org"/></label>
-                    <g:select from="${availableComboOrgs}" noSelection="${['':"${contextService.getOrg().getDesignation()}"]}" class="ui search dropdown"
+                    <g:select from="${availableComboOrgs}" noSelection="${['': message(code:'accessMethod.all')]}" class="ui search dropdown"
                               value="${params.org}" optionKey="${{genericOIDService.getOID(it)}}" optionValue="${{it.getDesignation()}}" id="org" name="org" />
                 </div>
             </g:if>

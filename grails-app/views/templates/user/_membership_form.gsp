@@ -1,7 +1,7 @@
 <%@ page import="de.laser.auth.*" %>
 <laser:serviceInjection />
 <g:if test="${tmplProfile}"><%-- /profile/index --%>
-    <g:form name="affiliationRequestForm" controller="profile" action="processJoinRequest" class="ui form" method="get">
+    <g:form controller="profile" action="addAffiliation" class="ui form addAffiliationForm" method="get">
 
         <div class="two fields">
             <div class="field">
