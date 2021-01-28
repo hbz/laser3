@@ -65,10 +65,16 @@ class GokbService {
                     r.curatoryGroups.each{ curatoryGroup ->
                         pkg.curatoryGroups.add(curatoryGroup)
                     }
-                    //TODO GOKb needs to deliver the counterpoint
+
                     pkg.source = [:]
-                    r.sources.each { source ->
-                        //pkg.sources.add(source)
+
+                    if(r.source) {
+                        pkg.source.lastRun = r.source.lastRun
+                        pkg.source.name = r.source.name
+                        pkg.source.automaticUpdates = Boolean.valueOf(r.source.automaticUpdates)
+                        if(r.source.url)
+                            pkg.source.url = new URL(r.source.url)
+                        pkg.source.frequency = r.source.frequency
                     }
 
                     pkg.titleCount = r.titleCount
@@ -132,10 +138,15 @@ class GokbService {
                     r.curatoryGroups?.each{ curatoryGroup ->
                         pkg.curatoryGroups.add(curatoryGroup);
                     }
-                    //TODO GOKb needs to deliver the counterpoint
-                    pkg.source = [:]
-                    r.sources.each { source ->
 
+                    pkg.source = [:]
+                    if(r.source) {
+                        pkg.source.lastRun = r.source.lastRun
+                        pkg.source.name = r.source.name
+                        pkg.source.automaticUpdates = Boolean.valueOf(r.source.automaticUpdates)
+                        if(r.source.url)
+                            pkg.source.url = new URL(r.source.url)
+                        pkg.source.frequency = r.source.frequency
                     }
 
                     pkg.titleCount = r.titleCount
