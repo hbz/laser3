@@ -199,7 +199,7 @@ class ProfileController {
                 flash.message += message(code:'profile.updateProfile.updated.email')
             }
             else {
-                flash.error = message(code:'profile.updateProfile.updated.email.error')
+                flash.error = message(code:'profile.updateProfile.updated.email.error') as String
             }
         }
 
@@ -549,7 +549,7 @@ class ProfileController {
             was_isRemindByEmail = params.isRemindByEmail
             flash.message += message(code:'profile.updateProfile.updated.isRemindByEmail')
             if ( ! user.email && was_isRemindByEmail.equals(RDStore.YN_YES)) {
-                flash.error = message(code:'profile.updateProfile.updated.isRemindByEmail.error')
+                flash.error = message(code:'profile.updateProfile.updated.isRemindByEmail.error') as String
             }
         }
         user.save()
@@ -576,7 +576,7 @@ class ProfileController {
             }
         }
         else {
-            flash.error = message(code:'profile.password.update.enterValidCurrentPassword')
+            flash.error = message(code:'profile.password.update.enterValidCurrentPassword') as String
         }
         redirect(action: "index")
     }
