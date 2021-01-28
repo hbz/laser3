@@ -16,7 +16,7 @@
 
 <semui:controlButtons>
     <semui:actionsDropdown>
-        <g:link class="ui item" controller="profile" action="deleteProfile">
+        <g:link class="ui item" controller="profile" action="delete">
             ${message(code:'profile.account.delete.button')}
         </g:link>
     </semui:actionsDropdown>
@@ -39,27 +39,24 @@
 
                     <g:form action="updateProfile" class="ui form updateProfile">
                         <div class="field">
-                            <label>${message(code: 'profile.username')}</label>
-                            <input type="text" readonly="readonly" value="${user.username}"/>
+                            <label for="profile_username">${message(code: 'profile.username')}</label>
+                            <input type="text" readonly="readonly" id="profile_username" value="${user.username}"/>
                         </div>
-
                         <div class="field ">
-                            <label>${message(code: 'profile.display')}</label>
-                            <input type="text" name="userDispName" value="${user.display}"/>
+                            <label for="profile_display">${message(code: 'profile.display')}</label>
+                            <input type="text" name="profile_display" id="profile_display" value="${user.display}"/>
                         </div>
-
                         <div class="field required">
-                            <label>${message(code: 'profile.email')}</label>
-                            <input type="text" id="email" name="email" value="${user.email}"/>
+                            <label for="profile_email">${message(code: 'profile.email')}</label>
+                            <input type="text" name="profile_email" id="profile_email" value="${user.email}"/>
                         </div>
 
                         <div class="field">
-                            <label>${message(code: 'profile.dash')}</label>
-
-                            <select name="defaultDash" value="${user.getSettingsValue(KEYS.DASHBOARD)?.id}" class="ui fluid dropdown">
+                            <label for="profile_dashboard">${message(code: 'profile.dash')}</label>
+                            <select name="profile_dashboard" id="profile_dashboard" class="ui fluid dropdown">
                                 <option value=""></option>
                                 <g:each in="${user.authorizedOrgs}" var="o">
-                                    <option value="${o.class.name}:${o.id}" ${user.getSettingsValue(KEYS.DASHBOARD)?.id==o.id?'selected':''}>${o.name}</option>
+                                    <option value="${o.class.name}:${o.id}" ${user.getSettingsValue(KEYS.DASHBOARD)?.id == o.id ? 'selected' : ''}>${o.name}</option>
                                 </g:each>
                             </select>
                         </div>
@@ -67,7 +64,79 @@
                         <div class="field">
                             <button type="submit" class="ui button">${message(code: 'profile.update.button')}</button>
                         </div>
-                    </g:form>
+                    </g:form><!-- updateProfile -->
+
+                </div><!-- .content -->
+            </div><!-- .card -->
+
+            <div class="ui card">
+                <div class="content">
+                    <h2 class="ui dividing header">
+                        ${message(code: 'profile.notification.label')}
+                    </h2>
+
+                    <g:form action="updateNotificationSettings" class="ui form updateNotificationSettings">
+                        <div class="inline field">
+                            <div class="ui checkbox">
+                                <g:set var="isNotificationByEmail" value="${user.getSetting(KEYS.IS_NOTIFICATION_BY_EMAIL, RDStore.YN_NO).rdValue == RDStore.YN_YES}"/>
+                                <input type="checkbox" name="isNotificationByEmail" id="isNotificationByEmail" class="hidden" value="Y" ${isNotificationByEmail?'checked':''}/>
+                                <label for="isNotificationByEmail">${message(code: 'profile.isNotificationByEmail')}</label>
+                            </div>
+                        </div>
+                        <div class="inline field">
+                            <div class="ui checkbox">
+                                <g:set var="isNotificationCCByEmail" value="${user.getSetting(KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO).rdValue == RDStore.YN_YES}"/>
+                                <input type="checkbox" name="isNotificationCCByEmail" id="isNotificationCCByEmail" class="hidden" value="Y" ${isNotificationCCByEmail?'checked':''}/>
+                                <label for="isNotificationCCByEmail">${message(code: 'profile.isNotificationCCByEmail')}</label>
+                            </div>
+                            <g:set var="notificationCCEmailaddress" value="${user.getSettingsValue(KEYS.NOTIFICATION_CC_EMAILADDRESS)}"/>
+                            <input type="text" id="emailCC" name="notificationCCEmailaddress" value="${notificationCCEmailaddress}"/>
+                        </div>
+
+                        <table class="ui celled la-table compact table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>${message(code: 'profile.notification.for.label')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="ui checkbox">
+                                            <g:set var="isNotificationForSurveysStart" value="${user.getSetting(KEYS.IS_NOTIFICATION_FOR_SURVEYS_START, RDStore.YN_NO).rdValue==RDStore.YN_YES}"/>
+                                            <input type="checkbox" name="isNotificationForSurveysStart" class="hidden" value="Y" ${isNotificationForSurveysStart?'checked':''}/>
+                                        </div>
+                                    </td>
+                                    <td>${message(code: 'profile.notification.for.SurveysStart')}</td>
+                                </tr>
+                                <g:if test="${contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM'}">
+                                    <tr>
+                                        <td>
+                                            <div class="ui checkbox">
+                                                <g:set var="isNotificationForSurveysParticipationFinish" value="${user.getSetting(KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_NO).rdValue==RDStore.YN_YES}"/>
+                                                <input type="checkbox" name="isNotificationForSurveysParticipationFinish" class="hidden" value="Y" ${isNotificationForSurveysParticipationFinish?'checked':''}/>
+                                            </div>
+                                        </td>
+                                        <td>${message(code: 'profile.notification.for.SurveysParticipationFinish')}</td>
+                                    </tr>
+                                </g:if>
+                                <tr>
+                                    <td>
+                                        <div class="ui checkbox">
+                                            <g:set var="isNotificationForSystemMessages" value="${user.getSetting(KEYS.IS_NOTIFICATION_FOR_SYSTEM_MESSAGES, RDStore.YN_NO).rdValue==RDStore.YN_YES}"/>
+                                            <input type="checkbox" name="isNotificationForSystemMessages" class="hidden" value="Y" ${isNotificationForSystemMessages?'checked':''}/>
+                                        </div>
+                                    </td>
+                                    <td>${message(code: 'profile.notification.for.SystemMessages')}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="inline field">
+                            <button type="submit" class="ui button" id="notificationSubmit">${message(code: 'profile.notification.submit')}</button>
+                        </div>
+                    </g:form><!-- updateNotificationSettings -->
 
                 </div><!-- .content -->
             </div><!-- .card -->
@@ -84,14 +153,14 @@
                             <div class="ui checkbox">
                                 <g:set var="isRemindByEmail" value="${user.getSetting(KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue == RDStore.YN_YES}"/>
                                 <input type="checkbox" name="isRemindByEmail" id="isRemindByEmail" class="hidden" value="Y" ${isRemindByEmail?'checked':''}/>
-                                <label>${message(code: 'profile.isRemindByEmail')}</label>
+                                <label for="isRemindByEmail">${message(code: 'profile.isRemindByEmail')}</label>
                             </div>
                         </div>
                         <div class="inline field">
                             <div class="ui checkbox">
                                 <g:set var="isRemindCCByEmail" value="${user.getSetting(KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO).rdValue == RDStore.YN_YES}"/>
                                 <input type="checkbox" name="isRemindCCByEmail" id="isRemindCCByEmail" class="hidden" value="Y" ${isRemindCCByEmail?'checked':''}/>
-                                <label>${message(code: 'profile.isRemindCCByEmail')}</label>
+                                <label for="isRemindCCByEmail">${message(code: 'profile.isRemindCCByEmail')}</label>
                             </div>
                             <g:set var="remindCCEmailaddress" value="${user.getSettingsValue(KEYS.REMIND_CC_EMAILADDRESS)}"/>
                             <input type="text" id="emailCC" name="remindCCEmailaddress" value="${remindCCEmailaddress}"/>
@@ -125,7 +194,6 @@
                                         <div class="ui checkbox">
                                             <g:set var="isSubscriptionsEnddate" value="${user.getSetting(KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE, RDStore.YN_YES).rdValue==RDStore.YN_YES}"/>
                                             <input type="checkbox" name="isSubscriptionsEnddate" class="hidden" value="Y" ${isSubscriptionsEnddate?'checked':''}/>
-                                            <label></label>
                                         </div>
                                     </td>
                                     <td>${message(code: 'profile.reminder.for.subscriptions.enddate')}</td>
@@ -260,7 +328,7 @@
                         <div class="inline field">
                             <button type="submit" class="ui button" id="reminderSubmit">${message(code: 'profile.reminder.submit')}</button>
                         </div>
-                    </g:form>
+                    </g:form><!-- updateReminderSettings -->
                 </div><!-- .content -->
             </div><!-- .card -->
 
@@ -307,28 +375,28 @@
                         </div>
                     </g:if>
 
-                    <g:form action="updatePassword" class="ui form">
+                    <g:form action="updatePassword" class="ui form updatePassword">
                         <div class="field required">
-                            <label>${message(code: 'profile.password.current')}</label>
-                            <input type="password" name="passwordCurrent"  class="pw"/>
+                            <label for="password_current">${message(code: 'profile.password.current')}</label>
+                            <input type="password" name="password_current" id="password_current" class="pw"/>
                         </div>
                         <div class="field required">
-                            <label>${message(code: 'profile.password.new')}</label>
-                            <input type="password" name="passwordNew"  class="pw pwn"/>
+                            <label for="password_new">${message(code: 'profile.password.new')}</label>
+                            <input type="password" name="password_new" id="password_new" class="pw pwn"/>
                         </div>
                         <div class="field required">
-                            <label>${message(code: 'profile.password.new.repeat')}</label>
-                            <input type="password" name="passwordNew2"  class="pw pwn"/>
+                            <label for="password_new_repeat">${message(code: 'profile.password.new.repeat')}</label>
+                            <input type="password" name="password_new_repeat" id="password_new_repeat" class="pw pwn"/>
                         </div>
                         <div class="field">
-                            <label>${message(code: 'profile.password.show')}</label>
-                            <input type="checkbox" name="showPasswords" id="passwordToggler">
+                            <label for="password_show_toggler">${message(code: 'profile.password.show')}</label>
+                            <input type="checkbox" name="showPasswords" id="password_show_toggler">
                         </div>
                         <div class="field">
                             <label></label>
-                            <button type="submit" class="ui button" id="passwordSubmit">${message(code: 'profile.password.update.button')}</button>
+                            <button type="submit" class="ui button" id="password_submit">${message(code: 'profile.password.update.button')}</button>
                         </div>
-                    </g:form>
+                    </g:form><!-- updatePassword -->
 
                 </div><!-- .content -->
             </div><!-- .card -->
@@ -347,7 +415,7 @@
                         </div>
                         --%>
                         <div class="field">
-                            <label>${message(code: 'profile.theme', default:'Theme')}</label>
+                            <label>${message(code: 'profile.theme')}</label>
                             <g:set var="US_THEME" value="${user.getSetting(KEYS.THEME, RefdataValue.getByValueAndCategory('default', RDConstants.USER_SETTING_THEME))}" />
                             <semui:xEditableRefData owner="${US_THEME}" field="rdValue" config="${US_THEME.key.rdc}" />
                         </div>
@@ -401,78 +469,6 @@
                 </div><!-- .content -->
             </div><!-- .card -->
 
-            <div class="ui card">
-                <div class="content">
-                    <h2 class="ui dividing header">
-                        ${message(code: 'profile.notification.label')}
-                    </h2>
-
-                    <g:form action="updateNotificationSettings" class="ui form updateNotificationSettings">
-                        <div class="inline field">
-                            <div class="ui checkbox">
-                                <g:set var="isNotificationByEmail" value="${user.getSetting(KEYS.IS_NOTIFICATION_BY_EMAIL, RDStore.YN_NO).rdValue == RDStore.YN_YES}"/>
-                                <input type="checkbox" name="isNotificationByEmail" id="isNotificationByEmail" class="hidden" value="Y" ${isNotificationByEmail?'checked':''}/>
-                                <label>${message(code: 'profile.isNotificationByEmail')}</label>
-                            </div>
-                        </div>
-                        <div class="inline field">
-                            <div class="ui checkbox">
-                                <g:set var="isNotificationCCByEmail" value="${user.getSetting(KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO).rdValue == RDStore.YN_YES}"/>
-                                <input type="checkbox" name="isNotificationCCByEmail" id="isNotificationCCByEmail" class="hidden" value="Y" ${isNotificationCCByEmail?'checked':''}/>
-                                <label>${message(code: 'profile.isNotificationCCByEmail')}</label>
-                            </div>
-                            <g:set var="notificationCCEmailaddress" value="${user.getSettingsValue(KEYS.NOTIFICATION_CC_EMAILADDRESS)}"/>
-                            <input type="text" id="emailCC" name="notificationCCEmailaddress" value="${notificationCCEmailaddress}"/>
-                        </div>
-
-                        <table class="ui celled la-table compact table">
-                            <thead>
-                            <tr>
-                                <th></th>
-                                <th>${message(code: 'profile.notification.for.label')}</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>
-                                    <div class="ui checkbox">
-                                        <g:set var="isNotificationForSurveysStart" value="${user.getSetting(KEYS.IS_NOTIFICATION_FOR_SURVEYS_START, RDStore.YN_NO).rdValue==RDStore.YN_YES}"/>
-                                        <input type="checkbox" name="isNotificationForSurveysStart" class="hidden" value="Y" ${isNotificationForSurveysStart?'checked':''}/>
-                                    </div>
-                                </td>
-                                <td>${message(code: 'profile.notification.for.SurveysStart')}</td>
-                            </tr>
-                            <g:if test="${contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM'}">
-                                <tr>
-                                    <td>
-                                        <div class="ui checkbox">
-                                            <g:set var="isNotificationForSurveysParticipationFinish" value="${user.getSetting(KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_NO).rdValue==RDStore.YN_YES}"/>
-                                            <input type="checkbox" name="isNotificationForSurveysParticipationFinish" class="hidden" value="Y" ${isNotificationForSurveysParticipationFinish?'checked':''}/>
-                                        </div>
-                                    </td>
-                                    <td>${message(code: 'profile.notification.for.SurveysParticipationFinish')}</td>
-                                </tr>
-                            </g:if>
-                            <tr>
-                                <td>
-                                    <div class="ui checkbox">
-                                        <g:set var="isNotificationForSystemMessages" value="${user.getSetting(KEYS.IS_NOTIFICATION_FOR_SYSTEM_MESSAGES, RDStore.YN_NO).rdValue==RDStore.YN_YES}"/>
-                                        <input type="checkbox" name="isNotificationForSystemMessages" class="hidden" value="Y" ${isNotificationForSystemMessages?'checked':''}/>
-                                    </div>
-                                </td>
-                                <td>${message(code: 'profile.notification.for.SystemMessages')}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-
-                        <div class="inline field">
-                            <button type="submit" class="ui button" id="notificationSubmit">${message(code: 'profile.notification.submit')}</button>
-                        </div>
-                    </g:form>
-
-                </div><!-- .content -->
-            </div><!-- .card -->
-
         </div><!-- .la-inline-lists -->
     </div><!-- .column -->
 
@@ -481,8 +477,6 @@
 <br />
 <br />
 <br />
-
-
 
 <div class="ui one column grid">
 
@@ -499,7 +493,7 @@
                         </h2>
 
                         <p style="word-break:normal">
-                            <g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser')} team for support." />
+                            <g:message code="profile.membership.request.text" />
                         </p>
 
                         <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, tmplProfile: true]" />
@@ -522,8 +516,7 @@
         }
     }
 
-                    $('.updateProfile')
-                            .form({
+                    $('.updateProfile').form({
                         on: 'blur',
                         inline: true,
                         fields: {
@@ -536,15 +529,14 @@
                                     }
                                 ]
                             }
-                         }
+                        }
                     });
-                    $('.la-js-changePassword .form')
-                            .form({
+                    $('.la-js-changePassword .form').form({
                         on: 'change',
                         inline: true,
                         fields: {
-                            passwordCurrent: {
-                                identifier  : 'passwordCurrent',
+                            password_current: {
+                                identifier  : 'password_current',
                                 rules: [
                                     {
                                         type   : 'empty',
@@ -552,8 +544,8 @@
                                     }
                                 ]
                             },
-                            passwordNew: {
-                                identifier  : 'passwordNew',
+                            password_new: {
+                                identifier  : 'password_new',
                                 rules: [
                                     {
                                         type   : 'empty',
@@ -561,23 +553,22 @@
                                     }
                                 ]
                             },
-                            passwordNew2: {
-                                identifier  : 'passwordNew2',
+                            password_new_repeat: {
+                                identifier  : 'password_new_repeat',
                                 rules: [
                                     {
                                         type   : 'empty',
                                         prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
                                     },
                                     {
-                                        type: 'match[passwordNew]',
+                                        type: 'match[password_new]',
                                         prompt : '{name} <g:message code="validation.mustMatch" default=" muss übereinstimmen" />'
                                     }
                                 ]
                             }
-                         }
+                        }
                     });
-                    $('.updateReminderSettings')
-                        .form({
+                    $('.updateReminderSettings').form({
                         on: 'blur',
                         inline: true,
                         fields: {
@@ -593,14 +584,14 @@
                         }
                     });
 
-        $('#passwordToggler').on('change', function(e) {
+        $('#password_show_toggler').on('change', function(e) {
             $('input.pw').attr('type', ($(this).is(":checked") ? 'text' : 'password'))
         })
 
-        $('#passwordSubmit').on('click', function(e) {
+        $('#password_submit').on('click', function(e) {
             e.preventDefault()
-            var pw1 = $('input[name=passwordNew]')
-            var pw2 = $('input[name=passwordNew2]')
+            var pw1 = $('input[name=password_new]')
+            var pw2 = $('input[name=password_new_repeat]')
 
             $('input.pwn').parents('div.field').removeClass('error')
 
