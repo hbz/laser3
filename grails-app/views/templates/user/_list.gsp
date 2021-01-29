@@ -102,7 +102,7 @@
                         <g:if test="${check2}">
 
                             <g:if test="${us.id == editor.id}">
-                                <g:link controller="profile" action="deleteProfile" class="ui icon negative button"><i class="trash alternate icon"></i></g:link>
+                                <g:link controller="profile" action="delete" class="ui icon negative button"><i class="trash alternate icon"></i></g:link>
                             </g:if>
                             <g:elseif test="${controllerName == 'user'}">
                                 <g:link controller="${controllerName}" action="${deleteLink}" params="${[id: us.id]}" class="ui icon negative button"><i class="trash alternate icon"></i></g:link>
