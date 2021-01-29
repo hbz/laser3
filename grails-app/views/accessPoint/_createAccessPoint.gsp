@@ -13,7 +13,7 @@
             <div class="field required">
                 <label>URL
                     <span class="la-long-tooltip la-popup-tooltip la-delay"
-                          data-tooltip="${message(code: "accessPoint.url.help")}">
+                          data-content="${message(code: "accessPoint.url.help")}">
                         <i class="question circle icon la-popup"></i></span>
                 </label>
                 <g:textField name="url" value="${url}" />
@@ -23,7 +23,7 @@
             <div class="field required">
                 <label>${message(code: 'accessPoint.oa.name.label')}
                     <span class="la-long-tooltip la-popup-tooltip la-delay"
-                          data-tooltip="${message(code:'accessPoint.oa.help')}">
+                          data-content="${message(code:'accessPoint.oa.help')}">
                         <i class="question circle icon la-popup"></i></span>
                 </label>
                 <g:field type="text" name="name" value="" />
@@ -40,7 +40,7 @@
             <div class="field required">
                 <label>${message(code: 'accessPoint.shibboleth.name.label')}
                     <span class="la-long-tooltip la-popup-tooltip la-delay"
-                          data-tooltip="${message(code:'accessPoint.shibboleth.help')}">
+                          data-content="${message(code:'accessPoint.shibboleth.help')}">
                         <i class="question circle icon la-popup"></i></span>
                 </label>
                 <g:field type="text" name="name" value="" />

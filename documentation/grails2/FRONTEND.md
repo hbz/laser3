@@ -136,6 +136,7 @@ Mind the convention of data-confirm-id in form element and inner button element
                   data-done="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
                   data-update="${custom_props_div}"
                   role="button"
+                  ariaLabel="Löschen"
 >
     <i class="trash alternate icon"></i>
 </laser:remoteLink>

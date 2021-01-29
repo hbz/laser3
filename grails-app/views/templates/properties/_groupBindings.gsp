@@ -102,7 +102,10 @@
                                                   ]'
                                                   onComplete="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                   data-update="propDefGroupBindingConfig"
-                                                  class="ui icon negative button">
+                                                  class="ui icon negative button"
+                                                      role="button"
+                                                      ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
+                                    >
                                         <i class="icon times"></i>
                                     </laser:remoteLink>
                                 </g:else>
