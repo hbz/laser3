@@ -1001,18 +1001,18 @@ class FinanceService {
                     else {
                         // TODO [ticket=1789]
                         // List<TitleInstance> titleMatches = TitleInstance.executeQuery("select distinct idOcc.ti from IdentifierOccurrence idOcc join idOcc.identifier id where id.value = :idCandidate and id.ns in :namespaces",[idCandidate: ieIdentifier, namespaces: [namespaces.isbn,namespaces.doi,namespaces.zdb,namespaces.issn,namespaces.eissn]])
-                        List<TitleInstance> titleMatches = TitleInstance.executeQuery("select distinct id.ti from Identifier id where id.value = :idCandidate and id.ns in :namespaces", [idCandidate: ieIdentifier, namespaces: [namespaces.isbn,namespaces.doi,namespaces.zdb,namespaces.issn,namespaces.eissn]])
+                        List<TitleInstancePackagePlatform> titleMatches = TitleInstancePackagePlatform.executeQuery("select distinct id.tipp from Identifier id where id.value = :idCandidate and id.ns in :namespaces", [idCandidate: ieIdentifier, namespaces: [namespaces.isbn,namespaces.doi,namespaces.zdb,namespaces.issn,namespaces.eissn]])
                         if(!titleMatches)
                             mappingErrorBag.noValidTitle = ieIdentifier
                         else if(titleMatches.size() > 1)
                             mappingErrorBag.multipleTitleError = titleMatches.collect { ti -> ti.title }
                         else if(titleMatches.size() == 1) {
-                            TitleInstance tiMatch = titleMatches[0]
-                            List<IssueEntitlement> ieMatches = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription and tipp.title = :titleInstance',[subscription:subscription,titleInstance:tiMatch])
+                            TitleInstancePackagePlatform tiMatch = titleMatches[0]
+                            List<IssueEntitlement> ieMatches = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription ',[subscription:subscription,titleInstance:tiMatch])
                             if(!ieMatches)
                                 mappingErrorBag.noValidEntitlement = ieIdentifier
                             else if(ieMatches.size() > 1)
-                                mappingErrorBag.multipleEntitlementError = ieMatches.collect { entMatch -> "${entMatch.subscription.dropdownNamingConvention(contextOrg)} - ${entMatch.tipp.title.title}" }
+                                mappingErrorBag.multipleEntitlementError = ieMatches.collect { entMatch -> "${entMatch.subscription.dropdownNamingConvention(contextOrg)} - ${entMatch.tipp.name}" }
                             else if(ieMatches.size() == 1) {
                                 ie = ieMatches[0]
                                 if(ie.tipp.pkg.gokbId != subPkg.pkg.gokbId)

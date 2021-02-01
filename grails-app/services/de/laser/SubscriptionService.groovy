@@ -557,7 +557,7 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
                         [sub: subscription, del: RDStore.TIPP_STATUS_DELETED])
                 : []
-        ies.sort {it.tipp.title.title}
+        ies.sort {it.tipp.sortName}
         ies
     }
 
@@ -591,7 +591,7 @@ class SubscriptionService {
                     qry_params.startDate = date_filter
                     qry_params.endDate = date_filter
                 }
-                base_qry += "and ( ( lower(ie.tipp.title.title) like :title ) or ( exists ( from Identifier ident where ident.ti.id = ie.tipp.title.id and ident.value like :identifier ) ) ) "
+                base_qry += "and ( ( lower(ie.tipp.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) ) "
                 qry_params.title = "%${params.filter.trim().toLowerCase()}%"
                 qry_params.identifier = "%${params.filter}%"
             } else {
@@ -625,27 +625,27 @@ class SubscriptionService {
             }
 
             if(params.summaryOfContent) {
-                base_qry += " and lower(ie.tipp.title.summaryOfContent) like :summaryOfContent "
+                base_qry += " and lower(ie.tipp.summaryOfContent) like :summaryOfContent "
                 qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
             }
 
             if(params.seriesNames) {
-                base_qry += " and lower(ie.tipp.title.seriesName) like :seriesNames "
+                base_qry += " and lower(ie.tipp.seriesName) like :seriesNames "
                 qry_params.seriesNames = "%${params.seriesNames.trim().toLowerCase()}%"
             }
 
             if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
-                base_qry += " and lower(ie.tipp.title.subjectReference) in (:subject_references)"
+                base_qry += " and lower(ie.tipp.subjectReference) in (:subject_references)"
                 qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
             }
 
             if (params.series_names && params.series_names != "" && params.list('series_names')) {
-                base_qry += " and lower(ie.tipp.title.seriesName) in (:series_names)"
+                base_qry += " and lower(ie.tipp.seriesName) in (:series_names)"
                 qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
             }
 
             if(params.ebookFirstAutorOrFirstEditor) {
-                base_qry += " and (lower(ie.tipp.title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.title.firstEditor) like :ebookFirstAutorOrFirstEditor) "
+                base_qry += " and (lower(ie.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
                 qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
             }
 
@@ -656,26 +656,26 @@ class SubscriptionService {
 
             //dateFirstOnline from
             if(params.dateFirstOnlineFrom) {
-                base_qry += " and (ie.tipp.title.dateFirstOnline is not null AND ie.tipp.title.dateFirstOnline >= :dateFirstOnlineFrom) "
+                base_qry += " and (ie.tipp.dateFirstOnline is not null AND ie.tipp.dateFirstOnline >= :dateFirstOnlineFrom) "
                 qry_params.dateFirstOnlineFrom = sdf.parse(params.dateFirstOnlineFrom)
 
             }
             //dateFirstOnline to
             if(params.dateFirstOnlineTo) {
-                base_qry += " and (ie.tipp.title.dateFirstOnline is not null AND ie.tipp.title.dateFirstOnline <= :dateFirstOnlineTo) "
+                base_qry += " and (ie.tipp.dateFirstOnline is not null AND ie.tipp.dateFirstOnline <= :dateFirstOnlineTo) "
                 qry_params.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
             }
 
             if ((params.sort != null) && (params.sort.length() > 0)) {
                 base_qry += "order by ie.${params.sort} ${params.order} "
             } else {
-                base_qry += "order by lower(ie.tipp.title.title) asc"
+                base_qry += "order by lower(ie.tipp.sortName) asc"
             }
 
             List<IssueEntitlement> ies = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: params.max, offset: params.offset])
 
 
-            ies.sort { it.tipp.title.title }
+            ies.sort { it.tipp.sortName }
             ies
         }else{
             List<IssueEntitlement> ies = []
@@ -690,7 +690,7 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.title.title}
+        ies.sort {it.tipp.sortName}
         ies
     }
     //In Verhandlung
@@ -699,7 +699,7 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.title.title}
+        ies.sort {it.tipp.sortName}
         ies
     }
 
@@ -708,7 +708,7 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.title.title}
+        ies.sort {it.tipp.sortName}
         ies
     }
 
@@ -717,7 +717,7 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.title.title}
+        ies.sort {it.tipp.sortName}
         ies
     }
 
@@ -726,7 +726,7 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.title.title}
+        ies.sort {it.tipp.sortName}
         ies
     }
 
@@ -735,7 +735,7 @@ class SubscriptionService {
         Set<String> subjects = []
 
         if(titleIDs){
-            subjects = TitleInstance.executeQuery("select distinct(subjectReference) from TitleInstance where subjectReference is not null and id in (:titleIDs) order by subjectReference", [titleIDs: titleIDs])
+            subjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and id in (:titleIDs) order by subjectReference", [titleIDs: titleIDs])
         }
         if(subjects.size() == 0){
             subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, locale)
@@ -749,7 +749,7 @@ class SubscriptionService {
         Set<String> seriesName = []
 
         if(titleIDs){
-            seriesName = TitleInstance.executeQuery("select distinct(seriesName) from TitleInstance where seriesName is not null and id in (:titleIDs) order by seriesName", [titleIDs: titleIDs])
+            seriesName = TitleInstance.executeQuery("select distinct(seriesName) from TitleInstancePackagePlatform where seriesName is not null and id in (:titleIDs) order by seriesName", [titleIDs: titleIDs])
         }
         if(seriesName.size() == 0){
             seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, locale)
@@ -763,7 +763,7 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur",
                         [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.title.title}
+        ies.sort {it.tipp.sortName}
         ies
     }
 
@@ -900,7 +900,7 @@ class SubscriptionService {
                 }
                 if(withPriceData && issueEntitlementOverwrite) {
                     if(issueEntitlementOverwrite instanceof IssueEntitlement && issueEntitlementOverwrite.priceItem) {
-                        PriceItem pi = new PriceItem(priceDate: issueEntitlementOverwrite.priceItem.priceDate ?: null,
+                        PriceItem pi = new PriceItem(startDate: issueEntitlementOverwrite.priceItem.startDate ?: null,
                                 listPrice: issueEntitlementOverwrite.priceItem.listPrice ?: null,
                                 listCurrency: issueEntitlementOverwrite.priceItem.listCurrency ?: null,
                                 localPrice: issueEntitlementOverwrite.priceItem.localPrice ?: null,
@@ -917,7 +917,7 @@ class SubscriptionService {
                     }
                     else {
 
-                        PriceItem pi = new PriceItem(priceDate: DateUtils.parseDateGeneric(issueEntitlementOverwrite.priceDate),
+                        PriceItem pi = new PriceItem(startDate: DateUtils.parseDateGeneric(issueEntitlementOverwrite.startDate),
                                 listPrice: issueEntitlementOverwrite.listPrice,
                                 listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency, 'Currency'),
                                 localPrice: issueEntitlementOverwrite.localPrice,
@@ -1585,9 +1585,9 @@ class SubscriptionService {
                     ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
             } else {
 
-                List<Long> titleIds = TitleInstance.executeQuery('select ti.id from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
+                List<Long> titleIds = TitleInstance.executeQuery('select tipp.id from TitleInstancePackagePlatform ti join tipp.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
                 if (titleIds.size() > 0) {
-                    IssueEntitlement issueEntitlement = issueEntitlements.find { it.tipp.title.id in titleIds }
+                    IssueEntitlement issueEntitlement = issueEntitlements.find { it.tipp.id in titleIds }
                     IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
                     if (issueEntitlement) {
                         count++
@@ -1642,7 +1642,7 @@ class SubscriptionService {
                                                 break
                                             case "localCurrencyCol": priceItem.localCurrency = RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY)
                                                 break
-                                            case "priceDateCol": priceItem.priceDate = cellEntry  ? DateUtils.parseDateGeneric(cellEntry) : null
+                                            case "priceDateCol": priceItem.startDate = cellEntry  ? DateUtils.parseDateGeneric(cellEntry) : null
                                                 break
                                         }
                                     }

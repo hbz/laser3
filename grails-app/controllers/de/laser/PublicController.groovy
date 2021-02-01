@@ -166,7 +166,7 @@ class PublicController {
 
                 String q = params.q?.trim()
                 if (q) {
-                    query += " AND ( LOWER(tipp.title.title) LIKE :q ) "
+                    query += " AND ( LOWER(tipp.name) LIKE :q ) "
 
                     queryParams.put('q', '%' + q.toLowerCase() + '%')
                 }
@@ -175,7 +175,7 @@ class PublicController {
                 if (idv) {
                     query += " AND ( EXISTS ( " +
                         " SELECT ident FROM Identifier AS ident " +
-                        " WHERE ident.ti = ie.tipp.title AND ident.value LIKE :idv "
+                        " WHERE ident.tipp = ie.tipp AND ident.value LIKE :idv "
 
                     if (params.idns) {
                         query += " AND io.identifier.ns = :idns "
@@ -186,7 +186,7 @@ class PublicController {
 
                     queryParams.put('idv', '%' + idv.toLowerCase() + '%')
                 }
-                query += " order by LOWER(tipp.title.title)"
+                query += " order by LOWER(tipp.sortName)"
                 result.issueEntitlements = IssueEntitlement.executeQuery(query, queryParams)
             }
             else {

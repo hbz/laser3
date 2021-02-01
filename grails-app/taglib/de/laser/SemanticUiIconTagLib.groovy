@@ -114,8 +114,8 @@ class SemanticUiIconTagLib {
                 dc = message(code: 'spotlight.databasetitle')
                 icon = 'database'
                 break
-            case 'EBook':
             case 'Book':
+            case 'EBook':
             case BookInstance.class.name:
                 dc = message(code: 'spotlight.ebooktitle')
                 icon = 'tablet alternate'

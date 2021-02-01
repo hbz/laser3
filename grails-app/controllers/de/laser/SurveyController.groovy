@@ -773,7 +773,7 @@ class SurveyController {
         base_qry += " and ie.status = :current "
         qry_params.current = RDStore.TIPP_STATUS_CURRENT
 
-        base_qry += "order by lower(ie.tipp.title.title) asc"
+        base_qry += "order by lower(ie.tipp.sortName) asc"
 
         result.num_sub_rows = IssueEntitlement.executeQuery("select ie.id " + base_qry, qry_params).size()
 
