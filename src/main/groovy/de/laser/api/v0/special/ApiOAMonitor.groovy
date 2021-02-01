@@ -6,6 +6,7 @@ import de.laser.OrgRole
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
+import de.laser.TitleInstancePackagePlatform
 import de.laser.finance.CostItem
 import de.laser.OrgSetting
 import de.laser.api.v0.*
@@ -269,8 +270,8 @@ class ApiOAMonitor {
             result << pkg
 
             List tmp = []
-            List<TitleInstance> tiList = TitleInstance.executeQuery(
-                    'select title from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join tipp.pkg pkg join tipp.title title' +
+            List<TitleInstancePackagePlatform> tiList = TitleInstance.executeQuery(
+                    'select tipp from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join tipp.pkg pkg ' +
                             ' where sub = :sub and pkg = :pkg and tipp.status != :statusTipp and ie.status != :statusIe',
                     [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_DELETED, statusIe: RDStore.TIPP_STATUS_DELETED]
             )

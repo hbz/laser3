@@ -255,7 +255,7 @@
                     <tr>
                         <th></th>
                         <th>${message(code: 'sidewide.number')}</th>
-                        <g:sortableColumn class="eight wide" params="${params}" property="tipp.title.sortTitle"
+                        <g:sortableColumn class="eight wide" params="${params}" property="tipp.sortName"
                                           title="${message(code: 'title.label')}"/>
                         <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
                         <th class="four wide">${message(code: 'subscription.details.coverage_dates')}</th>
@@ -379,9 +379,9 @@
                                                                     class="bulkcheck"/></g:if></td>
                                 <td>${counter++}</td>
                                 <td>
-                                    <semui:listIcon type="${ie.tipp.title.class.name}"/>
+                                    <semui:listIcon type="${ie.tipp.titleType}"/>
                                     <g:link controller="issueEntitlement" id="${ie.id}"
-                                            action="show"><strong>${ie.tipp.title.title}</strong>
+                                            action="show"><strong>${ie.tipp.name}</strong>
                                     </g:link>
                                     <g:if test="${ie.tipp.hostPlatformURL}">
                                         <semui:linkIcon href="${ie.tipp.hostPlatformURL.startsWith('http') ? ie.tipp.hostPlatformURL : 'http://' + ie.tipp.hostPlatformURL}"/>
@@ -397,19 +397,19 @@
                                     ${ie.medium} <!-- may be subject of sync if issue entitlement medium and TIPP medium may differ -->
                                 </td>
                                 <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
-                                    <g:if test="${ie.tipp.title instanceof BookInstance}">
+                                    <g:if test="${ie.tipp.titleType.contains('Book')}">
 
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                            data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                                         <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${ie.tipp.title.dateFirstInPrint}"/>
+                                                      date="${ie.tipp.dateFirstInPrint}"/>
                                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                            data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
                                         <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${ie.tipp.title.dateFirstOnline}"/>
+                                                      date="${ie.tipp.dateFirstOnline}"/>
 
                                     </g:if>
-                                    <g:elseif test="${ie.tipp.title instanceof JournalInstance}">
+                                    <g:elseif test="${ie.tipp.titleType == 'Journal'}">
                                         <%
                                             Map<String, Object> paramData = [issueEntitlement: ie.id]
                                             if(params.sort && params.order) {
@@ -460,18 +460,19 @@
                                     </g:else>
                                 </td>
                                 <td>
-                                    <g:if test="${ie.priceItem}">
-                                        <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice" owner="${ie.priceItem}" format=""/> <semui:xEditableRefData field="listCurrency" owner="${ie.priceItem}" config="Currency"/> <%--<g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>--%><br />
-                                        <g:message code="tipp.localPrice"/>: <semui:xEditable field="localPrice" owner="${ie.priceItem}"/> <semui:xEditableRefData field="localCurrency" owner="${ie.priceItem}" config="Currency"/> <%--<g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencyCode="${ie.priceItem.localCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>--%>
-                                        (<g:message code="tipp.priceDate"/> <semui:xEditable field="priceDate" type="date" owner="${ie.priceItem}"/> <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.priceDate}"/>--%>)
-                                    </g:if>
-                                    <g:elseif test="${editable}">
+                                    <g:each in="${ie.priceItems}" var="priceItem" status="i">
+                                        <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice" owner="${priceItem}" format=""/> <semui:xEditableRefData field="listCurrency" owner="${priceItem}" config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br />
+                                        <g:message code="tipp.localPrice"/>: <semui:xEditable field="localPrice" owner="${priceItem}"/> <semui:xEditableRefData field="localCurrency" owner="${priceItem}" config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
+                                        <semui:xEditable field="startDate" type="date" owner="${priceItem}"/><semui:dateDevider/><semui:xEditable field="endDate" type="date" owner="${priceItem}"/>  <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
+                                        <g:if test="${i < ie.priceItems.size()-1}"><hr></g:if>
+                                    </g:each>
+                                    <g:if test="${editable}">
                                         <g:link action="addEmptyPriceItem" class="ui icon positive button"
                                                 params="${[ieid: ie.id, id: subscription.id]}">
                                             <i class="money icon la-popup-tooltip la-delay"
                                                data-content="${message(code: 'subscription.details.addEmptyPriceItem.info')}"></i>
                                         </g:link>
-                                    </g:elseif>
+                                    </g:if>
                                 </td>
                                 <g:if test="${subscription.ieGroups.size() > 0}">
                                     <td>

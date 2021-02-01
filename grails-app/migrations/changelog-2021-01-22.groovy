@@ -45,4 +45,52 @@ databaseChangeLog = {
             }
         }
     }
+
+    changeSet(author: "agalffy (generated)", id: "1611307923419-3") {
+        addColumn(tableName: "pending_change") {
+            column(name: "pc_tc_fk", type: "int8")
+        }
+    }
+
+    changeSet(author: "agalffy (generated)", id: "1611307923419-4") {
+        addColumn(tableName: "pending_change") {
+            column(name: "pc_tipp_fk", type: "int8")
+        }
+    }
+
+    changeSet(author: "agalffy (generated)", id: "1611307923419-5") {
+        createIndex(indexName: "pending_change_tc_idx", tableName: "pending_change") {
+            column(name: "pc_tc_fk")
+        }
+    }
+
+    changeSet(author: "agalffy (generated)", id: "1611307923419-6") {
+        createIndex(indexName: "pending_change_tipp_idx", tableName: "pending_change") {
+            column(name: "pc_tipp_fk")
+        }
+    }
+
+    changeSet(author: "agalffy (generated)", id: "1611307923419-7") {
+        addForeignKeyConstraint(baseColumnNames: "pc_tipp_fk", baseTableName: "pending_change", constraintName: "FKm0vthqihnnrirmglv4samn8a7", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "tipp_id", referencedTableName: "title_instance_package_platform")
+    }
+
+    changeSet(author: "agalffy (generated)", id: "1611307923419-8") {
+        addForeignKeyConstraint(baseColumnNames: "pc_tc_fk", baseTableName: "pending_change", constraintName: "FKpfvhr4eht8rf8mjpfvsoup0ky", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "tc_id", referencedTableName: "tippcoverage")
+    }
+
+    changeSet(author: "agalffy (generated)", id: "1611307923419-9") {
+        addColumn(tableName: "pending_change") {
+            column(name: "pc_pi_fk", type: "int8")
+        }
+    }
+
+    changeSet(author: "agalffy (generated)", id: "1611307923419-10") {
+        createIndex(indexName: "pending_change_pi_idx", tableName: "pending_change") {
+            column(name: "pc_pi_fk")
+        }
+    }
+
+    changeSet(author: "agalffy (generated)", id: "1611307923419-11") {
+        addForeignKeyConstraint(baseColumnNames: "pc_pi_fk", baseTableName: "pending_change", constraintName: "FK6vw3w0n09roh5vbd8lh1tsi1w", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "pi_id", referencedTableName: "price_item")
+    }
 }

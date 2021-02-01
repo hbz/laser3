@@ -1,4 +1,4 @@
-<%@ page import="de.laser.titles.BookInstance; de.laser.Platform" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.IssueEntitlement;de.laser.Platform" %>
 <!doctype html>
 <html>
 <head>
@@ -197,13 +197,12 @@
 
         <div>
             <g:if test="${titles}">
-            <g:form action="subscriptionBatchUpdate" params="${[id: subscription.id]}" class="ui form">
                 <g:set var="counter" value="${offset + 1}"/>
                 <table class="ui sortable celled la-table table ">
                     <thead>
                         <tr>
                             <th>${message(code: 'sidewide.number')}</th>
-                            <g:sortableColumn params="${params}" property="tipp.title.sortTitle"
+                            <g:sortableColumn params="${params}" property="tipp.sortName"
                                               title="${message(code: 'title.label')}"/>
                             <th>${message(code: 'subscription.details.startDate')}</th>
                             <th>${message(code: 'subscription.details.endDate')}</th>
@@ -233,40 +232,36 @@
                             </th>
                         </tr>
                     </thead>
-                    <g:each in="${titles}" var="ti" status="jj">
+                    <g:each in="${titles}" var="tipp" status="jj">
                         <tr>
                             <td>${(params.int('offset') ?: 0) + jj + 1}</td>
                             <td>
-                                <semui:listIcon type="${ti.printTitleType()}"/>
-                                <strong><g:link controller="title" action="show"
-                                                id="${ti?.id}">${ti?.title}</g:link></strong>
+                                <semui:listIcon type="${tipp.titleType}"/>
+                                <strong><g:link controller="tipp" action="show"
+                                                id="${tipp.id}">${tipp.name}</g:link></strong>
 
-                                <g:if test="${ti instanceof BookInstance && ti.volume}">
-                                    (${message(code: 'title.volume.label')} ${ti.volume})
+                                <g:if test="${tipp.titleType.contains('Book') && tipp.volume}">
+                                    (${message(code: 'title.volume.label')} ${tipp.volume})
                                 </g:if>
 
-                                <g:if test="${ti instanceof BookInstance && (ti.firstAuthor || ti.firstEditor)}">
-                                    <br /><strong>${ti?.getEbookFirstAutorOrFirstEditor()}</strong>
+                                <g:if test="${tipp.titleType.contains('Book') && (tipp.firstAuthor || tipp.firstEditor)}">
+                                    <br /><strong>${tipp.getEbookFirstAutorOrFirstEditor()}</strong>
                                 </g:if>
 
-                                <g:if test="${ti instanceof BookInstance && ti.editionStatement}">
-                                    <div class="item"><strong>${message(code: 'title.editionStatement.label')}:</strong> ${ti.editionStatement}
+                                <g:if test="${tipp.titleType.contains('Book') && tipp.editionStatement}">
+                                    <div class="item"><strong>${message(code: 'title.editionStatement.label')}:</strong> ${tipp.editionStatement}
                                     </div>
                                     <br />
                                 </g:if>
 
+                                <g:if test="${tipp.hostPlatformURL}">
+                                    <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                       data-content="${message(code: 'tipp.tooltip.callUrl')}"
+                                       href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"
+                                       target="_blank"><i class="share square icon"></i></a>
+                                </g:if>
 
-                                <g:each in="${ti?.tipps?.unique { a, b -> a?.platform?.id <=> b?.platform?.id }.sort { it?.platform?.name }}" var="tipp">
-
-                                        <g:if test="${tipp?.hostPlatformURL}">
-                                            <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                                               data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                                               href="${tipp?.hostPlatformURL.contains('http') ? tipp?.hostPlatformURL : 'http://' + tipp?.hostPlatformURL}"
-                                               target="_blank"><i class="share square icon"></i></a>
-                                        </g:if>
-                                </g:each>
-
-                                <g:each in="${ti?.ids?.sort { it.ns.ns }}" var="id">
+                                <g:each in="${tipp.ids.sort { it.ns.ns }}" var="id">
                                     <span class="ui small blue image label">
                                         ${id.ns.ns}: <div class="detail">${id.value}</div>
                                     </span>
@@ -275,46 +270,40 @@
 
                                 <div class="ui list">
 
-                                    <g:set var="platforms" value="${ti?.tipps?.sort { it?.platform?.name }}"/>
-                                    <g:each in="${platforms.groupBy{it.platform?.id}}" var="platformID">
-
-                                        <g:set var="platform" value="${Platform.get(platformID.key)}"/>
-
                                         <div class="item"><strong>${message(code: 'tipp.platform')}:</strong>
-                                            <g:if test="${platform?.name}">
-                                                ${platform?.name}
+                                            <g:if test="${tipp.platform.name}">
+                                                ${tipp.platform.name}
                                             </g:if>
                                             <g:else>${message(code: 'default.unknown')}</g:else>
 
-                                            <g:if test="${platform?.name}">
+                                            <g:if test="${tipp.platform.name}">
                                                 <g:link class="ui icon mini  button la-js-dont-hide-button la-popup-tooltip la-delay"
                                                         data-content="${message(code: 'tipp.tooltip.changePlattform')}"
                                                         controller="platform" action="show"
-                                                        id="${platform?.id}"><i
+                                                        id="${tipp.platform.id}"><i
                                                         class="pencil alternate icon"></i></g:link>
                                             </g:if>
-                                            <g:if test="${platform?.primaryUrl}">
+                                            <g:if test="${tipp.platform.primaryUrl}">
                                                 <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                                                   href="${platform?.primaryUrl?.contains('http') ? platform?.primaryUrl : 'http://' + platform?.primaryUrl}"
+                                                   href="${tipp.platform.primaryUrl?.contains('http') ? platform?.primaryUrl : 'http://' + platform?.primaryUrl}"
                                                    target="_blank"><i class="share square icon"></i></a>
                                             </g:if>
 
                                         </div>
-                                </g:each>
                                 </div>
 
                             </td>
-
-                            <g:set var="title_coverage_info"
-                                   value="${ti.getInstitutionalCoverageSummary(institution, message(code: 'default.date.format.notime'), date_restriction)}"/>
-
-                            <td style="white-space:nowrap">${title_coverage_info.earliest}</td>
-                            <td style="white-space:nowrap">${title_coverage_info.latest ?: message(code: 'myinst.currentTitles.to_current')}</td>
-                            <td >
+                            <%
+                                String instanceFilter = ''
+                                if(institution.getCustomerType() == "ORG_CONSORTIUM")
+                                    instanceFilter += ' and sub.instanceOf = null'
+                                Set<IssueEntitlement> title_coverage_info = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and sub.status = :current'+instanceFilter,[context:institution,tipp:tipp,current: RDStore.SUBSCRIPTION_CURRENT])
+                            %>
+                            <td>
 
                                 <div class="ui three column grid">
-                                    <g:each in="${title_coverage_info.ies}" var="ie">
+                                    <g:each in="${title_coverage_info}" var="ie">
                                         <div class="sixteen wide column">
                                             <i class="icon clipboard outline outline la-list-icon"></i>
                                             <g:link controller="subscription" action="index"
@@ -327,16 +316,16 @@
                                         </div>
 
                                         <div class="eight wide centered column">
-                                            <g:if test="${ie.tipp.title instanceof BookInstance}">
+                                            <g:if test="${ie.tipp.titleType.contains('Book')}">
 
                                                 <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                                                 <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                              date="${ie.tipp.title.dateFirstInPrint}"/>
+                                                              date="${ie.tipp.dateFirstInPrint}"/>
                                                 <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
                                                 <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                              date="${ie.tipp.title.dateFirstOnline}"/>
+                                                              date="${ie.tipp.dateFirstOnline}"/>
 
 
                                             </g:if>
@@ -398,7 +387,7 @@
                                             <g:if test="${ie.priceItem}">
                                                 <g:message code="tipp.listPrice"/>: <g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency?.value}" currencySymbol="${ie.priceItem.listCurrency?.value}"/><br />
                                                 <g:message code="tipp.localPrice"/>: <g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencyCode="${ie.priceItem.localCurrency?.value}" currencySymbol="${ie.priceItem.localCurrency?.value}"/>
-                                                (<g:message code="tipp.priceDate"/> <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.priceDate}"/>)
+                                                (<g:message code="tipp.priceStartDate"/> <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.priceDate}"/>)
                                             </g:if>
                                         </div>
                                     </g:each>
@@ -408,7 +397,6 @@
                     </g:each>
 
                 </table>
-            </g:form>
             </g:if>
             <g:else>
                 <g:if test="${filterSet}">
@@ -444,7 +432,7 @@
                     <div class="accordion-inner">
                         <table class="ui sortable celled la-table table">
                             <tr>
-                                <g:sortableColumn params="${params}" property="tipp.title.sortTitle"
+                                <g:sortableColumn params="${params}" property="tipp.sortName"
                                                   title="${message(code: 'title.label')}"/>
                                 <th>ISSN</th>
                                 <th>eISSN</th>
@@ -457,9 +445,9 @@
                             </tr>
                             <g:each in="${entitlements}" var="ie">
                                 <tr>
-                                    <td>${ie.tipp.title.title}</td>
-                                    <td>${ie.tipp.title.getIdentifierValue('ISSN')}</td>
-                                    <td>${ie.tipp.title.getIdentifierValue('eISSN')}</td>
+                                    <td>${ie.tipp.name}</td>
+                                    <td>${ie.tipp.getIdentifierValue('ISSN')}</td>
+                                    <td>${ie.tipp.getIdentifierValue('eISSN')}</td>
                                     <td><g:formatDate format="${message(code: 'default.date.format.notime')}"
                                                       date="${ie.startDate}"/></td>
                                     <td><g:formatDate format="${message(code: 'default.date.format.notime')}"

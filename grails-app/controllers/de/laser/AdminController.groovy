@@ -793,56 +793,6 @@ class AdminController  {
         redirect(controller:'home')
     }
 
-    @Secured(['ROLE_ADMIN'])
-    @Transactional
-    def tippTransfer(){
-        log.debug("tippTransfer :: ${params}")
-        Map<String, Object> result = [:]
-        result.error = []
-
-    if(params.sourceTIPP && params.targetTI){
-        TitleInstance ti = TitleInstance.get(params.long("targetTI"))
-        TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.long("sourceTIPP"))
-      if(ti && tipp){
-        tipp.title = ti
-        try{
-          tipp.save(failOnError:true)
-          result.success = true
-        }catch(Exception e){
-            log.error( e.toString() )
-          result.error += "An error occured while saving the changes."
-        }
-      }else{
-        if(!ti) result.error += "No TitleInstance found with identifier: ${params.targetTI}."
-        if(!tipp) result.error += "No TIPP found with identifier: ${params.sourceTIPP}" 
-      }
-    }
-
-        result
-    }
-
-    @Secured(['ROLE_ADMIN'])
-    @Transactional
-    def ieTransfer(){
-        log.debug( params.toMapString() )
-        Map<String, Object> result = [:]
-        if(params.sourceTIPP && params.targetTIPP){
-            result.sourceTIPPObj = TitleInstancePackagePlatform.get(params.sourceTIPP)
-            result.targetTIPPObj = TitleInstancePackagePlatform.get(params.targetTIPP)
-        }
-
-        if(params.transfer == "Go" && result.sourceTIPPObj && result.targetTIPPObj){
-            log.debug("Tranfering ${IssueEntitlement.countByTipp(result.sourceTIPPObj)} IEs from ${result.sourceTIPPObj} to ${result.targetTIPPObj}")
-            def sourceIEs = IssueEntitlement.findAllByTipp(result.sourceTIPPObj)
-            sourceIEs.each{
-                it.setTipp(result.targetTIPPObj)
-                it.save()
-            }
-        }
-
-        result
-    }
-
     @Secured(['ROLE_YODA'])
     Map<String,Object> listDuplicateTitles() {
         SessionCacheWrapper sessionCache = contextService.getSessionCache()

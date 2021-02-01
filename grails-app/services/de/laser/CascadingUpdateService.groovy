@@ -28,7 +28,7 @@ class CascadingUpdateService {
         if (obj.org) { update(obj.org, luc) }
         if (obj.pkg) { update(obj.pkg, luc) }
         if (obj.sub) { update(obj.sub, luc) }
-        if (obj.ti)  { update(obj.ti,  luc) }
+        //if (obj.ti)  { update(obj.ti,  luc) }
 
         //        tipp:   TitleInstancePackagePlatform
     }
