@@ -57,7 +57,7 @@ class IssueEntitlementController  {
       result.editable = result.issueEntitlementInstance.subscription.isEditableBy(result.user)
 
       // Get usage statistics
-      def title_id = result.issueEntitlementInstance.tipp.name
+      def title_id = result.issueEntitlementInstance.tipp.id
       def org = result.issueEntitlementInstance.subscription.getSubscriber() // TODO
       def supplier =  result.issueEntitlementInstance.tipp.platform
       def supplier_id = supplier?.id
