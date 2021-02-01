@@ -1,68 +1,67 @@
-<%@ page import="de.laser.titles.BookInstance" %>
 <div class="la-icon-list">
-  <g:if test="${item.tipp.title instanceof BookInstance}">
-    <g:if test="${item.tipp.title.volume}">
+  <g:if test="${item.tipp.titleType.contains('Book')}">
+    <g:if test="${item.tipp.volume}">
       <div class="item">
         <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
         <div class="content">
-          ${item.tipp.title.volume}
+          ${item.tipp.volume}
         </div>
       </div>
     </g:if>
-    <g:if test="${item.tipp.title.firstAuthor || item.tipp.title.firstEditor}">
+    <g:if test="${item.tipp.firstAuthor || item.tipp.firstEditor}">
       <div class="item">
         <i class="grey icon user circle la-popup-tooltip la-delay" data-content="${message(code: 'author.slash.editor')}"></i>
         <div class="content">
-          ${item.tipp.title.getEbookFirstAutorOrFirstEditor()}
+          ${item.tipp.getEbookFirstAutorOrFirstEditor()}
         </div>
       </div>
     </g:if>
-    <g:if test="${item.tipp.title.editionStatement}">
+    <g:if test="${item.tipp.editionStatement}">
     <div class="item">
       <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>
       <div class="content">
-        ${item.tipp.title.editionStatement}
+        ${item.tipp.editionStatement}
       </div>
     </div>
     </g:if>
-    <g:if test="${item.tipp.title.summaryOfContent}">
+    <g:if test="${item.tipp.summaryOfContent}">
     <div class="item">
       <i class="grey icon desktop la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
       <div class="content">
-        ${item.tipp.title.summaryOfContent}
+        ${item.tipp.summaryOfContent}
       </div>
     </div>
     </g:if>
   </g:if>
 
-  <g:if test="${item.tipp.title.seriesName}">
+  <g:if test="${item.tipp.seriesName}">
     <div class="item">
       <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.seriesName.label')}"></i>
       <div class="content">
-        ${item.tipp.title.seriesName}
+        ${item.tipp.seriesName}
       </div>
     </div>
   </g:if>
 
-  <g:if test="${item.tipp.title.subjectReference}">
+  <g:if test="${item.tipp.subjectReference}">
     <div class="item">
       <i class="grey icon comment alternate la-popup-tooltip la-delay" data-content="${message(code: 'title.subjectReference.label')}"></i>
       <div class="content">
-        ${item.tipp.title.subjectReference}
+        ${item.tipp.subjectReference}
       </div>
     </div>
   </g:if>
 
 </div>
-<g:each in="${item.tipp.title.ids.sort { it.ns.ns }}" var="title_id">
+<g:each in="${item.tipp.ids.sort { it.ns.ns }}" var="title_id">
     <span class="ui small blue image label">
       ${title_id.ns.ns}: <div class="detail">${title_id.value}</div>
     </span>
 </g:each>
 <br />
 
-<!--                  ISSN:<strong>${item.tipp.title.getIdentifierValue('ISSN') ?: ' - '}</strong>,
-                  eISSN:<strong>${item.tipp.title.getIdentifierValue('eISSN') ?: ' - '}</strong><br />-->
+<!--                  ISSN:<strong>${item.tipp.getIdentifierValue('ISSN') ?: ' - '}</strong>,
+                  eISSN:<strong>${item.tipp.getIdentifierValue('eISSN') ?: ' - '}</strong><br />-->
 
 
 <div class="la-icon-list">
