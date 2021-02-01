@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.IssueEntitlement
+import de.laser.Org
 import de.laser.Package
 import de.laser.PendingChange
 import de.laser.RefdataValue
@@ -420,277 +421,96 @@ class PendingChangeService extends AbstractLockableService {
     }
 
     Map<String,Object> getChanges(LinkedHashMap<String, Object> configMap) {
-        Set<Map<String,Object>> pendingChanges = [], acceptedChanges = []
-        int pendingCount = 0, notificationsCount = 0
+        String subscribedPackagesQuery = 'select sp from SubscriptionPackage sp join sp.subscription sub join sub.orgRelations oo where oo.org = :context and oo.roleType in (:roleTypes)'
+        Map<String,Object> spQueryParams = [context:configMap.contextOrg,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS]]
+        if(configMap.contextOrg.getCustomerType() == "ORG_CONSORTIUM") {
+            subscribedPackagesQuery += ' and sub.instanceOf = null'
+        }
+        List<SubscriptionPackage> subscribedPackages = SubscriptionPackage.executeQuery(subscribedPackagesQuery,spQueryParams)
         List queryClauses = []
-        Set<RefdataValue> queryStatus = [RDStore.PENDING_CHANGE_PENDING,RDStore.PENDING_CHANGE_ACCEPTED]
-        String queryOwn = "select pc from PendingChange pc where pc.owner = :contextOrg"
-        String queryCount = "select count(distinct pc.oid) from PendingChange pc join pc.status status where pc.owner = :contextOrg and status in (:queryStatus)"
-        Map<String,Object> queryParams = [contextOrg:configMap.contextOrg]
+        String query1 = "select pc from PendingChange pc where pc.owner = :contextOrg and pc.status in (:status) and (pc.subscription = null or pc.msgToken = :newSubscription)",
+        query2 = 'select pc from PendingChange pc where pc.msgToken != null and pc.pkg in (:packages)',
+        query3 = 'select pc from PendingChange pc where pc.msgToken != null and pc.tipp.pkg in (:packages)',
+        query4 = 'select pc from PendingChange pc where pc.msgToken != null and pc.tippCoverage.tipp.pkg in (:packages)',
+        query5 = 'select pc from PendingChange pc where pc.msgToken != null and pc.priceItem.tipp.pkg in (:packages)'
+        Map<String,Object> query1Params = [contextOrg:configMap.contextOrg, status:[RDStore.PENDING_CHANGE_ACCEPTED,RDStore.PENDING_CHANGE_PENDING], newSubscription: "pendingChange.message_SU_NEW_01"],
+        query2Params = [packages:subscribedPackages.collect{ SubscriptionPackage sp -> sp.pkg }]
         if(configMap.periodInDays) {
             queryClauses << "pc.ts > :time"
-            queryParams.time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
+            Date time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
+            query1Params.time = time
+            query2Params.time = time
         }
-        if(configMap.consortialView) {
-            queryClauses << "(pc.subscription = null or pc.subscription.instanceOf = null)"
-        }
-        else queryClauses << "pc.subscription = null"
         if(queryClauses) {
-            queryOwn += ' and ' + queryClauses.join(" and ")
-            queryCount += ' and ' + queryClauses.join(" and ")
+            query1 += ' and ' + queryClauses.join(" and ")
+            query2 += ' and ' + queryClauses.join(" and ")
+            query3 += ' and ' + queryClauses.join(" and ")
+            query4 += ' and ' + queryClauses.join(" and ")
+            query5 += ' and ' + queryClauses.join(" and ")
         }
-        Set<SubscriptionPackage> pendingChangePackages = []
-        List counts = PendingChange.executeQuery(queryCount,queryParams+[queryStatus:queryStatus])
-        if(counts) {
-            Set<PendingChange> parentChanges = PendingChange.executeQuery( queryOwn + " and pc.status in (:queryStatus) order by pc.status asc, pc.ts desc", queryParams+[queryStatus:queryStatus] )
-            Set<PendingChange> result = []
-            Set<PendingChange> pending = parentChanges.findAll { PendingChange row -> row.status == RDStore.PENDING_CHANGE_PENDING }
-            Set<PendingChange> accepted = parentChanges.findAll { PendingChange row -> row.status == RDStore.PENDING_CHANGE_ACCEPTED }
-            //int pendingCount = PendingChange.executeQuery("${queryCount} and pc.status = :queryStatus",queryParams+[queryStatus: RDStore.PENDING_CHANGE_PENDING])[0]
-            //int notificationsCount = PendingChange.executeQuery("${queryCount} and pc.status = :queryStatus",queryParams+[queryStatus: RDStore.PENDING_CHANGE_ACCEPTED])[0]
-            if(!configMap.consortialView) {
-                String queryMember = "select pc from PendingChange pc join pc.subscription sub join sub.orgRelations oo where oo.roleType = :subRoleType and oo.org = :contextOrg "
-                if(queryClauses)
-                    queryMember += ' and '+queryClauses.join(" and ")
-                Set<PendingChange> memberChanges = PendingChange.executeQuery( queryMember + " and pc.status in (:queryStatus)", queryParams+[subRoleType:RDStore.OR_SUBSCRIBER_CONS,queryStatus: queryStatus] )
-                pending.addAll(memberChanges.findAll { PendingChange row -> row.status == RDStore.PENDING_CHANGE_PENDING })
-                accepted.addAll(memberChanges.findAll { PendingChange row -> row.status == RDStore.PENDING_CHANGE_ACCEPTED })
-            }
-            result.addAll(pending.drop(configMap.pendingOffset).take(configMap.max))
-            if(configMap.notifications)
-                result.addAll(accepted.drop(configMap.acceptedOffset).take(configMap.max))
-            result.each { PendingChange change ->
-                //fetch pending change configuration for subscription package attached, see if notification should be generated; fallback is yes
-                if(change.subscription) {
-                    def changedObject = genericOIDService.resolveOID(change.oid)
-                    Package targetPkg
-                    if(changedObject instanceof TitleInstancePackagePlatform) {
-                        targetPkg = changedObject.pkg
-                    }
-                    else if(changedObject instanceof IssueEntitlement || changedObject instanceof TIPPCoverage) {
-                        targetPkg = changedObject.tipp.pkg
-                    }
-                    else if(changedObject instanceof IssueEntitlementCoverage) {
-                        targetPkg = changedObject.issueEntitlement.tipp.pkg
-                    }
-                    else if(changedObject instanceof Package) {
-                        targetPkg = changedObject
-                    }
-                    //deletions
-                    else if(!changedObject && change.msgToken == PendingChangeConfiguration.COVERAGE_DELETED) {
-                        targetPkg = SubscriptionPackage.findBySubscription(change.subscription).pkg
-                    }
-                    //child subscription
-                    if(change.subscription.instanceOf) {
-                        if(targetPkg) {
-                            SubscriptionPackage targetSp = SubscriptionPackage.findBySubscriptionAndPkg(change.subscription.instanceOf,targetPkg)
-                            PendingChangeConfiguration pcc = PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(targetSp,change.msgToken)
-                            if(AuditConfig.getConfig(change.subscription.instanceOf,change.msgToken)) {
-                                if(change.status == RDStore.PENDING_CHANGE_PENDING) {
-                                    pendingChanges << [target:change.subscription,oid:change.oid,msgToken:change.msgToken,targetProperty:change.targetProperty,change:change]
-                                }
-                                else if(change.status == RDStore.PENDING_CHANGE_ACCEPTED && (!pcc || (pcc && pcc.withNotification))) {
-                                    acceptedChanges << [target:change.subscription,oid:change.oid,msgToken:change.msgToken,targetProperty:change.targetProperty,change:change]
-                                }
-                            }
-                        }
-
-                        if(change.status == RDStore.PENDING_CHANGE_PENDING) {
-                            if(pendingChanges.find {it.target == change.subscription && it.oid == change.oid && it.msgToken == change.msgToken && it.targetProperty == change.targetProperty})
-                                pendingChanges.find {it.target == change.subscription && it.oid == change.oid && it.msgToken == change.msgToken && it.targetProperty == change.targetProperty}.change = change
-                            else pendingChanges << [target:change.subscription,oid:change.oid,msgToken:change.msgToken,targetProperty:change.targetProperty,change:change]
-                        }
-                    }
-                    else {
-                        //consortia parent or local subscription
-                        if(change.status == RDStore.PENDING_CHANGE_PENDING) {
-                            if(targetPkg) {
-                                pendingChangePackages << SubscriptionPackage.findBySubscriptionAndPkg(change.subscription,targetPkg)
-                            }
-                            if(pendingChanges.find {it.target == change.subscription && it.oid == change.oid && it.msgToken == change.msgToken && it.targetProperty == change.targetProperty})
-                                pendingChanges.find {it.target == change.subscription && it.oid == change.oid && it.msgToken == change.msgToken && it.targetProperty == change.targetProperty}.change = change
-                            else pendingChanges << [target:change.subscription,oid:change.oid,msgToken:change.msgToken,targetProperty:change.targetProperty,change:change]
-                        }
-                        else if(change.status == RDStore.PENDING_CHANGE_ACCEPTED) {
-                            if(targetPkg){
-                                SubscriptionPackage targetSp = SubscriptionPackage.findBySubscriptionAndPkg(change.subscription,targetPkg)
-                                PendingChangeConfiguration pcc = PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(targetSp,change.msgToken)
-                                if(pcc && pcc.withNotification || !pcc) {
-                                    if(acceptedChanges.find {it.target == change.subscription && it.oid == change.oid && it.msgToken == change.msgToken && it.targetProperty == change.targetProperty})
-                                        acceptedChanges.find {it.target == change.subscription && it.oid == change.oid && it.msgToken == change.msgToken && it.targetProperty == change.targetProperty}.change = change
-                                    else acceptedChanges << [target:change.subscription,oid:change.oid,msgToken:change.msgToken,targetProperty:change.targetProperty,change:change]
-                                }
-                            }
-                        }
-                    }
-                }
-                else if(change.costItem) {
-                    Map<String,Object> entry = [target:change.costItem,msgToken:change.msgToken,change:change]
-                    if(change.status == RDStore.PENDING_CHANGE_PENDING)
-                        pendingChanges << entry
-                    else if(change.status == RDStore.PENDING_CHANGE_ACCEPTED)
-                        acceptedChanges << entry
-                }
-            }
-            pendingCount = pending.size()
-            notificationsCount = accepted.size()
+        List result = PendingChange.executeQuery(query1,query1Params) //PendingChanges need to be refilled in maps
+        if (subscribedPackages) {
+            List tokensOnly = PendingChange.executeQuery(query2 + ' group by pc.msgToken,pc', query2Params)
+            tokensOnly << PendingChange.executeQuery(query3 + ' group by pc.msgToken,pc', query2Params)
+            tokensOnly << PendingChange.executeQuery(query4 + ' group by pc.msgToken,pc', query2Params)
+            tokensOnly << PendingChange.executeQuery(query5 + ' group by pc.msgToken,pc', query2Params)
+            /*
+               I need to summarize here:
+               - the subscription package (I need both)
+               - for package changes: the old and new value (there, I can just add the pc row as is)
+               - for title and coverage changes: I just need to record that *something* happened and then, on the details page (method subscriptionControllerService.entitlementChanges()), to enumerate the actual changes
+            */
+            log.debug(tokensOnly.toListString())
         }
-        [pending:pendingChanges,packages:pendingChangePackages,pendingCount:pendingCount,notifications:acceptedChanges,notificationsCount:notificationsCount]
+        [changes:result,changesCount:result.size(),subscribedPackages:subscribedPackages]
     }
 
-    //called from: dashboard.gsp, pendingChanges.gsp, accepetdChanges.gsp
+    //called from: dashboard.gsp
     Map<String,Object> printRow(PendingChange change) {
         Locale locale = LocaleContextHolder.getLocale()
-        String eventIcon, instanceIcon, eventString, pkgLink, pkgName, titleLink, titleName, platformName, platformLink, holdingLink, coverageString
+        String eventIcon, instanceIcon, eventString
         List<Object> eventData
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-
         if(change.subscription && change.msgToken == "pendingChange.message_SU_NEW_01") {
             eventIcon = '<span data-tooltip="' + messageSource.getMessage("${change.msgToken}", null, locale) + '"><i class="yellow circle icon"></i></span>'
             instanceIcon = '<span data-tooltip="' + messageSource.getMessage('subscription', null, locale) + '"><i class="clipboard icon"></i></span>'
             eventString = messageSource.getMessage('pendingChange.message_SU_NEW_01.eventString', null, locale)
         }
-        else if(change.oid) {
-            if(change.oid.split(":")[0] == IssueEntitlement.class.name){
-                IssueEntitlement target = (IssueEntitlement) genericOIDService.resolveOID(change.oid)
-                holdingLink = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: target.subscription.id, params: [filter: target.tipp.title.title,pkgfilter: target.tipp.pkg.id])
-                pkgName = target.tipp.pkg.name
-                titleName = target.tipp.title.title
-            }
-            else if(change.oid.split(":")[0] == TitleInstancePackagePlatform.class.name) {
-                TitleInstancePackagePlatform target = (TitleInstancePackagePlatform) genericOIDService.resolveOID(change.oid)
-                pkgLink = grailsLinkGenerator.link(controller: 'package', action: 'current', id: target.pkg.id, params: [filter:target.title.title])
-                pkgName = target.pkg.name
-                titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: target.title.id)
-                titleName = target.title.title
-                platformLink = grailsLinkGenerator.link(controller: 'platform', action: 'show', id: target.platform.id)
-                platformName = target.platform.name
-            }
-            else if(change.oid.split(":")[0] == IssueEntitlementCoverage.class.name) {
-                IssueEntitlementCoverage target = (IssueEntitlementCoverage) genericOIDService.resolveOID(change.oid)
-                if(target) {
-                    IssueEntitlement ie = target.issueEntitlement
-                    String volume = messageSource.getMessage('tipp.volume',null,locale)
-                    String issue = messageSource.getMessage('tipp.issue',null,locale)
-                    holdingLink = grailsLinkGenerator.link(controller: 'subscription', action: 'index', id: ie.subscription.id, params: [filter: ie.tipp.title.title,pkgfilter: ie.tipp.pkg.id])
-                    titleName = ie.tipp.title.title
-                    pkgName = ie.tipp.pkg.name
-                    String startDate = target.startDate ? sdf.format(target.startDate) : ""
-                    String endDate = target.endDate ? sdf.format(target.endDate) : ""
-                    coverageString = "${startDate} (${volume} ${target.startVolume}, ${issue} ${target.startIssue}) – ${endDate} (${volume} ${target.endVolume}, ${issue} ${target.endIssue})"
-                }
-                else {
-                    coverageString = messageSource.getMessage('pendingChange.coverageStatementDeleted',null,locale)
-                }
-            }
-            else if(change.oid.split(":")[0] == TIPPCoverage.class.name) {
-                TIPPCoverage target = (TIPPCoverage) genericOIDService.resolveOID(change.oid)
-                pkgName = target.tipp.pkg.name
-                titleName = target.tipp.title.title
-                platformName = target.tipp.platform.name
-                String volume = messageSource.getMessage('tipp.volume',null,locale)
-                String issue = messageSource.getMessage('tipp.issue',null,locale)
-                String startDate = target.startDate ? sdf.format(target.startDate) : ""
-                String endDate = target.endDate ? sdf.format(target.endDate) : ""
-                coverageString = "${startDate} (${volume} ${target.startVolume}, ${issue} ${target.startIssue}) – ${endDate} (${volume} ${target.endVolume}, ${issue} ${target.endIssue})"
-            }
-            else if(change.oid.split(":")[0] == Package.class.name) {
-                Package target = (Package) genericOIDService.resolveOID(change.oid)
-                pkgLink = grailsLinkGenerator.link(controller: 'package', action: 'current', id: target.id)
-                pkgName = target.name
-            }
-            String eventTooltip = messageSource.getMessage("subscription.packages.${change.msgToken}",null,locale)
-            switch(change.msgToken) {
-            //pendingChange.message_TP01 (newTitle)
-                case PendingChangeConfiguration.NEW_TITLE:
-                    eventIcon = '<span data-tooltip="'+eventTooltip+'"><i class="green plus icon"></i></span>'
-                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('title',null,locale)+'"><i class="book icon"></i></span>'
-                    if(pkgLink && pkgName && titleLink && titleName && platformLink && platformName)
-                        eventData = [pkgLink,pkgName,titleLink,titleName,platformLink,platformName]
-                    else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
-                    break
-            //pendingChange.message_TP02 (titleUpdated)
-                case PendingChangeConfiguration.TITLE_UPDATED:
-                    eventIcon = '<span data-tooltip="'+eventTooltip+'"><i class="yellow circle icon"></i></span>'
-                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('title',null,locale)+'"><i class="book icon"></i></span>'
-                    if(holdingLink && titleName && pkgName) {
-                        eventData = [holdingLink,titleName,pkgName,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),output(change,'oldValue')]
-                        if(change.targetProperty in ['hostPlatformURL'])
-                            eventData << "<a href='${output(change,'newValue')}'>${output(change,'newValue')}</a>"
-                        else eventData << output(change,'newValue')
-                    }
-                    else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
-                    break
-            //pendingChange.message_TP03 (titleDeleted)
-                case PendingChangeConfiguration.TITLE_DELETED:
-                    eventIcon = '<span data-tooltip="'+eventTooltip+'"><i class="red minus icon"></i></span>'
-                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('title',null,locale)+'"><i class="book icon"></i></span>'
-                    if(pkgName && titleName && holdingLink)
-                        eventData = [pkgName,titleName,holdingLink]
-                    else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
-                    break
-            //pendingChange.message_TC01 (coverageUpdated)
-                case PendingChangeConfiguration.COVERAGE_UPDATED:
-                    eventIcon = '<span data-tooltip="'+eventTooltip+'"><i class="yellow circle icon"></i></span>'
-                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('tipp.coverage',null,locale)+'"><i class="file alternate icon"></i></span>'
-                    if(holdingLink && pkgName && coverageString && titleName) {
-                        eventData = [holdingLink,pkgName,titleName,coverageString,messageSource.getMessage("tipp.${change.targetProperty}",null,locale),output(change,'oldValue'),output(change,'newValue')]
-                    }
-                    else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
-                    break
-            //pendingChange.message_TC02 (newCoverage)
-                case PendingChangeConfiguration.NEW_COVERAGE:
-                    eventIcon = '<span data-tooltip="'+eventTooltip+'"><i class="green plus icon"></i></span>'
-                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('tipp.coverage',null,locale)+'"><i class="file alternate icon"></i></span>'
-                    if(coverageString)
-                        eventData = [coverageString]
-                    else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
-                    break
-            //pendingChange.message_TC03 (coverageDeleted)
-                case PendingChangeConfiguration.COVERAGE_DELETED:
-                    eventIcon = '<span data-tooltip="'+eventTooltip+'"><i class="red minus icon"></i></span>'
-                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('tipp.coverage',null,locale)+'"><i class="file alternate icon"></i></span>'
-                    if(holdingLink && coverageString && titleName)
-                        eventData = [coverageString,holdingLink,titleName]
-                    else if(coverageString)
-                        eventString = coverageString
-                    else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
-                    break
-            //pendingChange.message_PK01 (pkgPropUpdate)
-                case PendingChangeConfiguration.PACKAGE_PROP:
-                    eventIcon = '<span data-tooltip="'+eventTooltip+'"><i class="yellow circle icon"></i></span>'
-                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('package',null,locale)+'"><i class="gift icon"></i></span>'
-                    if(pkgLink && pkgName)
-                        eventData = [pkgLink,pkgName,messageSource.getMessage("package.${change.targetProperty}",null,locale),output(change,'oldValue'),output(change,'newValue')]
-                    else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
-                    break
-            //pendingChange.message_PK02 (pkgDeleted)
-                case PendingChangeConfiguration.PACKAGE_DELETED:
-                    eventIcon = '<span data-tooltip="'+eventTooltip+'"><i class="red minus icon"></i></span>'
-                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('package',null,locale)+'"><i class="gift icon"></i></span>'
-                    if(pkgName)
-                        eventData = [pkgName]
-                    else eventString = messageSource.getMessage('pendingChange.invalidParameter',null,locale)
-                    break
-            }
+        else if(change.costItem) {
+            eventIcon = '<span data-tooltip="'+messageSource.getMessage('default.change.label',null,locale)+'"><i class="yellow circle icon"></i></span>'
+            instanceIcon = '<span data-tooltip="'+messageSource.getMessage('financials.costItem',null,locale)+'"><i class="money bill icon"></i></span>'
+            eventData = [change.oldValue,change.newValue]
         }
         else {
-            if(change.costItem) {
-                eventIcon = '<span data-tooltip="'+messageSource.getMessage('default.change.label',null,locale)+'"><i class="yellow circle icon"></i></span>'
-                instanceIcon = '<span data-tooltip="'+messageSource.getMessage('financials.costItem',null,locale)+'"><i class="money bill icon"></i></span>'
-                eventData = [change.oldValue,change.newValue]
-            }
-
-            //pendingChange.message_SU_NEW_01 for Renew Sub by Survey
-            if(change.subscription && change.msgToken == "pendingChange.message_SU_NEW_01") {
-                eventIcon = '<span data-tooltip="' + messageSource.getMessage("${change.msgToken}", null, locale) + '"><i class="yellow circle icon"></i></span>'
-                instanceIcon = '<span data-tooltip="' + messageSource.getMessage('subscription', null, locale) + '"><i class="clipboard icon"></i></span>'
-                eventString = messageSource.getMessage('pendingChange.message_SU_NEW_01.eventString', null, locale)
+            switch(change.msgToken) {
+                case PendingChangeConfiguration.PACKAGE_PROP:
+                case PendingChangeConfiguration.PACKAGE_TIPP_COUNT_CHANGED:
+                    eventIcon = '<span data-tooltip="'+messageSource.getMessage('default.change.label',null,locale)+'"><i class="yellow circle icon"></i></span>'
+                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('package',null,locale)+'"><i class="gift icon"></i></span>'
+                    eventData = [change.targetProperty,change.oldValue,change.newValue]
+                    break
+                case PendingChangeConfiguration.PACKAGE_DELETED:
+                    eventIcon = '<span data-tooltip="'+messageSource.getMessage('subscription.packages.'+change.msgToken)+'"><i class="red minus icon"></i></span>'
+                    instanceIcon = '<span data-tooltip="'+messageSource.getMessage('package',null,locale)+'"><i class="gift icon"></i></span>'
+                    eventData = [change.pkg.name]
+                    break
             }
         }
         if(eventString == null && eventData)
             eventString = messageSource.getMessage(change.msgToken,eventData.toArray(),locale)
         [instanceIcon:instanceIcon,eventIcon:eventIcon,eventString:eventString]
+    }
+
+    void autoAcceptPendingChanges(Org contextOrg) {
+        String query = 'select pcc from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp join sp.subscription s join s.orgRelations oo where pcc.settingValue = :accept and oo.org = :context and oo.roleType in (:roleTypes)'
+        if(contextOrg.getCustomerType() == "ORG_CONSORTIUM")
+            query += ' and s.instanceOf is null'
+        List<PendingChangeConfiguration> pendingChangeConfigurations = SubscriptionPackage.executeQuery(query,[accept:RDStore.PENDING_CHANGE_CONFIG_ACCEPT,context:contextOrg,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+        Map<SubscriptionPackage,Set<String>> packagesConfigMap = [:]
+        /*
+        get for each subscription package the tokens which should be accepted
+        get each change for each subscribed package and token, fetch issue entitlement equivalent and process the change
+         */
     }
 
     /**
