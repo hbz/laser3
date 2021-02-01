@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.finance.CostItem
+import de.laser.finance.PriceItem
 import de.laser.oap.OrgAccessPointLink
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
@@ -14,6 +15,7 @@ import grails.converters.JSON
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.hibernate.Session
 
 import javax.persistence.Transient
@@ -209,10 +211,11 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
             "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: subscription, pkg: this])
 
     if (!dupe){
-        SubscriptionPackage new_pkg_sub = new SubscriptionPackage(subscription:subscription, pkg:this).save()
+        new SubscriptionPackage(subscription:subscription, pkg:this).save()
       // Step 3 - If createEntitlements ...
 
       if ( createEntitlements ) {
+          //explicit loading needed because of refreshing - after sync, GORM may be a bit behind
         TitleInstancePackagePlatform.findAllByPkg(this).each { TitleInstancePackagePlatform tipp ->
               IssueEntitlement new_ie = new IssueEntitlement(
                                               status: tipp.status,
@@ -223,7 +226,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                                               acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED)
               if(new_ie.save()) {
                   log.debug("${new_ie} saved")
-                  tipp.coverages.each { covStmt ->
+                  TIPPCoverage.findAllByTipp(tipp).each { TIPPCoverage covStmt ->
                       IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
                               startDate:covStmt.startDate,
                               startVolume:covStmt.startVolume,
@@ -237,6 +240,16 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                               issueEntitlement: new_ie
                       )
                       ieCoverage.save()
+                  }
+                  PriceItem.findAllByTipp(tipp).each { PriceItem pi ->
+                      PriceItem localPrice = new PriceItem()
+                      InvokerHelper.setProperties(localPrice, pi.properties)
+                      localPrice.tipp = null
+                      localPrice.globalUID = null
+                      localPrice.issueEntitlement = new_ie
+                      localPrice.setGlobalUID()
+                      if(!localPrice.save())
+                          log.error(localPrice.errors)
                   }
             }
         }

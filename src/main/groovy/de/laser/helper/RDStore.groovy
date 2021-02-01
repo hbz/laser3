@@ -33,6 +33,7 @@ class RDStore {
     public static final OT_AGENCY                  = getRefdataValue('Agency', RDConstants.ORG_TYPE)
     public static final OT_LICENSOR                = getRefdataValue('Licensor', RDConstants.ORG_TYPE)
     public static final OT_PROVIDER                = getRefdataValue('Provider', RDConstants.ORG_TYPE)
+    public static final OT_PUBLISHER               = getRefdataValue('Publisher', RDConstants.ORG_TYPE)
     public static final OT_DEPARTMENT              = getRefdataValue('Department', RDConstants.ORG_TYPE)
 
     public static final O_SECTOR_HIGHER_EDU        = getRefdataValue('Higher Education', RDConstants.ORG_SECTOR)

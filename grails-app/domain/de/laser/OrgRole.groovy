@@ -24,7 +24,7 @@ class OrgRole implements ShareableTrait {
     Package       pkg
     Subscription  sub
     License       lic
-    TitleInstance title
+    TitleInstancePackagePlatform tipp
     Date          startDate
     Date          endDate
 
@@ -48,7 +48,7 @@ class OrgRole implements ShareableTrait {
          pkg column:'or_pkg_fk',        index:'or_pkg_idx'
          sub column:'or_sub_fk',        index:'or_sub_idx'
          lic column:'or_lic_fk',        index:'or_lic_idx'
-       title column:'or_title_fk'
+        tipp column:'or_tipp_fk',       index:'or_tipp_idx'
    startDate column:'or_start_date'
      endDate column:'or_end_date'
     isShared column:'or_is_shared'
@@ -64,7 +64,7 @@ class OrgRole implements ShareableTrait {
     pkg         (nullable:true)
     sub         (nullable:true)
     lic         (nullable:true)
-    title       (nullable:true)
+    tipp        (nullable:true)
     startDate   (nullable:true)
     endDate     (nullable:true)
     sharedFrom  (nullable:true)
@@ -82,7 +82,7 @@ class OrgRole implements ShareableTrait {
         pkg     = owner instanceof Package ? owner : pkg
         lic     = owner instanceof License ? owner : lic
         sub     = owner instanceof Subscription ? owner : sub
-        title   = owner instanceof TitleInstance ? owner : title
+        tipp    = owner instanceof TitleInstancePackagePlatform ? owner : tipp
     }
 
     def getOwner() {
@@ -95,8 +95,8 @@ class OrgRole implements ShareableTrait {
         if (lic) {
             return lic
         }
-        if (title) {
-            return title
+        if (tipp) {
+            return tipp
         }
     }
 
@@ -111,8 +111,8 @@ class OrgRole implements ShareableTrait {
         if (lic) {
             return lic.getStatus()
         }
-        if (title) {
-            return title.getStatus()
+        if (tipp) {
+            return tipp.getStatus()
         }
     }
 

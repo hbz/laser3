@@ -29,7 +29,6 @@ class Identifier implements CalculatedLastUpdated {
             org:    Org,
             pkg:    Package,
             sub:    Subscription,
-            ti:     TitleInstance,
             tipp:   TitleInstancePackagePlatform
     ]
 
@@ -46,7 +45,6 @@ class Identifier implements CalculatedLastUpdated {
 	  	org     (nullable:true)
 	  	pkg     (nullable:true)
 	  	sub     (nullable:true)
-	  	ti      (nullable:true)
 	  	tipp    (nullable:true)
 
 		// Nullable is true, because values are already in the database
@@ -65,7 +63,6 @@ class Identifier implements CalculatedLastUpdated {
        org  column:'id_org_fk'
        pkg  column:'id_pkg_fk'
        sub  column:'id_sub_fk'
-       ti   column:'id_ti_fk',      index:'id_title_idx'
        tipp column:'id_tipp_fk',    index:'id_tipp_idx'
 
         dateCreated column: 'id_date_created'
