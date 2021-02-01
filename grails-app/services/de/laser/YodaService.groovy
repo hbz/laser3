@@ -288,77 +288,6 @@ class YodaService {
         [missingTitles:missingTitles,mergingTitles:mergingTitles,remappingTitles:remappingTitles,titlesWithoutTIPPs:titlesWithoutTIPPs,nextPhase:nextPhase,tippMergers:tippMergers]
     }
 
-    void executeTiCleanup(Map result) throws CleanupException {
-        List<TitleInstance> toDelete = []
-        toDelete.addAll(TitleInstance.findAllByGlobalUIDInList(result.titlesWithoutTIPPs))
-        toDelete.addAll(TitleInstance.findAllByGokbIdIsNull())
-        TitleInstance.withTransaction { TransactionStatus status ->
-            try {
-                result.missingTitles.each { entry ->
-                    TitleInstance mergeTarget = TitleInstance.findByGokbId(entry) //take first
-                    Set<TitleInstance> others = TitleInstance.findAllByGokbIdAndGlobalUIDNotEqual(entry,mergeTarget.globalUID)
-                    TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.title = :to where tipp.title in :from',[to:mergeTarget,from:others])
-                    Fact.executeUpdate('update Fact f set f.relatedTitle = :to where f.relatedTitle in :from',[to:mergeTarget, from:others])
-                    Identifier.executeUpdate('update Identifier id set id.ti = :to where id.ti in :from',[to:mergeTarget,from:others])
-                    //TitleInstitutionProvider.executeUpdate('update TitleInstitutionProvider tip set tip.title = :to where tip.title in :from',[to:mergeTarget,from:others])
-                    OrgRole.executeUpdate('update OrgRole oo set oo.title = :to where oo.title in :from',[to:mergeTarget, from:others])
-                    TitleHistoryEventParticipant.executeUpdate('update TitleHistoryEventParticipant thep set thep.participant = :to where thep.participant in :from',[to:mergeTarget, from:others])
-                    PersonRole.executeUpdate('update PersonRole pr set pr.title = :to where pr.title in :from',[to:mergeTarget, from:others])
-                    toDelete.addAll(others)
-                }
-                result.remappingTitles.each { entry ->
-                    TitleInstance.executeUpdate('update TitleInstance ti set ti.gokbId = :to where ti.globalUID = :from',[from:entry.target,to:entry.to])
-                }
-                result.tippMergers.each { entry ->
-                    if(entry.to) {
-                        TitleInstance mergeTarget = TitleInstance.findByGlobalUID(entry.from)
-                        //List tippsB = entry.to.TIPPs.TIPP.collect { tippB -> tippB.@uuid.text() }
-                        entry.others.each { otherKey ->
-                            TitleInstance other = TitleInstance.findByGlobalUID(otherKey)
-                            TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.title = :to where tipp.title = :from',[to:mergeTarget,from:other])
-                            Fact.executeUpdate('update Fact f set f.relatedTitle = :to where f.relatedTitle = :from',[to:mergeTarget, from:other])
-                            Identifier.executeUpdate('update Identifier id set id.ti = :to where id.ti = :from',[to:mergeTarget,from:other])
-                            //TitleInstitutionProvider.executeUpdate('update TitleInstitutionProvider tip set tip.title = :to where tip.title = :from',[to:mergeTarget,from:other])
-                            OrgRole.executeUpdate('update OrgRole oo set oo.title = :to where oo.title = :from',[to:mergeTarget, from:other])
-                            TitleHistoryEventParticipant.executeUpdate('update TitleHistoryEventParticipant thep set thep.participant = :to where thep.participant = :from',[to:mergeTarget, from:other])
-                            PersonRole.executeUpdate('update PersonRole pr set pr.title = :to where pr.title = :from',[to:mergeTarget, from:other])
-                            toDelete << other
-                        }
-                    }
-                    else if(entry.mergeTarget) {
-                        TitleInstance mergeTarget = TitleInstance.findByGlobalUID(entry.mergeTarget)
-                        Set<TitleInstance> others = TitleInstance.findAllByGokbIdAndGlobalUIDNotEqual(entry.gokbId,entry.mergeTarget)
-                        TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.title = :to where tipp.title in :from',[to:mergeTarget,from:others])
-                        Fact.executeUpdate('update Fact f set f.relatedTitle = :to where f.relatedTitle in :from',[to:mergeTarget, from:others])
-                        Identifier.executeUpdate('update Identifier id set id.ti = :to where id.ti in :from',[to:mergeTarget,from:others])
-                        //TitleInstitutionProvider.executeUpdate('update TitleInstitutionProvider tip set tip.title = :to where tip.title in :from',[to:mergeTarget,from:others])
-                        OrgRole.executeUpdate('update OrgRole oo set oo.title = :to where oo.title in :from',[to:mergeTarget, from:others])
-                        TitleHistoryEventParticipant.executeUpdate('update TitleHistoryEventParticipant thep set thep.participant = :to where thep.participant in :from',[to:mergeTarget, from:others])
-                        PersonRole.executeUpdate('update PersonRole pr set pr.title = :to where pr.title in :from',[to:mergeTarget, from:others])
-                        toDelete.addAll(others)
-                    }
-                    else {
-                        toDelete.addAll(TitleInstance.executeQuery('select ti from TitleInstance ti where ti.gokbId = :titleAKey and ti.tipps.size = 0',[titleAKey:entry.gokbId]))
-                    }
-                }
-                globalService.cleanUpGorm()
-                if(toDelete) {
-                    Identifier.executeUpdate('delete from Identifier id where id.ti in :toDelete',[toDelete:toDelete])
-                    //TitleInstitutionProvider.executeUpdate('delete from TitleInstitutionProvider tip where tip.title in :toDelete',[toDelete:toDelete])
-                    OrgRole.executeUpdate('delete from OrgRole oo where oo.title in :toDelete',[toDelete:toDelete])
-                    TitleHistoryEventParticipant.executeUpdate('delete from TitleHistoryEventParticipant thep where thep.participant in :toDelete',[toDelete:toDelete])
-                    PersonRole.executeUpdate('delete from PersonRole pr where pr.title in :toDelete',[toDelete:toDelete])
-                    Fact.executeUpdate('delete from Fact f where f.relatedTitle in :toDelete',[toDelete:toDelete])
-                    TitleInstance.executeUpdate('delete from TitleInstance ti where ti in :toDelete',[toDelete:toDelete])
-                }
-            }
-            catch (Exception e) {
-                status.setRollbackOnly()
-                throw new CleanupException(e.message)
-            }
-        }
-    }
-
     Map<String,Object> listDeletedTIPPs() {
         globalService.cleanUpGorm()
         //merge duplicate tipps
@@ -670,7 +599,7 @@ class YodaService {
         Map<Long,Long> toDelete = [:]
         Set<Long> toUUIDfy = []
         tippsWithoutGOKbID.each { tipp ->
-            TitleInstancePackagePlatform altTIPP = TitleInstancePackagePlatform.executeQuery("select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.title = :title and tipp.status = :current and tipp.gokbId != null",[pkg:tipp.pkg,title:tipp.title,current:RDStore.TIPP_STATUS_CURRENT])[0]
+            TitleInstancePackagePlatform altTIPP = TitleInstancePackagePlatform.executeQuery("select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status = :current and tipp.gokbId != null",[pkg:tipp.pkg,current:RDStore.TIPP_STATUS_CURRENT])[0]
             if(altTIPP) {
                 toDelete[tipp.id] = altTIPP.id
                 tippsWithAlternate << [tipp:tipp,altTIPP:altTIPP]

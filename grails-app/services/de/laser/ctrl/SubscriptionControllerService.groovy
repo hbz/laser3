@@ -169,7 +169,7 @@ class SubscriptionControllerService {
                         def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscription)
                         pu.setBenchmark('before usage data sub period')
                         def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscription)
-                        Set<RefdataValue> holdingTypes = RefdataValue.executeQuery('select ti.medium from IssueEntitlement ie join ie.tipp tipp join tipp.title ti where ie.subscription = :context', [context: result.subscription])
+                        Set<RefdataValue> holdingTypes = RefdataValue.executeQuery('select ti.medium from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :context', [context: result.subscription])
                         if (!holdingTypes) {
                             log.debug('No types found, maybe there are no issue entitlements linked to subscription')
                         } else if (holdingTypes.size() > 1) {
@@ -1157,28 +1157,25 @@ class SubscriptionControllerService {
             //to be deployed in parallel thread
             if(params.addUUID) {
                 String pkgUUID = params.addUUID
-                GlobalRecordSource source = GlobalRecordSource.findByUri("${params.source}/gokb/oai/packages")
-                log.debug("linkPackage. Global Record Source URL: " +source.baseUrl)
-                globalSourceSyncService.source = source
                 String addType = params.addType
                 if(!Package.findByGokbId(pkgUUID)) {
+                    GlobalRecordSource source = GlobalRecordSource.findByUri("${params.source}/gokb/api/")
+                    log.debug("linkPackage. Global Record Source URL: " +source.baseUrl)
+                    globalSourceSyncService.source = source
                     executorService.execute({
                         Thread.currentThread().setName("PackageSync_"+result.subscription.id)
                         try {
-                            GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord', metadataPrefix:'gokb', identifier:params.addUUID])
-                            if(packageRecord && packageRecord.record?.header?.status?.text() != 'deleted') {
-                                result.packageName = packageRecord.record.metadata.gokb.package.name
-                                globalSourceSyncService.defineMapFields()
-                                globalSourceSyncService.updateNonPackageData(packageRecord.record.metadata.gokb.package)
-                                globalSourceSyncService.createOrUpdatePackageOAI(packageRecord.record.metadata.gokb.package)
-                                Package pkgToLink = Package.findByGokbId(pkgUUID)
-                                log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                                if (addType == 'With') {
-                                    pkgToLink.addToSubscription(result.subscription, true)
-                                }
-                                else if (addType == 'Without') {
-                                    pkgToLink.addToSubscription(result.subscription, false)
-                                }
+                            globalSourceSyncService.defineMapFields()
+                            Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID])
+                            globalSourceSyncService.updateRecords(queryResult.records)
+                            Package pkgToLink = Package.findByGokbId(pkgUUID)
+                            result.packageName = pkgToLink.name
+                            log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
+                            if (addType == 'With') {
+                                pkgToLink.addToSubscription(result.subscription, true)
+                            }
+                            else if (addType == 'Without') {
+                                pkgToLink.addToSubscription(result.subscription, false)
                             }
                         }
                         catch (Exception e) {
@@ -1327,7 +1324,7 @@ class SubscriptionControllerService {
                     qry_params.startDate = date_filter
                     qry_params.endDate = date_filter
                 }
-                base_qry += "and ( ( lower(ie.tipp.title.title) like :title ) or ( exists ( from Identifier ident where ident.ti.id = ie.tipp.title.id and ident.value like :identifier ) ) ) "
+                base_qry += "and ( ( lower(ie.tipp.sortName) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) ) "
                 qry_params.title = "%${params.filter.trim().toLowerCase()}%"
                 qry_params.identifier = "%${params.filter}%"
                 filterSet = true
@@ -1362,30 +1359,30 @@ class SubscriptionControllerService {
                 qry_params.titleGroup = Long.parseLong(params.titleGroup)
             }
             if(params.seriesNames) {
-                base_qry += " and lower(ie.tipp.title.seriesName) like :seriesNames "
+                base_qry += " and lower(ie.tipp.seriesName) like :seriesNames "
                 qry_params.seriesNames = "%${params.seriesNames.trim().toLowerCase()}%"
                 filterSet = true
             }
             if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
-                base_qry += " and lower(ie.tipp.title.subjectReference) in (:subject_references)"
+                base_qry += " and lower(ie.tipp.subjectReference) in (:subject_references)"
                 qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
                 filterSet = true
             }
             if (params.series_names && params.series_names != "" && params.list('series_names')) {
-                base_qry += " and lower(ie.tipp.title.seriesName) in (:series_names)"
+                base_qry += " and lower(ie.tipp.seriesName) in (:series_names)"
                 qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
                 filterSet = true
             }
             if ((params.sort != null) && (params.sort.length() > 0)) {
                 if(params.sort == 'startDate')
-                    base_qry += "order by ic.startDate ${params.order}, lower(ie.tipp.title.title) asc "
+                    base_qry += "order by ic.startDate ${params.order}, lower(ie.tipp.sortName) asc "
                 else if(params.sort == 'endDate')
-                    base_qry += "order by ic.endDate ${params.order}, lower(ie.tipp.title.title) asc "
+                    base_qry += "order by ic.endDate ${params.order}, lower(ie.tipp.sortName) asc "
                 else
                     base_qry += "order by ie.${params.sort} ${params.order} "
             }
             else {
-                base_qry += "order by lower(ie.tipp.title.title) asc"
+                base_qry += "order by lower(ie.tipp.name) asc"
             }
             result.filterSet = filterSet
             Set<IssueEntitlement> entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params)
@@ -1398,8 +1395,8 @@ class SubscriptionControllerService {
                 params.remove("uploadCoverageDates")
                 params.remove("uploadPriceInfo")
             }
-            result.subjects = subscriptionService.getSubjects(entitlements.collect { IssueEntitlement ie -> ie.tipp.title.id})
-            result.seriesNames = subscriptionService.getSeriesNames(entitlements.collect { IssueEntitlement ie -> ie.tipp.title.id})
+            result.subjects = subscriptionService.getSubjects(entitlements.collect { IssueEntitlement ie -> ie.tipp.id})
+            result.seriesNames = subscriptionService.getSeriesNames(entitlements.collect { IssueEntitlement ie -> ie.tipp.id})
             if(result.subscription.ieGroups.size() > 0) {
                 result.num_ies = subscriptionService.getIssueEntitlementsWithFilter(result.subscription, [offset: 0, max: 5000]).size()
             }
@@ -1417,6 +1414,39 @@ class SubscriptionControllerService {
                 result.processingpc = true
             }
             [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String,Object> entitlementChanges(GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        if(!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            List<Package> pkgList = result.subscription.packages.collect { SubscriptionPackage sp -> sp.pkg }
+            List<Map<String,Object>> entitlementDiffs = []
+            List<PendingChange> pkgChanges = PendingChange.executeQuery('select pc from PendingChange pc where pc.status = :pkgHistory and pc.pkg in (:pkgList)',[pkgList:pkgList])
+            List<PendingChange> tippChanges = PendingChange.executeQuery('select pc from PendingChange pc where pc.status = :pkgHistory and pc.tipp.pkg in (:pkgList) and pc.msgToken = :updated',[pkgList:pkgList,updated:PendingChangeConfiguration.TITLE_UPDATED])
+            List<PendingChange> covChanges = PendingChange.executeQuery('select pc from PendingChange pc where pc.status = :pkgHistory and pc.tippCoverage.tipp.pkg in (:pkgList) and pc.msgToken = :updated',[pkgList:pkgList,updated:PendingChangeConfiguration.COVERAGE_UPDATED])
+            /*
+                get all changes which has occurred
+                list all changes in general
+                offer for each update for which prompt is the setting (explicitely or by missing setting) a change map with parameter links to accept the change
+                listing must be restricted to subscription package! explicite diff listing only for updates
+                creations and deletions have to be indicated only by numbers (number of tipps / tippCoverages vs. issue entitlements / ieCoverages)
+            */
+            List<IssueEntitlement> iesConcerned = IssueEntitlement.findAllByTippInListAndStatusNotEqual(tippChanges.collect { PendingChange pc -> pc.tipp },RDStore.TIPP_STATUS_DELETED)
+            List<IssueEntitlement> ieCovsConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlementCoverage ieCov join ieCov.issueEntitlement ie join ie.tipp tipp where tipp in (:tipps) and ie.status != :deleted',[tipps:tippChanges.collect { PendingChange pc -> pc.tipp },daleted:RDStore.TIPP_STATUS_DELETED])
+            tippChanges.each { PendingChange change ->
+                IssueEntitlement issueEntitlement = iesConcerned.find { IssueEntitlement ie -> ie.tipp == change.tipp }
+                switch(change.msgToken) {
+                    case PendingChangeConfiguration.TITLE_UPDATED:
+                        if(issueEntitlement[change.prop] != change.tipp[change.prop])
+                            entitlementDiffs << [prop:change.prop,oldValue:issueEntitlement[change.prop],newValue:change.tipp[change.prop],tipp:change.tipp,msgToken:change.msgToken]
+                        break
+                }
+            }
+            result
         }
     }
 
@@ -1451,17 +1481,17 @@ class SubscriptionControllerService {
             List errorList = []
             boolean filterSet = false
             EhcacheWrapper checkedCache = contextService.getCache("/subscription/addEntitlements/${params.id}", contextService.USER_SCOPE)
-            Map<TitleInstance,IssueEntitlement> addedTipps = [:]
+            Map<TitleInstancePackagePlatform,IssueEntitlement> addedTipps = [:]
             result.subscription.issueEntitlements.each { ie ->
                 if(ie instanceof IssueEntitlement && ie.status != ie_deleted)
-                    addedTipps[ie.tipp.title] = ie
+                    addedTipps[ie.tipp] = ie
             }
             // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
             String basequery
             Map<String,Object> qry_params = [subscription:result.subscription,tippStatus:tipp_current,issueEntitlementStatus:ie_current]
             if (params.filter) {
                 log.debug("Filtering....");
-                basequery = "select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = :subscription ) and tipp.status = :tippStatus and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.id = tipp.id and ie.status = :issueEntitlementStatus ) ) and ( ( lower(tipp.title.title) like :title ) OR ( exists ( select ident from Identifier ident where ident.ti.id = tipp.title.id and ident.value like :idVal ) ) ) "
+                basequery = "select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = :subscription ) and tipp.status = :tippStatus and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.id = tipp.id and ie.status = :issueEntitlementStatus ) ) and ( ( lower(tipp.name) like :title ) OR ( exists ( select ident from Identifier ident where ident.tipp.id = tipp.id and ident.value like :idVal ) ) ) "
                 qry_params.title = "%${params.filter.trim().toLowerCase()}%"
                 qry_params.idVal = "%${params.filter}%"
                 filterSet = true
@@ -1493,7 +1523,7 @@ class SubscriptionControllerService {
                 filterSet = true
             }
             else {
-                basequery += " order by tipp.title.title asc "
+                basequery += " order by tipp.sortName asc "
             }
             result.filterSet = filterSet
             tipps.addAll(TitleInstancePackagePlatform.executeQuery(basequery, qry_params))
@@ -1712,17 +1742,17 @@ class SubscriptionControllerService {
                     String serial
                     String electronicSerial
                     String checked = ""
-                    if(tipp.title instanceof BookInstance) {
-                        serial = tipp.title.getIdentifierValue('pISBN')
-                        electronicSerial = tipp?.title?.getIdentifierValue('ISBN')
+                    if(tipp.titleType.contains('Book')) {
+                        serial = tipp.getIdentifierValue('pISBN')
+                        electronicSerial = tipp.getIdentifierValue('ISBN')
                     }
-                    else if(tipp.title instanceof JournalInstance) {
-                        serial = tipp?.title?.getIdentifierValue('ISSN')
-                        electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
+                    else if(tipp.titleType == "Journal") {
+                        serial = tipp.getIdentifierValue('ISSN')
+                        electronicSerial = tipp.getIdentifierValue('eISSN')
                     }
-                    if(result.identifiers?.zdbIds?.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
+                    if(result.identifiers?.zdbIds?.indexOf(tipp.getIdentifierValue('zdb')) > -1) {
                         checked = "checked"
-                        result.issueEntitlementOverwrite[tipp.gokbId] = issueEntitlementOverwrite[tipp.title.getIdentifierValue('zdb')]
+                        result.issueEntitlementOverwrite[tipp.gokbId] = issueEntitlementOverwrite[tipp.getIdentifierValue('zdb')]
                     }
                     else if(result.identifiers?.onlineIds?.indexOf(electronicSerial) > -1) {
                         checked = "checked"
@@ -1827,7 +1857,7 @@ class SubscriptionControllerService {
             }
             else if(params.singleTitle) {
                 try {
-                    Object[] args = [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.title?.title]
+                    Object[] args = [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.name]
                     if(issueEntitlementCandidates?.get(params.singleTitle) || Boolean.valueOf(params.uploadPriceInfo))  {
                         if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
                             log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id} with issue entitlement overwrites")
@@ -1905,7 +1935,7 @@ class SubscriptionControllerService {
         Locale locale = LocaleContextHolder.getLocale()
         if(params.ieid) {
             IssueEntitlement ie = IssueEntitlement.get(params.ieid)
-            if(ie && !ie.priceItem) {
+            if(ie) {
                 PriceItem pi = new PriceItem(issueEntitlement: ie)
                 pi.setGlobalUID()
                 if(!pi.save()) {

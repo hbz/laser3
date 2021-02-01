@@ -45,62 +45,39 @@ class PackageController  {
     @Secured(['ROLE_USER'])
     def index() {
 
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        if (!apiSource) {
+            redirect controller: 'package', action: 'list'
+            return
+        }
+
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        params.max = params.max ?: result.user.getDefaultPageSize()
+        SwissKnife.setPaginationParams(result, params, result.user)
 
-            if (params.q == "") params.remove('q');
+        String esQuery = "?componentType=Package"
+        if(params.q) {
+            //for ElasticSearch
+            esQuery += "&name=${params.q}"
+            //the result set has to be broadened down by IdentifierNamespace queries! Problematic if the package is not in LAS:eR yet!
+        }
+        /*
+        to implement:
+        - provider
+        - componentType
+        - series
+        - subjectArea
+        - curatoryGroup
+        - year (combination of dateFirstPrint and dateFirstOnline)
+         */
 
-            if (params.search.equals("yes")) {
-                //when searching make sure results start from first page
-                params.offset = 0
-                params.remove("search")
-            }
+        String sort = params.sort ?: "&sort=sortname"
+        String order = params.order ?: "&order=asc"
 
-            def old_q = params.q
-            def old_sort = params.sort
-
-            if (!ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)) {
-                redirect controller: 'package', action: 'list'
-                return
-            }
-
-            def gokbRecords = []
-
-            ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
-                gokbRecords << gokbService.getPackagesMap(api, params.q, false).records
-            }
-
-            params.sort = params.sort ?: 'name'
-            params.order = params.order ?: 'asc'
-
-            result.records = gokbRecords ? gokbRecords.flatten().sort() : null
-
-            result.records?.sort { x, y ->
-                if (params.order == 'desc') {
-                    y."${params.sort}".toString().compareToIgnoreCase x."${params.sort}".toString()
-                } else {
-                    x."${params.sort}".toString().compareToIgnoreCase y."${params.sort}".toString()
-                }
-            }
-
-            result.resultsTotal2 = result.records?.size()
-
-            Integer start = params.offset ? params.int('offset') : 0
-            Integer end = params.offset ? params.int('max') + params.int('offset') : params.int('max')
-            end = (end > result.records?.size()) ? result.records?.size() : end
-
-            result.records = result.records?.subList(start, end)
-
-            //Double-Quoted search strings wont display without this
-            params.q = old_q?.replace("\"", "&quot;")
-
-            if (!old_q) {
-                params.remove('q')
-            }
-            if (!old_sort) {
-                params.remove('sort')
-            }
+        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/find'+esQuery+sort+order)
+        List records = queryResult.warning.records
+        result.recordsCount = records.size()
+        result.records = records.drop(result.offset).take(result.max)
 
         result
     }
@@ -217,11 +194,11 @@ class PackageController  {
                 return
             }
 
-            def groupedA = listA.groupBy({ it.title.title })
-            def groupedB = listB.groupBy({ it.title.title })
+            def groupedA = listA.groupBy({ it.name })
+            def groupedB = listB.groupBy({ it.name })
 
-            def mapA = listA.collectEntries { [it.title.title, it] }
-            def mapB = listB.collectEntries { [it.title.title, it] }
+            def mapA = listA.collectEntries { [it.name, it] }
+            def mapB = listB.collectEntries { [it.name, it] }
 
             result.listACount = [tipps: listA.size(), titles: mapA.size()]
             result.listBCount = [tipps: listB.size(), titles: mapB.size()]
@@ -545,7 +522,7 @@ class PackageController  {
             base_qry += " and ( tipp.accessEndDate <= :date ) "
         }
 
-        base_qry += " order by ${params.sort ?: 'tipp.title.sortTitle'} ${params.order ?: 'asc'} "
+        base_qry += " order by ${params.sort ?: 'tipp.name'} ${params.order ?: 'asc'} "
 
         log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
         result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + base_qry, qry_params, limits)
@@ -705,8 +682,8 @@ class PackageController  {
         String baseUrl = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true).baseUrl
         GlobalRecordSource source = GlobalRecordSource.findByUri("${baseUrl}/gokb/oai/packages")
         log.debug("addToSub. Global Record Source URL: " +source.baseUrl)
-        globalSourceSyncService.source = source
-        GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:'gokb',identifier:pkg.gokbId])
+        globalSourceSyncService.setSource(source)
+        GPathResult packageRecord = globalSourceSyncService.fetchRecordOAI('packages',[verb:'GetRecord', identifier:pkg.gokbId])
         if(packageRecord && packageRecord.record?.header?.status?.text() != 'deleted') {
             pkg.addToSubscription(sub, add_entitlements)
             if(add_entitlements) {

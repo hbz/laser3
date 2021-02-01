@@ -766,7 +766,7 @@ class SubscriptionController {
                 TitleInstancePackagePlatform tipp = ie.tipp
                 try {
                     if(subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItem != null) , RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)) {
-                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.title.title])
+                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name])
                     }
                 }
                 catch(EntitlementCreationException e) {
@@ -971,8 +971,8 @@ class SubscriptionController {
         List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
         List<IssueEntitlement> notFixedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub)
 
-        result.subjects = subscriptionService.getSubjects(allIEs.collect {it.tipp.title.id})
-        result.seriesNames = subscriptionService.getSeriesNames(allIEs.collect {it.tipp.title.id})
+        result.subjects = subscriptionService.getSubjects(allIEs.collect {it.tipp.id})
+        result.seriesNames = subscriptionService.getSeriesNames(allIEs.collect {it.tipp.id})
         result.countSelectedIEs = notFixedIEs.size()
         result.countAllIEs = allIEs.size()
         result.countAllSourceIEs = sourceIEs.size()
