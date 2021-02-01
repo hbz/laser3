@@ -6,6 +6,7 @@ import com.k_int.kbplus.GenericOIDService
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.CreationException
 import de.laser.finance.CostItem
+import de.laser.finance.PriceItem
 import de.laser.helper.ConfigUtils
 import de.laser.helper.FactoryResult
 import de.laser.helper.RDStore
@@ -1167,7 +1168,7 @@ class CopyElementsService {
                             def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ie.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
                             if (list.size() > 0) {
                                 // mich gibts schon! Fehlermeldung ausgeben!
-                                Object[] args = [ie.tipp.title.title]
+                                Object[] args = [ie.tipp.name]
                                 flash.error += messageSource.getMessage('subscription.err.titleAlreadyExistsInTargetSub', args, locale)
                             } else {
                                 def properties = ie.properties
@@ -1175,17 +1176,24 @@ class CopyElementsService {
                                 IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                                 InvokerHelper.setProperties(newIssueEntitlement, properties)
                                 newIssueEntitlement.coverages = null
+                                newIssueEntitlement.priceItems = null
                                 newIssueEntitlement.ieGroups = null
                                 newIssueEntitlement.subscription = targetObject
 
                                 if (save(newIssueEntitlement, flash)) {
                                     ie.properties.coverages.each { coverage ->
-
                                         def coverageProperties = coverage.properties
                                         IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
                                         InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
                                         newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
                                         newIssueEntitlementCoverage.save()
+                                    }
+                                    ie.properties.priceItems.each { priceItem ->
+                                        def priceItemProperties = priceItem.properties
+                                        PriceItem newPriceItem = new PriceItem()
+                                        InvokerHelper.setProperties(newPriceItem, priceItemProperties)
+                                        newPriceItem.issueEntitlement = newIssueEntitlement
+                                        newPriceItem.save()
                                     }
                                 }
                             }
@@ -1226,7 +1234,7 @@ class CopyElementsService {
                 def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ieToTake.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
                 if (list.size() > 0) {
                     // mich gibts schon! Fehlermeldung ausgeben!
-                    Object[] args = [ieToTake.tipp.title.title]
+                    Object[] args = [ieToTake.tipp.name]
                     flash.error += messageSource.getMessage('subscription.err.titleAlreadyExistsInTargetSub', args, locale)
                 } else {
                     def properties = ieToTake.properties

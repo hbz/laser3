@@ -1,5 +1,6 @@
 package de.laser.titles
 
+import de.laser.TitleInstancePackagePlatform
 
 import javax.persistence.Transient
 
@@ -28,7 +29,7 @@ class TitleHistoryEvent {
   }
 
   @Transient 
-  boolean inRole(String role, TitleInstance t) {
+  boolean inRole(String role, TitleInstancePackagePlatform t) {
     boolean result = false
     participants.each { p ->
       if ( ( p.participant.id == t.id ) && ( p.participantRole == role ) )
@@ -38,12 +39,12 @@ class TitleHistoryEvent {
   }
 
   @Transient 
-  List<TitleInstance> fromTitles() {
+  List<TitleInstancePackagePlatform> fromTitles() {
     participants.findAll{it.participantRole=='from'}.collect{ it.participant }
   }
 
   @Transient
-  List<TitleInstance> toTitles() {
+  List<TitleInstancePackagePlatform> toTitles() {
     participants.findAll{it.participantRole=='to'}.collect{ it.participant }
   }
 }

@@ -102,11 +102,11 @@
                             <input type="hidden" name="entitlements.${counter}.end_date" value="${e.endDate}"/>
                             <input type="hidden" name="entitlements.${counter}.coverage" value="${e.coverageDepth}"/>
                             <input type="hidden" name="entitlements.${counter}.coverage_note" value="${e.coverageNote}"/>--%>
-                            ${e.tipp.title.title}</td>
+                            ${e.tipp.name}</td>
                         <td><g:link controller="package" action="show"
                                     id="${e.tipp.pkg.id}">${e.tipp.pkg.name}(${e.tipp.pkg.id})</g:link></td>
-                        <td>${e.tipp.title.getIdentifierValue('ISSN')}</td>
-                        <td>${e.tipp.title.getIdentifierValue('eISSN')}</td>
+                        <td>${e.tipp.getIdentifierValue('ISSN')}</td>
+                        <td>${e.tipp.getIdentifierValue('eISSN')}</td>
                         <td>
                             <g:each in="${e.coverages}" var="covStmt">
                                 <g:formatDate formatName="default.date.format.notime" date="${covStmt.startDate}"/>

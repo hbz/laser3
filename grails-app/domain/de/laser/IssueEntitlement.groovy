@@ -39,17 +39,21 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
   static belongsTo = [subscription: Subscription, tipp: TitleInstancePackagePlatform]
 
-  static hasOne =    [priceItem: PriceItem]
-
   static hasMany = [coverages: IssueEntitlementCoverage,
-                    ieGroups: IssueEntitlementGroupItem]
+                    ieGroups: IssueEntitlementGroupItem,
+                    priceItems: PriceItem]
+
+  static mappedBy = [priceItems: 'issueEntitlement']
 
   @Transient
   def comparisonProps = ['derivedAccessStartDate', 'derivedAccessEndDate',
 'coverageNote','coverageDepth','embargo','startVolume','startIssue','startDate','endDate','endIssue','endVolume']
 
   int compareTo(obj) {
-    int cmp = tipp.title.title.compareTo(obj.tipp.title.title)
+    int cmp
+    if(tipp.sortName)
+        cmp = tipp.sortName.compareTo(obj.tipp.sortName)
+    else cmp = tipp.name.compareTo(obj.tipp.name)
     if(cmp == 0)
       return tipp.id.compareTo(obj.tipp.id)
     return cmp
@@ -81,7 +85,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     status         (nullable:true)
     ieReason       (nullable:true, blank:true)
     medium         (nullable:true)
-    priceItem      (nullable:true)
     accessStartDate(nullable:true)
     accessEndDate  (nullable:true)
     coreStatus     (nullable:true)
@@ -197,47 +200,4 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
       result
   }
-
-  /*
-  @Transient
-  @Deprecated
-  TitleInstitutionProvider getTIP(){
-    Org inst = subscription?.getSubscriber()
-    def title = tipp?.title
-    Org provider = tipp?.pkg?.getContentProvider()
-
-    if ( inst && title && provider ) {
-      TitleInstitutionProvider tip = TitleInstitutionProvider.findByTitleAndInstitutionAndprovider(title, inst, provider)
-      if(!tip){
-        tip = new TitleInstitutionProvider(title:title,institution:inst,provider:provider)
-        tip.save()
-      }
-      return tip
-    }
-    return null
-  }
-
-  @Transient
-  static def refdataFind(params) {
-
-    def result = [];
-    def hqlParams = []
-    String hqlString = "select ie from IssueEntitlement as ie"
-
-    if ( params.subFilter ) {
-      hqlString += ' where ie.subscription.id = ?'
-      hqlParams.add(params.long('subFilter'))
-    }
-
-    def results = IssueEntitlement.executeQuery(hqlString,hqlParams)
-
-    results?.each { t ->
-      def resultText = t.tipp.title.title
-      result.add([id:"${t.class.name}:${t.id}",text:resultText])
-    }
-
-    result
-
-  }
-  */
 }

@@ -8,7 +8,7 @@
         <tr>
             <th>${message(code: 'profile.membership.org')}</th>
             <th>${message(code: 'profile.membership.role')}</th>
-            <th>${message(code: 'profile.membership.dates')}</th>
+            %{-- <th>${message(code: 'profile.membership.dates')}</th> --}%
             <g:if test="${tmplUserEdit && editor.hasRole('ROLE_ADMIN')}">
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </g:if>
@@ -45,11 +45,11 @@
                             <g:message code="cv.roles.${aff.formalRole?.authority}"/>
                         </g:else>
                     </td>
-                    <td>
+                    %{-- <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${aff.dateCreated}"/>
                         /
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${aff.lastUpdated}"/>
-                    </td>
+                    </td> --}%
                     <g:if test="${tmplUserEdit && editor.hasRole('ROLE_ADMIN')}">
                         <td class="x">
                                 <g:if test="${! instAdmService.isUserLastInstAdminForOrg(userInstance, aff.org)}">

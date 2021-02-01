@@ -81,7 +81,7 @@
         <tr>
 
             <th>${message(code: 'sidewide.number')}</th>
-            <g:sortableColumn class="eight wide" params="${params}" property="tipp.title.sortTitle" title="${message(code: 'title.label')}"/>
+            <g:sortableColumn class="eight wide" params="${params}" property="tipp.sortName" title="${message(code: 'title.label')}"/>
             <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
             <th class="four wide">${message(code: 'subscription.details.coverage_dates')}</th>
             <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
@@ -118,9 +118,9 @@
 
                     <td>${counter++}</td>
                     <td>
-                        <semui:listIcon type="${ie.tipp.title.class.name}"/>
+                        <semui:listIcon type="${ie.tipp.titleType}"/>
                         <g:link controller="issueEntitlement" id="${ie.id}"
-                                action="show"><strong>${ie.tipp.title.title}</strong>
+                                action="show"><strong>${ie.tipp.name}</strong>
                         </g:link>
                         <g:if test="${ie.tipp.hostPlatformURL}">
                             <semui:linkIcon href="${ie.tipp.hostPlatformURL.startsWith('http') ? ie.tipp.hostPlatformURL : 'http://' + ie.tipp.hostPlatformURL}"/>
@@ -138,16 +138,16 @@
                                                 overwriteEditable="${false}"/>
                     </td>
                     <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
-                        <g:if test="${ie.tipp.title instanceof BookInstance}">
+                        <g:if test="${ie.tipp.titleType.contains('Book')}">
 
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                          date="${ie.tipp.title.dateFirstInPrint}"/>
+                                          date="${ie.tipp.dateFirstInPrint}"/>
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                          date="${ie.tipp.title.dateFirstOnline}"/>
+                                          date="${ie.tipp.dateFirstOnline}"/>
 
                         </g:if>
                         <g:else>
@@ -194,11 +194,15 @@
                                     field="localCurrency" owner="${ie.priceItem}" overwriteEditable="${false}"
                                     config="Currency"/>
                         <%--<g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencyCode="${ie.priceItem.localCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>--%>
-                            (<g:message code="tipp.priceDate"/> <semui:xEditable field="priceDate"
-                                                                                 type="date"
-                                                                                 owner="${ie.priceItem}"
-                                                                                 overwriteEditable="${false}"/>
-                        <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.priceDate}"/>--%>)
+                            (<g:message code="tipp.priceStartDate"/> <semui:xEditable field="startDate"
+                                                                                      type="date"
+                                                                                      owner="${ie.priceItem}"
+                                                                                      overwriteEditable="${false}"/>-
+                            <g:message code="tipp.priceEndDate"/> <semui:xEditable field="endDate"
+                                                                                     type="date"
+                                                                                     owner="${ie.priceItem}"
+                                                                                     overwriteEditable="${false}"/>
+                        <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.startDate}"/>--%>)
                         </g:if>
 
                     </td>

@@ -150,8 +150,8 @@ class SubscriptionsQueryService {
 
                 base_qry += tmpBaseQuery1 + ", SubscriptionPackage sp where ident.pkg = sp.pkg.id and sp.subscription = s " + tmpBaseQuery2 + " or "
 
-                base_qry += tmpBaseQuery1 + ", TitleInstance ti, TitleInstancePackagePlatform tipp, IssueEntitlement ie " +
-                        " where ident.ti = ti.id and tipp.title = ti.id and ie.tipp = tipp.id and ie.subscription = s.id " + tmpBaseQuery2  + " or "
+                base_qry += tmpBaseQuery1 + ", TitleInstancePackagePlatform tipp, IssueEntitlement ie " +
+                        " where ident.tipp = tipp.id and ie.tipp = tipp.id and ie.subscription = s.id " + tmpBaseQuery2  + " or "
 
                 base_qry += tmpBaseQuery1 + ", OrgRole ro where ident.org = ro.org and ro.sub = s " + tmpBaseQuery2
 

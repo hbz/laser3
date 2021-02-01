@@ -79,13 +79,12 @@
                         <tr>
                             <g:set var="pkg" value="${Package.findByGokbId(record.uuid)}"/>
                             <g:set var="org" value="${Org.findByGokbId(record.providerUuid)}"/>
-                            <g:set var="plat" value="${Platform.findByGokbId(record?.platformUuid)}"/>
+                            <g:set var="plat" value="${Platform.findByGokbId(record.platformUuid)}"/>
                             <td>${(params.int('offset') ?: 0) + jj + 1}</td>
                             <td>
-                                <!--${record} -->
                                 <%--UUID: ${record.uuid} --%>
                                 <%--Package: ${Package.findByGokbId(record.uuid)} --%>
-                                <g:if test="">
+                                <g:if test="${pkg}">
                                     <g:link controller="package" action="show"
                                             id="${pkg.id}">${record.name}</g:link>
                                 </g:if>
@@ -138,7 +137,7 @@
                                 </div>
                             </td>
                             <td>
-                                <g:if test="${record.source.automaticUpdates}">
+                                <g:if test="${record.source?.automaticUpdates}">
                                     <g:message code="package.index.result.automaticUpdates"/>
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                           data-content="${record.source.frequency}">
@@ -149,7 +148,7 @@
                                     <g:message code="package.index.result.noAutomaticUpdates"/>
                                 </g:else>
                             </td>
-                            <td><semui:listIcon type="${record.contentType}"/></td>
+                            <td><g:if test="${record.contentType}"><semui:listIcon type="${record.contentType}"/></g:if></td>
                             <sec:ifAllGranted roles="ROLE_YODA">
                                 <td>
                                     <g:link class="ui button" controller="yoda" action="retriggerPendingChanges" params="${[packageUUID:record.uuid]}"><g:message code="menu.yoda.retriggerPendingChanges"/></g:link>

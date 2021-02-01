@@ -19,6 +19,7 @@ import java.text.Normalizer
 import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
+@Deprecated
 @Slf4j
 class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
 
@@ -51,20 +52,22 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
     Date lastUpdated
     Date lastUpdatedCascading
 
+/*
   static mappedBy = [
-                     tipps:     'title',
-                     ids:       'ti',
-                     orgs:      'title',
-                     historyEvents: 'participant',
-                     prsLinks:  'title'
+                   tipps:     'title',
+                   ids:       'ti',
+                   orgs:      'title',
+                   historyEvents: 'participant',
+                   prsLinks:  'title'
                      ]
   static hasMany = [
-                    tipps:  TitleInstancePackagePlatform,
-                    ids:    Identifier,
-                    orgs:   OrgRole,
-                    historyEvents: TitleHistoryEventParticipant,
-                    prsLinks: PersonRole
+                  tipps:  TitleInstancePackagePlatform,
+                  ids:    Identifier,
+                  orgs:   OrgRole,
+                  historyEvents: TitleHistoryEventParticipant,
+                  prsLinks: PersonRole
                     ]
+*/
 
     static transients = ['publisher'] // mark read-only accessor methods
 

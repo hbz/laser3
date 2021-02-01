@@ -17,13 +17,13 @@
     <semui:crumb controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}"
                  text="${issueEntitlementInstance.subscription.name}"/>
     <semui:crumb class="active" id="${issueEntitlementInstance.id}"
-                 text="${issueEntitlementInstance.tipp.title.title}"/>
+                 text="${issueEntitlementInstance.tipp.name}"/>
 </semui:breadcrumbs>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
-        type="${issueEntitlementInstance.tipp.title.printTitleType()}"/>
+        type="${issueEntitlementInstance.tipp.titleType}"/>
 
-<g:message code="issueEntitlement.for_title.label"/> ${issueEntitlementInstance.tipp.title.title}
+<g:message code="issueEntitlement.for_title.label"/> ${issueEntitlementInstance.tipp.name}
 </h1>
 
 <semui:messages data="${flash}"/>
@@ -39,9 +39,9 @@
         </div>
 
         <div class="content">
-            <semui:listIcon type="${issueEntitlementInstance.tipp.title.class.name}"/>
-            <g:link controller="title" action="show"
-                    id="${issueEntitlementInstance.tipp.title.id}">${issueEntitlementInstance.tipp.title.title}
+            <semui:listIcon type="${issueEntitlementInstance.tipp.titleType}"/>
+            <g:link controller="tipp" action="show"
+                    id="${issueEntitlementInstance.tipp.id}">${issueEntitlementInstance.tipp.name}
             </g:link>
             <g:if test="${issueEntitlementInstance.tipp.hostPlatformURL}">
                 <semui:linkIcon
@@ -55,7 +55,7 @@
                       model="${[item: issueEntitlementInstance, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]}"/>
         <!-- END TEMPLATE -->
 
-            <g:if test="${issueEntitlementInstance.tipp.title instanceof BookInstance}">
+            <g:if test="${issueEntitlementInstance.tipp.titleType.contains('Book')}">
                 <br />
 
                 <div class="la-title">${message(code: 'subscription.details.coverage_dates')}</div>
@@ -65,14 +65,14 @@
                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                            data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                         <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                      date="${issueEntitlementInstance.tipp.title.dateFirstInPrint}"/>
+                                      date="${issueEntitlementInstance.tipp.dateFirstInPrint}"/>
                     </div>
 
                     <div class="item">
                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                            data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
                         <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                      date="${issueEntitlementInstance.tipp.title.dateFirstOnline}"/>
+                                      date="${issueEntitlementInstance.tipp.dateFirstOnline}"/>
                     </div>
                 </div>
 
@@ -131,9 +131,12 @@
                                                                               overwriteEditable="false"/> <semui:xEditableRefData
                                 field="localCurrency" owner="${issueEntitlementInstance.priceItem}" config="Currency"
                                 overwriteEditable="false"/>
-                        (<g:message code="tipp.priceDate"/> <semui:xEditable field="priceDate" type="date"
-                                                                             owner="${issueEntitlementInstance.priceItem}"
-                                                                             overwriteEditable="false"/>)
+                        (<g:message code="tipp.priceStartDate"/> <semui:xEditable field="startDate" type="date"
+                                                                                  owner="${issueEntitlementInstance.priceItem}"
+                                                                                  overwriteEditable="false"/>-
+                        <g:message code="tipp.priceEndDate"/> <semui:xEditable field="endDate" type="date"
+                                                                                  owner="${issueEntitlementInstance.priceItem}"
+                                                                                  overwriteEditable="false"/>)
                     </div>
                 </div>
             </g:if>
@@ -158,73 +161,7 @@
 
     </div>
 
-%{--<semui:form>
-    <dl>
-        <g:if test="${issueEntitlementInstance.subscription}">
-            <dt><g:message code="default.subscription.label"/></dt>
-
-            <dd><g:link controller="subscription" action="index"
-                        id="${issueEntitlementInstance.subscription.id}">${issueEntitlementInstance.subscription.name}</g:link></dd>
-
-        </g:if>
-    --}%%{--<g:if test="${issueEntitlementInstance.subscription.owner}">
-        <dt><g:message code="license.label"/></dt>
-
-        <dd><g:link controller="license" action="show"
-                    id="${issueEntitlementInstance.subscription.owner.id}">${issueEntitlementInstance.subscription.owner.reference}</g:link></dd>
-
-    </g:if>--}%%{--
-    <%--<g:if test="${issueEntitlementInstance.subscription.owner?.onixplLicense}">
-        <dt><g:message code="onixplLicense.license.label"/></dt>
-
-        <dd><g:link controller="onixplLicense" action="index"
-                    id="${issueEntitlementInstance.subscription.owner.onixplLicense.id}">${issueEntitlementInstance.subscription.owner.onixplLicense.title}</g:link></dd>
-    </g:if>--%>
-
-        <g:if test="${issueEntitlementInstance.tipp}">
-            <dt><g:message code="title.label" default="Title"/></dt>
-            <dd><g:link controller="title" action="show"
-                        id="${issueEntitlementInstance.tipp.title.id}">${issueEntitlementInstance.tipp.title.title}</g:link> (<g:message
-                    code="title.type.label"/>: ${issueEntitlementInstance.tipp.title.printTitleType()})</dd>
-            <dt><g:message code="tipp.delayedOA" default="TIPP Delayed OA"/></dt>
-            <dd>${issueEntitlementInstance.tipp.delayedOA?.value}</dd>
-            <dt><g:message code="tipp.hybridOA" default="TIPP Hybrid OA"/></dt>
-            <dd>${issueEntitlementInstance.tipp.hybridOA?.value}</dd>
-            <dt><g:message code="tipp.show.accessStart" default="Date Title Joined Package"/></dt>
-            <dd><g:formatDate format="${message(code: 'default.date.format.notime')}"
-                              date="${issueEntitlementInstance.tipp.accessStartDate}"/></dd>
-        </g:if>
-
-
-        <dt><g:message code="issueEntitlement.globalUID.label"/></dt>
-        <dd>
-            <g:fieldValue bean="${issueEntitlementInstance}" field="globalUID"/>
-        </dd>
-
-
-        <g:if test="${issueEntitlementInstance.coreStatus}">
-            <dt><g:message code="subscription.details.core_medium"/></dt>
-        <%-- fully qualified reference because we do not make imports for one occurrence --%>
-            <dd><semui:xEditableRefData owner="${issueEntitlementInstance}" field="coreStatus"
-                                        config='${de.laser.helper.RDConstants.CORE_STATUS}'/></dd>
-        </g:if>
-    <%--              <g:set var="iecorestatus" value="${issueEntitlementInstance.getTIP()?.coreStatus(null)}"/>
-<%--<dt>${message(code:'subscription.details.core_status')}</dt>
-    <dd>
-      <g:render template="/templates/coreStatus" model="${['issueEntitlement': issueEntitlementInstance]}"/>
-    </dd> --%>
-
-        <g:if test="${issueEntitlementInstance.tipp.hostPlatformURL}">
-            <dt><g:message code="tipp.hostPlatformURL"/></dt>
-            <dd><a href="${issueEntitlementInstance.tipp.hostPlatformURL.startsWith('http') ?: 'http://' + issueEntitlementInstance.tipp.hostPlatformURL}"
-                   target="_blank"
-                   TITLE="${issueEntitlementInstance.tipp.hostPlatformURL}">${issueEntitlementInstance.tipp.platform.name}</a>
-            </dd>
-        </g:if>
-    </dl>
-</semui:form>--}%
-
-    <g:if test="${issueEntitlementInstance.tipp.title instanceof JournalInstance}">
+    <g:if test="${issueEntitlementInstance.tipp.titleType == "Journal"}">
         <div class="ui card">
             <div class="content">
                 <h3 class="ui header"><strong><g:message
@@ -366,7 +303,7 @@
     </g:if>
 
 
-    <g:if test="${issueEntitlementInstance.tipp.title instanceof JournalInstance}">
+    <g:if test="${issueEntitlementInstance.tipp.titleType == "Journal"}">
         <br />
 
         <div class="ui card">
@@ -419,7 +356,7 @@
     </g:if>
 
 
-
+<%-- we should not be supposed to see the same tipp in other circumstances ... do we need the following information at all?
     <g:if test="${issueEntitlementInstance.tipp.title.tipps}">
         <br />
 
@@ -505,6 +442,7 @@
             </table>
         </div>
     </g:if>
+    --%>
 </div>
 
 </body>
