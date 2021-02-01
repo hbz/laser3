@@ -387,7 +387,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         accessEndDate   : tipp.accessEndDate ? DateUtils.parseDateGeneric(tipp.accessEndDate) : null,
                         medium: tipp.medium
                 ]
-                if(tipp.titleType == 'JournalInstance') {
+                if(tipp.titleType == 'Journal') {
                     tipp.coverage.each { cov ->
                         updatedTIPP.coverages << [
                                 startDate: cov.startDate ? DateUtils.parseDateGeneric(cov.startDate) : null,
