@@ -59,7 +59,10 @@
                 </td>
                 <td class="x">
 
-                    <g:link action="index" class="ui icon button" id="${params.id}" params="[titleGroup: titleGroup.id]">
+                    <g:link action="index" class="ui icon button" id="${params.id}"
+                            params="[titleGroup: titleGroup.id]"
+                            role="button"
+                            aria-label="${message(code: 'ariaLabel.change.universal')}">
                         <i class="pencil icon"></i>
                     </g:link>
                     <g:if test="${editable}">
