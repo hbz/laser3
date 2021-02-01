@@ -131,7 +131,10 @@
                                                                               overwriteEditable="false"/> <semui:xEditableRefData
                                 field="localCurrency" owner="${issueEntitlementInstance.priceItem}" config="Currency"
                                 overwriteEditable="false"/>
-                        (<g:message code="tipp.priceStartDate"/> <semui:xEditable field="priceDate" type="date"
+                        (<g:message code="tipp.priceStartDate"/> <semui:xEditable field="startDate" type="date"
+                                                                                  owner="${issueEntitlementInstance.priceItem}"
+                                                                                  overwriteEditable="false"/>-
+                        <g:message code="tipp.priceEndDate"/> <semui:xEditable field="endDate" type="date"
                                                                                   owner="${issueEntitlementInstance.priceItem}"
                                                                                   overwriteEditable="false"/>)
                     </div>
