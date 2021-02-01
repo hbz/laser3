@@ -194,11 +194,15 @@
                                     field="localCurrency" owner="${ie.priceItem}" overwriteEditable="${false}"
                                     config="Currency"/>
                         <%--<g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencyCode="${ie.priceItem.localCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>--%>
-                            (<g:message code="tipp.priceStartDate"/> <semui:xEditable field="priceDate"
+                            (<g:message code="tipp.priceStartDate"/> <semui:xEditable field="startDate"
                                                                                       type="date"
                                                                                       owner="${ie.priceItem}"
-                                                                                      overwriteEditable="${false}"/>
-                        <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.priceDate}"/>--%>)
+                                                                                      overwriteEditable="${false}"/>-
+                            <g:message code="tipp.priceEndDate"/> <semui:xEditable field="endDate"
+                                                                                     type="date"
+                                                                                     owner="${ie.priceItem}"
+                                                                                     overwriteEditable="${false}"/>
+                        <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.startDate}"/>--%>)
                         </g:if>
 
                     </td>
