@@ -68,7 +68,7 @@
                                 <g:render template="/templates/links/subLinksModal"
                                           model="${[tmplText:message(code:'subscription.details.editLink'),
                                                     tmplIcon:'write',
-                                                    tmplCss: 'icon la-selectable-button',
+                                                    tmplCss: 'icon la-selectable-button la-popup-tooltip la-delay',
                                                     tmplID:'editLink',
                                                     tmplModalID:"sub_edit_link_${link.id}",
                                                     subscriptionLicenseLink: subscriptionLicenseLink,

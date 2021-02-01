@@ -53,7 +53,7 @@
                             <td class="link">
                                 <g:link action="edit" controller="accessMethod" id="${accessMethod?.id}" class="ui icon button"
                                         role="button"
-                                        aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="write icon"></i>
                                 </g:link>
                                 <g:link action="delete" controller="accessMethod" id="${accessMethod?.id}" class="ui negative icon button"

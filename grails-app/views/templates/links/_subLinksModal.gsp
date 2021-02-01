@@ -1,8 +1,12 @@
 <%@ page import="com.k_int.kbplus.*;de.laser.*;de.laser.helper.RDStore;de.laser.interfaces.CalculatedType;de.laser.helper.RDConstants" %>
 <laser:serviceInjection/>
 <g:if test="${editmode}">
-    <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.editLink')}">
-        <a role="button" class="ui button ${tmplCss}" data-semui="modal" href="#${tmplModalID}">
+
+        <a role="button"
+           class="ui button ${tmplCss}"
+           data-semui="modal" href="#${tmplModalID}"
+           class="la-popup-tooltip la-delay"
+           data-content="${message(code:'license.details.editLink')}">
             <g:if test="${tmplIcon}">
                 <i class="${tmplIcon} icon"></i>
             </g:if>
@@ -10,7 +14,7 @@
                 ${tmplButtonText}
             </g:if>
         </a>
-    </span>
+
 </g:if>
 
 <%

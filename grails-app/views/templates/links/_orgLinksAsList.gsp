@@ -17,7 +17,7 @@
                         <g:if test="${roleObject.showUIShareButton()}">
                             <g:if test="${role.isShared}">
                                 <span class="la-js-editmode-container">
-                                    <g:link id="test" class="ui icon button green la-selectable-button la-popup-tooltip la-delay test"
+                                    <g:link id="test" class="ui icon button green la-selectable-button la-popup-tooltip la-delay"
                                             controller="ajax" action="toggleShare"
                                             params="${[owner:genericOIDService.getOID(roleObject), sharedObject:genericOIDService.getOID(role), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]}"
                                             data-position="top right" data-content="${message(code:'property.share.tooltip.on')}"
@@ -28,7 +28,7 @@
                             </g:if>
                             <g:else>
                                 <span class="la-js-editmode-container">
-                                    <g:link  class="ui icon button la-selectable-button la-popup-tooltip la-delay test "
+                                    <g:link  class="ui icon button la-selectable-button la-popup-tooltip la-delay  "
                                             controller="ajax" action="toggleShare"
                                             params="${[owner:genericOIDService.getOID(roleObject), sharedObject:genericOIDService.getOID(role), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]}"
                                              data-position="top right" data-content="${message(code:'property.share.tooltip.off')}"

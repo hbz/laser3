@@ -299,7 +299,7 @@
 
                         <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"
                                 role="button"
-                                aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="write icon"></i>
                         </g:link>
                         <g:if test="${sub.isEditableBy(contextService.getUser())}"> <%-- needs to be checked for child subscription because of collective subscriptions! --%>

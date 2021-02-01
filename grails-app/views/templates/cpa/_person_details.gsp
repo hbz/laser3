@@ -15,7 +15,7 @@
                 <div class="content la-space-right">
                     <button class="ui mini icon button" type="button" onclick="JSPC.app.editPerson(${person.id})"
                             role="button"
-                            aria-label="${message(code: 'ariaLabel.change.universal')}">
+                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
                         <i aria-hidden="true" class="write icon"></i>
                     </button>
                 </div>

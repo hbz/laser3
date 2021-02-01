@@ -73,7 +73,7 @@
                             <g:set var="pdgOID" value="${pdGroup.class.name + ':' + pdGroup.id}" />
                             <g:link controller="admin" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button trigger-modal"
                                     role="button"
-                                    aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>
                             </g:link>
                             <g:link controller="admin" action="managePropertyGroups" params="${[cmd:'delete', oid:pdgOID]}" class="ui icon negative button">

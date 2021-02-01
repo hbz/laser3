@@ -198,7 +198,7 @@
                 <g:if test="${editable}">
                     <button type="button" onclick="JSPC.app.editPerson(${person.id})" class="ui icon button"
                             role="button"
-                            aria-label="${message(code: 'ariaLabel.change.universal')}">
+                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
                         <i aria-hidden="true" class="write icon"></i>
                     </button>
 

@@ -55,7 +55,7 @@
                         <g:if test="${! docctx.sharedFrom}">
                             <a onclick="JSPC.app.noteedit(${docctx.owner.id});" class="ui icon button"
                                role="button"
-                               aria-label="${message(code: 'ariaLabel.change.universal')}">
+                               aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>
                             </a>
                             <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button"

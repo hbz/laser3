@@ -253,7 +253,7 @@
                                 <g:if test="${fixedSubscription}">
                                     <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal"
                                             role="button"
-                                            aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                         <i aria-hidden="true" class="write icon"></i>
                                     </g:link>
                                     <span data-position="top right la-popup-tooltip la-delay" data-content="${message(code:'financials.costItem.copy.tooltip')}">
@@ -265,7 +265,7 @@
                                 <g:else>
                                     <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal"
                                         role="button"
-                                        aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                         <i aria-hidden="true" class="write icon"></i>
                                     </g:link>
                                     <span  class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">

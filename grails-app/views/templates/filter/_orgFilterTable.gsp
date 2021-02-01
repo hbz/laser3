@@ -685,7 +685,7 @@
                             <g:link onclick="JSPC.app.addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${costItem.id})"
                                     class="ui icon circular button right floated trigger-modal"
                                     role="button"
-                                    aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>
                             </g:link>
                         </g:if>
@@ -693,7 +693,7 @@
                             <g:link onclick="JSPC.app.addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${null})"
                                     class="ui icon circular button right floated trigger-modal"
                                     role="button"
-                                    aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>
                             </g:link>
                         </g:else>
