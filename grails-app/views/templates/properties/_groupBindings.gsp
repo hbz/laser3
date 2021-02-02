@@ -105,7 +105,6 @@
                                                   class="ui icon negative button"
                                                       role="button"
                                                       ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
-                                    >
                                         <i class="icon times"></i>
                                     </laser:remoteLink>
                                 </g:else>
