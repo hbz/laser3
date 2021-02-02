@@ -64,8 +64,10 @@
 
                     <td class="x">
                         <g:if test="${overwriteEditable}">
-                            <a onclick="JSPC.app.taskedit(${taskInstance.id});" class="ui icon button">
-                                <i class="write icon"></i>
+                            <a onclick="JSPC.app.taskedit(${taskInstance.id});" class="ui icon button"
+                               role="button"
+                               aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                <i aria-hidden="true" class="write icon"></i>
                             </a>
                         </g:if>
                         <g:if test="${(user == taskInstance.creator) || contextService.getUser().hasAffiliation("INST_ADM")}">

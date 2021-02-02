@@ -325,8 +325,7 @@ if (customerType) {
                           data-content="Hier kommt der Tooltip rein"
                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
                           data-confirm-term-how="delete"
-                          role="button"
-                          aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                          role="button">
         >
             <i aria-hidden="true" class="trash alternate icon"></i>
         </laser:remoteLink>

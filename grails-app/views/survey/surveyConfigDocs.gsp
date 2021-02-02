@@ -126,8 +126,9 @@
                                 <g:if test="${editable && !docctx.sharedFrom}">
                                     <button type="button" class="ui icon button la-popup-tooltip la-delay" data-semui="modal"
                                             href="#modalEditDocument_${docctx.id}"
-                                            data-content="${message(code: "template.documents.edit")}"><i
-                                            class="pencil icon"></i></button>
+                                            data-content="${message(code: "template.documents.edit")}"
+                                            aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                        <i class="pencil icon"></i></button>
                                     <g:link controller="${controllerName}" action="deleteDocuments"
                                             class="ui icon negative button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"

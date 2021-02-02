@@ -32,7 +32,10 @@
     <td>${id.note}</td>
     <td>
         <g:if test="${editable}">
-            <button class="ui icon button" onclick="JSPC.app.IdContoller.editIdentifier(${id.id});"><i class="write icon"></i></button>
+            <button class="ui icon button" onclick="JSPC.app.IdContoller.editIdentifier(${id.id});"
+                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                <i aria-hidden="true" class="write icon"></i>
+            </button>
             <g:link controller="ajax"
                     action="deleteIdentifier"
                     class="ui button icon red js-open-confirm-modal"

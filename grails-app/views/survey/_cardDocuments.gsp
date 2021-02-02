@@ -59,7 +59,8 @@
                                                       onComplete=""
                                                       data-update="container-documents"
                                                       data-position="top right"
-                                                      data-content="${message(code: 'property.share.tooltip.on')}">
+                                                      data-content="${message(code: 'property.share.tooltip.on')}"
+                                                        role="button">
                                             <i class="la-share icon"></i>
                                         </laser:remoteLink>
 
@@ -77,7 +78,8 @@
                                                       data-position="top right"
                                                       data-content="${message(code: 'property.share.tooltip.off')}"
                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.share.element.member", args: [docctx.owner.title])}"
-                                                      data-confirm-term-how="share">
+                                                      data-confirm-term-how="share"
+                                                        role="button">
                                         </laser:remoteLink>
                                     </g:else>
                                 </g:if>

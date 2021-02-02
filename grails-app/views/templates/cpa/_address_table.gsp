@@ -78,8 +78,10 @@
             <td class="x">
                 <g:if test="${editable && tmplShowDeleteButton}">
 
-                    <button type="button" onclick="JSPC.app.editAddress(${address.id})" class="ui icon button">
-                        <i class="write icon"></i>
+                    <button type="button" onclick="JSPC.app.editAddress(${address.id})" class="ui icon button"
+                            role="button"
+                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                        <i aria-hidden="true" class="write icon"></i>
                     </button>
                     <g:link class="ui negative button icon js-open-confirm-modal"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"

@@ -68,13 +68,25 @@
                     <g:if test="${check}">
 
                         <g:if test="${controllerName == 'user'}">
-                            <g:link controller="${controllerName}" action="${editLink}" params="${[id: us.id]}" class="ui icon button"><i class="write icon"></i></g:link>
+                            <g:link controller="${controllerName}" action="${editLink}" params="${[id: us.id]}" class="ui icon button"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                <i aria-hidden="true" class="write icon"></i>
+                            </g:link>
                         </g:if>
                         <g:if test="${controllerName == 'myInstitution'}">
-                            <g:link controller="${controllerName}" action="${editLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon button"><i class="write icon"></i></g:link>
+                            <g:link controller="${controllerName}" action="${editLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon button"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                <i aria-hidden="true" class="write icon"></i>
+                            </g:link>
                         </g:if>
                         <g:if test="${controllerName == 'organisation'}">
-                            <g:link controller="${controllerName}" action="${editLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon button"><i class="write icon"></i></g:link>
+                            <g:link controller="${controllerName}" action="${editLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon button"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                <i aria-hidden="true" class="write icon"></i>
+                            </g:link>
                         </g:if>
 
                         <%

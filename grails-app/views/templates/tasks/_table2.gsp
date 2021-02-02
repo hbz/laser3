@@ -59,8 +59,10 @@
                     <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance?.createDate}"/></td>
 
                     <td class="x">
-                        <a onclick="JSPC.app.taskedit(${taskInstance.id});" class="ui icon button">
-                            <i class="write icon"></i>
+                        <a onclick="JSPC.app.taskedit(${taskInstance.id});" class="ui icon button"
+                           role="button"
+                           aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                            <i aria-hidden="true" class="write icon"></i>
                         </a>
                         <g:link class="ui icon negative button js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"

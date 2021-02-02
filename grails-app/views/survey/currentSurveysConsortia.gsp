@@ -400,7 +400,11 @@
                         </g:else>
                     </td>
                     <td>
-                        <g:link controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" class="ui button icon">
+                        <g:link controller="survey" action="show" id="${surveyInfo.id}"
+                                params="[surveyConfigID: surveyConfig.id]"
+                                class="ui button icon"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.change.universal')}">
                             <i class="pencil icon"></i>
                         </g:link>
                     </td>
