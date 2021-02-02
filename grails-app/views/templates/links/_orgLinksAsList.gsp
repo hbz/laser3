@@ -1,6 +1,8 @@
 <%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
-
+<button class="ui icon button la-selectable-button la-popup-tooltip la-delay"  data-content="${message(code:'subscription.details.addNewContact')}">
+    <i class="blind icon"></i>
+</button>
 <table class="ui three column table">
     <g:each in="${roleLinks}" var="role">
         <g:if test="${role.org}">
