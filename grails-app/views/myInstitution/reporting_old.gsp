@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore; de.laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.properties.PropertyDefinition; de.laser.ReportingService" %>
+<%@page import="de.laser.helper.RDStore; de.laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.properties.PropertyDefinition; de.laser.Reporting_OldService" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -17,7 +17,7 @@
         <semui:controlButtons>
             <semui:exportDropdown>
                 <semui:exportDropdownItem>
-                    <g:link class="item" action="reporting" params="${exportParams}">${message(code: 'default.button.export.xls')}</g:link>
+                    <g:link class="item" action="reporting_old" params="${exportParams}">${message(code: 'default.button.export.xls')}</g:link>
                 </semui:exportDropdownItem>
             </semui:exportDropdown>
         </semui:controlButtons>
@@ -208,7 +208,7 @@
                     let genGrouping = collectGenGrouping();
                     if(genGrouping.length > 0) {
                         let requestParams = {groupOptions: genGrouping.join(","),requestParam: $(this).attr("data-requestParam")};
-                        if(genGrouping.indexOf('${ReportingService.CONFIG_ORG_PROPERTY}') > -1)
+                        if(genGrouping.indexOf('${Reporting_OldService.CONFIG_ORG_PROPERTY}') > -1)
                             requestParams.propDef = selPropDef;
                         updateGeneral(requestParams);
                     }
@@ -311,12 +311,12 @@
                 let elem = $('.la-filterPropDef');
                 $("#displayConfigurations .red").each(function(index){
                     let chart = $("#"+$(this).attr("data-requestParam")+$(this).attr("data-display"));
-                    if(($(this).attr("data-display") !== "${ReportingService.CONFIG_ORG_PROPERTY}" && chart.length > 0) || ($(this).attr("data-display") === "${ReportingService.CONFIG_ORG_PROPERTY}" && elem.dropdown("get value") === selPropDef)) {
+                    if(($(this).attr("data-display") !== "${Reporting_OldService.CONFIG_ORG_PROPERTY}" && chart.length > 0) || ($(this).attr("data-display") === "${Reporting_OldService.CONFIG_ORG_PROPERTY}" && elem.dropdown("get value") === selPropDef)) {
                         //console.log(elem.dropdown("get value")+" vs. "+selPropDef);
                         chart.show();
                     }
                     else {
-                        if($(this).attr("data-display") === "${ReportingService.CONFIG_ORG_PROPERTY}" && elem.dropdown("get value") !== selPropDef) {
+                        if($(this).attr("data-display") === "${Reporting_OldService.CONFIG_ORG_PROPERTY}" && elem.dropdown("get value") !== selPropDef) {
                             selPropDef = elem.dropdown("get value");
                         }
                         genGrouping.push($(this).attr("data-display"));

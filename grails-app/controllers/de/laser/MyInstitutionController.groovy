@@ -70,6 +70,7 @@ class MyInstitutionController  {
     def organisationService
     def orgTypeService
     def propertyService
+    def reportingService
     def subscriptionsQueryService
     def subscriptionService
     def surveyService
@@ -100,11 +101,24 @@ class MyInstitutionController  {
         redirect(action:'dashboard')
     }
 
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_ADM")
+    })
+    def reporting() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        if (params.filter) {
+            result.result = reportingService.filter(params)
+        }
+        render view: 'reporting/index', model: result
+    }
+
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    def reporting() {
+    def reporting_old() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
         result.subStatus = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
         result.subProp = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], result.institution)
