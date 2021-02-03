@@ -144,29 +144,29 @@
             </div><!-- .column -->
         </sec:ifAnyGranted>
 
+        <g:if test="${manipulateAffiliations}">
+            <div class="sixteen wide column">
+                <div class="la-inline-lists">
+                    <g:render template="/templates/user/membership_table" model="[userInstance: user, tmplUserEdit: true]" />
+                </div>
+            </div>
+        </g:if>
     </div><!-- grid -->
-
-
-    <g:if test="${manipulateAffiliations}">
-        <div class="ui one column grid">
-            <g:render template="/templates/user/membership_table" model="[userInstance: user, tmplUserEdit: true]" />
-        </div>
-    </g:if>
 
         <g:if test="${editable}">
             <g:if test="${availableOrgs}">
                 <div class="ui segment form">
-                    <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, orgLabel: 'Organisation', tmplUserEdit: true]" />
+                    <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, orgLabel: 'Organisation']" />
                 </div>
             </g:if>
             <g:if test="${availableComboDeptOrgs}">
                 <div class="ui segment form">
-                    <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboDeptOrgs, orgLabel: orgLabel, tmplUserEdit: true]" />
+                    <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboDeptOrgs, orgLabel: orgLabel]" />
                 </div>
             </g:if>
             <g:if test="${availableComboConsOrgs}">
                 <div class="ui segment form">
-                    <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboConsOrgs, orgLabel: 'Teilnehmer', tmplUserEdit: true]" />
+                    <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboConsOrgs, orgLabel: 'Teilnehmer']" />
                 </div>
             </g:if>
         </g:if>

@@ -1,14 +1,15 @@
 <%@ page import="de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.auth.UserOrg;" %>
 <laser:serviceInjection />
 
-<div class="column wide sixteen">
+<div class="ui card">
+    <div class="content">
     <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
+
     <table class="ui celled la-table table">
         <thead>
         <tr>
             <th>${message(code: 'profile.membership.org')}</th>
             <th>${message(code: 'profile.membership.role')}</th>
-            %{-- <th>${message(code: 'profile.membership.dates')}</th> --}%
             <g:if test="${tmplUserEdit && editor.hasRole('ROLE_ADMIN')}">
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </g:if>
@@ -26,7 +27,7 @@
             }
         %>
         <g:each in="${userInstance.affiliations}" var="aff">
-            <g:if test="${tmplProfile || (editor.hasRole('ROLE_ADMIN') || (aff.org.id == contextService.getOrg().id) || (aff.org.id in comboOrgIds))}">
+            <g:if test="${controllerName == 'profile' || (editor.hasRole('ROLE_ADMIN') || (aff.org.id == contextService.getOrg().id) || (aff.org.id in comboOrgIds))}">
                 <% affiCount++ %>
                 <tr>
                     <td>
@@ -45,11 +46,6 @@
                             <g:message code="cv.roles.${aff.formalRole?.authority}"/>
                         </g:else>
                     </td>
-                    %{-- <td>
-                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${aff.dateCreated}"/>
-                        /
-                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${aff.lastUpdated}"/>
-                    </td> --}%
                     <g:if test="${tmplUserEdit && editor.hasRole('ROLE_ADMIN')}">
                         <td class="x">
                                 <g:if test="${! instAdmService.isUserLastInstAdminForOrg(userInstance, aff.org)}">
@@ -79,4 +75,6 @@
         </g:if>
         </tbody>
     </table>
-</div><!--.column-->
+
+    </div><!--.content-->
+</div><!--.card-->
