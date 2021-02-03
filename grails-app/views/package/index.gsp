@@ -14,29 +14,13 @@
 </semui:breadcrumbs>
 
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'package.show.all')}
-<semui:totalNumber total="${resultsTotal2}"/>
+<semui:totalNumber total="${recordsCount}"/>
 </h1>
 
 <semui:messages data="${flash}"/>
 
-<g:render template="/templates/filter/javascript" />
-<semui:filter showFilterButton="true">
-    <g:form action="index" method="get" params="${params}" class="ui form">
-        <input type="hidden" name="offset" value="${params.offset}"/>
+<g:render template="/templates/filter/packageGokbFilter"/>
 
-        <div class="field">
-            <label>${message(code: 'home.search.text')}: ${message(code: 'package.show.pkg_name')}, ${message(code: 'package.content_provider')}</label>
-            <input name="q" placeholder="${message(code:'default.search.ph')}" value="${params.q}"/>
-        </div>
-
-        <div class="field la-field-right-aligned">
-            <a href="${request.forwardURI}"
-               class="ui reset primary button">${message(code: 'default.button.filterreset.label')}</a>
-            <button type="submit" name="search" value="yes"
-                    class="ui secondary button">${message(code: 'default.button.filter.label')}</button>
-        </div>
-    </g:form>
-</semui:filter>
 <div class="ui icon info message">
     <i class="exclamation triangle icon"></i>
     <i class="close icon"></i>
@@ -163,7 +147,7 @@
             <semui:paginate action="index" controller="package" params="${params}"
                             next="${message(code: 'default.paginate.next')}"
                             prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                            total="${resultsTotal2}"/>
+                            total="${recordsCount}"/>
 
         </g:if>
         <g:else>
