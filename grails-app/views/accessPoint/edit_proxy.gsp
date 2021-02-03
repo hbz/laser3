@@ -107,8 +107,8 @@
                         <div class="field">
                             <label for="ipv4_ip">${message(code: 'accessPoint.ip.data')}
                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                      data-tooltip="${message(code: "accessPoint.ip.input")}">
-                                    <i class="question circle icon la-popup"></i></span>
+                                      data-content="${message(code: "accessPoint.ip.input")}">
+                                    <i class="question circle icon"></i></span>
                             </label>
 
 
@@ -175,7 +175,7 @@
                     <div class="field">
                         <label for="ipv6_ip">${message(code: 'accessPoint.ip.data')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                  data-tooltip="${message(code: "accessPoint.ip.input")}">
+                                  data-content="${message(code: "accessPoint.ip.input")}">
                                 <i class="question circle icon la-popup"></i></span>
                         </label>
 
