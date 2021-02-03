@@ -93,7 +93,9 @@
                                     <td>
                                         <g:if test="${editable}">
                                             <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative mini button"
-                                                    params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'>
+                                                    params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                 <i class="icon trash alternate"></i>
                                             </g:link>
                                         </g:if>

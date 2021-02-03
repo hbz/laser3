@@ -16,7 +16,9 @@
             </div>
             <div class="right aligned four wide column la-column-left-lessPadding">
                 <g:link action="tasks" class="ui mini icon negative button"
-                        params='[deleteId:tsk?.id, id: params.id, returnToShow: true]'>
+                        params='[deleteId:tsk?.id, id: params.id, returnToShow: true]'
+                        role="button"
+                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
                     <i class="trash alternate icon"></i>
                 </g:link>
             </div>

@@ -85,7 +85,9 @@
                     <td class="center aligned">
                         <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
                             <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}"
-                                    class="ui negative icon button">
+                                    class="ui negative icon button"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash very alternate icon"></i>
                             </g:link>
                         </g:if>
@@ -153,7 +155,9 @@
                 <td class="center aligned">
                     <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
                         <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}"
-                                class="ui negative icon button">
+                                class="ui negative icon button"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
                             <i class="trash very alternate icon"></i>
                         </g:link>
                     </g:if>

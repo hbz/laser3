@@ -89,7 +89,9 @@
                                 <td class="x">
                                     <g:if test="${editable}">
                                         <g:link controller="ajax" action="removeUserRole" params='${[user:"${user.class.name}:${user.id}",role:"${rl.role.class.name}:${rl.role.id}"]}'
-                                                class="ui icon negative button">
+                                                class="ui icon negative button"
+                                                role="button"
+                                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                             <i class="trash alternate icon"></i>
                                         </g:link>
                                     </g:if>
