@@ -58,20 +58,24 @@ class PackageController  {
 
         String esQuery = "?componentType=Package"
         if(params.q) {
+            result.filterSet = true
             //for ElasticSearch
             esQuery += "&name=${params.q}"
             //the result set has to be broadened down by IdentifierNamespace queries! Problematic if the package is not in LAS:eR yet!
         }
 
         if(params.provider) {
+            result.filterSet = true
             esQuery += "&providerName=${params.provider}"
         }
 
         if(params.curatoryGroup) {
+            result.filterSet = true
             esQuery += "&curatoryGroup=${params.curatoryGroup}"
         }
 
         if(params.resourceTyp) {
+            result.filterSet = true
             esQuery += "&contentType=${params.resourceTyp}"
         }
 
@@ -92,14 +96,18 @@ class PackageController  {
         String offset = params.offset ? "&offset=${params.offset}": "&offset=${result.offset}"
 
         Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/groups')
-        List recordsCuratoryGroups = queryCuratoryGroups.warning.result
-        result.curatoryGroups = recordsCuratoryGroups
+        if(queryCuratoryGroups) {
+            List recordsCuratoryGroups = queryCuratoryGroups.warning.result
+            result.curatoryGroups = recordsCuratoryGroups
+        }
 
 
         Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/find'+esQuery+sort+order+max+offset)
-        List records = queryResult.warning.records
-        result.recordsCount = queryResult.warning.count
-        result.records = records
+        if(queryResult) {
+            List records = queryResult.warning.records
+            result.recordsCount = queryResult.warning.count
+            result.records = records
+        }
 
         result
     }

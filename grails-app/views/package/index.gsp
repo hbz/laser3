@@ -151,7 +151,12 @@
 
         </g:if>
         <g:else>
-            <p><g:message code="default.search.empty" /></p>
+            <g:if test="${filterSet}">
+                <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"package.plural")]}"/></strong>
+            </g:if>
+            <g:else>
+                <br /><strong><g:message code="result.empty.object" args="${[message(code:"package.plural")]}"/></strong>
+            </g:else>
         </g:else>
     </div>
 </div>
