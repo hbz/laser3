@@ -305,18 +305,14 @@
                         <g:if test="${sub.isEditableBy(contextService.getUser())}"> <%-- needs to be checked for child subscription because of collective subscriptions! --%>
                             <g:if test="${sub._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE] && sub.instanceOf._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE}">
                                 <g:if test="${sub.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
-                                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}">
-                                        <g:link class="ui icon button" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
-                                            <i class="eye orange icon"></i>
+                                        <g:link class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
+                                            <i class="ui icon eye orange"></i>
                                         </g:link>
-                                    </span>
                                 </g:if>
                                 <g:else>
-                                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hideToSubscriber')}">
-                                        <g:link class="ui icon orange button" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
-                                            <i class="eye icon"></i>
-                                        </g:link>
-                                    </span>
+                                    <g:link class="ui icon orange button la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hideToSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
+                                        <i class="ui icon eye"></i>
+                                    </g:link>
                                 </g:else>
                             </g:if>
                             <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.sub = :sub and ci.costItemStatus != :deleted',[sub:sub,deleted:RDStore.COST_ITEM_DELETED])}"/>
