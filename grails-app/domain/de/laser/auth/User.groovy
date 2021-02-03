@@ -2,6 +2,7 @@ package de.laser.auth
 
 import de.laser.Org
 import de.laser.UserSetting
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.apache.commons.lang.RandomStringUtils
 
@@ -131,6 +132,23 @@ class User {
     }
     List<Long> getAuthorizedOrgsIds() {
         getAuthorizedOrgs().collect{ it.id }
+    }
+
+    boolean isAuthorizedInstMember(Org org) {
+        ! Org.executeQuery(
+                "select uo from UserOrg uo where uo.user = :user and uo.org = :org and uo.formalRole.roleType = 'user'",
+                [user: this, org: org]
+        ).isEmpty()
+    }
+
+    boolean isAuthorizedComboInstAdmin(Org org) {
+        List<Org> orgList = Org.executeQuery('select c.toOrg from Combo c where c.fromOrg = :org', [org: org])
+        orgList.add(org)
+
+        ! Org.executeQuery(
+                "select uo from UserOrg uo where uo.user = :user and uo.org in (:orgList) and uo.formalRole = :instAdm",
+                [user: this, orgList: orgList, instAdm: Role.findByAuthority('INST_ADM')]
+        ).isEmpty()
     }
 
     boolean hasRole(String roleName) {
