@@ -1,4 +1,4 @@
-<%@page import="de.laser.Org; de.laser.Package; de.laser.Platform" %>
+<%@page import="de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
 <!doctype html>
 
 <html>
@@ -52,7 +52,7 @@
                                           params="${params}"/>
                         <th>${message(code: 'package.curatoryGroup.label')}</th>
                         <th>${message(code: 'package.source.label')}</th>
-                        <th>${message(code: 'package.contentType.label')}</th>
+                        <th>${message(code: 'package.lastUpdated.label')}</th>
                         <sec:ifAllGranted roles="ROLE_YODA">
                             <th class="x"></th>
                         </sec:ifAllGranted>
@@ -80,28 +80,10 @@
                             </td>
                             <td>
                                 <g:if test="${record.titleCount}">
-                                    <g:if test="${record.titleCount == 1}">
-                                        <g:if test="${pkg}">
-                                            <g:link controller="package" action="current"
-                                                    id="${pkg.id}">${message(code: 'package.index.result.titles.single')}</g:link>
-                                        </g:if>
-                                        <g:else>
-                                            ${message(code: 'package.index.result.titles.single')}
-                                        </g:else>
-                                    </g:if>
-                                    <g:else>
-                                        <g:if test="${pkg}">
-                                            <g:link controller="package" action="current"
-                                                    id="${pkg.id}">${message(code: 'package.index.result.titles', args: [record.titleCount])}</g:link>
-                                        </g:if>
-                                        <g:else>
-                                            ${message(code: 'package.index.result.titles', args: [record.titleCount])}
-                                        </g:else>
-
-                                    </g:else>
+                                    ${record.titleCount}
                                 </g:if>
                                 <g:else>
-                                    ${message(code: 'package.index.result.titles.unknown')}
+                                    0
                                 </g:else>
                             </td>
                             <td><g:if test="${org}"><g:link
@@ -132,7 +114,11 @@
                                     <g:message code="package.index.result.noAutomaticUpdates"/>
                                 </g:else>
                             </td>
-                            <td><g:if test="${record.contentType}"><semui:listIcon type="${record.contentType}"/></g:if></td>
+                            <td>
+                                <g:if test="${record.lastUpdatedDisplay}">
+                                    <g:formatDate formatName="default.date.format.notime" date="${new SimpleDateFormat('yyyy-MM-dd HH:mm:ss').parse(record.lastUpdatedDisplay)}"/>
+                                </g:if>
+                            </td>
                             <sec:ifAllGranted roles="ROLE_YODA">
                                 <td>
                                     <g:link class="ui button" controller="yoda" action="retriggerPendingChanges" params="${[packageUUID:record.uuid]}"><g:message code="menu.yoda.retriggerPendingChanges"/></g:link>

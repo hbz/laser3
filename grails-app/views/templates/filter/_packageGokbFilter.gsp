@@ -32,7 +32,7 @@
         </div>
 
         <div class="two fields">
-            <div class="field">
+            %{--<div class="field">
                 <label for="provider">${message(code: 'package.index.filter.resource.typ')}
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'package.index.filter.resource.typ.tooltipp')}">
@@ -45,7 +45,7 @@
                            placeholder="${message(code: 'default.search.ph')}"
                            value="${params.resourceTyp}"/>
                 </div>
-            </div>
+            </div>--}%
 
             <div class="field">
                 <label for="curatoryGroup">${message(code: 'package.curatoryGroup.label')}
