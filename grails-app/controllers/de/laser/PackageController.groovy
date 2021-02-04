@@ -42,6 +42,7 @@ class PackageController  {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
+    //Data from GOKB ES
     @Secured(['ROLE_USER'])
     def index() {
 
@@ -50,17 +51,36 @@ class PackageController  {
             redirect controller: 'package', action: 'list'
             return
         }
-
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, result.user)
 
+        result.editUrl = apiSource.baseUrl+apiSource.fixToken
+
         String esQuery = "?componentType=Package"
         if(params.q) {
+            result.filterSet = true
             //for ElasticSearch
             esQuery += "&name=${params.q}"
             //the result set has to be broadened down by IdentifierNamespace queries! Problematic if the package is not in LAS:eR yet!
         }
+
+        if(params.provider) {
+            result.filterSet = true
+            esQuery += "&providerName=${params.provider}"
+        }
+
+        if(params.curatoryGroup) {
+            result.filterSet = true
+            esQuery += "&curatoryGroup=${params.curatoryGroup}"
+        }
+
+        if(params.resourceTyp) {
+            result.filterSet = true
+            esQuery += "&contentType=${params.resourceTyp}"
+        }
+
+
         /*
         to implement:
         - provider
@@ -73,11 +93,22 @@ class PackageController  {
 
         String sort = params.sort ?: "&sort=sortname"
         String order = params.order ?: "&order=asc"
+        String max = params.max ? "&max=${params.max}": "&max=${result.max}"
+        String offset = params.offset ? "&offset=${params.offset}": "&offset=${result.offset}"
 
-        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/find'+esQuery+sort+order)
-        List records = queryResult.warning.records
-        result.recordsCount = records.size()
-        result.records = records.drop(result.offset).take(result.max)
+        Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/groups')
+        if(queryCuratoryGroups) {
+            List recordsCuratoryGroups = queryCuratoryGroups.warning.result
+            result.curatoryGroups = recordsCuratoryGroups
+        }
+
+
+        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/find'+esQuery+sort+order+max+offset)
+        if(queryResult) {
+            List records = queryResult.warning.records
+            result.recordsCount = queryResult.warning.count
+            result.records = records
+        }
 
         result
     }
