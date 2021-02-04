@@ -155,14 +155,10 @@
     </div><!-- grid -->
 
     <g:if test="${editable}">
-        <g:if test="${availableOrgs}">
-            <g:set var="orgLabel" value="Organisation" />
-            <g:set var="availableOrgs" value="${Org.findAll()}" />
-        </g:if>
-        <g:elseif test="${availableComboDeptOrgs}">
+        <g:if test="${availableComboDeptOrgs}">
             <g:set var="availableOrgs" value="${availableComboDeptOrgs}" />
             %{-- TODO: overwrite for ROLE_ADMIN ? all available Orgs --}%
-        </g:elseif>
+        </g:if>
         %{-- not found -- <g:elseif test="${availableComboConsOrgs}">
             <g:set var="orgLabel" value="Teilnehmer" />
             <g:set var="availableOrgs" value="${availableComboConsOrgs}" />
@@ -187,7 +183,7 @@
 
                         <div class="two fields">
                             <div class="field">
-                                <label for="org">${orgLabel ?: 'Organisation'}</label>
+                                <label for="org">${orgLabel ?: message(code:'org.label')}</label>
                                 <g:select name="org" id="org"
                                           from="${availableOrgs}"
                                           optionKey="id"
@@ -196,7 +192,7 @@
                             </div>
 
                             <div class="field">
-                                <label for="formalRole">Role</label>
+                                <label for="formalRole">${message(code:'user.role')}</label>
                                 <g:select name="formalRole" id="formalRole"
                                           from="${Role.findAllByRoleType('user')}"
                                           optionKey="id"
