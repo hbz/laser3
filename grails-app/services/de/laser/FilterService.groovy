@@ -947,6 +947,7 @@ class FilterService {
         String base_qry
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,locale))
         boolean filterSet = false
+        //continue here: order title fields down to tipp endpoints
         if(forBase == 'Package')
             base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgInstance "
         else if(forBase == 'Platform')
@@ -970,7 +971,7 @@ class FilterService {
         }
 
         if (params.filter) {
-            base_qry += " and ( ( genfunc_filter_matcher(tipp.title.title,:title) = true ) or ( exists ( from Identifier ident where ident.ti.id = tipp.title.id and genfunc_filter_matcher(ident.value,:title) = true ) ) )"
+            base_qry += " and ( ( genfunc_filter_matcher(tipp.name,:title) = true ) or ( exists ( from Identifier ident where ident.tipp.id = ti.id and genfunc_filter_matcher(ident.value,:title) = true ) ) )"
             qry_params.title = params.filter
             filterSet = true
         }
@@ -1008,7 +1009,7 @@ class FilterService {
         if ((params.sort != null) && (params.sort.length() > 0)) {
             base_qry += " order by lower(${params.sort}) ${params.order}"
         } else {
-            base_qry += " order by lower(tipp.title.title) asc"
+            base_qry += " order by lower(tipp.sortName) asc"
         }
 
         return [base_qry:base_qry,qry_params:qry_params,filterSet:filterSet]

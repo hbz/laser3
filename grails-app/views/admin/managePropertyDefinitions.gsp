@@ -130,27 +130,27 @@
                                     <td class="x">
 
                                         <g:if test="${pd.mandatory}">
-                                            <g:link action="managePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left"
-                                                    params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon yellow button">
+                                            <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left"
+                                                    params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon yellow button la-popup-tooltip la-delay">
                                                 <i class="star icon"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
-                                            <g:link action="managePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.setMandatory.label')}" data-position="left"
-                                                    params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon button">
+                                            <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMandatory.label')}" data-position="left"
+                                                    params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon button la-popup-tooltip la-delay">
                                                 <i class="star yellow icon"></i>
                                             </g:link>
                                         </g:else>
                                         <g:if test="${!multiplePdList?.contains(pd.id)}">
                                             <g:if test="${pd.multipleOccurrence}">
-                                                <g:link action="managePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon orange button">
+                                                <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left"
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon orange button la-popup-tooltip la-delay">
                                                     <i class="redo slash icon"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>
-                                                <g:link action="managePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.setMultiple.label')}" data-position="left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon button">
+                                                <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="left"
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon button la-popup-tooltip la-delay">
                                                     <i class="redo orange icon"></i>
                                                 </g:link>
                                             </g:else>

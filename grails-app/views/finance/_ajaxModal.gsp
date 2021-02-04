@@ -575,8 +575,8 @@
                 });
                 <%
                     if(costItem?.issueEntitlement) {
-                        String ieTitleName = costItem.issueEntitlement.tipp.title.title
-                        String ieTitleTypeString = costItem.issueEntitlement.tipp.title.printTitleType()
+                        String ieTitleName = costItem.issueEntitlement.tipp.name
+                        String ieTitleTypeString = costItem.issueEntitlement.tipp.titleType
                         %>
                     $("#newIE").dropdown('set text',"${ieTitleName} (${ieTitleTypeString}) (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})");
                 <%  }  %>

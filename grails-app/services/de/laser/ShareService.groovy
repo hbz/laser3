@@ -83,7 +83,7 @@ class ShareService {
                 lic:            (target instanceof License) ? target : share.lic,
                 sub:            (target instanceof Subscription) ? target : share.sub,
                 pkg:            (target instanceof Package) ? target : share.pkg,
-                title:          (target instanceof TitleInstance) ? target : share.title,
+                tipp:           (target instanceof TitleInstancePackagePlatform) ? target : share.tipp,
                 roleType:       share.roleType,
                 startDate:      share.startDate,
                 endDate:        share.endDate,

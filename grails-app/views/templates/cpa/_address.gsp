@@ -56,7 +56,10 @@
         <div class="content">
             <g:if test="${editable && tmplShowDeleteButton}">
                 <div class="ui mini icon buttons">
-                    <a class="ui icon button" onclick="JSPC.app.editAddress(${address.id});">
+                    <a class="ui icon button"
+                       onclick="JSPC.app.editAddress(${address.id});"
+                       role="button"
+                       aria-label="${message(code: 'ariaLabel.change.universal')}">
                         <i class="pencil icon"></i>
                     </a>
 

@@ -6,6 +6,7 @@ import de.laser.Org
 import de.laser.Package
 import de.laser.Platform
 import de.laser.Subscription
+import de.laser.TitleInstancePackagePlatform
 import de.laser.finance.Invoice
 import de.laser.IssueEntitlementCoverage
 import de.laser.oap.OrgAccessPoint
@@ -136,21 +137,21 @@ class ApiUnsecuredMapReader {
     /**
      * @return Map<String, Object>
      */
-    static Map<String, Object> getTitleStubMap(TitleInstance title) {
-        if (!title) {
+    static Map<String, Object> getTitleStubMap(TitleInstancePackagePlatform tipp) {
+        if (!tipp) {
             return null
         }
         Map<String, Object> result = [:]
 
-        result.globalUID    = title.globalUID
-        result.gokbId       = title.gokbId
-        result.title        = title.title
-        result.normTitle    = title.normTitle
+        result.globalUID    = tipp.globalUID
+        result.gokbId       = tipp.gokbId
+        result.title        = tipp.name
+        result.normTitle    = tipp.normName
 
         // References
 
-        result.medium       = title.medium?.value
-        result.identifiers  = ApiCollectionReader.getIdentifierCollection(title.ids) // de.laser.Identifier
+        result.medium       = tipp.medium?.value
+        result.identifiers  = ApiCollectionReader.getIdentifierCollection(tipp.ids) // de.laser.Identifier
 
         ApiToolkit.cleanUp(result, true, true)
     }

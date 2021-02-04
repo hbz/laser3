@@ -159,17 +159,16 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                             allChecked = ""
                     }
                 %>
-                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}
-                                                onClick="javascript:selectAll()"/></g:if>
+                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
             </th>
             <th rowspan="3"><g:message code="sidewide.number"/></th>
-            <g:sortableColumn class="ten wide" params="${params}" property="tipp.title.sortTitle" title="${message(code: 'title.label')}"/>
+            <g:sortableColumn class="ten wide" params="${params}" property="tipp.sortName" title="${message(code: 'title.label')}"/>
             <th><g:message code="tipp.coverage"/></th>
             <th><g:message code="tipp.access"/></th>
             <g:if test="${uploadPriceInfo}">
                 <th><g:message code="tipp.listPrice"/></th>
                 <th><g:message code="tipp.localPrice"/></th>
-                <th><g:message code="tipp.priceDate"/></th>
+                <th><g:message code="tipp.priceStartDate"/></th>
             </g:if>
             <th><g:message code="default.actions.label"/></th>
         </tr>
@@ -194,16 +193,16 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             <td>${counter++}</td>
 
             <td>
-            <semui:listIcon type="${tipp.title.class.name}"/>
-            <strong><g:link controller="title" action="show"
-                            id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
+            <semui:listIcon type="${tipp.titleType}"/>
+            <strong><g:link controller="tipp" action="show"
+                            id="${tipp.id}">${tipp.name}</g:link></strong>
 
-            <g:if test="${tipp.title instanceof BookInstance && tipp.title.volume}">
-                (${message(code: 'title.volume.label')} ${tipp.title.volume})
+            <g:if test="${tipp.titleType.contains('Book') && tipp.volume}">
+                (${message(code: 'title.volume.label')} ${tipp.volume})
             </g:if>
 
-            <g:if test="${tipp.title instanceof BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
-                <br /><strong>${tipp.title.getEbookFirstAutorOrFirstEditor()}</strong>
+            <g:if test="${tipp.titleType.contains('Book') && (tipp.firstAuthor || tipp.firstEditor)}">
+                <br /><strong>${tipp.getEbookFirstAutorOrFirstEditor()}</strong>
             </g:if>
 
             <br />
@@ -231,32 +230,32 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                 </g:each>
             <br />
 
-            <g:if test="${tipp.title instanceof BookInstance}">
-                <g:if test="${tipp.title.editionStatement}">
-                <div class="item"><strong>${message(code: 'title.editionStatement.label')}:</strong> ${tipp.title.editionStatement}
+            <g:if test="${tipp.titleType.contains('Book')}">
+                <g:if test="${tipp.editionStatement}">
+                <div class="item"><strong>${message(code: 'title.editionStatement.label')}:</strong> ${tipp.editionStatement}
                 </div>
                 </g:if>
-                <g:if test="${tipp.title.summaryOfContent}">
+                <g:if test="${tipp.summaryOfContent}">
                 <div class="item">
-                     ${tipp.title.summaryOfContent}
+                     ${tipp.summaryOfContent}
                 </div>
                 </g:if>
             </g:if>
 
-                <g:if test="${tipp.title.seriesName}">
+                <g:if test="${tipp.seriesName}">
                     <div class="item">
                         <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.seriesName.label')}"></i>
                         <div class="content">
-                            ${tipp.title.seriesName}
+                            ${tipp.seriesName}
                         </div>
                     </div>
                 </g:if>
 
-                <g:if test="${tipp.title.subjectReference}">
+                <g:if test="${tipp.subjectReference}">
                     <div class="item">
                         <i class="grey icon comment alternate la-popup-tooltip la-delay" data-content="${message(code: 'title.subjectReference.label')}"></i>
                         <div class="content">
-                            ${tipp.title.subjectReference}
+                            ${tipp.subjectReference}
                         </div>
                     </div>
                 </g:if>
@@ -265,7 +264,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                 <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
             </g:if>
             <br />
-            <g:each in="${tipp.title.ids?.sort { it.ns.ns }}" var="id">
+            <g:each in="${tipp.ids?.sort { it.ns.ns }}" var="id">
                 <span class="ui small blue image label">
                     ${id.ns.ns}: <div class="detail">${id.value}</div>
                 </span>
@@ -315,18 +314,18 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
         </td>
 
             <td>
-                <g:if test="${tipp.title instanceof BookInstance}">
+                <g:if test="${tipp.titleType.contains('Book')}">
                     <%-- TODO contact Ingrid! ---> done as of subtask of ERMS-1490 --%>
                     <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                    %{-- <semui:datepicker class="ieOverwrite" placeholder="${message(code: 'title.dateFirstInPrint.label')}" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstInPrint : tipp.title?.dateFirstInPrint}"/>
                     <%--${tipp.title.dateFirstInPrint}--%>--}%
                     <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${tipp.title.dateFirstInPrint}"/>
+                                  date="${tipp.dateFirstInPrint}"/>
                     <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
                     %{--<semui:datepicker class="ieOverwrite" placeholder="${message(code: 'title.dateFirstOnline.label')}" name="ieAccessEnd" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstOnline : tipp.title?.dateFirstOnline}"/>
                     <%--${tipp.title.dateFirstOnline}--%>--}%
                     <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${tipp.title.dateFirstOnline}"/>
+                                  date="${tipp.dateFirstOnline}"/>
                 </g:if>
                 <g:else>
                     <%-- The check if preselectCoverageStatements is set is done server-side; this is implicitely done when checking if the issueEntitlementOverwrite map has the coverage statement list.
@@ -379,7 +378,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                     <g:formatNumber number="${issueEntitlementOverwrite[tipp.gokbId]?.localPrice}" type="currency" currencySymbol="${issueEntitlementOverwrite[tipp.gokbId]?.localCurrency}" currencyCode="${issueEntitlementOverwrite[tipp.gokbId]?.localCurrency}"/>
                 </td>
                 <td>
-                    <semui:datepicker class="ieOverwrite" name="priceDate" value="${issueEntitlementOverwrite[tipp.gokbId]?.priceDate}" placeholder="${message(code:'tipp.priceDate')}"/>
+                    <semui:datepicker class="ieOverwrite" name="priceDate" value="${issueEntitlementOverwrite[tipp.gokbId]?.priceDate}" placeholder="${message(code:'tipp.priceStartDate')}"/>
                 </td>
             </g:if>
             <td>
@@ -438,6 +437,10 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                 console.log("error occurred, consult logs!");
             });
     }
+
+    $("#select-all").change(function() {
+        JSPC.app.selectAll();
+    });
 
     $(".bulkcheck").change(function() {
         JSPC.app.updateSelectionCache($(this).parents("tr").attr("data-index"),$(this).prop('checked'));

@@ -22,12 +22,12 @@ class PersonRole implements Comparable<PersonRole>{
     @RefdataAnnotation(cat = RDConstants.PERSON_RESPONSIBILITY)
     RefdataValue    responsibilityType  // exclusive other types
 
-    License         lic
-    Package         pkg
-    Subscription    sub
-    TitleInstance   title
-    Date            start_date 
-    Date            end_date
+    License                        lic
+    Package                        pkg
+    Subscription                   sub
+    TitleInstancePackagePlatform   tipp
+    Date                           start_date
+    Date                           end_date
 
     Date dateCreated
     Date lastUpdated
@@ -50,7 +50,7 @@ class PersonRole implements Comparable<PersonRole>{
         org         column:'pr_org_fk',     index: 'pr_prs_org_idx'
         pkg         column:'pr_pkg_fk'
         sub         column:'pr_sub_fk'
-        title       column:'pr_title_fk'
+        tipp        column:'pr_tipp_fk'
         start_date  column:'pr_startdate'
         end_date    column:'pr_enddate'
         
@@ -66,7 +66,7 @@ class PersonRole implements Comparable<PersonRole>{
         org         (nullable:true)
         pkg         (nullable:true)
         sub         (nullable:true)
-        title       (nullable:true)
+        tipp        (nullable:true)
         start_date  (nullable:true)
         end_date    (nullable:true)
 
@@ -83,14 +83,14 @@ class PersonRole implements Comparable<PersonRole>{
         lic     = owner instanceof License ? owner : lic
         pkg     = owner instanceof Package ? owner : pkg
         sub     = owner instanceof Subscription ? owner : sub
-        title   = owner instanceof TitleInstance ? owner : title
+        tipp    = owner instanceof TitleInstancePackagePlatform ? owner : tipp
     }
 
     String getReference() {
         if (lic)        return 'lic:' + lic.id
         if (pkg)        return 'pkg:' + pkg.id
         if (sub)        return 'sub:' + sub.id
-        if (title)      return 'title:' + title.id
+        if (tipp)       return 'title:' + tipp.id
     }
 
     static List<RefdataValue> getAllRefdataValues(String category) {

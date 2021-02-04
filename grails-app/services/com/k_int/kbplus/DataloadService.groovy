@@ -14,6 +14,7 @@ import de.laser.Platform
 import de.laser.Subscription
 import de.laser.SurveyConfig
 import de.laser.SurveyOrg
+import de.laser.TitleInstancePackagePlatform
 import de.laser.properties.LicenseProperty
 import de.laser.properties.SubscriptionProperty
 import de.laser.system.SystemEvent
@@ -170,40 +171,38 @@ class DataloadService {
             result
         }
 
-        updateES(TitleInstance.class) { ti ->
+        updateES(TitleInstancePackagePlatform.class) { TitleInstancePackagePlatform tipp ->
 
             def result = [:]
 
-                if (ti.title != null) {
-                    /*def new_key_title = de.laser.titles.TitleInstance.generateKeyTitle(ti.title)
-                    if (ti.keyTitle != new_key_title) {
-                        ti.normTitle = de.laser.titles.TitleInstance.generateNormTitle(ti.title)
-                        ti.keyTitle = de.laser.titles.TitleInstance.generateKeyTitle(ti.title)
+                if (tipp.name != null) {
+                    if (!tipp.sortName) {
+                        tipp.generateNormTitle()
+                        tipp.generateSortTitle()
                         //
                         // This alone should trigger before update to do the necessary...
                         //
-                        ti.save()
-                    } else {
-                    }*/
+                    }
 
-                    result._id = ti.globalUID
+                    result._id = tipp.globalUID
                     result.priority = 20
-                    result.dbId = ti.id
+                    result.dbId = tipp.id
 
-                    result.gokbId = ti.gokbId
-                    result.guid = ti.globalUID ?: ''
-                    result.name = ti.title
-                    result.status = ti.status?.getMapForES()
+                    result.gokbId = tipp.gokbId
+                    result.guid = tipp.globalUID ?: ''
+                    result.name = tipp.name
+                    result.status = tipp.status?.getMapForES()
                     result.visible = 'Public'
-                    result.rectype = ti.getClass().getSimpleName()
+                    result.rectype = tipp.getClass().getSimpleName()
 
-                    //result.keyTitle = ti.keyTitle
-                    //result.normTitle = ti.normTitle
+                    result.sortName = tipp.sortName
+                    result.normName = tipp.normName
 
-                    result.type = ti.medium?.getMapForES()
+                    result.medium = tipp.medium?.getMapForES()
+                    result.titleType = tipp.titleType
 
                     result.identifiers = []
-                    ti.ids?.each { ident ->
+                    tipp.ids.each { Identifier ident ->
                         try {
                             if(ident.value) {
                             result.identifiers.add([type: ident.ns.ns, value: ident.value])
@@ -215,11 +214,11 @@ class DataloadService {
                     //result.keyTitle = ti.keyTitle
                     //result.normTitle = ti.normTitle
 
-                    result.dateCreated = ti.dateCreated
-                    result.lastUpdated = ti.lastUpdated
+                    result.dateCreated = tipp.dateCreated
+                    result.lastUpdated = tipp.lastUpdated
 
                 } else {
-                    log.warn("Title with no title string - ${ti.id}")
+                    log.warn("Title with no title string - ${tipp.id}")
                 }
 
             result
@@ -622,7 +621,7 @@ class DataloadService {
             result._id = ie.globalUID
             result.priority = 45
             result.dbId = ie.id
-            result.name = ie.tipp?.title?.title
+            result.name = ie.tipp?.name
             result.status= ie.status?.getMapForES()
             result.visible = 'Private'
             result.rectype = ie.getClass().getSimpleName()

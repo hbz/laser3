@@ -71,11 +71,11 @@ class StatsSyncService {
 
     private String getTitleInstancesForUsageQuery() {
         // Distinct list of titles ids, the platform, subscribing organisation and the zdbid
-        String hql =  "select distinct ie.tipp.title.id, pf.id, orgrel.org.id, titleIdentifier.id from IssueEntitlement as ie " +
+        String hql =  "select distinct ie.tipp.id, pf.id, orgrel.org.id, tipp.id from IssueEntitlement as ie " +
             "join ie.tipp.platform as pf " +
             "join ie.tipp.pkg.orgs as po " +
             "join ie.subscription.orgRelations as orgrel "+
-            "join ie.tipp.title.ids as titleIdentifier "+
+            "join ie.tipp.ids as titleIdentifier "+
             "where titleIdentifier.ns.ns in ('zdb','doi') "+
             "and ie.status.value <> '${RDStore.TIPP_STATUS_DELETED}' " +
             "and po.roleType.value='Content Provider' "+

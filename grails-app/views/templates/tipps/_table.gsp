@@ -4,7 +4,7 @@
     <thead>
     <tr>
         <th></th>
-        <g:sortableColumn class="ten wide" params="${params}" property="tipp.title.sortTitle"
+        <g:sortableColumn class="ten wide" params="${params}" property="tipp.sortName"
                           title="${message(code: 'title.label')}"/>
         <th class="two wide">${message(code: 'tipp.access')}</th>
         <th class="two wide">${message(code: 'tipp.coverage')}</th>
@@ -26,72 +26,72 @@
         <tr>
             <td>${counter++}</td>
             <td>
-                <semui:listIcon type="${tipp.title.medium?.value}"/>
-                <strong><g:link controller="title" action="show"
-                                id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
+                <semui:listIcon type="${tipp.medium?.value}"/>
+                <strong><g:link controller="tipp" action="show"
+                                id="${tipp.id}">${tipp.name}</g:link></strong>
 
                 <g:if test="${tipp.hostPlatformURL}">
                     <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                 </g:if>
                 <br />
                 <div class="la-icon-list">
-                    <g:if test="${tipp.title instanceof BookInstance && tipp.title.volume}">
+                    <g:if test="${tipp.titleType.contains('Book') && tipp.volume}">
                         <div class="item">
                             <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
                             <div class="content">
-                                ${tipp.title.volume}
+                                ${tipp.volume}
                             </div>
                         </div>
                     </g:if>
 
-                    <g:if test="${tipp.title instanceof BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
+                    <g:if test="${tipp.titleType.contains('Book') && (tipp.firstAuthor || tipp.firstEditor)}">
                         <div class="item">
                             <i class="grey icon user circle la-popup-tooltip la-delay" data-content="${message(code: 'author.slash.editor')}"></i>
                             <div class="content">
-                                ${tipp.title.getEbookFirstAutorOrFirstEditor()}
+                                ${tipp.getEbookFirstAutorOrFirstEditor()}
                             </div>
                         </div>
                     </g:if>
 
-                    <g:if test="${tipp.title instanceof BookInstance && tipp.title.editionStatement}">
+                    <g:if test="${tipp.titleType.contains('Book') && tipp.editionStatement}">
                         <div class="item">
                             <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>
                             <div class="content">
-                                ${tipp.title.editionStatement}
+                                ${tipp.editionStatement}
                             </div>
                         </div>
                     </g:if>
 
-                    <g:if test="${tipp.title instanceof BookInstance && tipp.title.summaryOfContent}">
+                    <g:if test="${tipp.titleType.contains('Book') && tipp.summaryOfContent}">
                         <div class="item">
                             <i class="grey icon desktop la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
                             <div class="content">
-                                ${tipp.title.summaryOfContent}
+                                ${tipp.summaryOfContent}
                             </div>
                         </div>
                     </g:if>
 
-                    <g:if test="${tipp.title.seriesName}">
+                    <g:if test="${tipp.seriesName}">
                         <div class="item">
                             <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.seriesName.label')}"></i>
                             <div class="content">
-                                ${tipp.title.seriesName}
+                                ${tipp.seriesName}
                             </div>
                         </div>
                     </g:if>
 
-                    <g:if test="${tipp.title.subjectReference}">
+                    <g:if test="${tipp.subjectReference}">
                         <div class="item">
                             <i class="grey icon comment alternate la-popup-tooltip la-delay" data-content="${message(code: 'title.subjectReference.label')}"></i>
                             <div class="content">
-                                ${tipp.title.subjectReference}
+                                ${tipp.subjectReference}
                             </div>
                         </div>
                     </g:if>
 
                 </div>
 
-                <g:each in="${tipp.title.ids?.sort { it.ns.ns }}" var="id">
+                <g:each in="${tipp.ids?.sort { it.ns.ns }}" var="id">
                     <span class="ui small blue image label">
                         ${id.ns.ns}: <div class="detail">${id.value}</div>
                     </span>
@@ -168,20 +168,20 @@
             </td>
 
             <td class="la-tableCard">
-                <g:if test="${tipp.title instanceof BookInstance}">
+                <g:if test="${tipp.titleType.contains('Book')}">
                     <div class="ui card">
                         <div class="content">
                             <!-- von -->
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                          date="${tipp.title.dateFirstInPrint}"/>
+                                          date="${tipp.dateFirstInPrint}"/>
                             <semui:dateDevider/>
                             <!-- bis -->
                             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                                data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
                             <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                          date="${tipp.title.dateFirstOnline}"/>
+                                          date="${tipp.dateFirstOnline}"/>
                         </div>
                     </div>
                 </g:if>

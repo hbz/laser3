@@ -43,11 +43,12 @@
                         </div>
                     </td>
                     <td style="border-top: none" class="right aligned">
-                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.config.header')}">
-                            <button id="pendingChangeConfigurationToggle${sp.id}" class="ui icon button ${buttonColor} la-js-dont-hide-button">
-                                <i class="ui angle double down icon"></i>
-                            </button>
-                        </span>
+                        <button id="pendingChangeConfigurationToggle${sp.id}"
+                                class="ui icon button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
+                                data-content="${message(code:'subscription.packages.config.header')}">
+                            <i class="ui angle double down icon"></i>
+                        </button>
+
                         <laser:script file="${this.getGroovyPageFileName()}">
                             $("#pendingChangeConfigurationToggle${sp.id}").on('click', function() {
                                 $("#pendingChangeConfiguration${sp.id}").transition('slide down');

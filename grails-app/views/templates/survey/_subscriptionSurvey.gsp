@@ -447,8 +447,11 @@
                                                 </td>
                                                 <td class="right aligned">
                                                     <g:if test="${pair.propertySet}">
-                                                        <button id="derived-license-properties-toggle${link.id}" class="ui icon button la-js-dont-hide-button">
-                                                            <i class="ui angle double down icon"></i></button>
+                                                        <button id="derived-license-properties-toggle${link.id}"
+                                                                class="ui icon button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                                data-content="${message(code:'subscription.details.viewLicenseProperties')}">
+                                                            <i class="ui angle double down icon"></i>
+                                                        </button>
                                                         <laser:script file="${this.getGroovyPageFileName()}">
                                                     $("#derived-license-properties-toggle${link.id}").on('click', function() {
                                                         $("#derived-license-properties${link.id}").transition('slide down');

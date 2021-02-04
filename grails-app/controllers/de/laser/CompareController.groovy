@@ -65,7 +65,7 @@ class CompareController  {
         if (params.tab == "compareEntitlements") {
             result = result + compareService.compareEntitlements(result.objects)
 
-            result.ies = result.ies.sort { genericOIDService.resolveOID(it.key).title.title }
+            result.ies = result.ies.sort { genericOIDService.resolveOID(it.key).name }
         }
 
         result

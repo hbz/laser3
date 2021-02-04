@@ -51,11 +51,15 @@
                                 <g:formatDate format="${message(code:'default.date.format.notime')}" date="${accessMethod.validTo}" />
                             </td>
                             <td class="link">
-                                <g:link action="edit" controller="accessMethod" id="${accessMethod?.id}" class="ui icon button">
-                                    <i class="write icon"></i>
+                                <g:link action="edit" controller="accessMethod" id="${accessMethod?.id}" class="ui icon button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                    <i aria-hidden="true" class="write icon"></i>
                                 </g:link>
                                 <g:link action="delete" controller="accessMethod" id="${accessMethod?.id}" class="ui negative icon button"
-                                        onclick="return confirm('${message(code: 'accessPoint.details.delete.confirm', args: ['aaaa'])}')">
+                                        onclick="return confirm('${message(code: 'accessPoint.details.delete.confirm', args: ['aaaa'])}')"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="delete icon"></i>
                                 </g:link>
                             </td>

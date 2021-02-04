@@ -683,7 +683,7 @@ class ExportService {
 					cell.setCellValue(ci?.subPkg ? ci.subPkg.pkg.name:'')
 					//issue entitlement
 					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.issueEntitlement ? ci.issueEntitlement?.tipp?.title?.title:'')
+					cell.setCellValue(ci?.issueEntitlement ? ci.issueEntitlement.tipp.name:'')
 					//date paid
 					cell = row.createCell(cellnum++)
 					cell.setCellValue(paid_date ?: '')
@@ -930,16 +930,13 @@ class ExportService {
 	 */
 	Map<String,List> generateTitleExportKBART(Collection entitlementData) {
 		List allRows = []
-		Set<TitleInstance> titleInstances = []
 		entitlementData.each { ieObj ->
 			def entitlement
 			if(ieObj instanceof IssueEntitlement) {
 				entitlement = (IssueEntitlement) ieObj
-				titleInstances << ieObj.tipp.title
 			}
 			else if(ieObj instanceof TitleInstancePackagePlatform) {
 				entitlement = (TitleInstancePackagePlatform) ieObj
-				titleInstances << ieObj.title
 			}
 			if(entitlement) {
 				entitlement.coverages.each { AbstractCoverage covStmt ->
@@ -1021,21 +1018,21 @@ class ExportService {
 				tipp = covStmt.tipp
 			}
 			List row = []
-			log.debug("processing ${tipp.title}")
+			//log.debug("processing ${tipp.name}")
 			//publication_title
-			row.add("${tipp.title.title}")
+			row.add("${tipp.name}")
 			log.debug("add main identifiers")
 			//print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
-			if(tipp.title.getIdentifierValue('pISBN'))
-				row.add(tipp.title.getIdentifierValue('pISBN'))
-			else if(tipp.title.getIdentifierValue('ISSN'))
-				row.add(tipp.title.getIdentifierValue('ISSN'))
+			if(tipp.getIdentifierValue('pISBN'))
+				row.add(tipp.getIdentifierValue('pISBN'))
+			else if(tipp.getIdentifierValue('ISSN'))
+				row.add(tipp.getIdentifierValue('ISSN'))
 			else row.add(' ')
 			//online_identifier
-			if(tipp.title.getIdentifierValue('ISBN'))
-				row.add(tipp.title.getIdentifierValue('ISBN'))
-			else if(tipp.title.getIdentifierValue('eISSN'))
-				row.add(tipp.title.getIdentifierValue('eISSN'))
+			if(tipp.getIdentifierValue('ISBN'))
+				row.add(tipp.getIdentifierValue('ISBN'))
+			else if(tipp.getIdentifierValue('eISSN'))
+				row.add(tipp.getIdentifierValue('eISSN'))
 			else row.add(' ')
 			log.debug("process package start and end")
 			if(covStmt) {
@@ -1085,26 +1082,25 @@ class ExportService {
 			//publisher_name (no value?)
 			row.add(' ')
 			//publication_type
-			switch(tipp.title.medium) {
-				case RDStore.TITLE_TYPE_JOURNAL: row.add('serial')
+			switch(tipp.titleType) {
+				case "Journal": row.add('serial')
 					break
-				case RDStore.TITLE_TYPE_EBOOK: row.add('monograph')
+				case "Book": row.add('monograph')
 					break
 				default: row.add(' ')
 					break
 			}
-			if(tipp.title instanceof BookInstance) {
-				BookInstance bookInstance = (BookInstance) tipp.title
+			if(tipp.titleType.contains('Book')) {
 				//date_monograph_published_print (no value unless BookInstance)
-				row.add(bookInstance.dateFirstInPrint ? formatter.format(bookInstance.dateFirstInPrint) : ' ')
+				row.add(tipp.dateFirstInPrint ? formatter.format(tipp.dateFirstInPrint) : ' ')
 				//date_monograph_published_online (no value unless BookInstance)
-				row.add(bookInstance.dateFirstOnline ? formatter.format(bookInstance.dateFirstOnline) : ' ')
+				row.add(tipp.dateFirstOnline ? formatter.format(tipp.dateFirstOnline) : ' ')
 				//monograph_volume (no value unless BookInstance)
-				row.add(bookInstance.volume ?: ' ')
+				row.add(tipp.volume ?: ' ')
 				//monograph_edition (no value unless BookInstance)
-				row.add(bookInstance.editionNumber ?: ' ')
+				row.add(tipp.editionNumber ?: ' ')
 				//first_editor (no value unless BookInstance)
-				row.add(bookInstance.firstEditor ?: ' ')
+				row.add(tipp.firstEditor ?: ' ')
 			}
 			else {
 				//empty values from date_monograph_published_print to first_editor
@@ -1135,9 +1131,9 @@ class ExportService {
 			row.add(entitlement?.derivedAccessEndDate ? formatter.format(entitlement.derivedAccessEndDate) : ' ')
 			log.debug("processing identifiers")
 			//zdb_id
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,','))
+			row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ZDB,','))
 			//zdb_ppn
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB_PPN,','))
+			row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ZDB_PPN,','))
 			if(entitlement) {
 				//ezb_anchor
 				row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.EZB_ANCHOR,','))
@@ -1162,18 +1158,18 @@ class ExportService {
 			//package_gokb_uid
 			row.add(tipp.pkg.gokbId)
 			//DOI
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.DOI,','))
+			row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.DOI,','))
 			//ISSNs
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISSN,','))
+			row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ISSN,','))
 			//eISSNs
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.EISSN,','))
+			row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.EISSN,','))
 			//pISBNs
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.PISBN,','))
+			row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.PISBN,','))
 			//ISBNs
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.PISBN,','))
+			row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.PISBN,','))
 			//other identifier namespaces
 			otherTitleIdentifierNamespaces.each { IdentifierNamespace ns ->
-				row.add(joinIdentifiers(tipp.title.ids,ns.ns,','))
+				row.add(joinIdentifiers(tipp.ids,ns.ns,','))
 			}
 			if(entitlement?.priceItem) {
 				//listprice_value
@@ -1185,7 +1181,7 @@ class ExportService {
 				//localprice_currency
 				row.add(entitlement.priceItem.localCurrency ? entitlement.priceItem.localCurrency.value : ' ')
 				//price_date
-				row.add(entitlement.priceItem.priceDate ? formatter.format(entitlement.priceItem.priceDate) : ' ')
+				row.add(entitlement.priceItem.startDate ? formatter.format(entitlement.priceItem.startDate) : ' ')
 			}
 			else {
 				//empty values for price item columns
@@ -1251,45 +1247,45 @@ class ExportService {
 				tipp = (TitleInstancePackagePlatform) entObj
 			}
 			List row = []
-			row.add(tipp.title.title ?: ' ')
-			if(tipp.title instanceof BookInstance) {
-				row.add(tipp.title.volume ?: ' ')
-				row.add(tipp.title.getEbookFirstAutorOrFirstEditor() ? tipp.title.getEbookFirstAutorOrFirstEditor().replace(';',',') : ' ')
-				row.add(tipp.title.editionStatement ?: ' ')
-				row.add(tipp.title.summaryOfContent ?: ' ')
+			row.add(tipp.name ?: ' ')
+			if(tipp.titleType.contains('Book')) {
+				row.add(tipp.volume ?: ' ')
+				row.add(tipp.getEbookFirstAutorOrFirstEditor() ? tipp.getEbookFirstAutorOrFirstEditor().replace(';',',') : ' ')
+				row.add(tipp.editionStatement ?: ' ')
+				row.add(tipp.summaryOfContent ?: ' ')
 			}else{
 				row.add(' ')
 				row.add(' ')
 				row.add(' ')
 				row.add(' ')
 			}
-			row.add(tipp.title.seriesName ?: ' ')
-			row.add(tipp.title.subjectReference ?: ' ')
+			row.add(tipp.seriesName ?: ' ')
+			row.add(tipp.subjectReference ?: ' ')
 
 			//zdb_id
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,','))
+			row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ZDB,','))
 			//zdb_ppn
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB_PPN,','))
+			row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ZDB_PPN,','))
 			//DOI
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.DOI,','))
+			row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.DOI,','))
 			//ISSNs
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISSN,','))
+			row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ISSN,','))
 			//eISSNs
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.EISSN,','))
+			row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.EISSN,','))
 			//pISBNs
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.PISBN,','))
+			row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.PISBN,','))
 			//ISBNs
-			row.add(joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISBN,','))
+			row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ISBN,','))
 
-			if(tipp.title instanceof BookInstance) {
-				row.add(tipp.title.dateFirstInPrint ? formatter.format(tipp.title.dateFirstInPrint) : ' ')
-				row.add(tipp.title.dateFirstOnline ? formatter.format(tipp.title.dateFirstOnline) : ' ')
+			if(tipp.titleType.contains('Book')) {
+				row.add(tipp.dateFirstInPrint ? formatter.format(tipp.dateFirstInPrint) : ' ')
+				row.add(tipp.dateFirstOnline ? formatter.format(tipp.dateFirstOnline) : ' ')
 			}else{
 				row.add(' ')
 				row.add(' ')
 			}
 			otherTitleIdentifierNamespaces.each { IdentifierNamespace otherNS ->
-				row.add(joinIdentifiers(tipp.title.ids,otherNS.ns,','))
+				row.add(joinIdentifiers(tipp.ids,otherNS.ns,','))
 			}
 			if(entitlement && entitlement.priceItem) {
 				row.add(entitlement.priceItem.listPrice ? escapeService.outputFinancialValue(entitlement.priceItem.listPrice) : ' ')
@@ -1347,45 +1343,45 @@ class ExportService {
 				tipp = (TitleInstancePackagePlatform) entObj
 			}
 			List row = []
-			row.add([field: tipp.title.title ?: '', style:null])
-			if(tipp.title instanceof BookInstance) {
-				row.add([field: tipp.title.volume ?: '', style: null])
-				row.add([field: tipp.title.getEbookFirstAutorOrFirstEditor() ?: '', style: null])
-				row.add([field: tipp.title.editionStatement ?: '', style:null])
-				row.add([field: tipp.title.summaryOfContent ?: '', style:null])
+			row.add([field: tipp.title ?: '', style:null])
+			if(tipp.titleType.contains('Book')) {
+				row.add([field: tipp.volume ?: '', style: null])
+				row.add([field: tipp.getEbookFirstAutorOrFirstEditor() ?: '', style: null])
+				row.add([field: tipp.editionStatement ?: '', style:null])
+				row.add([field: tipp.summaryOfContent ?: '', style:null])
 			}else{
 				row.add([field: '', style:null])
 				row.add([field: '', style:null])
 				row.add([field: '', style:null])
 				row.add([field: '', style:null])
 			}
-			row.add([field: tipp.title.seriesName ?: '',style: null])
-			row.add([field: tipp.title.subjectReference ?: '',style: null])
+			row.add([field: tipp.seriesName ?: '',style: null])
+			row.add([field: tipp.subjectReference ?: '',style: null])
 
 			//zdb_id
-			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB,','), style:null])
+			row.add([field: joinIdentifiers(tipp.ids,IdentifierNamespace.ZDB,','), style:null])
 			//zdb_ppn
-			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.ZDB_PPN,','), style:null])
+			row.add([field: joinIdentifiers(tipp.ids,IdentifierNamespace.ZDB_PPN,','), style:null])
 			//DOI
-			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.DOI,','), style:null])
+			row.add([field: joinIdentifiers(tipp.ids,IdentifierNamespace.DOI,','), style:null])
 			//ISSNs
-			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISSN,','), style:null])
+			row.add([field: joinIdentifiers(tipp.ids,IdentifierNamespace.ISSN,','), style:null])
 			//eISSNs
-			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.EISSN,','), style:null])
+			row.add([field: joinIdentifiers(tipp.ids,IdentifierNamespace.EISSN,','), style:null])
 			//pISBNs
-			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.PISBN,','), style:null])
+			row.add([field: joinIdentifiers(tipp.ids,IdentifierNamespace.PISBN,','), style:null])
 			//ISBNs
-			row.add([field: joinIdentifiers(tipp.title.ids,IdentifierNamespace.ISBN,','), style:null])
+			row.add([field: joinIdentifiers(tipp.ids,IdentifierNamespace.ISBN,','), style:null])
 
-			if(tipp.title instanceof BookInstance) {
-				row.add([field: tipp.title.dateFirstInPrint ? formatter.format(tipp.title.dateFirstInPrint) : '', style: null])
-				row.add([field: tipp.title.dateFirstOnline ? formatter.format(tipp.title.dateFirstOnline) : '', style: null])
+			if(tipp.titleType.contains('Book')) {
+				row.add([field: tipp.dateFirstInPrint ? formatter.format(tipp.dateFirstInPrint) : '', style: null])
+				row.add([field: tipp.dateFirstOnline ? formatter.format(tipp.dateFirstOnline) : '', style: null])
 			}else{
 				row.add([field: '', style:null])
 				row.add([field: '', style:null])
 			}
 			otherTitleIdentifierNamespaces.each { IdentifierNamespace otherNS ->
-				row.add([field: joinIdentifiers(tipp.title.ids,otherNS.ns,','),style:null])
+				row.add([field: joinIdentifiers(tipp.ids,otherNS.ns,','),style:null])
 			}
 
 			if(entitlement && entitlement.priceItem) {
@@ -1407,16 +1403,16 @@ class ExportService {
 	}
 
 	List<IdentifierNamespace> getOtherIdentifierNamespaces(Collection entitlements) {
-		Set<TitleInstance> titleInstances = []
+		Set<TitleInstancePackagePlatform> titleInstances = []
 		entitlements.each { entObj ->
 			if(entObj instanceof IssueEntitlement) {
-				titleInstances << entObj.tipp.title
+				titleInstances << entObj.tipp
 			}
 			else if(entObj instanceof TitleInstancePackagePlatform) {
-				titleInstances << entObj.title
+				titleInstances << entObj
 			}
 		}
-		IdentifierNamespace.executeQuery('select distinct(id.ns) from Identifier id where id.ti in (:titleInstances) and id.ns.ns not in (:coreTitleNS)',[titleInstances:titleInstances,coreTitleNS:IdentifierNamespace.CORE_TITLE_NS])
+		IdentifierNamespace.executeQuery('select distinct(id.ns) from Identifier id where id.tipp in (:titleInstances) and id.ns.ns not in (:coreTitleNS)',[titleInstances:titleInstances,coreTitleNS:IdentifierNamespace.CORE_TITLE_NS])
 	}
 
 	/**

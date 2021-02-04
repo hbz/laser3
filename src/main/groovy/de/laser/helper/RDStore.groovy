@@ -33,6 +33,7 @@ class RDStore {
     public static final OT_AGENCY                  = getRefdataValue('Agency', RDConstants.ORG_TYPE)
     public static final OT_LICENSOR                = getRefdataValue('Licensor', RDConstants.ORG_TYPE)
     public static final OT_PROVIDER                = getRefdataValue('Provider', RDConstants.ORG_TYPE)
+    public static final OT_PUBLISHER               = getRefdataValue('Publisher', RDConstants.ORG_TYPE)
     public static final OT_DEPARTMENT              = getRefdataValue('Department', RDConstants.ORG_TYPE)
 
     public static final O_SECTOR_HIGHER_EDU        = getRefdataValue('Higher Education', RDConstants.ORG_SECTOR)
@@ -100,10 +101,11 @@ class RDStore {
     public static final PACKAGE_STATUS_DELETED         = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
     public static final PLATFORM_STATUS_DELETED        = getRefdataValue('Deleted', RDConstants.PLATFORM_STATUS)
 
-    public static final PENDING_CHANGE_PENDING      = getRefdataValue('Pending', RDConstants.PENDING_CHANGE_STATUS)
-    public static final PENDING_CHANGE_ACCEPTED     = getRefdataValue('Accepted', RDConstants.PENDING_CHANGE_STATUS)
-    public static final PENDING_CHANGE_SUPERSEDED   = getRefdataValue('Superseded', RDConstants.PENDING_CHANGE_STATUS)
-    public static final PENDING_CHANGE_REJECTED     = getRefdataValue('Rejected', RDConstants.PENDING_CHANGE_STATUS)
+    public static final PENDING_CHANGE_PENDING    = getRefdataValue('Pending', RDConstants.PENDING_CHANGE_STATUS)
+    public static final PENDING_CHANGE_ACCEPTED   = getRefdataValue('Accepted', RDConstants.PENDING_CHANGE_STATUS)
+    public static final PENDING_CHANGE_SUPERSEDED = getRefdataValue('Superseded', RDConstants.PENDING_CHANGE_STATUS)
+    public static final PENDING_CHANGE_HISTORY    = getRefdataValue('History', RDConstants.PENDING_CHANGE_STATUS)
+    public static final PENDING_CHANGE_REJECTED   = getRefdataValue('Rejected', RDConstants.PENDING_CHANGE_STATUS)
 
     public static final PENDING_CHANGE_CONFIG_ACCEPT = getRefdataValue('Accept', RDConstants.PENDING_CHANGE_CONFIG_SETTING)
     public static final PENDING_CHANGE_CONFIG_PROMPT = getRefdataValue('Prompt', RDConstants.PENDING_CHANGE_CONFIG_SETTING)

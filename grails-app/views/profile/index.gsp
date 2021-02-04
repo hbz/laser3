@@ -474,13 +474,9 @@
 
 </div><!-- .grid -->
 
-<br />
-<br />
-<br />
-
-<div class="ui one column grid">
-
-    <g:render template="/templates/user/membership_table" model="[userInstance: user, tmplProfile: true]" />
+    <div class="la-inline-lists">
+        <g:render template="/templates/user/membership_table" model="[userInstance: user]" />
+    </div>
 
     <sec:ifAnyGranted roles="ROLE_ADMIN">
         <div class="column wide sixteen">
@@ -488,23 +484,45 @@
 
                 <div class="ui card la-full-width">
                     <div class="content">
-                        <h2 class="ui dividing header">
+                        %{-- <h2 class="ui dividing header">
                             ${message(code: 'profile.membership.request')}
                         </h2>
 
-                        <p style="word-break:normal">
+                        -- outdated due instant accept: <p style="word-break:normal">
                             <g:message code="profile.membership.request.text" />
-                        </p>
+                        </p>--}%
+                        <g:form controller="profile" action="addAffiliation" class="ui form addAffiliationForm" method="get">
+                            <div class="two fields">
+                                <div class="field">
+                                    <label for="org">Organisation</label>
+                                    <g:select name="org" id="org"
+                                              from="${availableOrgs}"
+                                              optionKey="id"
+                                              optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
+                                              class="ui fluid search dropdown"/>
+                                </div>
 
-                        <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, tmplProfile: true]" />
+                                <div class="field">
+                                    <label for="formalRole">Role</label>
+                                    <g:select name="formalRole" id="formalRole"
+                                              from="${Role.findAllByRoleType('user')}"
+                                              optionKey="id"
+                                              optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                                              value="${Role.findByAuthority('INST_USER').id}"
+                                              class="ui fluid dropdown"/>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
+                            </div>
+                        </g:form>
                     </div><!-- .content -->
                 </div><!-- .card -->
 
             </div><!-- .la-inline-lists -->
         </div><!--.column-->
     </sec:ifAnyGranted>
-
-</div><!-- .grid -->
 
 <laser:script file="${this.getGroovyPageFileName()}">
 

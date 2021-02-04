@@ -52,9 +52,10 @@
 
             <%
                 String formAction = (controllerName == 'user' ? 'delete' : 'deleteUser');
+                Map<String, Object> formParams = (controllerName == 'organisation') ? [process: true, id: orgInstance.id] : [process: true]
             %>
 
-            <g:form action="${formAction}" data-confirm-id="deleteUserForm_form" params="${[process: true]}">
+            <g:form action="${formAction}" data-confirm-id="deleteUserForm_form" params="${formParams}">
 
                 <g:if test="${controllerName == 'myInstitution'}">
                     <g:link action="users" class="ui button"><g:message code="default.button.cancel.label"/></g:link>

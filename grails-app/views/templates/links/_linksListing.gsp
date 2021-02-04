@@ -47,11 +47,11 @@
                             </td>
                             <td class="right aligned">
                                 <g:if test="${pair.propertySet && pair instanceof License}">
-                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.viewLicenseProperties')}">
-                                        <button id="derived-license-properties-toggle${link.id}" class="ui icon button la-js-dont-hide-button">
-                                            <i class="ui angle double down icon"></i>
-                                        </button>
-                                    </span>
+                                    <button id="derived-license-properties-toggle${link.id}"
+                                            class="ui icon button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                            data-content="${message(code:'subscription.details.viewLicenseProperties')}">
+                                        <i class="ui angle double down icon"></i>
+                                    </button>
                                     <laser:script file="${this.getGroovyPageFileName()}">
                                         $("#derived-license-properties-toggle${link.id}").on('click', function() {
                                             $("#derived-license-properties${link.id}").transition('slide down');
@@ -68,7 +68,7 @@
                                 <g:render template="/templates/links/subLinksModal"
                                           model="${[tmplText:message(code:'subscription.details.editLink'),
                                                     tmplIcon:'write',
-                                                    tmplCss: 'icon la-selectable-button',
+                                                    tmplCss: 'icon la-selectable-button la-popup-tooltip la-delay',
                                                     tmplID:'editLink',
                                                     tmplModalID:"sub_edit_link_${link.id}",
                                                     subscriptionLicenseLink: subscriptionLicenseLink,

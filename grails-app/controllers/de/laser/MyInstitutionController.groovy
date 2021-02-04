@@ -1021,6 +1021,7 @@ join sub.orgRelations or_sub where
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
             orgRoles << RDStore.OR_SUBSCRIPTION_CONSORTIA
+            queryFilter << " sub.instanceOf is null "
         }
         else {
             orgRoles << RDStore.OR_SUBSCRIBER
@@ -1093,8 +1094,7 @@ join sub.orgRelations or_sub where
         }
 
         if ((params.filter) && (params.filter.length() > 0)) {
-            log.debug("Adding title filter ${params.filter}");
-            queryFilter << "genfunc_filter_matcher(ti.title, :titlestr) = true "
+            queryFilter << "genfunc_filter_matcher(tipp.name, :titlestr) = true "
             qryParams.titlestr = params.get('filter').toString()
         }
 
@@ -1113,23 +1113,21 @@ join sub.orgRelations or_sub where
 
         //String havingClause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
 
-        String orderByClause = ''
+        String orderByClause
         if (params.order == 'desc') {
-            orderByClause = 'order by ti.sortTitle desc'
+            orderByClause = 'order by tipp.sortName desc, tipp.name desc'
         } else {
-            orderByClause = 'order by ti.sortTitle asc'
+            orderByClause = 'order by tipp.sortName asc, tipp.name asc'
         }
 
-        String qryString = "select ie from IssueEntitlement ie join ie.tipp tipp join tipp.title ti join ie.subscription sub join sub.orgRelations oo where ie.status != :deleted and sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
+        String qryString = "select ie.id from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo where ie.status != :deleted and sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
         if(queryFilter)
             qryString += ' and '+queryFilter.join(' and ')
-        qryString += orderByClause
 
-        //all ideas to move the .unique() into a group by clause are greately appreciated, a half day's attempts were unsuccessful!
-        Set<IssueEntitlement> currentIssueEntitlements = IssueEntitlement.executeQuery(qryString,qryParams).unique { ie -> ie.tipp.title }
-        Set<TitleInstance> allTitles = currentIssueEntitlements.collect { IssueEntitlement ie -> ie.tipp.title }
-        result.num_ti_rows = allTitles.size()
-        result.titles = allTitles.drop(result.offset).take(result.max)
+        Set<Long> currentIssueEntitlements = IssueEntitlement.executeQuery(qryString+' group by tipp, ie.id',qryParams)
+        Set<TitleInstancePackagePlatform> allTitles = TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) '+orderByClause,[ids:currentIssueEntitlements],[max:result.max,offset:result.offset])
+        result.num_ti_rows = currentIssueEntitlements.size()
+        result.titles = allTitles
 
         result.filterSet = params.filterSet || defaultSet
         String filename = "${message(code:'export.my.currentTitles')}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
