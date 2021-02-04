@@ -2,6 +2,7 @@ package de.laser.auth
 
 import de.laser.Org
 import de.laser.UserSetting
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.apache.commons.lang.RandomStringUtils
 
@@ -122,15 +123,35 @@ class User {
         password = springSecurityService.encodePassword(password)
     }
 
+    // TODO -> rename to getAffiliations() -> remove
     List<UserOrg> getAuthorizedAffiliations() {
         UserOrg.findAllByUser(this)
     }
+    // TODO -> rename to getAffiliationOrgs()
     List<Org> getAuthorizedOrgs() {
         String qry = "select distinct(o) from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user ) order by o.name"
         Org.executeQuery(qry, [user: this])
     }
+    // TODO -> rename to getAffiliationOrgIds()
     List<Long> getAuthorizedOrgsIds() {
         getAuthorizedOrgs().collect{ it.id }
+    }
+
+    boolean isAuthorizedInstMember(Org org) {
+        ! Org.executeQuery(
+                "select uo from UserOrg uo where uo.user = :user and uo.org = :org and uo.formalRole.roleType = 'user'",
+                [user: this, org: org]
+        ).isEmpty()
+    }
+
+    boolean isAuthorizedComboInstAdmin(Org org) {
+        List<Org> orgList = Org.executeQuery('select c.toOrg from Combo c where c.fromOrg = :org', [org: org])
+        orgList.add(org)
+
+        ! Org.executeQuery(
+                "select uo from UserOrg uo where uo.user = :user and uo.org in (:orgList) and uo.formalRole = :instAdm",
+                [user: this, orgList: orgList, instAdm: Role.findByAuthority('INST_ADM')]
+        ).isEmpty()
     }
 
     boolean hasRole(String roleName) {

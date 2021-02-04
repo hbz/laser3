@@ -297,33 +297,37 @@
                     </td>
                     <td class="x">
 
-                        <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                            <i aria-hidden="true" class="write icon"></i>
+                        </g:link>
                         <g:if test="${sub.isEditableBy(contextService.getUser())}"> <%-- needs to be checked for child subscription because of collective subscriptions! --%>
                             <g:if test="${sub._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE] && sub.instanceOf._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE}">
                                 <g:if test="${sub.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
-                                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}">
-                                        <g:link class="ui icon button" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
-                                            <i class="eye orange icon"></i>
+                                        <g:link class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
+                                            <i class="ui icon eye orange"></i>
                                         </g:link>
-                                    </span>
                                 </g:if>
                                 <g:else>
-                                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hideToSubscriber')}">
-                                        <g:link class="ui icon orange button" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
-                                            <i class="eye icon"></i>
-                                        </g:link>
-                                    </span>
+                                    <g:link class="ui icon orange button la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hideToSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
+                                        <i class="ui icon eye"></i>
+                                    </g:link>
                                 </g:else>
                             </g:if>
                             <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.sub = :sub and ci.costItemStatus != :deleted',[sub:sub,deleted:RDStore.COST_ITEM_DELETED])}"/>
                             <g:if test="${!hasCostItems}">
-                                <g:link class="ui icon negative button" controller="subscription" action="delete" params="${[id:sub.id]}">
+                                <g:link class="ui icon negative button" controller="subscription" action="delete" params="${[id:sub.id]}"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="trash alternate icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
                                 <span class="la-popup-tooltip" data-content="${message(code:'subscription.delete.existingCostItems')}">
-                                    <button class="ui disabled icon negative button">
+                                    <button class="ui disabled icon negative button"
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="trash alternate icon"></i>
                                     </button>
                                 </span>

@@ -116,6 +116,7 @@
                                           data-done=""
                                           data-update="container-table"
                                           role="button"
+                                          ariaLabel="${message(code:'ariaLabel.delete.universal')}"
                         >
                             <i class="trash alternate icon"></i>
                         </laser:remoteLink>
@@ -131,6 +132,7 @@
                                           data-done=""
                                           data-update="container-table"
                                           role="button"
+                                          ariaLabel="Termin wieder auf Ihrem Dashboard anzeigen lassen"
                         >
                             <i class="icon bell slash la-js-editmode-icon"></i>
                         </laser:remoteLink>
@@ -144,6 +146,7 @@
                                           data-done=""
                                           data-update="container-table"
                                           role="button"
+                                          ariaLabel="Termin nicht auf Ihrem Dashboard anzeigen lassen"
                         >
                             <i class="icon bell la-js-editmode-icon"></i>
                         </laser:remoteLink>
@@ -161,6 +164,7 @@
                                       data-done=""
                                       data-update="container-table"
                                       role="button"
+                                      ariaLabel="fälligen Termin auf NICHT erledigt sezten"
                     >
                         <i class="icon check la-js-editmode-icon"></i>
                         %{--<input type='checkbox' class='chk' name='isDone' id='${genericOIDService.getOID(dashDueDate)+isDone}'--}%
@@ -177,6 +181,7 @@
                                       data-done=""
                                       data-update="container-table"
                                       role="button"
+                                      ariaLabel="${message(code:'ariaLabel.check.universal')}"
                     >
                         <i class="icon check la-js-editmode-icon"></i>
                         %{--<input type='checkbox' class='chk' name='isDone' id='${genericOIDService.getOID(dashDueDate.dueDateObject)+isDone}'--}%

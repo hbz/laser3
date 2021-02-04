@@ -173,8 +173,8 @@
                         <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"
                                 data-tooltip="${message(code:'subscription.details.viewMember.label')}"
                                 data-position="left center"
-                        >
-                            <i class="write icon"></i></g:link>
+                                role="button">
+                            <i aria-hidden="true" class="write icon"></i></g:link>
                     </td>
                 </tr>
             </g:each>

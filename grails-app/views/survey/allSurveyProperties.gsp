@@ -111,7 +111,9 @@
                 <td class="x">
                     <g:if test="${property.countUsages() == 0 && property?.tenant?.id == institution?.id}">
                         <g:link action="deleteSurveyProperty" id="${params.id}" params="[deleteId: property?.id]"
-                                class="ui icon negative button">
+                                class="ui icon negative button"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
                             <i class="trash alternate icon"></i>
                         </g:link>
                     </g:if>

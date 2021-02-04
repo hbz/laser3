@@ -2,7 +2,7 @@
     <label>${message(code: 'accessPoint.' + accessMethod + '.name.label')}
         <g:if test="${accessMethod == 'proxy'}">
             <span class="la-long-tooltip la-popup-tooltip la-delay"
-                  data-tooltip="${message(code: "accessPoint.proxy.help")}">
+                  data-content="${message(code: "accessPoint.proxy.help")}">
                 <i class="question circle icon la-popup"></i></span>
         </g:if>
 

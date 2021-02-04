@@ -81,7 +81,11 @@
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                 <%-- START First Button --%>
                                 <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
+                                <button type="button" class="ui icon mini button editable-cancel"
+                                        data-semui="modal"
+                                        data-href="#modalEditDocument_${docctx.id}"
+                                        aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                    <i class="pencil icon"></i></button>
                                 <%-- STOP First Small Column --%>
                                 <g:if test="${!docctx.isShared}">
                                 <%-- START Second Button --%>
@@ -175,7 +179,10 @@
                         <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                             <div class="two wide column">
                                 <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
+                                <button type="button" class="ui icon mini button editable-cancel" data-semui="modal"
+                                        data-href="#modalEditDocument_${docctx.id}"
+                                        aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                <i class="pencil icon"></i></button>
                             </div>
                         </g:if>
                     </div>
