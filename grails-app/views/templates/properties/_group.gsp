@@ -196,7 +196,7 @@
                                         </laser:remoteLink>
                                     </g:if>
                                     <g:else>
-                                        <laser:remoteLink class="ui icon button" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                        <laser:remoteLink class="ui icon button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                           params='[oid: genericOIDService.getOID(prop),
                                                                    editable:"${overwriteEditable}",
                                                                    custom_props_div: "${custom_props_div}",

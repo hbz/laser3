@@ -85,7 +85,9 @@
                     <td class="center aligned">
                         <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
                             <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}"
-                                    class="ui negative icon button">
+                                    class="ui negative icon button"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash very alternate icon"></i>
                             </g:link>
                         </g:if>
@@ -107,8 +109,8 @@
                         <div class="field">
                             <label for="ipv4_ip">${message(code: 'accessPoint.ip.data')}
                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                      data-tooltip="${message(code: "accessPoint.ip.input")}">
-                                    <i class="question circle icon la-popup"></i></span>
+                                      data-content="${message(code: "accessPoint.ip.input")}">
+                                    <i class="question circle icon"></i></span>
                             </label>
 
 
@@ -153,7 +155,9 @@
                 <td class="center aligned">
                     <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
                         <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}"
-                                class="ui negative icon button">
+                                class="ui negative icon button"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
                             <i class="trash very alternate icon"></i>
                         </g:link>
                     </g:if>
@@ -175,7 +179,7 @@
                     <div class="field">
                         <label for="ipv6_ip">${message(code: 'accessPoint.ip.data')}
                             <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                  data-tooltip="${message(code: "accessPoint.ip.input")}">
+                                  data-content="${message(code: "accessPoint.ip.input")}">
                                 <i class="question circle icon la-popup"></i></span>
                         </label>
 

@@ -53,7 +53,9 @@
             <td>${oapl.oap.name}</td>
             <td>
                 <g:if test="${oapl.oap.hasActiveLink()}">
-                    <g:link controller="platform" action="removeAccessPoint" id="${platformInstance.id}" params="[oapl_id: oapl.id]" onclick="return confirm('Zugangspunkt entfernen?')">
+                    <g:link controller="platform" action="removeAccessPoint" id="${platformInstance.id}" params="[oapl_id: oapl.id]" onclick="return confirm('Zugangspunkt entfernen?')"
+                            role="button"
+                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                         <i class="trash icon red"></i>
                     </g:link>
                 </g:if>
