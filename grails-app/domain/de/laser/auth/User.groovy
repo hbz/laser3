@@ -123,13 +123,16 @@ class User {
         password = springSecurityService.encodePassword(password)
     }
 
+    // TODO -> rename to getAffiliations() -> remove
     List<UserOrg> getAuthorizedAffiliations() {
         UserOrg.findAllByUser(this)
     }
+    // TODO -> rename to getAffiliationOrgs()
     List<Org> getAuthorizedOrgs() {
         String qry = "select distinct(o) from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user ) order by o.name"
         Org.executeQuery(qry, [user: this])
     }
+    // TODO -> rename to getAffiliationOrgIds()
     List<Long> getAuthorizedOrgsIds() {
         getAuthorizedOrgs().collect{ it.id }
     }
