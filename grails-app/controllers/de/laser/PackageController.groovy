@@ -51,10 +51,11 @@ class PackageController  {
             redirect controller: 'package', action: 'list'
             return
         }
-
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, result.user)
+
+        result.editUrl = apiSource.baseUrl+apiSource.fixToken
 
         String esQuery = "?componentType=Package"
         if(params.q) {
