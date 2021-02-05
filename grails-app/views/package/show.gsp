@@ -113,6 +113,10 @@
                             <dd>
                                 <g:if test="${packageInstance.nominalPlatform}">
                                     <g:link controller="platform" action="show" id="${packageInstance.nominalPlatform.id}">${packageInstance.nominalPlatform.name}</g:link>
+
+                                    <g:if test="${packageInstance.nominalPlatform.primaryUrl}">
+                                    <semui:linkIcon href="${packageInstance.nominalPlatform.primaryUrl?.startsWith('http') ? packageInstance.nominalPlatform.primaryUrl : 'http://' + packageInstance.nominalPlatform.primaryUrl}"/>
+                                    </g:if>
                                 </g:if>
                             </dd>
                         </dl>
@@ -195,9 +199,9 @@
         </div><!-- .twelve -->
 
 
-        <aside class="four wide column la-sidekick">
+       %{-- <aside class="four wide column la-sidekick">
             <g:render template="/templates/aside1" model="${[ownobj:packageInstance, owntp:'pkg']}" />
-        </aside><!-- .four -->
+        </aside><!-- .four -->--}%
 
     </div><!-- .grid -->
 

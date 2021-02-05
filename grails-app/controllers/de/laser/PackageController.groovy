@@ -514,18 +514,18 @@ class PackageController  {
     }
 
     @Secured(['ROLE_USER'])
-    def expected() {
-        previous_expected(params, "expected")
+    def planned() {
+        planned_expired(params, "planned")
     }
 
     @Secured(['ROLE_USER'])
-    def previous() {
-        previous_expected(params, "previous")
+    def expired() {
+        planned_expired(params, "expired")
     }
 
     @Secured(['ROLE_USER'])
-    def previous_expected(params, func) {
-        log.debug("previous_expected ${params}");
+    def planned_expired(params, func) {
+        log.debug("planned_expired ${params}");
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         result.editable = isEditable()
@@ -546,7 +546,7 @@ class PackageController  {
         String base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status != :status "
         Map<String, Object> qry_params = [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED, date: new Date()]
 
-        if (func == "expected") {
+        if (func == "planned") {
             base_qry += " and ( coalesce(tipp.accessStartDate, tipp.pkg.startDate) >= :date ) "
         }
         else {

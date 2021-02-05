@@ -49,7 +49,7 @@
                             var="gokbAPI">
                       <g:if test="${platformInstance?.gokbId}">
                         <a target="_blank"
-                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + platformInstance?.gokbId : '#'}"><i
+                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/public/packageContent/?id=' + platformInstance?.gokbId : '#'}"><i
                             title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
                       </g:if>
                     </g:each>

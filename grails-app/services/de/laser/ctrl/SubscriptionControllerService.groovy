@@ -1512,7 +1512,7 @@ class SubscriptionControllerService {
                 result.deletedSPs = []
                 ApiSource source = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
                 deletedSPs.each { sp ->
-                    result.deletedSPs << [name:sp.pkg.name,link:"${source.editUrl}/gokb/resource/show/${sp.pkg.gokbId}"]
+                    result.deletedSPs << [name:sp.pkg.name,link:"${source.editUrl}/gokb/public/packageContent/?id=${sp.pkg.gokbId}"]
                 }
             }
             if (executorWrapperService.hasRunningProcess(result.subscription)) {

@@ -1,3 +1,4 @@
+<%@ page import="de.laser.IssueEntitlement; de.laser.helper.RDStore;" %>
 <laser:serviceInjection />
 
 <semui:subNav actionName="${actionName}">
@@ -5,7 +6,7 @@
     <semui:subNavItem controller="subscription" action="show" params="${[id:params.id]}" message="subscription.details.details.label" />
 
     <g:if test="${controllerName != 'finance'}">%{-- template is used by subscriptionDetails/* and finance/index --}%
-        <semui:subNavItem controller="subscription" action="index" params="${[id:params.id]}" message="subscription.details.current_ent" />
+        <semui:subNavItem controller="subscription" counts="${IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()}" action="index" params="${[id:params.id]}" message="subscription.details.current_ent" />
     </g:if>
     <g:else>%{-- prevent two active items with action 'index' due url mapping 'subfinance' --}%
         <g:link controller="subscription" action="index" params="${[id:params.id]}" class="item">${message('code': 'subscription.details.current_ent')}</g:link>
