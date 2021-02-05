@@ -9,6 +9,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 class ReportingService {
 
     def contextService
+    def filterService
     def subscriptionsQueryService
 
     static String filterPrefix = 'filter:'
@@ -43,17 +44,63 @@ class ReportingService {
             ]
     ]
 
-    Map<String, Object> filter(GrailsParameterMap params) {
-        // https://echarts.apache.org/en/index.html
+    Map<String, Object> organisationFilter(GrailsParameterMap params) {
+        Map<String, Object> result      = [:]
+
+        params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value // TODO - manipulation of params
+
+        Map<String, Object> fsq = filterService.getOrgComboQuery(params, contextService.getOrg())
+
+        Map<String, Object> queryParams = [ orgIdList: Org.executeQuery("select o.id " + fsq.query.minus("select o "), fsq.queryParams)]
+        List<String> queryParts         = [ 'select org.id from Org org']
+        List<String> whereParts         = [ 'where org.id in (:orgIdList)']
+
+        String cmbKey = ReportingService.filterPrefix + 'org_'
+        int pCount = 0
+
+        Set<String> keys = params.keySet().findAll{ it.toString().startsWith(cmbKey) }
+        keys.each { key ->
+            println key + " >> " + params.get(key)
+
+            if (params.get(key)) {
+                String p = key.replaceFirst(cmbKey,'')
+
+                if (p in ReportingService.config.Organisation.properties) {
+                    whereParts.add( 'org.' + p + ' = :p' + (++pCount) )
+                    if (Org.getDeclaredField(p).getType() == Date) {
+                        queryParams.put( 'p' + pCount, DateUtils.parseDateGeneric(params.get(key)) )
+                    }
+                    else {
+                        queryParams.put( 'p' + pCount, params.get(key) )
+                    }
+                }
+                else if (p in ReportingService.config.Organisation.refdata) {
+                    whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
+                    queryParams.put( 'p' + pCount, params.long(key) )
+                }
+            }
+        }
+
+        String query = queryParts.unique().join(' , ') + ' ' + whereParts.join(' and ')
+
+        println query
+        println queryParams
+        println whereParts
+
+        result.orgIdList = Subscription.executeQuery( query, queryParams )
+
+        println 'orgs >> ' + result.orgIdList.size()
+
+        result
+    }
+
+    Map<String, Object> subscriptionFilter(GrailsParameterMap params) {
         Map<String, Object> result      = [:]
 
         List baseQuery                  = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
         Map<String, Object> queryParams = [ subIdList: Subscription.executeQuery( 'select s.id ' + baseQuery[0], baseQuery[1]) ]
         List<String> queryParts         = [ 'select sub.id from Subscription sub']
         List<String> whereParts         = [ 'where sub.id in (:subIdList)']
-
-        result.memberIdList   = internalOrgFilter(params, 'member', queryParams.subIdList)
-        result.providerIdList = internalOrgFilter(params, 'provider', queryParams.subIdList)
 
         String cmbKey = ReportingService.filterPrefix + 'subscription_'
         int pCount = 0
@@ -88,6 +135,9 @@ class ReportingService {
        // println whereParts
 
         result.subIdList = Subscription.executeQuery( query, queryParams )
+
+        result.memberIdList   = internalOrgFilter(params, 'member', result.subIdList)
+        result.providerIdList = internalOrgFilter(params, 'provider', result.subIdList)
 
         println 'subscriptions >> ' + result.subIdList.size()
         println 'member >> ' + result.memberIdList.size()

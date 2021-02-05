@@ -137,7 +137,6 @@
 
                                 <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
                                 <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_ADM" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
                                 <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.changes" />
                                 <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
                                 <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
@@ -149,7 +148,8 @@
                                 <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="users" message="menu.institutions.users" />
 
                                 <sec:ifAnyGranted roles="ROLE_YODA">
-                                       <semui:link generateElementId="true" class="item" role="menuitem" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</semui:link>
+                                    <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_ADM" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
+                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</semui:link>
                                     <%--<semui:securedMainNavItem generateElementId="true" affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />--%>
                                 </sec:ifAnyGranted>
 

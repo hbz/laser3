@@ -108,8 +108,30 @@ class MyInstitutionController  {
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
+        result.filterChooserList = [
+                'organisation' : 'Einrichtung',
+                'subscription' : 'Lizenz'
+        ]
+        result.echartChooserList = [
+                'bar' : 'Balkendiagramm',
+                'pie' : 'Tortendiagramm'
+        ]
+
         if (params.filter) {
-            result.result = reportingService.filter(params)
+            result.filter = params.filter
+
+            if (params.filter == 'organisation') {
+                result.result = reportingService.organisationFilter(params)
+                result.resultChooserList = [
+                        'opt1' : 'Bibliothekstyp aller Einrichtungen'
+                ]
+            }
+            else if (params.filter == 'subscription') {
+                result.result = reportingService.subscriptionFilter(params)
+                result.resultChooserList = [
+                        'opt1' : 'Bundesländer aller Teilnehmer'
+                ]
+            }
         }
         render view: 'reporting/index', model: result
     }

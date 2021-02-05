@@ -179,6 +179,7 @@ assets {
             'chartist/**',
             'chartist-plugin-legend/**',
             'cryptoJS-v3.1.2/**',
+            'echarts/**',
             'datatables/**',
             'select2/**/*.js',
             'select2/**/*.css',
