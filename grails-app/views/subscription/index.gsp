@@ -203,7 +203,7 @@
                                 <option value="">${message(code: 'default.select.choose.label')}</option>
 
                                 <g:each in="${seriesNames}" var="seriesName">
-                                    <option <%=(params.list('series_names').contains(seriesName)) ? 'selected="selected"' : ''%>
+                                    <option <%=(params.list('series_names')?.contains(seriesName)) ? 'selected="selected"' : ''%>
                                             value="${seriesName}">
                                         ${seriesName}
                                     </option>
@@ -218,7 +218,7 @@
                                 <option value="">${message(code: 'default.select.choose.label')}</option>
 
                                 <g:each in="${subjects}" var="subject">
-                                    <option <%=(params.list('subject_references').contains(subject)) ? 'selected="selected"' : ''%>
+                                    <option <%=(params.list('subject_references')?.contains(subject)) ? 'selected="selected"' : ''%>
                                             value="${subject}">
                                         ${subject}
                                     </option>

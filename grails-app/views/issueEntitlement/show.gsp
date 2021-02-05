@@ -111,33 +111,37 @@
                 </div>
             </div>
 
-            <g:if test="${issueEntitlementInstance.priceItem}">
+            <g:if test="${issueEntitlementInstance.priceItems}">
                 <br />
 
                 <div class="la-title">${message(code: 'subscription.details.prices')}</div>
 
                 <div class="la-icon-list">
-                    <div class="item">
-                        <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice"
-                                                                             owner="${issueEntitlementInstance.priceItem}"
-                                                                             overwriteEditable="false"/> <semui:xEditableRefData
-                                field="listCurrency" owner="${issueEntitlementInstance.priceItem}" config="Currency"
-                                overwriteEditable="false"/>
-                    </div>
 
-                    <div class="item">
-                        <g:message code="tipp.localPrice"/>: <semui:xEditable field="localPrice"
-                                                                              owner="${issueEntitlementInstance.priceItem}"
-                                                                              overwriteEditable="false"/> <semui:xEditableRefData
-                                field="localCurrency" owner="${issueEntitlementInstance.priceItem}" config="Currency"
-                                overwriteEditable="false"/>
-                        (<g:message code="tipp.priceStartDate"/> <semui:xEditable field="startDate" type="date"
+                    <g:each in="${issueEntitlementInstance.priceItems}" var="priceItem" status="i">
+                        <div class="item">
+                            <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice"
+                                                                                 owner="${issueEntitlementInstance.priceItem}"
+                                                                                 overwriteEditable="false"/> <semui:xEditableRefData
+                                    field="listCurrency" owner="${issueEntitlementInstance.priceItem}" config="Currency"
+                                    overwriteEditable="false"/>
+                        </div>
+
+                        <div class="item">
+                            <g:message code="tipp.localPrice"/>: <semui:xEditable field="localPrice"
                                                                                   owner="${issueEntitlementInstance.priceItem}"
-                                                                                  overwriteEditable="false"/>-
-                        <g:message code="tipp.priceEndDate"/> <semui:xEditable field="endDate" type="date"
-                                                                                  owner="${issueEntitlementInstance.priceItem}"
-                                                                                  overwriteEditable="false"/>)
-                    </div>
+                                                                                  overwriteEditable="false"/> <semui:xEditableRefData
+                                    field="localCurrency" owner="${issueEntitlementInstance.priceItem}" config="Currency"
+                                    overwriteEditable="false"/>
+                            (<g:message code="tipp.priceStartDate"/> <semui:xEditable field="startDate" type="date"
+                                                                                      owner="${issueEntitlementInstance.priceItem}"
+                                                                                      overwriteEditable="false"/>-
+                            <g:message code="tipp.priceEndDate"/> <semui:xEditable field="endDate" type="date"
+                                                                                   owner="${issueEntitlementInstance.priceItem}"
+                                                                                   overwriteEditable="false"/>)
+                        </div>
+                    </g:each>
+
                 </div>
             </g:if>
 
