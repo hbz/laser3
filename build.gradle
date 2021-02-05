@@ -176,8 +176,6 @@ assets {
             'laser/**',
         // vendor/*
             'bulma/**',
-            'chartist/**',
-            'chartist-plugin-legend/**',
             'cryptoJS-v3.1.2/**',
             'echarts/**',
             'datatables/**',

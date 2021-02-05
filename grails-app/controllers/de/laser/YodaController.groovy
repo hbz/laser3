@@ -209,8 +209,9 @@ class YodaController {
             values.each { val ->
                 int indexOf = labels.findIndexOf{it == val[0]}
                 if (indexOf >= 0) {
-                    series1.putAt(indexOf, val[3])
-                    series2.putAt(indexOf, val[4]- val[3]) // stackBars: true
+                    series1.putAt(indexOf, val[3])          // [0] = min
+                    series2.putAt(indexOf, val[4])          // [1] = max
+                    //series2.putAt(indexOf, val[4]- val[3])  // stackBars: true - max-min -> [1] = diff
 
                     averages[indexOf] = averages[indexOf] + val[5]
                 }
@@ -224,7 +225,7 @@ class YodaController {
             averages[i] = (averages[i]/activity.size())
         }
 
-        activityMatrix.putAt('Ø', [(0..23).collect{ 0 }, averages])
+        activityMatrix.putAt('Ø', [averages, averages])
 
         result.labels = labels
         result.activity = activityMatrix
