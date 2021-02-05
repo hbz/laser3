@@ -52,7 +52,8 @@
                                       params="${params}"/>
                     <th>${message(code: 'package.curatoryGroup.label')}</th>
                     <th>${message(code: 'package.source.label')}</th>
-                    <th>${message(code: 'package.lastUpdated.label')}</th>
+                    <g:sortableColumn property="lastUpdatedDisplay" title="${message(code: 'package.lastUpdated.label')}"
+                                      params="${params}"/>
                     <sec:ifAllGranted roles="ROLE_YODA">
                         <th class="x"></th>
                     </sec:ifAllGranted>
@@ -74,7 +75,7 @@
                             </g:if>
                             <g:else>
                                 ${record.name} <a target="_blank"
-                                                  href="${record.editUrl ? record.editUrl + '/gokb/public/packageContent/' + record.uuid : '#'}"><i
+                                                  href="${editUrl ? editUrl + '/gokb/public/packageContent/' + record.uuid : '#'}"><i
                                         title="GOKB Link" class="external alternate icon"></i></a>
                             </g:else>
                         </td>

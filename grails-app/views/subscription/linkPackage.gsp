@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.Platform; de.laser.Package" %>
+<%@ page import="de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.Platform; de.laser.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.helper.RDStore;" %>
 <!doctype html>
 
 <html>
@@ -22,28 +22,18 @@
 </semui:controlButtons>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscription.name}</h1>
+<br>
+<br>
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'subscription.details.linkPackage.heading')}</h2>
+<br>
+<br>
 
-<semui:filter>
-    <g:form name="LinkPackageForm" action="linkPackage" method="get" params="${params}" class="ui form">
-        <input type="hidden" name="offset" value="${params.offset}"/>
-        <input type="hidden" name="id" value="${params.id}"/>
+<h3 class="ui left floated aligned icon header la-clear-before">${message(code: 'package.plural')}
+<semui:totalNumber total="${recordsCount}"/>
+</h3>
 
-            <div class="field">
-                <label for="q">${message(code: 'package.show.pkg_name')}</label>
-                <input id="q" name="q" value="${params.q}"/>
-            </div>
-
-            <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset primary button">${message(code: 'default.button.filterreset.label')}</a>
-                <button type="submit" name="search" value="yes"
-                        class="ui secondary button">${message(code: 'default.button.filter.label')}</button>
-            </div>
-
-    </g:form>
-</semui:filter>
+<g:render template="/templates/filter/packageGokbFilter"/>
 
 <semui:messages data="${flash}"/>
 
@@ -61,196 +51,289 @@
 
 <div class="ui grid">
 
-    <div class="twelve wide column">
-        <div>
-            <g:if test="${hits}">
-                <div class="paginateButtons" style="text-align:center">
-                    <g:if test="${params.int('offset')}">
-                        ${message(code: 'default.search.offset.text', args: [(params.int('offset') + 1), (resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))), resultsTotal])}
-                    </g:if>
-                    <g:elseif test="${resultsTotal && resultsTotal > 0}">
-                        ${message(code: 'default.search.no_offset.text', args: [(resultsTotal < params.int('max') ? resultsTotal : params.int('max')), resultsTotal])}
-                    </g:elseif>
-                    <g:else>
-                        ${message(code: 'default.search.no_pagiantion.text', args: [resultsTotal])}
-                    </g:else>
-                </div>
+    <div class="sixteen wide column">
 
-                <div id="resultsarea">
-                    <table class="ui sortable celled la-table table">
-                        <thead>
-                        <tr>
-                            <g:sortableColumn property="name"
-                                              title="${message(code: 'package.show.pkg_name')}"
-                                              params="${params}"/>
-                            <th>${message(code: 'package.curatoryGroup.label')}</th>
-                            <g:sortableColumn property="providerName"
-                                              title="${message(code: 'package.content_provider')}"
-                                              params="${params}"/>
-                            <g:sortableColumn property="platformName"
-                                              title="${message(code: 'package.nominalPlatform')}"
-                                              params="${params}"/>
-                            <th>${message(code: 'default.action.label')}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <g:each in="${hits}" var="hit">
-                            <tr>
-                                <td>
-                                    <g:if test="${Package.findByGokbId(hit.uuid)}">
-                                        <g:link controller="package" target="_blank" action="show" id="${Package.findByGokbId(hit.uuid).id}">${hit.name}</g:link>
-                                    </g:if>
-                                    <g:else>
-                                        ${hit.name}
-                                        <a target="_blank" href="${hit.url ? hit.url + '/gokb/public/packageContent/' + hit.id : '#'}">
-                                            <i title="GOKB Link" class="external alternate icon"></i>
-                                        </a>
-                                    </g:else>
-                                        <br /><strong>(${hit.titleCount ?: '0'} ${message(code: 'title.plural')})</strong>
-                                </td>
-                                <td>
-                                    <div class="ui bulleted list">
-                                        <g:each in="${hit.curatoryGroups}" var="curatoryGroup">
-                                            <div class="item">${curatoryGroup}</div>
-                                        </g:each>
-                                    </div>
-                                </td>
-                                <td>
-                                        <g:if test="${Org.findByGokbId(hit.providerUuid)}">
-                                            <g:link controller="organisation" action="show" id="${Org.findByGokbId(hit.providerUuid).id}">${hit.providerName}</g:link>
-                                        </g:if>
-                                        <g:else>
-                                            ${hit.providerName}
-                                        </g:else>
-                                </td>
-                                <td>
-                                        <g:if test="${Platform.findByGokbId(hit.platformUuid)}">
-                                            <g:link controller="platform" action="show" id="${Platform.findByGokbId(hit.platformUuid).id}">${hit.platformName}</g:link>
-                                        </g:if>
-                                        <g:else>
-                                            ${hit.platformName}
-                                        </g:else>
-                                </td>
-                                <td class="right aligned">
-                                        <g:if test="${editable && (!pkgs || !(hit.uuid in pkgs))}">
-                                            <g:link action="linkPackage" class="ui mini button packageLinkWithoutIE"
-                                                    id="${params.id}"
-                                                    params="${[addUUID: hit.uuid, source: hit.url, addType: 'Without']}"
-                                                    style="white-space:nowrap;">${message(code: 'subscription.details.link.no_ents')}</g:link>
-                                            <br /><br />
-                                            <g:link action="linkPackage" class="ui mini button packageLink"
-                                                    id="${params.id}"
-                                                    params="${[addUUID: hit.uuid, source: hit.url, addType: 'With']}"
-                                                    style="white-space:nowrap;">${message(code: 'subscription.details.link.with_ents')}</g:link>
-                                        </g:if>
-                                        <g:else>
-                                            <span><strong>${message(code: 'subscription.details.linkPackage.currentPackage')}</strong>
-                                            </span>
-                                            <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.pkg.gokbId = :hit and ci.subPkg.subscription = :sub',[hit:hit.uuid,sub:subscription])}" />
-                                            <br />
-                                            <g:if test="${editable && !hasCostItems}">
-                                                <div class="ui icon negative buttons">
-                                                    <button class="ui button la-selectable-button"
-                                                            onclick="JSPC.app.unlinkPackage(${Package.findByGokbId(hit.uuid)?.id})">
-                                                        <i class="unlink icon"></i>
-                                                    </button>
-                                                </div>
-                                            </g:if>
-                                            <g:elseif test="${editable && hasCostItems}">
-                                                <div class="ui icon negative buttons la-popup-tooltip" data-content="${message(code:'subscription.delete.existingCostItems')}">
-                                                    <button class="ui disabled button la-selectable-button">
-                                                        <i class="unlink icon"></i>
-                                                    </button>
-                                                </div>
-                                            </g:elseif>
-                                            <br />
-                                        </g:else>
-                                </td>
-                            </tr>
-                        </g:each>
-                        </tbody>
-                    </table>
-                </div>
-            </g:if>
-            <div class="paginateButtons" style="text-align:center">
-                <g:if test="${params.int('offset')}">
-                    ${message(code: 'default.search.offset.text', args: [(params.int('offset') + 1), (resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))), resultsTotal])}
-                </g:if>
-                <g:elseif test="${resultsTotal && resultsTotal > 0}">
-                    ${message(code: 'default.search.no_offset.text', args: [(resultsTotal < params.int('max') ? resultsTotal : params.int('max')), resultsTotal])}
-                </g:elseif>
-                <g:else>
-                    ${message(code: 'default.search.no_pagiantion.text', args: [resultsTotal])}
-                </g:else>
-            </div>
+        <g:if test="${records}">
 
-            <g:if test="${hits}">
-                <semui:paginate action="linkPackage" controller="subscription" params="${params}"
-                                next="${message(code: 'default.paginate.next')}"
-                                prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                                total="${resultsTotal}"/>
-            </g:if>
-        </div>
-    </div>
-
-    <div class="four wide column">
-        <div class="ui card">
-            <div class="content">
-                <div class="header">${message(code: 'subscription.details.linkPackage.current', args: [subscription.name])}</div>
-            </div>
-            <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
-                <div class="content">
-                    <div class="item"><g:link controller="package" action="show"
-                                          id="${sp.pkg.id}">${sp.pkg.name}</g:link>
-                        <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg = :sp',[sub:subscription,sp:sp])}"/>
-                        <br />
-                        <g:if test="${editable && !hasCostItems}">
-                            <div class="ui mini icon buttons">
-                                <button class="ui button la-selectable-button"
-                                        onclick="JSPC.app.unlinkPackage(${sp.pkg.id})">
-                                    <i class="times icon red"></i>${message(code: 'default.button.unlink.label')}
-                                </button>
+            <table class="ui sortable celled la-table table">
+                <thead>
+                <tr>
+                    <th>${message(code: 'sidewide.number')}</th>
+                    <g:sortableColumn property="name"
+                                      title="${message(code: 'package.show.pkg_name')}"
+                                      params="${params}"/>
+                    <th>${message(code: 'package.compare.overview.tipps')}</th>
+                    <g:sortableColumn property="providerName" title="${message(code: 'package.content_provider')}"
+                                      params="${params}"/>
+                    <g:sortableColumn property="nominalPlatformName"
+                                      title="${message(code: 'package.nominalPlatform')}"
+                                      params="${params}"/>
+                    <th>${message(code: 'package.curatoryGroup.label')}</th>
+                    <th>${message(code: 'package.source.label')}</th>
+                    <g:sortableColumn property="lastUpdatedDisplay"
+                                      title="${message(code: 'package.lastUpdated.label')}"
+                                      params="${params}"/>
+                    <th>${message(code: 'default.action.label')}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <g:each in="${records}" var="record" status="jj">
+                    <tr>
+                        <g:set var="pkg" value="${Package.findByGokbId(record.uuid)}"/>
+                        <g:set var="org" value="${Org.findByGokbId(record.providerUuid)}"/>
+                        <g:set var="plat" value="${Platform.findByGokbId(record.nominalPlatformUuid)}"/>
+                        <td>${(params.int('offset') ?: 0) + jj + 1}</td>
+                        <td>
+                        <%--UUID: ${record.uuid} --%>
+                        <%--Package: ${Package.findByGokbId(record.uuid)} --%>
+                            <g:if test="${pkg}">
+                                <g:link controller="package" action="show"
+                                        id="${pkg.id}">${record.name}</g:link>
+                            </g:if>
+                            <g:else>
+                                ${record.name} <a target="_blank"
+                                                  href="${record.editUrl ? record.editUrl + '/gokb/public/packageContent/' + record.uuid : '#'}"><i
+                                        title="GOKB Link" class="external alternate icon"></i></a>
+                            </g:else>
+                        </td>
+                        <td>
+                            <g:if test="${record.titleCount}">
+                                ${record.titleCount}
+                            </g:if>
+                            <g:else>
+                                0
+                            </g:else>
+                        </td>
+                        <td><g:if test="${org}"><g:link
+                                controller="organisation" action="show"
+                                id="${org.id}">${record.providerName}</g:link></g:if>
+                        <g:else>${record.providerName}</g:else>
+                        </td>
+                        <td><g:if test="${plat}"><g:link
+                                controller="platform" action="show"
+                                id="${plat.id}">${record.nominalPlatformName}</g:link></g:if>
+                            <g:else>${record.nominalPlatformName}</g:else></td>
+                        <td>
+                            <div class="ui bulleted list">
+                                <g:each in="${record.curatoryGroups}" var="curatoryGroup">
+                                    <div class="item">${curatoryGroup}</div>
+                                </g:each>
                             </div>
-                        </g:if>
-                        <g:elseif test="${editable && hasCostItems}">
-                            <div class="ui mini icon buttons la-popup-tooltip" data-content="${message(code:'subscription.delete.existingCostItems')}">
-                                <button class="ui disabled button la-selectable-button">
-                                    <i class="times icon red"></i>${message(code: 'default.button.unlink.label')}
-                                </button>
-                            </div>
-                        </g:elseif>
-                        <br />
-                    </div>
-                </div>
-            </g:each>
-        </div>
+                        </td>
+                        <td>
+                            <g:if test="${record.source?.automaticUpdates}">
+                                <g:message code="package.index.result.automaticUpdates"/>
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${record.source.frequency}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <g:message code="package.index.result.noAutomaticUpdates"/>
+                            </g:else>
+                        </td>
+                        <td>
+                            <g:if test="${record.lastUpdatedDisplay}">
+                                <g:formatDate formatName="default.date.format.notime"
+                                              date="${new SimpleDateFormat('yyyy-MM-dd HH:mm:ss').parse(record.lastUpdatedDisplay)}"/>
+                            </g:if>
+                        </td>
+                        <td class="right aligned">
+                            <g:if test="${editable && (!pkgs || !(record.uuid in pkgs))}">
+
+                                <button type="button" class="ui icon button la-popup-tooltip la-delay"
+                                        data-addUUID="${record.uuid}"
+                                        data-packageName="${record.name}"
+                                        data-semui="modal"
+                                        data-href="#linkPackageModal"
+                                        data-content="${message(code: 'subscription.details.linkPackage.button', args: [record.name])}"><g:message
+                                        code="subscription.details.linkPackage.label"/></button>
+
+                            </g:if>
+                        %{--<g:else>
+                            <g:set var="hasCostItems"
+                                   value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.pkg.gokbId = :record and ci.subPkg.subscription = :sub', [record: record.uuid, sub: subscription])}"/>
+                            <g:if test="${editable && !hasCostItems}">
+                                <div class="ui icon negative buttons">
+                                    <button class="ui button la-selectable-button"
+                                            onclick="JSPC.app.unlinkPackage(${Package.findByGokbId(record.uuid)?.id})">
+                                        <i class="unlink icon"></i>
+                                    </button>
+                                </div>
+                            </g:if>
+                            <g:elseif test="${editable && hasCostItems}">
+                                <div class="ui icon negative buttons la-popup-tooltip"
+                                     data-content="${message(code: 'subscription.delete.existingCostItems')}">
+                                    <button class="ui disabled button la-selectable-button">
+                                        <i class="unlink icon"></i>
+                                    </button>
+                                </div>
+                            </g:elseif>
+                            <br/>
+                        </g:else>--}%
+                        </td>
+                    </tr>
+                </g:each>
+                </tbody>
+            </table>
+
+
+            <semui:paginate action="linkPackage" controller="subscription" params="${params}"
+                            next="${message(code: 'default.paginate.next')}"
+                            prev="${message(code: 'default.paginate.prev')}" max="${max}"
+                            total="${recordsCount}"/>
+
+        </g:if>
+        <g:else>
+            <g:if test="${filterSet}">
+                <br/><strong><g:message code="filter.result.empty.object"
+                                        args="${[message(code: "package.plural")]}"/></strong>
+            </g:if>
+            <g:else>
+                <br/><strong><g:message code="result.empty.object"
+                                        args="${[message(code: "package.plural")]}"/></strong>
+            </g:else>
+        </g:else>
+
     </div>
+</div>
 
 
 <div id="magicArea"></div>
 
+<semui:modal id="linkPackageModal" message="myinst.currentSubscriptions.link_pkg" isEditModal="isEditModal">
+
+    <g:form class="ui form" url="[controller: 'subscription', action: 'processLinkPackage', id: params.id]">
+        <input type="hidden" name="addUUID" value=""/>
+
+        <div class="field">
+            <label for="pkgName">${message(code: 'package.label')}</label>
+            <input type="text" id="pkgName" name="pkgName" value="" readonly/>
+        </div>
+
+        <div class="grouped required fields">
+            <label for="With">${message(code: 'subscription.details.linkPackage.label')}</label>
+
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input type="radio" name="addType" id="With" value="With" tabindex="0" class="hidden">
+                    <label>${message(code: 'subscription.details.link.with_ents')}</label>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input type="radio" name="addType" id="Without" value="Without" tabindex="0" class="hidden">
+                    <label>${message(code: 'subscription.details.link.no_ents')}</label>
+                </div>
+            </div>
+        </div>
+
+        <br>
+        <br>
+        <div class="field">
+            <h5 class="ui dividing header">
+                <g:message code="subscription.packages.config.label" args="${[""]}"/>
+            </h5>
+
+            <table class="ui table compact">
+                <tr>
+                    <th class="control-label"><g:message code="subscription.packages.changeType.label"/></th>
+                    <th class="control-label">
+                        <g:message code="subscription.packages.setting.label"/>
+                    </th>
+                    <th class="control-label"
+                        data-tooltip="${message(code: "subscription.packages.notification.label")}">
+                        <i class="ui large icon bullhorn"></i>
+                    </th>
+                    <g:if test="${contextCustomerType == 'ORG_CONSORTIUM'}">
+                        <th class="control-label"
+                            data-tooltip="${message(code: 'subscription.packages.auditable')}">
+                            <i class="ui large icon thumbtack"></i>
+                        </th>
+                    </g:if>
+                </tr>
+                <g:set var="excludes"
+                       value="${[PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED]}"/>
+                <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
+                    <tr>
+                        <td class="control-label">
+                            <g:message code="subscription.packages.${settingKey}"/>
+                        </td>
+                        <td>
+                            <g:if test="${!(settingKey in excludes)}">
+                                <g:if test="${editable}">
+                                    <laser:select class="ui dropdown"
+                                                  name="${settingKey}!§!setting"
+                                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
+                                                  optionKey="id" optionValue="value"
+                                                  value="${RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"/>
+                                </g:if>
+                                <g:else>
+                                    ${RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n("value")}
+                                </g:else>
+                            </g:if>
+                        </td>
+                        <td>
+                            <g:if test="${editable}">
+                                <g:checkBox class="ui checkbox" name="${settingKey}!§!notification"
+                                            checked="${false}"/>
+                            </g:if>
+                            <g:else>
+                                ${RDStore.YN_NO.getI10n("value")}
+                            </g:else>
+                        </td>
+                        <g:if test="${contextCustomerType == 'ORG_CONSORTIUM'}">
+                            <td>
+                                <g:if test="${!(settingKey in excludes)}">
+                                    <g:if test="${editable}">
+                                        <g:checkBox class="ui checkbox" name="${settingKey}!§!auditable"
+                                                    checked="${false}"/>
+                                    </g:if>
+                                    <g:else>
+                                        ${RDStore.YN_NO.getI10n("value")}
+                                    </g:else>
+                                </g:if>
+                            </td>
+                        </g:if>
+                    </tr>
+                </g:each>
+            </table>
+        </div>
+    </g:form>
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.callbacks.modal.show.linkPackageModal = function(trigger) {
+            $('#linkPackageModal #pkgName').attr('value', $(trigger).attr('data-packageName'))
+            $('#linkPackageModal input[name=addUUID]').attr('value', $(trigger).attr('data-addUUID'))
+        }
+    </laser:script>
+
+</semui:modal>
+
 <laser:script file="${this.getGroovyPageFileName()}">
-      JSPC.app.unlinkPackage = function (pkg_id){
-        var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage', params: [subscription: subscription.id])}&package="+pkg_id
+%{--    JSPC.app.unlinkPackage = function (pkg_id){
+      var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage', params: [subscription: subscription.id])}&package="+pkg_id
 
         $.ajax({url: req_url,
           success: function(result){
+             $("#unlinkPackageModal").remove();
              $('#magicArea').html(result);
           },
           complete: function(){
             $("#unlinkPackageModal").modal("show");
           }
         });
-      }
-      JSPC.app.toggleAlert = function() {
-        $('#durationAlert').toggle();
-      }
+      }--}%
+    JSPC.app.toggleAlert = function() {
+      $('#durationAlert').toggle();
+    }
 
 
-        $(".packageLink").click(function(evt) {
-            evt.preventDefault();
+      $(".packageLink").click(function(evt) {
+          evt.preventDefault();
 
-            var check = confirm('${message(code: 'subscription.details.link.with_ents.confirm')}');
+          var check = confirm('${message(code: 'subscription.details.link.with_ents.confirm')}');
             console.log(check)
             if (check == true) {
                 JSPC.app.toggleAlert();
@@ -269,6 +352,5 @@
             }
         });
 </laser:script>
-<!-- ES Query String: ${es_query} -->
 </body>
 </html>
