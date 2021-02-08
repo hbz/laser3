@@ -327,6 +327,7 @@
                 <g:if test="${editable && properties && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
                     <td colspan="6">
                         <g:form action="addSurveyPropToConfig" controller="survey" method="post" class="ui form">
+                            <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
                             <g:hiddenField id="surveyInfo_id_${surveyInfo.id}" name="id" value="${surveyInfo.id}"/>
                             <g:hiddenField id="surveyConfig_id_${surveyConfig?.id}" name="surveyConfigID" value="${surveyConfig?.id}"/>
 
