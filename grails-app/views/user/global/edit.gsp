@@ -1,4 +1,5 @@
 <%@ page import="de.laser.auth.UserRole;de.laser.Org;de.laser.auth.Role" %>
+<laser:serviceInjection />
 <!doctype html>
 <html>
 <head>
@@ -89,7 +90,9 @@
                                 <td class="x">
                                     <g:if test="${editable}">
                                         <g:link controller="ajax" action="removeUserRole" params='${[user:"${user.class.name}:${user.id}",role:"${rl.role.class.name}:${rl.role.id}"]}'
-                                                class="ui icon negative button">
+                                                class="ui icon negative button"
+                                                role="button"
+                                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                             <i class="trash alternate icon"></i>
                                         </g:link>
                                     </g:if>
@@ -154,14 +157,61 @@
     </div><!-- grid -->
 
     <g:if test="${editable}">
-        <g:if test="${availableOrgs}">
-            <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, orgLabel: 'Organisation']" />
-        </g:if>
         <g:if test="${availableComboDeptOrgs}">
-            <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboDeptOrgs, orgLabel: orgLabel]" />
+            <g:set var="availableOrgs" value="${availableComboDeptOrgs}" />
+            %{-- TODO: overwrite for ROLE_ADMIN ? all available Orgs --}%
         </g:if>
-        <g:if test="${availableComboConsOrgs}">
-            <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboConsOrgs, orgLabel: 'Teilnehmer']" />
+        %{-- not found -- <g:elseif test="${availableComboConsOrgs}">
+            <g:set var="orgLabel" value="Teilnehmer" />
+            <g:set var="availableOrgs" value="${availableComboConsOrgs}" />
+        </g:elseif> --}%
+
+        <g:if test="${ availableOrgs }">
+            <g:if test="${controllerName == 'user' || (controllerName in ['myInstitution', 'organisation'] && ! user.isAuthorizedInstMember(orgInstance))}">
+                <div class="ui segment form">
+
+                    <g:form controller="${controllerName}" action="addAffiliation" class="ui form" method="get">
+
+                        <g:if test="${controllerName == 'myInstitution'}">
+                            <input type="hidden" name="uoid" value="${genericOIDService.getOID(user)}" />
+                        </g:if>
+                        <g:if test="${controllerName == 'organisation'}">
+                            <input type="hidden" name="uoid" value="${genericOIDService.getOID(user)}" />
+                            <input type="hidden" name="id" value="${orgInstance.id}" />
+                        </g:if>
+                        <g:if test="${controllerName == 'user'}">
+                            <input type="hidden" name="id" value="${user.id}" />
+                        </g:if>
+
+                        <div class="two fields">
+                            <div class="field">
+                                <label for="org">${orgLabel ?: message(code:'org.label')}</label>
+                                <g:select name="org" id="org"
+                                          from="${availableOrgs}"
+                                          optionKey="id"
+                                          optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
+                                          class="ui fluid search dropdown"/>
+                            </div>
+
+                            <div class="field">
+                                <label for="formalRole">${message(code:'user.role')}</label>
+                                <g:select name="formalRole" id="formalRole"
+                                          from="${Role.findAllByRoleType('user')}"
+                                          optionKey="id"
+                                          optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                                          value="${Role.findByAuthority('INST_USER').id}"
+                                          class="ui fluid dropdown"/>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <button type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
+                        </div>
+                    </g:form>
+
+                </div>
+            </g:if>
+
         </g:if>
     </g:if>
 

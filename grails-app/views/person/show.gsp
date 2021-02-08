@@ -337,7 +337,9 @@
                                                     <g:if test="${editable}">
                                                         <div class="ui mini icon buttons">
                                                             <g:set var="oid" value="${link.class.name}:${link.id}" />
-                                                            <g:link class="ui negative button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]">
+                                                            <g:link class="ui negative button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]"
+                                                                    role="button"
+                                                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                                 <i class="trash alternate icon"></i>
                                                             </g:link>
                                                         </div>

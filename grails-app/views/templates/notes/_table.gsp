@@ -59,7 +59,9 @@
                                 <i aria-hidden="true" class="write icon"></i>
                             </a>
                             <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button"
-                                    params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'>
+                                    params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>

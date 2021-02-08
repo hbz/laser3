@@ -910,7 +910,9 @@
                                 && (RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id)}">
                             <g:link class="ui icon negative button"
                                     controller="survey" action="deleteSurveyPropFromConfig"
-                                    id="${surveyProperty.id}">
+                                    id="${surveyProperty.id}"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>

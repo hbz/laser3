@@ -18,6 +18,15 @@ class ConfigUtils {
     static String getAggrEsIndex(boolean validate = false) {
         readConfig('aggr_es_index', validate)
     }
+    static String getAggrEsGOKBCluster(boolean validate = false) {
+        readConfig('aggr_es_gokb_cluster', validate)
+    }
+    static String getAggrEsGOKBHostname(boolean validate = false) {
+        readConfig('aggr_es_gokb_hostname', validate)
+    }
+    static String getAggrEsGOKBIndex(boolean validate = false) {
+        readConfig('aggr_es_gokb_index', validate)
+    }
     static Object getAppDefaultPrefs(boolean validate = false) {
         readConfig('appDefaultPrefs', validate)
     }

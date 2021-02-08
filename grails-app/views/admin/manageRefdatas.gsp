@@ -126,7 +126,9 @@
 
                                         <g:if test="${! rdv.isHardData && ! usedRdvList?.contains(rdv.id)}">
                                             <g:link controller="admin" action="manageRefdatas"
-                                                    params="${[cmd: 'deleteRefdataValue', rdv: RefdataValue.class.name + ':' + rdv.id]}" class="ui icon negative button">
+                                                    params="${[cmd: 'deleteRefdataValue', rdv: RefdataValue.class.name + ':' + rdv.id]}" class="ui icon negative button"
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                 <i class="trash alternate icon"></i>
                                             </g:link>
                                         </g:if>

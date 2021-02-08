@@ -81,6 +81,12 @@ link.type,Link Type,Link Type
 mail.template.language,MailTemplate Sprache,MailTemplate Language
 mail.template.type,MailTemplate Typ,MailTemplate Type
 number.type,Zahlen-Typ,Number Type
+oa.content.receiver,OA-Inhalte Empfänger,OA content receiver
+oa.author.identification,OA Autorenidentifikation,OA author identification
+oa.publishing.timespan,OA Publikation Zeitspanne,OA publishing timespan
+oa.publishing.report.delivery,OA Publikations-Report Lieferweg,OA publishing report delivery
+oa.responsible.party,OA Zuständigkeit,OA responsible party
+oa.time.moment,OA relevanter Zeitpunkt,OA relevant time moment
 org.sector,Bereich,OrgSector
 org.status,Status,Status
 org.type,Organisationstyp,Organisation Type
