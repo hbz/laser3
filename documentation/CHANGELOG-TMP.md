@@ -7,7 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
 3115    08.02.2021  rc2.0   2.0         Andreas Feature     OA-relevante Lizenzmerkmale und Referenzwerte incl. -kategorien eingefügt
+
+3103    08.02.2021  rc2.0   2.0         Moe     Feature     Lizenz-Bestand und Paket-Detailansicht
 
 3102    05.02.2021  rc2.0   2.0         Moe     Feature     "Paket verknüpfen" mit Lizenz
 

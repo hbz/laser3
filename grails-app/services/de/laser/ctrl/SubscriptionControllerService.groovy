@@ -244,6 +244,7 @@ class SubscriptionControllerService {
             }
             List bm = pu.stopBenchmark()
             result.benchMark = bm
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
             [result:result,status:STATUS_OK]
         }
     }
@@ -277,6 +278,7 @@ class SubscriptionControllerService {
             result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.subscription)
             result.myTaskInstanceCount = result.myTaskInstanceList.size()
             result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
             [result:result,status:STATUS_OK]
         }
     }
@@ -292,6 +294,7 @@ class SubscriptionControllerService {
             Set<AuditLogEvent> historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className = :cname and persistedObjectId = :poid order by id desc", qry_params)
             result.historyLinesTotal = historyLines.size()
             result.historyLines = historyLines.drop(result.offset).take(result.max)
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
             [result:result,status:STATUS_OK]
         }
     }
@@ -307,6 +310,7 @@ class SubscriptionControllerService {
             Set<PendingChange> todoHistoryLines = PendingChange.executeQuery("select pc from PendingChange as pc where pc.subscription = :sub and pc.status in (:stats) order by pc.ts desc", baseParams)
             result.todoHistoryLinesTotal = todoHistoryLines.size()
             result.todoHistoryLines = todoHistoryLines.drop(result.offset).take(result.max)
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
             [result:result,status:STATUS_OK]
         }
     }
@@ -435,14 +439,20 @@ class SubscriptionControllerService {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
-        else [result:result,status:STATUS_OK]
+        else {
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
+            [result: result, status: STATUS_OK]
+        }
     }
 
     Map<String,Object> documents(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
-        else [result:result,status:STATUS_OK]
+        else {
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
+            [result:result,status:STATUS_OK]
+        }
     }
 
     //--------------------------------- consortia members section ----------------------------------------------
@@ -492,6 +502,7 @@ class SubscriptionControllerService {
             }
             result.orgs = orgs
         }
+        result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
         [result:result,status:STATUS_OK]
     }
 
@@ -1123,6 +1134,7 @@ class SubscriptionControllerService {
                     [sub: result.subscription.instanceOf,
                      org: result.contextOrg,
                      invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
             [result:result,status:STATUS_OK]
         }
     }
@@ -1134,6 +1146,7 @@ class SubscriptionControllerService {
         }
         else {
             result.surveys = result.subscription ? SurveyConfig.findAllBySubscription(result.subscription) : null
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
             [result:result,status:STATUS_OK]
         }
     }
@@ -1307,33 +1320,35 @@ class SubscriptionControllerService {
                 if (addType != null && addType != '') {
                     Package pkgToLink = Package.findByGokbId(pkgUUID)
                     SubscriptionPackage subscriptionPackage = SubscriptionPackage.findBySubscriptionAndPkg(result.subscription, pkgToLink)
-                    PendingChangeConfiguration.SETTING_KEYS.each { String settingKey ->
-                        Map<String, Object> configMap = [subscriptionPackage: subscriptionPackage, settingKey: settingKey, withNotification: false]
-                        boolean auditable = false
-                        //Set because we have up to three keys in params with the settingKey
-                        Set<String> keySettings = params.keySet().findAll { k -> k.contains(settingKey) }
-                        keySettings.each { key ->
-                            List<String> settingData = key.split('!§!')
-                            switch (settingData[1]) {
-                                case 'setting': configMap.settingValue = RefdataValue.get(params[key])
-                                    break
-                                case 'notification': configMap.withNotification = params[key] != null
-                                    break
-                                case 'auditable': auditable = params[key] != null
-                                    break
+                    if(subscriptionPackage) {
+                        PendingChangeConfiguration.SETTING_KEYS.each { String settingKey ->
+                            Map<String, Object> configMap = [subscriptionPackage: subscriptionPackage, settingKey: settingKey, withNotification: false]
+                            boolean auditable = false
+                            //Set because we have up to three keys in params with the settingKey
+                            Set<String> keySettings = params.keySet().findAll { k -> k.contains(settingKey) }
+                            keySettings.each { key ->
+                                List<String> settingData = key.split('!§!')
+                                switch (settingData[1]) {
+                                    case 'setting': configMap.settingValue = RefdataValue.get(params[key])
+                                        break
+                                    case 'notification': configMap.withNotification = params[key] != null
+                                        break
+                                    case 'auditable': auditable = params[key] != null
+                                        break
+                                }
                             }
-                        }
-                        try {
-                            PendingChangeConfiguration.construct(configMap)
-                            boolean hasConfig = AuditConfig.getConfig(subscriptionPackage.subscription, settingKey) != null
-                            if (auditable && !hasConfig) {
-                                AuditConfig.addConfig(subscriptionPackage.subscription, settingKey)
-                            } else if (!auditable && hasConfig) {
-                                AuditConfig.removeConfig(subscriptionPackage.subscription, settingKey)
+                            try {
+                                PendingChangeConfiguration.construct(configMap)
+                                boolean hasConfig = AuditConfig.getConfig(subscriptionPackage.subscription, settingKey) != null
+                                if (auditable && !hasConfig) {
+                                    AuditConfig.addConfig(subscriptionPackage.subscription, settingKey)
+                                } else if (!auditable && hasConfig) {
+                                    AuditConfig.removeConfig(subscriptionPackage.subscription, settingKey)
+                                }
                             }
-                        }
-                        catch (CreationException e) {
-                            log.error("ProcessLinkPackage -> PendingChangeConfiguration: "+e.message)
+                            catch (CreationException e) {
+                                log.error("ProcessLinkPackage -> PendingChangeConfiguration: " + e.message)
+                            }
                         }
                     }
                 }
@@ -1512,12 +1527,13 @@ class SubscriptionControllerService {
                 result.deletedSPs = []
                 ApiSource source = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
                 deletedSPs.each { sp ->
-                    result.deletedSPs << [name:sp.pkg.name,link:"${source.editUrl}/gokb/resource/show/${sp.pkg.gokbId}"]
+                    result.deletedSPs << [name:sp.pkg.name,link:"${source.editUrl}/gokb/public/packageContent/?id=${sp.pkg.gokbId}"]
                 }
             }
             if (executorWrapperService.hasRunningProcess(result.subscription)) {
                 result.processingpc = true
             }
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
             [result:result,status:STATUS_OK]
         }
     }
@@ -2435,6 +2451,7 @@ class SubscriptionControllerService {
                     result.pendingChanges << [("${member.id}".toString()): pendingChanges]
                 }
             }
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
             [result:result,status:STATUS_OK]
         }
     }
