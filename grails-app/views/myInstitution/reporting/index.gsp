@@ -48,7 +48,7 @@
             <div class="ui segment">
                 Suche über folgenden Einstiegspunkt beginnen: &nbsp;
                 <g:select name="filter-chooser"
-                          from="${filterChooserList}"
+                          from="${cfgFilterList}"
                           optionKey="key"
                           optionValue="value"
                           class="ui selection dropdown"

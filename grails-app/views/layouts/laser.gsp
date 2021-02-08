@@ -148,7 +148,9 @@
                                 <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="users" message="menu.institutions.users" />
 
                                 <sec:ifAnyGranted roles="ROLE_YODA">
-                                    <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_ADM" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
+                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="myInstitution" action="reporting">${message(code: 'menu.institutions.reporting')}</semui:link>
+                                    %{--<semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_ADM" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />--}%
+
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</semui:link>
                                     <%--<semui:securedMainNavItem generateElementId="true" affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />--%>
                                 </sec:ifAnyGranted>

@@ -12,6 +12,7 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.properties.PersonProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
+import de.laser.reporting.Cfg
 import de.laser.titles.TitleInstance
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -101,34 +102,29 @@ class MyInstitutionController  {
         redirect(action:'dashboard')
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_ADM")
-    })
+    //@DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM")
+    //@Secured(closure = {
+    //    ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_ADM")
+    //})
+    @Secured(['ROLE_ADMIN'])
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        result.filterChooserList = [
-                'organisation' : 'Einrichtung',
-                'subscription' : 'Lizenz'
-        ]
-        result.echartChooserList = [
-                'bar' : 'Balkendiagramm',
-                'pie' : 'Tortendiagramm'
-        ]
+        result.cfgFilterList = Cfg.config.filter
+        result.cfgChartsList = Cfg.config.charts
 
         if (params.filter) {
             result.filter = params.filter
 
             if (params.filter == 'organisation') {
-                result.result = reportingService.organisationFilter(params)
-                result.resultChooserList = [
+                result.result = reportingService.filterOrganisation(params)
+                result.resultList = [
                         'opt1' : 'Bibliothekstyp aller Einrichtungen'
                 ]
             }
             else if (params.filter == 'subscription') {
-                result.result = reportingService.subscriptionFilter(params)
-                result.resultChooserList = [
+                result.result = reportingService.filterSubscription(params)
+                result.resultList = [
                         'opt1' : 'Bundesländer aller Teilnehmer'
                 ]
             }

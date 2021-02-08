@@ -6,7 +6,7 @@
 
         <div class="ui segment">
             <g:select name="result-chooser"
-                      from="${resultChooserList}"
+                      from="${resultList}"
                       optionKey="key"
                       optionValue="value"
                       class="ui selection dropdown"
@@ -14,7 +14,7 @@
                       noSelection="${['': message(code: 'default.select.choose.label')]}" />
 
             <g:select name="echart-chooser"
-                      from="${echartChooserList}"
+                      from="${cfgChartsList}"
                       optionKey="key"
                       optionValue="value"
                       class="ui selection dropdown"
