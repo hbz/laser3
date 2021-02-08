@@ -45,7 +45,7 @@
                                 </g:if>
                                 <g:else>
                                     <a target="_blank"
-                                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/public/packageContent/?id=' + object?.gokbId : '#'}"><i
+                                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/?id=' + object?.gokbId : '#'}"><i
                                             title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
                                 </g:else>
                             </g:if>

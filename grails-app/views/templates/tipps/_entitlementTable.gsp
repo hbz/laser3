@@ -51,7 +51,7 @@
                             <g:else>
                                 <div class="la-inline-flexbox la-popup-tooltip la-delay">
                                     <i class="icon"></i>
-                                </div>
+                         subss       </div>
                             </g:else>
 
                             <semui:listIcon type="${ie.tipp.titleType}"/>
@@ -186,7 +186,7 @@
                                     <g:if test="${tipp?.gokbId}">
                                         <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                            data-content="${message(code: 'gokb')}"
-                                           href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/public/packageContent/?id=' + tipp.pkg.gokbId : '#'}"
+                                           href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/?id=' + tipp.gokbId : '#'}"
                                            target="_blank"><i class="la-gokb  icon"></i>
                                         </a>
                                     </g:if>
