@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3103    08.02.2021  rc2.0   2.0         Moe     Feature     Lizenz-Bestand und Paket-Detailansicht
+
 3102    05.02.2021  rc2.0   2.0         Moe     Feature     "Paket verknüpfen" mit Lizenz
 
 3086    02.02.2021  rc2.0   2.0         Moe     Feature     Alle Pakete: Anzeigefelder

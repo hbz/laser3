@@ -92,7 +92,7 @@
                             </g:if>
                             <g:else>
                                 ${record.name} <a target="_blank"
-                                                  href="${record.editUrl ? record.editUrl + '/gokb/public/packageContent/' + record.uuid : '#'}"><i
+                                                  href="${record.editUrl ? record.editUrl + '/gokb/public/packageContent/?id=' + record.uuid : '#'}"><i
                                         title="GOKB Link" class="external alternate icon"></i></a>
                             </g:else>
                         </td>
@@ -201,7 +201,7 @@
 
 <div id="magicArea"></div>
 
-<semui:modal id="linkPackageModal" message="myinst.currentSubscriptions.link_pkg" isEditModal="isEditModal">
+<semui:modal id="linkPackageModal" message="myinst.currentSubscriptions.link_pkg" msgSave="${message(code: 'default.button.link.label')}">
 
     <g:form class="ui form" url="[controller: 'subscription', action: 'processLinkPackage', id: params.id]">
         <input type="hidden" name="addUUID" value=""/>
