@@ -47,11 +47,11 @@
                     ${platformInstance?.gokbId}
                     <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                             var="gokbAPI">
-                      <g:if test="${platformInstance?.gokbId}">
+                      %{--<g:if test="${platformInstance?.gokbId}">
                         <a target="_blank"
                            href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/public/packageContent/?id=' + platformInstance?.gokbId : '#'}"><i
                             title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
-                      </g:if>
+                      </g:if>--}%
                     </g:each>
                   </dd>
                 </dl>
