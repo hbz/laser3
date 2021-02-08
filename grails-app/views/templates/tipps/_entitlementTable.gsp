@@ -51,7 +51,7 @@
                             <g:else>
                                 <div class="la-inline-flexbox la-popup-tooltip la-delay">
                                     <i class="icon"></i>
-                         subss       </div>
+                                </div>
                             </g:else>
 
                             <semui:listIcon type="${ie.tipp.titleType}"/>
