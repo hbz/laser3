@@ -7,6 +7,17 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
+3115    08.02.2021  rc2.0   2.0         Andreas Feature     OA-relevante Lizenzmerkmale und Referenzwerte incl. -kategorien eingefügt
+
+3103    08.02.2021  rc2.0   2.0         Moe     Feature     Lizenz-Bestand und Paket-Detailansicht
+
+3102    05.02.2021  rc2.0   2.0         Moe     Feature     "Paket verknüpfen" mit Lizenz
+
+3086    02.02.2021  rc2.0   2.0         Moe     Feature     Alle Pakete: Anzeigefelder
+
+3100    02.02.2021  rc2.0   2.0         Moe     Feature     Alle Pakete: Filter
+
 3064    28.01.2021  rc2.0   2.0         David   Feature     Aussagekräftige (Fehler-)Meldungen im Benutzerprofil
 
 3095    27.01.2021  rc2.0   2.0         David   Bug         Filter funktioniert nicht: Nutzerverwaltung

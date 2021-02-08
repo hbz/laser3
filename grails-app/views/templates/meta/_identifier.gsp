@@ -40,12 +40,12 @@
                             <g:if test="${object.gokbId}">
                                 <g:if test="${object instanceof Package}">
                                     <a target="_blank"
-                                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/public/packageContent/' + object?.gokbId : '#'}"><i
+                                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/public/packageContent/?id=' + object?.gokbId : '#'}"><i
                                             title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
                                 </g:if>
                                 <g:else>
                                     <a target="_blank"
-                                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + object?.gokbId : '#'}"><i
+                                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/?id=' + object?.gokbId : '#'}"><i
                                             title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
                                 </g:else>
                             </g:if>
@@ -93,7 +93,9 @@
                                     <td>
                                         <g:if test="${editable}">
                                             <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative mini button"
-                                                    params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'>
+                                                    params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                 <i class="icon trash alternate"></i>
                                             </g:link>
                                         </g:if>

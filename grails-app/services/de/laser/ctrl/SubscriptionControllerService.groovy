@@ -244,6 +244,7 @@ class SubscriptionControllerService {
             }
             List bm = pu.stopBenchmark()
             result.benchMark = bm
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
             [result:result,status:STATUS_OK]
         }
     }
@@ -277,6 +278,7 @@ class SubscriptionControllerService {
             result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.subscription)
             result.myTaskInstanceCount = result.myTaskInstanceList.size()
             result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
             [result:result,status:STATUS_OK]
         }
     }
@@ -292,6 +294,7 @@ class SubscriptionControllerService {
             Set<AuditLogEvent> historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className = :cname and persistedObjectId = :poid order by id desc", qry_params)
             result.historyLinesTotal = historyLines.size()
             result.historyLines = historyLines.drop(result.offset).take(result.max)
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
             [result:result,status:STATUS_OK]
         }
     }
@@ -307,6 +310,7 @@ class SubscriptionControllerService {
             Set<PendingChange> todoHistoryLines = PendingChange.executeQuery("select pc from PendingChange as pc where pc.subscription = :sub and pc.status in (:stats) order by pc.ts desc", baseParams)
             result.todoHistoryLinesTotal = todoHistoryLines.size()
             result.todoHistoryLines = todoHistoryLines.drop(result.offset).take(result.max)
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
             [result:result,status:STATUS_OK]
         }
     }
@@ -435,14 +439,20 @@ class SubscriptionControllerService {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
-        else [result:result,status:STATUS_OK]
+        else {
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
+            [result: result, status: STATUS_OK]
+        }
     }
 
     Map<String,Object> documents(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
-        else [result:result,status:STATUS_OK]
+        else {
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
+            [result:result,status:STATUS_OK]
+        }
     }
 
     //--------------------------------- consortia members section ----------------------------------------------
@@ -492,6 +502,7 @@ class SubscriptionControllerService {
             }
             result.orgs = orgs
         }
+        result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
         [result:result,status:STATUS_OK]
     }
 
@@ -1123,6 +1134,7 @@ class SubscriptionControllerService {
                     [sub: result.subscription.instanceOf,
                      org: result.contextOrg,
                      invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
             [result:result,status:STATUS_OK]
         }
     }
@@ -1134,6 +1146,7 @@ class SubscriptionControllerService {
         }
         else {
             result.surveys = result.subscription ? SurveyConfig.findAllBySubscription(result.subscription) : null
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
             [result:result,status:STATUS_OK]
         }
     }
@@ -1141,6 +1154,114 @@ class SubscriptionControllerService {
     //-------------------------------------- packages section ------------------------------------------
 
     Map<String,Object> linkPackage(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            if (result.subscription.packages) {
+                result.pkgs = []
+                    result.subscription.packages.each { sp ->
+                        log.debug("Existing package ${sp.pkg.name} (Adding GOKb ID: ${sp.pkg.gokbId})")
+                        result.pkgs.add(sp.pkg.gokbId)
+                }
+            } else {
+                log.debug("Subscription has no linked packages yet")
+            }
+            /*result.max = params.max ? params.int('max') : result.user.getDefaultPageSizeAsInteger()
+            List gokbRecords = []
+            ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { ApiSource api ->
+                gokbRecords << gokbService.getPackagesMap(api, params.q, false).records
+            }
+            result.sort = params.sort ?: 'name'
+            result.order = params.order ?: 'asc'
+            result.records = null
+            if(gokbRecords) {
+                Map filteredMap = [:]
+                gokbRecords.each { apiRes ->
+                    apiRes.each { rec ->
+                        filteredMap[rec.uuid] = rec
+                    }
+                }
+                result.records = filteredMap.values().toList().flatten()
+            }
+            if(result.records) {
+                result.records.sort { x, y ->
+                    if (result.order == 'desc') {
+                        y."${result.sort}".toString().compareToIgnoreCase x."${result.sort}".toString()
+                    } else {
+                        x."${result.sort}".toString().compareToIgnoreCase y."${result.sort}".toString()
+                    }
+                }
+                result.resultsTotal = result.records.size()
+                Integer start = params.offset ? params.int('offset') : 0
+                Integer end = params.offset ? result.max + params.int('offset') : result.max
+                end = (end > result.records.size()) ? result.records.size() : end
+                result.hits = result.records.subList(start, end)
+            }*/
+
+            ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+
+            SwissKnife.setPaginationParams(result, params, result.user)
+
+            result.editUrl = apiSource.baseUrl+apiSource.fixToken
+            String esQuery = "?componentType=Package"
+            if(params.q) {
+                result.filterSet = true
+                //for ElasticSearch
+                esQuery += "&name=${params.q}"
+                //the result set has to be broadened down by IdentifierNamespace queries! Problematic if the package is not in LAS:eR yet!
+            }
+
+            if(params.provider) {
+                result.filterSet = true
+                esQuery += "&providerName=${params.provider}"
+            }
+
+            if(params.curatoryGroup) {
+                result.filterSet = true
+                esQuery += "&curatoryGroup=${params.curatoryGroup}"
+            }
+
+            if(params.resourceTyp) {
+                result.filterSet = true
+                esQuery += "&contentType=${params.resourceTyp}"
+            }
+
+
+            /*
+            to implement:
+            - provider
+            - componentType
+            - series
+            - subjectArea
+            - curatoryGroup
+            - year (combination of dateFirstPrint and dateFirstOnline)
+             */
+
+            String sort = params.sort ?: "&sort=sortname"
+            String order = params.order ?: "&order=asc"
+            String max = params.max ? "&max=${params.max}": "&max=${result.max}"
+            String offset = params.offset ? "&offset=${params.offset}": "&offset=${result.offset}"
+
+            Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/groups')
+            if(queryCuratoryGroups) {
+                List recordsCuratoryGroups = queryCuratoryGroups.warning.result
+                result.curatoryGroups = recordsCuratoryGroups
+            }
+
+
+            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/find'+esQuery+sort+order+max+offset)
+            if(queryResult) {
+                List records = queryResult.warning.records
+                result.recordsCount = queryResult.warning.count
+                result.records = records
+            }
+
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String,Object> processLinkPackage(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(!result)
             [result:null,status:STATUS_ERROR]
@@ -1153,13 +1274,14 @@ class SubscriptionControllerService {
                     result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
                 }
             }
-            params.sort = "name"
             //to be deployed in parallel thread
             if(params.addUUID) {
                 String pkgUUID = params.addUUID
                 String addType = params.addType
                 if(!Package.findByGokbId(pkgUUID)) {
-                    GlobalRecordSource source = GlobalRecordSource.findByUri("${params.source}/gokb/api/")
+                    ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                    result.source = apiSource.baseUrl+apiSource.fixToken
+                    GlobalRecordSource source = GlobalRecordSource.findByUri("${result.source}/gokb/api/")
                     log.debug("linkPackage. Global Record Source URL: " +source.baseUrl)
                     globalSourceSyncService.source = source
                     executorService.execute({
@@ -1194,49 +1316,44 @@ class SubscriptionControllerService {
                         pkgToLink.addToSubscription(result.subscription, false)
                     }
                 }
-            }
-            if (result.subscription.packages) {
-                result.pkgs = []
-                if (params.gokbApi) {
-                    result.subscription.packages.each { sp ->
-                        log.debug("Existing package ${sp.pkg.name} (Adding GOKb ID: ${sp.pkg.gokbId})")
-                        result.pkgs.add(sp.pkg.gokbId)
+
+                if (addType != null && addType != '') {
+                    Package pkgToLink = Package.findByGokbId(pkgUUID)
+                    SubscriptionPackage subscriptionPackage = SubscriptionPackage.findBySubscriptionAndPkg(result.subscription, pkgToLink)
+                    if(subscriptionPackage) {
+                        PendingChangeConfiguration.SETTING_KEYS.each { String settingKey ->
+                            Map<String, Object> configMap = [subscriptionPackage: subscriptionPackage, settingKey: settingKey, withNotification: false]
+                            boolean auditable = false
+                            //Set because we have up to three keys in params with the settingKey
+                            Set<String> keySettings = params.keySet().findAll { k -> k.contains(settingKey) }
+                            keySettings.each { key ->
+                                List<String> settingData = key.split('!§!')
+                                switch (settingData[1]) {
+                                    case 'setting': configMap.settingValue = RefdataValue.get(params[key])
+                                        break
+                                    case 'notification': configMap.withNotification = params[key] != null
+                                        break
+                                    case 'auditable': auditable = params[key] != null
+                                        break
+                                }
+                            }
+                            try {
+                                PendingChangeConfiguration.construct(configMap)
+                                boolean hasConfig = AuditConfig.getConfig(subscriptionPackage.subscription, settingKey) != null
+                                if (auditable && !hasConfig) {
+                                    AuditConfig.addConfig(subscriptionPackage.subscription, settingKey)
+                                } else if (!auditable && hasConfig) {
+                                    AuditConfig.removeConfig(subscriptionPackage.subscription, settingKey)
+                                }
+                            }
+                            catch (CreationException e) {
+                                log.error("ProcessLinkPackage -> PendingChangeConfiguration: " + e.message)
+                            }
+                        }
                     }
                 }
-            } else {
-                log.debug("Subscription has no linked packages yet")
             }
-            result.max = params.max ? params.int('max') : result.user.getDefaultPageSizeAsInteger()
-            List gokbRecords = []
-            ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { ApiSource api ->
-                gokbRecords << gokbService.getPackagesMap(api, params.q, false).records
-            }
-            result.sort = params.sort ?: 'name'
-            result.order = params.order ?: 'asc'
-            result.records = null
-            if(gokbRecords) {
-                Map filteredMap = [:]
-                gokbRecords.each { apiRes ->
-                    apiRes.each { rec ->
-                        filteredMap[rec.uuid] = rec
-                    }
-                }
-                result.records = filteredMap.values().toList().flatten()
-            }
-            if(result.records) {
-                result.records.sort { x, y ->
-                    if (result.order == 'desc') {
-                        y."${result.sort}".toString().compareToIgnoreCase x."${result.sort}".toString()
-                    } else {
-                        x."${result.sort}".toString().compareToIgnoreCase y."${result.sort}".toString()
-                    }
-                }
-                result.resultsTotal = result.records.size()
-                Integer start = params.offset ? params.int('offset') : 0
-                Integer end = params.offset ? result.max + params.int('offset') : result.max
-                end = (end > result.records.size()) ? result.records.size() : end
-                result.hits = result.records.subList(start, end)
-            }
+
             [result:result,status:STATUS_OK]
         }
     }
@@ -1267,10 +1384,13 @@ class SubscriptionControllerService {
                 if (childSubs) {
                     String queryChildSubs = "select ie.id from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
                     Map<String,Object> queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id]
+                    List childSubsPackages = SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs, result.package)
                     int numOfPCsChildSubs = result.package.removePackagePendingChanges(childSubs.id, false)
                     int numOfIEsChildSubs = IssueEntitlement.executeQuery(queryChildSubs, queryParamChildSubs).size()
-                    int numOfCIsChildSubs = CostItem.findAllBySubPkgInList(SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs, result.package)).size()
-                    conflictsList.addAll(packageService.listConflicts(result.package,childSubs,numOfPCsChildSubs,numOfIEsChildSubs,numOfCIsChildSubs))
+                    int numOfCIsChildSubs = childSubsPackages ? CostItem.findAllBySubPkgInList(childSubsPackages).size() : 0
+                    if(numOfPCsChildSubs > 0 || numOfIEsChildSubs > 0 || numOfCIsChildSubs > 0) {
+                        conflictsList.addAll(packageService.listConflicts(result.package, childSubs, numOfPCsChildSubs, numOfIEsChildSubs, numOfCIsChildSubs))
+                    }
                 }
             }
             result.conflict_list = conflictsList
@@ -1407,12 +1527,13 @@ class SubscriptionControllerService {
                 result.deletedSPs = []
                 ApiSource source = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
                 deletedSPs.each { sp ->
-                    result.deletedSPs << [name:sp.pkg.name,link:"${source.editUrl}/gokb/resource/show/${sp.pkg.gokbId}"]
+                    result.deletedSPs << [name:sp.pkg.name,link:"${source.editUrl}/gokb/public/packageContent/?id=${sp.pkg.gokbId}"]
                 }
             }
             if (executorWrapperService.hasRunningProcess(result.subscription)) {
                 result.processingpc = true
             }
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
             [result:result,status:STATUS_OK]
         }
     }
@@ -2330,6 +2451,7 @@ class SubscriptionControllerService {
                     result.pendingChanges << [("${member.id}".toString()): pendingChanges]
                 }
             }
+            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
             [result:result,status:STATUS_OK]
         }
     }

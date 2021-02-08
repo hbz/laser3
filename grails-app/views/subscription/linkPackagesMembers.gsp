@@ -266,7 +266,8 @@
 
         $.ajax({url: req_url,
           done: function(result){
-             $('#magicArea').html(result);
+            $("#unlinkPackageModal").remove();
+            $('#magicArea').html(result);
             $("#unlinkPackageModal").modal("show");
           }
         });
