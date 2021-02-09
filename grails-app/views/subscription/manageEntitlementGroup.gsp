@@ -96,7 +96,7 @@
 
     <g:form action="processCreateEntitlementGroup" controller="subscription" params="[id: params.id]"
             method="post" class="ui form">
-
+        <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
         <div class="field required ">
             <label>${message(code: 'issueEntitlementGroup.name.label')}</label>
             <input type="text" name="name" placeholder="" value="${params.name}" required/>
