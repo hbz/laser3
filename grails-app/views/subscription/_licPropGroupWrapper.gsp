@@ -6,7 +6,7 @@
 
 <g:if test="${propList}">
     <div class="content">
-        <h5 class="ui header">
+        <h2 class="ui header">
             <g:link controller="license" action="show" id="${ownObj.id}"><i class="balance scale icon"></i>${ownObj}</g:link>
             (${propDefGroup.name})
 
@@ -19,7 +19,7 @@
                     </g:if>
                 </g:if>
             </g:if>
-        </h5>
+        </h2>
 
         <div id="grouped_derived_custom_props_div_${propDefGroup.id}">
 

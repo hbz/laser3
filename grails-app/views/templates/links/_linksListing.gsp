@@ -1,7 +1,7 @@
 <%@page import="de.laser.helper.RDStore; de.laser.Subscription; de.laser.License" %>
 <laser:serviceInjection/>
 <div class="content">
-    <h5 class="ui header">
+    <h2 class="ui header">
         <g:if test="${subscriptionLicenseLink}">
             <g:message code="license.plural"/>
         </g:if>
@@ -11,7 +11,7 @@
         <g:elseif test="${license}">
             <g:message code="license.details.linksHeader"/>
         </g:elseif>
-    </h5>
+    </h2>
     <g:if test="${links.entrySet()}">
         <table class="ui three column table">
             <g:each in="${links.entrySet()}" var="linkTypes">

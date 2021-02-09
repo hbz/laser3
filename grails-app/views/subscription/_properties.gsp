@@ -101,14 +101,14 @@
 
     <%--<div class="ui card la-dl-no-table la-js-hideable"> --%>
     <div class="content">
-        <h5 class="ui header">
+        <h2 class="ui header">
             <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
                 ${message(code:'subscription.properties.orphaned')}
             </g:if>
             <g:else>
                 ${message(code:'subscription.properties')}
             </g:else>
-        </h5>
+        </h2>
         <div id="custom_props_div_props">
             <g:render template="/templates/properties/custom" model="${[
                     prop_desc: PropertyDefinition.SUB_PROP,

@@ -3,7 +3,7 @@
 
 <div class="ui card">
     <div class="content">
-        <h5 class="ui header">${message(code: 'subscription.packages.label')}</h5>
+        <h2 class="ui header">${message(code: 'subscription.packages.label')}</h2>
         <table class="ui three column table">
             <g:each in="${subscription.packages}" var="sp">
                 <% String buttonColor = ""

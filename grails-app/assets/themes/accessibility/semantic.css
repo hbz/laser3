@@ -30071,7 +30071,7 @@ a.ui.card:hover,
 }
 
 .ui.cards > .card > .content > .header,
-.ui.card > .content > .header {
+.ui.card > .content .header {
   color: #767676;
   font-size: 1rem;
 }
