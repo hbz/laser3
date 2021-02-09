@@ -402,6 +402,7 @@
 
             $.ajax({url: req_url,
               success: function(result){
+                 $("#unlinkPackageModal").remove();
                  $('#magicArea').html(result);
               },
               complete: function(){

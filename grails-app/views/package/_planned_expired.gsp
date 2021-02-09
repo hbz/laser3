@@ -41,34 +41,38 @@
 
             <g:render template="nav" contextPath="." />
 
-                <sec:ifAnyGranted roles="ROLE_ADMIN">
-                    <g:link class="ui button" controller="announcement" action="index" params='[at:"Package Link: ${pkg_link_str}",as:"RE: Package ${packageInstance.name}"]'>${message(code:'package.show.announcement')}</g:link>
-                </sec:ifAnyGranted>
-
-            <g:if test="${forum_url != null}">
-              <a href="${forum_url}">| Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
-            </g:if>
 
   <semui:messages data="${flash}" />
 
   <semui:errors bean="${packageInstance}" />
 
-    <div>
-
-        <dl>
-          <dt>${message(code:'title.search.offset.text', args:[offset+1,lasttipp,num_tipp_rows])}</dt>
-
-        <g:render template="/templates/tipps/table" model="[tipps: titlesList, showPackage: false, showPlattform: true, showBulkFlag: false]"/>
-
-        </dl>
-
-          <g:if test="${titlesList}" >
-            <semui:paginate  action="${params.action}" controller="package" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
-          </g:if>
-
+  <div class="row">
+      <div class="column">
+          ${message(code: 'title.search.offset.text', args: [offset + 1, lasttipp, num_tipp_rows])}
       </div>
+  </div>
 
-    <%-- <g:render template="enhanced_select" contextPath="../templates" /> --%>
+  <div class="row">
+      <div class="column">
+          <g:render template="filter" model="${[params: params]}"/>
+      </div>
+  </div>
+
+  <div class="row">
+      <div class="column">
+          <g:render template="/templates/tipps/table"
+                    model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
+      </div>
+  </div>
+  </div>
+
+  <g:if test="${titlesList}">
+      <semui:paginate action="${actionName}" controller="package" params="${params}"
+                      next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}"
+                      maxsteps="${max}" total="${num_tipp_rows}"/>
+  </g:if>
+
+
     <g:render template="/templates/orgLinksModal"
               model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />
 

@@ -102,22 +102,36 @@
                         <g:if test="${check2}">
 
                             <g:if test="${us.id == editor.id}">
-                                <g:link controller="profile" action="delete" class="ui icon negative button"><i class="trash alternate icon"></i></g:link>
+                                <g:link controller="profile" action="delete" class="ui icon negative button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                <i class="trash alternate icon"></i></g:link>
                             </g:if>
                             <g:elseif test="${controllerName == 'user'}">
-                                <g:link controller="${controllerName}" action="${deleteLink}" params="${[id: us.id]}" class="ui icon negative button"><i class="trash alternate icon"></i></g:link>
+                                <g:link controller="${controllerName}" action="${deleteLink}" params="${[id: us.id]}" class="ui icon negative button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                <i class="trash alternate icon"></i></g:link>
                             </g:elseif>
                             <g:elseif test="${controllerName == 'myInstitution'}">
-                                <g:link controller="${controllerName}" action="${deleteLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button"><i class="trash alternate icon"></i></g:link>
+                                <g:link controller="${controllerName}" action="${deleteLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                <i class="trash alternate icon"></i></g:link>
                             </g:elseif>
                             <g:elseif test="${controllerName == 'organisation'}">
-                                <g:link controller="${controllerName}" action="${deleteLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button"><i class="trash alternate icon"></i></g:link>
+                                <g:link controller="${controllerName}" action="${deleteLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                <i class="trash alternate icon"></i></g:link>
                             </g:elseif>
 
                         </g:if>
                         <g:else>
                             <span  class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg1', args: [us.getDisplayName()])}">
-                                <button class="ui icon negative button" disabled="disabled">
+                                <button class="ui icon negative button" disabled="disabled"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="trash alternate icon"></i>
                                 </button>
                             </span>

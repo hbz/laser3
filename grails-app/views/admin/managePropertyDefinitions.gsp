@@ -179,7 +179,9 @@
 
                                         <g:if test="${! pd.isHardData && ! usedPdList?.contains(pd.id)}">
                                             <g:link controller="admin" action="managePropertyDefinitions"
-                                                    params="${[cmd: 'deletePropertyDefinition', pd: genericOIDService.getOID(pd)]}" class="ui icon negative button">
+                                                    params="${[cmd: 'deletePropertyDefinition', pd: genericOIDService.getOID(pd)]}" class="ui icon negative button"
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                 <i class="trash alternate icon"></i>
                                             </g:link>
                                         </g:if>

@@ -187,7 +187,10 @@
                     </td>
                     <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">
                         <button type="submit" class="ui icon basic negative button" name="clearOnlyoneitemBasket"
-                                value="${itm.id}"><i class="trash icon"></i></button>
+                                value="${itm.id}"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                            <i class="trash icon"></i></button>
                     </g:if>
                     </td>
                     </tr>

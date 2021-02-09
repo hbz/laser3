@@ -97,7 +97,9 @@
                                     </g:if>
                                     <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
                                             data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
-                                            data-confirm-term-how="ok" params="${[semester:numbersInstance.getKey().id,org:params.id]}">
+                                            data-confirm-term-how="ok" params="${[semester:numbersInstance.getKey().id,org:params.id]}"
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                     <g:render template="/readerNumber/formModal" model="[formId: 'newForSemester'+numbersInstance.getKey().id,semester:numbersInstance.getKey().id,withSemester: true,title:message(code: 'readerNumber.createForUni.label')]"/>
@@ -138,7 +140,9 @@
                                     <g:if test="${editable}">
                                         <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
                                                 data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
-                                                data-confirm-term-how="ok" params="${[dueDate:numbersInstance.getKey(),org:params.id]}">
+                                                data-confirm-term-how="ok" params="${[dueDate:numbersInstance.getKey(),org:params.id]}"
+                                                role="button"
+                                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                             <i class="trash alternate icon"></i>
                                         </g:link>
                                     </g:if>

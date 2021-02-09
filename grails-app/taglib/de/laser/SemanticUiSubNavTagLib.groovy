@@ -48,9 +48,14 @@ class SemanticUiSubNavTagLib {
         String aClass    = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         String tooltip = attrs.tooltip ?: ""
+        Integer counts = (attrs.counts >= 0) ? attrs.counts : null
 
         if(tooltip != "") {
             linkBody = '<div data-tooltip="' + tooltip + '" data-position="bottom center">' + linkBody + '</div>'
+        }
+
+        if(counts >= 0) {
+            linkBody = linkBody + '<div class="ui floating blue circular label">'+counts+'</div>'
         }
 
         if (attrs.disabled) {

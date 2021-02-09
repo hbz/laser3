@@ -563,6 +563,32 @@ class SubscriptionController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    def processLinkPackage() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.processLinkPackage(this,params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+            }
+        }
+        else {
+            if(params.addUUID) {
+                switch(params.addType) {
+                    case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
+                        redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
+                        return
+                        break
+                    case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
+                        redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: ctrlResult.result.packageName]
+                        return
+                        break
+                }
+            }
+        }
+        redirect(url: request.getHeader("referer"))
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def unlinkPackage() {
         Map<String, Object> ctrlResult = subscriptionControllerService.unlinkPackage(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -580,7 +606,8 @@ class SubscriptionController {
                 redirect(action:'show', id: params.subscription)
             }
             else {
-                render(template: "unlinkPackageModal", model: [pkg: ctrlResult.result.package, subscription: ctrlResult.result.subscription, conflicts_list: ctrlResult.result.conflicts_list])
+
+                render(template: "unlinkPackageModal", model: [pkg: ctrlResult.result.package, subscription: ctrlResult.result.subscription, conflicts_list: ctrlResult.result.conflict_list])
             }
         }
     }

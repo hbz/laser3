@@ -910,7 +910,9 @@
                                 && (RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id)}">
                             <g:link class="ui icon negative button"
                                     controller="survey" action="deleteSurveyPropFromConfig"
-                                    id="${surveyProperty.id}">
+                                    id="${surveyProperty.id}"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>
@@ -923,6 +925,7 @@
                 <g:if test="${editable && properties && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
                     <td colspan="6">
                         <g:form action="addSurveyPropToConfig" controller="survey" method="post" class="ui form">
+                            <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
                             <g:hiddenField name="id" value="${surveyInfo.id}"/>
                             <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
 
