@@ -480,7 +480,9 @@ class ExportService {
 	 * @param childObjects - a {@link Map} of dependent objects
 	 * @return a {@link List} or a {@link List} of {@link Map}s for the export sheet containing the value
 	 */
-	List processPropertyListValues(Set<PropertyDefinition> propertyDefinitions, String format, def target, Map childObjects, Map objectNames) {
+	List processPropertyListValues(Set<PropertyDefinition> propertyDefinitions, String format, def target, Map childObjects, Map objectNames, Org contextOrg) {
+		if(!contextOrg)
+			contextOrg = contextService.getOrg()
 		List cells = []
 		SimpleDateFormat sdf = DateUtils.getSimpleDateFormatByToken('default.date.format.notime')
 		propertyDefinitions.each { PropertyDefinition pd ->
@@ -496,13 +498,11 @@ class ExportService {
 			if(childObjects) {
 				childObjects.get(target).each { childObj ->
 					if(childObj.hasProperty("propertySet")) {
-						childObj.propertySet.each { AbstractPropertyWithCalculatedLastUpdated childProp ->
-							if(childProp.type.descr == pd.descr && childProp.type == pd && childProp.value && !childProp.instanceOf && (childProp.tenant == contextService.getOrg() || childProp.isPublic)) {
-								if(childProp.refValue)
-									value << "${childProp.refValue.getI10n('value')} (${objectNames.get(childObj)})"
-								else
-									value << childProp.getValue() ? "${childProp.getValue()} (${objectNames.get(childObj)})" : ' '
-							}
+						childObj.propertySet.findAll{ AbstractPropertyWithCalculatedLastUpdated childProp -> childProp.type.descr == pd.descr && childProp.type == pd && childProp.value && !childProp.instanceOf && (childProp.tenant == contextOrg || childProp.isPublic) }.each { AbstractPropertyWithCalculatedLastUpdated childProp ->
+							if(childProp.refValue)
+								value << "${childProp.refValue.getI10n('value')} (${objectNames.get(childObj)})"
+							else
+								value << childProp.getValue() ? "${childProp.getValue()} (${objectNames.get(childObj)})" : ' '
 						}
 					}
 				}
