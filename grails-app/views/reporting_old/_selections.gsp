@@ -1,4 +1,4 @@
-<%@page import="de.laser.ReportingService;de.laser.RefdataValue;de.laser.helper.RDStore" %>
+<%@page import="de.laser.Reporting_OldService; de.laser.ReportingService;de.laser.RefdataValue;de.laser.helper.RDStore" %>
 <laser:serviceInjection/>
 
     <g:if test="${secondLevel == 'orgProperty'}">
@@ -12,7 +12,7 @@
             <semui:dropdown id="filterPropDef" name="filterPropDef"
                             class="la-filterPropDef"
                             requestParam="${queried}"
-                            display="${ReportingService.CONFIG_ORG_PROPERTY}"
+                            display="${de.laser.Reporting_OldService.CONFIG_ORG_PROPERTY}"
                             from="${propList}"
                             iconWhich = "shield alternate"
                             optionKey="${{
@@ -49,7 +49,7 @@
                                         select += '<div class="item"  data-value="' + option.value + '">' + optionText + '</div>';
                                     }
 
-                                    select = ' <div class="ui fluid multiple search selection dropdown la-filterProp" data-requestParam="${queried}" data-display="${ReportingService.CONFIG_ORG_PROPERTY}">' +
+                                    select = ' <div class="ui fluid multiple search selection dropdown la-filterProp" data-requestParam="${queried}" data-display="${Reporting_OldService.CONFIG_ORG_PROPERTY}">' +
                                         '   <input type="hidden" id="filterProp" name="filterProp">' +
                                         '   <i class="dropdown icon"></i>' +
                                         '   <div class="default text">${message(code: 'default.select.choose.label')}</div>' +
@@ -85,7 +85,7 @@
                                         select += '<div class="item"  data-value="' + option.value + '">' + optionText + '</div>';
                                     }
 
-                                    select = ' <div   class="ui fluid search selection dropdown la-filterProp" data-requestParam="${queried}" data-display="${ReportingService.CONFIG_ORG_PROPERTY}">' +
+                                    select = ' <div   class="ui fluid search selection dropdown la-filterProp" data-requestParam="${queried}" data-display="${Reporting_OldService.CONFIG_ORG_PROPERTY}">' +
                                         '   <input type="hidden" id="filterProp" name="filterProp">' +
                                         '   <i class="dropdown icon"></i>' +
                                         '   <div class="default text">${message(code: 'default.select.choose.label')}</div>' +

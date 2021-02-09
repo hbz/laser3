@@ -3,7 +3,6 @@ package de.laser.ajax
 import com.k_int.kbplus.GenericOIDService
 import de.laser.AccessService
 import de.laser.AddressbookService
-import de.laser.ApiSource
 import de.laser.ContextService
 import de.laser.GokbService
 import de.laser.License
@@ -12,13 +11,12 @@ import de.laser.Org
 import de.laser.OrgRole
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
-import de.laser.ReportingService
+import de.laser.Reporting_OldService
 import de.laser.Subscription
 import de.laser.Address
 import de.laser.Doc
 import de.laser.Person
 import de.laser.PersonRole
-import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
 import de.laser.Task
 import de.laser.TaskService
@@ -43,7 +41,7 @@ class AjaxHtmlController {
     ContextService contextService
     GenericOIDService genericOIDService
     TaskService taskService
-    ReportingService reportingService
+    Reporting_OldService reporting_OldService
     LinksGenerationService linksGenerationService
     AccessService accessService
     GokbService gokbService
@@ -60,6 +58,7 @@ class AjaxHtmlController {
         render result
     }
 
+    @Deprecated
     @Secured(['ROLE_USER'])
     def loadGeneralFilter() {
         Map<String,Object> result = [entry:params.entry,queried:params.queried]
@@ -68,6 +67,7 @@ class AjaxHtmlController {
 
     //------------------------------------------------- reporting tool -------------------------------------------------
 
+    @Deprecated
     @Secured(['ROLE_USER'])
     def loadThirdLevel() {
         Map<String,Object> result = [secondLevel:params.secondLevel,institution:contextService.getOrg(),queried:params.queried]
@@ -84,6 +84,7 @@ class AjaxHtmlController {
         render view: '/reporting/_selections', model: result
     }
 
+    @Deprecated
     @Secured(['ROLE_USER'])
     def getGraphsForGeneral() {
         def options = JSON.parse(params.requestOptions)
@@ -100,12 +101,13 @@ class AjaxHtmlController {
             result.propDef = configMap.propDef.getI10n("name")
         }
         if(configMap.groupOptions)
-            result.growth = reportingService.generateGrowth(configMap)
+            result.growth = reporting_OldService.generateGrowth(configMap)
         result.requestObject = configMap.requestParam
         log.debug(result.toMapString())
         render view: '/reporting/_generalGraphs', model: result
     }
 
+    @Deprecated
     @Secured(['ROLE_USER'])
     def getGraphsForSubscription() {
         Map<String, Object> result = [institution:contextService.getOrg()]
@@ -114,7 +116,7 @@ class AjaxHtmlController {
         if (params.costItem) {
             Subscription entry = (Subscription) genericOIDService.resolveOID(params.subscription)
             //get cost item groupings
-            result.putAll(reportingService.groupCostItemsBySubscription([institution:result.institution,entry:entry,options:options]))
+            result.putAll(reporting_OldService.groupCostItemsBySubscription([institution:result.institution, entry:entry, options:options]))
             result.entry = entry
             result.displayConfig = options.displayConfiguration
         }
