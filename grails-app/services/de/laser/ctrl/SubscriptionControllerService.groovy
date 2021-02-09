@@ -1244,14 +1244,14 @@ class SubscriptionControllerService {
             String offset = params.offset ? "&offset=${params.offset}": "&offset=${result.offset}"
 
             Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/groups')
-            if(queryCuratoryGroups) {
+            if(queryCuratoryGroups.warning) {
                 List recordsCuratoryGroups = queryCuratoryGroups.warning.result
                 result.curatoryGroups = recordsCuratoryGroups
             }
 
 
             Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/find'+esQuery+sort+order+max+offset)
-            if(queryResult) {
+            if(queryResult.warning) {
                 List records = queryResult.warning.records
                 result.recordsCount = queryResult.warning.count
                 result.records = records
