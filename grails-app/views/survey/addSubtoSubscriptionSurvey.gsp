@@ -22,7 +22,7 @@
 
 <semui:form>
     <g:form action="processCreateSubscriptionSurvey" controller="survey" method="post" class="ui form">
-        <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
+        <semui:msg class="info" message="messageRequiredField" />
         <g:hiddenField id="sub_id_${subscription?.id}" name="sub" value="${subscription?.id}"/>
         <div class="field required ">
             <label>${message(code: 'surveyInfo.name.label')}</label>

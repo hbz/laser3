@@ -5,11 +5,11 @@
         <g:each in="${groupedProperties}" var="groupedProps">
             <g:if test="${groupedProps.getValue()}">
 
-                <h5 class="ui header">
+                <h2 class="ui header">
                     ${message(code: 'subscription.properties.public')}
                     (${groupedProps.getKey().name})
 
-                </h5>
+                </h2>
 
                 <table class="ui selectable celled table la-table la-ignore-fixed">
                     <g:render template="comparisonPropertiesTable"

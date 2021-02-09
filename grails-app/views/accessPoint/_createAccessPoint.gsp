@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 <semui:form>
     <g:form action="processCreate" controller="accessPoint" id="${orgInstance.id}" method="post" class="ui form">
-        <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
+        <semui:msg class="info" message="messageRequiredField" />
         <g:hiddenField name="accessMethod" value="${genericOIDService.getOID(accessMethod)}" />
         <g:if test="${accessMethod == RDStore.ACCESS_POINT_TYPE_IP}">
             <g:render template="name" model="${[nameOptions: availableOptions.collectEntries(),
