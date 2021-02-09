@@ -154,7 +154,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                 <g:link action="renewEntitlementsWithSurvey"
                         id="${newSub.id}"
                         params="${[surveyConfigID: surveyConfig?.id, tab: params.tab]}"
-                        class="ui reset primary button">${message(code: 'default.button.filterreset.label')}</g:link>
+                        class="ui reset primary button">${message(code: 'default.button.reset.label')}</g:link>
                 <input type="submit" class="ui secondary button"
                        value="${message(code: 'default.button.filter.label')}"/>
             </div>

@@ -512,7 +512,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def surveys() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.surveys(this)
+        Map<String,Object> ctrlResult = subscriptionControllerService.surveys(this, params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             response.sendError(401)
         }

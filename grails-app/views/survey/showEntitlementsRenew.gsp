@@ -237,19 +237,19 @@
 
                             <g:each in="${tipp.ids?.sort { it.ns.ns }}" var="id">
                                 <g:if test="${id.ns.ns == 'originEditUrl'}">
-                                <%--<span class="ui small blue image label">
+                                <%--<span class="ui small basic image label">
                                     ${id.ns.ns}: <div class="detail"><a
                                         href="${id.value}">${message(code: 'package.show.openLink')}</a>
                                 </div>
                                 </span>
-                                <span class="ui small blue image label">
+                                <span class="ui small basic image label">
                                     ${id.ns.ns}: <div class="detail"><a
                                         href="${id.value.toString().replace("resource/show", "public/packageContent")}">${message(code: 'package.show.openLink')}</a>
                                 </div>
                                 </span>--%>
                                 </g:if>
                                 <g:else>
-                                    <span class="ui small blue image label">
+                                    <span class="ui small basic image label">
                                         ${id.ns.ns}: <div class="detail">${id.value}</div>
                                     </span>
                                 </g:else>

@@ -41,18 +41,6 @@
                               noSelection="${['': message(code: 'default.select.choose.label')]}"
                               onchange="JSPC.app.adjustDropdown()"/>
             </div><br/>
-            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
-                <div class="ui checkbox">
-                    <g:checkBox name="show.subscriber" value="true" checked="false"
-                                onchange="JSPC.app.adjustDropdown()"/>
-                    <label for="show.subscriber">${message(code: 'copyElementsIntoObject.show.subscriber.sub')}</label>
-                </div><br/>
-            </g:if>
-            <div class="ui checkbox">
-                <g:checkBox name="show.connectedObjects" value="true" checked="false"
-                            onchange="JSPC.app.adjustDropdown()"/>
-                <label for="show.connectedObjects">${message(code: 'copyElementsIntoObject.show.connectedObjects.sub')}</label>
-            </div>
             <br>
             <br id="element-vor-target-dropdown"/>
             <br>

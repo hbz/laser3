@@ -262,7 +262,7 @@
                                 </g:if>
 
                                 <g:each in="${tipp.ids.sort { it.ns.ns }}" var="id">
-                                    <span class="ui small blue image label">
+                                    <span class="ui small basic image label">
                                         ${id.ns.ns}: <div class="detail">${id.value}</div>
                                     </span>
                                 </g:each>

@@ -58,7 +58,7 @@ class FinanceController  {
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
             result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
-            result.currentTitleCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
+
             result
         }
         catch (FinancialDataException e) {

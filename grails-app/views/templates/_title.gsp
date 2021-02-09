@@ -54,7 +54,7 @@
 
 </div>
 <g:each in="${item.tipp.ids.sort { it.ns.ns }}" var="title_id">
-    <span class="ui small blue image label">
+    <span class="ui small basic image label">
       ${title_id.ns.ns}: <div class="detail">${title_id.value}</div>
     </span>
 </g:each>
