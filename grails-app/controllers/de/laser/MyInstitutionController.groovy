@@ -120,11 +120,17 @@ class MyInstitutionController  {
         if (params.query) {
             String prefix = params.query.split('-')[0]
             if (prefix in ['org', 'member', 'provider']) {
-                    result = QueryHandler.processOrgQuery(params)
+                result = QueryHandler.processOrgQuery(params)
+                render template: '/myInstitution/reporting/chart/org', model: result
+                return
+            }
+            if (prefix in ['subscription']) {
+                result = QueryHandler.processSubscriptionQuery(params)
+                render template: '/myInstitution/reporting/chart/subscription', model: result
+                return
             }
         }
-
-        render template: '/myInstitution/reporting/chart/org', model: result
+        render result as JSON
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")

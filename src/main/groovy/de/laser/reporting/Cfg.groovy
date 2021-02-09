@@ -31,7 +31,7 @@ class Cfg {
                     form : [
                             [
                                     'country'           : FORM_TYPE_REFDATA,
-                                    'region'            : FORM_TYPE_REFDATA,
+                                    //'region'            : FORM_TYPE_REFDATA,
                                     'libraryType'       : FORM_TYPE_REFDATA,
                                     'libraryNetwork'    : FORM_TYPE_REFDATA,
                                     'funderType'        : FORM_TYPE_REFDATA,
@@ -65,6 +65,7 @@ class Cfg {
                             [
                                     'form'              : FORM_TYPE_REFDATA,
                                     'kind'              : FORM_TYPE_REFDATA,
+                                    'resource'          : FORM_TYPE_REFDATA,
                                     'status'            : FORM_TYPE_REFDATA,
                                     'type'              : FORM_TYPE_REFDATA
                             ]
@@ -78,7 +79,11 @@ class Cfg {
                             'member-region'             : 'Bundesländer aller Teilnehmer',
                             'provider-libraryType'      : 'Bibliothekstyp aller Anbieter',
                             'provider-region'           : 'Bundesländer aller Anbieter',
-                            'provider-country'          : 'Länder aller Anbieter'
+                            'provider-country'          : 'Länder aller Anbieter',
+                            'subscription-form  '       : 'Lizenzform',
+                            'subscription-kind'         : 'Lizenztyp',
+                            'subscription-resource'     : 'Ressourcentyp',
+                            'subscription-status'       : 'Lizenzstatus'
                     ]
             ]
     ]

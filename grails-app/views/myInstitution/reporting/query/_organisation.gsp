@@ -4,9 +4,10 @@
 <g:if test="${result}">
     <g:if test="${result.orgIdList}">
 
-        <div class="ui message info">
+        <div class="ui message success">
             <p>
                 ${result.orgIdList.size()} Einrichtungen
+                wurden anhand der Filtereinstellungen gefunden.
             </p>
         </div>
 
@@ -47,8 +48,9 @@
 
         <style>
         #chart-wrapper {
-            width: 100%;
-            height: 400px;
+            width: 98%;
+            height: 450px;
+            margin: 3em auto;
         }
         </style>
 
@@ -63,8 +65,8 @@
 
     </g:if>
     <g:else>
-        <div class="ui message info">
-            Keine Treffer ..
+        <div class="ui message negative">
+            Keine Treffer gefunden ..
         </div>
     </g:else>
 </g:if>

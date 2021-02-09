@@ -4,11 +4,12 @@
 <g:if test="${result}">
     <g:if test="${result.subIdList || result.memberIdList || result.providerIdList}">
 
-        <div class="ui message info">
+        <div class="ui message success">
             <p>
                 ${result.subIdList.size()} Einrichtungen,
-                ${result.memberIdList.size()} Teilnehmer,
+                ${result.memberIdList.size()} Teilnehmer und
                 ${result.providerIdList.size()} Anbieter
+                wurden anhand der Filtereinstellungen gefunden.
             </p>
         </div>
 
@@ -75,8 +76,9 @@
 
         <style>
         #chart-wrapper {
-            width: 100%;
-            height: 400px;
+            width: 98%;
+            height: 450px;
+            margin: 3em auto;
         }
         </style>
 
@@ -85,7 +87,7 @@
             if (! JSPC.app.reporting) { JSPC.app.reporting = {} }
 
             JSPC.app.reporting.requestConfig = {
-                subcriptionIdList: [${result.subIdList.join(',')}],
+                subscriptionIdList: [${result.subIdList.join(',')}],
                 memberIdList: [${result.memberIdList.join(',')}],
                 providerIdList: [${result.providerIdList.join(',')}]
             }
@@ -93,8 +95,8 @@
 
     </g:if>
     <g:else>
-        <div class="ui message info">
-            Keine Treffer ..
+        <div class="ui message negative">
+            Keine Treffer gefunden ..
         </div>
     </g:else>
 </g:if>

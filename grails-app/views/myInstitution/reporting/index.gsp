@@ -34,13 +34,13 @@
                 Verschiedene Einstiegspunkte ermöglichen eine individuelle Zusammenstellung Ihrer Daten.
             </p>
             <p>
-                <strong>2. Ergebnis untersuchen ..</strong>
+                <strong>2. Ergebnis analysieren ..</strong>
                 <br />
                 Die in Schritt 1 erzeugte Ergebnismenge kann durch vordefinierte Abfragen
-                weiter analyisert und visualisiert werden.
+                untersucht und visualisiert werden.
             </p>
         </div>
-        <h2 class="ui header la-noMargin-top">1. Suchanfrage definieren ..</h2>
+        <h2 class="ui header">1. Suchanfrage definieren ..</h2>
 
         <g:set var="hidden" value="hidden" />
 
@@ -72,7 +72,7 @@
         </g:if>
 
         <g:if test="${result}">
-            <h2 class="ui header la-noMargin-top">2. Ergebnis untersuchen ..</h2>
+            <h2 class="ui header">2. Ergebnis analysieren ..</h2>
 
             <g:if test="${filter == 'subscription'}">
                 <g:render template="/myInstitution/reporting/query/subscription" />
@@ -122,8 +122,6 @@
                     })
                 }
             }
-
-
         </laser:script>
 
     </body>
