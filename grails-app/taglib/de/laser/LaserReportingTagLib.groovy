@@ -1,19 +1,31 @@
 package de.laser
 
 import de.laser.annotations.RefdataAnnotation
+import de.laser.reporting.Cfg
+
 import java.lang.reflect.Field
 
 class LaserReportingTagLib {
 
     static namespace = "laser"
 
+    def reportFilterField = { attrs, body ->
+
+        String fieldType = ReportingService.getFormFieldType(attrs.config, attrs.field) // [ property, refdata ]
+
+        if (fieldType == Cfg.FORM_TYPE_PROPERTY) {
+            out << laser.reportFilterProperty(config: attrs.config, property: attrs.field, key: attrs.key)
+        }
+        if (fieldType == Cfg.FORM_TYPE_REFDATA) {
+            out << laser.reportFilterRefdata(config: attrs.config, refdata: attrs.field, key: attrs.key)
+        }
+    }
+
     def reportFilterProperty = { attrs, body ->
 
-        Map<String, Object> config = attrs.config
+        Field prop  = attrs.config.meta.class.getDeclaredField(attrs.property)
 
-        Field prop  = config.meta.class.getDeclaredField(attrs.property)
-
-        String todo = config.meta.class.simpleName.uncapitalize() // TODO -> check
+        String todo = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
 
         String filterLabel    = message(code: todo + '.' + prop.getName() + '.label', default: prop.getName())
         String filterName     = 'filter:' + (attrs.key ? attrs.key : todo) + '_' + attrs.property
@@ -34,14 +46,12 @@ class LaserReportingTagLib {
 
     def reportFilterRefdata = { attrs, body ->
 
-        Map<String, Object> config = attrs.config
-
-        Field refdata   = config.meta.class.getDeclaredField(attrs.refdata)
+        Field refdata   = attrs.config.meta.class.getDeclaredField(attrs.refdata)
         def anno        = refdata.getAnnotationsByType(RefdataAnnotation).head()
         String rdCat    = anno.cat()
         String rdI18n   = anno.i18n()
 
-        String todo     = config.meta.class.simpleName.uncapitalize() // TODO -> check
+        String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
 
         String filterLabel    = rdI18n != 'n/a' ? message(code: rdI18n, default: rdCat) : message(code: rdCat + '.label', default: rdCat) // TODO -> @RefdataAnnotation
         String filterName     = "filter:" + (attrs.key ? attrs.key : todo) + '_' + attrs.refdata

@@ -1,6 +1,7 @@
 package de.laser.reporting
 
 import de.laser.Org
+import de.laser.ReportingService
 import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
@@ -25,10 +26,20 @@ class SubscriptionFilter {
         // notice: params is cloned
         Map<String, Object> result      = [:]
 
-        List baseQuery                  = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
-        Map<String, Object> queryParams = [ subIdList: Subscription.executeQuery( 'select s.id ' + baseQuery[0], baseQuery[1]) ]
         List<String> queryParts         = [ 'select sub.id from Subscription sub']
         List<String> whereParts         = [ 'where sub.id in (:subIdList)']
+        Map<String, Object> queryParams = [ subIdList: [] ]
+
+        switch (params.get(Cfg.filterPrefix + 'subscription_filter')) {
+            case 'all-sub':
+                queryParams.subIdList = Subscription.executeQuery( 'select s.id from Subscription s' )
+                break
+            case 'my-sub':
+                List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery( [validOn: null], contextService.getOrg() )
+                println tmp
+                queryParams.subIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
+                break
+        }
 
         String cmbKey = Cfg.filterPrefix + 'subscription_'
         int pCount = 0
@@ -39,8 +50,9 @@ class SubscriptionFilter {
                 println key + " >> " + params.get(key)
 
                 String p = key.replaceFirst(cmbKey,'')
+                String pType = ReportingService.getFormFieldType(Cfg.config.Subscription, p)
 
-                if (p in Cfg.config.Subscription.properties) {
+                if (pType == Cfg.FORM_TYPE_PROPERTY) {
                     whereParts.add( 'sub.' + p + ' = :p' + (++pCount) )
                     if (Subscription.getDeclaredField(p).getType() == Date) {
                         queryParams.put( 'p' + pCount, DateUtils.parseDateGeneric(params.get(key)) )
@@ -49,7 +61,7 @@ class SubscriptionFilter {
                         queryParams.put( 'p' + pCount, params.get(key) )
                     }
                 }
-                else if (p in Cfg.config.Subscription.refdata) {
+                else if (pType == Cfg.FORM_TYPE_REFDATA) {
                     whereParts.add( 'sub.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
                 }
@@ -58,9 +70,9 @@ class SubscriptionFilter {
 
         String query = queryParts.unique().join(' , ') + ' ' + whereParts.join(' and ')
 
-        println query
-        // println queryParams
-        // println whereParts
+//        println query
+//        println queryParams
+//        println whereParts
 
         result.subIdList = Subscription.executeQuery( query, queryParams )
 
@@ -75,6 +87,11 @@ class SubscriptionFilter {
     }
 
     private List<Long> internalOrgFilter(GrailsParameterMap params, String partKey, List<Long> subIdList) {
+
+        //println 'internalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
+        if (! subIdList) {
+            return []
+        }
 
         String queryBase = 'select distinct (org.id) from Org org join org.links orgLink'
         List<String> whereParts = [ 'orgLink.roleType in (:roleTypes)', 'orgLink.sub.id in (:subIdList)' ]
@@ -101,8 +118,9 @@ class SubscriptionFilter {
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
+                String pType = ReportingService.getFormFieldType(Cfg.config.Organisation, p)
 
-                if (p in Cfg.config.Organisation.properties) {
+                if (pType == Cfg.FORM_TYPE_PROPERTY) {
                     whereParts.add( 'org.' + p + ' = :p' + (++pCount) )
                     if (Org.getDeclaredField(p).getType() == Date) {
                         queryParams.put( 'p' + pCount, DateUtils.parseDateGeneric(params.get(key)) )
@@ -111,7 +129,7 @@ class SubscriptionFilter {
                         queryParams.put( 'p' + pCount, params.get(key) )
                     }
                 }
-                else if (p in Cfg.config.Organisation.refdata) {
+                else if (pType == Cfg.FORM_TYPE_REFDATA) {
                     whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
                 }
@@ -120,7 +138,7 @@ class SubscriptionFilter {
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
 
-        println query
+//        println query
 
         Org.executeQuery(query, queryParams)
     }

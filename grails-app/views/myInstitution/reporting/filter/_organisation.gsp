@@ -14,18 +14,14 @@
                 <g:select name="filter:org_filter" class="ui selection dropdown" from="${config.filter}" optionKey="key" optionValue="value" value="${params.get('filter:org_filter')}" />
             </div>
 
-            <div class="fields">
-                <g:set var="config" value="${Cfg.config.Organisation}" />
-                <g:each in="${config.properties}" var="prop">
-                    <laser:reportFilterProperty config="${config}" property="${prop}" />
-                </g:each>
-            </div>
+            <g:each in="${config.form}" var="cfgFormGroup">
+                <div class="fields">
+                    <g:each in="${cfgFormGroup.keySet()}" var="field">
+                        <laser:reportFilterField config="${config}" field="${field}" />
+                    </g:each>
+                </div>
+            </g:each>
 
-            <div class="fields">
-                <g:each in="${config.refdata}" var="rd">
-                    <laser:reportFilterRefdata config="${config}" refdata="${rd}" />
-                </g:each>
-            </div>
         </div><!-- .first -->
 
         <div class="field">
@@ -35,7 +31,4 @@
         </div>
 
     </g:form>
-
-    <laser:script file="${this.getGroovyPageFileName()}">
-    </laser:script>
 

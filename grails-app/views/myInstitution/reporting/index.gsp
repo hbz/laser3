@@ -61,7 +61,7 @@
 
         <g:if test="${!filter || filter == 'subscription'}">
             <div id="filter-subscription" class="filter-form-wrapper ${hidden}">
-                <g:render template="/myInstitution/reporting/filter/subscription" />
+               <g:render template="/myInstitution/reporting/filter/subscription" />
             </div>
         </g:if>
 
@@ -76,32 +76,54 @@
 
             <g:if test="${filter == 'subscription'}">
                 <g:render template="/myInstitution/reporting/query/subscription" />
-
-                <g:render template="/myInstitution/reporting/result/subscription" />
             </g:if>
 
             <g:if test="${filter == 'organisation'}">
                 <g:render template="/myInstitution/reporting/query/organisation" />
-
-                <g:render template="/myInstitution/reporting/result/organisation" />
             </g:if>
 
         </g:if>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            $('#filter-chooser').on('change', function(e){
+            $('#filter-chooser').on( 'change', function(e) {
                 $('.filter-form-wrapper').addClass('hidden')
-                $('#filter-' + $('#filter-chooser').dropdown('get value')).removeClass('hidden')
-            })
-/*
-            $('#result-chooser').on('change', function(e){
-                alert( $('#result-chooser').dropdown('get value') )
+                $('#filter-' + $('#filter-chooser').dropdown('get value')).removeClass('hidden');
             })
 
-            $('#echart-chooser').on('change', function(e){
-                alert( $('#echart-chooser').dropdown('get value') )
+            $('#query-chooser').on( 'change', function(e) {
+                JSPC.app.reporting.requestConfig.query = $('#query-chooser').dropdown('get value');
+                JSPC.app.reporting.sendChartRequest();
             })
-            */
+
+            $('#chart-chooser').on( 'change', function(e) {
+                JSPC.app.reporting.requestConfig.chart = $('#chart-chooser').dropdown('get value');
+                JSPC.app.reporting.sendChartRequest();
+            })
+
+            if (! JSPC.app.reporting) { JSPC.app.reporting = {} }
+
+            JSPC.app.reporting.sendChartRequest = function() {
+                console.log( JSPC.app.reporting.requestConfig );
+
+                if ( JSPC.app.reporting.requestConfig.query && JSPC.app.reporting.requestConfig.chart ) {
+                    $.ajax({
+                        url: "<g:createLink controller="myInstitution" action="reportingChart" />",
+                        dataType: 'script',
+                        method: 'post',
+                        data: JSPC.app.reporting.requestConfig
+                    }).done( function (data) {
+                        $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
+
+                        var chart = echarts.init($('#chart-wrapper')[0]);
+                        chart.setOption( JSPC.app.reporting.chartOption );
+                    })
+                    .fail( function (data) {
+                        console.log( data );
+                    })
+                }
+            }
+
+
         </laser:script>
 
     </body>

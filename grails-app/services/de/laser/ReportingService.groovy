@@ -19,4 +19,15 @@ class ReportingService {
         SubscriptionFilter filter = new SubscriptionFilter()
         filter.filter(params.clone() as GrailsParameterMap)
     }
+
+    static String getFormFieldType(Map<String, Object> objConfig, String fieldName) {
+
+        String fieldType = '' // [ property, refdata ]
+        objConfig.form.each {
+            if (it.keySet().contains(fieldName)) {
+                fieldType = it.get(fieldName)
+            }
+        }
+        fieldType
+    }
 }
