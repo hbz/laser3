@@ -7,6 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3120    09.02.2021  rc2.0   2.0         David   Feature     Reporting: Pattern für Relationstabellen erstellen (Org.subjectGroup)
+
+3117    09.02.2021  rc2.0   2.0         David   Feature     Reporting: Basisvariante (als Pattern) implementieren
 
 3115    08.02.2021  rc2.0   2.0         Andreas Feature     OA-relevante Lizenzmerkmale und Referenzwerte incl. -kategorien eingefügt
 

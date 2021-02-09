@@ -19,6 +19,9 @@ class LaserReportingTagLib {
         if (fieldType == Cfg.FORM_TYPE_REFDATA) {
             out << laser.reportFilterRefdata(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
+        if (fieldType == Cfg.FORM_TYPE_REFDATA_RELTABLE) {
+            out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
+        }
     }
 
     def reportFilterProperty = { attrs, body ->
@@ -40,8 +43,6 @@ class LaserReportingTagLib {
                     value      : filterValue
             ])
         }
-
-        // println todo + '.' + prop.getName() + '.label' // DEBUG
     }
 
     def reportFilterRefdata = { attrs, body ->
@@ -70,7 +71,30 @@ class LaserReportingTagLib {
                 noSelection: ['': message(code: 'default.select.choose.label')]
         ])
         out << '</div>'
+    }
 
-        // println rdCat + '.label' // DEBUG
+    def reportFilterRefdataRelTable = { attrs, body ->
+
+        Map<String, Object> rdvInfo = Cfg.getRefdataRelTableInfo(attrs.refdata)
+
+        String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
+
+        String filterLabel    = rdvInfo.get('label')
+        String filterName     = "filter:" + (attrs.key ? attrs.key : todo) + '_' + attrs.refdata
+        String filterValue    = params.get(filterName)
+
+        out << '<div class="field">'
+        out << '<label for="' + filterName + '">' + filterLabel + '</label>'
+
+        out << laser.select([
+                class      : "ui fluid dropdown",
+                name       : filterName,
+                from       : rdvInfo.get('from'),
+                optionKey  : "id",
+                optionValue: "value",
+                value      : filterValue,
+                noSelection: ['': message(code: 'default.select.choose.label')]
+        ])
+        out << '</div>'
     }
 }
