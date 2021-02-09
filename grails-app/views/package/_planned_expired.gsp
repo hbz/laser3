@@ -48,12 +48,6 @@
 
   <div class="row">
       <div class="column">
-          ${message(code: 'title.search.offset.text', args: [offset + 1, lasttipp, num_tipp_rows])}
-      </div>
-  </div>
-
-  <div class="row">
-      <div class="column">
           <g:render template="filter" model="${[params: params]}"/>
       </div>
   </div>

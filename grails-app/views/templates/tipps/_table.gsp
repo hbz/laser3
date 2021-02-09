@@ -6,8 +6,8 @@
         <th></th>
         <g:sortableColumn class="ten wide" params="${params}" property="tipp.sortName"
                           title="${message(code: 'title.label')}"/>
-        <th class="two wide">${message(code: 'tipp.access')}</th>
         <th class="two wide">${message(code: 'tipp.coverage')}</th>
+        <th class="two wide">${message(code: 'tipp.access')}</th>
     </tr>
     <tr>
         <th colspan="2" rowspan="2"></th>
