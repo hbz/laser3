@@ -350,6 +350,7 @@
 
     <div class="ui segment">
         <g:form action="processPropertiesMembers" method="post" class="ui form">
+            <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
             <g:hiddenField id="ppm_id_${params.id}" name="id" value="${params.id}"/>
 
             <div class="field required">

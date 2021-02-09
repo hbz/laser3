@@ -20,7 +20,7 @@
 
         <semui:form>
             <g:form action="processEmptySubscription" method="post" class="ui form newSubscription">
-
+                <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
                 <div class="field required">
                     <label>${message(code:'myinst.emptySubscription.name')}</label>
                     <input type="text" name="newEmptySubName" placeholder=""/>
