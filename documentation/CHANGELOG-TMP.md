@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3111    10.02.2021  rc2.0   2.0         Andreas Bug         Finanzfiltercache wieder korrekt eingebunden, Rechnungsnummer korrigiert
+
 3120    09.02.2021  rc2.0   2.0         David   Feature     Reporting: Pattern für Relationstabellen erstellen (Org.subjectGroup)
 
 3117    09.02.2021  rc2.0   2.0         David   Feature     Reporting: Basisvariante (als Pattern) implementieren

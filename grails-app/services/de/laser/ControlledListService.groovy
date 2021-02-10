@@ -458,7 +458,7 @@ class ControlledListService {
         }
         queryString += " order by ci.reference asc"
         List references = CostItem.executeQuery(queryString,filter)
-        references.each { CostItem r ->
+        references.each { String r ->
             result.results.add([name:r,value:r])
         }
         result
