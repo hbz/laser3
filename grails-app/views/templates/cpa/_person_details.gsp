@@ -58,14 +58,14 @@
 
         <div class="ui item person-details">
             <div class="content la-space-right">
-                <h5 class="ui header">
+                <h2 class="ui header">
 
                         ${personRole.prs.title}
                         ${personRole.prs.first_name}
                         ${personRole.prs.middle_name}
                         ${personRole.prs.last_name}
 
-                </h5>
+                </h2>
                 <g:if test="${personRole.functionType}">
                     (${personRole.functionType.getI10n('value')})
                 </g:if>

@@ -75,7 +75,7 @@
 <semui:modal id="editMailTemplate" message="mailTemplate.label" isEditModal="isEditModal">
 
     <g:form class="ui form" url="[controller: 'dataManager', action: 'editMailTemplate']">
-        <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
+        <semui:msg class="info" message="messageRequiredField" />
         <input type="hidden" name="target" value="" />
         <div class="field required">
             <label for="mailTemplateName">${message(code:'mailTemplate.name.label')}:</label>

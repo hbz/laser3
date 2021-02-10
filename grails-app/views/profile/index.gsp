@@ -38,7 +38,7 @@
                     </h2>
 
                     <g:form action="updateProfile" class="ui form updateProfile">
-                        <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
+                        <semui:msg class="info" message="messageRequiredField" />
                         <div class="field">
                             <label for="profile_username">${message(code: 'profile.username')}</label>
                             <input type="text" readonly="readonly" id="profile_username" value="${user.username}"/>

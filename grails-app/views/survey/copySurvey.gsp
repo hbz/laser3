@@ -37,7 +37,7 @@
     <g:form action="processCopySurvey" controller="survey" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
         <semui:form>
-            <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
+            <semui:msg class="info" message="messageRequiredField" />
             <g:if test="${surveyInfo.type.id == RDStore.SURVEY_TYPE_INTEREST.id}">
                 <div class="field required">
                     <label>${message(code: 'surveyInfo.name.label')}</label>

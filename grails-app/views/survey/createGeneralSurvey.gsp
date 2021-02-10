@@ -22,7 +22,7 @@
 
 <semui:form>
     <g:form action="processCreateGeneralSurvey" controller="survey" method="post" class="ui form">
-        <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
+        <semui:msg class="info" message="messageRequiredField" />
         <div class="field required ">
             <label>${message(code: 'surveyInfo.name.label')}</label>
             <input type="text" name="name" placeholder="" value="${params.name}" required/>
