@@ -15,10 +15,9 @@ JSPC.app.reporting.chartOption = {
         {
             type: 'pie',
             radius: '70%',
+            center: ['65%', '50%'],
             data: [
-                <%
-                    data.each{ it -> println "{value: ${it[1]}, name:'${it[0]}'}," }
-                %>
+                <% data.each{ it -> println "{value: ${it[1]}, name:'${it[0]}'}," } %>
             ],
             emphasis: {
                 itemStyle: {
@@ -36,13 +35,11 @@ JSPC.app.reporting.chartOption = {
     dataset: {
         source: [
                 ['count', 'type'],
-                <%
-                    data.each{ it -> println "[${it[1]}, '${it[0]}']," }
-                %>
+                <% data.reverse().each{ it -> println "[${it[1]}, '${it[0]}']," } %>
         ]
     },
     grid:  {containLabel: true},
-    xAxis: {name: 'Anzahl'},
+    xAxis: {},
     yAxis: {type: 'category'},
     series: [
         {
