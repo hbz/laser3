@@ -78,11 +78,11 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
 
         Set<String> keys = params.keySet().findAll{ it.toString().startsWith(cmbKey) }
         keys.each { key ->
-            println key + " >> " + params.get(key)
+            //println key + " >> " + params.get(key)
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = ReportingService.getFormFieldType(Cfg.config.Organisation, p)
+                String pType = Cfg.getFormFieldType(Cfg.config.Organisation, p)
 
                 // --> generic properties
                 if (pType == Cfg.FORM_TYPE_PROPERTY) {

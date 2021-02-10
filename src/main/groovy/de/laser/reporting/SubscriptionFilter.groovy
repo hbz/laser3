@@ -50,7 +50,7 @@ class SubscriptionFilter {
                 println key + " >> " + params.get(key)
 
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = ReportingService.getFormFieldType(Cfg.config.Subscription, p)
+                String pType = Cfg.getFormFieldType(Cfg.config.Subscription, p)
 
                 // --> generic properties
                 if (pType == Cfg.FORM_TYPE_PROPERTY) {
@@ -120,11 +120,11 @@ class SubscriptionFilter {
 
         Set<String> keys = params.keySet().findAll{ it.toString().startsWith(cmbKey) }
         keys.each { key ->
-            println key + " >> " + params.get(key)
+            //println key + " >> " + params.get(key)
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = ReportingService.getFormFieldType(Cfg.config.Organisation, p)
+                String pType = Cfg.getFormFieldType(Cfg.config.Organisation, p)
 
                 // --> generic properties
                 if (pType == Cfg.FORM_TYPE_PROPERTY) {

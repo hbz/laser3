@@ -11,7 +11,7 @@ class LaserReportingTagLib {
 
     def reportFilterField = { attrs, body ->
 
-        String fieldType = ReportingService.getFormFieldType(attrs.config, attrs.field) // [ property, refdata ]
+        String fieldType = Cfg.getFormFieldType(attrs.config, attrs.field) // [ property, refdata ]
 
         if (fieldType == Cfg.FORM_TYPE_PROPERTY) {
             out << laser.reportFilterProperty(config: attrs.config, property: attrs.field, key: attrs.key)
