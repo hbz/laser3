@@ -12,10 +12,9 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.properties.PersonProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
-import de.laser.titles.TitleInstance
+import de.laser.reporting.Cfg
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
  
 import de.laser.finance.BudgetCode
@@ -25,13 +24,12 @@ import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
+import de.laser.reporting.QueryHandler
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
-
-//import de.laser.TaskService //unused for quite a long time
 
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
@@ -70,6 +68,7 @@ class MyInstitutionController  {
     def organisationService
     def orgTypeService
     def propertyService
+    def reportingService
     def subscriptionsQueryService
     def subscriptionService
     def surveyService
@@ -82,29 +81,63 @@ class MyInstitutionController  {
     PendingChangeService pendingChangeService
     UserControllerService userControllerService
 
-    // copied from
-    static String INSTITUTIONAL_LICENSES_QUERY      =
-            " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType IN (:org_roles) ) "
-
-    // copied from
-    static String INSTITUTIONAL_SUBSCRIPTION_QUERY  =
-            " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) "
-
-    // Map the parameter names we use in the webapp with the ES fields
-    def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
-    def reversemap = ['subject': 'subject', 'provider': 'provid', 'studyMode': 'presentations.studyMode', 'qualification': 'qual.type', 'level': 'qual.level']
-
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def index() {
         redirect(action:'dashboard')
     }
 
+    //@DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM")
+    //@Secured(closure = {
+    //    ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_ADM")
+    //})
+    @Secured(['ROLE_ADMIN'])
+    def reporting() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        result.cfgFilterList = Cfg.config.filter
+        result.cfgChartsList = Cfg.config.charts
+
+        if (params.filter) {
+            result.filter = params.filter
+
+            if (params.filter == 'organisation') {
+                result.result       = reportingService.filterOrganisation(params)
+                result.cfgQueryList = Cfg.config.Organisation.query
+            }
+            else if (params.filter == 'subscription') {
+                result.result       = reportingService.filterSubscription(params)
+                result.cfgQueryList = Cfg.config.Subscription.query
+            }
+        }
+        render view: 'reporting/index', model: result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def reportingChart() {
+        Map<String, Object> result = [:]
+
+        if (params.query) {
+            String prefix = params.query.split('-')[0]
+            if (prefix in ['org', 'member', 'provider']) {
+                result = QueryHandler.processOrgQuery(params)
+                render template: '/myInstitution/reporting/chart/generic', model: result
+                return
+            }
+            if (prefix in ['subscription']) {
+                result = QueryHandler.processSubscriptionQuery(params)
+                render template: '/myInstitution/reporting/chart/generic', model: result
+                return
+            }
+        }
+        render result as JSON
+    }
+
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
-    def reporting() {
+    def reporting_old() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
         result.subStatus = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
         result.subProp = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], result.institution)

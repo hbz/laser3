@@ -4,6 +4,7 @@
              text="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}">
 
     <g:form id="newContact" name="newContact" class="ui form" url="[controller: 'contact', action: 'create']" method="POST">
+        <semui:msg class="info" message="messageRequiredField" />
         <input type="hidden" name="redirect" value="true" />
 
         <div class="field">

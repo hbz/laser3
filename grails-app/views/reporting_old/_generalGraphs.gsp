@@ -1,11 +1,11 @@
-<%@page import="grails.converters.JSON; de.laser.helper.RDStore; de.laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.ReportingService" %>
+<%@page import="grails.converters.JSON; de.laser.helper.RDStore; de.laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.Reporting_OldService" %>
 <laser:serviceInjection/>
 
 <g:each in="${growth}" var="row">
     <g:set var="key" value="${row.getKey()}"/>
     <g:set var="graph" value="${row.getValue()}"/>
     <div class="ui top attached segment generalChartContainer" id="${requestObject}${key}">
-        <g:if test="${key.contains(ReportingService.CONFIG_ORG_PROPERTY)}">
+        <g:if test="${key.contains(Reporting_OldService.CONFIG_ORG_PROPERTY)}">
             <g:set var="groupingText" value="${propDef}"/>
         </g:if>
         <g:else>

@@ -1,5 +1,5 @@
 <g:form class="ui form" id="create_task" url="[controller: 'dev', action: 'index']" method="post">
-
+    <semui:msg class="info" message="messageRequiredField" />
     <div class="field required">
         <label for="title">
             <g:message code="task.title.label"/>

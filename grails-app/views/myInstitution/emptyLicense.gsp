@@ -24,7 +24,7 @@
 
     <semui:form>
         <g:form action="processEmptyLicense" controller="myInstitution" method="post" class="ui form newLicence">
-
+            <semui:msg class="info" message="messageRequiredField" />
             <g:if test="${subInstance}">
                 <g:hiddenField id="sub_id_${subInstance.id}" name="sub" value="${subInstance.id}"/>
                 <div class="ui info message">${message(code: 'myinst.licensewithSub.notice', args: [subInstance.name])}</div>

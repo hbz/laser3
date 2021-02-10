@@ -14,4 +14,5 @@ import java.lang.annotation.Target
     static final String GENERIC = 'GENERIC'
 
     String cat() default 'n/a'
+    String i18n() default 'n/a'
 }

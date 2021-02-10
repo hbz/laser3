@@ -3,6 +3,7 @@
 <semui:modal id="modalCreateTask" message="task.create.new">
 
     <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
+        <semui:msg class="info" message="messageRequiredField" />
         <g:if test="${controllerName != 'myInstitution' && controllerName != 'ajaxHtml'}">
             <g:hiddenField name="${owntp}" value="${(owntp == 'surveyConfig') ? ownobj?.id : params.id}"/>
             <g:hiddenField name="linkto" value="${owntp}"/>

@@ -72,22 +72,22 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     @RefdataAnnotation(cat = '?')
     RefdataValue membership
 
-    @RefdataAnnotation(cat = RDConstants.COUNTRY)
+    @RefdataAnnotation(cat = RDConstants.COUNTRY, i18n = 'org.country.label')
     RefdataValue country
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = '?', i18n = 'org.region.label')
     RefdataValue region
 
-    @RefdataAnnotation(cat = RDConstants.LIBRARY_NETWORK)
+    @RefdataAnnotation(cat = RDConstants.LIBRARY_NETWORK, i18n = 'org.libraryNetwork.label')
     RefdataValue libraryNetwork
 
-    @RefdataAnnotation(cat = RDConstants.FUNDER_TYPE)
+    @RefdataAnnotation(cat = RDConstants.FUNDER_TYPE, i18n = 'org.funderType.label')
     RefdataValue funderType
 
-    @RefdataAnnotation(cat = RDConstants.FUNDER_HSK_TYPE)
+    @RefdataAnnotation(cat = RDConstants.FUNDER_HSK_TYPE, i18n = 'org.funderHSK.label')
     RefdataValue funderHskType
 
-    @RefdataAnnotation(cat = RDConstants.LIBRARY_TYPE)
+    @RefdataAnnotation(cat = RDConstants.LIBRARY_TYPE, i18n = 'org.libraryType.label')
     RefdataValue libraryType
 
     @RefdataAnnotation(cat = RDConstants.COST_CONFIGURATION)

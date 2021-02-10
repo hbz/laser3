@@ -6,7 +6,7 @@
              msgClose="${message(code: 'default.button.cancel')}"
              msgSave="${message(code: 'default.button.save.label')}">
     <g:form id="person_form" class="ui form" url="${url}" method="POST">
-
+        <semui:msg class="info" message="messageRequiredField" />
         <g:if test="${!personInstance}">
             <input name="tenant.id" type="hidden" value="${tenant.id}"/>
             <input name="isPublic" type="hidden" value="${personInstance?.isPublic ?: (isPublic ?: false)}"/>
