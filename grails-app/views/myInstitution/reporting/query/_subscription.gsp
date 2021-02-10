@@ -55,21 +55,34 @@
             </g:if>
         </div>
 
-        <div class="ui segment">
-            <g:select name="query-chooser"
-                      from="${cfgQueryList}"
-                      optionKey="key"
-                      optionValue="value"
-                      class="ui selection dropdown"
-                      value="opt1"
-                      noSelection="${['': message(code: 'default.select.choose.label')]}" />
+        <div class="ui segment form">
+            <div class="fields">
+                <g:each in="${cfgQueryList}" var="cfgQueryGroup" status="qci">
+                    <g:each in="${cfgQueryGroup}" var="field">
+                        <div class="field">
+                            <label for="query-chooser-${qci}">${field.key}</label>
+                            <g:select name="query-chooser"
+                                      id="query-chooser-${qci}"
+                                      from="${field.value}"
+                                      optionKey="key"
+                                      optionValue="value"
+                                      class="ui selection dropdown la-not-clearable"
+                                      value="opt1"
+                                      noSelection="${['': message(code: 'default.select.choose.label')]}" />
+                        </div>
+                    </g:each>
+                </g:each>
 
-            <g:select name="chart-chooser"
-                      from="${cfgChartsList}"
-                      optionKey="key"
-                      optionValue="value"
-                      class="ui selection dropdown"
-                      noSelection="${['': message(code: 'default.select.choose.label')]}" />
+                <div class="field">
+                    <label for="query-chooser">Visualisierung</label>
+                    <g:select name="chart-chooser"
+                              from="${cfgChartsList}"
+                              optionKey="key"
+                              optionValue="value"
+                              class="ui selection dropdown la-not-clearable"
+                              noSelection="${['': message(code: 'default.select.choose.label')]}" />
+                </div>
+            </div>
         </div>
 
         <div id="chart-wrapper"></div>

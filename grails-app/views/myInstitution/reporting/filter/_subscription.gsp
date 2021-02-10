@@ -12,7 +12,7 @@
             <div class="field">
                 <label for="filter:subscription_filter">Auswahl</label>
                 <g:set var="config" value="${Cfg.config.Subscription}" />
-                <g:select name="filter:subscription_filter" class="ui selection dropdown" from="${config.filter}" optionKey="key" optionValue="value" value="${params.get('filter:sub_filter')}" />
+                <g:select name="filter:subscription_filter" class="ui selection dropdown la-not-clearable" from="${config.filter}" optionKey="key" optionValue="value" value="${params.get('filter:sub_filter')}" />
             </div>
 
             <g:each in="${config.form}" var="cfgFormGroup">
