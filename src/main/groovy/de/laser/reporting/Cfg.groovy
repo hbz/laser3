@@ -51,9 +51,11 @@ class Cfg {
                             'my-provider'   : 'Meine Anbieter und Lieferanten'
                     ],
                     query : [
-                            'org-libraryType'   : 'Verteilung: Bibliothekstyp',
-                            'org-region'        : 'Verteilung: Bundesländer',
-                            'org-subjectGroup'  : 'Verteilung: Fächergruppen'
+                            'Verteilung' : [
+                                'org-libraryType'   : 'Bibliothekstyp',
+                                'org-region'        : 'Bundesländer',
+                                'org-subjectGroup'  : 'Fächergruppen'
+                            ]
                     ]
             ],
 
@@ -81,16 +83,22 @@ class Cfg {
                             'my-sub'    : 'Meine Lizenzen'
                     ],
                     query : [
-                            'subscription-form  '       : 'Verteilung: Lizenzform',
-                            'subscription-kind'         : 'Verteilung: Lizenztyp',
-                            'subscription-resource'     : 'Verteilung: Ressourcentyp',
-                            'subscription-status'       : 'Verteilung: Lizenzstatus',
-                            'member-libraryType'        : 'Bibliothekstyp aller Teilnehmer',
-                            'member-region'             : 'Bundesländer aller Teilnehmer',
-                            'member-subjectGroup'       : 'Fächergruppen aller Teilnehmer',
-                            'provider-libraryType'      : 'Bibliothekstyp aller Anbieter',
-                            'provider-region'           : 'Bundesländer aller Anbieter',
-                            'provider-country'          : 'Länder aller Anbieter'
+                            'Verteilung' : [
+                                'subscription-form  '       : 'Lizenzform',
+                                'subscription-kind'         : 'Lizenztyp',
+                                'subscription-resource'     : 'Ressourcentyp',
+                                'subscription-status'       : 'Lizenzstatus',
+                            ],
+                            'Teilnehmer' : [
+                                'member-libraryType'        : 'Bibliothekstyp aller Teilnehmer',
+                                'member-region'             : 'Bundesländer aller Teilnehmer',
+                                'member-subjectGroup'       : 'Fächergruppen aller Teilnehmer',
+                            ],
+                            'Anbieter' : [
+                                'provider-libraryType'      : 'Bibliothekstyp aller Anbieter',
+                                'provider-region'           : 'Bundesländer aller Anbieter',
+                                'provider-country'          : 'Länder aller Anbieter'
+                            ]
                     ]
             ]
     ]

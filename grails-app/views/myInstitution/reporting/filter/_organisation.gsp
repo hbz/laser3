@@ -11,7 +11,7 @@
             <div class="field">
                 <label for="filter:org_filter">Auswahl</label>
                 <g:set var="config" value="${Cfg.config.Organisation}" />
-                <g:select name="filter:org_filter" class="ui selection dropdown" from="${config.filter}" optionKey="key" optionValue="value" value="${params.get('filter:org_filter')}" />
+                <g:select name="filter:org_filter" class="ui selection dropdown la-not-clearable" from="${config.filter}" optionKey="key" optionValue="value" value="${params.get('filter:org_filter')}" />
             </div>
 
             <g:each in="${config.form}" var="cfgFormGroup">

@@ -45,14 +45,16 @@
         <g:set var="hidden" value="hidden" />
 
         <g:if test="${!filter}">
-            <div class="ui segment">
-                Suche über folgenden Einstiegspunkt beginnen: &nbsp;
-                <g:select name="filter-chooser"
-                          from="${cfgFilterList}"
-                          optionKey="key"
-                          optionValue="value"
-                          class="ui selection dropdown"
-                          noSelection="${['': message(code: 'default.select.choose.label')]}" />
+            <div class="ui segment form">
+                <div class="field">
+                    <label for="filter-chooser">Einstiegspunkt</label>
+                    <g:select name="filter-chooser"
+                              from="${cfgFilterList}"
+                              optionKey="key"
+                              optionValue="value"
+                              class="ui selection dropdown la-not-clearable"
+                              noSelection="${['': message(code: 'default.select.choose.label')]}" />
+                </div>
             </div>
         </g:if>
         <g:else>
@@ -87,16 +89,20 @@
         <laser:script file="${this.getGroovyPageFileName()}">
             $('#filter-chooser').on( 'change', function(e) {
                 $('.filter-form-wrapper').addClass('hidden')
-                $('#filter-' + $('#filter-chooser').dropdown('get value')).removeClass('hidden');
+                $('#filter-' + $(e.target).dropdown('get value')).removeClass('hidden');
             })
 
-            $('#query-chooser').on( 'change', function(e) {
-                JSPC.app.reporting.requestConfig.query = $('#query-chooser').dropdown('get value');
-                JSPC.app.reporting.sendChartRequest();
+            $('*[id^=query-chooser').on( 'change', function(e) {
+                var value = $(e.target).dropdown('get value');
+                if (value) {
+                    $('*[id^=query-chooser').not($('#' + e.target.id)).dropdown('clear');
+                    JSPC.app.reporting.requestConfig.query = value;
+                    JSPC.app.reporting.sendChartRequest();
+                }
             })
 
             $('#chart-chooser').on( 'change', function(e) {
-                JSPC.app.reporting.requestConfig.chart = $('#chart-chooser').dropdown('get value');
+                JSPC.app.reporting.requestConfig.chart = $(e.target).dropdown('get value');
                 JSPC.app.reporting.sendChartRequest();
             })
 
