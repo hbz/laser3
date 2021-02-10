@@ -37,8 +37,7 @@
                         ${message(code: 'profile.bc.profile')}
                     </h2>
 
-                    <g:form action="updateProfile" class="ui form updateProfile">
-                        <semui:msg class="info" message="messageRequiredField" />
+                    <g:form action="updateProfile" class="ui form updateProfile"
                         <div class="field">
                             <label for="profile_username">${message(code: 'profile.username')}</label>
                             <input type="text" readonly="readonly" id="profile_username" value="${user.username}"/>
@@ -48,7 +47,7 @@
                             <input type="text" name="profile_display" id="profile_display" value="${user.display}"/>
                         </div>
                         <div class="field required">
-                            <label for="profile_email">${message(code: 'profile.email')}</label>
+                            <label for="profile_email">${message(code: 'profile.email')} <g:message code="messageRequiredField" /></label>
                             <input type="text" name="profile_email" id="profile_email" value="${user.email}"/>
                         </div>
 
@@ -378,15 +377,15 @@
 
                     <g:form action="updatePassword" class="ui form updatePassword">
                         <div class="field required">
-                            <label for="password_current">${message(code: 'profile.password.current')}</label>
+                            <label for="password_current">${message(code: 'profile.password.current')} <g:message code="messageRequiredField" /></label>
                             <input type="password" name="password_current" id="password_current" class="pw"/>
                         </div>
                         <div class="field required">
-                            <label for="password_new">${message(code: 'profile.password.new')}</label>
+                            <label for="password_new">${message(code: 'profile.password.new')} <g:message code="messageRequiredField" /></label>
                             <input type="password" name="password_new" id="password_new" class="pw pwn"/>
                         </div>
                         <div class="field required">
-                            <label for="password_new_repeat">${message(code: 'profile.password.new.repeat')}</label>
+                            <label for="password_new_repeat">${message(code: 'profile.password.new.repeat')} <g:message code="messageRequiredField" /></label>
                             <input type="password" name="password_new_repeat" id="password_new_repeat" class="pw pwn"/>
                         </div>
                         <div class="field">

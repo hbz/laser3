@@ -22,15 +22,14 @@
 
 <semui:form>
     <g:form action="processCreateSubscriptionSurvey" controller="survey" method="post" class="ui form">
-        <semui:msg class="info" message="messageRequiredField" />
         <g:hiddenField id="sub_id_${subscription?.id}" name="sub" value="${subscription?.id}"/>
         <div class="field required ">
-            <label>${message(code: 'surveyInfo.name.label')}</label>
+            <label>${message(code: 'surveyInfo.name.label')} ${message(code: 'messageRequiredField')}</label>
             <input type="text" name="name" placeholder="" value="${subscription?.name ?: params.name}" required />
         </div>
 
         <div class="two fields ">
-            <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
+            <semui:datepicker label="surveyInfo.startDate.label,messageRequiredField" id="startDate" name="startDate"
                               value="${params.startDate}" required="" />
 
             <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
