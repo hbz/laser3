@@ -18,7 +18,7 @@
   z-index: @zIndex;
 }
 .ui.cards > .card > .content > .header,
-.ui.card > .content > .header {
+.ui.card > .content  .header {
   color: @headerColor;
   font-size: @headerFontSize;
 }

@@ -1,5 +1,5 @@
 <%@ page import="de.laser.oap.OrgAccessPoint; de.laser.helper.RDConstants" %>
-<semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
+<semui:msg class="info" message="messageRequiredField" />
 <div class="field required">
     <label for="accessMethod">${message(code: 'accessMethod.label')}</label>
     <laser:select class="ui dropdown" id="accessMethod" name="accessMethod"

@@ -103,7 +103,7 @@
             if (! JSPC.app.reporting) { JSPC.app.reporting = {} }
 
             JSPC.app.reporting.sendChartRequest = function() {
-                console.log( JSPC.app.reporting.requestConfig );
+                //console.log( JSPC.app.reporting.requestConfig );
 
                 if ( JSPC.app.reporting.requestConfig.query && JSPC.app.reporting.requestConfig.chart ) {
                     $.ajax({
@@ -118,7 +118,7 @@
                         chart.setOption( JSPC.app.reporting.chartOption );
                     })
                     .fail( function (data) {
-                        console.log( data );
+                        console.log( data) ;
                     })
                 }
             }

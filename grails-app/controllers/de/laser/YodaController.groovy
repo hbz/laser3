@@ -304,7 +304,9 @@ class YodaController {
                 }
             }
 
-            ordered[uri] = count
+            if (count > 0) {
+                ordered[uri] = count
+            }
         }
         result.globalTimelineOrder = ordered.sort{ e,f -> f.value <=> e.value }
 

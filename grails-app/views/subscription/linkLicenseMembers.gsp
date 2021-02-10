@@ -58,7 +58,7 @@
 
     <div class="ui segment">
     <g:form action="processLinkLicenseMembers" method="post" class="ui form" data-confirm-id="deleteLicenses_form">
-        <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
+        <semui:msg class="info" message="messageRequiredField" />
         <g:hiddenField id="pllm_id_${params.id}" name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
