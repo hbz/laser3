@@ -50,8 +50,9 @@ class SubscriptionFilter {
                 println key + " >> " + params.get(key)
 
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = ReportingService.getFormFieldType(Cfg.config.Subscription, p)
+                String pType = Cfg.getFormFieldType(Cfg.config.Subscription, p)
 
+                // --> generic properties
                 if (pType == Cfg.FORM_TYPE_PROPERTY) {
                     whereParts.add( 'sub.' + p + ' = :p' + (++pCount) )
                     if (Subscription.getDeclaredField(p).getType() == Date) {
@@ -61,9 +62,14 @@ class SubscriptionFilter {
                         queryParams.put( 'p' + pCount, params.get(key) )
                     }
                 }
+                // --> generic refdata
                 else if (pType == Cfg.FORM_TYPE_REFDATA) {
                     whereParts.add( 'sub.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
+                }
+                // --> refdata relation tables
+                else if (pType == Cfg.FORM_TYPE_REFDATA_RELTABLE) {
+                    println ' ------------ not implemented ------------ '
                 }
             }
         }
@@ -114,12 +120,13 @@ class SubscriptionFilter {
 
         Set<String> keys = params.keySet().findAll{ it.toString().startsWith(cmbKey) }
         keys.each { key ->
-            println key + " >> " + params.get(key)
+            //println key + " >> " + params.get(key)
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = ReportingService.getFormFieldType(Cfg.config.Organisation, p)
+                String pType = Cfg.getFormFieldType(Cfg.config.Organisation, p)
 
+                // --> generic properties
                 if (pType == Cfg.FORM_TYPE_PROPERTY) {
                     whereParts.add( 'org.' + p + ' = :p' + (++pCount) )
                     if (Org.getDeclaredField(p).getType() == Date) {
@@ -129,9 +136,18 @@ class SubscriptionFilter {
                         queryParams.put( 'p' + pCount, params.get(key) )
                     }
                 }
+                // --> generic refdata
                 else if (pType == Cfg.FORM_TYPE_REFDATA) {
                     whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
+                }
+                // --> refdata relation tables
+                else if (pType == Cfg.FORM_TYPE_REFDATA_RELTABLE) {
+                    if (p == 'subjectGroup') {
+                        queryBase = queryBase + ' join org.subjectGroup osg join osg.subjectGroup rdvsg'
+                        whereParts.add('rdvsg.id = :p' + (++pCount))
+                        queryParams.put('p' + pCount, params.long(key))
+                    }
                 }
             }
         }

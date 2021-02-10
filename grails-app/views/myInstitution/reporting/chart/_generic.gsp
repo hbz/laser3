@@ -1,4 +1,8 @@
-<g:if test="${chart == 'pie'}">
+<g:if test="${! data}">
+    JSPC.app.reporting.chartOption = {}
+    alert('Keine Daten gefunden');
+</g:if>
+<g:elseif test="${chart == 'pie'}">
 JSPC.app.reporting.chartOption = {
     tooltip: {
         trigger: 'item'
@@ -26,7 +30,7 @@ JSPC.app.reporting.chartOption = {
         }
     ]
 };
-</g:if>
+</g:elseif>
 <g:elseif test="${chart == 'bar'}">
 JSPC.app.reporting.chartOption = {
     dataset: {
