@@ -5,6 +5,7 @@ import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.helper.RDConstants
+import grails.web.servlet.mvc.GrailsParameterMap
 
 class Cfg {
 
@@ -90,14 +91,14 @@ class Cfg {
                                 'subscription-status'       : 'Lizenzstatus',
                             ],
                             'Teilnehmer' : [
-                                'member-libraryType'        : 'Bibliothekstyp aller Teilnehmer',
-                                'member-region'             : 'Bundesländer aller Teilnehmer',
-                                'member-subjectGroup'       : 'Fächergruppen aller Teilnehmer',
+                                'member-libraryType'        : 'Bibliothekstyp',
+                                'member-region'             : 'Bundesländer',
+                                'member-subjectGroup'       : 'Fächergruppen',
                             ],
                             'Anbieter' : [
-                                'provider-libraryType'      : 'Bibliothekstyp aller Anbieter',
-                                'provider-region'           : 'Bundesländer aller Anbieter',
-                                'provider-country'          : 'Länder aller Anbieter'
+                                'provider-libraryType'      : 'Bibliothekstyp',
+                                'provider-region'           : 'Bundesländer',
+                                'provider-country'          : 'Länder'
                             ]
                     ]
             ]
@@ -106,12 +107,29 @@ class Cfg {
     static String getFormFieldType(Map<String, Object> objConfig, String fieldName) {
 
         String fieldType = '' // [ property, refdata ]
+
         objConfig.form.each {
             if (it.keySet().contains(fieldName)) {
                 fieldType = it.get(fieldName)
             }
         }
         fieldType
+    }
+
+    static String getQueryLabel(GrailsParameterMap params) {
+
+        String label = ''
+
+        config.each {it ->
+            if (it.value.containsKey('query')) {
+                it.value.get('query').each { it2 ->
+                    if (it2.value.containsKey(params.query)) {
+                        label = it2.key + ' > ' + it2.value.get(params.query) + ' > ' + params.label
+                    }
+                }
+            }
+        }
+        label
     }
 
     static Map<String, Object> getRefdataRelTableInfo(String key) {
