@@ -24,7 +24,8 @@ import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
-import de.laser.reporting.QueryHandler
+import de.laser.reporting.OrganisationQueryHandler
+import de.laser.reporting.SubscriptionQueryHandler
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -111,26 +112,6 @@ class MyInstitutionController  {
             }
         }
         render view: 'reporting/index', model: result
-    }
-
-    @Secured(['ROLE_ADMIN'])
-    def reportingChart() {
-        Map<String, Object> result = [:]
-
-        if (params.query) {
-            String prefix = params.query.split('-')[0]
-            if (prefix in ['org', 'member', 'provider']) {
-                result = QueryHandler.processOrgQuery(params)
-                render template: '/myInstitution/reporting/chart/generic', model: result
-                return
-            }
-            if (prefix in ['subscription']) {
-                result = QueryHandler.processSubscriptionQuery(params)
-                render template: '/myInstitution/reporting/chart/generic', model: result
-                return
-            }
-        }
-        render result as JSON
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")

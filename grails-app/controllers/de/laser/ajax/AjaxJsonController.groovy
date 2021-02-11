@@ -26,6 +26,8 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
+import de.laser.reporting.OrganisationQueryHandler
+import de.laser.reporting.SubscriptionQueryHandler
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -654,6 +656,28 @@ class AjaxJsonController {
             }
         }
 
+        render result as JSON
+    }
+
+    // ----- reporting -----
+
+    @Secured(['ROLE_ADMIN'])
+    def chart() {
+        Map<String, Object> result = [:]
+
+        if (params.query) {
+            String prefix = params.query.split('-')[0]
+            if (prefix in ['org', 'member', 'provider']) {
+                result = OrganisationQueryHandler.query(params)
+                render template: '/myInstitution/reporting/chart/generic', model: result
+                return
+            }
+            if (prefix in ['subscription']) {
+                result = SubscriptionQueryHandler.query(params)
+                render template: '/myInstitution/reporting/chart/generic', model: result
+                return
+            }
+        }
         render result as JSON
     }
 }

@@ -126,7 +126,7 @@ class SubscriptionFilter {
                 String p = key.replaceFirst(cmbKey,'')
                 String pType = Cfg.getFormFieldType(Cfg.config.Organisation, p)
 
-                // --> generic properties
+                // --> properties generic
                 if (pType == Cfg.FORM_TYPE_PROPERTY) {
                     whereParts.add( 'org.' + p + ' = :p' + (++pCount) )
                     if (Org.getDeclaredField(p).getType() == Date) {
@@ -136,7 +136,7 @@ class SubscriptionFilter {
                         queryParams.put( 'p' + pCount, params.get(key) )
                     }
                 }
-                // --> generic refdata
+                // --> refdata generic
                 else if (pType == Cfg.FORM_TYPE_REFDATA) {
                     whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
