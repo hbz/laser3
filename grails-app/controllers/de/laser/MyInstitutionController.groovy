@@ -759,14 +759,14 @@ join sub.orgRelations or_sub where
         //Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP],contextOrg)
         Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where (sp.owner in (:subscriptions) or sp.owner.instanceOf in (:subscriptions)) and sp.tenant = :ctx",[subscriptions:subscriptions,ctx:contextOrg])
         titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
-        Map<Subscription,Set> providers = [:], agencies = [:], identifiers = [:], licenseReferences = [:], subChildMap = [:]
-        Map costItemCounts = [:]
-        List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
-        List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
-        List allIdentifiers = Identifier.findAllBySubIsNotNull()
+        Map<Subscription,Set> licenseReferences = [:], subChildMap = [:]
+        Map<Long,Integer> costItemCounts = [:]
+        //List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
+        //List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
+        //List allIdentifiers = Identifier.findAllBySubIsNotNull()
         List allLicenses = Links.executeQuery("select li from Links li where li.destinationSubscription in (:subscriptions) and li.linkType = :linkType",[subscriptions:subscriptions, linkType:RDStore.LINKTYPE_LICENSE])
         List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
-        allProviders.each { OrgRole provider ->
+        /*allProviders.each { OrgRole provider ->
             Set subProviders = providers.get(provider.sub)
             if(!providers.get(provider.sub))
                 subProviders = new TreeSet()
@@ -788,9 +788,9 @@ join sub.orgRelations or_sub where
                 subIdentifiers = new TreeSet()
             subIdentifiers.add("(${identifier.ns.ns}) ${identifier.value}")
             identifiers.put(identifier.sub,subIdentifiers)
-        }
+        }*/
         allCostItems.each { row ->
-            costItemCounts.put(row[1],row[0])
+            costItemCounts.put((Long) row[1],(Integer) row[0])
         }
         allLicenses.each { Links row ->
             Subscription s = row.destinationSubscription
@@ -801,12 +801,12 @@ join sub.orgRelations or_sub where
             subLicenses.add(l.reference)
             licenseReferences.put(s,subLicenses)
         }
-        List membershipCounts = Subscription.executeQuery('select count(s.id),s.instanceOf.id from Subscription s where s.instanceOf != null group by s.instanceOf.id')
-        Map subscriptionMembers = [:]
+        List membershipCounts = Subscription.executeQuery('select count(s.id),s.instanceOf.id from Subscription s where s.instanceOf in (:parentSubs) group by s.instanceOf.id',[parentSubs:subscriptions])
+        Map<Long,Integer> subscriptionMembers = [:]
         membershipCounts.each { row ->
-            subscriptionMembers.put(row[1],row[0])
+            subscriptionMembers.put((Long) row[1],(Integer) row[0])
         }
-        List<Subscription> childSubsOfSet = subscriptions.isEmpty() ? [] : Subscription.findAllByInstanceOfInList(subscriptions)
+        List<Subscription> childSubsOfSet = subscriptions.isEmpty() ? [] : Subscription.executeQuery('select s from Subscription s where s.instanceOf in (:parentSubs) and exists (select sp.id from SubscriptionProperty sp where sp.owner = s and sp.instanceOf = null and sp.tenant = :context)',[parentSubs:subscriptions,context:contextOrg])
         childSubsOfSet.each { Subscription child ->
             Set<Subscription> children = subChildMap.get(child.instanceOf)
             if(!children)
@@ -825,6 +825,9 @@ join sub.orgRelations or_sub where
         List subscriptionData = []
         subscriptions.each { Subscription sub ->
             List row = []
+            TreeSet subProviders = sub.orgRelations.findAll { OrgRole oo -> oo.roleType == RDStore.OR_PROVIDER }.collect { OrgRole oo -> oo.org.name }
+            TreeSet subAgencies = sub.orgRelations.findAll { OrgRole oo -> oo.roleType == RDStore.OR_AGENCY }.collect { OrgRole oo -> oo.org.name }
+            TreeSet subIdentifiers = sub.ids.collect { Identifier id -> "(${id.ns.ns}) ${id.value}" }
             switch (format) {
                 case "xls":
                 case "xlsx":
@@ -836,12 +839,12 @@ join sub.orgRelations or_sub where
                     }
                     row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
                     row.add([field: sub.getConsortia()?.name ?: '', style: null])
-                    row.add([field: providers.get(sub) ? providers.get(sub).join(", ") : '', style: null])
-                    row.add([field: agencies.get(sub) ? agencies.get(sub).join(", ") : '', style: null])
+                    row.add([field: subProviders.join(', '), style: null])
+                    row.add([field: subAgencies.join(', '), style: null])
                     row.add([field: sub.startDate ? sdf.format(sub.startDate) : '', style: null])
                     row.add([field: sub.endDate ? sdf.format(sub.endDate) : '', style: null])
                     row.add([field: sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '', style: null])
-                    row.add([field: identifiers.get(sub) ? identifiers.get(sub).join(", ") : '',style: null])
+                    row.add([field: subIdentifiers.join(", "),style: null])
                     row.add([field: sub.status?.getI10n("value"), style: null])
                     row.add([field: sub.kind?.getI10n("value") ?: '', style: null])
                     row.add([field: sub.form?.getI10n("value") ?: '', style: null])
@@ -852,7 +855,7 @@ join sub.orgRelations or_sub where
                         row.add([field: subscriptionMembers.get(sub.id) ?: 0, style: null])
                         row.add([field: costItemCounts.get(sub.id) ?: 0, style: null])
                     }
-                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub,subChildMap,objectNames))
+                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub,subChildMap,objectNames,contextOrg))
                     subscriptionData.add(row)
                     break
                 case "csv":
@@ -864,12 +867,12 @@ join sub.orgRelations or_sub where
                     }
                     row.add(packageNames ? packageNames.join("; ") : '')
                     row.add(sub.getConsortia()?.name ?: '')
-                    row.add(providers.get(sub) ? providers.get(sub).join("; ").replace(',','') : '')
-                    row.add(agencies.get(sub) ? agencies.get(sub).join("; ").replace(',','') : '')
+                    row.add(subProviders.join("; ").replace(',',''))
+                    row.add(subAgencies.join("; ").replace(',',''))
                     row.add(sub.startDate ? sdf.format(sub.startDate) : '')
                     row.add(sub.endDate ? sdf.format(sub.endDate) : '')
                     row.add(sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '')
-                    row.add(identifiers.get(sub) ? identifiers.get(sub).join("; ") : '')
+                    row.add(subIdentifiers.join("; "))
                     row.add(sub.status?.getI10n("value"))
                     row.add(sub.kind?.getI10n("value"))
                     row.add(sub.form?.getI10n("value"))
@@ -880,7 +883,7 @@ join sub.orgRelations or_sub where
                         row.add(subscriptionMembers.get(sub.id) ? (int) subscriptionMembers.get(sub.id) : 0)
                         row.add(costItemCounts.get(sub.id) ? (int) costItemCounts.get(sub.id) : 0)
                     }
-                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub,subChildMap,objectNames))
+                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub,subChildMap,objectNames,contextOrg))
                     subscriptionData.add(row)
                     break
             }
