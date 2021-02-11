@@ -29,7 +29,7 @@
         </div>
 
         <div class="two fields ">
-            <semui:datepicker label="surveyInfo.startDate.label,messageRequiredField" id="startDate" name="startDate"
+            <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
                               value="${params.startDate}" required="" />
 
             <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
