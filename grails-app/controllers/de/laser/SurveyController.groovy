@@ -759,7 +759,7 @@ class SurveyController {
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        String base_qry = null
+        /*String base_qry = null
         Map<String,Object> qry_params = [subscription: result.surveyConfig.subscription]
 
         Date date_filter
@@ -768,16 +768,15 @@ class SurveyController {
         base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
         base_qry += " and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
         qry_params.startDate = date_filter
-        qry_params.endDate = date_filter
+        qry_params.endDate = date_filter*/
 
-        base_qry += " and ie.status = :current "
-        qry_params.current = RDStore.TIPP_STATUS_CURRENT
+        params.ieAcceptStatusFixed = true
+        def query = filterService.getIssueEntitlementQuery(params, result.surveyConfig.subscription)
+        result.filterSet = query.filterSet
 
-        base_qry += "order by lower(ie.tipp.sortName) asc"
+        result.num_sub_rows = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams).size()
 
-        result.num_sub_rows = IssueEntitlement.executeQuery("select ie.id " + base_qry, qry_params).size()
-
-        result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: result.max, offset: result.offset])
+        result.entitlements = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams, [max: result.max, offset: result.offset])
 
         result
 

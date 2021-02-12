@@ -414,7 +414,6 @@ class FinanceService {
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark("load filter params")
         Map<String,Object> filterQuery = processFilterParams(params)
-        pu.setBenchmark("get cache")
         Map<String,Object> result = [filterPresets:filterQuery.filterData]
         result.filterSet = filterQuery.subFilter || filterQuery.ciFilter
         Org org = (Org) configMap.institution
@@ -509,12 +508,15 @@ class FinanceService {
      * @return an array with the filter string on position 0 and the filter parameter map on position 1
      */
     Map<String,Object> processFilterParams(GrailsParameterMap params) {
+        Map<String,Object> result
+        String subFilterQuery = "", costItemFilterQuery = ""
+        Map<String,Object> queryParams = [:]
         EhcacheWrapper cache = contextService.getCache("/finance/filter/",ContextService.USER_SCOPE)
-        if(cache && cache.get('cachedFilter'))
-            (Map<String,Object>) cache.get('cachedFilter')
+        if((cache && cache.get('cachedFilter')) && params.reset == null && params.submit == null) {
+            Map<String,Object> cachedFilter = (Map<String, Object>) cache.get('cachedFilter')
+            result = [subFilter:cachedFilter.subFilter,ciFilter:cachedFilter.ciFilter,filterData:cachedFilter.filterData]
+        }
         else {
-            String subFilterQuery = "", costItemFilterQuery = ""
-            Map<String,Object> queryParams = [:]
             SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             //subscription filter settings
             //subscription members A (from /subFinance)
@@ -712,11 +714,11 @@ class FinanceService {
                     queryParams.filterCIPaidTo = invoiceTo
                 }
             }
-            Map<String,Object> result = [subFilter:subFilterQuery,ciFilter:costItemFilterQuery,filterData:queryParams]
+            result = [subFilter:subFilterQuery,ciFilter:costItemFilterQuery,filterData:queryParams]
             if(params.reset || params.submit)
                 cache.put('cachedFilter',result)
-            result
         }
+        result
     }
 
     /**

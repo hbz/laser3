@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3044    12.02.2021  rv2.0   2.0         Moe     Bug         Erweiterung der Titelfilter
+
+3111    10.02.2021  rc2.0   2.0         Andreas Bug         Finanzfiltercache wieder korrekt eingebunden, Rechnungsnummer korrigiert
+
 3113    09.02.2021  rc2.0   2.0         Andreas Bug         Bug bei Lizenzexport behoben, leichte Performanzverbesserung
 
 3120    09.02.2021  rc2.0   2.0         David   Feature     Reporting: Pattern für Relationstabellen erstellen (Org.subjectGroup)

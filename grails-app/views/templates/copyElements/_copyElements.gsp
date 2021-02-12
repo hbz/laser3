@@ -17,13 +17,12 @@
     <g:form action="${actionName}" controller="${controllerName}" id="${params.id}"
             params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey, copyObject: copyObject]"
             method="post" class="ui form newLicence">
-        <semui:msg class="info" message="messageRequiredField" />
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
         <g:if test="${copyObject}">
             <div class="ui big form">
                 <div class="field required">
-                    <label>${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.name.label")}</label>
+                    <label>${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.name.label")} <g:message code="messageRequiredField" /></label>
                     <input required type="text" name="name" value="" placeholder=""/>
                 </div>
             </div>

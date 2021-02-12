@@ -363,6 +363,6 @@ if (customerType) {
 <g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="dev" action="frontend" params="" class="ui icon positive button">
     <i aria-hidden="true" class="checkmark icon"></i>
 </g:link>
-
+<g:message code="task.title.label" /> <g:message code="messageRequiredField" />
 </body>
 </html>

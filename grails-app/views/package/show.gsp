@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.ConfigUtils; de.laser.helper.RDStore; de.laser.helper.RDConstants;de.laser.Package;de.laser.RefdataCategory;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.helper.ConfigUtils; de.laser.helper.DateUtils; de.laser.helper.RDStore; de.laser.helper.RDConstants;de.laser.Package;de.laser.RefdataCategory;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -72,7 +72,7 @@
                             <dd>
                                 <g:if test="${packageInstanceRecord.lastUpdatedDisplay}">
                                     <g:formatDate formatName="default.date.format.notime"
-                                                  date="${new SimpleDateFormat('yyyy-MM-dd HH:mm:ss').parse(packageInstanceRecord.lastUpdatedDisplay)}"/>
+                                                  date="${DateUtils.parseDateGeneric(packageInstanceRecord.lastUpdatedDisplay)}"/>
                                 </g:if>
                             </dd>
                         </dl>

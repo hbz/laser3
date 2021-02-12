@@ -537,6 +537,8 @@ class SemanticUiTagLib {
 
         String classes    = attrs.containsKey('required') ? 'field required' : 'field'
         String required   = attrs.containsKey('required') ? 'required=""' : ''
+        String mandatoryField   = attrs.containsKey('required') ? "${message(code: 'messageRequiredField')}" :""
+
         boolean hideLabel = attrs.hideLabel ? false : true
 
         if (attrs.class) {
@@ -549,7 +551,7 @@ class SemanticUiTagLib {
 
         out << '<div class="' + classes + '">'
         if (hideLabel) {
-            out << '<label for="' + id + '">' + label + '</label>'
+            out << '<label for="' + id + '">' + label + ' ' + mandatoryField +'</label>'
         }
         out << '<div class="ui calendar datepicker">'
         out << '<div class="ui input left icon">'

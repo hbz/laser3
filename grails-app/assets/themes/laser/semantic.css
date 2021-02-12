@@ -17233,7 +17233,7 @@ ol.ui.horizontal.list li:before,
   opacity: 1;
 }
 
-.la-list-border-around {
+td .la-list-border-around {
   border: 1px solid #d3dae3;
 }
 
@@ -29866,6 +29866,12 @@ a.ui.card:hover,
   line-height: 1.28571429em;
 }
 
+.ui.cards > .card > .content > .header:not(.ui).la-primary-header,
+.ui.card > .content > .header:not(.ui).la-primary-header {
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
 .ui.card.la-role-admin {
   border-right: 10px solid #004678;
 }
@@ -29897,7 +29903,7 @@ a.ui.card:hover,
 .la-inline-lists dl dd {
   display: table-cell;
   padding-top: 0.4rem;
-  padding-bottom: 0.4rem;
+  padding-bottom: 1rem;
 }
 
 .la-inline-lists dl dd {

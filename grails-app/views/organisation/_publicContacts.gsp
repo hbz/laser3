@@ -7,7 +7,7 @@
 <g:if test="${!isProviderOrAgency}">
     <div class="card">
         <div class="content">
-            <div class="header">${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}</div>
+            <div class="header la-primary-header">${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}</div>
 
             <div class="description">
 
@@ -40,7 +40,7 @@
 <g:if test="${!isProviderOrAgency}">
     <div class="card">
         <div class="content">
-            <div class="header">${RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS.getI10n('value')}</div>
+            <div class="header la-primary-header">${RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS.getI10n('value')}</div>
 
             <div class="description">
                 <g:set var="persons"
@@ -72,7 +72,7 @@
 
 <div class="card">
     <div class="content">
-        <div class="header">${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}</div>
+        <div class="header la-primary-header">${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}</div>
 
         <div class="description">
 
