@@ -2,7 +2,6 @@
 <laser:serviceInjection/>
 <semui:form>
     <g:form action="processCreate" controller="accessPoint" id="${orgInstance.id}" method="post" class="ui form">
-        <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
         <g:hiddenField name="accessMethod" value="${genericOIDService.getOID(accessMethod)}" />
         <g:if test="${accessMethod == RDStore.ACCESS_POINT_TYPE_IP}">
             <g:render template="name" model="${[nameOptions: availableOptions.collectEntries(),
@@ -15,7 +14,7 @@
                 <label>URL
                     <span class="la-long-tooltip la-popup-tooltip la-delay"
                           data-content="${message(code: "accessPoint.url.help")}">
-                        <i class="question circle icon la-popup"></i></span>
+                        <i class="question circle icon la-popup"></i></span> <g:message code="messageRequiredField" />
                 </label>
                 <g:textField name="url" value="${url}" />
             </div>
@@ -25,12 +24,12 @@
                 <label>${message(code: 'accessPoint.oa.name.label')}
                     <span class="la-long-tooltip la-popup-tooltip la-delay"
                           data-content="${message(code:'accessPoint.oa.help')}">
-                        <i class="question circle icon la-popup"></i></span>
+                        <i class="question circle icon la-popup"></i></span>  <g:message code="messageRequiredField" />
                 </label>
                 <g:field type="text" name="name" value="" />
             </div>
             <div class="field required">
-                <label>${message(code: 'accessPoint.entitiyId.label')}</label>
+                <label>${message(code: 'accessPoint.entitiyId.label')} <g:message code="messageRequiredField" /></label>
                 <g:textField name="entityId" value="${entityId}" />
             </div>
         </g:elseif>
@@ -42,7 +41,7 @@
                 <label>${message(code: 'accessPoint.shibboleth.name.label')}
                     <span class="la-long-tooltip la-popup-tooltip la-delay"
                           data-content="${message(code:'accessPoint.shibboleth.help')}">
-                        <i class="question circle icon la-popup"></i></span>
+                        <i class="question circle icon la-popup"></i></span> <g:message code="messageRequiredField" />
                 </label>
                 <g:field type="text" name="name" value="" />
             </div>

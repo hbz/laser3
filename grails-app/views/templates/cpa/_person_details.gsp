@@ -2,14 +2,14 @@
     <div class="ui divided middle aligned selection list la-flex-list">
 
         <div class="ui item person-details">
-            <h5 class="ui header">
+            <div class="header">
 
                     ${person.title}
                     ${person.first_name}
                     ${person.middle_name}
                     ${person.last_name}
 
-            </h5>
+            </div>
 
             <g:if test="${overwriteEditable}">
                 <div class="content la-space-right">
@@ -58,14 +58,14 @@
 
         <div class="ui item person-details">
             <div class="content la-space-right">
-                <h5 class="ui header">
+                <div class="header">
 
                         ${personRole.prs.title}
                         ${personRole.prs.first_name}
                         ${personRole.prs.middle_name}
                         ${personRole.prs.last_name}
 
-                </h5>
+                </div>
                 <g:if test="${personRole.functionType}">
                     (${personRole.functionType.getI10n('value')})
                 </g:if>

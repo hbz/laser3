@@ -379,7 +379,7 @@
                                     <g:each in="${typeNames}" var="typeName">
                                         <div class="card">
                                             <div class="content">
-                                                <div class="header">${typeName}</div>
+                                                <div class="header la-primary-header">${typeName}</div>
                                                 <div class="description">
                                                     <div class="ui divided middle aligned list la-flex-list">
                                                         <% List addresses = typeAddressMap.get(typeName) %>

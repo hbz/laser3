@@ -93,7 +93,6 @@
     </div>
 
     <g:form action="processLinkPackagesMembers" method="post" class="ui form">
-        <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
         <g:hiddenField id="plpm_id_${params.id}" name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <div class="ui segment">
@@ -102,7 +101,7 @@
                 <h4 class="ui header">${message(code: 'subscription.linkPackagesMembers.info', args: args.memberType)}</h4>
 
                 <label><g:message code="subscription.linkPackagesMembers.package.label"
-                                  args="${args.superOrgType}"/></label>
+                                  args="${args.superOrgType}"/> <g:message code="messageRequiredField" /></label>
                 <g:if test="${validPackages}">
                     <g:select class="ui search dropdown"
                               optionKey="id" optionValue="${{ it.getPackageName() }}"

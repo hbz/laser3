@@ -5,12 +5,12 @@
 
         <div class="ui item person-details">
             <div class="content la-space-right">
-                <h5 class="ui header">
+                <div class="header">
                         ${person.title}
                         ${person.first_name}
                         ${person.middle_name}
                         ${person.last_name}
-                </h5>
+                </div>
             </div>
 
             <g:if test="${overwriteEditable}">

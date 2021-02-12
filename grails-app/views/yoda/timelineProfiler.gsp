@@ -3,7 +3,7 @@
 <head>
     <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'menu.yoda.timelineProfiler')}</title>
-    <asset:stylesheet src="chartist.css"/><laser:javascript src="chartist.js"/>%{-- dont move --}%
+    <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </head>
 <body>
 
@@ -28,34 +28,34 @@
                     <td>
                         <strong>${ik}</strong> (${iv}) <br />
 
-                        <div id="ct-chart-${index}"></div>
+                        <div id="ct-chart-${index}" class="echarts-wrapper"></div>
 
                         <laser:script file="${this.getGroovyPageFileName()}">
-                                JSPC.app.chartData_${index} = {
-                                    labels: [
-                                        <% println '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>
-                                    ],
-                                    series: [
-                                        [<% println '"' + itemValue.join('","') + '"' %>]
-                                    ]
-                                };
+                            JSPC.app.chartData_${index} = {
+                                xAxis: {
+                                    type: 'category',
+                                    boundaryGap: false,
+                                    data: [<% println '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>]
+                                },
+                                yAxis: {
+                                    type: 'value'
+                                },
+                                grid: {
+                                    top:20, right:30, bottom:30, left:50
+                                },
+                                tooltip: {
+                                    trigger: 'axis'
+                                },
+                                series: [{
+                                    data: [<% println itemValue.join(', ') %>],
+                                    type: 'line',
+                                    areaStyle: { color: '#bad722' },
+                                    smooth: true,
+                                    lineStyle: { color: '#98b500', width: 3 },
+                                }]
+                            };
 
-                                new Chartist.Bar('#ct-chart-${index}', JSPC.app.chartData_${index}, {
-                                    stackBars: true,
-                                    fullWidth: true,
-                                    chartPadding: {
-                                        right: 20
-                                    },
-                                    axisY: {
-                                        onlyInteger: true
-                                    }
-                                }).on('draw', function(data) {
-                                    if(data.type === 'bar') {
-                                        data.element.attr({
-                                            style: 'stroke-width: 20px'
-                                        });
-                                    }
-                                });
+                            echarts.init( $('#ct-chart-${index}')[0] ).setOption( JSPC.app.chartData_${index} );
                         </laser:script>
                     </td>
                 </tr>
@@ -63,8 +63,10 @@
         </tbody>
     </table>
     <style>
-        .ct-series-a .ct-bar { stroke: #98b500; }
-        .ct-series-a .ct-slice-pie { fill: #98b500; }
+    .echarts-wrapper {
+        width: 100%;
+        height: 130px;
+    }
     </style>
 </body>
 </html>

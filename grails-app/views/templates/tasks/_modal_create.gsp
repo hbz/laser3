@@ -3,7 +3,6 @@
 <semui:modal id="modalCreateTask" message="task.create.new">
 
     <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
-        <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
         <g:if test="${controllerName != 'myInstitution' && controllerName != 'ajaxHtml'}">
             <g:hiddenField name="${owntp}" value="${(owntp == 'surveyConfig') ? ownobj?.id : params.id}"/>
             <g:hiddenField name="linkto" value="${owntp}"/>
@@ -11,7 +10,7 @@
 
         <div class="field ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
             <label for="title">
-                <g:message code="task.title.label" />
+                <g:message code="task.title.label" /> <g:message code="messageRequiredField" />
             </label>
             <g:textField id="title" name="title" required="" value="${taskInstance?.title}"/>
         </div>
@@ -27,7 +26,7 @@
             <div class="field required">
                 <fieldset>
                     <legend>
-                        <g:message code="task.typ" />
+                        <g:message code="task.typ" /> <g:message code="messageRequiredField" />
                     </legend>
                     <div class="ui radio checkbox">
                         <input id="generalradio" type="radio" value="general" name="linkto" tabindex="0" class="hidden" checked="">
@@ -67,7 +66,7 @@
             <div id="licensediv"
                  class="field ${hasErrors(bean: taskInstance, field: 'license', 'error')} required">
                 <label for="license">
-                    <g:message code="task.linkto" /><g:message code="license.label" />
+                    <g:message code="task.linkto" /><g:message code="license.label" /> <g:message code="messageRequiredField" />
                 </label>
                 <g:select class="ui dropdown search many-to-one"
                           id="license"
@@ -83,7 +82,7 @@
 
             <div id="orgdiv" class="field ${hasErrors(bean: taskInstance, field: 'org', 'error')} required">
             <label for="org">
-                <g:message code="task.linkto" /><g:message code="task.org.label" />
+                <g:message code="task.linkto" /><g:message code="task.org.label" /> <g:message code="messageRequiredField" />
             </label>
                 <g:select id="org"
                           name="org"
@@ -98,7 +97,7 @@
 
             <div id="pkgdiv" class="field ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} required">
                 <label for="pkg">
-                    <g:message code="task.linkto" /><g:message code="package.label" />
+                    <g:message code="task.linkto" /><g:message code="package.label" /> <g:message code="messageRequiredField" />
                 </label>
                 <g:select id="pkg" name="pkg" from="${validPackages}" optionKey="id" value="${ownobj?.id}"
                           class="ui dropdown search many-to-one"
@@ -110,7 +109,7 @@
             <div id="subscriptiondiv"
                  class="field ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required">
                 <label for="subscription">
-                    <g:message code="task.linkto" /><g:message code="default.subscription.label" />
+                    <g:message code="task.linkto" /><g:message code="default.subscription.label" /> <g:message code="messageRequiredField" />
                 </label>
                 <g:select class="ui dropdown search many-to-one"
                           id="subscription"
@@ -132,7 +131,7 @@
 
                 <div class="field wide eight ${hasErrors(bean: taskInstance, field: 'status', 'error')} required">
                     <label for="status">
-                        <g:message code="task.status.label" />
+                        <g:message code="task.status.label" /> <g:message code="messageRequiredField" />
                     </label>
                     <laser:select id="status" name="status.id"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"

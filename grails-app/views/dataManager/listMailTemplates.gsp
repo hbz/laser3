@@ -75,25 +75,24 @@
 <semui:modal id="editMailTemplate" message="mailTemplate.label" isEditModal="isEditModal">
 
     <g:form class="ui form" url="[controller: 'dataManager', action: 'editMailTemplate']">
-        <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
         <input type="hidden" name="target" value="" />
         <div class="field required">
-            <label for="mailTemplateName">${message(code:'mailTemplate.name.label')}:</label>
+            <label for="mailTemplateName">${message(code:'mailTemplate.name.label')} <g:message code="messageRequiredField" /></label>
             <input type="text" id="mailTemplateNameEdit" name="name" />
         </div>
 
         <div class="field required">
-            <label for="mailTemplateSubject">${message(code:'mailTemplate.subject.label')}:</label>
+            <label for="mailTemplateSubject">${message(code:'mailTemplate.subject.label')} <g:message code="messageRequiredField" /></label>
             <input type="text" id="mailTemplateSubjectEdit" name="subject" />
         </div>
 
         <div class="field">
-            <label for="mailTemplateText">${message(code:'mailTemplate.text.label')}:</label>
+            <label for="mailTemplateText">${message(code:'mailTemplate.text.label')}</label>
             <g:textArea id="mailTemplateTextEdit" name="text" rows="5" cols="40"/>
         </div>
 
         <div  class="field required">
-            <label for="mailTemplateLanguage">${message(code:'mailTemplate.language.label')}:</label>
+            <label for="mailTemplateLanguage">${message(code:'mailTemplate.language.label')} <g:message code="messageRequiredField" /></label>
             <g:select id="mailTemplateLanguageEdit"
                       name="language"
                       from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_LANGUAGE)}"
@@ -104,7 +103,7 @@
         </div>
 
         <div  class="field required">
-            <label for="mailTemplateType">${message(code:'default.type.label')}:</label>
+            <label for="mailTemplateType">${message(code:'default.type.label')} <g:message code="messageRequiredField" /></label>
             <g:select id="mailTemplateTypeEdit"
                       name="type"
                       from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_TYPE)}"
@@ -133,22 +132,22 @@
     <g:form id="create_mail_template" class="ui form" url="[controller:'dataManager', action:'createMailTemplate']" method="post">
 
         <div class="field required">
-            <label for="mailTemplateName">${message(code:'mailTemplate.name.label')}:</label>
+            <label for="mailTemplateName">${message(code:'mailTemplate.name.label')} <g:message code="messageRequiredField" /></label>
             <input type="text" id="mailTemplateName" name="name" />
         </div>
 
         <div class="field required">
-            <label for="mailTemplateSubject">${message(code:'mailTemplate.subject.label')}:</label>
+            <label for="mailTemplateSubject">${message(code:'mailTemplate.subject.label')} <g:message code="messageRequiredField" /></label>
             <input type="text" id="mailTemplateSubject" name="subject" />
         </div>
 
         <div class="field">
-            <label for="mailTemplateText">${message(code:'mailTemplate.text.label')}:</label>
+            <label for="mailTemplateText">${message(code:'mailTemplate.text.label')}</label>
             <g:textArea id="mailTemplateText" name="text" rows="5" cols="40"/>
         </div>
 
         <div  class="field required">
-        <label for="mailTemplateLanguage">${message(code:'mailTemplate.language.label')}:</label>
+        <label for="mailTemplateLanguage">${message(code:'mailTemplate.language.label')} <g:message code="messageRequiredField" /></label>
         <g:select id="mailTemplateLanguage"
                   name="language"
                   from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_LANGUAGE)}"
@@ -159,7 +158,7 @@
         </div>
 
         <div  class="field required">
-            <label for="mailTemplateType">${message(code:'default.type.label')}:</label>
+            <label for="mailTemplateType">${message(code:'default.type.label')} <g:message code="messageRequiredField" /></label>
             <g:select id="mailTemplateType"
                       name="type"
                       from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_TYPE)}"

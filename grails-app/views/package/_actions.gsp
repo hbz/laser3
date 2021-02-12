@@ -69,9 +69,9 @@
             <br>
 
             <div class="field">
-                <h5 class="ui dividing header">
+                <h3 class="ui dividing header">
                     <g:message code="subscription.packages.config.label" args="${[packageInstance.name]}"/>
-                </h5>
+                </h3>
 
                 <table class="ui table compact">
                     <tr>

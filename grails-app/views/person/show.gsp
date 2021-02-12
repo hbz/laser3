@@ -368,7 +368,7 @@
                     <div class="la-inline-lists">
                         <div class="ui card">
                             <div class="content">
-                                <h5 class="ui header">${message(code:'org.properties.private')} ${institution.name}</h5>
+                                <h2 class="ui header">${message(code:'org.properties.private')} ${institution.name}</h2>
                                 <g:set var="propertyWrapper" value="private-property-wrapper-${institution.id}" />
                                 <div id="${propertyWrapper}">
                                     <g:render template="/templates/properties/private" model="${[

@@ -17233,7 +17233,7 @@ ol.ui.horizontal.list li:before,
   opacity: 1;
 }
 
-.la-list-border-around {
+td .la-list-border-around {
   border: 1px solid #d3dae3;
 }
 
@@ -29851,7 +29851,7 @@ a.ui.card:hover,
 }
 
 .ui.cards > .card > .content > .header,
-.ui.card > .content > .header {
+.ui.card > .content .header {
   color: #767676;
   font-size: 1rem;
 }
@@ -29864,6 +29864,12 @@ a.ui.card:hover,
   font-size: 1rem;
   margin-top: -0.21425em;
   line-height: 1.28571429em;
+}
+
+.ui.cards > .card > .content > .header:not(.ui).la-primary-header,
+.ui.card > .content > .header:not(.ui).la-primary-header {
+  text-transform: uppercase;
+  font-size: 0.85rem;
 }
 
 .ui.card.la-role-admin {
@@ -29897,7 +29903,7 @@ a.ui.card:hover,
 .la-inline-lists dl dd {
   display: table-cell;
   padding-top: 0.4rem;
-  padding-bottom: 0.4rem;
+  padding-bottom: 1rem;
 }
 
 .la-inline-lists dl dd {

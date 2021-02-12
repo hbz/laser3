@@ -6,7 +6,6 @@
              msgClose="${message(code: 'default.button.cancel')}"
              msgSave="${message(code: 'default.button.save.label')}">
     <g:form id="person_form" class="ui form" url="${url}" method="POST">
-        <semui:msg class="info" header="" text="${message(code: 'messageRequiredField')}" />
         <g:if test="${!personInstance}">
             <input name="tenant.id" type="hidden" value="${tenant.id}"/>
             <input name="isPublic" type="hidden" value="${personInstance?.isPublic ?: (isPublic ?: false)}"/>
@@ -27,7 +26,7 @@
                         <div class="field required">
                             <g:if test="${orgList}">
                                 <label for="personRoleOrg">
-                                    <g:message code="person.belongsTo"/>
+                                    <g:message code="person.belongsTo"/> <g:message code="messageRequiredField" />
                                 </label>
                                 <g:select class="ui search dropdown"
                                           name="personRoleOrg"
@@ -109,7 +108,7 @@
 
                     <div class="field wide twelve ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
                         <label for="last_name">
-                            <g:message code="person.last_name.label"/>
+                            <g:message code="person.last_name.label"/> <g:message code="messageRequiredField" />
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                   data-content="${message(code: 'person.last_name.info')}">
                                 <i class="question circle icon"></i>
@@ -121,7 +120,7 @@
                     <div id="person_title"
                          class="field wide four ${hasErrors(bean: personInstance, field: 'title', 'error')}">
                         <label for="title">
-                            <g:message code="person.title.label"/>
+                            <g:message code="person.title.label"/> <g:message code="messageRequiredField" />
                         </label>
                         <g:textField name="title" required="required" value="${personInstance?.title}"/>
                     </div>
