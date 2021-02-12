@@ -577,7 +577,7 @@ class PendingChangeService extends AbstractLockableService {
      */
     def output(PendingChange change,String key) {
         Locale locale = LocaleContextHolder.getLocale()
-        def retI
+        def ret
         if(change.targetProperty in PendingChange.DATE_FIELDS) {
             Date date = DateUtils.parseDateGeneric(change[key])
             if(date)
