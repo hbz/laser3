@@ -193,8 +193,6 @@
 
 <div class="la-clear-before">
     <div>
-        %{--<span>${message(code: 'title.plural')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (titles.size())), num_ti_rows])} )</span>--}%
-
         <div>
             <g:if test="${titles}">
                 <g:set var="counter" value="${offset + 1}"/>
@@ -236,64 +234,13 @@
                         <tr>
                             <td>${(params.int('offset') ?: 0) + jj + 1}</td>
                             <td>
-                                <semui:listIcon type="${tipp.titleType}"/>
-                                <strong><g:link controller="tipp" action="show"
-                                                id="${tipp.id}">${tipp.name}</g:link></strong>
+                                <!-- START TEMPLATE -->
+                        <g:render template="/templates/title"
+                                  model="${[ie: null, tipp: tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                                            showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
+                        <!-- END TEMPLATE -->
 
-                                <g:if test="${tipp.titleType.contains('Book') && tipp.volume}">
-                                    (${message(code: 'title.volume.label')} ${tipp.volume})
-                                </g:if>
-
-                                <g:if test="${tipp.titleType.contains('Book') && (tipp.firstAuthor || tipp.firstEditor)}">
-                                    <br /><strong>${tipp.getEbookFirstAutorOrFirstEditor()}</strong>
-                                </g:if>
-
-                                <g:if test="${tipp.titleType.contains('Book') && tipp.editionStatement}">
-                                    <div class="item"><strong>${message(code: 'title.editionStatement.label')}:</strong> ${tipp.editionStatement}
-                                    </div>
-                                    <br />
-                                </g:if>
-
-                                <g:if test="${tipp.hostPlatformURL}">
-                                    <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                                       data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                                       href="${tipp.hostPlatformURL.contains('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"
-                                       target="_blank"><i class="share square icon"></i></a>
-                                </g:if>
-
-                                <g:each in="${tipp.ids.sort { it.ns.ns }}" var="id">
-                                    <span class="ui small basic image label">
-                                        ${id.ns.ns}: <div class="detail">${id.value}</div>
-                                    </span>
-                                </g:each>
-                                <br />
-
-                                <div class="ui list">
-
-                                        <div class="item"><strong>${message(code: 'tipp.platform')}:</strong>
-                                            <g:if test="${tipp.platform.name}">
-                                                ${tipp.platform.name}
-                                            </g:if>
-                                            <g:else>${message(code: 'default.unknown')}</g:else>
-
-                                            <g:if test="${tipp.platform.name}">
-                                                <g:link class="ui icon mini  button la-js-dont-hide-button la-popup-tooltip la-delay"
-                                                        data-content="${message(code: 'tipp.tooltip.changePlattform')}"
-                                                        controller="platform" action="show"
-                                                        id="${tipp.platform.id}"><i
-                                                        class="pencil alternate icon"></i></g:link>
-                                            </g:if>
-                                            <g:if test="${tipp.platform.primaryUrl}">
-                                                <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                                                   data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                                                   href="${tipp.platform.primaryUrl.contains('http') ? tipp.platform.primaryUrl : 'http://' + tipp.platform.primaryUrl}"
-                                                   target="_blank"><i class="share square icon"></i></a>
-                                            </g:if>
-
-                                        </div>
-                                </div>
-
-                            </td>
+                </td>
                             <%
                                 String instanceFilter = ''
                                 if(institution.getCustomerType() == "ORG_CONSORTIUM")
@@ -384,11 +331,22 @@
                                             </g:else>
                                         </div>
                                         <div class="sixteen wide column">
-                                            <g:if test="${ie.priceItem}">
-                                                <g:message code="tipp.listPrice"/>: <g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency?.value}" currencySymbol="${ie.priceItem.listCurrency?.value}"/><br />
-                                                <g:message code="tipp.localPrice"/>: <g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencyCode="${ie.priceItem.localCurrency?.value}" currencySymbol="${ie.priceItem.localCurrency?.value}"/>
-                                                (<g:message code="tipp.priceStartDate"/> <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.priceDate}"/>)
-                                            </g:if>
+                                            <g:each in="${ie.priceItems}" var="priceItem" status="i">
+                                                <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice"
+                                                                                                     owner="${priceItem}"
+                                                                                                     format=""/> <semui:xEditableRefData
+                                                    field="listCurrency" owner="${priceItem}"
+                                                    config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
+                                                <g:message code="tipp.localPrice"/>: <semui:xEditable field="localPrice"
+                                                                                                      owner="${priceItem}"/> <semui:xEditableRefData
+                                                    field="localCurrency" owner="${priceItem}"
+                                                    config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
+                                                <semui:xEditable field="startDate" type="date"
+                                                                 owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
+                                                    field="endDate" type="date"
+                                                    owner="${priceItem}"/>  <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
+                                                <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
+                                            </g:each>
                                         </div>
                                     </g:each>
                                 </div>

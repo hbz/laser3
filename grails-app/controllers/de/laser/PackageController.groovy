@@ -348,7 +348,7 @@ class PackageController {
         Package packageInstance = Package.get(params.id)
         if (!packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
 
@@ -415,7 +415,6 @@ class PackageController {
     def current() {
         log.debug("current ${params}");
         Map<String, Object> result = [:]
-        boolean showDeletedTipps = false
         result.user = contextService.getUser()
         result.editable = isEditable()
         result.contextOrg = contextService.getOrg()
@@ -429,6 +428,10 @@ class PackageController {
         }
         result.packageInstance = packageInstance
 
+        result.currentTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_CURRENT).size()
+        result.plannedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateGreaterThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+        result.expiredTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateLessThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+
         if (executorWrapperService.hasRunningProcess(packageInstance)) {
             result.processingpc = true
         }
@@ -439,16 +442,11 @@ class PackageController {
         )
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-        params.max = result.max
 
-        // def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
-        Map<String, Object> qry_params = [pkgInstance: packageInstance]
-        Date date_filter = params.mode == 'advanced' ? null : new Date()
-
-        Map<String, Object> query = filterService.generateBasePackageQuery(params, qry_params, showDeletedTipps, date_filter, "Package")
+        Map<String, Object> query = filterService.getTippQuery(params, [packageInstance])
         result.filterSet = query.filterSet
 
-        List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.base_qry, query.qry_params)
+        List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.query, query.queryParams)
         result.titlesList = titlesList.drop(result.offset).take(result.max)
         result.num_tipp_rows = titlesList.size()
 
@@ -498,7 +496,7 @@ class PackageController {
     }
 
     @Deprecated
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def deleteDocuments() {
         def ctxlist = []
 
@@ -510,7 +508,7 @@ class PackageController {
     }
 
     @Deprecated
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def documents() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
@@ -550,25 +548,28 @@ class PackageController {
         }
         result.packageInstance = packageInstance
 
+        result.currentTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_CURRENT).size()
+        result.plannedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateGreaterThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+        result.expiredTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateLessThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-        params.max = result.max
 
         def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
 
-        String base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status != :status "
-        Map<String, Object> qry_params = [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED, date: new Date()]
-
         if (func == "planned") {
-            base_qry += " and ( coalesce(tipp.accessStartDate, tipp.pkg.startDate) >= :date ) "
+            params.planned = true
+            params.notStatus = RDStore.TIPP_STATUS_DELETED.id
         } else {
-            base_qry += " and ( tipp.accessEndDate <= :date ) "
+            params.expired = true
+            params.notStatus = RDStore.TIPP_STATUS_DELETED.id
         }
 
-        base_qry += " order by ${params.sort ?: 'tipp.name'} ${params.order ?: 'asc'} "
+        Map<String, Object> query = filterService.getTippQuery(params, [packageInstance])
+        result.filterSet = query.filterSet
 
-        log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
-        result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + base_qry, qry_params, limits)
-        result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params).size()
+        List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.query, query.queryParams)
+        result.titlesList = titlesList.drop(result.offset).take(result.max)
+        result.num_tipp_rows = titlesList.size()
 
         result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
 
@@ -796,7 +797,7 @@ class PackageController {
     }
 
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def notes() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
@@ -807,7 +808,7 @@ class PackageController {
         result
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     @Transactional
     def tasks() {
         Map<String, Object> result = [:]
@@ -844,7 +845,7 @@ class PackageController {
         result
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     @Transactional
     def history() {
         Map<String, Object> result = [:]

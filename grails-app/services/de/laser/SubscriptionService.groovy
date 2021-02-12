@@ -560,7 +560,7 @@ class SubscriptionService {
         ies.sort {it.tipp.sortName}
         ies
     }
-
+    @Deprecated
     List getIssueEntitlementsWithFilter(Subscription subscription, params) {
 
         if(subscription) {
@@ -627,11 +627,6 @@ class SubscriptionService {
             if(params.summaryOfContent) {
                 base_qry += " and lower(ie.tipp.summaryOfContent) like :summaryOfContent "
                 qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
-            }
-
-            if(params.seriesNames) {
-                base_qry += " and lower(ie.tipp.seriesName) like :seriesNames "
-                qry_params.seriesNames = "%${params.seriesNames.trim().toLowerCase()}%"
             }
 
             if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
@@ -728,34 +723,6 @@ class SubscriptionService {
                 : []
         ies.sort {it.tipp.sortName}
         ies
-    }
-
-    Set<String> getSubjects(List titleIDs) {
-        Locale locale = LocaleContextHolder.getLocale()
-        Set<String> subjects = []
-
-        if(titleIDs){
-            subjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and id in (:titleIDs) order by subjectReference", [titleIDs: titleIDs])
-        }
-        if(subjects.size() == 0){
-            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, locale)
-        }
-
-        subjects
-    }
-
-    Set<String> getSeriesNames(List titleIDs) {
-        Locale locale = LocaleContextHolder.getLocale()
-        Set<String> seriesName = []
-
-        if(titleIDs){
-            seriesName = TitleInstance.executeQuery("select distinct(seriesName) from TitleInstancePackagePlatform where seriesName is not null and id in (:titleIDs) order by seriesName", [titleIDs: titleIDs])
-        }
-        if(seriesName.size() == 0){
-            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, locale)
-        }
-        seriesName
-
     }
 
     List getCurrentIssueEntitlements(Subscription subscription) {

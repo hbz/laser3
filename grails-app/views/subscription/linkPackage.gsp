@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.Platform; de.laser.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.Platform; de.laser.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.helper.RDConstants; de.laser.helper.RDStore; de.laser.helper.DateUtils;" %>
 <!doctype html>
 
 <html>
@@ -135,7 +135,7 @@
                         <td>
                             <g:if test="${record.lastUpdatedDisplay}">
                                 <g:formatDate formatName="default.date.format.notime"
-                                              date="${new SimpleDateFormat('yyyy-MM-dd HH:mm:ss').parse(record.lastUpdatedDisplay)}"/>
+                                              date="${DateUtils.parseDateGeneric(record.lastUpdatedDisplay)}"/>
                             </g:if>
                         </td>
                         <td class="right aligned">

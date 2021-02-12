@@ -20,9 +20,14 @@ class TippController  {
     Map<String, Object> result = [:]
 
     result.user = contextService.getUser()
-    result.editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
+    result.editable = false
 
     result.tipp = TitleInstancePackagePlatform.get(params.id)
+
+    result.currentTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(result.tipp.pkg, RDStore.TIPP_STATUS_CURRENT).size()
+    result.plannedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateGreaterThan(result.tipp.pkg, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+    result.expiredTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateLessThan(result.tipp.pkg, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+
 
     if (!result.tipp) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstance.label'), params.id])

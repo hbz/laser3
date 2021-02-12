@@ -974,68 +974,41 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def renewEntitlementsWithSurvey() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = contextService.getUser()
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        Subscription newSub = params.targetObjectId ? Subscription.get(params.targetObjectId) : Subscription.get(params.id)
-        Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
-        params.id = newSub.id
-        params.sourceObjectId = baseSub.id
-        params.tab = params.tab ?: 'allIEs'
-        List<IssueEntitlement> sourceIEs
-        if(params.tab == 'allIEs') {
-            sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(baseSub, params+[max:5000,offset:0])
-        }
-        if(params.tab == 'selectedIEs') {
-            sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, params+[ieAcceptStatusNotFixed: true])
-        }
-
-        List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, [max: 5000, offset: 0])
-        List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
-        List<IssueEntitlement> notFixedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub)
-
-        result.subjects = subscriptionService.getSubjects(allIEs.collect {it.tipp.id})
-        result.seriesNames = subscriptionService.getSeriesNames(allIEs.collect {it.tipp.id})
-        result.countSelectedIEs = notFixedIEs.size()
-        result.countAllIEs = allIEs.size()
-        result.countAllSourceIEs = sourceIEs.size()
-        result.num_ies_rows = sourceIEs.size()//subscriptionService.getIssueEntitlementsFixed(baseSub).size()
-        result.sourceIEs = sourceIEs.drop(result.offset).take(result.max)
-        result.targetIEs = targetIEs
-        result.newSub = newSub
-        result.subscription = baseSub
-        result.subscriber = result.newSub.getSubscriber()
-        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
-        String filename = escapeService.escapeString(message(code:'renewEntitlementsWithSurvey.selectableTitles')+'_'+result.newSub.dropdownNamingConvention())
-        if (params.exportKBart) {
-            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-            response.contentType = "text/tsv"
-            ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = exportService.generateTitleExportKBART(sourceIEs)
-            out.withWriter { Writer writer ->
-                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+        Map<String, Object> ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this,params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if(!ctrlResult.result)
+                response.sendError(401)
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
             }
-            out.flush()
-            out.close()
-        }
-        else if(params.exportXLS) {
-            response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportXLS(sourceIEs)
-            Map sheetData = [:]
-            sheetData[g.message(code:'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow:export.titles,columnData:export.rows]
-            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
-            workbook.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            workbook.dispose()
         }
         else {
-            result
+            String filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
+            if (params.exportKBart) {
+                response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+                response.contentType = "text/tsv"
+                ServletOutputStream out = response.outputStream
+                Map<String, List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.sourceIEs)
+                out.withWriter { Writer writer ->
+                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                }
+                out.flush()
+                out.close()
+            } else if (params.exportXLS) {
+                response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                Map<String, List> export = exportService.generateTitleExportXLS(ctrlResult.result.sourceIEs)
+                Map sheetData = [:]
+                sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
+                SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
+                workbook.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                workbook.dispose()
+            } else {
+                ctrlResult.result
+            }
         }
     }
 

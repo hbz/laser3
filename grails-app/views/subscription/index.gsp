@@ -66,21 +66,6 @@
         <div class="column">
 
             <g:if test="${entitlements && entitlements.size() > 0}">
-                ${message(code: 'subscription.entitlement.plural')} ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (entitlements.size())), num_sub_rows])}
-            %{--(<g:if test="${params.mode == 'advanced'}">
-                ${message(code: 'subscription.details.advanced.note')}
-                <g:link controller="subscription" action="index"
-                        params="${params + ['mode': 'basic']}">${message(code: 'default.basic')}</g:link>
-                ${message(code: 'subscription.details.advanced.note.end')}
-            </g:if>
-            <g:else>
-                ${message(code: 'subscription.details.basic.note')}
-                <g:link controller="subscription" action="index" params="${params + ['mode': 'advanced']}"
-                        type="button">${message(code: 'default.advanced')}</g:link>
-                ${message(code: 'subscription.details.basic.note.end')}
-            </g:else>
-            )--}%
-
 
                 <g:if test="${subscription.packages.size() > 1}">
                     <a class="ui right floated button" data-href="#showPackagesModal" data-semui="modal"><g:message
@@ -89,7 +74,7 @@
 
                 <g:if test="${subscription.packages.size() == 1}">
                     <g:link class="ui right floated button" controller="package" action="show"
-                            id="${subscription.packages.pkg.id}"><g:message
+                            id="${subscription.packages[0].pkg.id}"><g:message
                             code="subscription.details.details.package.label"/></g:link>
                 </g:if>
             </g:if>
@@ -191,85 +176,16 @@
     <div class="row">
         <div class="column">
 
-            <g:render template="/templates/filter/javascript"/>
-            <semui:filter showFilterButton="true">
-                <g:form action="index" params="${params}" method="get" class="ui form">
-                    <input type="hidden" name="sort" value="${params.sort}">
-                    <input type="hidden" name="order" value="${params.order}">
-
-                    <div class="three fields">
-                        <div class="field">
-                            <label for="filter">${message(code: 'default.search.text')}</label>
-                            <input name="filter" id="filter" value="${params.filter}"/>
-                        </div>
-
-                        <div class="field">
-                            <label for="pkgfilter">${message(code: 'subscription.details.from_pkg')}</label>
-                            <select class="ui dropdown" name="pkgfilter" id="pkgfilter">
-                                <option value="">${message(code: 'subscription.details.from_pkg.all')}</option>
-                                <g:each in="${subscription.packages}" var="sp">
-                                    <option value="${sp.pkg.id}" ${sp.pkg.id.toString() == params.pkgfilter ? 'selected=true' : ''}>${sp.pkg.name}</option>
-                                </g:each>
-                            </select>
-                        </div>
-                        <g:if test="${params.mode != 'advanced'}">
-                            <div class="field">
-                                <semui:datepicker label="subscription.details.asAt" id="asAt" name="asAt"
-                                                  value="${params.asAt}"
-                                                  placeholder="subscription.details.asAt.placeholder"/>
-                            </div>
-                        </g:if>
-                    </div>
-
-                    <div class="three fields">
-                        <div class="field">
-                            <label for="series_names">${message(code: 'titleInstance.seriesName.label')}</label>
-
-                            <select name="series_names" id="series_names" multiple=""
-                                    class="ui search selection dropdown">
-                                <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                                <g:each in="${seriesNames}" var="seriesName">
-                                    <option <%=(params.list('series_names')?.contains(seriesName)) ? 'selected="selected"' : ''%>
-                                            value="${seriesName}">
-                                        ${seriesName}
-                                    </option>
-                                </g:each>
-                            </select>
-                        </div>
-
-                        <div class="field">
-                            <label for="subject_reference">${message(code: 'titleInstance.subjectReference.label')}</label>
-
-                            <select name="subject_references" id="subject_reference" multiple=""
-                                    class="ui search selection dropdown">
-                                <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                                <g:each in="${subjects}" var="subject">
-                                    <option <%=(params.list('subject_references')?.contains(subject)) ? 'selected="selected"' : ''%>
-                                            value="${subject}">
-                                        ${subject}
-                                    </option>
-                                </g:each>
-                            </select>
-                        </div>
-
-                        <div class="field la-field-right-aligned">
-                            <a href="${request.forwardURI}"
-                               class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
-                            <input type="submit" class="ui secondary button"
-                                   value="${message(code: 'default.button.filter.label')}"/>
-                        </div>
-                    </div>
-                </g:form>
-            </semui:filter>
+            <g:render template="/templates/filter/tipp_ieFilter"/>
 
         </div>
     </div><!--.row-->
 
-
     <div class="row">
         <div class="column">
+
+            <div class="ui blue large label"><g:message code="title.plural"/>: <div class="detail">${num_ies_rows}</div>
+            </div>
 
             <g:form action="subscriptionBatchUpdate" params="${[id: subscription.id]}" class="ui form">
                 <g:set var="counter" value="${offset + 1}"/>
@@ -408,19 +324,10 @@
                                                                     class="bulkcheck"/></g:if></td>
                                 <td>${counter++}</td>
                                 <td>
-                                    <semui:listIcon type="${ie.tipp.titleType}"/>
-                                    <g:link controller="issueEntitlement" id="${ie.id}"
-                                            action="show"><strong>${ie.tipp.name}</strong>
-                                    </g:link>
-                                    <g:if test="${ie.tipp.hostPlatformURL}">
-                                        <semui:linkIcon
-                                                href="${ie.tipp.hostPlatformURL.startsWith('http') ? ie.tipp.hostPlatformURL : 'http://' + ie.tipp.hostPlatformURL}"/>
-                                    </g:if>
-                                    <br/>
                                     <!-- START TEMPLATE -->
-
                                     <g:render template="/templates/title"
-                                              model="${[item: ie, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]}"/>
+                                              model="${[ie: ie, tipp: ie.tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                                                        showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
                                     <!-- END TEMPLATE -->
                                 </td>
 

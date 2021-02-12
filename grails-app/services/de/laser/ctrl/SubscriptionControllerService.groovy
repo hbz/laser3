@@ -1151,6 +1151,53 @@ class SubscriptionControllerService {
         }
     }
 
+    Map<String,Object> renewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String, Object> result = [:]
+        result.institution = contextService.getOrg()
+        result.user = contextService.getUser()
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        if (!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            SwissKnife.setPaginationParams(result, params, (User) result.user)
+
+            Subscription newSub = params.targetObjectId ? Subscription.get(params.targetObjectId) : Subscription.get(params.id)
+            Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
+            params.id = newSub.id
+            params.sourceObjectId = baseSub.id
+            params.tab = params.tab ?: 'allIEs'
+            List<IssueEntitlement> sourceIEs
+            if(params.tab == 'allIEs') {
+                Map query = filterService.getIssueEntitlementQuery(params+[max:5000,offset:0], baseSub)
+                sourceIEs = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams)
+            }
+            if(params.tab == 'selectedIEs') {
+                Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
+                sourceIEs = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams)
+            }
+
+            Map query = filterService.getIssueEntitlementQuery([max: 5000, offset: 0], newSub)
+            List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams)
+            List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
+            List<IssueEntitlement> notFixedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub)
+
+            result.countSelectedIEs = notFixedIEs.size()
+            result.countAllIEs = allIEs.size()
+            result.countAllSourceIEs = sourceIEs.size()
+            result.num_ies_rows = sourceIEs.size()
+            //subscriptionService.getIssueEntitlementsFixed(baseSub).size()
+            result.sourceIEs = sourceIEs.drop(result.offset).take(result.max)
+            result.targetIEs = targetIEs
+            result.newSub = newSub
+            result.subscription = baseSub
+            result.subscriber = result.newSub.getSubscriber()
+            result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+
+            [result:result,status:STATUS_OK]
+        }
+    }
+
     //-------------------------------------- packages section ------------------------------------------
 
     Map<String,Object> linkPackage(SubscriptionController controller, GrailsParameterMap params) {
@@ -1421,91 +1468,14 @@ class SubscriptionControllerService {
             else {
                 SwissKnife.setPaginationParams(result, params, (User) result.user)
             }
-            boolean filterSet = false
             List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription = :sub and ( pc.status is null or pc.status = :status ) order by ts desc",
                     [sub: result.subscription, status: RDStore.PENDING_CHANGE_PENDING])
             result.pendingChanges = pendingChanges
-            String base_qry
-            Map<String,Object> qry_params = [subscription: result.subscription]
-            Date date_filter
-            if (params.asAt && params.asAt.length() > 0) {
-                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                date_filter = sdf.parse(params.asAt)
-                result.as_at_date = date_filter
-                result.editable = false
-            }
-            if (params.filter) {
-                base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
-                if (date_filter) {
-                    // If we are not in advanced mode, hide IEs that are not current, otherwise filter
-                    // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
-                    // qry_params.add(deleted_ie);
-                    base_qry += "and ( ( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate,ie.tipp.accessStartDate) or (ie.accessStartDate is null and ie.subscription.startDate is null and ie.tipp.accessStartDate is null) ) and ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate,ie.tipp.accessEndDate) or (ie.accessEndDate is null and ie.subscription.endDate is null and ie.tipp.accessEndDate is null) OR ( ie.subscription.hasPerpetualAccess = true ) ) ) "
-                    qry_params.startDate = date_filter
-                    qry_params.endDate = date_filter
-                }
-                base_qry += "and ( ( lower(ie.tipp.sortName) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) ) "
-                qry_params.title = "%${params.filter.trim().toLowerCase()}%"
-                qry_params.identifier = "%${params.filter}%"
-                filterSet = true
-            }
-            else {
-                base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
-                /*if (params.mode != 'advanced') {
-                    // If we are not in advanced mode, hide IEs that are not current, otherwise filter
 
-                    base_qry += " and ( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate,ie.tipp.accessStartDate) or (ie.accessStartDate is null and ie.subscription.startDate is null and ie.tipp.accessStartDate is null) ) and ( ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate,ie.accessEndDate) or (ie.accessEndDate is null and ie.subscription.endDate is null and ie.tipp.accessEndDate is null)  or (ie.subscription.hasPerpetualAccess = true) ) ) "
-                    qry_params.startDate = date_filter
-                    qry_params.endDate = date_filter
-                }*/
-            }
-            if(params.mode != 'advanced') {
-                base_qry += " and ie.status = :current "
-                qry_params.current = RDStore.TIPP_STATUS_CURRENT
-            }
-            else {
-                base_qry += " and ie.status != :deleted "
-                qry_params.deleted = RDStore.TIPP_STATUS_DELETED
-            }
-            base_qry += " and ie.acceptStatus = :ieAcceptStatus "
-            qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-            if (params.pkgfilter && (params.pkgfilter != '')) {
-                base_qry += " and ie.tipp.pkg.id = :pkgId "
-                qry_params.pkgId = Long.parseLong(params.pkgfilter)
-                filterSet = true
-            }
-            if (params.titleGroup && (params.titleGroup != '')) {
-                base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) "
-                qry_params.titleGroup = Long.parseLong(params.titleGroup)
-            }
-            if(params.seriesNames) {
-                base_qry += " and lower(ie.tipp.seriesName) like :seriesNames "
-                qry_params.seriesNames = "%${params.seriesNames.trim().toLowerCase()}%"
-                filterSet = true
-            }
-            if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
-                base_qry += " and lower(ie.tipp.subjectReference) in (:subject_references)"
-                qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
-                filterSet = true
-            }
-            if (params.series_names && params.series_names != "" && params.list('series_names')) {
-                base_qry += " and lower(ie.tipp.seriesName) in (:series_names)"
-                qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
-                filterSet = true
-            }
-            if ((params.sort != null) && (params.sort.length() > 0)) {
-                if(params.sort == 'startDate')
-                    base_qry += "order by ic.startDate ${params.order}, lower(ie.tipp.sortName) asc "
-                else if(params.sort == 'endDate')
-                    base_qry += "order by ic.endDate ${params.order}, lower(ie.tipp.sortName) asc "
-                else
-                    base_qry += "order by ie.${params.sort} ${params.order} "
-            }
-            else {
-                base_qry += "order by lower(ie.tipp.name) asc"
-            }
-            result.filterSet = filterSet
-            Set<IssueEntitlement> entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params)
+            params.ieAcceptStatusFixed = true
+            def query = filterService.getIssueEntitlementQuery(params, result.subscription)
+            result.filterSet = query.filterSet
+            Set<IssueEntitlement> entitlements = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams)
             if(params.kbartPreselect) {
                 MultipartFile kbartFile = params.kbartPreselect
                 InputStream stream = kbartFile.getInputStream()
@@ -1515,12 +1485,12 @@ class SubscriptionControllerService {
                 params.remove("uploadCoverageDates")
                 params.remove("uploadPriceInfo")
             }
-            result.subjects = subscriptionService.getSubjects(entitlements.collect { IssueEntitlement ie -> ie.tipp.id})
-            result.seriesNames = subscriptionService.getSeriesNames(entitlements.collect { IssueEntitlement ie -> ie.tipp.id})
+
             if(result.subscription.ieGroups.size() > 0) {
-                result.num_ies = subscriptionService.getIssueEntitlementsWithFilter(result.subscription, [offset: 0, max: 5000]).size()
+                def query2 = filterService.getIssueEntitlementQuery([offset: 0, max: 5000, ieAcceptStatusFixed: true], result.subscription)
+                result.num_ies = IssueEntitlement.executeQuery("select ie " + query2.query, query2.queryParams).size()
             }
-            result.num_sub_rows = entitlements.size()
+            result.num_ies_rows = entitlements.size()
             result.entitlements = entitlements.drop(result.offset).take(result.max)
             Set<SubscriptionPackage> deletedSPs = result.subscription.packages.findAll { SubscriptionPackage sp -> sp.pkg.packageStatus == RDStore.PACKAGE_STATUS_DELETED}
             if(deletedSPs) {
@@ -1610,44 +1580,14 @@ class SubscriptionControllerService {
             // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
             String basequery
             Map<String,Object> qry_params = [subscription:result.subscription,tippStatus:tipp_current,issueEntitlementStatus:ie_current]
-            if (params.filter) {
-                log.debug("Filtering....");
-                basequery = "select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = :subscription ) and tipp.status = :tippStatus and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.id = tipp.id and ie.status = :issueEntitlementStatus ) ) and ( ( lower(tipp.name) like :title ) OR ( exists ( select ident from Identifier ident where ident.tipp.id = tipp.id and ident.value like :idVal ) ) ) "
-                qry_params.title = "%${params.filter.trim().toLowerCase()}%"
-                qry_params.idVal = "%${params.filter}%"
-                filterSet = true
-            }
-            else {
-                basequery = "select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = :subscription ) and tipp.status = :tippStatus and ( not exists ( select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.id = tipp.id and ie.status = :issueEntitlementStatus ) )"
-            }
-            if (params.endsAfter && params.endsAfter.length() > 0) {
-                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                Date d = sdf.parse(params.endsAfter)
-                basequery += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= :endDate"
-                qry_params.endDate = d
-                filterSet = true
-            }
-            if (params.startsBefore && params.startsBefore.length() > 0) {
-                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                Date d = sdf.parse(params.startsBefore)
-                basequery += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= :startDate"
-                qry_params.startDate = d
-                filterSet = true
-            }
-            if (params.pkgfilter && (params.pkgfilter != '')) {
-                basequery += " and tipp.pkg.gokbId = :pkg "
-                qry_params.pkg = params.pkgfilter
-                filterSet = true
-            }
-            if ((params.sort != null) && (params.sort.length() > 0)) {
-                basequery += " order by tipp.${params.sort} ${params.order} "
-                filterSet = true
-            }
-            else {
-                basequery += " order by tipp.sortName asc "
-            }
-            result.filterSet = filterSet
-            tipps.addAll(TitleInstancePackagePlatform.executeQuery(basequery, qry_params))
+
+            params.subscription = result.subscription
+            params.issueEntitlementStatus = ie_current
+            params.addEntitlements = true
+            Map<String, Object> query = filterService.getTippQuery(params, result.subscription.packages?.pkg)
+            result.filterSet = query.filterSet
+            println(query)
+            tipps.addAll(TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams))
             result.num_tipp_rows = tipps.size()
             result.tipps = tipps.drop(result.offset).take(result.max)
             Map identifiers = [zdbIds:[],onlineIds:[],printIds:[],unidentified:[]]
