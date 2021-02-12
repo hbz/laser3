@@ -6,7 +6,6 @@ import de.laser.finance.PriceItem
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 import de.laser.titles.TitleHistoryEventParticipant
-import de.laser.titles.TitleInstance
 import groovy.time.TimeCategory
 import org.springframework.context.i18n.LocaleContextHolder
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat; de.laser.helper.DateUtils;" %>
 <!doctype html>
 
 <html>
@@ -118,7 +118,7 @@
                         <td>
                             <g:if test="${record.lastUpdatedDisplay}">
                                 <g:formatDate formatName="default.date.format.notime"
-                                              date="${new SimpleDateFormat('yyyy-MM-dd HH:mm:ss').parse(record.lastUpdatedDisplay)}"/>
+                                              date="${DateUtils.parseDateGeneric(record.lastUpdatedDisplay)}"/>
                             </g:if>
                         </td>
                         <sec:ifAllGranted roles="ROLE_YODA">

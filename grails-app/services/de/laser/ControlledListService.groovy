@@ -534,4 +534,88 @@ class ControlledListService {
         }
         result
     }
+
+
+    List getAllPossibleTitleTypes() {
+        return TitleInstancePackagePlatform.executeQuery('select distinct(tipp.titleType) from TitleInstancePackagePlatform tipp')
+    }
+
+    Set<String> getAllPossibleSeriesByPackage(Package pkg) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<String> seriesName = []
+
+        seriesName = TitleInstancePackagePlatform.executeQuery("select distinct(seriesName) from TitleInstancePackagePlatform where seriesName is not null and pkg = :pkg order by seriesName", [pkg: pkg])
+
+        if(seriesName.size() == 0){
+            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, locale)
+        }
+        seriesName
+    }
+
+    Set<String> getAllPossibleSeriesBySub(Subscription subscription) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<String> seriesName = []
+
+        if(subscription.packages){
+            seriesName = TitleInstancePackagePlatform.executeQuery("select distinct(seriesName) from TitleInstancePackagePlatform where seriesName is not null and pkg in (:pkg) order by seriesName", [pkg: subscription.packages.pkg])
+        }
+        if(seriesName.size() == 0){
+            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, locale)
+        }
+        seriesName
+    }
+
+    Set<String> getAllPossibleSubjectsByPackage(Package pkg) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<String> subjects = []
+
+        subjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg = :pkg order by subjectReference", [pkg: pkg])
+
+        if(subjects.size() == 0){
+            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, locale)
+        }
+
+        subjects
+    }
+
+    Set<String> getAllPossibleSubjectsBySub(Subscription subscription) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<String> subjects = []
+
+        if(subscription.packages){
+            subjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg in (:pkg) order by subjectReference", [pkg: subscription.packages.pkg])
+        }
+        if(subjects.size() == 0){
+            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, locale)
+        }
+
+        subjects
+    }
+
+    Set<String> getAllPossibleDateFirstOnlineYearByPackage(Package pkg) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<String> subjects = []
+
+        subjects = TitleInstancePackagePlatform.executeQuery("select distinct(Year(dateFirstOnline)) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg = :pkg order by YEAR(dateFirstOnline)", [pkg: pkg])
+
+        if(subjects.size() == 0){
+            subjects << messageSource.getMessage('default.selectionNotPossible.label', null, locale)
+        }
+
+        subjects
+    }
+
+    Set<String> getAllPossibleDateFirstOnlineYearBySub(Subscription subscription) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<String> subjects = []
+
+        if(subscription.packages){
+            subjects = TitleInstancePackagePlatform.executeQuery("select distinct(YEAR(dateFirstOnline)) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg in (:pkg) order by YEAR(dateFirstOnline)", [pkg: subscription.packages.pkg])
+        }
+        if(subjects.size() == 0){
+            subjects << messageSource.getMessage('default.selectionNotPossible.label', null, locale)
+        }
+
+        subjects
+    }
 }

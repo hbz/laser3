@@ -4,7 +4,7 @@
 <head>
     <meta name="layout" content="laser">
     <g:set var="entityName" value="${message(code: 'issueEntitlement.label')}"/>
-    <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]"/></title>
+    <title>${message(code: 'laser')} : <g:message code="default.show.label" args="[entityName]"/></title>
 </head>
 
 <body>
@@ -23,12 +23,12 @@
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
         type="${issueEntitlementInstance.tipp.titleType}"/>
 
-<g:message code="issueEntitlement.for_title.label"/> ${issueEntitlementInstance.tipp.name}
+<g:message code="issueEntitlement.for_title.label" args="[issueEntitlementInstance.tipp.name, issueEntitlementInstance.subscription.name]"/>
 </h1>
 
 <semui:messages data="${flash}"/>
 
-<g:render template="/templates/meta/identifier" model="${[object: issueEntitlementInstance, editable: false]}" />
+<g:render template="/templates/meta/identifier" model="${[object: issueEntitlementInstance, editable: false]}"/>
 
 <div class="la-inline-lists">
     <div class="ui card">
@@ -39,24 +39,14 @@
         </div>
 
         <div class="content">
-            <semui:listIcon type="${issueEntitlementInstance.tipp.titleType}"/>
-            <g:link controller="tipp" action="show"
-                    id="${issueEntitlementInstance.tipp.id}">${issueEntitlementInstance.tipp.name}
-            </g:link>
-            <g:if test="${issueEntitlementInstance.tipp.hostPlatformURL}">
-                <semui:linkIcon
-                        href="${issueEntitlementInstance.tipp.hostPlatformURL.startsWith('http') ? issueEntitlementInstance.tipp.hostPlatformURL : 'http://' + issueEntitlementInstance.tipp.hostPlatformURL}"/>
-            </g:if>
-            <br />
-
         <!-- START TEMPLATE -->
-
             <g:render template="/templates/title"
-                      model="${[item: issueEntitlementInstance, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]}"/>
+                      model="${[ie: issueEntitlementInstance, tipp: issueEntitlementInstance.tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                                showPackage: true, showPlattform: true, showCompact: false, showEmptyFields: true]}"/>
         <!-- END TEMPLATE -->
 
             <g:if test="${issueEntitlementInstance.tipp.titleType.contains('Book')}">
-                <br />
+                <br/>
 
                 <div class="la-title">${message(code: 'subscription.details.coverage_dates')}</div>
 
@@ -78,7 +68,27 @@
 
             </g:if>
 
-            <br />
+            <g:if test="${issueEntitlementInstance.tipp.titleType.contains('Journal')}">
+                <br/>
+
+                <div class="la-title">${message(code: 'subscription.details.coverage_dates')}</div>
+
+                <div class="la-icon-list">
+                    <div class="ui cards">
+                        <g:each in="${issueEntitlementInstance.coverages}" var="covStmt">
+                            <div class="item">
+                                <div class="ui card">
+                                    <g:render template="/templates/tipps/coverageStatement"
+                                              model="${[covStmt: covStmt]}"/>
+                                </div>
+                            </div>
+                        </g:each>
+                    </div>
+                </div>
+
+            </g:if>
+
+            <br/>
 
             <div class="la-title">${message(code: 'subscription.details.access_dates')}</div>
 
@@ -86,135 +96,98 @@
                 <div class="item">
                     <i class="grey calendar icon la-popup-tooltip la-delay"
                        data-content="${message(code: 'subscription.details.access_start')}"></i>
-                <g:if test="${editable}">
-                    <semui:xEditable owner="${issueEntitlementInstance}" type="date" field="accessStartDate"/>
-                    <i class="grey question circle icon la-popup-tooltip la-delay"
-                       data-content="${message(code: 'subscription.details.access_start.note')}"></i>
-                </g:if>
-                <g:else>
-                    <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${issueEntitlementInstance.accessStartDate}"/>
-                </g:else>
+                    <g:if test="${editable}">
+                        <semui:xEditable owner="${issueEntitlementInstance}" type="date"
+                                         field="accessStartDate"/>
+                        <i class="grey question circle icon la-popup-tooltip la-delay"
+                           data-content="${message(code: 'subscription.details.access_start.note')}"></i>
+                    </g:if>
+                    <g:else>
+                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                      date="${issueEntitlementInstance.accessStartDate}"/>
+                    </g:else>
                 </div>
+
                 <div class="item">
                     <i class="grey calendar icon la-popup-tooltip la-delay"
                        data-content="${message(code: 'subscription.details.access_end')}"></i>
-                <g:if test="${editable}">
-                    <semui:xEditable owner="${issueEntitlementInstance}" type="date" field="accessEndDate"/>
-                    <i class="grey question circle icon la-popup-tooltip la-delay"
-                       data-content="${message(code: 'subscription.details.access_end.note')}"></i>
-                </g:if>
-                <g:else>
-                    <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${issueEntitlementInstance.accessEndDate}"/>
-                </g:else>
+                    <g:if test="${editable}">
+                        <semui:xEditable owner="${issueEntitlementInstance}" type="date" field="accessEndDate"/>
+                        <i class="grey question circle icon la-popup-tooltip la-delay"
+                           data-content="${message(code: 'subscription.details.access_end.note')}"></i>
+                    </g:if>
+                    <g:else>
+                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                      date="${issueEntitlementInstance.accessEndDate}"/>
+                    </g:else>
                 </div>
             </div>
 
-            <g:if test="${issueEntitlementInstance.priceItems}">
-                <br />
+            <br/>
 
-                <div class="la-title">${message(code: 'subscription.details.prices')}</div>
+            <div class="la-title">${message(code: 'subscription.details.prices')}</div>
 
-                <div class="la-icon-list">
+            <div class="la-icon-list">
+                <g:if test="${issueEntitlementInstance.priceItems}">
+                    <div class="ui cards">
+                        <g:each in="${issueEntitlementInstance.priceItems}" var="priceItem" status="i">
+                            <div class="item">
+                                <div class="ui card">
+                                    <div class="content">
+                                        <div class="la-card-column">
+                                            <g:message code="tipp.listPrice"/>:
+                                            <semui:xEditable field="listPrice"
+                                                             owner="${priceItem}"/> <semui:xEditableRefData
+                                                    field="listCurrency" owner="${priceItem}" config="Currency"/>
 
-                    <g:each in="${issueEntitlementInstance.priceItems}" var="priceItem" status="i">
+                                            <br/>
+                                            <g:message code="tipp.localPrice"/>: <semui:xEditable field="localPrice"
+                                                                                                  owner="${priceItem}"/> <semui:xEditableRefData
+                                                    field="localCurrency" owner="${priceItem}" config="Currency"/>
+                                            <br/>
+                                            (<g:message code="tipp.priceStartDate"/> <semui:xEditable field="startDate"
+                                                                                                      type="date"
+                                                                                                      owner="${priceItem}"/>-
+                                            <g:message code="tipp.priceEndDate"/> <semui:xEditable field="endDate"
+                                                                                                   type="date"
+                                                                                                   owner="${priceItem}"/>)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </g:each>
+                    </div>
+                </g:if>
+            </div>
+            <br/>
+
+            <div class="la-title">${message(code: 'subscription.details.ieGroups')}</div>
+
+            <div class="la-icon-list">
+                <g:if test="${issueEntitlementInstance.ieGroups}">
+                    <g:each in="${issueEntitlementInstance.ieGroups.sort { it.ieGroup.name }}" var="titleGroup">
                         <div class="item">
-                            <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice"
-                                                                                 owner="${issueEntitlementInstance.priceItem}"
-                                                                                 overwriteEditable="false"/> <semui:xEditableRefData
-                                    field="listCurrency" owner="${issueEntitlementInstance.priceItem}" config="Currency"
-                                    overwriteEditable="false"/>
-                        </div>
+                            <i class="grey icon object group la-popup-tooltip la-delay"
+                               data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
 
-                        <div class="item">
-                            <g:message code="tipp.localPrice"/>: <semui:xEditable field="localPrice"
-                                                                                  owner="${issueEntitlementInstance.priceItem}"
-                                                                                  overwriteEditable="false"/> <semui:xEditableRefData
-                                    field="localCurrency" owner="${issueEntitlementInstance.priceItem}" config="Currency"
-                                    overwriteEditable="false"/>
-                            (<g:message code="tipp.priceStartDate"/> <semui:xEditable field="startDate" type="date"
-                                                                                      owner="${issueEntitlementInstance.priceItem}"
-                                                                                      overwriteEditable="false"/>-
-                            <g:message code="tipp.priceEndDate"/> <semui:xEditable field="endDate" type="date"
-                                                                                   owner="${issueEntitlementInstance.priceItem}"
-                                                                                   overwriteEditable="false"/>)
-                        </div>
-                    </g:each>
-
-                </div>
-            </g:if>
-
-            <g:if test="${issueEntitlementInstance.ieGroups}">
-                <br />
-
-                <div class="la-title">${message(code: 'subscription.details.ieGroups')}</div>
-
-                <div class="la-icon-list">
-                    <g:each in="${issueEntitlementInstance.ieGroups.sort{it.ieGroup.name}}" var="titleGroup">
-                        <div class="item">
-                            <i class="grey icon object group la-popup-tooltip la-delay" data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
                             <div class="content">
-                                <g:link controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}" params="[titleGroup: titleGroup.ieGroup.id]" >${titleGroup.ieGroup.name}</g:link>
+                                <g:link controller="subscription" action="index"
+                                        id="${issueEntitlementInstance.subscription.id}"
+                                        params="[titleGroup: titleGroup.ieGroup.id]">${titleGroup.ieGroup.name}</g:link>
                             </div>
                         </div>
                     </g:each>
-                </div>
-            </g:if>
+                </g:if>
+            </div>
         </div>
 
     </div>
 
-    <g:if test="${issueEntitlementInstance.tipp.titleType == "Journal"}">
-        <div class="ui card">
-            <div class="content">
-                <h3 class="ui header"><strong><g:message
-                        code="issueEntitlement.subscription_access.label"/></strong> :
-                <g:link controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}">
-                    ${issueEntitlementInstance.subscription.name}
-                </g:link>
-                </h3>
-            </div>
-
-            <div class="content">
-                <table class="ui celled la-table table">
-                    <thead>
-                    <tr>
-                        <th><g:message code="tipp.startDate"/></th>
-                        <th><g:message code="tipp.startVolume"/></th>
-                        <th><g:message code="tipp.startIssue"/></th>
-                        <th><g:message code="tipp.startDate"/></th>
-                        <th><g:message code="tipp.endVolume"/></th>
-                        <th><g:message code="tipp.endIssue"/></th>
-                        <th><g:message code="tipp.embargo"/></th>
-                        <th><g:message code="tipp.coverageDepth"/></th>
-                        <th><g:message code="tipp.coverageNote"/></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <g:each in="${issueEntitlementInstance.coverages}" var="ieCoverage">
-                        <tr>
-                            <td><semui:xEditable owner="${ieCoverage}" field="startDate" type="date"/></td>
-                            <td><semui:xEditable owner="${ieCoverage}" field="startVolume"/></td>
-                            <td><semui:xEditable owner="${ieCoverage}" field="startIssue"/></td>
-                            <td><semui:xEditable owner="${ieCoverage}" field="endDate" type="date"/></td>
-                            <td><semui:xEditable owner="${ieCoverage}" field="endVolume"/></td>
-                            <td><semui:xEditable owner="${ieCoverage}" field="endIssue"/></td>
-                            <td><semui:xEditable owner="${ieCoverage}" field="embargo"/></td>
-                            <td><semui:xEditable owner="${ieCoverage}" field="coverageDepth"/></td>
-                            <td><semui:xEditable owner="${ieCoverage}" field="coverageNote"/></td>
-                        </tr>
-                    </g:each>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </g:if>
-
 
 
     <g:if test="${(institutional_usage_identifier) && (usage != null) && (usage.size() > 0)}">
-        <br />
+        <br/>
 
         <div class="ui card">
             <div class="content">
@@ -306,58 +279,6 @@
         </div>
     </g:if>
 
-
-    <g:if test="${issueEntitlementInstance.tipp.titleType == "Journal"}">
-        <br />
-
-        <div class="ui card">
-            <div class="content">
-                <h3 class="ui header">
-                    <strong><g:message
-                            code="issueEntitlement.package_defaults.label"/></strong>:
-                <g:link controller="package" action="show"
-                        id="${issueEntitlementInstance.tipp.pkg.id}">${issueEntitlementInstance.tipp.pkg.name}
-                </g:link>
-
-                </h3>
-            </div>
-
-            <div class="content">
-                <table class="ui celled la-table table">
-                    <thead>
-                    <tr>
-                        <th><g:message code="tipp.startDate"/></th>
-                        <th><g:message code="tipp.startVolume"/></th>
-                        <th><g:message code="tipp.startIssue"/></th>
-                        <th><g:message code="tipp.endDate"/></th>
-                        <th><g:message code="tipp.endVolume"/></th>
-                        <th><g:message code="tipp.endIssue"/></th>
-                        <th><g:message code="tipp.embargo"/> (tipp)</th>
-                        <th><g:message code="tipp.coverageDepth"/></th>
-                        <th><g:message code="tipp.coverageNote"/></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <g:each in="${issueEntitlementInstance.tipp.coverages}" var="tippCoverage">
-                        <tr>
-                            <td><g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                              date="${tippCoverage.startDate}"/></td>
-                            <td>${tippCoverage.startVolume}</td>
-                            <td>${tippCoverage.startIssue}</td>
-                            <td><g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                              date="${tippCoverage.endDate}"/></td>
-                            <td>${tippCoverage.endVolume}</td>
-                            <td>${tippCoverage.endIssue}</td>
-                            <td>${tippCoverage.embargo}</td>
-                            <td>${tippCoverage.coverageDepth}</td>
-                            <td>${tippCoverage.coverageNote}</td>
-                        </tr>
-                    </g:each>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </g:if>
 
 
 <%-- we should not be supposed to see the same tipp in other circumstances ... do we need the following information at all?

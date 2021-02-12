@@ -32,97 +32,11 @@
             <div class="sixteen wide column">
 
                 <semui:form>
-                <div class="la-icon-list">
-                    <div class="item">
-                        <semui:listIcon type="${ti.printTitleType()}"/>
-                        <div class="content">
-                            ${ti.printTitleType()}
-                        </div>
-                    </div>
-                    <g:if test="${ti instanceof BookInstance && (ti.firstAuthor || ti.firstEditor)}">
-                        <div class="item">
-                            <i class="grey icon user circle la-popup-tooltip la-delay" data-content="${message(code: 'author.slash.editor')}"></i>
-                            <div class="content">
-                                ${ti.getEbookFirstAutorOrFirstEditor()}
-                            </div>
-                        </div>
-                    </g:if>
-
-                    <g:if test="${ti instanceof BookInstance}">
-                        <g:if test="${ti.volume}">
-                        <div class="item">
-                            <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
-                            <div class="content">
-                                 ${ti.volume})
-                            </div>
-                        </div>
-                        </g:if>
-                        <g:if test="${ti.editionStatement}">
-                        <div class="item">
-                            <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>
-                            <div class="content">
-                                ${ti.editionStatement}
-                            </div>
-                        </div>
-                        </g:if>
-                        <g:if test="${ti.editionNumber}">
-                        <div class="item">
-                            <i class="grey icon copy outline la-popup-tooltip la-delay" data-content="${message(code: 'title.editionNumber.label')}"></i>
-                            <div class="content">
-                                ${ti.editionNumber}
-                            </div>
-                        </div>
-                        </g:if>
-                        <g:if test="${ti.summaryOfContent}">
-                        <div class="item">
-                            <i class="grey icon desktop la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
-                            <div class="content">
-                                ${ti.summaryOfContent}
-                            </div>
-                        </div>
-                        </g:if>
-                        <g:if test="${ti.seriesName}">
-                            <div class="item">
-                                <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.seriesName.label')}"></i>
-                                <div class="content">
-                                    ${ti.seriesName}
-                                </div>
-                            </div>
-                        </g:if>
-                        <g:if test="${ti.subjectReference}">
-                            <div class="item">
-                                <i class="grey icon comment alternate la-popup-tooltip la-delay" data-content="${message(code: 'title.subjectReference.label')}"></i>
-                                <div class="content">
-                                    ${ti.subjectReference}
-                                </div>
-                            </div>
-                        </g:if>
-
-                        <div class="item">
-                            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                               data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                        <div class="content">
-                            <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${ti.dateFirstInPrint}"/>
-                        </div>
-                        </div>
-                        <div class="item">
-                            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                   data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                        <div class="content"><g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                              date="${ti.dateFirstOnline}"/>
-                        </div>
-                        </div>
-                    </g:if>
-
-                    <div class="item">
-                        <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.status.label')}"></i>
-                        <div class="content">
-                            ${ti.status.getI10n("value")}
-                        </div>
-                    </div>
-
-                </div>
+                    <!-- START TEMPLATE -->
+                    <g:render template="/templates/title"
+                              model="${[ie: null, tipp: ti, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                                        showPackage: true, showPlattform: true, showCompact: false, showEmptyFields: true]}"/>
+                    <!-- END TEMPLATE -->
                 </semui:form>
             </div>
 
@@ -258,7 +172,7 @@
                   </g:if>
 
                   <g:each in="${t?.title?.ids?.sort{it?.ns?.ns}}" var="id">
-                      <span class="ui small blue image label">
+                      <span class="ui small basic image label">
                           ${id.ns.ns}: <div class="detail">${id.value}</div>
                       </span>
                   </g:each>

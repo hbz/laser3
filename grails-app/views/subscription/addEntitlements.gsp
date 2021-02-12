@@ -27,58 +27,8 @@
 <%-- <g:render template="nav"/> --%>
 
 <g:set var="counter" value="${offset + 1}"/>
-${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (tipps?.size())), num_tipp_rows])} )
 
-<g:render template="/templates/filter/javascript" />
-<semui:filter showFilterButton="true">
-    <g:form class="ui form" action="addEntitlements" params="${params}" method="get">
-        <input type="hidden" name="sort" value="${params.sort}">
-        <input type="hidden" name="order" value="${params.order}">
-
-        <div class="fields two">
-            <div class="field">
-                <label for="filter">${message(code: 'subscription.compare.filter.title')}</label>
-                <input id="filter" name="filter" value="${params.filter}"/>
-            </div>
-
-            <div class="field">
-                <label for="pkgfilter">${message(code: 'subscription.details.from_pkg')}</label>
-                <select id="pkgfilter" name="pkgfilter">
-                    <option value="">${message(code: 'subscription.details.from_pkg.all')}</option>
-                    <g:if test="${params.packageLinkPreselect}">
-                        <option value="${params.packageLinkPreselect}" selected=selected>${params.preselectedName}</option>
-                    </g:if>
-                    <%--<g:elseif test="${!subscription.packages.find { sp -> sp.pkg.gokbId == params.pkgFilter}}">
-                        <option value="${params.pkgFilter}" selected=selected>${params.preselectedName}</option>
-                    </g:elseif>--%>
-                    <g:each in="${subscription.packages}" var="sp">
-                        <option value="${sp.pkg.gokbId}" ${sp.pkg.gokbId == params.pkgfilter ? 'selected=selected' : ''}>${sp.pkg.name}</option>
-                    </g:each>
-                </select>
-            </div>
-        </div>
-
-        <div class="three fields">
-            <div class="field">
-                <semui:datepicker label="default.startsBefore.label" id="startsBefore" name="startsBefore"
-                                  value="${params.startsBefore}"/>
-            </div>
-
-            <div class="field">
-                <semui:datepicker label="default.endsAfter.label" id="endsAfter" name="endsAfter"
-                                  value="${params.endsAfter}"/>
-            </div>
-
-            <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui secondary button"
-                       value="${message(code: 'default.button.filter.label')}">
-            </div>
-        </div>
-
-    </g:form>
-</semui:filter>
+<g:render template="/templates/filter/tipp_ieFilter"/>
 
     <semui:messages data="${flash}"/>
 
@@ -193,125 +143,12 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             <td>${counter++}</td>
 
             <td>
-            <semui:listIcon type="${tipp.titleType}"/>
-            <strong><g:link controller="tipp" action="show"
-                            id="${tipp.id}">${tipp.name}</g:link></strong>
-
-            <g:if test="${tipp.titleType.contains('Book') && tipp.volume}">
-                (${message(code: 'title.volume.label')} ${tipp.volume})
-            </g:if>
-
-            <g:if test="${tipp.titleType.contains('Book') && (tipp.firstAuthor || tipp.firstEditor)}">
-                <br /><strong>${tipp.getEbookFirstAutorOrFirstEditor()}</strong>
-            </g:if>
-
-            <br />
-                <g:if test="${tipp?.id}">
-                    <div class="la-title">${message(code: 'default.details.label')}</div>
-                    <g:link class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                            data-content="${message(code: 'laser')}"
-                            href="${tipp?.hostPlatformURL.contains('http') ? tipp?.hostPlatformURL : 'http://' + tipp?.hostPlatformURL}"
-                            target="_blank"
-                            controller="tipp" action="show"
-                            id="${tipp?.id}">
-                        <i class="book icon"></i>
-                    </g:link>
-                </g:if>
-                <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
-                        var="gokbAPI">
-                    <g:if test="${tipp?.gokbId}">
-                        <a role="button"
-                           class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                           data-content="${message(code: 'gokb')}"
-                           href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/?id=' + tipp?.gokbId : '#'}"
-                           target="_blank"><i class="la-gokb  icon"></i>
-                        </a>
-                    </g:if>
-                </g:each>
-            <br />
-
-            <g:if test="${tipp.titleType.contains('Book')}">
-                <g:if test="${tipp.editionStatement}">
-                <div class="item"><strong>${message(code: 'title.editionStatement.label')}:</strong> ${tipp.editionStatement}
-                </div>
-                </g:if>
-                <g:if test="${tipp.summaryOfContent}">
-                <div class="item">
-                     ${tipp.summaryOfContent}
-                </div>
-                </g:if>
-            </g:if>
-
-                <g:if test="${tipp.seriesName}">
-                    <div class="item">
-                        <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.seriesName.label')}"></i>
-                        <div class="content">
-                            ${tipp.seriesName}
-                        </div>
-                    </div>
-                </g:if>
-
-                <g:if test="${tipp.subjectReference}">
-                    <div class="item">
-                        <i class="grey icon comment alternate la-popup-tooltip la-delay" data-content="${message(code: 'title.subjectReference.label')}"></i>
-                        <div class="content">
-                            ${tipp.subjectReference}
-                        </div>
-                    </div>
-                </g:if>
-
-            <g:if test="${tipp.hostPlatformURL}">
-                <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
-            </g:if>
-            <br />
-            <g:each in="${tipp.ids?.sort { it.ns.ns }}" var="id">
-                <span class="ui small blue image label">
-                    ${id.ns.ns}: <div class="detail">${id.value}</div>
-                </span>
-            </g:each>
-
-
-            <div class="ui list">
-                <div class="item" title="${tipp.availabilityStatusExplanation}">
-                    <strong>${message(code: 'default.access.label')}:</strong> ${tipp.availabilityStatus?.getI10n('value')}
-                </div>
-
-            </div>
-
-            <div class="item">
-                <strong>${message(code: 'default.status.label')}:</strong>
-                <%--<semui:xEditableRefData owner="${tipp}" field="status" config="${de.laser.helper.RDConstants.TIPP_STATUS}"/>--%>
-                ${tipp.status.getI10n('value')}
-            </div>
-
-            <div class="item"><strong>${message(code: 'package.label')}:</strong>
-
-                <div class="la-flexbox">
-                    <i class="icon gift scale la-list-icon"></i>
-                    <g:link controller="package" action="show" id="${tipp?.pkg?.id}">${tipp?.pkg?.name}</g:link>
-                </div>
-            </div>
-
-            <div class="item"><strong>${message(code: 'tipp.platform')}:</strong>
-                <g:if test="${tipp?.platform.name}">
-                    ${tipp?.platform.name}
-                </g:if>
-                <g:else>${message(code: 'default.unknown')}</g:else>
-                <g:if test="${tipp?.platform.name}">
-                    <g:link class="ui icon mini  button la-url-button la-popup-tooltip la-delay"
-                            data-content="${message(code: 'tipp.tooltip.changePlattform')}"
-                            controller="platform" action="show" id="${tipp?.platform.id}">
-                        <i class="pencil alternate icon"></i>
-                    </g:link>
-                </g:if>
-                <g:if test="${tipp?.platform?.primaryUrl}">
-                    <a role="button" class="ui icon mini blue button la-url-button la-popup-tooltip la-delay"
-                       data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                       href="${tipp?.platform?.primaryUrl?.contains('http') ? tipp?.platform?.primaryUrl : 'http://' + tipp?.platform?.primaryUrl}"
-                       target="_blank"><i class="share square icon"></i></a>
-                </g:if>
-            </div>
-        </td>
+                <!-- START TEMPLATE -->
+                <g:render template="/templates/title"
+                          model="${[ie: null, tipp: tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                                    showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
+                <!-- END TEMPLATE -->
+            </td>
 
             <td>
                 <g:if test="${tipp.titleType.contains('Book')}">
