@@ -34,9 +34,10 @@
   }
 }
 
-.la-list-border-around {
-  border: 1px solid @laSecondaryColor;
+td .la-list-border-around {
+     border: 1px solid @laSecondaryColor;
 }
+
 .ui.item.person-details:hover {
   background: white!important;
 }
