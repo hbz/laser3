@@ -358,7 +358,7 @@
                                     <dd>
                                         <g:each in="${subscription.ids?.sort { it.ns.ns }}"
                                                 var="id">
-                                            <span class="ui small blue image label">
+                                            <span class="ui small basic image label">
                                                 ${id.ns.ns}: <div class="detail">${id.value}</div>
                                             </span>
                                         </g:each>
@@ -925,12 +925,11 @@
                 <g:if test="${editable && properties && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
                     <td colspan="6">
                         <g:form action="addSurveyPropToConfig" controller="survey" method="post" class="ui form">
-                            <semui:msg class="info" message="messageRequiredField" />
                             <g:hiddenField name="id" value="${surveyInfo.id}"/>
                             <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
 
                             <div class="field required">
-                                <label>${message(code: 'surveyConfigs.property')}</label>
+                                <label>${message(code: 'surveyConfigs.property')} <g:message code="messageRequiredField" /></label>
                                 <semui:dropdown name="selectedProperty"
 
                                                 class="la-filterPropDef"

@@ -84,9 +84,26 @@
                 <g:render template="/myInstitution/reporting/query/organisation" />
             </g:if>
 
+            <div id="chart-wrapper"></div>
+
+            <div id="chart-details"></div>
+
+            <style>
+            #chart-wrapper {
+                height: 450px;
+                width: 98%;
+                margin: 1em auto;
+            }
+            </style>
+
         </g:if>
 
+
         <laser:script file="${this.getGroovyPageFileName()}">
+            if (! JSPC.app.reporting) { JSPC.app.reporting = {}; }
+            if (! JSPC.app.reporting.current) { JSPC.app.reporting.current = {}; }
+            if (! JSPC.app.reporting.current.chart) { JSPC.app.reporting.current.chart = {}; }
+
             $('#filter-chooser').on( 'change', function(e) {
                 $('.filter-form-wrapper').addClass('hidden')
                 $('#filter-' + $(e.target).dropdown('get value')).removeClass('hidden');
@@ -96,38 +113,88 @@
                 var value = $(e.target).dropdown('get value');
                 if (value) {
                     $('*[id^=query-chooser').not($('#' + e.target.id)).dropdown('clear');
-                    JSPC.app.reporting.requestConfig.query = value;
-                    JSPC.app.reporting.sendChartRequest();
+                    JSPC.app.reporting.current.request.query = value;
+                    JSPC.app.reporting.requestChart();
                 }
             })
 
             $('#chart-chooser').on( 'change', function(e) {
-                JSPC.app.reporting.requestConfig.chart = $(e.target).dropdown('get value');
-                JSPC.app.reporting.sendChartRequest();
+                JSPC.app.reporting.current.request.chart = $(e.target).dropdown('get value');
+                JSPC.app.reporting.requestChart();
             })
 
-            if (! JSPC.app.reporting) { JSPC.app.reporting = {} }
+            $('#chart-export').on( 'click', function(e) {
+                if ( JSPC.app.reporting.current.request.query ) {
+                    JSPC.app.reporting.requestExport();
+                }
+            })
 
-            JSPC.app.reporting.sendChartRequest = function() {
-                //console.log( JSPC.app.reporting.requestConfig );
+            JSPC.app.reporting.requestExport = function() {
+                console.log(JSPC.app.reporting.current.request);
+                alert('Noch nicht implementiert');
+            }
 
-                if ( JSPC.app.reporting.requestConfig.query && JSPC.app.reporting.requestConfig.chart ) {
+            JSPC.app.reporting.requestChart = function() {
+                if ( JSPC.app.reporting.current.request.query && JSPC.app.reporting.current.request.chart ) {
+                    JSPC.app.reporting.current.chart = {};
+
                     $.ajax({
-                        url: "<g:createLink controller="myInstitution" action="reportingChart" />",
+                        url: "<g:createLink controller="ajaxJson" action="chart" />",
                         dataType: 'script',
                         method: 'post',
-                        data: JSPC.app.reporting.requestConfig
-                    }).done( function (data) {
+                        data: JSPC.app.reporting.current.request
+                    })
+                    .done( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
+                        $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
 
                         var chart = echarts.init($('#chart-wrapper')[0]);
-                        chart.setOption( JSPC.app.reporting.chartOption );
+                        chart.setOption( JSPC.app.reporting.current.chart.option );
+                        chart.on( 'click', function (params) {
+                            var valid = false;
+
+                            if (JSPC.app.reporting.current.request.chart == 'pie') {
+                                $.each( JSPC.app.reporting.current.chart.details, function(i, v) {
+                                    if (params.data.id == v.id) {
+                                        valid = true;
+                                        JSPC.app.reporting.requestChartDetails(JSPC.app.reporting.current.request, v);
+                                    }
+                                })
+                            }
+                            else if (JSPC.app.reporting.current.request.chart == 'bar') {
+                                $.each( JSPC.app.reporting.current.chart.details, function(i, v) {
+                                    if (params.data[0] == v.id) {
+                                        valid = true;
+                                        JSPC.app.reporting.requestChartDetails(JSPC.app.reporting.current.request, v);
+                                    }
+                                })
+                            }
+                            if (! valid) {
+                                alert('Keine Details verfügbar / Noch nicht implementiert');
+                            }
+                        });
                     })
                     .fail( function (data) {
-                        console.log( data) ;
+                        $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                     })
                 }
             }
+
+            JSPC.app.reporting.requestChartDetails = function(request, data) {
+                $.ajax({
+                    url: "<g:createLink controller="ajaxHtml" action="chartDetails" />",
+                    method: 'post',
+                    data: data
+                })
+                .done( function (data) {
+                     $('#chart-details').empty();
+                     $('#chart-details').html(data);
+                })
+                .fail( function (data) {
+                    alert('Unbekannter Fehler');
+                })
+            }
+
         </laser:script>
 
     </body>

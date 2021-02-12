@@ -39,13 +39,13 @@ class OrganisationFilter {
                 break
             case 'all-inst':
                 queryParams.orgIdList = Org.executeQuery(
-                        'select o.id from Org o where (o.status is null or o.status != :orgStatus) and exists (select ot from o.orgType ot where ot = :orgType )',
+                        'select o.id from Org o where (o.status is null or o.status != :orgStatus) and exists (select ot from o.orgType ot where ot = :orgType)',
                         [orgStatus: RDStore.ORG_STATUS_DELETED, orgType: RDStore.OT_INSTITUTION]
                 )
                 break
             case 'all-provider':
                 queryParams.orgIdList = Org.executeQuery(
-                        'select o.id from Org o where (o.status is null or o.status != :orgStatus) and exists (select ot from o.orgType ot where ot in (:orgTypes) )',
+                        'select o.id from Org o where (o.status is null or o.status != :orgStatus) and exists (select ot from o.orgType ot where ot in (:orgTypes))',
                         [orgStatus: RDStore.ORG_STATUS_DELETED, orgTypes: [RDStore.OT_PROVIDER, RDStore.OR_AGENCY]]
                 )
                 break
@@ -84,7 +84,7 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                 String p = key.replaceFirst(cmbKey,'')
                 String pType = Cfg.getFormFieldType(Cfg.config.Organisation, p)
 
-                // --> generic properties
+                // --> properties generic
                 if (pType == Cfg.FORM_TYPE_PROPERTY) {
                     whereParts.add( 'org.' + p + ' = :p' + (++pCount) )
                     if (Org.getDeclaredField(p).getType() == Date) {
@@ -94,7 +94,7 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                         queryParams.put( 'p' + pCount, params.get(key) )
                     }
                 }
-                // --> generic refdata
+                // --> refdata generic
                 else if (pType == Cfg.FORM_TYPE_REFDATA) {
                     whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )

@@ -1,3 +1,4 @@
+<%@ page import="de.laser.titles.BookInstance; de.laser.helper.RDStore; de.laser.ApiSource" %>
 <!doctype html>
 <html>
 <head>
@@ -22,296 +23,301 @@
 
 <semui:messages data="${flash}"/>
 
-<semui:form>
 
-    <div class="la-icon-list">
+<div class="la-inline-lists">
 
-        %{--<div class="item">
-            <i class="grey key icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'default.access.label')}"></i>
-
-            <div class="content">
-                ${tipp.availabilityStatus?.getI10n('value')}
-            </div>
-        </div>--}%
-
-        <div class="item">
-            <semui:listIcon type="${tipp.titleType}"/>
-            <div class="content">
-                ${tipp.titleType}
-            </div>
-        </div>
-        <g:if test="${tipp.titleType.contains('Book') && (tipp.firstAuthor || tipp.firstEditor)}">
-            <div class="item">
-                <i class="grey icon user circle la-popup-tooltip la-delay" data-content="${message(code: 'author.slash.editor')}"></i>
-                <div class="content">
-                    ${tipp.getEbookFirstAutorOrFirstEditor()}
-                </div>
-            </div>
-        </g:if>
-
-        <g:if test="${tipp.titleType.contains('Book')}">
-            <g:if test="${tipp.volume}">
-                <div class="item">
-                    <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
-                    <div class="content">
-                        ${tipp.volume})
-                    </div>
-                </div>
-            </g:if>
-            <g:if test="${tipp.editionStatement}">
-                <div class="item">
-                    <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>
-                    <div class="content">
-                        ${tipp.editionStatement}
-                    </div>
-                </div>
-            </g:if>
-            <g:if test="${tipp.editionNumber}">
-                <div class="item">
-                    <i class="grey icon copy outline la-popup-tooltip la-delay" data-content="${message(code: 'title.editionNumber.label')}"></i>
-                    <div class="content">
-                        ${tipp.editionNumber}
-                    </div>
-                </div>
-            </g:if>
-            <g:if test="${tipp.summaryOfContent}">
-                <div class="item">
-                    <i class="grey icon desktop la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
-                    <div class="content">
-                        ${tipp.summaryOfContent}
-                    </div>
-                </div>
-            </g:if>
-            <g:if test="${tipp.seriesName}">
-                <div class="item">
-                    <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.seriesName.label')}"></i>
-                    <div class="content">
-                        ${tipp.seriesName}
-                    </div>
-                </div>
-            </g:if>
-            <g:if test="${tipp.subjectReference}">
-                <div class="item">
-                    <i class="grey icon comment alternate la-popup-tooltip la-delay" data-content="${message(code: 'title.subjectReference.label')}"></i>
-                    <div class="content">
-                        ${tipp.subjectReference}
-                    </div>
-                </div>
-            </g:if>
-
-            <div class="item">
-                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                <div class="content">
-                    <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${tipp.dateFirstInPrint}"/>
-                </div>
-            </div>
-            <div class="item">
-                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                <div class="content"><g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                   date="${tipp.dateFirstOnline}"/>
-                </div>
-            </div>
-        </g:if>
-
-        <div class="item">
-            <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.show.accessStart')}"></i>
-
-            <div class="content">
-                <g:formatDate date="${tipp.accessStartDate}" format="${message(code:'default.date.format.notime')}"/>
-            </div>
+    <div class="ui card">
+        <div class="content">
+            <div class="header"><g:message code="title.label"/></div>
         </div>
 
-        <div class="item">
-            <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.show.accessEnd')}"></i>
+        <div class="content">
 
-            <div class="content">
-                <g:formatDate date="${tipp.accessEndDate}" format="${message(code:'default.date.format.notime')}"/>
-            </div>
-        </div>
+            <!-- START TEMPLATE -->
+                <g:render template="/templates/title"
+                          model="${[ie: null, tipp: tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                                    showPackage: false, showPlattform: false, showCompact: false, showEmptyFields: true]}"/>
+            <!-- END TEMPLATE -->
+            <br/>
+            <br/>
 
-        <g:if test="${tipp.coverages}">
-            <dt><g:message code="tipp.coverage"/></dt>
-            <dd>
-                <div class="ui cards">
-                    <g:each in="${tipp.coverages}" var="coverage">
-                        <div class="ui card">
-                            <div class="content">
-                                <div class="la-card-column">
-                                    <!-- von -->
-                                    <g:formatDate date="${coverage.startDate}"
-                                                  format="${message(code: 'default.date.format.notime')}"/><br />
-                                    <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                       data-content="${message(code: 'tipp.volume')}"></i>
-                                    ${coverage.startVolume}<br />
-                                    <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
-                                       data-content="${message(code: 'tipp.issue')}"></i>
-                                    ${coverage.startIssue}
-                                    <semui:dateDevider/>
-                                    <!-- bis -->
-                                    <g:formatDate date="${coverage.endDate}"
-                                                  format="${message(code: 'default.date.format.notime')}"/><br />
-                                    <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                       data-content="${message(code: 'tipp.volume')}"></i>
-                                    ${coverage.endVolume}<br />
-                                    <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
-                                       data-content="${message(code: 'tipp.issue')}"></i>
-                                    ${coverage.endIssue}
+            <div class="la-title"><g:message code="tipp.coverage"/></div>
+
+            <div class="la-icon-list">
+
+                <g:if test="${tipp.titleType.contains('Book')}">
+                    <div class="item">
+                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                           data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
+                        <${message(code: 'default.date.format.notime')}: g:formatDate
+                                                                         format="${message(code: 'default.date.format.notime')}"
+                                                                         date="${tipp.dateFirstInPrint}"/>
+                    </div>
+
+                    <div class="item">
+                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                           data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
+                        ${message(code: 'default.date.format.notime')}: <g:formatDate
+                                format="${message(code: 'default.date.format.notime')}"
+                                date="${tipp.dateFirstOnline}"/>
+                    </div>
+
+                </g:if>
+                <g:elseif test="${tipp.titleType == 'Journal'}">
+                    <div class="ui cards">
+                        <g:each in="${tipp.coverages}" var="covStmt">
+                            <div class="item">
+                                <div class="ui card">
+                                    <g:render template="/templates/tipps/coverageStatement"
+                                              model="${[covStmt: covStmt]}"/>
                                 </div>
+                            </div>
+                        </g:each>
+                    </div>
+                </g:elseif>
+            </div>
+            <br/>
 
-                                <div class="la-card-column-with-row">
-                                    <div class="la-card-row">
-                                        <i class="grey icon file alternate right la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'tipp.coverageDepth')}"></i>${coverage.coverageDepth}<br />
-                                        <i class="grey icon quote right la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'tipp.coverageNote')}"></i>${coverage.coverageNote}<br />
-                                        <i class="grey icon hand paper right la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'tipp.embargo')}"></i>${coverage.embargo}<br />
+            <div class="la-title">${message(code: 'tipp.access_dates')}</div>
+
+            <div class="la-icon-list">
+                <div class="item">
+                    <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
+                       data-content="${message(code: 'tipp.show.accessStart')}"></i>
+
+                    <div class="content">
+                        ${message(code: 'tipp.show.accessStart')}: <g:formatDate date="${tipp.accessStartDate}"
+                                                                                 format="${message(code: 'default.date.format.notime')}"/>
+                    </div>
+                </div>
+
+                <div class="item">
+                    <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
+                       data-content="${message(code: 'tipp.show.accessEnd')}"></i>
+
+                    <div class="content">
+                        ${message(code: 'tipp.show.accessEnd')}: <g:formatDate date="${tipp.accessEndDate}"
+                                                                               format="${message(code: 'default.date.format.notime')}"/>
+                    </div>
+                </div>
+            </div>
+
+            <br/>
+
+            <div class="la-title"><g:message code="tipp.price.plural"/></div>
+
+            <div class="la-icon-list">
+                <div class="ui cards">
+                    <g:each in="${tipp.priceItems}" var="priceItem" status="i">
+                        <div class="item">
+                            <div class="ui card">
+                                <div class="content">
+                                    <div class="la-card-column">
+                                        <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice"
+                                                                                             owner="${priceItem}"
+                                                                                             overwriteEditable="false"/> <semui:xEditableRefData
+                                                field="listCurrency" owner="${priceItem}"
+                                                config="Currency"
+                                                overwriteEditable="false"/>
+                                        <br />
+                                        (<g:message code="tipp.priceStartDate"/> <semui:xEditable field="startDate"
+                                                                                                  type="date"
+                                                                                                  owner="${priceItem}"
+                                                                                                  overwriteEditable="false"/>-
+                                        <g:message code="tipp.priceEndDate"/> <semui:xEditable field="endDate"
+                                                                                               type="date"
+                                                                                               owner="${priceItem}"
+                                                                                               overwriteEditable="false"/>)
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                     </g:each>
                 </div>
-            </dd>
-        </g:if>
-
-        <div class="item">
-            <i class="grey key icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'default.status.label')}"></i>
-
-            <div class="content">
-                ${tipp.status.getI10n("value")}
             </div>
+
+            <br>
+        </div>
+    </div>
+
+    <div class="ui card">
+        <div class="content">
+            <div class="header"><g:message code="package.label"/></div>
         </div>
 
-        <div class="item">
-            <i class="grey edit icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.show.statusReason')}"></i>
+        <div class="content">
+            <div class="item">
+                <i class="grey icon gift scale la-popup-tooltip la-delay"
+                   data-content="${message(code: 'package.label')}"></i>
+                <g:link controller="package" action="show"
+                        id="${tipp.pkg?.id}">${tipp.pkg?.name}</g:link>
 
-            <div class="content">
-                ${tipp.statusReason?.getI10n("value")}
+                <br>
+                <br>
+                <g:link controller="package" action="current"
+                        id="${tipp.pkg?.id}">
+                    <g:message code="package.show.nav.current"/>: <g:message code="package.compare.overview.tipps"/> ${currentTippsCounts}</g:link>
+                <br>
+                <g:link controller="package" action="planned"
+                        id="${tipp.pkg?.id}">
+                    <g:message code="package.show.nav.planned"/>: <g:message code="package.compare.overview.tipps"/> ${plannedTippsCounts}</g:link>
+                <br>
+                <g:link controller="package" action="expired"
+                        id="${tipp.pkg?.id}">
+                    <g:message code="package.show.nav.expired"/>: <g:message code="package.compare.overview.tipps"/> ${expiredTippsCounts}</g:link>
+
+                <br>
+                <br>
+                <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                        var="gokbAPI">
+                    <g:if test="${tipp.pkg.gokbId}">
+                        <a role="button"
+                           class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                           data-content="${message(code: 'gokb')}"
+                           href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/public/packageContent/?id=' + tipp.pkg.gokbId : '#'}"
+                           target="_blank"><i class="la-gokb  icon"></i>
+                        </a>
+                    </g:if>
+                </g:each>
+
             </div>
         </div>
+    </div>
 
-        <div class="item">
-            <i class="grey lock open icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.delayedOA')}"></i>
-
-            <div class="content">
-                ${tipp.delayedOA?.getI10n("value")}"
-            </div>
+    <div class="ui card">
+        <div class="content">
+            <div class="header"><g:message code="platform.label"/></div>
         </div>
 
-        <div class="item">
-            <i class="grey lock open alternate icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.hybridOA')}"></i>
-
-            <div class="content">
-                ${tipp.hybridOA?.getI10n("value")}
-            </div>
-        </div>
-
-
-        <div class="item">
-            <i class="grey money icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.paymentType')}"></i>
-
-            <div class="content">
-                ${tipp.payment?.getI10n("value")}
-            </div>
-        </div>
-
-
-        <div class="item">
-            <i class="grey icon cloud la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.tooltip.changePlattform')}"></i>
-
-            <div class="content">
-                <g:if test="${tipp?.platform.name}">
-                    <g:link controller="platform" action="show" id="${tipp?.platform.id}">
-                        ${tipp?.platform.name}
+        <div class="content">
+            <div class="item">
+                <i class="grey icon cloud la-popup-tooltip la-delay"
+                   data-content="${message(code: 'platform.label')}"></i>
+                <g:if test="${tipp.platform.name}">
+                    <g:link controller="platform" action="show" id="${tipp.platform.id}">
+                        ${tipp.platform.name}
                     </g:link>
                 </g:if>
                 <g:else>
                     ${message(code: 'default.unknown')}
                 </g:else>
+
+                <g:if test="${tipp.hostPlatformURL}">
+                    <br/>
+                    <semui:linkIcon
+                            href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
+                </g:if>
             </div>
+
+            <div class="item">
+                ${message(code: 'platform.org')}:  <g:if test="${tipp.platform.org}">
+                    <g:link controller="organisation" action="show"
+                            id="${tipp.platform.org.id}">${tipp.platform.org.name}</g:link>
+                </g:if>
+
+            </div>
+
+            <div class="item">${message(code: 'platform.primaryUrl', default: 'Primary URL')}:               ${tipp.platform.primaryUrl}
+                <g:if test="${tipp.platform.primaryUrl}">
+                    <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                       data-content="${message(code: 'tipp.tooltip.callUrl')}"
+                       href="${tipp.platform.primaryUrl?.contains('http') ? tipp.platform.primaryUrl : 'http://' + tipp.platform.primaryUrl}"
+                       target="_blank"><i class="share square icon"></i></a>
+                </g:if>
+            </div>
+            <br>
+            <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                    var="gokbAPI">
+                <g:if test="${tipp.platform.gokbId}">
+                    <a role="button"
+                       class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                       data-content="${message(code: 'gokb')}"
+                       href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/?id=' + tipp.platform.gokbId : '#'}"
+                       target="_blank"><i class="la-gokb  icon"></i>
+                    </a>
+                </g:if>
+            </g:each>
+
         </div>
-        <br />
-        <g:if test="${tipp.hostPlatformURL}">
-            <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
-        </g:if>
-
     </div>
-</semui:form>
 
-<h3 class="ui header"><g:message code="title.edit.orglink"/></h3>
 
-<table class="ui celled la-table table ">
-    <thead>
-        <tr>
-            %{--<th><g:message code="title.edit.component_id.label"/></th>--}%
-            <th><g:message code="template.orgLinks.name"/></th>
-            <th><g:message code="template.orgLinks.role"/></th>
-            <th><g:message code="title.edit.orglink.from"/></th>
-            <th><g:message code="title.edit.orglink.to"/></th>
-        </tr>
-    </thead>
-    <tbody>
-        <g:each in="${tipp.orgs}" var="org">
-            <tr>
-                %{--<td>${org.org.id}</td>--}%
-                <td><g:link controller="organisation" action="show" id="${org.org.id}">${org.org.name}</g:link></td>
-                <td>${org.roleType.getI10n("value")}</td>
-                <td>
-                    <semui:xEditable owner="${org}" type="date" field="startDate"/>
-                </td>
-                <td>
-                    <semui:xEditable owner="${org}" type="date" field="endDate"/>
-                </td>
-            </tr>
-        </g:each>
-    </tbody>
-</table>
+    <div class="ui card">
+        <div class="content">
+            <div class="header"><g:message code="title.edit.orglink"/></div>
+        </div>
 
-<h3 class="ui header">${message(code: 'title.show.history.label')}</h3>
-<table class="ui celled la-table table">
-    <thead>
-        <tr>
-            <th>${message(code: 'default.date.label')}</th>
-            <th>${message(code: 'title.show.history.from')}</th>
-            <th>${message(code: 'title.show.history.to')}</th>
-        </tr>
-    </thead>
-    <tbody>
-        <g:each in="${titleHistory}" var="th">
-            <tr>
-                <td><g:formatDate date="${th.eventDate}" formatName="default.date.format.notime"/></td>
-                <td>
-                    <g:each in="${th.participants}" var="p">
-                        <g:if test="${p.participantRole=='from'}">
-                            <g:link controller="title" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == ti.id}">font-weight:bold</g:if>">${p.participant.title}</span></g:link><br />
-                        </g:if>
-                    </g:each>
-                </td>
-                <td>
-                    <g:each in="${th.participants}" var="p">
-                        <g:if test="${p.participantRole=='to'}">
-                            <g:link controller="title" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == ti.id}">font-weight:bold</g:if>">${p.participant.title}</span></g:link><br />
-                        </g:if>
-                    </g:each>
-                </td>
-            </tr>
-        </g:each>
-    </tbody>
-</table>
+        <div class="content">
 
-<br />
+            <table class="ui celled la-table table ">
+                <thead>
+                <tr>
+                    %{--<th><g:message code="title.edit.component_id.label"/></th>--}%
+                    <th><g:message code="template.orgLinks.name"/></th>
+                    <th><g:message code="template.orgLinks.role"/></th>
+                    <th><g:message code="title.edit.orglink.from"/></th>
+                    <th><g:message code="title.edit.orglink.to"/></th>
+                </tr>
+                </thead>
+                <tbody>
+                <g:each in="${tipp.orgs}" var="org">
+                    <tr>
+                        %{--<td>${org.org.id}</td>--}%
+                        <td><g:link controller="organisation" action="show"
+                                    id="${org.org.id}">${org.org.name}</g:link></td>
+                        <td>${org.roleType.getI10n("value")}</td>
+                        <td>
+                            <semui:xEditable owner="${org}" type="date" field="startDate"/>
+                        </td>
+                        <td>
+                            <semui:xEditable owner="${org}" type="date" field="endDate"/>
+                        </td>
+                    </tr>
+                </g:each>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+  <div class="ui card">
+                <div class="content">
+                    <div class="header">${message(code: 'title.show.history.label')}</div>
+                </div>
+                <div class="content">
+                    <table class="ui celled la-table table">
+                        <thead>
+                            <tr>
+                                <th>${message(code: 'default.date.label')}</th>
+                                <th>${message(code: 'title.show.history.from')}</th>
+                                <th>${message(code: 'title.show.history.to')}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <g:each in="${titleHistory}" var="tiH">
+                                <tr>
+                                    <td><g:formatDate date="${tiH.eventDate}" formatName="default.date.format.notime"/></td>
+                                    <td>
+                                        <g:each in="${tiH.participants}" var="p">
+                                            <g:if test="${p.participantRole=='from'}">
+                                                <g:link controller="title" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == tiH.id}">font-weight:bold</g:if>">${p.participant.title}</span></g:link><br>
+                                            </g:if>
+                                        </g:each>
+                                    </td>
+                                    <td>
+                                        <g:each in="${tiH.participants}" var="p">
+                                            <g:if test="${p.participantRole=='to'}">
+                                                <g:link controller="title" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == tiH.id}">font-weight:bold</g:if>">${p.participant.title}</span></g:link><br>
+                                            </g:if>
+                                        </g:each>
+                                    </td>
+                                </tr>
+                            </g:each>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+</div>
+
 </body>
 </html>

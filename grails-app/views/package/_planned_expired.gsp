@@ -48,18 +48,16 @@
 
   <div class="row">
       <div class="column">
-          ${message(code: 'title.search.offset.text', args: [offset + 1, lasttipp, num_tipp_rows])}
+          <g:render template="/templates/filter/tipp_ieFilter"/>
       </div>
   </div>
 
   <div class="row">
       <div class="column">
-          <g:render template="filter" model="${[params: params]}"/>
-      </div>
-  </div>
 
-  <div class="row">
-      <div class="column">
+          <div class="ui blue large label"><g:message code="title.plural"/>: <div class="detail">${num_tipp_rows}</div>
+          </div>
+
           <g:render template="/templates/tipps/table"
                     model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
       </div>

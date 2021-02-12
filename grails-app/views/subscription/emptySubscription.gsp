@@ -20,9 +20,8 @@
 
         <semui:form>
             <g:form action="processEmptySubscription" method="post" class="ui form newSubscription">
-                <semui:msg class="info" message="messageRequiredField" />
                 <div class="field required">
-                    <label>${message(code:'myinst.emptySubscription.name')}</label>
+                    <label>${message(code:'myinst.emptySubscription.name')} <g:message code="messageRequiredField" /></label>
                     <input type="text" name="newEmptySubName" placeholder=""/>
                  </div>
 
@@ -33,7 +32,7 @@
                 </div>
 
                 <div class="field required">
-                    <label>${message(code:'default.status.label')}</label>
+                    <label>${message(code:'default.status.label')} <g:message code="messageRequiredField" /></label>
                     <laser:select name="status" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" optionKey="id" optionValue="value"
                                   noSelection="${['' : '']}"
                                   value="${['':'']}"

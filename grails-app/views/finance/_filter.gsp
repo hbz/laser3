@@ -27,7 +27,7 @@
                         <label for="filterSubMembers">
                             <g:message code="${subMemberLabel}"/>
                         </label>
-                        <g:select id="filterSubMembers" name="filterSubMembers" multiple="" value="${filterPresets?.filterSubMembers}"
+                        <g:select id="filterSubMembers" name="filterSubMembers" multiple="" value="${filterPresets?.filterSubMembers?.collect{ sm -> sm.id }}"
                                   class="ui fluid search dropdown" from="${subMembers}" optionKey="id" optionValue="${{it.getSubscriber().dropdownNamingConvention(institution)}}"
                                   noSelection="${['':message(code:'default.select.all.label')]}"
                         />
@@ -35,10 +35,10 @@
                 </g:if>
                 <g:if test="${consMembers}">
                     <div class="field">
-                        <label for="filterSubMembers">
+                        <label for="filterConsMembers">
                             <g:message code="${subMemberLabel}"/>
                         </label>
-                        <g:select id="filterConsMembers" name="filterConsMembers" multiple="" value="${filterPresets?.filterConsMembers}"
+                        <g:select id="filterConsMembers" name="filterConsMembers" multiple="" value="${filterPresets?.filterConsMembers?.collect{ cm -> cm.id }}"
                                   class="ui fluid search dropdown" from="${consMembers}" optionKey="id" optionValue="${{it.dropdownNamingConvention(institution)}}"
                                   noSelection="${['':message(code:'default.select.all.label')]}"
                         />
@@ -334,10 +334,10 @@
                     values = [<g:each in="${filterPresets?.filterCIBudgetCode}" var="budgetCode" status="i">'${budgetCode.id}'<g:if test="${i < filterPresets.filterCIBudgetCode.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterCIInvoiceNumber':
-                    values = [<g:each in="${filterPresets?.filterCIInvoiceNumber}" var="invoiceNumber" status="i">'${invoiceNumber.id}'<g:if test="${i < filterPresets.filterCIInvoiceNumber.size()-1}">,</g:if></g:each>];
+                    values = [<g:each in="${filterPresets?.filterCIInvoiceNumber}" var="invoiceNumber" status="i">'${invoiceNumber}'<g:if test="${i < filterPresets.filterCIInvoiceNumber.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterCIOrderNumber':
-                    values = [<g:each in="${filterPresets?.filterCIOrderNumber}" var="orderNumber" status="i">'${orderNumber.id}'<g:if test="${i < filterPresets.filterCIOrderNumber.size()-1}">,</g:if></g:each>];
+                    values = [<g:each in="${filterPresets?.filterCIOrderNumber}" var="orderNumber" status="i">'${orderNumber}'<g:if test="${i < filterPresets.filterCIOrderNumber.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterCIReference':
                     values = [<g:each in="${filterPresets?.filterCIReference}" var="reference" status="i">'${reference}'<g:if test="${i < filterPresets.filterCIReference.size()-1}">,</g:if></g:each>];

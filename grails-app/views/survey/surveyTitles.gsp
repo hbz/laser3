@@ -39,197 +39,185 @@
     <div class="la-inline-lists">
 
         <div class="ui icon positive message">
-                <i class="info icon"></i>
+            <i class="info icon"></i>
 
-                <div class="content">
-                    <div class="header"></div>
+            <div class="content">
+                <div class="header"></div>
 
-                    <p>
-<%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
-<g:message code="showSurveyInfo.pickAndChoose.Package"/>
-</p>
-<br />
-<g:link controller="subscription" class="ui button" action="index" target="_blank" id="${surveyConfig.subscription.id}">
-    ${surveyConfig.subscription.name} (${surveyConfig.subscription.status.getI10n('value')})
-</g:link>
+                <p>
+                    <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
+                    <g:message code="showSurveyInfo.pickAndChoose.Package"/>
+                </p>
+                <br/>
+                <g:link controller="subscription" class="ui button" action="index" target="_blank"
+                        id="${surveyConfig.subscription.id}">
+                    ${surveyConfig.subscription.name} (${surveyConfig.subscription.status.getI10n('value')})
+                </g:link>
 
-<g:link controller="subscription" class="ui button" action="linkPackage" target="_blank" id="${surveyConfig.subscription.id}">
-    <g:message code="subscription.details.linkPackage.label"/>
-</g:link>
+                <g:link controller="subscription" class="ui button" action="linkPackage" target="_blank"
+                        id="${surveyConfig.subscription.id}">
+                    <g:message code="subscription.details.linkPackage.label"/>
+                </g:link>
 
-<g:link controller="subscription" class="ui button" action="addEntitlements" target="_blank" id="${surveyConfig.subscription.id}">
-    <g:message code="subscription.details.addEntitlements.label"/>
-</g:link>
+                <g:link controller="subscription" class="ui button" action="addEntitlements" target="_blank"
+                        id="${surveyConfig.subscription.id}">
+                    <g:message code="subscription.details.addEntitlements.label"/>
+                </g:link>
 
-</div>
+            </div>
 
-</div>
+        </div>
 
 
-<div class="row">
-<div class="column">
+        <div class="row">
+            <div class="column">
+                <g:render template="/templates/filter/tipp_ieFilter"/>
+            </div>
+        </div>
 
-    <g:if test="${entitlements.size() > 0}">
-        ${message(code: 'subscription.entitlement.plural')} ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (entitlements?.size())), num_sub_rows])}.     </g:if>
-    <g:else>
-        ${message(code: 'subscription.details.no_ents')}
-    </g:else>
-    <g:set var="counter" value="${offset + 1}"/>
+        <div class="row">
+            <div class="column">
 
-    <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header">
-        <thead>
-        <tr>
+                <g:set var="counter" value="${offset + 1}"/>
 
-            <th>${message(code: 'sidewide.number')}</th>
-            <g:sortableColumn class="eight wide" params="${params}" property="tipp.sortName" title="${message(code: 'title.label')}"/>
-            <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
-            <th class="four wide">${message(code: 'subscription.details.coverage_dates')}</th>
-            <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
-            <th class="two wide"><g:message code="subscription.details.prices"/></th>
-            <th class="one wide"></th>
-        </tr>
-        <tr>
-            <th rowspan="2" colspan="3"></th>
-            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
-                              title="${message(code: 'default.from')}"/>
-            <g:sortableColumn class="la-smaller-table-head" params="${params}"
-                              property="accessStartDate"
-                              title="${message(code: 'default.from')}"/>
+                <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header">
+                    <thead>
+                    <tr>
 
-            <th rowspan="2" colspan="2"></th>
-        </tr>
-        <tr>
-            <g:sortableColumn class="la-smaller-table-head" property="endDate"
-                              title="${message(code: 'default.to')}"/>
-            <g:sortableColumn class="la-smaller-table-head" params="${params}"
-                              property="accessEndDate"
-                              title="${message(code: 'default.to')}"/>
-        </tr>
-        <tr>
-            <th colspan="9"></th>
-        </tr>
-        </thead>
-        <tbody>
+                        <th>${message(code: 'sidewide.number')}</th>
+                        <g:sortableColumn class="eight wide" params="${params}" property="tipp.sortName"
+                                          title="${message(code: 'title.label')}"/>
+                        <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
+                        <th class="four wide">${message(code: 'subscription.details.coverage_dates')}</th>
+                        <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
+                        <th class="two wide"><g:message code="subscription.details.prices"/></th>
+                        <th class="one wide"></th>
+                    </tr>
+                    <tr>
+                        <th rowspan="2" colspan="3"></th>
+                        <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
+                                          title="${message(code: 'default.from')}"/>
+                        <g:sortableColumn class="la-smaller-table-head" params="${params}"
+                                          property="accessStartDate"
+                                          title="${message(code: 'default.from')}"/>
 
-        <g:if test="${entitlements}">
+                        <th rowspan="2" colspan="2"></th>
+                    </tr>
+                    <tr>
+                        <g:sortableColumn class="la-smaller-table-head" property="endDate"
+                                          title="${message(code: 'default.to')}"/>
+                        <g:sortableColumn class="la-smaller-table-head" params="${params}"
+                                          property="accessEndDate"
+                                          title="${message(code: 'default.to')}"/>
+                    </tr>
+                    <tr>
+                        <th colspan="9"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
 
-            <g:each in="${entitlements}" var="ie">
-                <tr>
+                    <g:if test="${entitlements}">
 
-                    <td>${counter++}</td>
-                    <td>
-                        <semui:listIcon type="${ie.tipp.titleType}"/>
-                        <g:link controller="issueEntitlement" id="${ie.id}"
-                                action="show"><strong>${ie.tipp.name}</strong>
-                        </g:link>
-                        <g:if test="${ie.tipp.hostPlatformURL}">
-                            <semui:linkIcon href="${ie.tipp.hostPlatformURL.startsWith('http') ? ie.tipp.hostPlatformURL : 'http://' + ie.tipp.hostPlatformURL}"/>
-                        </g:if>
-                        <br />
-                        <!-- START TEMPLATE -->
+                        <g:each in="${entitlements}" var="ie">
+                            <tr>
 
-                        <g:render template="/templates/title"
-                                  model="${[item: ie, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]}"/>
-                        <!-- END TEMPLATE -->
-                    </td>
+                                <td>${counter++}</td>
+                                <td>
+                                    <!-- START TEMPLATE -->
+                                    <g:render template="/templates/title"
+                                              model="${[ie         : ie, tipp: ie.tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                                                        showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
+                                    <!-- END TEMPLATE -->
+                                </td>
 
-                    <td>
-                        <semui:xEditableRefData owner="${ie}" field="medium" config="${de.laser.helper.RDConstants.IE_MEDIUM}"
-                                                overwriteEditable="${false}"/>
-                    </td>
-                    <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
-                        <g:if test="${ie.tipp.titleType.contains('Book')}">
+                                <td>
+                                    <semui:xEditableRefData owner="${ie}" field="medium"
+                                                            config="${de.laser.helper.RDConstants.IE_MEDIUM}"
+                                                            overwriteEditable="${false}"/>
+                                </td>
+                                <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
+                                    <g:if test="${ie.tipp.titleType.contains('Book')}">
 
-                            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                               data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                            <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                          date="${ie.tipp.dateFirstInPrint}"/>
-                            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                               data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                            <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                          date="${ie.tipp.dateFirstOnline}"/>
+                                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                                           data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
+                                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                                      date="${ie.tipp.dateFirstInPrint}"/>
+                                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                                           data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
+                                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                                      date="${ie.tipp.dateFirstOnline}"/>
 
-                        </g:if>
-                        <g:else>
-                            <div class="ui cards">
-                                <g:each in="${ie.coverages}" var="covStmt">
-                                    <div class="ui card">
-                                        <g:render template="/templates/tipps/coverageStatement"
-                                                  model="${[covStmt: covStmt, overwriteEditable: false]}"/>
-                                    </div>
-                                </g:each>
-                            </div>
-                        </g:else>
+                                    </g:if>
+                                    <g:else>
+                                        <div class="ui cards">
+                                            <g:each in="${ie.coverages}" var="covStmt">
+                                                <div class="ui card">
+                                                    <g:render template="/templates/tipps/coverageStatement"
+                                                              model="${[covStmt: covStmt, overwriteEditable: false]}"/>
+                                                </div>
+                                            </g:each>
+                                        </div>
+                                    </g:else>
 
-                    </td>
-                    <td>
-                        <!-- von --->
+                                </td>
+                                <td>
+                                    <!-- von --->
 
-                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                      date="${ie.accessStartDate}"/>
+                                    <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                                  date="${ie.accessStartDate}"/>
 
-                        <semui:dateDevider/>
-                        <!-- bis -->
+                                    <semui:dateDevider/>
+                                    <!-- bis -->
 
-                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                      date="${ie.accessEndDate}"/>
+                                    <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                                  date="${ie.accessEndDate}"/>
 
-                    </td>
-                    <td>
-                        <g:if test="${ie.priceItem}">
-                            <strong><g:message code="tipp.listPrice"/>:</strong>
-                            <semui:xEditable field="listPrice"
-                                                                                 owner="${ie.priceItem}"
-                                                                                 overwriteEditable="${false}"/>
-                            ${ie.priceItem.listCurrency.getI10n('value').split('-').first()}
-                        %{--<semui:xEditableRefData
-                                    field="listCurrency" owner="${ie.priceItem}" overwriteEditable="${false}"
-                                    config="Currency"/> --}%
-                        <%--<g:formatNumber number="${ie.priceItem.listPrice}" type="currency" currencyCode="${ie.priceItem.listCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>--%><br />
-                            <strong> <g:message code="tipp.localPrice"/>:</strong>
-                            <semui:xEditable field="localPrice"
-                                                                                  owner="${ie.priceItem}"
-                                                                                  overwriteEditable="${false}"/>
-                            <semui:xEditableRefData
-                                    field="localCurrency" owner="${ie.priceItem}" overwriteEditable="${false}"
-                                    config="Currency"/>
-                        <%--<g:formatNumber number="${ie.priceItem.localPrice}" type="currency" currencyCode="${ie.priceItem.localCurrency.value}" currencySymbol="${ie.priceItem.listCurrency.value}"/>--%>
-                            (<g:message code="tipp.priceStartDate"/> <semui:xEditable field="startDate"
-                                                                                      type="date"
-                                                                                      owner="${ie.priceItem}"
-                                                                                      overwriteEditable="${false}"/>-
-                            <g:message code="tipp.priceEndDate"/> <semui:xEditable field="endDate"
-                                                                                     type="date"
-                                                                                     owner="${ie.priceItem}"
-                                                                                     overwriteEditable="${false}"/>
-                        <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.priceItem.startDate}"/>--%>)
-                        </g:if>
+                                </td>
+                                <td>
+                                    <g:if test="${ie.priceItems}">
+                                        <g:each in="${ie.priceItems}" var="priceItem" status="i">
+                                            <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice"
+                                                                                                 owner="${priceItem}"
+                                                                                                 format=""/> <semui:xEditableRefData
+                                                field="listCurrency" owner="${priceItem}"
+                                                config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
+                                            <g:message code="tipp.localPrice"/>: <semui:xEditable field="localPrice"
+                                                                                                  owner="${priceItem}"/> <semui:xEditableRefData
+                                                field="localCurrency" owner="${priceItem}"
+                                                config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
+                                            <semui:xEditable field="startDate" type="date"
+                                                             owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
+                                                field="endDate" type="date"
+                                                owner="${priceItem}"/>  <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
+                                            <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
+                                        </g:each>
+                                    </g:if>
 
-                    </td>
-                    <td class="x">
+                                </td>
+                                <td class="x">
 
-                    </td>
-                </tr>
-            </g:each>
-        </g:if>
-        </tbody>
-    </table>
+                                </td>
+                            </tr>
+                        </g:each>
+                    </g:if>
+                    </tbody>
+                </table>
 
+            </div>
+        </div><!--.row-->
     </div>
-</div><!--.row-->
 </div>
-</div>
-    <g:if test="${entitlements}">
-        <semui:paginate action="surveyTitles" controller="survey" params="${params}"
-                        next="${message(code: 'default.paginate.next')}"
-                        prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                        total="${num_sub_rows}"/>
-    </g:if>
+<g:if test="${entitlements}">
+    <semui:paginate action="surveyTitles" controller="survey" params="${params}"
+                    next="${message(code: 'default.paginate.next')}"
+                    prev="${message(code: 'default.paginate.prev')}" max="${max}"
+                    total="${num_sub_rows}"/>
+</g:if>
 
-    <div id="magicArea"></div>
-    <laser:script file="${this.getGroovyPageFileName()}">
-        $('#finishProcess').progress();
-    </laser:script>
+<div id="magicArea"></div>
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('#finishProcess').progress();
+</laser:script>
 
-    </body>
-    </html>
+</body>
+</html>

@@ -14,6 +14,7 @@ class CompareService {
     ComparisonService comparisonService
     AccessService accessService
     SubscriptionService subscriptionService
+    FilterService filterService
 
 
     List compareElements(Object obj) {
@@ -202,7 +203,8 @@ class CompareService {
         LinkedHashMap result = [ies: [:]]
         objects.each { object ->
             Map ies = result.ies
-            ies = comparisonService.buildComparisonTreeIEs(ies, object, subscriptionService.getIssueEntitlementsWithFilter(object, [max: 5000, offset: 0]))
+            Map query = filterService.getIssueEntitlementQuery([max:5000,offset:0], object)
+            ies = comparisonService.buildComparisonTreeIEs(ies, object, IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams))
             result.ies = ies
         }
         result
