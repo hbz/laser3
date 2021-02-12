@@ -7,27 +7,35 @@ import javax.persistence.Transient
 class TitleHistoryEvent {
 
   Date eventDate
-  Set participants
+  String from
+  String to
+  //Set participants
 
   Date dateCreated
   Date lastUpdated
 
-  static hasMany = [ participants:TitleHistoryEventParticipant ]
-  static mappedBy = [ participants:'event' ]
+  static belongsTo = [ tipp: TitleInstancePackagePlatform ]
 
   static mapping = {
-    participants  batchSize: 10
-
+    //participants  batchSize: 10
+    eventDate   column: 'the_event_date'
+    from        column: 'the_from', type: 'text'
+    to          column: 'the_to', type: 'text'
+    tipp        column: 'the_tipp_fk'
     dateCreated column: 'the_date_created'
     lastUpdated column: 'the_last_updated'
   }
 
   static constraints = {
+    from        (nullable: true) //backwards-compatibility until old values have been migrated
+    to          (nullable: true) //backwards-compatibility until old values have been migrated
+    tipp        (nullable: true) //backwards-compatibility until old values have been migrated
     // Nullable is true, because values are already in the database
     lastUpdated (nullable: true)
     dateCreated (nullable: true)
   }
 
+  /*
   @Transient 
   boolean inRole(String role, TitleInstancePackagePlatform t) {
     boolean result = false
@@ -47,4 +55,5 @@ class TitleHistoryEvent {
   List<TitleInstancePackagePlatform> toTitles() {
     participants.findAll{it.participantRole=='to'}.collect{ it.participant }
   }
+   */
 }

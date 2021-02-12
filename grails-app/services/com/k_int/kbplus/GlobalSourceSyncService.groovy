@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
 import de.laser.ApiSource
+import de.laser.AuditConfig
+import de.laser.AuditService
 import de.laser.EscapeService
 import de.laser.GlobalRecordSource
 import de.laser.Identifier
@@ -32,6 +34,7 @@ import de.laser.titles.JournalInstance
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
 import de.laser.titles.TitleInstance
+import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChild
@@ -42,7 +45,6 @@ import groovyx.net.http.HttpResponseException
 import groovyx.net.http.Method
 import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 import org.hibernate.Session
-import org.springframework.transaction.TransactionStatus
 
 import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorService
@@ -55,10 +57,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     ExecutorService executorService
     ChangeNotificationService changeNotificationService
+    PendingChangeService pendingChangeService
     def genericOIDService
     EscapeService escapeService
     GlobalRecordSource source
     ApiSource apiSource
+    AuditService auditService
 
     final static long RECTYPE_PACKAGE = 0
     final static long RECTYPE_TITLE = 1
@@ -67,10 +71,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
     final static Map<Long,String> RECTYPES = [(RECTYPE_PACKAGE):'packages',(RECTYPE_TITLE):'titles',(RECTYPE_ORG):'orgs',(RECTYPE_TIPP):'tipps']
 
     Map<String, RefdataValue> titleStatus = [:], titleMedium = [:], tippStatus = [:], packageStatus = [:], orgStatus = [:], currency = [:]
-    Set<String> newPackages = [], newTIPPs = []
     Long maxTimestamp = 0
     Map<String,Integer> initialPackagesCounter = [:]
     Map<String,Set<Map<String,Object>>> pkgPropDiffsContainer = [:]
+    Map<String,Set<Map<String,Object>>> packagesToNotify = [:]
 
     SimpleDateFormat xmlTimestampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
@@ -238,11 +242,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     Thread.currentThread().setName("GlobalDataSync_Json")
                     this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
                     Date oldDate = source.haveUpTo
-                    Long maxTimestamp = 0 //upon updating, consider lack of 10' upon entering data to index!
                     log.info("getting records from job #${source.id} with uri ${source.uri} since ${oldDate}")
                     SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss')
                     String componentType
-                    Map<String,Set<Map<String,Object>>> packagesToNotify = [:]
                     /*
                         structure:
                         { packageUUID: [
@@ -259,8 +261,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         case RECTYPE_TIPP: componentType = 'TitleInstancePackagePlatform'
                             //do prequest: are we needing the scroll api?
                             Map<String,Object> result
-                            result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate)])
-                            if(result && result.count >= 10000) {
+                            //5000 records because of local testing ability
+                            result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),max:5000])
+                            if(result && result.count >= 5000) {
                                 String scrollId
                                 boolean more = true
                                 while(more) {
@@ -269,7 +272,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         result = fetchRecordJSON(true,[component_type: componentType,changedSince:sdf.format(oldDate),scrollId: scrollId])
                                     else result = fetchRecordJSON(true,[component_type: componentType,changedSince:sdf.format(oldDate)])
                                     if(result.count > 0) {
-                                        packagesToNotify = updateRecords(result.records)
+                                        updateRecords(result.records)
                                         if(result.hasMoreRecords) {
                                             scrollId = result.scrollId
                                         }
@@ -290,29 +293,41 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     }
                                 }
                             }
+                            else if(result && result.count > 0 && result.count < 5000) {
+                                updateRecords(result.records)
+                            }
                             else {
-                                if(result.count > 0) {
-                                    packagesToNotify = updateRecords(result.records)
-                                }
-                                else log.info("no records updated - leaving everything as is ...")
+                                log.info("no records updated - leaving everything as is ...")
                             }
                             break
                     }
-                    if(maxTimestamp+10000 > source.haveUpTo.getTime()) {
+                    if(maxTimestamp+1000 > source.haveUpTo.getTime()) {
                         log.debug("old ${sdf.format(source.haveUpTo)}")
-                        source.haveUpTo = new Date(maxTimestamp + 10000)
+                        source.haveUpTo = new Date(maxTimestamp+1000)
                         log.debug("new ${sdf.format(source.haveUpTo)}")
                         source.save()
                     }
                     if(packagesToNotify.keySet().size() > 0) {
                         log.info("notifying subscriptions ...")
-                        notifyLinkedSubscriptions(packagesToNotify)
+                        trackPackageHistory()
+                        //get subscription packages and their respective holders, parent level only!
+                        String query = 'select oo.org,sp from SubscriptionPackage sp join sp.pkg pkg ' +
+                                'join sp.subscription s ' +
+                                'join s.orgRelations oo ' +
+                                'where s.instanceOf = null and pkg.gokbId in (:packages) ' +
+                                'and oo.roleType in (:roleTypes)'
+                        List subPkgHolders = SubscriptionPackage.executeQuery(query,[packages:packagesToNotify.keySet(),roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+                        subPkgHolders.each { row ->
+                            Org org = (Org) row[0]
+                            SubscriptionPackage sp = (SubscriptionPackage) row[1]
+                            autoAcceptPendingChanges(org,sp)
+                        }
                     }
                     else {
                         log.info("no diffs recorded ...")
                     }
                     log.info("sync job finished")
-                    //SystemEvent.createEvent('GSSS_JSON_COMPLETE',['jobId',source.id])
+                    SystemEvent.createEvent('GSSS_JSON_COMPLETE',['jobId',source.id])
                 }
                 catch (Exception e) {
                     SystemEvent.createEvent('GSSS_JSON_ERROR',['jobId':source.id])
@@ -323,11 +338,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
         running = false
     }
 
-    Map<String,Set<Map<String,Object>>> updateRecords(List<Map> records) {
-        Map<String,Set<Map<String,Object>>> packagesToNotify = [:]
-        SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss')
-        //continue here: translate the OAI methods into JSON processing
-        //!!!! providers are on TIPP page -> implement !!!!
+    void updateRecords(List<Map> records) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         Set<String> platformUUIDs = records.collect { Map tipp -> tipp.hostPlatformUuid } as Set<String>
         Set<String> packageUUIDs = records.collect { Map tipp -> tipp.tippPackageUuid } as Set<String>
         Set<String> tippUUIDs = records.collect { Map tipp -> tipp.uuid } as Set<String>
@@ -381,11 +393,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         priceItems: [],
                         hostPlatformURL: tipp.url ?: null,
                         identifiers: [],
-                        //id: tipp.'@id'.text(),
+                        history: [],
                         uuid: tipp.uuid,
                         accessStartDate : tipp.accessStartDate ? DateUtils.parseDateGeneric(tipp.accessStartDate) : null,
                         accessEndDate   : tipp.accessEndDate ? DateUtils.parseDateGeneric(tipp.accessEndDate) : null,
-                        medium: tipp.medium
+                        medium: tipp.tippTitleMedium
                 ]
                 if(tipp.titleType == 'Journal') {
                     tipp.coverage.each { cov ->
@@ -414,6 +426,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 tipp.titlePublishers.each { publisher ->
                     updatedTIPP.titlePublishers << [uuid:publisher.uuid,name:publisher.name]
                 }
+                tipp.identifiers.each { identifier ->
+                    updatedTIPP.identifiers << [namespace:identifier.namespace, value: identifier.value, name_de: identifier.namespaceName]
+                }
+                tipp.titleHistory.each { historyEvent ->
+                    updatedTIPP.history << [date:DateUtils.parseDateGeneric(historyEvent.date),from:historyEvent.from,to:historyEvent.to]
+                }
                 if(updatedTIPP.packageUUID in existingPlatformUUIDs) {
                     Map<String,Object> diffs = createOrUpdateTIPP(tippsOnPage.get(updatedTIPP.uuid),updatedTIPP,packagesOnPage,platformsOnPage)
                     Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(updatedTIPP.packageUUID)
@@ -437,14 +455,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 SystemEvent.createEvent("GSSS_JSON_WARNING",[tippRecordKey:tipp.uuid])
             }
         }
-        packagesToNotify
     }
 
     /**
-     * This is the change notification processor for the JSON-based (i.e. new) sync logic
-     * @param packagesToNotify
+     * This records the package changes so that subscription holders may decide whether they apply them or not
+     * @param packagesToTrack
      */
-    void notifyLinkedSubscriptions(Map<String,Set<Map<String,Object>>> packagesToNotify) {
+    void trackPackageHistory() {
         //Package.withSession { Session sess ->
             //loop through all packages
             packagesToNotify.each { String packageUUID, Set<Map<String,Object>> diffsOfPackage ->
@@ -469,7 +486,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                 break
                                             case 'update': PendingChange.construct([msgToken:PendingChangeConfiguration.COVERAGE_UPDATED,target:covEntry.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:diff.prop,newValue:diff.newValue,oldValue:diff.oldValue])
                                                 break
-                                            case 'delete': PendingChange.construct([msgToken:PendingChangeConfiguration.COVERAGE_DELETED,target:covEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
+                                            case 'delete': JSON oldMap = covEntry.target.properties as JSON
+                                                PendingChange.construct([msgToken:PendingChangeConfiguration.COVERAGE_DELETED, target:covEntry.targetParent, oldValue: oldMap.toString() , status:RDStore.PENDING_CHANGE_HISTORY])
                                                 break
                                         }
                                     }
@@ -480,7 +498,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                 break
                                             case 'update': PendingChange.construct([msgToken:PendingChangeConfiguration.PRICE_UPDATED,target:priceEntry.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:diff.prop,newValue:diff.newValue,oldValue:diff.oldValue])
                                                 break
-                                            case 'delete': PendingChange.construct([msgToken:PendingChangeConfiguration.PRICE_DELETED,target:priceEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
+                                            case 'delete': JSON oldMap = priceEntry.target.properties as JSON
+                                                PendingChange.construct([msgToken:PendingChangeConfiguration.PRICE_DELETED,target:priceEntry.targetParent,oldValue:oldMap.toString(),status:RDStore.PENDING_CHANGE_HISTORY])
                                                 break
                                         }
                                     }
@@ -498,6 +517,36 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 //sess.flush()
             }
         //}
+    }
+
+    void autoAcceptPendingChanges(Org contextOrg, SubscriptionPackage subPkg) {
+        //get for each subscription package the tokens which should be accepted
+        String query = 'select pcc.settingKey from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where pcc.settingValue = :accept and sp = :sp'
+        List<String> pendingChangeConfigurations = PendingChangeConfiguration.executeQuery(query,[accept:RDStore.PENDING_CHANGE_CONFIG_ACCEPT,sp:subPkg])
+        if(pendingChangeConfigurations) {
+            Map<String,Object> changeParams = [pkg:subPkg.pkg,history:RDStore.PENDING_CHANGE_HISTORY,subscriptionJoin:subPkg.dateCreated,msgTokens:pendingChangeConfigurations]
+            Set<PendingChange> newChanges = [],
+                               acceptedChanges = PendingChange.findAllByOidAndStatusAndMsgTokenIsNotNull(genericOIDService.getOID(subPkg.subscription),RDStore.PENDING_CHANGE_ACCEPTED)
+            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
+            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
+            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.priceItem pi join pi.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
+            newChanges.each { PendingChange newChange ->
+                boolean processed = false
+                if(newChange.tipp)
+                    processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken } != null
+                else if(newChange.tippCoverage)
+                    processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken } != null
+                else if(newChange.priceItem && newChange.priceItem.tipp)
+                    processed = acceptedChanges.find { PendingChange accepted -> accepted.priceItem == newChange.priceItem && accepted.msgToken == newChange.msgToken } != null
+                if(!processed) {
+                    /*
+                    get each change for each subscribed package and token, fetch issue entitlement equivalent and process the change
+                    if a change is being accepted, create a copy with target = subscription of subscription package and oid = the target of the processed change
+                     */
+                    pendingChangeService.applyChangeForHolding(newChange,subPkg,contextOrg)
+                }
+            }
+        }
     }
 
     Map<String,Object> collectDataToUpdate(GPathResult listOAI, Set<Package> packagesExisting) {
@@ -547,7 +596,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     Map<String,Object> createOrUpdateTIPP(TitleInstancePackagePlatform tippA,Map tippB, Map<String,Package> newPackages,Map<String,Platform> newPlatforms) {
         Map<String,Object> result = [:]
-        TitleInstancePackagePlatform.withSession { Session sess ->
+        //TitleInstancePackagePlatform.withSession { Session sess ->
             if(tippA) {
                 //update or delete TIPP
                 result.putAll(processTippDiffs(tippA,tippB)) //maybe I have to make some adaptations on tippB!
@@ -558,7 +607,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 result.event = 'add'
                 result.target = target
             }
-        }
+        //}
         result
     }
 
@@ -862,7 +911,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                         pkgPropDiffsContainer.put(packageUUID,getPkgPropDiff(result, newPackageProps))
                         if(!initialPackagesCounter.get(packageUUID))
-                            initialPackagesCounter.put(packageUUID,result.tipps.size())
+                            initialPackagesCounter.put(packageUUID,TitleInstancePackagePlatform.executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg:result])[0] as Integer)
                     }
                 }
                 else {
@@ -1019,7 +1068,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 titleRecord.identifiers.identifier.each { idData ->
                                     if(idData.'@namespace'.text().toLowerCase() != 'originediturl') {
                                         Identifier.construct([namespace: idData.'@namespace'.text(), value: idData.'@value'.text(), reference: titleInstance, isUnique: false, nsType: TitleInstance.class.name])
-                                        ts.flush()
+                                        //ts.flush()
                                     }
                                 }
                             //}
@@ -1416,7 +1465,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else {
             //process central differences which are without effect to issue entitlements
             tippA.titleType = tippB.titleType
-            tippA.name = tippB.name
+            tippA.name = tippB.name //TODO include name, sortName in IssueEntitlements, then, this property may move to the controlled ones
             tippA.firstAuthor = tippB.firstAuthor
             tippA.firstEditor = tippB.firstEditor
             tippA.dateFirstInPrint = (Date) tippB.dateFirstInPrint
@@ -1436,63 +1485,81 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     tippB.identifiers.each { idData ->
                         if(idData.namespace.toLowerCase() != 'originediturl') {
-                            Identifier.construct([namespace: idData.namespace, value: idData.value, reference: tippA, isUnique: false, nsType: TitleInstancePackagePlatform.class.name])
-                            ts.flush()
+                            Identifier.construct([namespace: idData.namespace, value: idData.value, name_de: idData.namespaceName, reference: tippA, isUnique: false, nsType: TitleInstancePackagePlatform.class.name])
                         }
                     }
                 //}
+            }
+            if(tippB.history) {
+                if(tippA.historyEvents) {
+                    TitleHistoryEvent.executeUpdate('delete from TitleHistoryEvent the where the.tipp = :tipp',[tipp:tippA])
+                }
+                tippB.history.each { historyEvent ->
+                    historyEvent.from.each { from ->
+                        TitleHistoryEvent the = new TitleHistoryEvent(tipp:tippA,from:from.name,eventDate:historyEvent.date)
+                        if(!the.save())
+                            throw new SyncException("Error on saving title history data: ${the.errors}")
+                    }
+                    historyEvent.to.each { to ->
+                        TitleHistoryEvent the = new TitleHistoryEvent(tipp:tippA,from:to.name,eventDate:historyEvent.date)
+                        if(!the.save())
+                            throw new SyncException("Error on saving title history data: ${the.errors}")
+                    }
+                }
             }
             //get to diffs that need to be notified
             Set<Map<String, Object>> diffs = getTippDiff(tippA, tippB)
             //includes also changes in coverage statement set
             if (diffs) {
-                log.info("Got tipp diffs: ${diffs}")
                 //process actual diffs
                 diffs.each { Map<String,Object> diff ->
-                    if (diff.prop == 'coverage') {
-                        diff.covDiffs.each { entry ->
-                            switch (entry.event) {
-                                case 'add':
-                                    if (!entry.target.save())
-                                        throw new SyncException("Error on adding coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
-                                    break
-                                case 'delete': tippA.coverages.remove(entry.target)
-                                    entry.target.delete()
-                                    break
-                                case 'update': entry.diffs.each { covDiff ->
+                    log.info("Got tipp diff: ${diff}")
+                    switch(diff.prop) {
+                        case 'coverage':
+                            diff.covDiffs.each { entry ->
+                                switch (entry.event) {
+                                    case 'add':
+                                        if (!entry.target.save())
+                                            throw new SyncException("Error on adding coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
+                                        break
+                                    case 'delete': tippA.coverages.remove(entry.target)
+                                        entry.target.delete()
+                                        break
+                                    case 'update': entry.diffs.each { covDiff ->
                                         entry.target[covDiff.prop] = covDiff.newValue
                                     }
-                                    if (!entry.target.save())
-                                        throw new SyncException("Error on updating coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
-                                    break
+                                        if (!entry.target.save())
+                                            throw new SyncException("Error on updating coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
+                                        break
+                                }
                             }
-                        }
-                    }
-                    if (diff.prop == 'price') {
-                        diff.priceDiffs.each { entry ->
-                            switch (entry.event) {
-                                case 'add':
-                                    if (!entry.target.save())
-                                        throw new SyncException("Error on adding price item for TIPP ${tippA.gokbId}: ${entry.target.errors}")
-                                    break
-                                case 'delete': tippA.priceItems.remove(entry.target)
-                                    entry.target.delete()
-                                    break
-                                case 'update': entry.diffs.each { priceDiff ->
+                            break
+                        case 'price':
+                            diff.priceDiffs.each { entry ->
+                                switch (entry.event) {
+                                    case 'add':
+                                        if (!entry.target.save())
+                                            throw new SyncException("Error on adding price item for TIPP ${tippA.gokbId}: ${entry.target.errors}")
+                                        break
+                                    case 'delete': tippA.priceItems.remove(entry.target)
+                                        entry.target.delete()
+                                        break
+                                    case 'update': entry.diffs.each { priceDiff ->
                                         entry.target[priceDiff.prop] = priceDiff.newValue
                                     }
-                                    if (!entry.target.save())
-                                        throw new SyncException("Error on updating coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
-                                    break
+                                        if (!entry.target.save())
+                                            throw new SyncException("Error on updating coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
+                                        break
+                                }
                             }
-                        }
-                    }
-                    else {
-                        if (diff.prop in PendingChange.REFDATA_FIELDS) {
-                            tippA[diff.prop] = tippStatus.values().find { RefdataValue rdv -> rdv.id == diff.newValue }
-                        } else {
-                            tippA[diff.prop] = diff.newValue
-                        }
+                            break
+                        default:
+                            if (diff.prop in PendingChange.REFDATA_FIELDS) {
+                                tippA[diff.prop] = tippStatus.values().find { RefdataValue rdv -> rdv.id == diff.newValue }
+                            } else {
+                                tippA[diff.prop] = diff.newValue
+                            }
+                            break
                     }
                 }
                 if (tippA.save())
@@ -1514,8 +1581,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
         TitleInstancePackagePlatform newTIPP = new TitleInstancePackagePlatform(
                 titleType: tippData.titleType,
                 name: tippData.name,
-                firstAuthor: tippData.titleFirstAuthor,
-                firstEditor: tippData.titleFirstEditor,
+                firstAuthor: tippData.FirstAuthor,
+                firstEditor: tippData.FirstEditor,
                 dateFirstInPrint: (Date) tippData.dateFirstInPrint,
                 dateFirstOnline: (Date) tippData.dateFirstOnline,
                 imprint: tippData.imprint,
@@ -1574,7 +1641,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             tippData.identifiers.each { idB ->
                 if(idB.namespace.toLowerCase() != 'originediturl') {
-                    Identifier.construct([namespace: idB.namespace, value: idB.value, reference: newTIPP, isUnique: false, nsType: TitleInstancePackagePlatform.class.name])
+                    Identifier.construct([namespace: idB.namespace, value: idB.value, name_de: idB.name_de, reference: newTIPP, isUnique: false, nsType: TitleInstancePackagePlatform.class.name])
+                }
+            }
+            tippData.history.each { historyEvent ->
+                historyEvent.from.each { from ->
+                    TitleHistoryEvent the = new TitleHistoryEvent(tipp:newTIPP,from:from.name,eventDate:historyEvent.date)
+                    if(!the.save())
+                        throw new SyncException("Error on saving title history data: ${the.errors}")
+                }
+                historyEvent.to.each { to ->
+                    TitleHistoryEvent the = new TitleHistoryEvent(tipp:newTIPP,from:to.name,eventDate:historyEvent.date)
+                    if(!the.save())
+                        throw new SyncException("Error on saving title history data: ${the.errors}")
                 }
             }
             newTIPP
@@ -1609,6 +1688,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
         Set<Map<String, Object>> priceDiffs = getSubListDiffs(tippa,tippb.priceItems,'price')
         if(!priceDiffs.isEmpty())
             result.add([prop: 'price', priceDiffs: priceDiffs])
+
+        /* is perspectively ordered; needs more refactoring
+        if (tippb.containsKey("name") && tippa.name != tippb.name) {
+            result.add([prop: 'name', newValue: tippb.name, oldValue: tippa.name])
+        }
+        */
 
         if (tippb.containsKey("accessStartDate") && tippa.accessStartDate != tippb.accessStartDate) {
             result.add([prop: 'accessStartDate', newValue: tippb.accessStartDate, oldValue: tippa.accessStartDate])
@@ -1682,7 +1767,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 listA.each { itemA ->
                     if(!toKeep.contains(itemA)) {
-                        subDiffs << [event: 'delete', target: itemA]
+                        subDiffs << [event: 'delete', target: itemA, targetParent: tippA]
                     }
                 }
             }
@@ -1945,7 +2030,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 if(i > 0 && i % 30 == 0) {
                     log.info("clean up transaction")
-                    ts.flush()
+                    //ts.flush()
                 }
             }
         //}
@@ -1997,10 +2082,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //I need to address a bulk output endpoint like https://github.com/hbz/lobid-resources/blob/f93201bec043cc732b27814a6ab4aea390d1aa9e/web/app/controllers/resources/Application.java, method bulkResult().
         //By then, I should query the "normal" endpoint /gokb/api/find?
         HTTPBuilder http
-        if(useScroll)
-            http = new HTTPBuilder(source.uri+'/scroll')
+        if(useScroll) {
+            http = new HTTPBuilder(source.uri + '/scroll')
+        }
         else http = new HTTPBuilder(source.uri+'/find')
         Map<String,Object> result = [:]
+        //setting default status
+        queryParams.status = ["Current","Expected","Retired"]
+        log.debug("mem check: ${Runtime.getRuntime().freeMemory()} bytes")
         http.request(Method.POST, ContentType.JSON) { req ->
             body = queryParams
             requestContentType = ContentType.URLENC

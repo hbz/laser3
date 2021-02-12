@@ -29,7 +29,7 @@ abstract class AbstractCoverage {
         for (String k : equivalencyProperties) {
             equivalent = list.find { AbstractCoverage cov -> cov[k] == this[k] }
             if (equivalent) {
-                println "Coverage statement ${equivalent.id} considered as equivalent to ${this.id}"
+                //println "Coverage statement ${equivalent.id} considered as equivalent to ${this.id}"
                 break
             }
         }

@@ -272,22 +272,21 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
             new SubscriptionPackage(subscription:target, pkg:this).save()
 
-            TitleInstancePackagePlatform.executeQuery(
-                "select tipp from IssueEntitlement ie join ie.tipp tipp " +
-                "where tipp.pkg = :pkg and tipp.status = :current and ie.subscription = :consortia ", [
+            IssueEntitlement.executeQuery(
+                "select ie from IssueEntitlement ie join ie.tipp tipp " +
+                "where tipp.pkg = :pkg and ie.status = :current and ie.subscription = :consortia ", [
                       pkg: this, current: statusCurrent, consortia: consortia
-
-            ]).each { TitleInstancePackagePlatform tipp ->
+            ]).each { IssueEntitlement ie ->
                 IssueEntitlement newIe = new IssueEntitlement(
                         status: statusCurrent,
                         subscription: target,
-                        tipp: tipp,
-                        accessStartDate: tipp.accessStartDate,
-                        accessEndDate: tipp.accessEndDate,
+                        tipp: ie.tipp,
+                        accessStartDate: ie.tipp.accessStartDate,
+                        accessEndDate: ie.tipp.accessEndDate,
                         acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED
                 )
                 if(newIe.save()) {
-                    tipp.coverages.each { covStmt ->
+                    ie.tipp.coverages.each { TIPPCoverage covStmt ->
                         IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
                                 startDate: covStmt.startDate,
                                 startVolume: covStmt.startVolume,
@@ -301,6 +300,18 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                                 issueEntitlement: newIe
                         )
                         ieCoverage.save()
+                    }
+                    ie.priceItems.each { PriceItem pi ->
+                        PriceItem priceItem = new PriceItem(
+                                startDate: pi.startDate,
+                                endDate: pi.endDate,
+                                listPrice: pi.listPrice,
+                                listCurrency: pi.listCurrency,
+                                localPrice: pi.localPrice,
+                                localCurrency: pi.localCurrency,
+                                issueEntitlement: newIe
+                        )
+                        priceItem.save()
                     }
                 }
             }
@@ -316,14 +327,9 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
             if (deleteEntitlements) {
                 List<Long> subList = [subscription.id]
-                if(subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkPerm("ORG_CONSORTIUM")) {
-                    Subscription.findAllByInstanceOf(subscription).each { Subscription childSub ->
-                        subList.add(childSub.id)
-                    }
-                }
                 Map<String,Object> queryParams = [sub: subList, pkg_id: this.id]
                 //delete matches
-                IssueEntitlement.withSession { Session session ->
+                //IssueEntitlement.withSession { Session session ->
                     List deleteIdList = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie, Package pkg where ie.subscription.id in (:sub) and pkg.id = :pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) ", queryParams)
                     removePackagePendingChanges(subList,true)
                     if (deleteIdList) {
@@ -346,9 +352,9 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
                     SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=:pkg and sp.subscription.id in (:subList)", [pkg:this, subList:subList])
                     //log.debug("before flush")
-                    session.flush()
+                    //session.flush()
                     return true
-                }
+                //}
             } else {
 
                 if (subPkg) {
