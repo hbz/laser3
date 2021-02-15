@@ -25,7 +25,7 @@ class IssueEntitlementCoverage extends AbstractCoverage {
     }
 
     static mapping = {
-        id column: 'ic_id'
+        id column: 'ic_id', index: 'ic_id_idx'
         version column: 'ic_version'
         startDate column:'ic_start_date',      index: 'ic_dates_idx'
         startVolume column:'ic_start_volume'
@@ -36,7 +36,7 @@ class IssueEntitlementCoverage extends AbstractCoverage {
         embargo column:'ic_embargo'
         coverageDepth column:'ic_coverage_depth'
         coverageNote column:'ic_coverage_note',type: 'text'
-        issueEntitlement column:'ic_ie_fk'
+        issueEntitlement column:'ic_ie_fk', index: 'ic_ie_idx'
         lastUpdated column:'ic_last_updated'
         dateCreated column:'ic_date_created'
         sort startDate: 'asc', startVolume: 'asc', startIssue: 'asc', endDate: 'asc', endVolume: 'asc', endIssue: 'asc'

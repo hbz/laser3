@@ -842,7 +842,7 @@ class SubscriptionControllerService {
             List<SubscriptionPackage> validSubChildPackages = SubscriptionPackage.executeQuery("select sp from SubscriptionPackage sp join sp.subscription sub where sub.instanceOf = :parent",[parent:result.subscription])
             validSubChildPackages.each { SubscriptionPackage sp ->
                 if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp',[sp:sp])) {
-                    if (params.withIE) {
+                    if (Boolean.valueOf(params.withIE)) {
                         if(sp.pkg.unlinkFromSubscription(sp.subscription, true)){
                             result.message << messageSource.getMessage('subscription.linkPackagesMembers.unlinkInfo.withIE.successful',null,locale)
                         }
@@ -1510,34 +1510,41 @@ class SubscriptionControllerService {
 
     Map<String,Object> entitlementChanges(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        SwissKnife.setPaginationParams(result,params,(User) result.user)
         if(!result) {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            List<Package> pkgList = result.subscription.packages.collect { SubscriptionPackage sp -> sp.pkg }
-            List<Map<String,Object>> entitlementDiffs = []
-            List<PendingChange> pkgChanges = PendingChange.executeQuery('select pc from PendingChange pc where pc.status = :pkgHistory and pc.pkg in (:pkgList)',[pkgList:pkgList])
-            List<PendingChange> tippChanges = PendingChange.executeQuery('select pc from PendingChange pc where pc.status = :pkgHistory and pc.tipp.pkg in (:pkgList) and pc.msgToken = :updated',[pkgList:pkgList,updated:PendingChangeConfiguration.TITLE_UPDATED])
-            List<PendingChange> covChanges = PendingChange.executeQuery('select pc from PendingChange pc where pc.status = :pkgHistory and pc.tippCoverage.tipp.pkg in (:pkgList) and pc.msgToken = :updated',[pkgList:pkgList,updated:PendingChangeConfiguration.COVERAGE_UPDATED])
-            /*
-                get all changes which has occurred
-                list all changes in general
-                offer for each update for which prompt is the setting (explicitely or by missing setting) a change map with parameter links to accept the change
-                listing must be restricted to subscription package! explicite diff listing only for updates
-                creations and deletions have to be indicated only by numbers (number of tipps / tippCoverages vs. issue entitlements / ieCoverages)
-            */
-            List<IssueEntitlement> iesConcerned = IssueEntitlement.findAllByTippInListAndStatusNotEqual(tippChanges.collect { PendingChange pc -> pc.tipp },RDStore.TIPP_STATUS_DELETED)
-            List<IssueEntitlement> ieCovsConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlementCoverage ieCov join ieCov.issueEntitlement ie join ie.tipp tipp where tipp in (:tipps) and ie.status != :deleted',[tipps:tippChanges.collect { PendingChange pc -> pc.tipp },daleted:RDStore.TIPP_STATUS_DELETED])
-            tippChanges.each { PendingChange change ->
-                IssueEntitlement issueEntitlement = iesConcerned.find { IssueEntitlement ie -> ie.tipp == change.tipp }
-                switch(change.msgToken) {
-                    case PendingChangeConfiguration.TITLE_UPDATED:
-                        if(issueEntitlement[change.prop] != change.tipp[change.prop])
-                            entitlementDiffs << [prop:change.prop,oldValue:issueEntitlement[change.prop],newValue:change.tipp[change.prop],tipp:change.tipp,msgToken:change.msgToken]
-                        break
+            List<Package> pkgList = []
+            Set<String> pendingOrWithNotification = []
+            Set<Long> packageHistory = [], accepted = []
+            Set subscriptionHistory = []
+            Set<PendingChange> changesOfPage = []
+            result.subscription.packages.each { SubscriptionPackage sp ->
+                pkgList << sp.pkg
+                pendingOrWithNotification.addAll(sp.pendingChangeConfig.findAll { PendingChangeConfiguration pcc -> pcc.settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT || pcc.withNotification }.collect{ PendingChangeConfiguration pcc -> pcc.settingKey })
+            }
+            if(pkgList && pendingOrWithNotification) {
+                String query1 = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = null and pc.status = :history and pc.msgToken in (:pendingOrWithNotification)',
+                       query2 = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = null and pc.status = :history and pc.msgToken in (:pendingOrWithNotification)',
+                       query3 = 'select pc.id from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = null and pc.status = :history and pc.msgToken in (:pendingOrWithNotification)',
+                       query1a = 'select pc.id,pc.tipp from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status = :accepted',
+                       query2a = 'select pc.id,pc.tippCoverage from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status = :accepted',
+                       query3a = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status = :accepted'
+                packageHistory.addAll(PendingChange.executeQuery(query1,[packages:pkgList,history:RDStore.PENDING_CHANGE_HISTORY,pendingOrWithNotification:pendingOrWithNotification]))
+                packageHistory.addAll(PendingChange.executeQuery(query2,[packages:pkgList,history:RDStore.PENDING_CHANGE_HISTORY,pendingOrWithNotification:pendingOrWithNotification]))
+                packageHistory.addAll(PendingChange.executeQuery(query3,[packages:pkgList,history:RDStore.PENDING_CHANGE_HISTORY,pendingOrWithNotification:pendingOrWithNotification]))
+                subscriptionHistory.addAll(PendingChange.executeQuery(query1a,[packages:pkgList,accepted:RDStore.PENDING_CHANGE_ACCEPTED,subOid:genericOIDService.getOID(result.subscription)]))
+                subscriptionHistory.addAll(PendingChange.executeQuery(query2a,[packages:pkgList,accepted:RDStore.PENDING_CHANGE_ACCEPTED,subOid:genericOIDService.getOID(result.subscription)]))
+                subscriptionHistory.addAll(PendingChange.executeQuery(query3a,[packages:pkgList,accepted:RDStore.PENDING_CHANGE_ACCEPTED,subOid:genericOIDService.getOID(result.subscription)]))
+                changesOfPage.addAll(PendingChange.findAllByIdInList(packageHistory,[sort:'ts',order:'asc']))
+                subscriptionHistory.each { row ->
+                    accepted << changesOfPage.find { PendingChange pc -> row[1] in [pc.tipp,pc.tippCoverage,pc.priceItem] }.id
                 }
             }
-            result
+            result.packageHistory = changesOfPage
+            result.accepted = accepted
+            [result:result,status:STATUS_OK]
         }
     }
 

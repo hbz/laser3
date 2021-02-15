@@ -40,13 +40,13 @@
                         </label>
                     </div>
                     &nbsp &nbsp
-                    <div class="ui radio checkbox">
+                    %{--<div class="ui radio checkbox">
                         <input id="pkgradio" type="radio" value="pkg" name="linkto" tabindex="0" class="hidden">
                         <label for="pkgradio">
                             <g:message code="package.label" />
                         </label>
                     </div>
-                    &nbsp &nbsp
+                    &nbsp &nbsp--}%
                     <div class="ui radio checkbox">
                         <input id="subscriptionradio" type="radio" value="subscription" name="linkto" tabindex="0" class="hidden">
                         <label for="subscriptionradio">

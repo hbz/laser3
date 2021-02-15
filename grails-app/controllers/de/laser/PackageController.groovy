@@ -458,7 +458,7 @@ class PackageController {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = exportService.generateTitleExportKBART(titlesList)
+            Map<String,List> tableData = exportService.generateTitleExportKBART(result.titlesList)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -467,7 +467,7 @@ class PackageController {
         } else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String, List> export = exportService.generateTitleExportXLS(titlesList)
+            Map<String,List> export = exportService.generateTitleExportXLS(result.titlesList)
             Map sheetData = [:]
             sheetData[message(code: 'menu.my.titles')] = [titleRow: export.titles, columnData: export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -485,7 +485,7 @@ class PackageController {
                 response.contentType = "text/csv"
 
                 ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = exportService.generateTitleExportCSV(titlesList)
+                Map<String, List> tableData = exportService.generateTitleExportCSV(result.titlesList)
                 out.withWriter { writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.rows, ';'))
                 }
