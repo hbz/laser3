@@ -37,16 +37,16 @@ class PriceItem extends AbstractBase {
                         issueEntitlement: IssueEntitlement]
 
     static mapping = {
-        id                  column: 'pi_id'
+        id                  column: 'pi_id', index:'pi_idx'
         globalUID           column: 'pi_guid'
         listPrice           column: 'pi_list_price'
-        listCurrency        column: 'pi_list_currency_rv_fk'
+        listCurrency        column: 'pi_list_currency_rv_fk', index: 'pi_list_currency_idx'
         localPrice          column: 'pi_local_price'
-        localCurrency       column: 'pi_local_currency_rv_fk'
+        localCurrency       column: 'pi_local_currency_rv_fk', index: 'pi_local_currency_idx'
         startDate           column: 'pi_start_date'
         endDate             column: 'pi_end_date'
-        tipp                column: 'pi_tipp_fk'
-        issueEntitlement    column: 'pi_ie_fk'
+        tipp                column: 'pi_tipp_fk', index: 'pi_tipp_idx'
+        issueEntitlement    column: 'pi_ie_fk', index: 'pi_ie_idx'
         lastUpdated         column: 'pi_last_updated'
         dateCreated         column: 'pi_date_created'
     }

@@ -128,7 +128,7 @@
 
         <g:if test="${editable}">
             <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'PendingChanges' || us_dashboard_tab.getValue() == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges">
-                <div class="la-float-right">
+                <%--<div class="la-float-right">
                     <g:if test="${packages}">
                         <g:form controller="pendingChange" action="processAll">
                             <g:select from="${packages}" noSelection="${['':message(code:'default.select.choose.label')]}" name="acceptChangesForPackages" class="ui select search multiple dropdown" optionKey="${{it.id}}" optionValue="${{it.pkg.name}}"/>
@@ -139,16 +139,10 @@
                             </div>
                         </g:form>
                     </g:if>
-                </div>
+                </div>--%>
                 <div class="ui internally celled grid">
                     <div class="row">
-                        <div class="two wide column">
-                            <g:message code="profile.dashboard.changes.eventtype"/>
-                        </div><!-- .column -->
-                        <div class="two wide column">
-                            <g:message code="profile.dashboard.changes.objecttype"/>
-                        </div><!-- .column -->
-                        <div class="two wide column">
+                        <div class="six wide column">
                             <g:message code="profile.dashboard.changes.object"/>
                         </div><!-- .column -->
                         <div class="seven wide column">
@@ -159,48 +153,44 @@
                         </div><!-- .column -->
                     </div>
                     <g:each in="${pending}" var="entry">
-                        <g:set var="row" value="${pendingChangeService.printRow(entry.change)}" />
-                        <g:set var="event" value="${row.eventData}"/>
                         <div class="row">
-                            <div class="two wide column">
-                                ${raw(row.eventIcon)}
-                            </div><!-- .column -->
-                            <div class="two wide column">
-                                ${raw(row.instanceIcon)}
-                            </div><!-- .column -->
-                            <div class="two wide column">
-                                <g:if test="${entry.change.subscription}">
-                                    <g:link controller="subscription" action="index" id="${entry.target.id}">${entry.target.dropdownNamingConvention()}</g:link>
+                            <%--${entry}--%>
+                            <div class="six wide column">
+                                <g:if test="${entry.subPkg}">
+                                    <g:link controller="subscription" action="index" id="${entry.subPkg.subscription.id}">${entry.subPkg.subscription.dropdownNamingConvention()}</g:link>
                                 </g:if>
-                                <g:elseif test="${entry.change.costItem}">
-                                    <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.target.sub.id]}">${entry.target.sub.dropdownNamingConvention()}</g:link>
+                                <g:elseif test="${entry.costItem}">
+                                    <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.costItem.sub.id]}">${entry.costItem.sub.dropdownNamingConvention()}</g:link>
                                 </g:elseif>
                             </div><!-- .column -->
                             <div class="seven wide column">
-                                ${raw(row.eventString)}
+                                <g:if test="${entry.subPkg}">
+                                    <g:link controller="subscription" action="entitlementChanges" id="${entry.subPkg.subscription.id}">${raw(entry.eventString)}</g:link>
+                                </g:if>
+                                <g:else>
+                                    ${raw(entry.eventString)}
+                                </g:else>
 
-                                <g:if test="${entry.change.msgToken == "pendingChange.message_SU_NEW_01" && accessService.checkPerm('ORG_INST')}">
+                                <g:if test="${entry.subscription}">
                                     <div class="right aligned wide column">
-                                        <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(entry.change.subscription._getCalculatedPrevious()), targetObjectId: genericOIDService.getOID(entry.change.subscription)]}">
+                                        <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(entry.subscription._getCalculatedPrevious()), targetObjectId: genericOIDService.getOID(entry.subscription)]}">
                                             <g:message code="myinst.copyMyElements"/>
                                         </g:link>
                                     </div>
                                 </g:if>
                             </div><!-- .column -->
                             <div class="three wide column">
-                                <div class="ui buttons">
-                                    <g:link class="ui positive button" controller="pendingChange" action="accept" id="${entry.change.id}"><g:message code="default.button.accept.label"/></g:link>
-                                    <div class="or" data-text="${message(code:'default.or')}"></div>
-                                    <g:link class="ui negative button" controller="pendingChange" action="reject" id="${entry.change.id}"><g:message code="default.button.reject.label"/></g:link>
-                                </div>
+                                <g:if test="${entry.changeId}">
+                                    <div class="ui buttons">
+                                        <g:link class="ui positive button" controller="pendingChange" action="accept" id="${entry.changeId}"><g:message code="default.button.accept.label"/></g:link>
+                                        <div class="or" data-text="${message(code:'default.or')}"></div>
+                                        <g:link class="ui negative button" controller="pendingChange" action="reject" id="${entry.changeId}"><g:message code="default.button.reject.label"/></g:link>
+                                    </div>
+                                </g:if>
                             </div><!-- .column -->
                         </div><!-- .row -->
-
                     </g:each>
                 </div><!-- .grid -->
-                <div>
-                    <semui:paginate offset="${pendingOffset ? pendingOffset : '0'}" max="${max}" params="${[view:'PendingChanges']}" total="${pendingCount}"/>
-                </div>
             </div>
         </g:if>
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'AcceptedChanges' || us_dashboard_tab.getValue() == 'AcceptedChanges' ? 'active':''}" data-tab="acceptedchanges">
@@ -209,13 +199,7 @@
             </div>
             <div class="ui internally celled grid">
                 <div class="row">
-                    <div class="two wide column">
-                        <g:message code="profile.dashboard.changes.eventtype"/>
-                    </div><!-- .column -->
-                    <div class="two wide column">
-                        <g:message code="profile.dashboard.changes.objecttype"/>
-                    </div><!-- .column -->
-                    <div class="two wide column">
+                    <div class="six wide column">
                         <g:message code="profile.dashboard.changes.object"/>
                     </div><!-- .column -->
                     <div class="ten wide column">
@@ -223,34 +207,37 @@
                     </div><!-- .column -->
                 </div>
                 <g:each in="${notifications}" var="entry">
-                    <g:set var="row" value="${pendingChangeService.printRow(entry.change)}" />
-                    <g:set var="event" value="${row.eventData}"/>
                     <div class="row">
-                        <div class="two wide column">
-                            ${raw(row.eventIcon)}
-                        </div><!-- .column -->
-                        <div class="two wide column">
-                            ${raw(row.instanceIcon)}
-                            <g:if test="${entry.memberSubscriptions}">
-                                (${entry.memberSubscriptions.size()})
+                        <%--${entry}--%>
+                        <div class="six wide column">
+                            <g:if test="${entry.subPkg}">
+                                <g:link controller="subscription" action="index" id="${entry.subPkg.subscription.id}">${entry.subPkg.subscription.dropdownNamingConvention()}</g:link>
                             </g:if>
-                        </div><!-- .column -->
-                        <div class="two wide column">
-                            <g:if test="${entry.change.subscription}">
-                                <g:link controller="subscription" action="index" id="${entry.target.id}">${entry.target.dropdownNamingConvention()}</g:link>
-                            </g:if>
-                            <g:elseif test="${entry.change.costItem}">
-                                <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.target.sub.id]}">${entry.target.sub.dropdownNamingConvention()}</g:link>
+                            <g:elseif test="${entry.costItem}">
+                                <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.costItem.sub.id]}">${entry.costItem.sub.dropdownNamingConvention()}</g:link>
                             </g:elseif>
                         </div><!-- .column -->
                         <div class="ten wide column">
-                            ${raw(row.eventString)}
+                            <g:if test="${entry.subPkg}">
+                                <g:link controller="subscription" action="entitlementChanges" id="${entry.subPkg.subscription.id}">${raw(entry.eventString)}</g:link>
+                            </g:if>
+                            <g:else>
+                                ${raw(entry.eventString)}
+                            </g:else>
+
+                            <g:if test="${entry.subscription}">
+                                <div class="right aligned wide column">
+                                    <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(entry.subscription._getCalculatedPrevious()), targetObjectId: genericOIDService.getOID(entry.subscription)]}">
+                                        <g:message code="myinst.copyMyElements"/>
+                                    </g:link>
+                                </div>
+                            </g:if>
                         </div><!-- .column -->
                     </div><!-- .row -->
                 </g:each>
             </div><!-- .grid -->
             <div>
-                <semui:paginate offset="${acceptedOffset ? acceptedOffset : '0'}" max="${max}" params="${[view:'AcceptedChanges']}" total="${notificationsCount}"/>
+                <semui:paginate offset="${acceptedOffset ? acceptedOffset : '0'}" max="${max}" params="${[view:'AcceptedChanges']}" total="${notifications.size()}"/>
             </div>
         </div>
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active':''}" data-tab="news">

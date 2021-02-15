@@ -5,6 +5,7 @@ import de.laser.base.AbstractBase
 import de.laser.finance.PriceItem
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
+import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
 import groovy.time.TimeCategory
 import org.springframework.context.i18n.LocaleContextHolder
@@ -77,11 +78,12 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
   static mappedBy = [ids: 'tipp',
                      orgs: 'tipp',
                      prsLinks: 'tipp',
-                     priceItems: 'tipp']
+                     priceItems: 'tipp',
+                     historyEvents: 'tipp']
   static hasMany = [ids: Identifier,
                     coverages: TIPPCoverage,
                     orgs: OrgRole,
-                    historyEvents: TitleHistoryEventParticipant,
+                    historyEvents: TitleHistoryEvent,
                     prsLinks: PersonRole,
                     priceItems: PriceItem]
 
@@ -187,6 +189,8 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     @Override
     def beforeInsert() {
         touchPkgLastUpdated()
+        generateSortTitle()
+        generateNormTitle()
         super.beforeInsertHandler()
     }
     @Override
@@ -213,7 +217,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
             sortName = sortName.replaceFirst('^der ', '')
             sortName = sortName.replaceFirst('^die ', '')
             sortName = sortName.replaceFirst('^das ', '')
-            save()
         }
     }
 
@@ -225,7 +228,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
             normName = alphanum.matcher(normName).replaceAll("")
             normName = normName.replaceAll("\\s+", " ")
             normName = asciify(normName)
-            save()
         }
     }
 

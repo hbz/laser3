@@ -966,14 +966,16 @@ class FilterService {
         }
 
         if (asAt != null) {
-            base_qry += " and ( ( ( :startDate >= coalesce(tipp.accessStartDate, tipp.pkg.startDate) ) or ( tipp.accessEndDate is null ) ) and ( ( :endDate <= tipp.accessEndDate ) or ( tipp.accessEndDate is null ) ) ) "
+            base_qry += " and ( ( :startDate >= tipp.accessStartDate or tipp.accessStartDate is null ) and ( :endDate <= tipp.accessEndDate or tipp.accessEndDate is null ) ) "
             qry_params.startDate = asAt
             qry_params.endDate = asAt
             filterSet = true
         }
 
         if (params.filter) {
-            base_qry += " and ( ( genfunc_filter_matcher(tipp.name,:title) = true ) or ( exists ( from Identifier ident where ident.tipp.id = ti.id and genfunc_filter_matcher(ident.value,:title) = true ) ) )"
+            //causes GC overhead
+            //base_qry += " and ( genfunc_filter_matcher(tipp.name,:title) = true or ( exists ( select id.id from Identifier id where genfunc_filter_matcher(id.value,:title) = true and id.tipp = tipp ) ) )"
+            base_qry += " and genfunc_filter_matcher(tipp.name,:title) = true "
             qry_params.title = params.filter
             filterSet = true
         }
@@ -1006,12 +1008,6 @@ class FilterService {
             base_qry += " and tipp.accessEndDate >= :accessEndDate"
             qry_params.accessEndDate = sdf.parse(params.accessEndDate)
             filterSet = true
-        }
-
-        if ((params.sort != null) && (params.sort.length() > 0)) {
-            base_qry += " order by lower(${params.sort}) ${params.order}"
-        } else {
-            base_qry += " order by lower(tipp.sortName) asc"
         }
 
         return [base_qry:base_qry,qry_params:qry_params,filterSet:filterSet]

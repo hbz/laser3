@@ -3,6 +3,7 @@ package de.laser
 
  
 import de.laser.annotations.DebugAnnotation
+import de.laser.exceptions.ChangeAcceptException
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -24,7 +25,28 @@ class PendingChangeController  {
             pendingChangeService.performAccept(pc)
         }
         else if (!pc.payload) {
-            pc.accept()
+            if(pc.status == RDStore.PENDING_CHANGE_HISTORY) {
+                Org contextOrg = contextService.getOrg()
+                Package targetPkg
+                if(pc.tipp) {
+                    targetPkg = pc.tipp.pkg
+                }
+                else if(pc.tippCoverage) {
+                    targetPkg = pc.tippCoverage.tipp.pkg
+                }
+                else if(pc.priceItem) {
+                    targetPkg = pc.priceItem.tipp.pkg
+                }
+                if(targetPkg) {
+                    List<SubscriptionPackage> subPkg = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where sp.pkg = :pkg and sp.subscription.id = :subscription and oo.org = :ctx and s.instanceOf is null',[ctx:contextOrg,pkg:targetPkg,subscription:Long.parseLong(params.subId)])
+                    if(subPkg.size() == 1)
+                        pendingChangeService.applyChangeForHolding(pc,(SubscriptionPackage) subPkg[0], contextOrg)
+                    else log.error("unable to determine subscription package for pending change ${pc}")
+                }
+            }
+            else {
+                pendingChangeService.accept(pc)
+            }
         }
         redirect(url: request.getHeader('referer'))
     }
@@ -39,7 +61,7 @@ class PendingChangeController  {
             pendingChangeService.performReject(pc)
         }
         else if (!pc.payload) {
-            pc.reject()
+            if(pc.status != RDStore.PENDING_CHANGE_HISTORY) pendingChangeService.reject(pc)
         }
         redirect(url: request.getHeader('referer'))
     }
@@ -75,11 +97,11 @@ class PendingChangeController  {
                         if(targetPkg?.id == sp.pkg.id) {
                             if(acceptAll) {
                                 //log.info("is rejectAll simultaneously set? ${params.rejectAll}")
-                                pc.accept()
+                                pendingChangeService.accept(pc)
                             }
                             else if(rejectAll) {
                                 //log.info("is acceptAll simultaneously set? ${params.acceptAll}")
-                                pc.reject()
+                                pendingChangeService.reject(pc)
                             }
                         }
                     }
