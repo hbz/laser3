@@ -115,10 +115,10 @@
     <g:if test="${tipp.titleType.contains('Book') && (tipp.editionStatement || showEmptyFields)}">
         <div class="item">
             <i class="grey icon copy la-popup-tooltip la-delay"
-               data-content="${message(code: 'title.type.label')}"></i>
+               data-content="${message(code: 'title.editionStatement.label')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'title.type.label') + ':'} ${tipp.editionStatement}
+                ${showCompact ? '' : message(code: 'title.editionStatement.label') + ':'} ${tipp.editionStatement}
             </div>
         </div>
     </g:if>
@@ -202,7 +202,7 @@
         </div>
     </g:if>
 
-    <g:if test="${ie && (ie.availabilityStatus || showEmptyFields)}">
+    %{--<g:if test="${ie && (ie.availabilityStatus || showEmptyFields)}">
         <g:if test="${ie.availabilityStatus?.value == 'Expected'}">
             ${message(code: 'default.on')} <g:formatDate
                 format="${message(code: 'default.date.format.notime')}"
@@ -214,7 +214,7 @@
                 format="${message(code: 'default.date.format.notime')}"
                 date="${ie.accessEndDate}"/>
         </g:if>
-    </g:if>
+    </g:if>--}%
 
     <g:if test="${showPackage}">
         <g:if test="${tipp.pkg.id}">

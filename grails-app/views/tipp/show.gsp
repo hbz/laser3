@@ -49,17 +49,13 @@
                     <div class="item">
                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                            data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                        <${message(code: 'default.date.format.notime')}: g:formatDate
-                                                                         format="${message(code: 'default.date.format.notime')}"
-                                                                         date="${tipp.dateFirstInPrint}"/>
+                        <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.dateFirstInPrint}"/>
                     </div>
 
                     <div class="item">
                         <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                            data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                        ${message(code: 'default.date.format.notime')}: <g:formatDate
-                                format="${message(code: 'default.date.format.notime')}"
-                                date="${tipp.dateFirstOnline}"/>
+                         <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.dateFirstOnline}"/>
                     </div>
 
                 </g:if>

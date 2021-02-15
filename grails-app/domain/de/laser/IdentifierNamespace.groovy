@@ -33,12 +33,16 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
 
     //title identifier namespaces
     public static final String ZDB        = 'zdb'
+    public static final String EZB       = 'ezb'
     public static final String ZDB_PPN    = 'zdb_ppn'
     public static final String DOI        = 'doi'
     public static final String ISSN       = 'issn'
     public static final String EISSN      = 'eissn'
     public static final String PISBN      = 'pisbn'
     public static final String ISBN       = 'isbn'
+
+    //package identifier namespaces
+    public static final String PKG_ID        = 'Anbieter_Produkt_ID'
 
     //subscription identifier namespaces
     public static final String EZB_ANCHOR = 'EZB anchor'

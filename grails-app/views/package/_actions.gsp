@@ -40,8 +40,7 @@
                               value="${RDStore.SUBSCRIPTION_CURRENT.id}"
                               noSelection="${['': message(code: 'default.select.choose.label')]}"
                               onchange="JSPC.app.adjustDropdown()"/>
-            </div><br/>
-            <br>
+            </div>
             <br id="element-vor-target-dropdown"/>
             <br>
             <br>

@@ -269,18 +269,20 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         else return ""
     }
 
+  @Deprecated
   Date getDerivedAccessStartDate() {
-    accessStartDate ? accessStartDate : pkg?.startDate
+    accessStartDate ? accessStartDate : null
   }
-
+  @Deprecated
   Date getDerivedAccessEndDate() {
-    accessEndDate ? accessEndDate : pkg?.endDate
+    accessEndDate ? accessEndDate : null
   }
-
+  @Deprecated
   RefdataValue getAvailabilityStatus() {
     return getAvailabilityStatus(new Date());
   }
-  
+
+  @Deprecated
   String getAvailabilityStatusAsString() {
 	  String result
 	  def loc = LocaleContextHolder.locale?.toString()
@@ -305,7 +307,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
 	  result
   }
   
-
+  @Deprecated
   RefdataValue getAvailabilityStatus(Date as_at) {
       RefdataValue result
     // If StartDate <= as_at <= EndDate - Current
@@ -331,11 +333,11 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     }
     result
   }
-
+    @Deprecated
     String getAvailabilityStatusExplanation() {
         return getAvailabilityStatusExplanation(new Date());
     }
-
+    @Deprecated
     String getAvailabilityStatusExplanation(Date as_at) {
         StringWriter sw = new StringWriter()
         sw.write("This tipp is ${getAvailabilityStatus(as_at).value} as at ${as_at} because the date specified was between the start date (${getDerivedAccessStartDate()} ${accessStartDate ? 'Set explicitly on this TIPP' : 'Defaulted from package start date'}) and the end date (${getDerivedAccessEndDate()} ${accessEndDate ? 'Set explicitly on this TIPP' : 'Defaulted from package end date'})");
