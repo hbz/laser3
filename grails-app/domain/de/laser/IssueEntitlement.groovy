@@ -51,9 +51,9 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
   int compareTo(obj) {
     int cmp
-    if(tipp.sortName)
-        cmp = tipp.sortName.compareTo(obj.tipp.sortName)
-    else cmp = tipp.name.compareTo(obj.tipp.name)
+    if(tipp.sortName && obj.tipp.sortName)
+        cmp = tipp.sortName <=> obj.tipp.sortName
+    else if(tipp.name && obj.tipp.name) cmp = tipp.name <=> obj.tipp.name
     if(cmp == 0)
       return tipp.id.compareTo(obj.tipp.id)
     return cmp

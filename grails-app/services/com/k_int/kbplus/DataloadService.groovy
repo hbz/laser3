@@ -179,6 +179,7 @@ class DataloadService {
                     if (!tipp.sortName) {
                         tipp.generateNormTitle()
                         tipp.generateSortTitle()
+                        tipp.save()
                         //
                         // This alone should trigger before update to do the necessary...
                         //

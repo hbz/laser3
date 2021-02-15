@@ -13,6 +13,7 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemGroup
+import de.laser.finance.PriceItem
 import de.laser.helper.RDConstants
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -930,23 +931,31 @@ class ExportService {
 	 */
 	Map<String,List> generateTitleExportKBART(Collection entitlementData) {
 		List allRows = []
+		Set<TitleInstancePackagePlatform> titleInstances = []
 		entitlementData.each { ieObj ->
 			def entitlement
 			if(ieObj instanceof IssueEntitlement) {
 				entitlement = (IssueEntitlement) ieObj
+				titleInstances << entitlement.tipp
 			}
 			else if(ieObj instanceof TitleInstancePackagePlatform) {
 				entitlement = (TitleInstancePackagePlatform) ieObj
+				titleInstances << entitlement
 			}
 			if(entitlement) {
-				entitlement.coverages.each { AbstractCoverage covStmt ->
-					allRows << covStmt
-				}
-				if(!entitlement.coverages)
+				if(!entitlement.coverages && !entitlement.priceItems)
 					allRows << entitlement
+				else {
+					entitlement.coverages.each { AbstractCoverage covStmt ->
+						allRows << covStmt
+					}
+					entitlement.priceItems.each { PriceItem pi ->
+						allRows << pi
+					}
+				}
 			}
 		}
-		List<IdentifierNamespace> otherTitleIdentifierNamespaces = IdentifierNamespace.executeQuery('select distinct(id.ns) from Identifier id where id.ti in (:availableTitles) and id.ns.ns not in (:coreTitleNS)',[availableTitles:titleInstances,coreTitleNS:IdentifierNamespace.CORE_TITLE_NS])
+		List<IdentifierNamespace> otherTitleIdentifierNamespaces = IdentifierNamespace.executeQuery('select distinct(id.ns) from Identifier id where id.tipp in (:availableTitles) and id.ns.ns not in (:coreTitleNS)',[availableTitles:titleInstances,coreTitleNS:IdentifierNamespace.CORE_TITLE_NS])
 		List<String> titleHeaders = [
 				'publication_title',
 				'print_identifier',

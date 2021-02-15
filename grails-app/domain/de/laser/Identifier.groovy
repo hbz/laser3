@@ -83,6 +83,7 @@ class Identifier implements CalculatedLastUpdated {
         String value     = map.get('value')
         Object reference = map.get('reference')
         def namespace    = map.get('namespace')
+        String name_de   = map.get('name_de')
         String nsType    = map.get('nsType')
         boolean isUnique = true
         if(map.containsKey('isUnique') && map.get('isUnique') == false)
@@ -101,11 +102,17 @@ class Identifier implements CalculatedLastUpdated {
 
 			if(! ns) {
                 if (nsType){
-                    ns = new IdentifierNamespace(ns: namespace, isUnique: isUnique, isHidden: false, nsType: nsType)
+                    ns = new IdentifierNamespace(ns: namespace, isUnique: isUnique, isHidden: false, nsType: nsType, name_de: name_de)
                 } else {
-                    ns = new IdentifierNamespace(ns: namespace, isUnique: isUnique, isHidden: false)
+                    ns = new IdentifierNamespace(ns: namespace, isUnique: isUnique, isHidden: false, name_de: name_de)
                 }
                 ns.save()
+            }
+            else {
+                if(ns.name_de != name_de) {
+                    ns.name_de = name_de
+                    ns.save()
+                }
             }
         }
 
@@ -158,7 +165,7 @@ class Identifier implements CalculatedLastUpdated {
         pkg  = owner instanceof Package ? owner : pkg
         sub  = owner instanceof Subscription ? owner : sub
         tipp = owner instanceof TitleInstancePackagePlatform ? owner : tipp
-        ti   = owner instanceof TitleInstance ? owner : ti
+        //ti   = owner instanceof TitleInstance ? owner : ti
     }
 
     Object getReference() {
