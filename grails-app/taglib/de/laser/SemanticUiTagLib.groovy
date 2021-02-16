@@ -516,7 +516,7 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
-    //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="" />
+    //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="" modifiers="" />
 
     def datepicker = { attrs, body ->
 
@@ -527,7 +527,7 @@ class SemanticUiTagLib {
         def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : "${message(code: 'default.date.label')}"
 
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-        def value = ''
+        String value = ''
         try {
             value = attrs.value ? sdf.format(attrs.value) : value
         }
@@ -551,14 +551,26 @@ class SemanticUiTagLib {
 
         out << '<div class="' + classes + '">'
         if (hideLabel) {
-            out << '<label for="' + id + '">' + label + ' ' + mandatoryField +'</label>'
+            out << '<label for="' + id + '">' + label + ' ' + mandatoryField + '</label>'
         }
-        out << '<div class="ui calendar datepicker">'
-        out << '<div class="ui input left icon">'
-        out << '<i aria-hidden="true" class="calendar icon"></i>'
-        out << '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '" ' + required + '>'
-        out << '</div>'
-        out << '</div>'
+        out <<   '<div class="ui calendar datepicker">'
+        out <<     '<div class="ui input left icon">'
+        out <<       '<i aria-hidden="true" class="calendar icon"></i>'
+        out <<       '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '" ' + required + '>'
+        out <<     '</div>'
+        out <<   '</div>'
+
+        // reporting -->
+        if (attrs.modifiers) {
+            String modName = name + '_modifier'
+            out << '<select class="ui dropdown" name="' + modName + '">'
+            out << '<option value="">Modifikator (todo)</option>'
+            out << '<option value="lower"' + ( params.get(modName) == 'lower' ? ' selected="selected"' : '' ) + '>&lt;</option>'
+            out << '<option value="equals"' + ( params.get(modName) == 'equals' ? ' selected="selected"' : '' ) + '>=</option>'
+            out << '<option value="greater"' + ( params.get(modName) == 'greater' ? ' selected="selected"' : '' ) + '>&gt;</option>'
+            out << '</select>'
+        }
+
         out << '</div>'
     }
 

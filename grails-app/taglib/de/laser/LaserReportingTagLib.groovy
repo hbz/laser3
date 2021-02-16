@@ -1,7 +1,7 @@
 package de.laser
 
 import de.laser.annotations.RefdataAnnotation
-import de.laser.reporting.Cfg
+import de.laser.reporting.RepCfg
 
 import java.lang.reflect.Field
 
@@ -11,15 +11,15 @@ class LaserReportingTagLib {
 
     def reportFilterField = { attrs, body ->
 
-        String fieldType = Cfg.getFormFieldType(attrs.config, attrs.field) // [ property, refdata ]
+        String fieldType = RepCfg.getFormFieldType(attrs.config, attrs.field) // [ property, refdata ]
 
-        if (fieldType == Cfg.FORM_TYPE_PROPERTY) {
+        if (fieldType == RepCfg.FORM_TYPE_PROPERTY) {
             out << laser.reportFilterProperty(config: attrs.config, property: attrs.field, key: attrs.key)
         }
-        if (fieldType == Cfg.FORM_TYPE_REFDATA) {
+        if (fieldType == RepCfg.FORM_TYPE_REFDATA) {
             out << laser.reportFilterRefdata(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
-        if (fieldType == Cfg.FORM_TYPE_REFDATA_RELTABLE) {
+        if (fieldType == RepCfg.FORM_TYPE_REFDATA_RELTABLE) {
             out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
     }
@@ -40,7 +40,8 @@ class LaserReportingTagLib {
                     id         : filterName,
                     name       : filterName,
                     placeholder: "filter.placeholder",
-                    value      : filterValue
+                    value      : filterValue,
+                    modifiers  : true
             ])
         }
     }
@@ -75,7 +76,7 @@ class LaserReportingTagLib {
 
     def reportFilterRefdataRelTable = { attrs, body ->
 
-        Map<String, Object> rdvInfo = Cfg.getRefdataRelTableInfo(attrs.refdata)
+        Map<String, Object> rdvInfo = RepCfg.getRefdataRelTableInfo(attrs.refdata)
 
         String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
 

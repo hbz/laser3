@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.Cfg;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.RepCfg;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 
     <g:form action="reporting" method="POST" class="ui form">
@@ -11,7 +11,7 @@
         <div class="ui bottom attached active tab segment" data-tab="sub-filter-tab-1">
             <div class="field">
                 <label for="filter:subscription_filter">Auswahl</label>
-                <g:set var="config" value="${Cfg.config.Subscription}" />
+                <g:set var="config" value="${RepCfg.config.Subscription}" />
                 <g:select name="filter:subscription_filter" class="ui selection dropdown la-not-clearable" from="${config.filter}" optionKey="key" optionValue="value" value="${params.get('filter:sub_filter')}" />
             </div>
 
@@ -31,7 +31,7 @@
                 <input type="text" id="filter:org_member" value="Alle betroffenen Teilnehmer" readonly="readonly" />
             </div>
 
-            <g:set var="config" value="${Cfg.config.Organisation}" />
+            <g:set var="config" value="${RepCfg.config.Organisation}" />
 
             <g:each in="${config.form}" var="cfgFormGroup">
                 <div class="fields">
@@ -49,7 +49,7 @@
                 <input type="text" id="filter:org_provider" value="Alle betroffenen Anbieter" readonly="readonly" />
             </div>
 
-            <g:set var="config" value="${Cfg.config.Organisation}" />
+            <g:set var="config" value="${RepCfg.config.Organisation}" />
 
             <g:each in="${config.form}" var="cfgFormGroup">
                 <div class="fields">

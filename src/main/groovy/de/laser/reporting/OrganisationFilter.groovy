@@ -1,7 +1,6 @@
 package de.laser.reporting
 
 import de.laser.Org
-import de.laser.ReportingService
 import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
@@ -30,7 +29,7 @@ class OrganisationFilter {
         List<String> whereParts         = [ 'where org.id in (:orgIdList)']
         Map<String, Object> queryParams = [ orgIdList: [] ]
 
-        switch (params.get(Cfg.filterPrefix + 'org_filter')) {
+        switch (params.get(RepCfg.filterPrefix + 'org_filter')) {
             case 'all-org':
                 queryParams.orgIdList = Org.executeQuery(
                         'select o.id from Org o where (o.status is null or o.status != :orgStatus)',
@@ -73,7 +72,7 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                 break
         }
 
-        String cmbKey = Cfg.filterPrefix + 'org_'
+        String cmbKey = RepCfg.filterPrefix + 'org_'
         int pCount = 0
 
         Set<String> keys = params.keySet().findAll{ it.toString().startsWith(cmbKey) }
@@ -82,12 +81,22 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = Cfg.getFormFieldType(Cfg.config.Organisation, p)
+                String pType = RepCfg.getFormFieldType(RepCfg.config.Organisation, p)
 
                 // --> properties generic
-                if (pType == Cfg.FORM_TYPE_PROPERTY) {
-                    whereParts.add( 'org.' + p + ' = :p' + (++pCount) )
+                if (pType == RepCfg.FORM_TYPE_PROPERTY) {
                     if (Org.getDeclaredField(p).getType() == Date) {
+
+                        String modifier = params.get(key + '_modifier')
+                        if (modifier == 'lower') {
+                            whereParts.add( 'org.' + p + ' < :p' + (++pCount) )
+                        }
+                        else if (modifier == 'greater') {
+                            whereParts.add( 'org.' + p + ' > :p' + (++pCount) )
+                        }
+                        else {
+                            whereParts.add( 'org.' + p + ' = :p' + (++pCount) )
+                        }
                         queryParams.put( 'p' + pCount, DateUtils.parseDateGeneric(params.get(key)) )
                     }
                     else {
@@ -95,12 +104,12 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                     }
                 }
                 // --> refdata generic
-                else if (pType == Cfg.FORM_TYPE_REFDATA) {
+                else if (pType == RepCfg.FORM_TYPE_REFDATA) {
                     whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
                 }
                 // --> refdata relation tables
-                else if (pType == Cfg.FORM_TYPE_REFDATA_RELTABLE) {
+                else if (pType == RepCfg.FORM_TYPE_REFDATA_RELTABLE) {
                     if (p == 'subjectGroup') {
                         queryParts.add('OrgSubjectGroup osg')
                         whereParts.add('osg.org = org and osg.subjectGroup.id = :p' + (++pCount))
@@ -112,6 +121,7 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
 
         String query = queryParts.unique().join(' , ') + ' ' + whereParts.join(' and ')
 
+//        println 'OrganisationFilter.filter() -->'
 //        println query
 //        println queryParams
 //        println whereParts

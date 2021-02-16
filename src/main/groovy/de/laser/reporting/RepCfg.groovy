@@ -7,7 +7,7 @@ import de.laser.Subscription
 import de.laser.helper.RDConstants
 import grails.web.servlet.mvc.GrailsParameterMap
 
-class Cfg {
+class RepCfg {
 
     static String filterPrefix          = 'filter:'
 
@@ -65,18 +65,18 @@ class Cfg {
                             class: Subscription
                     ],
                     form : [
-                            /*[
-                                    'startDate'                 : FORM_TYPE_PROPERTY,
-                                    'endDate'                   : FORM_TYPE_PROPERTY,
-                                    'manualRenewalDate'         : FORM_TYPE_PROPERTY,
-                                    'manualCancellationDate'    : FORM_TYPE_PROPERTY
-                            ],*/
                             [
                                     'form'              : FORM_TYPE_REFDATA,
                                     'kind'              : FORM_TYPE_REFDATA,
                                     'resource'          : FORM_TYPE_REFDATA,
                                     'status'            : FORM_TYPE_REFDATA,
                                     'type'              : FORM_TYPE_REFDATA
+                            ],
+                            [
+                                    'startDate'                 : FORM_TYPE_PROPERTY,
+                                    'endDate'                   : FORM_TYPE_PROPERTY,
+                                    //'manualRenewalDate'         : FORM_TYPE_PROPERTY,
+                                    //'manualCancellationDate'    : FORM_TYPE_PROPERTY
                             ]
                     ],
                     filter : [

@@ -12,7 +12,7 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.properties.PersonProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
-import de.laser.reporting.Cfg
+import de.laser.reporting.RepCfg
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
@@ -24,8 +24,6 @@ import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
-import de.laser.reporting.OrganisationQueryHandler
-import de.laser.reporting.SubscriptionQueryHandler
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -96,19 +94,19 @@ class MyInstitutionController  {
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        result.cfgFilterList = Cfg.config.filter
-        result.cfgChartsList = Cfg.config.charts
+        result.cfgFilterList = RepCfg.config.filter
+        result.cfgChartsList = RepCfg.config.charts
 
         if (params.filter) {
             result.filter = params.filter
 
             if (params.filter == 'organisation') {
                 result.result       = reportingService.filterOrganisation(params)
-                result.cfgQueryList = Cfg.config.Organisation.query
+                result.cfgQueryList = RepCfg.config.Organisation.query
             }
             else if (params.filter == 'subscription') {
                 result.result       = reportingService.filterSubscription(params)
-                result.cfgQueryList = Cfg.config.Subscription.query
+                result.cfgQueryList = RepCfg.config.Subscription.query
             }
         }
         render view: 'reporting/index', model: result
