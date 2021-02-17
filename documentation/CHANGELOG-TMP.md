@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-3044    12.02.2021  rv2.0   2.0         Moe     Bug         Erweiterung der Titelfilter
+3098    17.02.2021  rc2.0   2.0         Moe     Bug         Umfrage-Merkmale kann nicht gelöscht werden
+
+3044    12.02.2021  rc2.0   2.0         Moe     Bug         Erweiterung der Titelfilter
 
 3111    10.02.2021  rc2.0   2.0         Andreas Bug         Finanzfiltercache wieder korrekt eingebunden, Rechnungsnummer korrigiert
 
