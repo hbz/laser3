@@ -7,6 +7,7 @@ import de.laser.Subscription
 import de.laser.helper.RDConstants
 import grails.web.servlet.mvc.GrailsParameterMap
 
+@Deprecated
 class RepCfg {
 
     static String filterPrefix          = 'filter:'
@@ -40,7 +41,10 @@ class RepCfg {
                                     'libraryType'       : FORM_TYPE_REFDATA,
                                     'libraryNetwork'    : FORM_TYPE_REFDATA,
                                     'funderType'        : FORM_TYPE_REFDATA,
-                                    'funderHskType'     : FORM_TYPE_REFDATA,
+                                    'funderHskType'     : FORM_TYPE_REFDATA
+                            ],
+                            [
+                                    'eInvoice'          : FORM_TYPE_PROPERTY,
                                     'subjectGroup'      : FORM_TYPE_REFDATA_RELTABLE
                             ]
                     ],
@@ -53,9 +57,12 @@ class RepCfg {
                     ],
                     query : [
                             'Verteilung' : [
-                                'org-libraryType'   : 'Bibliothekstyp',
-                                'org-region'        : 'Bundesländer',
-                                'org-subjectGroup'  : 'Fächergruppen'
+                                'org-libraryType'       : 'Bibliothekstyp',
+                                'org-region'            : 'Bundesländer',
+                                'org-subjectGroup'      : 'Fächergruppen',
+                                'org-libraryNetwork'    : 'Verbundzugehörigkeit',
+                                'org-funderType'        : 'Unterhaltsträger',
+                                'org-funderHskType'     : 'Trägerschaft',
                             ]
                     ]
             ],
@@ -73,8 +80,13 @@ class RepCfg {
                                     'type'              : FORM_TYPE_REFDATA
                             ],
                             [
-                                    'startDate'                 : FORM_TYPE_PROPERTY,
-                                    'endDate'                   : FORM_TYPE_PROPERTY,
+                                    //'isMultiYear'           : FORM_TYPE_PROPERTY,
+                                    'hasPerpetualAccess'    : FORM_TYPE_PROPERTY,
+                                    'isPublicForApi'        : FORM_TYPE_PROPERTY
+                            ],
+                            [
+                                    'startDate'             : FORM_TYPE_PROPERTY,
+                                    'endDate'               : FORM_TYPE_PROPERTY,
                                     //'manualRenewalDate'         : FORM_TYPE_PROPERTY,
                                     //'manualCancellationDate'    : FORM_TYPE_PROPERTY
                             ]
@@ -94,9 +106,11 @@ class RepCfg {
                                 'member-libraryType'        : 'Bibliothekstyp',
                                 'member-region'             : 'Bundesländer',
                                 'member-subjectGroup'       : 'Fächergruppen',
+                                'member-libraryNetwork'     : 'Verbundzugehörigkeit',
+                                'member-funderType'         : 'Unterhaltsträger',
+                                'member-funderHskType'      : 'Trägerschaft',
                             ],
                             'Anbieter' : [
-                                'provider-libraryType'      : 'Bibliothekstyp',
                                 'provider-region'           : 'Bundesländer',
                                 'provider-country'          : 'Länder'
                             ]

@@ -1,6 +1,7 @@
 package de.laser.reporting
 
 import de.laser.Org
+import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
@@ -29,7 +30,7 @@ class OrganisationFilter {
         List<String> whereParts         = [ 'where org.id in (:orgIdList)']
         Map<String, Object> queryParams = [ orgIdList: [] ]
 
-        switch (params.get(RepCfg.filterPrefix + 'org_filter')) {
+        switch (params.get(GenericConfig.FILTER_PREFIX + 'org_filter')) {
             case 'all-org':
                 queryParams.orgIdList = Org.executeQuery(
                         'select o.id from Org o where (o.status is null or o.status != :orgStatus)',
@@ -72,7 +73,7 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                 break
         }
 
-        String cmbKey = RepCfg.filterPrefix + 'org_'
+        String cmbKey = GenericConfig.FILTER_PREFIX + 'org_'
         int pCount = 0
 
         Set<String> keys = params.keySet().findAll{ it.toString().startsWith(cmbKey) }
@@ -81,10 +82,10 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = RepCfg.getFormFieldType(RepCfg.config.Organisation, p)
+                String pType = GenericConfig.getFormFieldType(OrganisationConfig.CONFIG.base, p)
 
                 // --> properties generic
-                if (pType == RepCfg.FORM_TYPE_PROPERTY) {
+                if (pType == GenericConfig.FORM_TYPE_PROPERTY) {
                     if (Org.getDeclaredField(p).getType() == Date) {
 
                         String modifier = params.get(key + '_modifier')
@@ -99,17 +100,25 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                         }
                         queryParams.put( 'p' + pCount, DateUtils.parseDateGeneric(params.get(key)) )
                     }
+                    else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
+                        if (RefdataValue.get(params.get(key)) == RDStore.YN_YES) {
+                            whereParts.add( 'org.' + p + ' is true' )
+                        }
+                        else if (RefdataValue.get(params.get(key)) == RDStore.YN_NO) {
+                            whereParts.add( 'org.' + p + ' is false' )
+                        }
+                    }
                     else {
                         queryParams.put( 'p' + pCount, params.get(key) )
                     }
                 }
                 // --> refdata generic
-                else if (pType == RepCfg.FORM_TYPE_REFDATA) {
+                else if (pType == GenericConfig.FORM_TYPE_REFDATA) {
                     whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
                 }
                 // --> refdata relation tables
-                else if (pType == RepCfg.FORM_TYPE_REFDATA_RELTABLE) {
+                else if (pType == GenericConfig.FORM_TYPE_REFDATA_RELTABLE) {
                     if (p == 'subjectGroup') {
                         queryParts.add('OrgSubjectGroup osg')
                         whereParts.add('osg.org = org and osg.subjectGroup.id = :p' + (++pCount))

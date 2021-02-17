@@ -14,14 +14,6 @@
             <semui:crumb text="${message(code:'myinst.reporting')}" class="active" />
         </semui:breadcrumbs>
 
-        %{-- <semui:controlButtons>
-            <semui:exportDropdown>
-                <semui:exportDropdownItem>
-                    <g:link class="item" action="reporting_old" params="${exportParams}">${message(code: 'default.button.export.xls')}</g:link>
-                </semui:exportDropdownItem>
-            </semui:exportDropdown>
-        </semui:controlButtons> --}%
-
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
             <g:message code="myinst.reporting"/> <span class="ui label red">DEMO</span>
         </h1>
@@ -131,7 +123,7 @@
 
             JSPC.app.reporting.requestExport = function() {
                 console.log(JSPC.app.reporting.current.request);
-                alert('Noch nicht implementiert');
+                alert('[c1] - Noch nicht implementiert');
             }
 
             JSPC.app.reporting.requestChart = function() {
@@ -170,7 +162,7 @@
                                 })
                             }
                             if (! valid) {
-                                alert('Keine Details verfügbar / Noch nicht implementiert');
+                                alert('[c2] - Keine Details verfügbar');
                             }
                         });
                     })

@@ -22,7 +22,7 @@ class OrganisationQueryHandler {
 
         if (! idList) {
         }
-        else if ( params.query in ['org-libraryType', 'member-libraryType', 'provider-libraryType']) {
+        else if ( params.query in ['org-libraryType', 'member-libraryType']) {
 
             processSimpleRefdataQuery(params.query, 'libraryType', idList, result)
         }
@@ -34,6 +34,18 @@ class OrganisationQueryHandler {
 
             processSimpleRefdataQuery(params.query,'country', idList, result)
         }
+        else if ( params.query in ['org-libraryNetwork', 'member-libraryNetwork']) {
+
+            processSimpleRefdataQuery(params.query, 'libraryNetwork', idList, result)
+        }
+        else if ( params.query in ['org-funderType', 'member-funderType']) {
+
+            processSimpleRefdataQuery(params.query, 'funderType', idList, result)
+        }
+        else if ( params.query in ['org-funderHskType', 'member-funderHskType']) {
+
+            processSimpleRefdataQuery(params.query, 'funderHskType', idList, result)
+        }
         else if ( params.query in ['org-subjectGroup', 'member-subjectGroup']) {
 
             result.data = Org.executeQuery(
@@ -41,7 +53,25 @@ class OrganisationQueryHandler {
                     [idList: idList]
             )
 
-            // TODO --------------- result.dataDetails =
+            result.data.each { d ->
+                result.dataDetails.add( [
+                        query:  params.query,
+                        id:     d[0],
+                        label:  RefdataValue.get(d[0]).getI10n('value'),
+                        idList: Org.executeQuery(
+                                'select o.id from Org o join o.subjectGroup rt join rt.subjectGroup p where o.id in (:idList) and p.id = :d order by o.name',
+                                [idList: idList, d: d[0]]
+                        )
+                ])
+            }
+            List noData = Org.executeQuery(
+                    'select count(*) from Org o where o.id in (:idList) and not exists (select osg from OrgSubjectGroup osg where osg.org = o)',
+                    [idList: idList]
+            )
+
+            if (noData) {
+                result.data.add([null, '* keine Angabe', noData.get(0)])
+            }
         }
 
         result

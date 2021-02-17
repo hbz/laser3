@@ -1,7 +1,9 @@
 package de.laser
 
 import de.laser.annotations.RefdataAnnotation
-import de.laser.reporting.RepCfg
+import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
+import de.laser.reporting.GenericConfig
 
 import java.lang.reflect.Field
 
@@ -11,15 +13,15 @@ class LaserReportingTagLib {
 
     def reportFilterField = { attrs, body ->
 
-        String fieldType = RepCfg.getFormFieldType(attrs.config, attrs.field) // [ property, refdata ]
+        String fieldType = GenericConfig.getFormFieldType(attrs.config, attrs.field) // [ property, refdata ]
 
-        if (fieldType == RepCfg.FORM_TYPE_PROPERTY) {
+        if (fieldType == GenericConfig.FORM_TYPE_PROPERTY) {
             out << laser.reportFilterProperty(config: attrs.config, property: attrs.field, key: attrs.key)
         }
-        if (fieldType == RepCfg.FORM_TYPE_REFDATA) {
+        if (fieldType == GenericConfig.FORM_TYPE_REFDATA) {
             out << laser.reportFilterRefdata(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
-        if (fieldType == RepCfg.FORM_TYPE_REFDATA_RELTABLE) {
+        if (fieldType == GenericConfig.FORM_TYPE_REFDATA_RELTABLE) {
             out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
     }
@@ -34,7 +36,23 @@ class LaserReportingTagLib {
         String filterName     = 'filter:' + (attrs.key ? attrs.key : todo) + '_' + attrs.property
         String filterValue    = params.get(filterName)
 
-        if (prop.getType() == java.util.Date) {
+        if (prop.getType() in [boolean, Boolean]) {
+
+            out << '<div class="field">'
+            out << '<label for="' + filterName + '">' + filterLabel + '</label>'
+
+            out << laser.select([
+                    class      : "ui fluid dropdown",
+                    name       : filterName,
+                    from       : RefdataCategory.getAllRefdataValues(RDConstants.Y_N),
+                    optionKey  : "id",
+                    optionValue: "value",
+                    value      : filterValue,
+                    noSelection: ['': message(code: 'default.select.choose.label')]
+            ])
+            out << '</div>'
+        }
+        else if (prop.getType() == Date) {
             out << semui.datepicker([
                     label      : filterLabel,
                     id         : filterName,
@@ -76,7 +94,7 @@ class LaserReportingTagLib {
 
     def reportFilterRefdataRelTable = { attrs, body ->
 
-        Map<String, Object> rdvInfo = RepCfg.getRefdataRelTableInfo(attrs.refdata)
+        Map<String, Object> rdvInfo = GenericConfig.getRefdataRelTableInfo(attrs.refdata)
 
         String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
 

@@ -1,6 +1,6 @@
 <g:if test="${! data}">
     JSPC.app.reporting.current.chart.option = {}
-    alert('Keine Daten gefunden');
+    alert('[c3] - Keine Daten gefunden');
 </g:if>
 <g:elseif test="${chart == 'pie'}">
 JSPC.app.reporting.current.chart.option = {
