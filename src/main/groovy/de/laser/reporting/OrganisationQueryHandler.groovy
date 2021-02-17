@@ -64,13 +64,19 @@ class OrganisationQueryHandler {
                         )
                 ])
             }
-            List noData = Org.executeQuery(
-                    'select count(*) from Org o where o.id in (:idList) and not exists (select osg from OrgSubjectGroup osg where osg.org = o)',
+            List noDataList = Org.executeQuery(
+                    'select distinct o.id from Org o where o.id in (:idList) and not exists (select osg from OrgSubjectGroup osg where osg.org = o)',
                     [idList: idList]
             )
+            if (noDataList) {
+                result.data.add( [null, '* keine Angabe', noDataList.size()] )
 
-            if (noData) {
-                result.data.add([null, '* keine Angabe', noData.get(0)])
+                result.dataDetails.add( [
+                        query: params.query,
+                        id: null,
+                        label: '* keine Angabe',
+                        idList: noDataList
+                ])
             }
         }
 
@@ -82,8 +88,7 @@ class OrganisationQueryHandler {
         String noDataLabel = '* keine Angabe'
 
         result.data = Org.executeQuery(
-                PROPERTY_QUERY[0] + 'from Org o join o.' + refdata + ' p where o.id in (:idList)' + PROPERTY_QUERY[1],
-                [idList: idList]
+                PROPERTY_QUERY[0] + 'from Org o join o.' + refdata + ' p where o.id in (:idList)' + PROPERTY_QUERY[1], [idList: idList]
         )
         result.data.each { d ->
             result.dataDetails.add( [
@@ -96,13 +101,19 @@ class OrganisationQueryHandler {
                     )
             ])
         }
-        List noData = Org.executeQuery(
-                'select count(*) from Org o where o.id in (:idList) and o.' + refdata + ' is null group by o.' + refdata,
-                [idList: idList]
-        )
 
-        if (noData) {
-            result.data.add([null, noDataLabel, noData.get(0)])
+        List noDataList = Org.executeQuery(
+                'select distinct o.id from Org o where o.id in (:idList) and o.' + refdata + ' is null', [idList: idList]
+        )
+        if (noDataList) {
+            result.data.add( [null, noDataLabel, noDataList.size()] )
+
+            result.dataDetails.add( [
+                    query: query,
+                    id: null,
+                    label: noDataLabel,
+                    idList: noDataList
+            ])
         }
     }
 }
