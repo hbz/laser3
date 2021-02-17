@@ -34,66 +34,9 @@
                 <!-- END TEMPLATE -->
             </td>
 
-            <td class="la-tableCard">
-                <g:if test="${tipp.titleType.contains('Book')}">
-                    <div class="ui card">
-                        <div class="content">
-                            <!-- von -->
-                            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                               data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                            <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                          date="${tipp.dateFirstInPrint}"/>
-                            <semui:dateDevider/>
-                            <!-- bis -->
-                            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                               data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                            <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                          date="${tipp.dateFirstOnline}"/>
-                        </div>
-                    </div>
-                </g:if>
-                <g:else>
-                    <div class="ui cards">
-                        <g:each in="${tipp.coverages}" var="coverage">
-                            <div class="ui card">
-                                <div class="content">
-                                    <div class="la-card-column">
-                                        <!-- von -->
-                                        <g:formatDate date="${coverage.startDate}"
-                                                      format="${message(code: 'default.date.format.notime')}"/><br/>
-                                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'tipp.volume')}"></i>
-                                        ${coverage.startVolume}<br/>
-                                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'tipp.issue')}"></i>
-                                        ${coverage.startIssue}
-                                        <semui:dateDevider/>
-                                        <!-- bis -->
-                                        <g:formatDate date="${coverage.endDate}"
-                                                      format="${message(code: 'default.date.format.notime')}"/><br/>
-                                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'tipp.volume')}"></i>
-                                        ${coverage.endVolume}<br/>
-                                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'tipp.issue')}"></i>
-                                        ${coverage.endIssue}
-                                    </div>
+            <td class="coverageStatements la-tableCard">
 
-                                    <div class="la-card-column-with-row">
-                                        <div class="la-card-row">
-                                            <i class="grey icon file alternate right la-popup-tooltip la-delay"
-                                               data-content="${message(code: 'tipp.coverageDepth')}"></i>${coverage.coverageDepth}<br/>
-                                            <i class="grey icon quote right la-popup-tooltip la-delay"
-                                               data-content="${message(code: 'tipp.coverageNote')}"></i>${coverage.coverageNote}<br/>
-                                            <i class="grey icon hand paper right la-popup-tooltip la-delay"
-                                               data-content="${message(code: 'tipp.embargo')}"></i>${coverage.embargo}<br/>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </g:each>
-                    </div>
-                </g:else>
+                <g:render template="/templates/tipps/coverages" model="${[ie: null, tipp: tipp]}"/>
 
             </td>
             <td>

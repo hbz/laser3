@@ -453,7 +453,7 @@ class PackageController {
 
         List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.query, query.queryParams)
 
-        String filename = "${escapeService.escapeString(packageInstance.name)}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
+        String filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.current'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
 
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
@@ -470,7 +470,7 @@ class PackageController {
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             Map<String,List> export = exportService.generateTitleExportXLS(titlesList)
             Map sheetData = [:]
-            sheetData[message(code: 'menu.my.titles')] = [titleRow: export.titles, columnData: export.rows]
+            sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
             workbook.write(response.outputStream)
             response.outputStream.flush()
@@ -568,23 +568,26 @@ class PackageController {
 
         def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
 
+        String filename
         if (func == "planned") {
             params.planned = true
             params.notStatus = RDStore.TIPP_STATUS_DELETED.id
+            filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.planned'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
         } else if (func == "expired"){
             params.expired = true
             params.notStatus = RDStore.TIPP_STATUS_DELETED.id
+            filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.expired'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
         }
         else if (func == "deleted"){
             params.status = RDStore.TIPP_STATUS_DELETED.id
+            filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.deleted'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
         }
 
         Map<String, Object> query = filterService.getTippQuery(params, [packageInstance])
         result.filterSet = query.filterSet
+        println(query)
 
         List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.query, query.queryParams)
-
-        String filename = "${escapeService.escapeString(packageInstance.name)}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
 
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
@@ -601,7 +604,7 @@ class PackageController {
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             Map<String,List> export = exportService.generateTitleExportXLS(titlesList)
             Map sheetData = [:]
-            sheetData[message(code: 'menu.my.titles')] = [titleRow: export.titles, columnData: export.rows]
+            sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
             workbook.write(response.outputStream)
             response.outputStream.flush()

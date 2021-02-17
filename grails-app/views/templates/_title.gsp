@@ -39,7 +39,7 @@
         <semui:listIcon type="${tipp.titleType}"/>
 
         <div class="content">
-            ${showCompact ? '' : message(code: 'title.type.label') + ':'} ${tipp.titleType}
+            ${showCompact ? '' : message(code: 'tipp.titleType') + ':'} ${tipp.titleType}
         </div>
     </div>
 
@@ -70,10 +70,10 @@
     <g:if test="${ie && (ie.status || showEmptyFields)}">
         <div class="item">
             <i class="grey key icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'default.status.label')}"></i>
+               data-content="${message(code: 'tipp.status')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'default.status.label') + ':'} ${ie.status?.getI10n('value')}
+                ${showCompact ? '' : message(code: 'tipp.status') + ':'} ${ie.status?.getI10n('value')}
             </div>
         </div>
     </g:if>
@@ -81,10 +81,10 @@
         <g:if test="${(tipp.status || showEmptyFields)}">
             <div class="item">
                 <i class="grey key icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'default.status.label')}"></i>
+                   data-content="${message(code: 'tipp.status')}"></i>
 
                 <div class="content">
-                    ${showCompact ? '' : message(code: 'default.status.label') + ':'} ${tipp.status?.getI10n('value')}
+                    ${showCompact ? '' : message(code: 'tipp.status') + ':'} ${tipp.status?.getI10n('value')}
                 </div>
             </div>
         </g:if>
@@ -101,13 +101,24 @@
         </div>
     </g:if>
 
-    <g:if test="${tipp.titleType.contains('Book') && (tipp.firstAuthor || tipp.firstEditor || showEmptyFields)}">
+    <g:if test="${tipp.titleType.contains('Book') && (tipp.firstAuthor || showEmptyFields)}">
         <div class="item">
             <i class="grey icon user circle la-popup-tooltip la-delay"
-               data-content="${message(code: 'author.slash.editor')}"></i>
+               data-content="${message(code: 'tipp.firstAuthor')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'author.slash.editor') + ':'} ${tipp.getEbookFirstAutorOrFirstEditor()}
+                ${showCompact ? '' : message(code: 'tipp.firstAuthor') + ':'} ${tipp.firstAuthor}
+            </div>
+        </div>
+    </g:if>
+
+    <g:if test="${tipp.titleType.contains('Book') && (tipp.firstEditor || showEmptyFields)}">
+        <div class="item">
+            <i class="grey icon user circle la-popup-tooltip la-delay"
+               data-content="${message(code: 'tipp.firstEditor')}"></i>
+
+            <div class="content">
+                ${showCompact ? '' : message(code: 'tipp.firstEditor') + ':'} ${tipp.firstEditor}
             </div>
         </div>
     </g:if>
@@ -119,6 +130,17 @@
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'title.editionStatement.label') + ':'} ${tipp.editionStatement}
+            </div>
+        </div>
+    </g:if>
+
+    <g:if test="${tipp.titleType.contains('Book') && (tipp.editionNumber || showEmptyFields)}">
+        <div class="item">
+            <i class="grey icon copy la-popup-tooltip la-delay"
+               data-content="${message(code: 'tipp.editionNumber.tooltip')}"></i>
+
+            <div class="content">
+                ${showCompact ? '' : message(code: 'tipp.editionNumber') + ':'} ${tipp.editionNumber}
             </div>
         </div>
     </g:if>
@@ -137,10 +159,10 @@
     <g:if test="${(tipp.seriesName || showEmptyFields)}">
         <div class="item">
             <i class="grey icon list la-popup-tooltip la-delay"
-               data-content="${message(code: 'title.seriesName.label')}"></i>
+               data-content="${message(code: 'tipp.seriesName')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'title.seriesName.label') + ':'} ${tipp.seriesName}
+                ${showCompact ? '' : message(code: 'tipp.seriesName') + ':'} ${tipp.seriesName}
             </div>
         </div>
     </g:if>
@@ -148,10 +170,10 @@
     <g:if test="${(tipp.subjectReference || showEmptyFields)}">
         <div class="item">
             <i class="grey icon comment alternate la-popup-tooltip la-delay"
-               data-content="${message(code: 'title.subjectReference.label')}"></i>
+               data-content="${message(code: 'tipp.subjectReference')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'title.subjectReference.label') + ':'} ${tipp.subjectReference}
+                ${showCompact ? '' : message(code: 'tipp.subjectReference') + ':'} ${tipp.subjectReference}
             </div>
         </div>
 

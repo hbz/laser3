@@ -13,11 +13,6 @@
   </semui:breadcrumbs>
 
   <semui:controlButtons>
-      <semui:exportDropdown>
-          <semui:exportDropdownItem>
-              <g:link class="item" action="list" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
-          </semui:exportDropdownItem>
-      </semui:exportDropdown>
       <g:render template="actions"/>
   </semui:controlButtons>
 

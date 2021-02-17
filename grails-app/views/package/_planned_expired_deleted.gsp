@@ -18,10 +18,46 @@
       <semui:controlButtons>
           <semui:exportDropdown>
               <semui:exportDropdownItem>
-                  <g:link class="item" action="show" params="${params+[format:'json']}">JSON</g:link>
+                  <g:if test="${filterSet}">
+                      <g:link class="item js-open-confirm-modal"
+                              data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
+                              data-confirm-term-how="ok" controller="package" action="${actionName}"
+                              params="${params + [format: 'csv']}">
+                          <g:message code="default.button.exports.csv"/>
+                      </g:link>
+                  </g:if>
+                  <g:else>
+                      <g:link class="item" action="${actionName}" params="${params + [format: 'csv']}">CSV Export</g:link>
+                  </g:else>
               </semui:exportDropdownItem>
               <semui:exportDropdownItem>
-                  <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
+                  <g:if test="${filterSet}">
+                      <g:link class="item js-open-confirm-modal"
+                              data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
+                              data-confirm-term-how="ok" controller="package" action="${actionName}"
+                              params="${params + [exportXLSX: true]}">
+                          <g:message code="default.button.exports.xls"/>
+                      </g:link>
+                  </g:if>
+                  <g:else>
+                      <g:link class="item" action="${actionName}" params="${params + [exportXLSX: true]}">
+                          <g:message code="default.button.exports.xls"/>
+                      </g:link>
+                  </g:else>
+              </semui:exportDropdownItem>
+              <semui:exportDropdownItem>
+                  <g:if test="${filterSet}">
+                      <g:link class="item js-open-confirm-modal"
+                              data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
+                              data-confirm-term-how="ok" controller="package" action="${actionName}"
+                              params="${params + [exportKBart: true]}">
+                          KBART Export
+                      </g:link>
+                  </g:if>
+                  <g:else>
+                      <g:link class="item" action="${actionName}"
+                              params="${params + [exportKBart: true]}">KBART Export</g:link>
+                  </g:else>
               </semui:exportDropdownItem>
           </semui:exportDropdown>
           <g:render template="actions" />

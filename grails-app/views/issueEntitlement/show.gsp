@@ -23,7 +23,8 @@
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
         type="${issueEntitlementInstance.tipp.titleType}"/>
 
-<g:message code="issueEntitlement.for_title.label" args="[issueEntitlementInstance.tipp.name, issueEntitlementInstance.subscription.name]"/>
+<g:message code="issueEntitlement.for_title.label"
+           args="[issueEntitlementInstance.tipp.name, issueEntitlementInstance.subscription.name]"/>
 </h1>
 
 <semui:messages data="${flash}"/>
@@ -39,54 +40,21 @@
         </div>
 
         <div class="content">
-        <!-- START TEMPLATE -->
+            <!-- START TEMPLATE -->
             <g:render template="/templates/title"
-                      model="${[ie: issueEntitlementInstance, tipp: issueEntitlementInstance.tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                      model="${[ie         : issueEntitlementInstance, tipp: issueEntitlementInstance.tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
                                 showPackage: true, showPlattform: true, showCompact: false, showEmptyFields: true]}"/>
-        <!-- END TEMPLATE -->
+            <!-- END TEMPLATE -->
 
-            <g:if test="${issueEntitlementInstance.tipp.titleType.contains('Book')}">
-                <br/>
+            <br/>
 
-                <div class="la-title">${message(code: 'subscription.details.coverage_dates')}</div>
+            <div class="la-title">${message(code: 'subscription.details.coverage_dates')}</div>
 
-                <div class="la-icon-list">
-                    <div class="item">
-                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                           data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                      date="${issueEntitlementInstance.tipp.dateFirstInPrint}"/>
-                    </div>
+            <div class="la-icon-list">
+                <g:render template="/templates/tipps/coverages"
+                          model="${[ie: issueEntitlementInstance, tipp: issueEntitlementInstance.tipp]}"/>
+            </div>
 
-                    <div class="item">
-                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                           data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                      date="${issueEntitlementInstance.tipp.dateFirstOnline}"/>
-                    </div>
-                </div>
-
-            </g:if>
-
-            <g:if test="${issueEntitlementInstance.tipp.titleType.contains('Journal')}">
-                <br/>
-
-                <div class="la-title">${message(code: 'subscription.details.coverage_dates')}</div>
-
-                <div class="la-icon-list">
-                    <div class="ui cards">
-                        <g:each in="${issueEntitlementInstance.coverages}" var="covStmt">
-                            <div class="item">
-                                <div class="ui card">
-                                    <g:render template="/templates/tipps/coverageStatement"
-                                              model="${[covStmt: covStmt]}"/>
-                                </div>
-                            </div>
-                        </g:each>
-                    </div>
-                </div>
-
-            </g:if>
 
             <br/>
 
