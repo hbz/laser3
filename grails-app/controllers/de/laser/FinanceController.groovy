@@ -224,7 +224,7 @@ class FinanceController  {
                                 row.add(ci.subPkg ? ci.subPkg.pkg.name:'')
                                 //issue entitlement
                                 cellnum++
-                                row.add(ci.issueEntitlement ? ci.issueEntitlement?.tipp?.title?.title:'')
+                                row.add(ci.issueEntitlement ? ci.issueEntitlement?.tipp?.name:'')
                                 //date paid
                                 cellnum++
                                 row.add(paid_date ?: '')

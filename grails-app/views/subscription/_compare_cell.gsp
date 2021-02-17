@@ -14,13 +14,13 @@
 			  </g:if> <g:else>
 			  	<g:formatDate format="${message(code:'default.date.format.notime')}" date="${obj.tipp.startDate}"/> <br />
 			  </g:else>
-  			  ${message(code:'tipp.volume')}:
+  			  ${message(code:'tipp.startVolume')}:
   			  <g:if test="${obj.startVolume != null}">
   			  	 ${obj.startVolume} <br />
   			  </g:if> <g:else>
   			  	 ${obj.tipp.startVolume} <br />
   			  </g:else>
-			  ${message(code:'tipp.issue')}:
+			  ${message(code:'tipp.startIssue')}:
 			  <g:if test="${obj.startIssue != null}">
 			  	${obj.startIssue}
 			  </g:if> <g:else>
@@ -36,13 +36,13 @@
 			  </g:if> <g:else>
 			  	<g:formatDate format="${message(code:'default.date.format.notime')}" date="${obj.tipp.endDate}"/> <br />
 			  </g:else>
-			  ${message(code:'tipp.volume')}:
+			  ${message(code:'tipp.endVolume')}:
   			  <g:if test="${obj.endVolume != null}">
   			  	${obj.endVolume} <br />
   			  </g:if> <g:else>
   			  	${obj.tipp.endVolume} <br />
   			  </g:else>
-  			  ${message(code:'tipp.issue')}:
+  			  ${message(code:'tipp.endIssue')}:
 			  <g:if test="${obj.endIssue != null}">
 			  	${obj.endIssue} 
 			  </g:if> <g:else>

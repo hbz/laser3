@@ -44,37 +44,8 @@
             <div class="la-title"><g:message code="tipp.coverage"/></div>
 
             <div class="la-icon-list">
-
-                <g:if test="${tipp.titleType.contains('Book')}">
-                    <div class="item">
-                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                           data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                        <${message(code: 'default.date.format.notime')}: g:formatDate
-                                                                         format="${message(code: 'default.date.format.notime')}"
-                                                                         date="${tipp.dateFirstInPrint}"/>
-                    </div>
-
-                    <div class="item">
-                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                           data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                        ${message(code: 'default.date.format.notime')}: <g:formatDate
-                                format="${message(code: 'default.date.format.notime')}"
-                                date="${tipp.dateFirstOnline}"/>
-                    </div>
-
-                </g:if>
-                <g:elseif test="${tipp.titleType == 'Journal'}">
-                    <div class="ui cards">
-                        <g:each in="${tipp.coverages}" var="covStmt">
-                            <div class="item">
-                                <div class="ui card">
-                                    <g:render template="/templates/tipps/coverageStatement"
-                                              model="${[covStmt: covStmt]}"/>
-                                </div>
-                            </div>
-                        </g:each>
-                    </div>
-                </g:elseif>
+                <g:render template="/templates/tipps/coverages"
+                          model="${[ie: null, tipp: tipp]}"/>
             </div>
             <br/>
 
@@ -83,20 +54,20 @@
             <div class="la-icon-list">
                 <div class="item">
                     <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
-                       data-content="${message(code: 'tipp.show.accessStart')}"></i>
+                       data-content="${message(code: 'tipp.accessStartDate.tooltip')}"></i>
 
                     <div class="content">
-                        ${message(code: 'tipp.show.accessStart')}: <g:formatDate date="${tipp.accessStartDate}"
+                        ${message(code: 'tipp.accessStartDate')}: <g:formatDate date="${tipp.accessStartDate}"
                                                                                  format="${message(code: 'default.date.format.notime')}"/>
                     </div>
                 </div>
 
                 <div class="item">
                     <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
-                       data-content="${message(code: 'tipp.show.accessEnd')}"></i>
+                       data-content="${message(code: 'tipp.accessEndDate.tooltip')}"></i>
 
                     <div class="content">
-                        ${message(code: 'tipp.show.accessEnd')}: <g:formatDate date="${tipp.accessEndDate}"
+                        ${message(code: 'tipp.accessEndDate')}: <g:formatDate date="${tipp.accessEndDate}"
                                                                                format="${message(code: 'default.date.format.notime')}"/>
                     </div>
                 </div>

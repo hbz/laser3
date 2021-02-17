@@ -73,6 +73,8 @@ class RDStore {
     public static final COST_ITEM_ELEMENT_CONSORTIAL_PRICE          = getRefdataValue('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
 
     public static final CURRENCY_EUR               = getRefdataValue('EUR', RDConstants.CURRENCY)
+    public static final CURRENCY_GBP               = getRefdataValue('GBP', RDConstants.CURRENCY)
+    public static final CURRENCY_USD               = getRefdataValue('USD', RDConstants.CURRENCY)
 
     public static final DOC_CTX_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.DOCUMENT_CONTEXT_STATUS)
     public static final DOC_TYPE_ANNOUNCEMENT      = getRefdataValue('Announcement', RDConstants.DOCUMENT_TYPE)
