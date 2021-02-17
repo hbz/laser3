@@ -47,8 +47,7 @@ class SubscriptionQueryHandler {
         String noDataLabel = '* keine Angabe'
 
         result.data = Org.executeQuery(
-                PROPERTY_QUERY[0] + 'from Subscription s join s.' + refdata + ' p where s.id in (:idList)' + PROPERTY_QUERY[1],
-                [idList: idList]
+                PROPERTY_QUERY[0] + 'from Subscription s join s.' + refdata + ' p where s.id in (:idList)' + PROPERTY_QUERY[1], [idList: idList]
         )
         result.data.each { d ->
             result.dataDetails.add( [
@@ -61,13 +60,19 @@ class SubscriptionQueryHandler {
                     )
             ])
         }
-        List noData = Org.executeQuery(
-                'select count(*) from Subscription s where s.id in (:idList) and s.'+ refdata + ' is null group by s.' + refdata,
-                [idList: idList]
-        )
 
-        if (noData) {
-            result.data.add([null, noDataLabel, noData.get(0)])
+        List noDataList = Org.executeQuery(
+                'select distinct s.id from Subscription s where s.id in (:idList) and s.'+ refdata + ' is null', [idList: idList]
+        )
+        if (noDataList) {
+            result.data.add( [null, noDataLabel, noDataList.size()] )
+
+            result.dataDetails.add( [
+                    query: query,
+                    id: null,
+                    label: noDataLabel,
+                    idList: noDataList
+            ])
         }
     }
 }
