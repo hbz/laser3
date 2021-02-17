@@ -13401,6 +13401,28 @@ i.icon.la-laser {
   font-family: 'icomoon';
 }
 
+/* ICONS FOR MATH*/
+
+i.icon.la-less-than {
+  font-family: 'icomoon';
+}
+
+i.icon.la-greater-than {
+  font-family: 'icomoon';
+}
+
+i.icon.la-equals {
+  font-family: 'icomoon';
+}
+
+i.icon.la-less-than-equal {
+  font-family: 'icomoon';
+}
+
+i.icon.la-greater-than-equal {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
@@ -13467,6 +13489,28 @@ i.icon.la-gokb:before {
 
 i.icon.la-laser:before {
   content: "\e90f";
+}
+
+/**/
+
+i.icon.la-less-than:before {
+  content: "\e910";
+}
+
+i.icon.la-greater-than:before {
+  content: "\e911";
+}
+
+i.icon.la-equals:before {
+  content: "\e912";
+}
+
+i.icon.la-less-than-equal:before {
+  content: "\e913";
+}
+
+i.icon.la-greater-than-equal:before {
+  content: "\e914";
 }
 
 /*******************************
