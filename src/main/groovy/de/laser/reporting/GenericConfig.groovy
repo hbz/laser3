@@ -58,7 +58,7 @@ class GenericConfig {
                 it.value.get('query').each { it2 ->
                     println it2
                     if (it2.value.containsKey(params.query)) {
-                        label = it2.key + ' > ' + it2.value.get(params.query) + ' : ' + params.label
+                        label = it2.key + ' > ' + it2.value.get(params.query) + ' > ' + params.label
                     }
                 }
             }

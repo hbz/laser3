@@ -4,7 +4,7 @@ import de.laser.Org
 import de.laser.RefdataValue
 import grails.web.servlet.mvc.GrailsParameterMap
 
-class SubscriptionQueryHandler {
+class SubscriptionQueryHandler extends GenericQueryHandler {
 
     static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
 
@@ -44,8 +44,6 @@ class SubscriptionQueryHandler {
 
     static void processSimpleRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
 
-        String noDataLabel = '* keine Angabe'
-
         result.data = Org.executeQuery(
                 PROPERTY_QUERY[0] + 'from Subscription s join s.' + refdata + ' p where s.id in (:idList)' + PROPERTY_QUERY[1], [idList: idList]
         )
@@ -61,18 +59,11 @@ class SubscriptionQueryHandler {
             ])
         }
 
-        List noDataList = Org.executeQuery(
-                'select distinct s.id from Subscription s where s.id in (:idList) and s.'+ refdata + ' is null', [idList: idList]
+        handleNonMatchingData(
+                query,
+                'select distinct s.id from Subscription s where s.id in (:idList) and s.'+ refdata + ' is null',
+                idList,
+                result
         )
-        if (noDataList) {
-            result.data.add( [null, noDataLabel, noDataList.size()] )
-
-            result.dataDetails.add( [
-                    query: query,
-                    id: null,
-                    label: noDataLabel,
-                    idList: noDataList
-            ])
-        }
     }
 }
