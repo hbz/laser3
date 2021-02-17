@@ -1,4 +1,6 @@
-<g:if test="${key == 'Organisation'}">
+<%@ page import="de.laser.reporting.OrganisationConfig;de.laser.reporting.SubscriptionConfig;" %>
+
+<g:if test="${key == OrganisationConfig.KEY}">
     <div class="ui segment">
         <p style="text-align: center"><strong>${title}</strong></p>
         <table class="ui table la-table compact">
@@ -21,7 +23,7 @@
         </table>
     </div>
 </g:if>
-<g:if test="${key == 'Subscription'}">
+<g:if test="${key == SubscriptionConfig.KEY}">
     <div class="ui segment">
         <p style="text-align: center"><strong>${title}</strong></p>
         <table class="ui table la-table compact">

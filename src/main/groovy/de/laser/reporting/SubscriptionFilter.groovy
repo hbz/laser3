@@ -1,7 +1,7 @@
 package de.laser.reporting
 
 import de.laser.Org
-import de.laser.ReportingService
+import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
@@ -30,7 +30,7 @@ class SubscriptionFilter {
         List<String> whereParts         = [ 'where sub.id in (:subIdList)']
         Map<String, Object> queryParams = [ subIdList: [] ]
 
-        switch (params.get(Cfg.filterPrefix + 'subscription_filter')) {
+        switch (params.get(GenericConfig.FILTER_PREFIX + 'subscription_filter')) {
             case 'all-sub':
                 queryParams.subIdList = Subscription.executeQuery( 'select s.id from Subscription s' )
                 break
@@ -41,7 +41,7 @@ class SubscriptionFilter {
                 break
         }
 
-        String cmbKey = Cfg.filterPrefix + 'subscription_'
+        String cmbKey = GenericConfig.FILTER_PREFIX + 'subscription_'
         int pCount = 0
 
         Set<String> keys = params.keySet().findAll{ it.toString().startsWith(cmbKey) }
@@ -50,25 +50,43 @@ class SubscriptionFilter {
                 println key + " >> " + params.get(key)
 
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = Cfg.getFormFieldType(Cfg.config.Subscription, p)
+                String pType = GenericConfig.getFormFieldType(SubscriptionConfig.CONFIG.base, p)
 
                 // --> generic properties
-                if (pType == Cfg.FORM_TYPE_PROPERTY) {
-                    whereParts.add( 'sub.' + p + ' = :p' + (++pCount) )
+                if (pType == GenericConfig.FORM_TYPE_PROPERTY) {
                     if (Subscription.getDeclaredField(p).getType() == Date) {
+
+                        String modifier = params.get(key + '_modifier')
+                        if (modifier == 'lower') {
+                            whereParts.add( 'sub.' + p + ' < :p' + (++pCount) )
+                        }
+                        else if (modifier == 'greater') {
+                            whereParts.add( 'sub.' + p + ' > :p' + (++pCount) )
+                        }
+                        else {
+                            whereParts.add( 'sub.' + p + ' = :p' + (++pCount) )
+                        }
                         queryParams.put( 'p' + pCount, DateUtils.parseDateGeneric(params.get(key)) )
+                    }
+                    else if (Subscription.getDeclaredField(p).getType() in [boolean, Boolean]) {
+                        if (RefdataValue.get(params.get(key)) == RDStore.YN_YES) {
+                            whereParts.add( 'sub.' + p + ' is true' )
+                        }
+                        else if (RefdataValue.get(params.get(key)) == RDStore.YN_NO) {
+                            whereParts.add( 'sub.' + p + ' is false' )
+                        }
                     }
                     else {
                         queryParams.put( 'p' + pCount, params.get(key) )
                     }
                 }
                 // --> generic refdata
-                else if (pType == Cfg.FORM_TYPE_REFDATA) {
+                else if (pType == GenericConfig.FORM_TYPE_REFDATA) {
                     whereParts.add( 'sub.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
                 }
                 // --> refdata relation tables
-                else if (pType == Cfg.FORM_TYPE_REFDATA_RELTABLE) {
+                else if (pType == GenericConfig.FORM_TYPE_REFDATA_RELTABLE) {
                     println ' ------------ not implemented ------------ '
                 }
             }
@@ -76,6 +94,7 @@ class SubscriptionFilter {
 
         String query = queryParts.unique().join(' , ') + ' ' + whereParts.join(' and ')
 
+//        println 'SubscriptionFilter.filter() -->'
 //        println query
 //        println queryParams
 //        println whereParts
@@ -85,9 +104,9 @@ class SubscriptionFilter {
         result.memberIdList   = internalOrgFilter(params, 'member', result.subIdList)
         result.providerIdList = internalOrgFilter(params, 'provider', result.subIdList)
 
-        println 'subscriptions >> ' + result.subIdList.size()
-        println 'member >> ' + result.memberIdList.size()
-        println 'provider >> ' + result.providerIdList.size()
+//        println 'subscriptions >> ' + result.subIdList.size()
+//        println 'member >> ' + result.memberIdList.size()
+//        println 'provider >> ' + result.providerIdList.size()
 
         result
     }
@@ -115,7 +134,7 @@ class SubscriptionFilter {
             queryParams.put( 'roleTypes', [RDStore.OR_PROVIDER] )
         }
 
-        String cmbKey = Cfg.filterPrefix + partKey + '_'
+        String cmbKey = GenericConfig.FILTER_PREFIX + partKey + '_'
         int pCount = 0
 
         Set<String> keys = params.keySet().findAll{ it.toString().startsWith(cmbKey) }
@@ -124,25 +143,51 @@ class SubscriptionFilter {
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = Cfg.getFormFieldType(Cfg.config.Organisation, p)
+                String pType
+                if (partKey == 'member') {
+                    pType = GenericConfig.getFormFieldType(SubscriptionConfig.CONFIG.member, p)
+                }
+                else if (partKey == 'provider') {
+                    pType = GenericConfig.getFormFieldType(SubscriptionConfig.CONFIG.provider, p)
+                }
 
                 // --> properties generic
-                if (pType == Cfg.FORM_TYPE_PROPERTY) {
-                    whereParts.add( 'org.' + p + ' = :p' + (++pCount) )
+                if (pType == GenericConfig.FORM_TYPE_PROPERTY) {
+
                     if (Org.getDeclaredField(p).getType() == Date) {
+                        String modifier = params.get(key + '_modifier')
+
+                        if (modifier == 'lower') {
+                            whereParts.add( 'org.' + p + ' < :p' + (++pCount) )
+                        }
+                        else if (modifier == 'greater') {
+                            whereParts.add( 'org.' + p + ' > :p' + (++pCount) )
+                        }
+                        else {
+                            whereParts.add( 'org.' + p + ' = :p' + (++pCount) )
+                        }
                         queryParams.put( 'p' + pCount, DateUtils.parseDateGeneric(params.get(key)) )
                     }
+                    else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
+                        if (RefdataValue.get(params.get(key)) == RDStore.YN_YES) {
+                            whereParts.add( 'org.' + p + ' is true' )
+                        }
+                        else if (RefdataValue.get(params.get(key)) == RDStore.YN_NO) {
+                            whereParts.add( 'org.' + p + ' is false' )
+                        }
+                    }
                     else {
+                        whereParts.add( 'org.' + p + ' = :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, params.get(key) )
                     }
                 }
                 // --> refdata generic
-                else if (pType == Cfg.FORM_TYPE_REFDATA) {
+                else if (pType == GenericConfig.FORM_TYPE_REFDATA) {
                     whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
                 }
                 // --> refdata relation tables
-                else if (pType == Cfg.FORM_TYPE_REFDATA_RELTABLE) {
+                else if (pType == GenericConfig.FORM_TYPE_REFDATA_RELTABLE) {
                     if (p == 'subjectGroup') {
                         queryBase = queryBase + ' join org.subjectGroup osg join osg.subjectGroup rdvsg'
                         whereParts.add('rdvsg.id = :p' + (++pCount))
@@ -154,6 +199,7 @@ class SubscriptionFilter {
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
 
+//        println 'SubscriptionFilter.internalOrgFilter() -->'
 //        println query
 
         Org.executeQuery(query, queryParams)
