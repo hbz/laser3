@@ -12,7 +12,9 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.properties.PersonProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
-import de.laser.reporting.RepCfg
+import de.laser.reporting.OrganisationConfig
+import de.laser.reporting.SubscriptionConfig
+import de.laser.reporting.GenericConfig
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
@@ -94,36 +96,25 @@ class MyInstitutionController  {
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        result.cfgFilterList = RepCfg.config.filter
-        result.cfgChartsList = RepCfg.config.charts
+        result.cfgFilterList = GenericConfig.FILTER
+        result.cfgChartsList = GenericConfig.CHARTS
 
         if (params.filter) {
             result.filter = params.filter
+            result.cfgQueryList = [:]
 
             if (params.filter == 'organisation') {
                 result.result       = reportingService.filterOrganisation(params)
-                result.cfgQueryList = RepCfg.config.Organisation.query
+                result.cfgQueryList.putAll( OrganisationConfig.CONFIG.base.query )
             }
             else if (params.filter == 'subscription') {
                 result.result       = reportingService.filterSubscription(params)
-                result.cfgQueryList = RepCfg.config.Subscription.query
+                result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.base.query )
+                result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.member.query )
+                result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.provider.query )
             }
         }
         render view: 'reporting/index', model: result
-    }
-
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-    })
-    def reporting_old() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        result.subStatus = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
-        result.subProp = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], result.institution)
-        result.subForm = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)
-        result.subResourceType = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)
-        result.subKind = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)
-        result
     }
 
     @Secured(['ROLE_USER'])
