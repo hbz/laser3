@@ -51,7 +51,7 @@ class GenericConfig {
     static String getQueryLabel(Map<String, Object> config, GrailsParameterMap params) {
 
         String label = ''
-        println params
+        //println params
 
         config.each {it ->
             if (it.value.containsKey('query')) {
