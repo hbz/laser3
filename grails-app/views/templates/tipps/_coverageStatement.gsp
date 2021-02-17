@@ -1,4 +1,4 @@
-
+<%@ page import="de.laser.IssueEntitlementCoverage" %>
 <g:set var="overwriteEditable" value="${(overwriteEditable == null) ? editable : overwriteEditable}" />
 <%
     Map<String, Object> paramData = [ieCoverage: covStmt.id]
@@ -13,19 +13,21 @@
 %>
 <div class="content">
     <div class="la-card-column">
+        <i class="grey fitted calendar alternate icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.startDate.tooltip')}"></i>
         <semui:xEditable owner="${covStmt}" type="date" field="startDate" overwriteEditable="${overwriteEditable}"/><br />
-        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
+        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.startVolume.tooltip')}"></i>
         <semui:xEditable owner="${covStmt}" field="startVolume" overwriteEditable="${overwriteEditable}"/><br />
 
-        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
+        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.startIssue.tooltip')}"></i>
         <semui:xEditable owner="${covStmt}" field="startIssue" overwriteEditable="${overwriteEditable}"/>
         <semui:dateDevider/>
         <!-- bis -->
+        <i class="grey fitted calendar alternate icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.endDate.tooltip')}"></i>
         <semui:xEditable owner="${covStmt}" type="date" field="endDate" overwriteEditable="${overwriteEditable}"/><br />
-        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
+        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.endVolume.tooltip')}"></i>
         <semui:xEditable owner="${covStmt}" field="endVolume" overwriteEditable="${overwriteEditable}"/><br />
 
-        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
+        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.endIssue.tooltip')}"></i>
         <semui:xEditable owner="${covStmt}" field="endIssue" overwriteEditable="${overwriteEditable}"/><br />
     </div>
     <div class="la-card-column-with-row">
@@ -38,7 +40,7 @@
             <semui:xEditable owner="${covStmt}" field="embargo" overwriteEditable="${overwriteEditable}"/><br />
         </div>
         <div class="la-card-row">
-            <g:if test="${overwriteEditable}">
+            <g:if test="${overwriteEditable && (covStmt instanceof IssueEntitlementCoverage)}">
                 <span class="right floated" >
                     <g:link controller="subscription" action="removeCoverage" params="${paramData}" class="ui compact icon button negative tiny removeCoverage"><i class="ui icon minus" data-content="Lizenzzeitraum entfernen"></i></g:link>
                 </span>

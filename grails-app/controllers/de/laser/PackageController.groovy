@@ -38,7 +38,6 @@ class PackageController {
     def addressbookService
     def docstoreService
     def gokbService
-    def globalSourceSyncService
     def filterService
     EscapeService escapeService
     MessageSource messageSource
@@ -274,8 +273,8 @@ class PackageController {
                                 def tippA = values[0]
                                 def tippB = values[1]
                                 def colorCode = values[2]
-                                def pissn = tippA ? tippA.title.getIdentifierValue('issn') : tippB.title.getIdentifierValue('issn');
-                                def eissn = tippA ? tippA.title.getIdentifierValue('eISSN') : tippB.title.getIdentifierValue('eISSN');
+                                def pissn = tippA ? tippA.getIdentifierValue('issn') : tippB.getIdentifierValue('issn');
+                                def eissn = tippA ? tippA.getIdentifierValue('eISSN') : tippB.getIdentifierValue('eISSN');
 
                                 writer.write("\"${title}\",\"${pissn ?: ''}\",\"${eissn ?: ''}\",\"${formatDateOrNull(dateFormatter, tippA?.startDate)}\",\"${formatDateOrNull(dateFormatter, tippB?.startDate)}\",\"${tippA?.startVolume ?: ''}\",\"${tippB?.startVolume ?: ''}\",\"${tippA?.startIssue ?: ''}\",\"${tippB?.startIssue ?: ''}\",\"${formatDateOrNull(dateFormatter, tippA?.endDate)}\",\"${formatDateOrNull(dateFormatter, tippB?.endDate)}\",\"${tippA?.endVolume ?: ''}\",\"${tippB?.endVolume ?: ''}\",\"${tippA?.endIssue ?: ''}\",\"${tippB?.endIssue ?: ''}\",\"${tippA?.coverageNote ?: ''}\",\"${tippB?.coverageNote ?: ''}\",\"${colorCode}\"\n")
                             }
@@ -352,6 +351,11 @@ class PackageController {
             return
         }
 
+        result.currentTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_CURRENT).size()
+        result.plannedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateGreaterThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+        result.expiredTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateLessThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+        result.deletedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_DELETED).size()
+
         result.contextOrg = contextService.getOrg()
         result.contextCustomerType = result.contextOrg.getCustomerType()
 
@@ -423,7 +427,7 @@ class PackageController {
         Package packageInstance = Package.get(params.id)
         if (!packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
         result.packageInstance = packageInstance
@@ -431,6 +435,7 @@ class PackageController {
         result.currentTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_CURRENT).size()
         result.plannedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateGreaterThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
         result.expiredTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateLessThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+        result.deletedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_DELETED).size()
 
         if (executorWrapperService.hasRunningProcess(packageInstance)) {
             result.processingpc = true
@@ -447,18 +452,14 @@ class PackageController {
         result.filterSet = query.filterSet
 
         List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.query, query.queryParams)
-        result.titlesList = titlesList.drop(result.offset).take(result.max)
-        result.num_tipp_rows = titlesList.size()
 
-        result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
-
-        String filename = "${escapeService.escapeString(packageInstance.name)}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
+        String filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.current'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
 
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String,List> tableData = exportService.generateTitleExportKBART(result.titlesList)
+            Map<String,List> tableData = exportService.generateTitleExportKBART(titlesList)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -467,9 +468,9 @@ class PackageController {
         } else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportXLS(result.titlesList)
+            Map<String,List> export = exportService.generateTitleExportXLS(titlesList)
             Map sheetData = [:]
-            sheetData[message(code: 'menu.my.titles')] = [titleRow: export.titles, columnData: export.rows]
+            sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
             workbook.write(response.outputStream)
             response.outputStream.flush()
@@ -478,6 +479,11 @@ class PackageController {
         }
         withFormat {
             html {
+
+                result.titlesList = titlesList.drop(result.offset).take(result.max)
+                result.num_tipp_rows = titlesList.size()
+
+                result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
                 result
             }
             csv {
@@ -485,7 +491,7 @@ class PackageController {
                 response.contentType = "text/csv"
 
                 ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = exportService.generateTitleExportCSV(result.titlesList)
+                Map<String, List> tableData = exportService.generateTitleExportCSV(titlesList)
                 out.withWriter { writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.rows, ';'))
                 }
@@ -523,17 +529,22 @@ class PackageController {
 
     @Secured(['ROLE_USER'])
     def planned() {
-        planned_expired(params, "planned")
+        planned_expired_deleted(params, "planned")
     }
 
     @Secured(['ROLE_USER'])
     def expired() {
-        planned_expired(params, "expired")
+        planned_expired_deleted(params, "expired")
     }
 
     @Secured(['ROLE_USER'])
-    def planned_expired(params, func) {
-        log.debug("planned_expired ${params}");
+    def deleted() {
+        planned_expired_deleted(params, "deleted")
+    }
+
+    @Secured(['ROLE_USER'])
+    def planned_expired_deleted(params, func) {
+        log.debug("planned_expired_deleted ${params}");
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         result.editable = isEditable()
@@ -543,7 +554,7 @@ class PackageController {
         Package packageInstance = Package.get(params.id)
         if (!packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
         result.packageInstance = packageInstance
@@ -551,29 +562,77 @@ class PackageController {
         result.currentTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_CURRENT).size()
         result.plannedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateGreaterThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
         result.expiredTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateLessThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+        result.deletedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_DELETED).size()
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
 
+        String filename
         if (func == "planned") {
             params.planned = true
             params.notStatus = RDStore.TIPP_STATUS_DELETED.id
-        } else {
+            filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.planned'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
+        } else if (func == "expired"){
             params.expired = true
             params.notStatus = RDStore.TIPP_STATUS_DELETED.id
+            filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.expired'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
+        }
+        else if (func == "deleted"){
+            params.status = RDStore.TIPP_STATUS_DELETED.id
+            filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.deleted'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
         }
 
         Map<String, Object> query = filterService.getTippQuery(params, [packageInstance])
         result.filterSet = query.filterSet
+        println(query)
 
         List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.query, query.queryParams)
-        result.titlesList = titlesList.drop(result.offset).take(result.max)
-        result.num_tipp_rows = titlesList.size()
 
-        result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
+        if (params.exportKBart) {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+            response.contentType = "text/tsv"
+            ServletOutputStream out = response.outputStream
+            Map<String,List> tableData = exportService.generateTitleExportKBART(titlesList)
+            out.withWriter { writer ->
+                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+            }
+            out.flush()
+            out.close()
+        } else if (params.exportXLSX) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            Map<String,List> export = exportService.generateTitleExportXLS(titlesList)
+            Map sheetData = [:]
+            sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+        }
+        withFormat {
+            html {
 
-        result
+                result.titlesList = titlesList.drop(result.offset).take(result.max)
+                result.num_tipp_rows = titlesList.size()
+
+                result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
+                result
+            }
+            csv {
+                response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+                response.contentType = "text/csv"
+
+                ServletOutputStream out = response.outputStream
+                Map<String, List> tableData = exportService.generateTitleExportCSV(titlesList)
+                out.withWriter { writer ->
+                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.rows, ';'))
+                }
+                out.flush()
+                out.close()
+            }
+        }
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -913,7 +972,7 @@ class PackageController {
                     TitleInstancePackagePlatform tipp_object = TitleInstancePackagePlatform.get(hl.persistedObjectId);
                     if (tipp_object != null) {
                         line_to_add = [link        : createLink(controller: 'tipp', action: 'show', id: hl.persistedObjectId),
-                                       name        : tipp_object.title?.title + " / " + tipp_object.pkg?.name,
+                                       name        : tipp_object.name + " / " + tipp_object.pkg?.name,
                                        lastUpdated : hl.lastUpdated,
                                        propertyName: hl.propertyName,
                                        actor       : User.findByUsername(hl.actor),
