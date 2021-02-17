@@ -335,45 +335,8 @@
                                     ${ie.medium} <!-- may be subject of sync if issue entitlement medium and TIPP medium may differ -->
                                 </td>
                                 <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
-                                    <g:if test="${ie.tipp.titleType.contains('Book')}">
 
-                                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${ie.tipp.dateFirstInPrint}"/>
-                                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${ie.tipp.dateFirstOnline}"/>
-
-                                    </g:if>
-                                    <g:elseif test="${ie.tipp.titleType == 'Journal'}">
-                                        <%
-                                            Map<String, Object> paramData = [issueEntitlement: ie.id]
-                                            if (params.sort && params.order) {
-                                                paramData.sort = params.sort
-                                                paramData.order = params.order
-                                            }
-                                            if (params.max && params.offset) {
-                                                paramData.max = params.max
-                                                paramData.offset = params.offset
-                                            }
-                                        %>
-                                        <div class="ui cards">
-                                            <g:each in="${ie.coverages}" var="covStmt">
-                                                <div class="ui card">
-                                                    <g:render template="/templates/tipps/coverageStatement"
-                                                              model="${[covStmt: covStmt]}"/>
-                                                </div>
-                                            </g:each>
-                                        </div>
-                                        <g:if test="${editable}">
-                                            <br/>
-                                            <g:link action="addCoverage" params="${paramData}"
-                                                    class="ui compact icon button positive tiny"><i class="ui icon plus"
-                                                                                                    data-content="${message(code: 'subscription.details.addCoverage')}"></i></g:link>
-                                        </g:if>
-                                    </g:elseif>
+                                    <g:render template="/templates/tipps/coverages" model="${[ie: ie, tipp: ie.tipp]}"/>
 
                                 </td>
                                 <td>

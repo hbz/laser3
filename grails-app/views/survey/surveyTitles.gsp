@@ -136,28 +136,9 @@
                                                             overwriteEditable="${false}"/>
                                 </td>
                                 <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
-                                    <g:if test="${ie.tipp.titleType.contains('Book')}">
 
-                                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${ie.tipp.dateFirstInPrint}"/>
-                                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${ie.tipp.dateFirstOnline}"/>
-
-                                    </g:if>
-                                    <g:else>
-                                        <div class="ui cards">
-                                            <g:each in="${ie.coverages}" var="covStmt">
-                                                <div class="ui card">
-                                                    <g:render template="/templates/tipps/coverageStatement"
-                                                              model="${[covStmt: covStmt, overwriteEditable: false]}"/>
-                                                </div>
-                                            </g:each>
-                                        </div>
-                                    </g:else>
+                                    <g:render template="/templates/tipps/coverages"
+                                              model="${[ie: ie, tipp: ie.tipp, overwriteEditable: false]}"/>
 
                                 </td>
                                 <td>

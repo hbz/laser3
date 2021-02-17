@@ -238,13 +238,13 @@
                       <p>
                           <!-- von -->
                           <g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.startDate}"/><br />
-                          <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>${covStmt.startVolume}<br />
-                          <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>${covStmt.startIssue}<br />
+                          <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.startVolume')}"></i>${covStmt.startVolume}<br />
+                          <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.startIssue')}"></i>${covStmt.startIssue}<br />
                           <semui:dateDevider/>
                           <!-- bis -->
                           <g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.endDate}"/><br />
-                          <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>${covStmt.endVolume}<br />
-                          <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>${covStmt.endIssue}<br />
+                          <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.endVolume')}"></i>${covStmt.endVolume}<br />
+                          <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.endIssue')}"></i>${covStmt.endIssue}<br />
                           <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageNote')}"></i>${covStmt.coverageNote}<br />
                           <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>${covStmt.coverageDepth}<br />
                           <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>${covStmt.embargo}<br />
