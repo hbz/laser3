@@ -68,8 +68,8 @@ class AjaxController {
     ],
     'Currency' : [
       domain:'RefdataValue',
-      countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='${RDConstants.CURRENCY}'",
-      rowQry:"select rdv from RefdataValue as rdv where rdv.owner.desc='${RDConstants.CURRENCY}'",
+      countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + RDConstants.CURRENCY + "'",
+      rowQry:"select rdv from RefdataValue as rdv where rdv.owner.desc='" + RDConstants.CURRENCY + "'",
       qryParams:[
                    [
                       param:'iDisplayLength',
@@ -1598,6 +1598,7 @@ class AjaxController {
                             target_object."${params.name}" = null
                         }
                         target_object.save(failOnError: true)
+                        println(target_object."${params.name}")
                     }
                     catch (Exception e) {
                         target_object."${params.name}" = backup

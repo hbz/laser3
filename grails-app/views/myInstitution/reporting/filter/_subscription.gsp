@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.Cfg;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.SubscriptionConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 
     <g:form action="reporting" method="POST" class="ui form">
@@ -11,7 +11,7 @@
         <div class="ui bottom attached active tab segment" data-tab="sub-filter-tab-1">
             <div class="field">
                 <label for="filter:subscription_filter">Auswahl</label>
-                <g:set var="config" value="${Cfg.config.Subscription}" />
+                <g:set var="config" value="${SubscriptionConfig.CONFIG.base}" />
                 <g:select name="filter:subscription_filter" class="ui selection dropdown la-not-clearable" from="${config.filter}" optionKey="key" optionValue="value" value="${params.get('filter:sub_filter')}" />
             </div>
 
@@ -27,11 +27,10 @@
 
         <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-2">
             <div class="field">
-                <label for="filter:org_member">Teilnehmerauswahl</label>
-                <input type="text" id="filter:org_member" value="Alle betroffenen Teilnehmer" readonly="readonly" />
+                <label for="filter:member_filter">Teilnehmerauswahl</label>
+                <g:set var="config" value="${SubscriptionConfig.CONFIG.member}" />
+                <g:select name="filter:member_filter" class="ui selection dropdown la-not-clearable" from="${config.filter}" optionKey="key" optionValue="value" value="${params.get('filter:member_filter')}" />
             </div>
-
-            <g:set var="config" value="${Cfg.config.Organisation}" />
 
             <g:each in="${config.form}" var="cfgFormGroup">
                 <div class="fields">
@@ -45,11 +44,10 @@
 
         <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-3">
             <div class="field">
-                <label for="filter:org_provider">Anbieterauswahl</label>
-                <input type="text" id="filter:org_provider" value="Alle betroffenen Anbieter" readonly="readonly" />
+                <label for="filter:provider_filter">Anbieterauswahl</label>
+                <g:set var="config" value="${SubscriptionConfig.CONFIG.provider}" />
+                <g:select name="filter:provider_filter" class="ui selection dropdown la-not-clearable" from="${config.filter}" optionKey="key" optionValue="value" value="${params.get('filter:provider_filter')}" />
             </div>
-
-            <g:set var="config" value="${Cfg.config.Organisation}" />
 
             <g:each in="${config.form}" var="cfgFormGroup">
                 <div class="fields">
@@ -62,8 +60,8 @@
         </div><!-- .second -->
 
         <div class="field">
-            <g:link action="reporting" class="ui button primary">Zurücksetzen</g:link>
-            <input type="submit" class="ui button secondary" value="Suchen" />
+            <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
+            <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
             <input type="hidden" name="filter" value="subscription" />
         </div>
 

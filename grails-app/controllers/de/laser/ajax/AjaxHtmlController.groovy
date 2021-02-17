@@ -25,9 +25,9 @@ import de.laser.ctrl.LicenseControllerService
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
-import de.laser.reporting.Cfg
-import de.laser.reporting.OrganisationQueryHandler
-import de.laser.reporting.SubscriptionQueryHandler
+import de.laser.reporting.GenericConfig
+import de.laser.reporting.OrganisationConfig
+import de.laser.reporting.SubscriptionConfig
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -432,15 +432,20 @@ class AjaxHtmlController {
             String prefix = params.query.split('-')[0]
             List idList = params.list('idList[]').collect { it as Long }
 
-            if (prefix in ['org', 'member', 'provider']) {
-                result.key = 'Organisation'
-                result.title = Cfg.getQueryLabel(params)
-                result.list = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
+            if (prefix in ['org']) {
+                result.key   = OrganisationConfig.KEY
+                result.title = OrganisationConfig.getQueryLabel(params)
+                result.list  = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
             }
             if (prefix in ['subscription']) {
-                result.key = 'Subscription'
-                result.title = Cfg.getQueryLabel(params)
-                result.list = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
+                result.key   = SubscriptionConfig.KEY
+                result.title = SubscriptionConfig.getQueryLabel(params)
+                result.list  = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
+            }
+            if (prefix in ['member', 'provider']) {
+                result.key   = OrganisationConfig.KEY
+                result.title = SubscriptionConfig.getQueryLabel(params)
+                result.list  = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
             }
         }
         render template: '/myInstitution/reporting/chart/details', model: result

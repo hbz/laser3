@@ -37,7 +37,7 @@
                         ${message(code: 'profile.bc.profile')}
                     </h2>
 
-                    <g:form action="updateProfile" class="ui form updateProfile"
+                    <g:form action="updateProfile" class="ui form updateProfile">
                         <div class="field">
                             <label for="profile_username">${message(code: 'profile.username')}</label>
                             <input type="text" readonly="readonly" id="profile_username" value="${user.username}"/>

@@ -1036,7 +1036,7 @@ class FilterService {
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
             }
-            base_qry += "and ( ( lower(ie.tipp.sortName) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) or ((lower(ie.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
+            base_qry += "and ( ( lower(ie.tipp.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) or ((lower(ie.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"
             qry_params.identifier = "%${params.filter}%"
             qry_params.ebookFirstAutorOrFirstEditor = "%${params.filter.trim().toLowerCase()}%"
@@ -1184,13 +1184,13 @@ class FilterService {
             result.editable = false
         }
         if (params.filter) {
-            base_qry = " from TitleInstancePackagePlatform as tipp where tipp.pkg in (:pkg) "
+            base_qry = " from TitleInstancePackagePlatform as tipp where tipp.pkg in (:pkgs) "
             if (date_filter) {
                 base_qry += "and ( ( :startDate >= coalesce(tipp.accessStartDate,tipp.pkg.startDate,tipp.accessStartDate) or (tipp.accessStartDate is null and tipp.pkg.startDate is null and tipp.accessStartDate is null) ) and ( :endDate <= coalesce(tipp.accessEndDate,tipp.pkg.endDate,tipp.accessEndDate) or (tipp.accessEndDate is null and tipp.subscription.endDate is null and tipp.accessEndDate is null) ) ) "
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
             }
-            base_qry += "and ( ( lower(tipp.sortName) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) or ((lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
+            base_qry += "and ( ( lower(tipp.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) or ((lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"
             qry_params.identifier = "%${params.filter}%"
             qry_params.ebookFirstAutorOrFirstEditor = "%${params.filter.trim().toLowerCase()}%"

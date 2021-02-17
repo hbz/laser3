@@ -38,27 +38,9 @@
                     <g:if test="${ieValues.containsKey(object)}">
                             <g:each var="ieValue" in="${ieValues.get(object)}">
                                 <td class="coverageStatements la-tableCard" >
-                                    <g:if test="${ieValue.tipp.titleType.contains('Book')}">
 
-                                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${ieValue.tipp.dateFirstInPrint}"/>
-                                        <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                                        <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${ieValue.tipp.dateFirstOnline}"/>
+                                    <g:render template="/templates/tipps/coverages" model="${[ie: ieValue, tipp: ieValue.tipp]}"/>
 
-                                    </g:if>
-                                    <g:elseif test="${ieValue.tipp.titleType == "Journal"}">
-                                        <div class="ui cards">
-                                            <g:each in="${ieValue.coverages}" var="covStmt">
-                                                <div class="ui card">
-                                                    <g:render template="/templates/tipps/coverageStatement" model="${[covStmt: covStmt]}"/>
-                                                </div>
-                                            </g:each>
-                                        </div>
-                                    </g:elseif>
                                 </td>
                                 <td>
                                     <!-- von --->

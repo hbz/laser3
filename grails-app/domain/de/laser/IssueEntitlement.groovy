@@ -146,7 +146,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
   void afterDelete() {
     deletionService.deleteDocumentFromIndex(this.globalUID)
   }
-
+  @Deprecated
   Date getDerivedAccessStartDate() {
       if(accessStartDate)
           accessStartDate
@@ -155,7 +155,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       else if(tipp.accessStartDate)
           tipp.accessStartDate
   }
-
+  @Deprecated
   Date getDerivedAccessEndDate() {
       if(accessEndDate)
           accessEndDate
@@ -164,7 +164,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       else if(tipp.accessEndDate)
           tipp.accessEndDate
   }
-
+  @Deprecated
   RefdataValue getAvailabilityStatus() {
     getAvailabilityStatus(new Date())
   }
@@ -179,7 +179,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     if(noChange) return 0;
     return 1;
   }
-
+  @Deprecated
   RefdataValue getAvailabilityStatus(Date as_at) {
       RefdataValue result
       // If StartDate <= as_at <= EndDate - Current

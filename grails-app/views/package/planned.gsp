@@ -1,1 +1,1 @@
-<g:render template="planned_expired" />
+<g:render template="planned_expired_deleted" />

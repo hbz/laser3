@@ -162,22 +162,10 @@
                                                 showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
                             <!-- END TEMPLATE -->
                         </td>
-                        <td>
-                            <g:if test="${tipp.titleType.contains('Book')}">
-                            <%-- TODO contact Ingrid! ---> done as of subtask of ERMS-1490 --%>
-                                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                   data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                                <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                              date="${tipp.dateFirstInPrint}"/>
-                                <br/>
-                                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                   data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                                <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                              date="${tipp.dateFirstOnline}"/>
-                            </g:if>
-                            <g:else>
-                            <%-- TODO: FOR JOURNALS --%>
-                            </g:else>
+                        <td class="coverageStatements la-tableCard">
+
+                            <g:render template="/templates/tipps/coverages" model="${[ie: ie, tipp: tipp]}"/>
+
                         </td>
                         <td>
                             <g:if test="${ie.priceItems}">
