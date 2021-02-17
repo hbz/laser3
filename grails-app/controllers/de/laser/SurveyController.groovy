@@ -3767,7 +3767,7 @@ class SurveyController {
                 newMap.newSub = sub
                 newMap.oldSub = result.surveyConfig.subSurveyUseForTransfer ? sub._getCalculatedPrevious() : result.parentSubscription.getDerivedSubscriptionBySubscribers(org)
 
-                println("new: ${newMap.newSub}, old: ${newMap.oldSub}")
+                //println("new: ${newMap.newSub}, old: ${newMap.oldSub}")
 
 
                 if (params.tab == 'surveyProperties') {

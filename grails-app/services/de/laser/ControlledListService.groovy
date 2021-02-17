@@ -197,7 +197,7 @@ class ControlledListService {
                 }
             }
         }
-        println(queryString)
+        //println(queryString)
         List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, s.startDate asc, s.endDate asc, org.sortname asc",filter)
 
         subscriptions.each { row ->
