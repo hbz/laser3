@@ -4,7 +4,7 @@ import de.laser.Org
 import de.laser.RefdataValue
 import grails.web.servlet.mvc.GrailsParameterMap
 
-class OrganisationQueryHandler {
+class OrganisationQueryHandler extends GenericQueryHandler {
 
     static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
 
@@ -64,28 +64,19 @@ class OrganisationQueryHandler {
                         )
                 ])
             }
-            List noDataList = Org.executeQuery(
-                    'select distinct o.id from Org o where o.id in (:idList) and not exists (select osg from OrgSubjectGroup osg where osg.org = o)',
-                    [idList: idList]
-            )
-            if (noDataList) {
-                result.data.add( [null, '* keine Angabe', noDataList.size()] )
 
-                result.dataDetails.add( [
-                        query: params.query,
-                        id: null,
-                        label: '* keine Angabe',
-                        idList: noDataList
-                ])
-            }
+            handleNonMatchingData(
+                    params.query,
+                    'select distinct o.id from Org o where o.id in (:idList) and not exists (select osg from OrgSubjectGroup osg where osg.org = o)',
+                    idList,
+                    result
+            )
         }
 
         result
     }
 
     static void processSimpleRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
-
-        String noDataLabel = '* keine Angabe'
 
         result.data = Org.executeQuery(
                 PROPERTY_QUERY[0] + 'from Org o join o.' + refdata + ' p where o.id in (:idList)' + PROPERTY_QUERY[1], [idList: idList]
@@ -102,18 +93,11 @@ class OrganisationQueryHandler {
             ])
         }
 
-        List noDataList = Org.executeQuery(
-                'select distinct o.id from Org o where o.id in (:idList) and o.' + refdata + ' is null', [idList: idList]
+        handleNonMatchingData(
+                query,
+                'select distinct o.id from Org o where o.id in (:idList) and o.' + refdata + ' is null',
+                idList,
+                result
         )
-        if (noDataList) {
-            result.data.add( [null, noDataLabel, noDataList.size()] )
-
-            result.dataDetails.add( [
-                    query: query,
-                    id: null,
-                    label: noDataLabel,
-                    idList: noDataList
-            ])
-        }
     }
 }
