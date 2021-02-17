@@ -40,7 +40,7 @@ class SubscriptionConfig extends GenericConfig {
                     ],
                     query : [
                             'Verteilung' : [
-                                    'subscription-form  '       : 'Lizenzform',
+                                    'subscription-form'         : 'Lizenzform',
                                     'subscription-kind'         : 'Lizenztyp',
                                     'subscription-resource'     : 'Ressourcentyp',
                                     'subscription-status'       : 'Lizenzstatus',
