@@ -10,7 +10,6 @@
                               optionKey="key"
                               optionValue="value"
                               class="ui selection dropdown la-not-clearable"
-                              value="opt1"
                               noSelection="${['': message(code: 'default.select.choose.label')]}" />
                 </div>
             </g:each>
