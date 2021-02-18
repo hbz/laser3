@@ -562,7 +562,7 @@ class SemanticUiTagLib {
                 iconClassModi = 'la-greater-than'
             }
             out << '<div class="field la-combi-input-left">'
-            out << '<label for="dateBeforeVal">Vor/Nach</label>'
+            out << '<label for="dateBeforeVal">&nbsp;</label>'
             out << '<div class="ui compact selection dropdown la-not-clearable">'
             out << '<input type="hidden" name="' + modName + '">'
             out << '<i class="dropdown icon"></i>'
