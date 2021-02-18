@@ -197,7 +197,7 @@ class ControlledListService {
                 }
             }
         }
-        println(queryString)
+        //println(queryString)
         List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, s.startDate asc, s.endDate asc, org.sortname asc",filter)
 
         subscriptions.each { row ->
@@ -617,5 +617,32 @@ class ControlledListService {
         }
 
         subjects
+    }
+
+    Set<String> getAllPossiblePublisherByPackage(Package pkg) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<String> publishers = []
+
+        publishers = TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg = :pkg order by orgRole.org.name", [pkg: pkg])
+
+        if(publishers.size() == 0){
+            publishers << messageSource.getMessage('default.selectionNotPossible.label', null, locale)
+        }
+        publishers
+    }
+
+    Set<String> getAllPossiblePublisherBySub(Subscription subscription) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<String> publishers = []
+
+        if(subscription.packages){
+            publishers = TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg in (:pkg) order by orgRole.org.name", [pkg: subscription.packages.pkg])
+        }
+        if(publishers.size() == 0){
+            publishers << messageSource.getMessage('default.selectionNotPossible.label', null, locale)
+        }
+
+
+        publishers
     }
 }
