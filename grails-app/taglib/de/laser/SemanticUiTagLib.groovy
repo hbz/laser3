@@ -549,7 +549,41 @@ class SemanticUiTagLib {
             classes += ' error'
         }
 
-        out << '<div class="' + classes + '">'
+        // reporting -->
+        if (attrs.modifiers) {
+
+
+            String modName = name + '_modifier'
+            String iconClassModi = ''
+            if (params.get(modName) == 'greater') {
+                iconClassModi = 'la-less-than'
+            }
+            else if (params.get(modName) == 'lower') {
+                iconClassModi = 'la-greater-than'
+            }
+            out << '<div class="field la-combi-input-left">'
+            out << '<label for="dateBeforeVal">&nbsp;</label>'
+            out << '<div class="ui compact selection dropdown la-not-clearable">'
+            out << '<input type="hidden" name="' + modName + '" value="' +params.get(modName)+ '">'
+            out << '<i class="dropdown icon"></i>'
+            out << '<div class="text"><i class="small icon ' + iconClassModi + '"></i></div>'
+            out << '<div class="menu">'
+            out << '<div class="item'  + ( params.get(modName) == 'lower' ? ' active' : '' ) + '" data-value="lower"><i class="la-less-than small icon"></i></div>'
+            out << '<div class="item'  + ( params.get(modName) == 'greater' ? ' active' : '' ) + '" data-value="greater"><i class="la-greater-than small icon"></i></div>'
+            out << '<div class="item'  + ( params.get(modName) == 'equals' ? ' active' : '' ) + '" data-value="equals"><i class="la-equals small icon"></i></div>'
+            out << '<div class="item"><i class="la-less-than-equal small icon"></i></div>'
+            out << '<div class="item"><i class="la-greater-than-equal small icon"></i></div>'
+            out << '</div>'
+            out << '</div>'
+            out << '</div>'
+        }
+
+        if (attrs.modifiers) {
+            String modClass = 'la-combi-input-right'
+        }
+        String modClass = attrs.modifiers ? ' la-combi-input-right' : ''
+
+        out << '<div class="' + classes + modClass +'">'
         if (hideLabel) {
             out << '<label for="' + id + '">' + label + ' ' + mandatoryField + '</label>'
         }
@@ -559,17 +593,6 @@ class SemanticUiTagLib {
         out <<       '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '" ' + required + '>'
         out <<     '</div>'
         out <<   '</div>'
-
-        // reporting -->
-        if (attrs.modifiers) {
-            String modName = name + '_modifier'
-            out << '<select class="ui dropdown" name="' + modName + '">'
-            out << '<option value="">Modifikator (todo)</option>'
-            out << '<option value="lower"' + ( params.get(modName) == 'lower' ? ' selected="selected"' : '' ) + '>&lt;</option>'
-            out << '<option value="equals"' + ( params.get(modName) == 'equals' ? ' selected="selected"' : '' ) + '>=</option>'
-            out << '<option value="greater"' + ( params.get(modName) == 'greater' ? ' selected="selected"' : '' ) + '>&gt;</option>'
-            out << '</select>'
-        }
 
         out << '</div>'
     }
