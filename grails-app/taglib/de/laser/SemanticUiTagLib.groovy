@@ -551,16 +551,26 @@ class SemanticUiTagLib {
 
         // reporting -->
         if (attrs.modifiers) {
+
+
             String modName = name + '_modifier'
+            String iconClassModi = ''
+            if (params.get(modName) == 'greater') {
+                iconClassModi = 'la-less-than'
+            }
+            else if (params.get(modName) == 'lower') {
+                iconClassModi = 'la-greater-than'
+            }
             out << '<div class="field la-combi-input-left">'
-            out << '<label for="dateBeforeVal">Wert</label>'
+            out << '<label for="dateBeforeVal">Vor/Nach</label>'
             out << '<div class="ui compact selection dropdown la-not-clearable">'
+            out << '<input type="hidden" name="' + modName + '">'
             out << '<i class="dropdown icon"></i>'
-            out << '<div class="text"><i class="minus circle icon"></i></div>'
+            out << '<div class="text"><i class="small icon ' + iconClassModi + '"></i></div>'
             out << '<div class="menu">'
-            out << '<div class="item" data-value="lower"' +  '><i class="la-less-than small icon"></i></div>'
-            out << '<div class="item" data-value="greater"'  + '><i class="la-greater-than small icon"></i></div>'
-            out << '<div class="item" data-value="equals"' +  '><i class="la-equals small icon"></i></div>'
+            out << '<div class="item'  + ( params.get(modName) == 'lower' ? ' active' : '' ) + '" data-value="lower"><i class="la-less-than small icon"></i></div>'
+            out << '<div class="item'  + ( params.get(modName) == 'greater' ? ' active' : '' ) + '" data-value="greater"><i class="la-greater-than small icon"></i></div>'
+            out << '<div class="item'  + ( params.get(modName) == 'equals' ? ' active' : '' ) + '" data-value="equals"><i class="la-equals small icon"></i></div>'
             out << '<div class="item"><i class="la-less-than-equal small icon"></i></div>'
             out << '<div class="item"><i class="la-greater-than-equal small icon"></i></div>'
             out << '</div>'
