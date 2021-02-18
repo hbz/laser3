@@ -1,4 +1,4 @@
-<%@page import="de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.OrganisationConfig; de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:if test="${result}">
@@ -8,6 +8,9 @@
             <p>
                 ${result.orgIdList.size()} Einrichtungen
                 wurden anhand der Filtereinstellungen gefunden.
+            </p>
+            <p>
+                ${result.filterLabels}
             </p>
         </div>
 

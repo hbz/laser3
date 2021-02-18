@@ -1,4 +1,4 @@
-<%@page import="de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.SubscriptionConfig; de.laser.reporting.OrganisationConfig; de.laser.reporting.GenericConfig; de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -22,7 +22,7 @@
             <p>
                 <strong>1. Suchanfrage</strong>
                 <br />
-                Erzeugen Sie eine Ergebnismenge anhand kombinierbarer Filter.
+                Erstellen Sie eine Suchanfrage anhand kombinierbarer Filter.
                 Verschiedene Einstiegspunkte ermöglichen eine individuelle Zusammenstellung Ihrer Daten.
             </p>
             <p>
@@ -58,13 +58,13 @@
             <g:set var="hidden" value="" />
         </g:else>
 
-        <g:if test="${!filter || filter == 'subscription'}">
+        <g:if test="${!filter || filter == SubscriptionConfig.KEY}">
             <div id="filter-subscription" class="filter-form-wrapper ${hidden}">
                <g:render template="/myInstitution/reporting/filter/subscription" />
             </div>
         </g:if>
 
-        <g:if test="${!filter || filter == 'organisation'}">
+        <g:if test="${!filter || filter == OrganisationConfig.KEY}">
             <div id="filter-organisation" class="filter-form-wrapper ${hidden}">
                 <g:render template="/myInstitution/reporting/filter/organisation" />
             </div>
@@ -73,11 +73,11 @@
         <g:if test="${result}">
             <h2 class="ui header">2. Ergebnis</h2>
 
-            <g:if test="${filter == 'subscription'}">
+            <g:if test="${filter == SubscriptionConfig.KEY}">
                 <g:render template="/myInstitution/reporting/query/subscription" />
             </g:if>
 
-            <g:if test="${filter == 'organisation'}">
+            <g:if test="${filter == OrganisationConfig.KEY}">
                 <g:render template="/myInstitution/reporting/query/organisation" />
             </g:if>
 

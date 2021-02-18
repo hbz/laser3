@@ -9,7 +9,7 @@ import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.ApplicationContext
 
-class SubscriptionFilter {
+class SubscriptionFilter extends GenericFilter {
 
     def contextService
     def filterService
@@ -24,13 +24,16 @@ class SubscriptionFilter {
 
     Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned
-        Map<String, Object> result      = [:]
+        Map<String, Object> result      = [ filterLabels : [:] ]
 
         List<String> queryParts         = [ 'select sub.id from Subscription sub']
         List<String> whereParts         = [ 'where sub.id in (:subIdList)']
-        Map<String, Object> queryParams = [ subIdList: [] ]
+        Map<String, Object> queryParams = [ subIdList : [] ]
 
-        switch (params.get(GenericConfig.FILTER_PREFIX + 'subscription_filter')) {
+        String filterSource = params.get(GenericConfig.FILTER_PREFIX + 'subscription' + GenericConfig.FILTER_SOURCE_POSTFIX)
+        result.filterLabels.put('base', [source: getFilterSourceLabel(SubscriptionConfig.CONFIG.base, filterSource)])
+
+        switch (filterSource) {
             case 'all-sub':
                 queryParams.subIdList = Subscription.executeQuery( 'select s.id from Subscription s' )
                 break
@@ -44,16 +47,18 @@ class SubscriptionFilter {
         String cmbKey = GenericConfig.FILTER_PREFIX + 'subscription_'
         int pCount = 0
 
-        Set<String> keys = params.keySet().findAll{ it.toString().startsWith(cmbKey) }
+        Set<String> keys = params.keySet().findAll{ it.toString().startsWith(cmbKey) && ! it.toString().endsWith(GenericConfig.FILTER_SOURCE_POSTFIX) }
         keys.each{ key ->
             if (params.get(key)) {
                 println key + " >> " + params.get(key)
 
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = GenericConfig.getFormFieldType(SubscriptionConfig.CONFIG.base, p)
+                String pType = getFilterFieldType(SubscriptionConfig.CONFIG.base, p)
+
+                result.filterLabels.get('base').put(p, getFilterFieldLabel(SubscriptionConfig.CONFIG.base, p))
 
                 // --> generic properties
-                if (pType == GenericConfig.FORM_TYPE_PROPERTY) {
+                if (pType == GenericConfig.FIELD_TYPE_PROPERTY) {
                     if (Subscription.getDeclaredField(p).getType() == Date) {
 
                         String modifier = params.get(key + '_modifier')
@@ -81,12 +86,12 @@ class SubscriptionFilter {
                     }
                 }
                 // --> generic refdata
-                else if (pType == GenericConfig.FORM_TYPE_REFDATA) {
+                else if (pType == GenericConfig.FIELD_TYPE_REFDATA) {
                     whereParts.add( 'sub.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
                 }
                 // --> refdata relation tables
-                else if (pType == GenericConfig.FORM_TYPE_REFDATA_RELTABLE) {
+                else if (pType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
                     println ' ------------ not implemented ------------ '
                 }
             }
@@ -101,8 +106,8 @@ class SubscriptionFilter {
 
         result.subIdList = Subscription.executeQuery( query, queryParams )
 
-        result.memberIdList   = internalOrgFilter(params, 'member', result.subIdList)
-        result.providerIdList = internalOrgFilter(params, 'provider', result.subIdList)
+        handleInternalOrgFilter(params, 'member', result)
+        handleInternalOrgFilter(params, 'provider', result)
 
 //        println 'subscriptions >> ' + result.subIdList.size()
 //        println 'member >> ' + result.memberIdList.size()
@@ -111,16 +116,20 @@ class SubscriptionFilter {
         result
     }
 
-    private List<Long> internalOrgFilter(GrailsParameterMap params, String partKey, List<Long> subIdList) {
+    private void handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> result) {
+
+        String filterSource = params.get(GenericConfig.FILTER_PREFIX + partKey + GenericConfig.FILTER_SOURCE_POSTFIX)
+        result.filterLabels.put(partKey, [source: getFilterSourceLabel(SubscriptionConfig.CONFIG.get(partKey), filterSource)])
 
         //println 'internalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
-        if (! subIdList) {
-            return []
+        if (! result.subIdList) {
+            result.put( partKey + 'IdList', [] )
+            return
         }
 
         String queryBase = 'select distinct (org.id) from Org org join org.links orgLink'
         List<String> whereParts = [ 'orgLink.roleType in (:roleTypes)', 'orgLink.sub.id in (:subIdList)' ]
-        Map<String, Object> queryParams = [ 'subIdList': subIdList ]
+        Map<String, Object> queryParams = [ 'subIdList': result.subIdList ]
 
         if (partKey == 'member') {
             queryParams.put( 'roleTypes', [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN] ) // TODO <- RDStore.OR_SUBSCRIBER
@@ -137,7 +146,7 @@ class SubscriptionFilter {
         String cmbKey = GenericConfig.FILTER_PREFIX + partKey + '_'
         int pCount = 0
 
-        Set<String> keys = params.keySet().findAll{ it.toString().startsWith(cmbKey) }
+        Set<String> keys = params.keySet().findAll{ it.toString().startsWith(cmbKey) && ! it.toString().endsWith(GenericConfig.FILTER_SOURCE_POSTFIX) }
         keys.each { key ->
             //println key + " >> " + params.get(key)
 
@@ -145,14 +154,18 @@ class SubscriptionFilter {
                 String p = key.replaceFirst(cmbKey,'')
                 String pType
                 if (partKey == 'member') {
-                    pType = GenericConfig.getFormFieldType(SubscriptionConfig.CONFIG.member, p)
+                    pType = getFilterFieldType(SubscriptionConfig.CONFIG.member, p)
+
+                    result.filterLabels.get(partKey).put(p, getFilterFieldLabel(SubscriptionConfig.CONFIG.member, p))
                 }
                 else if (partKey == 'provider') {
-                    pType = GenericConfig.getFormFieldType(SubscriptionConfig.CONFIG.provider, p)
+                    pType = getFilterFieldType(SubscriptionConfig.CONFIG.provider, p)
+
+                    result.filterLabels.get(partKey).put(p, getFilterFieldLabel(SubscriptionConfig.CONFIG.provider, p))
                 }
 
                 // --> properties generic
-                if (pType == GenericConfig.FORM_TYPE_PROPERTY) {
+                if (pType == GenericConfig.FIELD_TYPE_PROPERTY) {
 
                     if (Org.getDeclaredField(p).getType() == Date) {
                         String modifier = params.get(key + '_modifier')
@@ -182,12 +195,12 @@ class SubscriptionFilter {
                     }
                 }
                 // --> refdata generic
-                else if (pType == GenericConfig.FORM_TYPE_REFDATA) {
+                else if (pType == GenericConfig.FIELD_TYPE_REFDATA) {
                     whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
                 }
                 // --> refdata relation tables
-                else if (pType == GenericConfig.FORM_TYPE_REFDATA_RELTABLE) {
+                else if (pType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
                     if (p == 'subjectGroup') {
                         queryBase = queryBase + ' join org.subjectGroup osg join osg.subjectGroup rdvsg'
                         whereParts.add('rdvsg.id = :p' + (++pCount))
@@ -202,6 +215,6 @@ class SubscriptionFilter {
 //        println 'SubscriptionFilter.internalOrgFilter() -->'
 //        println query
 
-        Org.executeQuery(query, queryParams)
+        result.put( partKey + 'IdList', Org.executeQuery(query, queryParams) )
     }
 }

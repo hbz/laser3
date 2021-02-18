@@ -1,11 +1,10 @@
 package de.laser.reporting
 
 import de.laser.Org
-import grails.web.servlet.mvc.GrailsParameterMap
 
 class OrganisationConfig extends GenericConfig {
 
-    static String KEY = 'Organisation'
+    static String KEY = 'organisation'
 
     static Map<String, Object> CONFIG = [
 
@@ -13,26 +12,26 @@ class OrganisationConfig extends GenericConfig {
                     meta : [
                             class: Org
                     ],
-                    form : [
-                            [
-                                    'country'           : FORM_TYPE_REFDATA,
-                                    //'region'            : FORM_TYPE_REFDATA,
-                                    'libraryType'       : FORM_TYPE_REFDATA,
-                                    'libraryNetwork'    : FORM_TYPE_REFDATA,
-                                    'funderType'        : FORM_TYPE_REFDATA,
-                                    'funderHskType'     : FORM_TYPE_REFDATA
-                            ],
-                            [
-                                    'eInvoice'          : FORM_TYPE_PROPERTY,
-                                    'subjectGroup'      : FORM_TYPE_REFDATA_RELTABLE
-                            ]
-                    ],
-                    filter : [
+                    source : [
                             'all-org'       : 'Alle Organisationen',
                             'all-inst'      : 'Alle Einrichtungen',
                             'all-provider'  : 'Alle Anbieter und Lieferanten',
                             'my-inst'       : 'Meine Einrichtungen',
                             'my-provider'   : 'Meine Anbieter und Lieferanten'
+                    ],
+                    filter : [
+                            [
+                                    'country'           : FIELD_TYPE_REFDATA,
+                                    //'region'            : FIELD_TYPE_REFDATA,
+                                    'libraryType'       : FIELD_TYPE_REFDATA,
+                                    'libraryNetwork'    : FIELD_TYPE_REFDATA,
+                                    'funderType'        : FIELD_TYPE_REFDATA,
+                                    'funderHskType'     : FIELD_TYPE_REFDATA
+                            ],
+                            [
+                                    'eInvoice'          : FIELD_TYPE_PROPERTY,
+                                    'subjectGroup'      : FIELD_TYPE_REFDATA_RELTABLE
+                            ]
                     ],
                     query : [
                             'Verteilung' : [
@@ -46,8 +45,4 @@ class OrganisationConfig extends GenericConfig {
                     ]
             ]
     ]
-
-    static String getQueryLabel(GrailsParameterMap params) {
-        getQueryLabel(CONFIG, params)
-    }
 }

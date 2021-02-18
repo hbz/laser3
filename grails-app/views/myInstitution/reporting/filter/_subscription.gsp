@@ -10,12 +10,12 @@
         </div><!-- .menu -->
         <div class="ui bottom attached active tab segment" data-tab="sub-filter-tab-1">
             <div class="field">
-                <label for="filter:subscription_filter">Auswahl</label>
+                <label for="filter:subscription_source">Auswahl</label>
                 <g:set var="config" value="${SubscriptionConfig.CONFIG.base}" />
-                <g:select name="filter:subscription_filter" class="ui selection dropdown la-not-clearable" from="${config.filter}" optionKey="key" optionValue="value" value="${params.get('filter:sub_filter')}" />
+                <g:select name="filter:subscription_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:sub_source')}" />
             </div>
 
-            <g:each in="${config.form}" var="cfgFormGroup">
+            <g:each in="${config.filter}" var="cfgFormGroup">
                 <div class="fields">
                     <g:each in="${cfgFormGroup.keySet()}" var="field">
                         <laser:reportFilterField config="${config}" field="${field}" />
@@ -27,12 +27,12 @@
 
         <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-2">
             <div class="field">
-                <label for="filter:member_filter">Teilnehmerauswahl</label>
+                <label for="filter:member_source">Teilnehmerauswahl</label>
                 <g:set var="config" value="${SubscriptionConfig.CONFIG.member}" />
-                <g:select name="filter:member_filter" class="ui selection dropdown la-not-clearable" from="${config.filter}" optionKey="key" optionValue="value" value="${params.get('filter:member_filter')}" />
+                <g:select name="filter:member_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:member_source')}" />
             </div>
 
-            <g:each in="${config.form}" var="cfgFormGroup">
+            <g:each in="${config.filter}" var="cfgFormGroup">
                 <div class="fields">
                     <g:each in="${cfgFormGroup.keySet()}" var="field">
                         <laser:reportFilterField config="${config}" field="${field}" key="member" />
@@ -44,12 +44,12 @@
 
         <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-3">
             <div class="field">
-                <label for="filter:provider_filter">Anbieterauswahl</label>
+                <label for="filter:provider_source">Anbieterauswahl</label>
                 <g:set var="config" value="${SubscriptionConfig.CONFIG.provider}" />
-                <g:select name="filter:provider_filter" class="ui selection dropdown la-not-clearable" from="${config.filter}" optionKey="key" optionValue="value" value="${params.get('filter:provider_filter')}" />
+                <g:select name="filter:provider_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:provider_source')}" />
             </div>
 
-            <g:each in="${config.form}" var="cfgFormGroup">
+            <g:each in="${config.filter}" var="cfgFormGroup">
                 <div class="fields">
                     <g:each in="${cfgFormGroup.keySet()}" var="field">
                         <laser:reportFilterField config="${config}" field="${field}" key="provider" />

@@ -1,4 +1,4 @@
-<%@page import="de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.SubscriptionConfig; de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:if test="${result}">
@@ -10,6 +10,9 @@
                 ${result.memberIdList.size()} Teilnehmer und
                 ${result.providerIdList.size()} Anbieter
                 wurden anhand der Filtereinstellungen gefunden.
+            </p>
+            <p>
+                ${result.filterLabels}
             </p>
         </div>
 

@@ -4,7 +4,7 @@
     <h2 class="ui header">3. Details</h2>
 
     <div class="ui segment">
-        <p style="text-align: center"><strong>${title}</strong></p>
+        <p style="text-align: center"><strong>${label}</strong></p>
         <table class="ui table la-table compact">
             %{-- <thead>
             <tr>
@@ -29,7 +29,7 @@
     <h2 class="ui header">3. Details</h2>
 
     <div class="ui segment">
-        <p style="text-align: center"><strong>${title}</strong></p>
+        <p style="text-align: center"><strong>${label}</strong></p>
         <table class="ui table la-table compact">
             %{-- <thead>
             <tr>
