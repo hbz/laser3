@@ -585,7 +585,7 @@ class PackageController {
 
         Map<String, Object> query = filterService.getTippQuery(params, [packageInstance])
         result.filterSet = query.filterSet
-        println(query)
+        //println(query)
 
         List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.query, query.queryParams)
 

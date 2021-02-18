@@ -7,6 +7,8 @@
            value="${packageInstance ? controlledListService.getAllPossibleSubjectsByPackage(packageInstance) : []}"/>
     <g:set var="yearsFirstOnline"
            value="${packageInstance ? controlledListService.getAllPossibleDateFirstOnlineYearByPackage(packageInstance) : []}"/>
+    <g:set var="publishers"
+           value="${packageInstance ? controlledListService.getAllPossiblePublisherByPackage(packageInstance) : []}"/>
 </g:if>
 
 <g:if test="${controllerName == 'subscription'}">
@@ -16,6 +18,8 @@
            value="${subscription ? controlledListService.getAllPossibleSubjectsBySub(subscription) : []}"/>
     <g:set var="yearsFirstOnline"
            value="${subscription ? controlledListService.getAllPossibleDateFirstOnlineYearBySub(subscription) : []}"/>
+    <g:set var="publishers"
+           value="${subscription ? controlledListService.getAllPossiblePublisherBySub(subscription) : []}"/>
 
 </g:if>
 
@@ -122,9 +126,13 @@
             </div>
 
             <div class="field">
-                <label for="publisher">${message(code: 'title.publisher.label')}
+                <label for="publisher">${message(code: 'tipp.publisher')}
                 </label>
-                <input name="publisher" id="publisher" value="${params.publisher}"/>
+                <g:select name="publisher" id="publisher"
+                          from="${publishers}"
+                          class="ui fluid search selection dropdown"
+                          value="${params.publisher}"
+                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
 
         </div>

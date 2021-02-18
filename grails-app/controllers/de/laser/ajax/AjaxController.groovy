@@ -1598,7 +1598,6 @@ class AjaxController {
                             target_object."${params.name}" = null
                         }
                         target_object.save(failOnError: true)
-                        println(target_object."${params.name}")
                     }
                     catch (Exception e) {
                         target_object."${params.name}" = backup

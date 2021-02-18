@@ -1233,7 +1233,7 @@ class DataloadService {
                             query_str = "rectype:'TitleInstance' OR rectype:'BookInstance' OR rectype:'JournalInstance' OR rectype:'DatabaseInstance'"
                         }
 
-                        println(query_str)
+                        //println(query_str)
 
                         String index = ESWrapperService.getESSettings().indexName
 

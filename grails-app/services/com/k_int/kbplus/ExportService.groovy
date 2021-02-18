@@ -1008,7 +1008,6 @@ class ExportService {
 				}
 				else {
 					entitlement.coverages.each { AbstractCoverage covStmt ->
-						println(covStmt)
 						allRows << covStmt
 					}
 				}
@@ -1353,7 +1352,6 @@ class ExportService {
 				}
 				else {
 					entitlement.coverages.each { AbstractCoverage covStmt ->
-						println(covStmt)
 						allRows << covStmt
 					}
 				}
@@ -1673,7 +1671,6 @@ class ExportService {
 				}
 				else {
 					entitlement.coverages.each { AbstractCoverage covStmt ->
-						println(covStmt)
 						allRows << covStmt
 					}
 				}
