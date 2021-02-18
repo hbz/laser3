@@ -564,7 +564,7 @@ class SemanticUiTagLib {
             out << '<div class="field la-combi-input-left">'
             out << '<label for="dateBeforeVal">&nbsp;</label>'
             out << '<div class="ui compact selection dropdown la-not-clearable">'
-            out << '<input type="hidden" name="' + modName + '">'
+            out << '<input type="hidden" name="' + modName + '" value="' +params.get(modName)+ '">'
             out << '<i class="dropdown icon"></i>'
             out << '<div class="text"><i class="small icon ' + iconClassModi + '"></i></div>'
             out << '<div class="menu">'
