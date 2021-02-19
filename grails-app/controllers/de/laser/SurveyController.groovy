@@ -423,7 +423,7 @@ class SurveyController {
                     break
             }
         }
-        result.num_sub_rows = subscriptions.size()
+        result.num_ies_rows = subscriptions.size()
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
         result.allLinkedLicenses = [:]
@@ -774,7 +774,7 @@ class SurveyController {
         def query = filterService.getIssueEntitlementQuery(params, result.surveyConfig.subscription)
         result.filterSet = query.filterSet
 
-        result.num_sub_rows = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams).size()
+        result.num_ies_rows = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams).size()
 
         result.entitlements = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams, [max: result.max, offset: result.offset])
 
