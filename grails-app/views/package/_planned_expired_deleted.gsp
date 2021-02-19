@@ -75,7 +75,7 @@
               <g:else>${packageInstance.name}</g:else>
           </h1>
 
-            <g:render template="nav" contextPath="." />
+  <g:render template="nav"/>
 
 
   <semui:messages data="${flash}" />

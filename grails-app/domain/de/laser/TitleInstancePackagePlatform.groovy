@@ -5,6 +5,7 @@ import de.laser.base.AbstractBase
 import de.laser.finance.PriceItem
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
+import de.laser.helper.RDStore
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
 import groovy.time.TimeCategory
@@ -572,6 +573,19 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
                 return 'z'
         }
         return c
+    }
+
+    Org getPublisher() {
+        Org result
+
+
+        orgs.each { or ->
+            if ( or.roleType.id in [RDStore.OR_PUBLISHER.id] )
+                result = or.org
+
+        }
+
+        result
     }
 
 }

@@ -1593,7 +1593,7 @@ class SubscriptionControllerService {
             params.addEntitlements = true
             Map<String, Object> query = filterService.getTippQuery(params, result.subscription.packages?.pkg)
             result.filterSet = query.filterSet
-            println(query)
+
             tipps.addAll(TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams))
             result.num_tipp_rows = tipps.size()
             result.tipps = tipps.drop(result.offset).take(result.max)
