@@ -269,54 +269,6 @@ class MyInstitutionController  {
         }
         result.licenseFilterTable = licenseFilterTable
 
-        if(params.subKind || params.subStatus || ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) || !params.filterSubmit) {
-            Set<String> subscrQueryFilter = ["oo.org = :context"]
-            qry_params.context = result.institution
-
-            //the if needs to be done twice, here is the second case because the keyword may occur in subscriptions but also in licenses!
-            if(params['keyword-search'] != null && params['keyword-search'].trim().length() > 0) {
-                subscrQueryFilter << "genfunc_filter_matcher(s.name, :name_filter) = true"
-            }
-
-            if(params.subStatus || !params.filterSubmit) {
-                subscrQueryFilter <<  "s.status.id = :subStatus"
-                if(!params.filterSubmit) {
-                    params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
-                    result.filterSet = true
-                }
-                qry_params.subStatus = params.subStatus as Long
-            }
-
-            if(params.subKind) {
-                subscrQueryFilter << "s.kind.id in (:subKinds)"
-                List<Long> subKinds = []
-                List<String> selKinds = params.list('subKind')
-                selKinds.each { String sel ->
-                    subKinds << Long.parseLong(sel)
-                }
-                qry_params.subKinds = subKinds
-            }
-
-            if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                subscrQueryFilter << "s.instanceOf is null"
-            }
-
-            base_qry += " or exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" )"
-            qry_params.linkType = RDStore.LINKTYPE_LICENSE
-        }
-        if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
-            base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
-                    + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
-                    + "   orgR.roleType in (:licRoleTypes) and ( "
-                    + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
-                    + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
-                    + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
-                    + " ) ) ) ) ")
-            qry_params.name_filter = params['keyword-search']
-            qry_params.licRoleTypes = [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]
-            result.keyWord = params['keyword-search']
-        }
-
         if(params.consortium) {
             base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType = :licCons and o.org.id in (:cons) ) ) "
             List<Long> consortia = []
@@ -371,6 +323,55 @@ class MyInstitutionController  {
             }
             qry_params.status = params.status as Long
         }
+
+        if(params.subKind || params.subStatus || ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) || !params.filterSubmit) {
+            Set<String> subscrQueryFilter = ["oo.org = :context"]
+            qry_params.context = result.institution
+
+            //the if needs to be done twice, here is the second case because the keyword may occur in subscriptions but also in licenses!
+            if(params['keyword-search'] != null && params['keyword-search'].trim().length() > 0) {
+                subscrQueryFilter << "genfunc_filter_matcher(s.name, :name_filter) = true"
+            }
+
+            if(params.subStatus || !params.filterSubmit) {
+                subscrQueryFilter <<  "s.status.id = :subStatus"
+                if(!params.filterSubmit) {
+                    params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
+                    result.filterSet = true
+                }
+                qry_params.subStatus = params.subStatus as Long
+            }
+
+            if(params.subKind) {
+                subscrQueryFilter << "s.kind.id in (:subKinds)"
+                List<Long> subKinds = []
+                List<String> selKinds = params.list('subKind')
+                selKinds.each { String sel ->
+                    subKinds << Long.parseLong(sel)
+                }
+                qry_params.subKinds = subKinds
+            }
+
+            if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                subscrQueryFilter << "s.instanceOf is null"
+            }
+
+            base_qry += " or exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" )"
+            qry_params.linkType = RDStore.LINKTYPE_LICENSE
+        }
+        if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
+            base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
+                    + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
+                    + "   orgR.roleType in (:licRoleTypes) and ( "
+                    + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
+                    + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
+                    + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
+                    + " ) ) ) ) ")
+            qry_params.name_filter = params['keyword-search']
+            qry_params.licRoleTypes = [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]
+            result.keyWord = params['keyword-search']
+        }
+
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
             base_qry += " order by l.${params.sort} ${params.order}"
