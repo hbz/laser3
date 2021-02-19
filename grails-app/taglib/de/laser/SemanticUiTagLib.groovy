@@ -551,15 +551,21 @@ class SemanticUiTagLib {
 
         // reporting -->
         if (attrs.modifiers) {
-
-
             String modName = name + '_modifier'
             String iconClassModi = ''
-            if (params.get(modName) == 'greater') {
-                iconClassModi = 'la-less-than'
-            }
-            else if (params.get(modName) == 'lower') {
-                iconClassModi = 'la-greater-than'
+            switch(params.get(modName)) {
+                case 'lower':
+                    iconClassModi = 'la-less-than'
+                    break
+                case 'greater':
+                    iconClassModi = 'la-greater-than'
+                    break
+                case 'equals':
+                    iconClassModi = 'la-equals'
+                    break
+                default:
+                    iconClassModi = 'minus'
+                    break
             }
             out << '<div class="field la-combi-input-left">'
             out <<   '<label for="dateBeforeVal">&nbsp;</label>'
