@@ -248,10 +248,11 @@ class GokbService {
     }
 
     Map queryElasticsearch(String url){
-        log.info("querying: " + url)
+        String compatibleUrl = url.replaceAll(" ", "+")
+        log.info("querying: " + compatibleUrl)
         Map result = [:]
         try {
-            def http = new HTTPBuilder(url)
+            def http = new HTTPBuilder(compatibleUrl)
 //         http.auth.basic user, pwd
             http.request(Method.GET) { req ->
                 headers.'User-Agent' = 'laser'
