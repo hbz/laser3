@@ -4,7 +4,7 @@ import de.laser.Org
 import de.laser.RefdataValue
 import grails.web.servlet.mvc.GrailsParameterMap
 
-class OrganisationQueryHandler extends GenericQueryHandler {
+class OrganisationQuery extends GenericQuery {
 
     static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
 

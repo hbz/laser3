@@ -1,8 +1,9 @@
+<%@ page import="de.laser.reporting.GenericConfig" %>
 <g:if test="${! data}">
     JSPC.app.reporting.current.chart.option = {}
     alert('[c3] - Keine Daten gefunden');
 </g:if>
-<g:elseif test="${chart == 'pie'}">
+<g:elseif test="${chart == GenericConfig.CHART_PIE}">
 JSPC.app.reporting.current.chart.option = {
     tooltip: {
         trigger: 'item'
@@ -31,7 +32,7 @@ JSPC.app.reporting.current.chart.option = {
 };
 JSPC.app.reporting.current.chart.details = <%= dataDetails as grails.converters.JSON %>
 </g:elseif>
-<g:elseif test="${chart == 'bar'}">
+<g:elseif test="${chart == GenericConfig.CHART_BAR}">
 JSPC.app.reporting.current.chart.option = {
     dataset: {
         source: [

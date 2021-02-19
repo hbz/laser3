@@ -1,4 +1,4 @@
-<%@page import="de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.SubscriptionConfig; de.laser.reporting.OrganisationConfig; de.laser.reporting.GenericConfig; de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -20,19 +20,24 @@
 
         <div class="ui message info">
             <p>
-                <strong>1. Suchanfrage definieren ..</strong>
+                <strong>1. Suchanfrage</strong>
                 <br />
-                Erzeugen Sie eine Ergebnismenge anhand kombinierbarer Filter.
+                Erstellen Sie eine Suchanfrage anhand kombinierbarer Filter.
                 Verschiedene Einstiegspunkte ermöglichen eine individuelle Zusammenstellung Ihrer Daten.
             </p>
             <p>
-                <strong>2. Ergebnis analysieren ..</strong>
+                <strong>2. Ergebnis</strong>
                 <br />
                 Die in Schritt 1 erzeugte Ergebnismenge kann durch vordefinierte Abfragen
                 untersucht und visualisiert werden.
             </p>
+            <p>
+                <strong>3. Details</strong>
+                <br />
+                Die in Schritt 2 erzeugte Visualisierung ist interaktiv und bietet Zugriff auf weitere Informationen.
+            </p>
         </div>
-        <h2 class="ui header">1. Suchanfrage definieren ..</h2>
+        <h2 class="ui header">1. Suchanfrage</h2>
 
         <g:set var="hidden" value="hidden" />
 
@@ -53,26 +58,26 @@
             <g:set var="hidden" value="" />
         </g:else>
 
-        <g:if test="${!filter || filter == 'subscription'}">
+        <g:if test="${!filter || filter == SubscriptionConfig.KEY}">
             <div id="filter-subscription" class="filter-form-wrapper ${hidden}">
                <g:render template="/myInstitution/reporting/filter/subscription" />
             </div>
         </g:if>
 
-        <g:if test="${!filter || filter == 'organisation'}">
+        <g:if test="${!filter || filter == OrganisationConfig.KEY}">
             <div id="filter-organisation" class="filter-form-wrapper ${hidden}">
                 <g:render template="/myInstitution/reporting/filter/organisation" />
             </div>
         </g:if>
 
         <g:if test="${result}">
-            <h2 class="ui header">2. Ergebnis analysieren ..</h2>
+            <h2 class="ui header">2. Ergebnis</h2>
 
-            <g:if test="${filter == 'subscription'}">
+            <g:if test="${filter == SubscriptionConfig.KEY}">
                 <g:render template="/myInstitution/reporting/query/subscription" />
             </g:if>
 
-            <g:if test="${filter == 'organisation'}">
+            <g:if test="${filter == OrganisationConfig.KEY}">
                 <g:render template="/myInstitution/reporting/query/organisation" />
             </g:if>
 
