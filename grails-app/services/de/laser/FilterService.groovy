@@ -1013,7 +1013,164 @@ class FilterService {
         return [base_qry:base_qry,qry_params:qry_params,filterSet:filterSet]
     }
 
-    Map<String,Object> getIssueEntitlementQuery(def params, Subscription subscription) {
+    Map<String,Object> getIssueEntitlementQuery(GrailsParameterMap params, Subscription subscription) {
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        Map result = [:]
+
+        String base_qry
+        Map<String,Object> qry_params = [subscription: subscription]
+        boolean filterSet = false
+        Date date_filter
+        if (params.asAt && params.asAt.length() > 0) {
+            date_filter = sdf.parse(params.asAt)
+            result.as_at_date = date_filter
+            result.editable = false
+        }
+        if (params.filter) {
+            base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
+            if (date_filter) {
+                // If we are not in advanced mode, hide IEs that are not current, otherwise filter
+                // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
+                // qry_params.add(deleted_ie);
+                base_qry += "and ( ( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate,ie.tipp.accessStartDate) or (ie.accessStartDate is null and ie.subscription.startDate is null and ie.tipp.accessStartDate is null) ) and ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate,ie.tipp.accessEndDate) or (ie.accessEndDate is null and ie.subscription.endDate is null and ie.tipp.accessEndDate is null) OR ( ie.subscription.hasPerpetualAccess = true ) ) ) "
+                qry_params.startDate = date_filter
+                qry_params.endDate = date_filter
+            }
+            base_qry += "and ( ( lower(ie.tipp.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) or ((lower(ie.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
+            qry_params.title = "%${params.filter.trim().toLowerCase()}%"
+            qry_params.identifier = "%${params.filter}%"
+            qry_params.ebookFirstAutorOrFirstEditor = "%${params.filter.trim().toLowerCase()}%"
+            filterSet = true
+        }
+        else {
+            base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
+            /*if (params.mode != 'advanced') {
+                // If we are not in advanced mode, hide IEs that are not current, otherwise filter
+
+                base_qry += " and ( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate,ie.tipp.accessStartDate) or (ie.accessStartDate is null and ie.subscription.startDate is null and ie.tipp.accessStartDate is null) ) and ( ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate,ie.accessEndDate) or (ie.accessEndDate is null and ie.subscription.endDate is null and ie.tipp.accessEndDate is null)  or (ie.subscription.hasPerpetualAccess = true) ) ) "
+                qry_params.startDate = date_filter
+                qry_params.endDate = date_filter
+            }*/
+        }
+
+        if(params.status != '' && params.status != null) {
+            base_qry += " and ie.status.id = :status "
+            qry_params.status = params.status
+        }else if (params.notStatus != '' && params.notStatus != null){
+            base_qry += " and ie.status.id != :notStatus "
+            qry_params.notStatus = params.notStatus
+        }
+        else {
+            base_qry += " and ie.status = :current "
+            qry_params.current = RDStore.TIPP_STATUS_CURRENT
+        }
+
+        /*if(params.mode != 'advanced') {
+            base_qry += " and ie.status = :current "
+            qry_params.current = RDStore.TIPP_STATUS_CURRENT
+        }
+        else {
+            base_qry += " and ie.status != :deleted "
+            qry_params.deleted = RDStore.TIPP_STATUS_DELETED
+        }*/
+
+        if(params.ieAcceptStatusFixed) {
+            base_qry += " and ie.acceptStatus = :ieAcceptStatus "
+            qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
+        }
+
+        if(params.ieAcceptStatusNotFixed) {
+            base_qry += " and ie.acceptStatus != :ieAcceptStatus "
+            qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
+        }
+
+        if (params.pkgfilter && (params.pkgfilter != '')) {
+            base_qry += " and ie.tipp.pkg.id = :pkgId "
+            qry_params.pkgId = Long.parseLong(params.pkgfilter)
+            filterSet = true
+        }
+        if (params.titleGroup && (params.titleGroup != '')) {
+            base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) "
+            qry_params.titleGroup = Long.parseLong(params.titleGroup)
+        }
+
+        if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
+            base_qry += " and lower(ie.tipp.subjectReference) in (:subject_references)"
+            qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
+            filterSet = true
+        }
+        if (params.series_names && params.series_names != "" && params.list('series_names')) {
+            base_qry += " and lower(ie.tipp.seriesName) in (:series_names)"
+            qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
+            filterSet = true
+        }
+
+        if(params.summaryOfContent) {
+            base_qry += " and lower(ie.tipp.summaryOfContent) like :summaryOfContent "
+            qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
+        }
+
+        if(params.ebookFirstAutorOrFirstEditor) {
+            base_qry += " and (lower(ie.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
+            qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
+        }
+
+        if(params.dateFirstOnlineFrom) {
+            base_qry += " and (ie.tipp.dateFirstOnline is not null AND ie.tipp.dateFirstOnline >= :dateFirstOnlineFrom) "
+            qry_params.dateFirstOnlineFrom = sdf.parse(params.dateFirstOnlineFrom)
+
+        }
+        if(params.dateFirstOnlineTo) {
+            base_qry += " and (ie.tipp.dateFirstOnline is not null AND ie.tipp.dateFirstOnline <= :dateFirstOnlineTo) "
+            qry_params.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
+        }
+
+        if(params.yearsFirstOnline) {
+            base_qry += " and (Year(ie.tipp.dateFirstOnline) in (:yearsFirstOnline)) "
+            qry_params.yearsFirstOnline = params.list('yearsFirstOnline').collect { Integer.parseInt(it) }
+        }
+
+        if (params.identifier) {
+            base_qry += "and ( exists ( from Identifier ident. where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) "
+            qry_params.identifier = "${params.identifier}"
+            filterSet = true
+        }
+
+        if (params.publisher) {
+            base_qry += "and exists (select orgRole from OrgRole orgRole where orgRole.tipp = ie.tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name like :publisher) "
+            qry_params.publisher = "%${params.publisher}%"
+            filterSet = true
+        }
+
+
+        if (params.title_types && params.title_types != "" && params.list('title_types')) {
+            base_qry += " and lower(ie.tipp.titleType) in (:title_types)"
+            qry_params.title_types = params.list('title_types').collect { ""+it.toLowerCase()+"" }
+            filterSet = true
+        }
+
+        if ((params.sort != null) && (params.sort.length() > 0)) {
+            if(params.sort == 'startDate')
+                base_qry += "order by ic.startDate ${params.order}, lower(ie.tipp.sortName) asc "
+            else if(params.sort == 'endDate')
+                base_qry += "order by ic.endDate ${params.order}, lower(ie.tipp.sortName) asc "
+            else
+                base_qry += "order by ie.${params.sort} ${params.order} "
+        }
+        else {
+            base_qry += "order by lower(ie.tipp.name) asc"
+        }
+
+
+        result.query = base_qry
+        result.queryParams = qry_params
+        result.filterSet = filterSet
+
+        result
+
+    }
+
+    Map<String,Object> getIssueEntitlementQuery(Map params, Subscription subscription) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Map result = [:]
 
