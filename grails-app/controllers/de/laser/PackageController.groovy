@@ -93,8 +93,8 @@ class PackageController {
         - year (combination of dateFirstPrint and dateFirstOnline)
          */
 
-        String sort = params.sort ?: "&sort=sortname"
-        String order = params.order ?: "&order=asc"
+        String sort = params.sort ? "&sort="+params.sort: "&sort=sortname"
+        String order = params.order ? "&order="+params.order: "&order=asc"
         String max = params.max ? "&max=${params.max}" : "&max=${result.max}"
         String offset = params.offset ? "&offset=${params.offset}" : "&offset=${result.offset}"
 

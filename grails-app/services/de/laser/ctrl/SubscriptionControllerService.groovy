@@ -1285,8 +1285,8 @@ class SubscriptionControllerService {
             - year (combination of dateFirstPrint and dateFirstOnline)
              */
 
-            String sort = params.sort ?: "&sort=sortname"
-            String order = params.order ?: "&order=asc"
+            String sort = params.sort ? "&sort="+params.sort: "&sort=sortname"
+            String order = params.order ? "&order="+params.order: "&order=asc"
             String max = params.max ? "&max=${params.max}": "&max=${result.max}"
             String offset = params.offset ? "&offset=${params.offset}": "&offset=${result.offset}"
 
@@ -1539,10 +1539,12 @@ class SubscriptionControllerService {
                 subscriptionHistory.addAll(PendingChange.executeQuery(query3a,[packages:pkgList,accepted:RDStore.PENDING_CHANGE_ACCEPTED,subOid:genericOIDService.getOID(result.subscription)]))
                 changesOfPage.addAll(PendingChange.findAllByIdInList(packageHistory,[sort:'ts',order:'asc']))
                 subscriptionHistory.each { row ->
-                    accepted << changesOfPage.find { PendingChange pc -> row[1] in [pc.tipp,pc.tippCoverage,pc.priceItem] }.id
+                    accepted << changesOfPage.find { PendingChange pc -> row[1] in [pc.tipp,pc.tippCoverage,pc.priceItem] }?.id
                 }
             }
-            result.packageHistory = changesOfPage
+
+            result.num_pkgHistory_rows = changesOfPage.size()
+            result.packageHistory = changesOfPage.drop(result.offset).take(result.max)
             result.accepted = accepted
             [result:result,status:STATUS_OK]
         }

@@ -531,7 +531,8 @@ class PendingChangeService extends AbstractLockableService {
             }
         }
         //[changes:result,changesCount:result.size(),subscribedPackages:subscribedPackages]
-        [notifications:notifications.drop(configMap.offset).take(configMap.max),pending:pending,acceptedOffset:configMap.offset]
+        [notifications: notifications.drop(configMap.offset).take(configMap.max), notificationsCount: notifications.size(),
+         pending: pending, pendingCount: pending.size(), acceptedOffset: configMap.offset]
     }
 
     //called from: dashboard.gsp
@@ -592,6 +593,7 @@ class PendingChangeService extends AbstractLockableService {
     }
 
     boolean accept(PendingChange pc) throws ChangeAcceptException {
+        println("accept:" +pc)
         boolean done = false
         def target
         if(pc.oid)
@@ -845,6 +847,7 @@ class PendingChangeService extends AbstractLockableService {
     }
 
     void applyChangeForHolding(PendingChange newChange,SubscriptionPackage subPkg,Org contextOrg) {
+            println("applyChangeForHolding")
             def target
             if(newChange.tipp)
                 target = newChange.tipp
