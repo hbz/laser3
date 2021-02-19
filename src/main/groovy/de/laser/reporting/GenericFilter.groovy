@@ -2,7 +2,6 @@ package de.laser.reporting
 
 import de.laser.annotations.RefdataAnnotation
 import grails.util.Holders
-import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.lang.reflect.Field
@@ -34,6 +33,8 @@ class GenericFilter {
         Locale locale = LocaleContextHolder.getLocale()
 
         if (type == GenericConfig.FIELD_TYPE_PROPERTY) {
+            // LaserReportingTagLib:reportFilterProperty
+
             Field prop = objConfig.meta.class.getDeclaredField(fieldName)
             String csn = objConfig.meta.class.simpleName.uncapitalize() // TODO -> check
 
@@ -41,6 +42,8 @@ class GenericFilter {
         }
 
         if (type == GenericConfig.FIELD_TYPE_REFDATA) {
+            // LaserReportingTagLib:reportFilterRefdata
+
             Field refdata   = objConfig.meta.class.getDeclaredField(fieldName)
             def anno        = refdata.getAnnotationsByType(RefdataAnnotation).head()
             String rdCat    = anno.cat()
@@ -50,6 +53,8 @@ class GenericFilter {
         }
 
         if (type == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
+            // LaserReportingTagLib:reportFilterRefdata
+
             Map<String, Object> rdvInfo = GenericConfig.getRefdataRelTableInfo(fieldName)
 
             label = rdvInfo.get('label')

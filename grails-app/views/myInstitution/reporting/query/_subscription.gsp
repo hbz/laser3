@@ -12,7 +12,15 @@
                 wurden anhand der Filtereinstellungen gefunden.
             </p>
             <p>
-                ${result.filterLabels}
+                <g:each in="${result.filterLabels}" var="labelGroup">
+                    <strong>${labelGroup.value.source}</strong>
+                    <br />
+                    <g:each in="${labelGroup.value}" var="label">
+                        <g:if test="${label.key != 'source'}">
+                            - ${label.value} <br/>
+                        </g:if>
+                    </g:each>
+                </g:each>
             </p>
         </div>
 
