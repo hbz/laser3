@@ -575,13 +575,13 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         return c
     }
 
-    Org getPublisher() {
-        Org result
+    List<Org> getPublishers() {
+        List<Org> result = []
 
 
         orgs.each { or ->
             if ( or.roleType.id in [RDStore.OR_PUBLISHER.id] )
-                result = or.org
+                result << or.org
 
         }
 
