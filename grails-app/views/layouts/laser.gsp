@@ -64,10 +64,6 @@
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="package" action="index">${message(code:'menu.public.all_pkg')}</semui:link>
                                     <semui:link generateElementId="true"  class="item" role="menuitem" controller="title" action="index">${message(code:'menu.public.all_titles')}</semui:link>
 
-                                    <g:if test="${grailsApplication.config.feature.eBooks}">
-                                        <a id="gokbLabs" class="item" role="menuitem" href="http://gokb.k-int.com/gokbLabs">${message(code:'menu.institutions.ebooks')}</a>
-                                        <div class="divider"></div>
-                                    </g:if>
 
                                     <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
                                         <semui:mainNavItem generateElementId="true" role="menuitem" controller="organisation" action="index" message="menu.public.all_orgs" />

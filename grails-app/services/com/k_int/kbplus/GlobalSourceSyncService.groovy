@@ -445,7 +445,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 else {
                     addNewTIPP(packagesOnPage.get(updatedTIPP.packageUUID),updatedTIPP,platformsOnPage,null)
                 }
-                Date lastUpdatedTime = sdf.parse(tipp.lastUpdatedDisplay)
+                Date lastUpdatedTime = DateUtils.parseDateGeneric(tipp.lastUpdatedDisplay)
                 if(lastUpdatedTime.getTime() > maxTimestamp) {
                     maxTimestamp = lastUpdatedTime.getTime()
                 }

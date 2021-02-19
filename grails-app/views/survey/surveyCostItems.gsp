@@ -362,8 +362,6 @@
                                       tableID         : 'costTable'
                               ]"/>
 
-                    </div>
-
                 </g:if>
 
                 <br />

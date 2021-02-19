@@ -421,20 +421,21 @@
                                 <td class="x">
                                     <g:if test="${editable}">
                                         <g:if test="${subscription.ieGroups.size() > 0}">
-                                            <g:link action="removeEntitlementWithIEGroups"
-                                                    class="ui icon negative button"
+                                            <g:link action="removeEntitlementWithIEGroups" class="ui icon negative button js-open-confirm-modal"
                                                     params="${[ieid: ie.id, sub: subscription.id]}"
-                                                    onClick="return confirm('${message(code: 'subscription.details.removeEntitlementWithIEGroups.confirm')}');"
                                                     role="button"
+                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.tipp.name])}"
+                                                    data-confirm-term-how="delete"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                 <i class="trash alternate icon"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
-                                            <g:link action="removeEntitlement" class="ui icon negative button"
+                                            <g:link action="removeEntitlement" class="ui icon negative button js-open-confirm-modal"
                                                     params="${[ieid: ie.id, sub: subscription.id]}"
-                                                    onClick="return confirm('${message(code: 'subscription.details.removeEntitlement.confirm')}');"
                                                     role="button"
+                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.tipp.name])}"
+                                                    data-confirm-term-how="delete"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                 <i class="trash alternate icon"></i>
                                             </g:link>

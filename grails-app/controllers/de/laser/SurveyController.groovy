@@ -2032,7 +2032,7 @@ class SurveyController {
         PropertyDefinition surveyProperty = PropertyDefinition.findByIdAndTenant(params.deleteId, result.institution)
 
         PropertyDefinition.withTransaction { TransactionStatus ts ->
-            if (surveyProperty.countUsages()==0 && surveyProperty.owner.id == result.institution.id) {
+            if (surveyProperty.countUsages()==0 && surveyProperty.tenant.id == result.institution.id) {
                 surveyProperty.delete()
                 //flash.message = message(code: 'default.deleted.message', args:[message(code: 'surveyProperty.label'), surveyProperty.getI10n('name')])
             }
@@ -3767,7 +3767,7 @@ class SurveyController {
                 newMap.newSub = sub
                 newMap.oldSub = result.surveyConfig.subSurveyUseForTransfer ? sub._getCalculatedPrevious() : result.parentSubscription.getDerivedSubscriptionBySubscribers(org)
 
-                println("new: ${newMap.newSub}, old: ${newMap.oldSub}")
+                //println("new: ${newMap.newSub}, old: ${newMap.oldSub}")
 
 
                 if (params.tab == 'surveyProperties') {
