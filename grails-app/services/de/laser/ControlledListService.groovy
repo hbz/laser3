@@ -537,7 +537,7 @@ class ControlledListService {
 
 
     List getAllPossibleTitleTypes() {
-        return TitleInstancePackagePlatform.executeQuery('select distinct(tipp.titleType) from TitleInstancePackagePlatform tipp')
+        return TitleInstancePackagePlatform.executeQuery('select distinct(tipp.titleType) from TitleInstancePackagePlatform tipp where tipp.titleType is not null')
     }
 
     Set<String> getAllPossibleSeriesByPackage(Package pkg) {
