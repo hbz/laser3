@@ -2,11 +2,10 @@ package de.laser.reporting
 
 import de.laser.Org
 import de.laser.Subscription
-import grails.web.servlet.mvc.GrailsParameterMap
 
 class SubscriptionConfig extends GenericConfig {
 
-    static String KEY = 'Subscription'
+    static String KEY = 'subscription'
 
     static Map<String, Object> CONFIG = [
 
@@ -14,29 +13,29 @@ class SubscriptionConfig extends GenericConfig {
                     meta : [
                             class: Subscription
                     ],
-                    form : [
-                            [
-                                    'form'              : FORM_TYPE_REFDATA,
-                                    'kind'              : FORM_TYPE_REFDATA,
-                                    'resource'          : FORM_TYPE_REFDATA,
-                                    'status'            : FORM_TYPE_REFDATA,
-                                    'type'              : FORM_TYPE_REFDATA
-                            ],
-                            [
-                                    //'isMultiYear'           : FORM_TYPE_PROPERTY,
-                                    'hasPerpetualAccess'    : FORM_TYPE_PROPERTY,
-                                    'isPublicForApi'        : FORM_TYPE_PROPERTY
-                            ],
-                            [
-                                    'startDate'             : FORM_TYPE_PROPERTY,
-                                    'endDate'               : FORM_TYPE_PROPERTY,
-                                    //'manualRenewalDate'         : FORM_TYPE_PROPERTY,
-                                    //'manualCancellationDate'    : FORM_TYPE_PROPERTY
-                            ]
-                    ],
-                    filter : [
+                    source : [
                             //'all-sub' : 'Alle Lizenzen',
                             'my-sub' : 'Meine Lizenzen'
+                    ],
+                    filter : [
+                            [
+                                    'form'              : FIELD_TYPE_REFDATA,
+                                    'kind'              : FIELD_TYPE_REFDATA,
+                                    'resource'          : FIELD_TYPE_REFDATA,
+                                    'status'            : FIELD_TYPE_REFDATA,
+                                    //'type'              : FIELD_TYPE_REFDATA
+                            ],
+                            [
+                                    //'isMultiYear'           : FIELD_TYPE_PROPERTY,
+                                    'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
+                                    'isPublicForApi'        : FIELD_TYPE_PROPERTY
+                            ],
+                            [
+                                    'startDate'             : FIELD_TYPE_PROPERTY,
+                                    'endDate'               : FIELD_TYPE_PROPERTY,
+                                    //'manualRenewalDate'         : FIELD_TYPE_PROPERTY,
+                                    //'manualCancellationDate'    : FIELD_TYPE_PROPERTY
+                            ]
                     ],
                     query : [
                             'Verteilung' : [
@@ -52,22 +51,22 @@ class SubscriptionConfig extends GenericConfig {
                     meta : [
                             class: Org
                     ],
-                    form : [
-                            [
-                                    'country'           : FORM_TYPE_REFDATA,
-                                    //'region'            : FORM_TYPE_REFDATA,
-                                    'libraryType'       : FORM_TYPE_REFDATA,
-                                    'libraryNetwork'    : FORM_TYPE_REFDATA,
-                                    'funderType'        : FORM_TYPE_REFDATA,
-                                    'funderHskType'     : FORM_TYPE_REFDATA,
-                                    'subjectGroup'      : FORM_TYPE_REFDATA_RELTABLE
-                            ],
-                            [
-                                    'eInvoice'          : FORM_TYPE_PROPERTY
-                            ]
+                    source : [
+                            'depending-member' : 'Alle betroffenen Teilnehmer'
                     ],
                     filter : [
-                            'depending-member' : 'Alle betroffenen Teilnehmer'
+                            [
+                                    'country'           : FIELD_TYPE_REFDATA,
+                                    //'region'            : FIELD_TYPE_REFDATA,
+                                    'libraryType'       : FIELD_TYPE_REFDATA,
+                                    'libraryNetwork'    : FIELD_TYPE_REFDATA,
+                                    'funderType'        : FIELD_TYPE_REFDATA,
+                                    'funderHskType'     : FIELD_TYPE_REFDATA,
+                                    'subjectGroup'      : FIELD_TYPE_REFDATA_RELTABLE
+                            ],
+                            [
+                                    'eInvoice'          : FIELD_TYPE_PROPERTY
+                            ]
                     ],
                     query : [
                             'Teilnehmer' : [
@@ -85,13 +84,13 @@ class SubscriptionConfig extends GenericConfig {
                     meta : [
                             class: Org
                     ],
-                    form : [
-                            [
-                                    'country' : FORM_TYPE_REFDATA
-                            ]
+                    source : [
+                            'depending-provider' : 'Alle betroffenen Anbieter'
                     ],
                     filter : [
-                            'depending-provider' : 'Alle betroffenen Anbieter'
+                            [
+                                    'country' : FIELD_TYPE_REFDATA
+                            ]
                     ],
                     query : [
                             'Anbieter' : [
@@ -101,8 +100,4 @@ class SubscriptionConfig extends GenericConfig {
                     ]
             ],
     ]
-
-    static String getQueryLabel(GrailsParameterMap params) {
-        getQueryLabel(CONFIG, params)
-    }
 }

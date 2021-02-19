@@ -2,8 +2,8 @@ package de.laser
 
 import de.laser.annotations.RefdataAnnotation
 import de.laser.helper.RDConstants
-import de.laser.helper.RDStore
 import de.laser.reporting.GenericConfig
+import de.laser.reporting.GenericFilter
 
 import java.lang.reflect.Field
 
@@ -13,15 +13,15 @@ class LaserReportingTagLib {
 
     def reportFilterField = { attrs, body ->
 
-        String fieldType = GenericConfig.getFormFieldType(attrs.config, attrs.field) // [ property, refdata ]
+        String fieldType = GenericFilter.getFilterFieldType(attrs.config, attrs.field) // [ property, refdata ]
 
-        if (fieldType == GenericConfig.FORM_TYPE_PROPERTY) {
+        if (fieldType == GenericConfig.FIELD_TYPE_PROPERTY) {
             out << laser.reportFilterProperty(config: attrs.config, property: attrs.field, key: attrs.key)
         }
-        if (fieldType == GenericConfig.FORM_TYPE_REFDATA) {
+        if (fieldType == GenericConfig.FIELD_TYPE_REFDATA) {
             out << laser.reportFilterRefdata(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
-        if (fieldType == GenericConfig.FORM_TYPE_REFDATA_RELTABLE) {
+        if (fieldType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
             out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
     }

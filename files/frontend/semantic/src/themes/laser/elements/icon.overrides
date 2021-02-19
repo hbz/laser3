@@ -1759,6 +1759,22 @@ i.icon.la-gokb {
 i.icon.la-laser {
   font-family: 'icomoon';
 }
+/* ICONS FOR MATH*/
+i.icon.la-less-than {
+  font-family: 'icomoon';
+}
+i.icon.la-greater-than {
+  font-family: 'icomoon';
+}
+i.icon.la-equals {
+  font-family: 'icomoon';
+}
+i.icon.la-less-than-equal {
+  font-family: 'icomoon';
+}
+i.icon.la-greater-than-equal {
+  font-family: 'icomoon';
+}
 // to turn off all the buttons on a side
 // the other part of the button is the SEMANTIC UI Icon: 'hand pointer outline'
 
@@ -1781,7 +1797,12 @@ i.icon.la-replace:before { content: "\e90d"; }
 /**/
 i.icon.la-gokb:before { content: "\e90e"; }
 i.icon.la-laser:before { content: "\e90f"; }
-
+/**/
+i.icon.la-less-than:before { content: "\e910"; }
+i.icon.la-greater-than:before { content: "\e911"; }
+i.icon.la-equals:before { content: "\e912"; }
+i.icon.la-less-than-equal:before { content: "\e913"; }
+i.icon.la-greater-than-equal:before { content: "\e914"; }
 /*******************************
            Laser Icons
 *******************************/
@@ -1910,4 +1931,3 @@ i.inverted.circular.la-light-grey.icon {
 i.inverted.circular.icon.la-filter-icon {
   background-color: #8699b1!important;
 }
-

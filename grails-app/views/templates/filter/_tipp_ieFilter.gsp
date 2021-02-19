@@ -119,7 +119,7 @@
                             var="titleType">
                         <option <%=(params.list('title_types')?.contains(titleType)) ? 'selected="selected"' : ''%>
                                 value="${titleType}">
-                            ${titleType ? RefdataValue.getByValueAndCategory(titleType, RDConstants.TITLE_MEDIUM).getI10n('value') : titleType}
+                            ${titleType.capitalize()}
                         </option>
                     </g:each>
                 </select>

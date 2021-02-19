@@ -26,6 +26,7 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.GenericConfig
+import de.laser.reporting.GenericQuery
 import de.laser.reporting.OrganisationConfig
 import de.laser.reporting.SubscriptionConfig
 import grails.converters.JSON
@@ -434,20 +435,22 @@ class AjaxHtmlController {
 
             if (prefix in ['org']) {
                 result.key   = OrganisationConfig.KEY
-                result.title = OrganisationConfig.getQueryLabel(params)
+                result.label = GenericQuery.getQueryLabels(OrganisationConfig.CONFIG, params).join(' > ')
                 result.list  = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
             }
             if (prefix in ['subscription']) {
                 result.key   = SubscriptionConfig.KEY
-                result.title = SubscriptionConfig.getQueryLabel(params)
+                result.label = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params).join(' > ')
                 result.list  = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
             }
             if (prefix in ['member', 'provider']) {
                 result.key   = OrganisationConfig.KEY
-                result.title = SubscriptionConfig.getQueryLabel(params)
+                result.label = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params).join(' > ')
                 result.list  = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
             }
         }
+
+        println result
         render template: '/myInstitution/reporting/chart/details', model: result
     }
 }

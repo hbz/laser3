@@ -1,4 +1,4 @@
-<%@page import="de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.SubscriptionConfig; de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:if test="${result}">
@@ -11,6 +11,8 @@
                 ${result.providerIdList.size()} Anbieter
                 wurden anhand der Filtereinstellungen gefunden.
             </p>
+
+            <g:render template="/myInstitution/reporting/query/base.part1" />
         </div>
 
         %{--
@@ -57,7 +59,7 @@
         </div>
         --}%
 
-        <g:render template="/myInstitution/reporting/query/base.part" />
+        <g:render template="/myInstitution/reporting/query/base.part2" />
 
         <laser:script file="${this.getGroovyPageFileName()}">
             if (! JSPC.app.reporting) { JSPC.app.reporting = {}; }

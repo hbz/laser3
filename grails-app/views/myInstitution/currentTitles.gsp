@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.IssueEntitlement;de.laser.Platform" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.ApiSource;" %>
 <!doctype html>
 <html>
 <head>
@@ -37,7 +37,7 @@
                 </g:link>
             </g:if>
             <g:else>
-                <g:link class="item" action="currentTitles" params="${params+[exportXLSX: true]}">
+                <g:link class="item" action="currentTitles" params="${params + [exportXLSX: true]}">
                     <g:message code="default.button.exports.xls"/>
                 </g:link>
             </g:else>
@@ -71,7 +71,7 @@
 
 <semui:messages data="${flash}"/>
 
-<g:render template="/templates/filter/javascript" />
+<g:render template="/templates/filter/javascript"/>
 
 <semui:filter showFilterButton="true">
     <g:form id="filtering-form" action="currentTitles" controller="myInstitution" method="get" class="ui form">
@@ -176,17 +176,17 @@
             </div>--%>
         </div>
 
-        <%--<div class="two fields">
+    <%--<div class="two fields">
 
-        <%-- class="field">
-            <label for="filterMultiIE">${message(code: 'myinst.currentTitles.dupes')}</label>
+    <%-- class="field">
+        <label for="filterMultiIE">${message(code: 'myinst.currentTitles.dupes')}</label>
 
-            <div class="ui checkbox">
-                <input type="checkbox" class="hidden" name="filterMultiIE" id="filterMultiIE"
-                       value="${true}" <%=(params.filterMultiIE) ? ' checked="true"' : ''%>/>
-            </div>
+        <div class="ui checkbox">
+            <input type="checkbox" class="hidden" name="filterMultiIE" id="filterMultiIE"
+                   value="${true}" <%=(params.filterMultiIE) ? ' checked="true"' : ''%>/>
         </div>
-        </div>--%>
+    </div>
+    </div>--%>
 
     </g:form>
 </semui:filter>
@@ -198,54 +198,55 @@
                 <g:set var="counter" value="${offset + 1}"/>
                 <table class="ui sortable celled la-table table ">
                     <thead>
-                        <tr>
-                            <th>${message(code: 'sidewide.number')}</th>
-                            <g:sortableColumn params="${params}" property="tipp.sortName"
-                                              title="${message(code: 'title.label')}"/>
-                            <th>${message(code: 'subscription.details.startDate')}</th>
-                            <th>${message(code: 'subscription.details.endDate')}</th>
-                            <th style="width: 30%">
-                                <div class="ui three column grid">
-                                    <div class="sixteen wide column">
-                                        ${message(code: 'myinst.currentTitles.sub_content')}
-                                    </div>
-                                    <div class="eight wide column">
-                                        ${message(code: 'subscription.details.coverage_dates')}
-                                        <br />
-                                        ${message(code: 'default.from')}
-                                        <br />
-                                        ${message(code: 'default.to')}
-                                    </div>
-                                    <div class="eight wide column">
-                                        ${message(code: 'subscription.details.access_dates')}
-                                        <br />
-                                        ${message(code: 'default.from')}
-                                        <br />
-                                        ${message(code: 'default.to')}
-                                    </div>
-                                    <div class="sixteen wide column">
-                                        <g:message code="subscription.details.prices"/>
-                                    </div>
+                    <tr>
+                        <th>${message(code: 'sidewide.number')}</th>
+                        <g:sortableColumn params="${params}" property="tipp.sortName"
+                                          title="${message(code: 'title.label')}"/>
+                        <th>
+                            <div class="ui three column grid">
+                                <div class="sixteen wide column">
+                                    ${message(code: 'myinst.currentTitles.sub_content')}
                                 </div>
-                            </th>
-                        </tr>
+
+                                <div class="eight wide column">
+                                    ${message(code: 'subscription.details.coverage_dates')}
+                                    <br/>
+                                    ${message(code: 'default.from')}
+                                    <br/>
+                                    ${message(code: 'default.to')}
+                                </div>
+
+                                <div class="eight wide column">
+                                    ${message(code: 'subscription.details.access_dates')}
+                                    <br/>
+                                    ${message(code: 'default.from')}
+                                    <br/>
+                                    ${message(code: 'default.to')}
+                                </div>
+
+                                <div class="sixteen wide column">
+                                    <g:message code="subscription.details.prices"/>
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
                     </thead>
                     <g:each in="${titles}" var="tipp" status="jj">
                         <tr>
                             <td>${(params.int('offset') ?: 0) + jj + 1}</td>
                             <td>
                                 <!-- START TEMPLATE -->
-                        <g:render template="/templates/title"
-                                  model="${[ie: null, tipp: tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
-                                            showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
-                        <!-- END TEMPLATE -->
+                                <g:render template="/templates/title"
+                                          model="${[ie         : null, tipp: tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                                                    showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
+                                <!-- END TEMPLATE -->
 
-                </td>
+                            </td>
                             <%
                                 String instanceFilter = ''
-                                if(institution.getCustomerType() == "ORG_CONSORTIUM")
+                                if (institution.getCustomerType() == "ORG_CONSORTIUM")
                                     instanceFilter += ' and sub.instanceOf = null'
-                                Set<IssueEntitlement> title_coverage_info = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and sub.status = :current'+instanceFilter,[context:institution,tipp:tipp,current: RDStore.SUBSCRIPTION_CURRENT])
+                                Set<IssueEntitlement> title_coverage_info = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and sub.status = :current' + instanceFilter, [context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
                             %>
                             <td>
 
@@ -256,17 +257,19 @@
                                             <g:link controller="subscription" action="index"
                                                     id="${ie.subscription.id}">${ie.subscription.name}</g:link>
                                             &nbsp;
-                                            <br />
+                                            <br/>
                                             <g:link controller="issueEntitlement" action="show"
                                                     id="${ie.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
-                                            <br />
+                                            <br/>
                                         </div>
 
                                         <div class="eight wide centered column coverageStatements la-tableCard">
 
-                                            <g:render template="/templates/tipps/coverages" model="${[ie: ie, tipp: ie.tipp]}"/>
+                                            <g:render template="/templates/tipps/coverages"
+                                                      model="${[ie: ie, tipp: ie.tipp]}"/>
 
                                         </div>
+
                                         <div class="eight wide centered column">
 
                                         <!-- von --->
@@ -291,6 +294,7 @@
                                                               date="${ie.accessEndDate}"/>
                                             </g:else>
                                         </div>
+
                                         <div class="sixteen wide column">
                                             <g:each in="${ie.priceItems}" var="priceItem" status="i">
                                                 <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice"
@@ -319,10 +323,12 @@
             </g:if>
             <g:else>
                 <g:if test="${filterSet}">
-                    <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"title.plural")]}"/></strong>
+                    <br/><strong><g:message code="filter.result.empty.object"
+                                            args="${[message(code: "title.plural")]}"/></strong>
                 </g:if>
                 <g:else>
-                    <br /><strong><g:message code="result.empty.object" args="${[message(code:"title.plural")]}"/></strong>
+                    <br/><strong><g:message code="result.empty.object"
+                                            args="${[message(code: "title.plural")]}"/></strong>
                 </g:else>
             </g:else>
         </div>
@@ -395,7 +401,7 @@
 </div>
 
 <semui:debugInfo>
-    <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+    <g:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
 </semui:debugInfo>
 
 </body>

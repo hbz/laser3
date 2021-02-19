@@ -2,17 +2,20 @@ package de.laser.reporting
 
 import de.laser.RefdataCategory
 import de.laser.helper.RDConstants
-import grails.web.servlet.mvc.GrailsParameterMap
 
 class GenericConfig {
 
     static String KEY                           = 'Generic'
 
     static String FILTER_PREFIX                 = 'filter:'
+    static String FILTER_SOURCE_POSTFIX         = '_source'
 
-    static String FORM_TYPE_PROPERTY            = 'property'
-    static String FORM_TYPE_REFDATA             = 'refdata'
-    static String FORM_TYPE_REFDATA_RELTABLE    = 'refdataRelationTable'
+    static String CHART_BAR                     = 'bar'
+    static String CHART_PIE                     = 'pie'
+
+    static String FIELD_TYPE_PROPERTY           = 'property'
+    static String FIELD_TYPE_REFDATA            = 'refdata'
+    static String FIELD_TYPE_REFDATA_RELTABLE   = 'refdataRelationTable'
 
     static Map<String, String> FILTER = [
 
@@ -30,41 +33,11 @@ class GenericConfig {
 
             object : [
                     meta    : [],
-                    form    : [],
+                    source  : [],
                     filter  : [],
                     query   : []
             ]
     ]
-
-    static String getFormFieldType(Map<String, Object> objConfig, String fieldName) {
-
-        String fieldType = '' // [ property, refdata ]
-
-        objConfig.form.each {
-            if (it.keySet().contains(fieldName)) {
-                fieldType = it.get(fieldName)
-            }
-        }
-        fieldType
-    }
-
-    static String getQueryLabel(Map<String, Object> config, GrailsParameterMap params) {
-
-        String label = ''
-        //println params
-
-        config.each {it ->
-            if (it.value.containsKey('query')) {
-                it.value.get('query').each { it2 ->
-                    println it2
-                    if (it2.value.containsKey(params.query)) {
-                        label = it2.key + ' > ' + it2.value.get(params.query) + ' > ' + params.label
-                    }
-                }
-            }
-        }
-        label
-    }
 
     static Map<String, Object> getRefdataRelTableInfo(String key) {
 

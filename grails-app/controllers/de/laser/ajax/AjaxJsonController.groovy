@@ -26,8 +26,8 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
-import de.laser.reporting.OrganisationQueryHandler
-import de.laser.reporting.SubscriptionQueryHandler
+import de.laser.reporting.OrganisationQuery
+import de.laser.reporting.SubscriptionQuery
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -668,12 +668,12 @@ class AjaxJsonController {
         if (params.query) {
             String prefix = params.query.split('-')[0]
             if (prefix in ['org', 'member', 'provider']) {
-                result = OrganisationQueryHandler.query(params)
+                result = OrganisationQuery.query(params)
                 render template: '/myInstitution/reporting/chart/generic', model: result
                 return
             }
             if (prefix in ['subscription']) {
-                result = SubscriptionQueryHandler.query(params)
+                result = SubscriptionQuery.query(params)
                 render template: '/myInstitution/reporting/chart/generic', model: result
                 return
             }
