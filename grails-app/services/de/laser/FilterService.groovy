@@ -1013,7 +1013,7 @@ class FilterService {
         return [base_qry:base_qry,qry_params:qry_params,filterSet:filterSet]
     }
 
-    Map<String,Object> getIssueEntitlementQuery(GrailsParameterMap params, Subscription subscription) {
+    Map<String,Object> getIssueEntitlementQuery(def params, Subscription subscription) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Map result = [:]
 

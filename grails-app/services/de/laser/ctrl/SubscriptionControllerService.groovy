@@ -2495,7 +2495,7 @@ class SubscriptionControllerService {
                 result.auditConfigs = auditService.getAllAuditConfigs(result.subscription.instanceOf)
             else result.auditConfigs = auditService.getAllAuditConfigs(result.subscription)
 
-            result.currentTitlesCounts = IssueEntitlement.findAllBySubscriptionAndStatusAndAcceptStatus(result.subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED).size()
+            result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])[0]
 
             if(result.contextCustomerType == "ORG_CONSORTIUM") {
                 if(result.subscription.instanceOf){
@@ -2506,7 +2506,7 @@ class SubscriptionControllerService {
                 }else{
                     result.currentSurveysCounts = SurveyConfig.findAllBySubscription(result.subscription).size()
                 }
-                result.currentMembersCounts =  Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',[parent: result.subscription, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).size()
+                result.currentMembersCounts =  Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',[parent: result.subscription, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
             }else{
                 result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                         [sub: result.subscription.instanceOf,
