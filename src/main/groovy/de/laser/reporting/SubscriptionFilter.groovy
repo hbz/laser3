@@ -1,6 +1,7 @@
 package de.laser.reporting
 
 import de.laser.Org
+import de.laser.OrgSubjectGroup
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.helper.DateUtils
@@ -39,7 +40,7 @@ class SubscriptionFilter extends GenericFilter {
                 break
             case 'my-sub':
                 List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery( [validOn: null], contextService.getOrg() )
-                println tmp
+                //println tmp
                 queryParams.subIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
                 break
         }
@@ -50,28 +51,23 @@ class SubscriptionFilter extends GenericFilter {
         Set<String> keys = params.keySet().findAll{ it.toString().startsWith(cmbKey) && ! it.toString().endsWith(GenericConfig.FILTER_SOURCE_POSTFIX) }
         keys.each{ key ->
             if (params.get(key)) {
-                println key + " >> " + params.get(key)
+                //println key + " >> " + params.get(key)
 
                 String p = key.replaceFirst(cmbKey,'')
                 String pType = getFilterFieldType(SubscriptionConfig.CONFIG.base, p)
 
-                result.filterLabels.get('base').put(p, getFilterFieldLabel(SubscriptionConfig.CONFIG.base, p))
+                def filterLabelValue
 
                 // --> generic properties
                 if (pType == GenericConfig.FIELD_TYPE_PROPERTY) {
                     if (Subscription.getDeclaredField(p).getType() == Date) {
 
-                        String modifier = params.get(key + '_modifier')
-                        if (modifier == 'lower') {
-                            whereParts.add( 'sub.' + p + ' < :p' + (++pCount) )
-                        }
-                        else if (modifier == 'greater') {
-                            whereParts.add( 'sub.' + p + ' > :p' + (++pCount) )
-                        }
-                        else {
-                            whereParts.add( 'sub.' + p + ' = :p' + (++pCount) )
-                        }
+                        String modifier = getDateModifier( params.get(key + '_modifier') )
+
+                        whereParts.add( 'sub.' + p + ' ' + modifier + ' :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, DateUtils.parseDateGeneric(params.get(key)) )
+
+                        filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
                     }
                     else if (Subscription.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         if (RefdataValue.get(params.get(key)) == RDStore.YN_YES) {
@@ -80,19 +76,27 @@ class SubscriptionFilter extends GenericFilter {
                         else if (RefdataValue.get(params.get(key)) == RDStore.YN_NO) {
                             whereParts.add( 'sub.' + p + ' is false' )
                         }
+                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                     }
                     else {
                         queryParams.put( 'p' + pCount, params.get(key) )
+                        filterLabelValue = params.get(key)
                     }
                 }
                 // --> generic refdata
                 else if (pType == GenericConfig.FIELD_TYPE_REFDATA) {
                     whereParts.add( 'sub.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
+
+                    filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                 }
                 // --> refdata relation tables
                 else if (pType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
                     println ' ------------ not implemented ------------ '
+                }
+
+                if (filterLabelValue) {
+                    result.filterLabels.get('base').put(p, [label: getFilterFieldLabel(SubscriptionConfig.CONFIG.base, p), value: filterLabelValue])
                 }
             }
         }
@@ -155,31 +159,24 @@ class SubscriptionFilter extends GenericFilter {
                 String pType
                 if (partKey == 'member') {
                     pType = getFilterFieldType(SubscriptionConfig.CONFIG.member, p)
-
-                    result.filterLabels.get(partKey).put(p, getFilterFieldLabel(SubscriptionConfig.CONFIG.member, p))
                 }
                 else if (partKey == 'provider') {
                     pType = getFilterFieldType(SubscriptionConfig.CONFIG.provider, p)
-
-                    result.filterLabels.get(partKey).put(p, getFilterFieldLabel(SubscriptionConfig.CONFIG.provider, p))
                 }
+
+                def filterLabelValue
 
                 // --> properties generic
                 if (pType == GenericConfig.FIELD_TYPE_PROPERTY) {
 
                     if (Org.getDeclaredField(p).getType() == Date) {
-                        String modifier = params.get(key + '_modifier')
 
-                        if (modifier == 'lower') {
-                            whereParts.add( 'org.' + p + ' < :p' + (++pCount) )
-                        }
-                        else if (modifier == 'greater') {
-                            whereParts.add( 'org.' + p + ' > :p' + (++pCount) )
-                        }
-                        else {
-                            whereParts.add( 'org.' + p + ' = :p' + (++pCount) )
-                        }
+                        String modifier = getDateModifier( params.get(key + '_modifier') )
+
+                        whereParts.add( 'org.' + p + ' ' + modifier + ' :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, DateUtils.parseDateGeneric(params.get(key)) )
+
+                        filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
                     }
                     else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         if (RefdataValue.get(params.get(key)) == RDStore.YN_YES) {
@@ -188,16 +185,21 @@ class SubscriptionFilter extends GenericFilter {
                         else if (RefdataValue.get(params.get(key)) == RDStore.YN_NO) {
                             whereParts.add( 'org.' + p + ' is false' )
                         }
+                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                     }
                     else {
                         whereParts.add( 'org.' + p + ' = :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, params.get(key) )
+
+                        filterLabelValue = params.get(key)
                     }
                 }
                 // --> refdata generic
                 else if (pType == GenericConfig.FIELD_TYPE_REFDATA) {
                     whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
+
+                    filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                 }
                 // --> refdata relation tables
                 else if (pType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
@@ -205,6 +207,17 @@ class SubscriptionFilter extends GenericFilter {
                         queryBase = queryBase + ' join org.subjectGroup osg join osg.subjectGroup rdvsg'
                         whereParts.add('rdvsg.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))
+
+                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                    }
+                }
+
+                if (filterLabelValue) {
+                    if (partKey == 'member') {
+                        result.filterLabels.get(partKey).put(p, [label: getFilterFieldLabel(SubscriptionConfig.CONFIG.member, p), value: filterLabelValue])
+                    }
+                    else if (partKey == 'provider') {
+                        result.filterLabels.get(partKey).put(p, [label: getFilterFieldLabel(SubscriptionConfig.CONFIG.provider, p), value: filterLabelValue])
                     }
                 }
             }

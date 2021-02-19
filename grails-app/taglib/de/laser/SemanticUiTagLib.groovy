@@ -552,19 +552,23 @@ class SemanticUiTagLib {
         // reporting -->
         if (attrs.modifiers) {
             String modName = name + '_modifier'
-            String iconClassModi = ''
+            String modIconClass = 'small icon la-equals'
+
             switch(params.get(modName)) {
-                case 'lower':
-                    iconClassModi = 'la-less-than'
+                case 'less':
+                    modIconClass = 'small icon la-less-than'
                     break
                 case 'greater':
-                    iconClassModi = 'la-greater-than'
+                    modIconClass = 'small icon la-greater-than'
                     break
                 case 'equals':
-                    iconClassModi = 'la-equals'
+                    modIconClass = 'small icon la-equals'
                     break
-                default:
-                    iconClassModi = 'minus'
+                case 'less-equal':
+                    modIconClass = 'small icon la-less-than-equal'
+                    break
+                case 'greater-equal':
+                    modIconClass = 'small icon la-greater-than-equal'
                     break
             }
             out << '<div class="field la-combi-input-left">'
@@ -572,21 +576,18 @@ class SemanticUiTagLib {
             out <<   '<div class="ui compact selection dropdown la-not-clearable">'
             out <<     '<input type="hidden" name="' + modName + '" value="' + params.get(modName) + '">'
             out <<     '<i class="dropdown icon"></i>'
-            out <<       '<div class="text"><i class="small icon ' + iconClassModi + '"></i></div>'
-            out <<       '<div class="menu">'
-            out <<       '<div class="item' + ( params.get(modName) == 'lower' ? ' active' : '' ) + '" data-value="lower"><i class="la-less-than small icon"></i></div>'
-            out <<       '<div class="item' + ( params.get(modName) == 'greater' ? ' active' : '' ) + '" data-value="greater"><i class="la-greater-than small icon"></i></div>'
-            out <<       '<div class="item' + ( params.get(modName) == 'equals' ? ' active' : '' ) + '" data-value="equals"><i class="la-equals small icon"></i></div>'
-            out <<       '<div class="item' + ( params.get(modName) == 'equal-lower' ? ' active' : '' ) + '" data-value="equal-lower"><i class="la-less-than-equal small icon"></i></div>'
-            out <<       '<div class="item' + ( params.get(modName) == 'equal-greater' ? ' active' : '' ) + '" data-value="equal-lower"><i class="la-greater-than-equal small icon"></i></div>'
+            out <<      '<div class="text"><i class="' + modIconClass + '"></i></div>'
+            out <<      '<div class="menu">'
+            out <<        '<div class="item' + ( params.get(modName) == 'less' ? ' active' : '' ) + '" data-value="less"><i class="la-less-than small icon"></i></div>'
+            out <<        '<div class="item' + ( params.get(modName) == 'greater' ? ' active' : '' ) + '" data-value="greater"><i class="la-greater-than small icon"></i></div>'
+            out <<        '<div class="item' + ( params.get(modName) == 'equals' ? ' active' : '' ) + '" data-value="equals"><i class="la-equals small icon"></i></div>'
+            out <<        '<div class="item' + ( params.get(modName) == 'less-equal' ? ' active' : '' ) + '" data-value="less-equal"><i class="la-less-than-equal small icon"></i></div>'
+            out <<        '<div class="item' + ( params.get(modName) == 'greater-equal' ? ' active' : '' ) + '" data-value="greater-equal"><i class="la-greater-than-equal small icon"></i></div>'
             out <<     '</div>'
             out <<   '</div>'
             out << '</div>'
         }
 
-        if (attrs.modifiers) {
-            String modClass = 'la-combi-input-right'
-        }
         String modClass = attrs.modifiers ? ' la-combi-input-right' : ''
 
         out << '<div class="' + classes + modClass +'">'

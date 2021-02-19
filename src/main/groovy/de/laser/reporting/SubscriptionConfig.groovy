@@ -23,7 +23,7 @@ class SubscriptionConfig extends GenericConfig {
                                     'kind'              : FIELD_TYPE_REFDATA,
                                     'resource'          : FIELD_TYPE_REFDATA,
                                     'status'            : FIELD_TYPE_REFDATA,
-                                    'type'              : FIELD_TYPE_REFDATA
+                                    //'type'              : FIELD_TYPE_REFDATA
                             ],
                             [
                                     //'isMultiYear'           : FIELD_TYPE_PROPERTY,

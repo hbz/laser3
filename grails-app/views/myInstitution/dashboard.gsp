@@ -36,10 +36,13 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
+                            <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org_info')}</g:link>
+                        </div>
+                        %{-- <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="myinst.reporting" /> --}%
+                        <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
+                        <div class="item">
                             <g:link controller="myInstitution" action="changes">${message(code: 'myinst.pendingChanges.label')}</g:link>
                         </div>
-                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="myinst.reporting" />
-                        <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
                     </div>
                 </div>
 

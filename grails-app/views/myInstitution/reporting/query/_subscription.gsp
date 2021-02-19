@@ -11,17 +11,8 @@
                 ${result.providerIdList.size()} Anbieter
                 wurden anhand der Filtereinstellungen gefunden.
             </p>
-            <p>
-                <g:each in="${result.filterLabels}" var="labelGroup">
-                    <strong>${labelGroup.value.source}</strong>
-                    <br />
-                    <g:each in="${labelGroup.value}" var="label">
-                        <g:if test="${label.key != 'source'}">
-                            - ${label.value} <br/>
-                        </g:if>
-                    </g:each>
-                </g:each>
-            </p>
+
+            <g:render template="/myInstitution/reporting/query/base.part1" />
         </div>
 
         %{--
@@ -68,7 +59,7 @@
         </div>
         --}%
 
-        <g:render template="/myInstitution/reporting/query/base.part" />
+        <g:render template="/myInstitution/reporting/query/base.part2" />
 
         <laser:script file="${this.getGroovyPageFileName()}">
             if (! JSPC.app.reporting) { JSPC.app.reporting = {}; }

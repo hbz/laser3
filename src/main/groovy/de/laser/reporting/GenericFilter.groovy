@@ -61,4 +61,23 @@ class GenericFilter {
         }
         label
     }
+
+    static String getDateModifier(String modifier) {
+
+        if (modifier == 'less') {
+            return '<'
+        }
+        else if (modifier == 'greater') {
+            return '>'
+        }
+        else if (modifier == 'less-equal') {
+            return '<='
+        }
+        else if (modifier == 'greater-equal') {
+            return '>='
+        }
+        else {
+            return '='
+        }
+    }
 }

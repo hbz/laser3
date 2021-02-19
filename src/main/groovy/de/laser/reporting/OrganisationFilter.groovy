@@ -1,6 +1,7 @@
 package de.laser.reporting
 
 import de.laser.Org
+import de.laser.OrgSubjectGroup
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.helper.DateUtils
@@ -87,23 +88,18 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                 String p = key.replaceFirst(cmbKey,'')
                 String pType = getFilterFieldType(OrganisationConfig.CONFIG.base, p)
 
-                result.filterLabels.get('base').put(p, getFilterFieldLabel(OrganisationConfig.CONFIG.base, p))
+                def filterLabelValue
 
                 // --> properties generic
                 if (pType == GenericConfig.FIELD_TYPE_PROPERTY) {
                     if (Org.getDeclaredField(p).getType() == Date) {
 
-                        String modifier = params.get(key + '_modifier')
-                        if (modifier == 'lower') {
-                            whereParts.add( 'org.' + p + ' < :p' + (++pCount) )
-                        }
-                        else if (modifier == 'greater') {
-                            whereParts.add( 'org.' + p + ' > :p' + (++pCount) )
-                        }
-                        else {
-                            whereParts.add( 'org.' + p + ' = :p' + (++pCount) )
-                        }
+                        String modifier = getDateModifier( params.get(key + '_modifier') )
+
+                        whereParts.add( 'org.' + p + ' ' + modifier + ' :p' + (++pCount) )
                         queryParams.put( 'p' + pCount, DateUtils.parseDateGeneric(params.get(key)) )
+
+                        filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
                     }
                     else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         if (RefdataValue.get(params.get(key)) == RDStore.YN_YES) {
@@ -112,15 +108,19 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                         else if (RefdataValue.get(params.get(key)) == RDStore.YN_NO) {
                             whereParts.add( 'org.' + p + ' is false' )
                         }
+                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                     }
                     else {
                         queryParams.put( 'p' + pCount, params.get(key) )
+                        filterLabelValue = params.get(key)
                     }
                 }
                 // --> refdata generic
                 else if (pType == GenericConfig.FIELD_TYPE_REFDATA) {
                     whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
+
+                    filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                 }
                 // --> refdata relation tables
                 else if (pType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
@@ -128,7 +128,13 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                         queryParts.add('OrgSubjectGroup osg')
                         whereParts.add('osg.org = org and osg.subjectGroup.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))
+
+                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                     }
+                }
+
+                if (filterLabelValue) {
+                    result.filterLabels.get('base').put(p, [label: getFilterFieldLabel(OrganisationConfig.CONFIG.base, p), value: filterLabelValue])
                 }
             }
         }
