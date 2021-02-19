@@ -90,6 +90,11 @@
 
             <div class="column"><i aria-hidden="true" class="la-laser icon"></i>la-laser</div>
 
+            <div class="column"><i aria-hidden="true" class="la-less-than icon"></i>la-less-than </div>
+            <div class="column"><i aria-hidden="true" class="la-greater-than icon"></i>la-greater-than</div>
+            <div class="column"><i aria-hidden="true" class="la-equals icon"></i>la-equals</div>
+            <div class="column"><i aria-hidden="true" class="la-less-than-equal icon"></i>la-less-than-equal</div>
+            <div class="column"><i aria-hidden="true" class="la-greater-than-equal icon"></i>la-greater-than-equal</div>
         </div>
 
         <div class="ui top attached label">Zusätzliche Icons in Laser</div>

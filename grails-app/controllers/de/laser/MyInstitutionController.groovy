@@ -103,12 +103,14 @@ class MyInstitutionController  {
             result.filter = params.filter
             result.cfgQueryList = [:]
 
-            if (params.filter == 'organisation') {
-                result.result       = reportingService.filterOrganisation(params)
+            if (params.filter == OrganisationConfig.KEY) {
+                result.result = reportingService.filterOrganisation(params)
+
                 result.cfgQueryList.putAll( OrganisationConfig.CONFIG.base.query )
             }
-            else if (params.filter == 'subscription') {
-                result.result       = reportingService.filterSubscription(params)
+            else if (params.filter == SubscriptionConfig.KEY) {
+                result.result = reportingService.filterSubscription(params)
+
                 result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.base.query )
                 result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.member.query )
                 result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.provider.query )

@@ -88,7 +88,7 @@ class DateUtils {
                     parsed_date = next.parse(value)
                 }
                 catch (Exception e) {
-                    static_logger.info("Parser for ${next.toPattern()} could not parse date ${value}. Trying next one ...")
+                    static_logger.debug("Parser for ${next.toPattern()} could not parse date ${value}. Trying next one ...")
                 }
             }
         }

@@ -9,6 +9,12 @@
 
 3137    19.02.2021  rc2.0   2.0         Moe     Bug         meine titel nicht aufrufbar
 
+3139    19.02.2021  rc2.0   2.0         David   Feature     Reporting: Zusammenfassung: Gesetzte Filter
+
+3119    18.02.2021  rc2.0   2.0         David   Feature     Reporting: Datumsfelder praxistauglich erweitern
+
+3124    17.02.2021  rc2.0   2.0         David   Feature     Reporting: Interaktive Diagramme
+
 2270    17.02.2021  rc2.0   2.0         Moe     Bug         Modaler Dialog nicht im LAS:eR-Design
 
 3098    17.02.2021  rc2.0   2.0         Moe     Bug         Umfrage-Merkmale kann nicht gelöscht werden
