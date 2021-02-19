@@ -654,7 +654,7 @@ class PendingChangeService extends AbstractLockableService {
                     targetTitle = (IssueEntitlement) target
                 }
                 else if(target instanceof Subscription) {
-                    targetTitle = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != deleted',[target:target,tipp:pc.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
+                    targetTitle = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:pc.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
                 }
                 if(targetTitle) {
                     targetTitle.status = RDStore.TIPP_STATUS_DELETED
@@ -672,7 +672,7 @@ class PendingChangeService extends AbstractLockableService {
                     targetCov = (IssueEntitlementCoverage) target
                 }
                 else if(target instanceof Subscription) {
-                    IssueEntitlement ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != deleted',[target:target,tipp:pc.tippCoverage.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
+                    IssueEntitlement ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:pc.tippCoverage.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
                     targetCov = (IssueEntitlementCoverage) pc.tippCoverage.findEquivalent(ie.coverages)
                 }
                 if(targetCov) {
@@ -724,7 +724,7 @@ class PendingChangeService extends AbstractLockableService {
                 }
                 else if(target instanceof Subscription) {
                     JSONObject oldMap = JSON.parse(pc.oldValue) as JSONObject
-                    IssueEntitlement ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != deleted',[target:target,tipp:oldMap.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
+                    IssueEntitlement ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:oldMap.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
                     for (String k : AbstractCoverage.equivalencyProperties) {
                         targetCov = ie.coverages.find { IssueEntitlementCoverage iec -> iec[k] == oldMap[k] }
                         if(targetCov) {
@@ -746,7 +746,7 @@ class PendingChangeService extends AbstractLockableService {
                     targetPi = (PriceItem) target
                 }
                 else if(target instanceof Subscription) {
-                    IssueEntitlement ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != deleted',[target:target,tipp:priceItem.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
+                    IssueEntitlement ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:priceItem.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
                     targetPi = priceItem.findEquivalent(ie.priceItems)
                 }
                 if(targetPi) {
@@ -793,7 +793,7 @@ class PendingChangeService extends AbstractLockableService {
                 }
                 else if(target instanceof Subscription) {
                     JSONObject oldMap = JSON.parse(pc.oldValue) as JSONObject
-                    IssueEntitlement ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != deleted',[target:target,tipp:oldMap.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
+                    IssueEntitlement ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:oldMap.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
                     for(String k : PriceItem.equivalencyProperties) {
                         targetPi = ie.priceItems.find { PriceItem pi -> pi[k] == oldMap[k] }
                         if(targetPi) {
