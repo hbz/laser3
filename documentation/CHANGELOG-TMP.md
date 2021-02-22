@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3146    22.02.2021  rc2.0   2.0         Moe     Bug         Vollnutzer können Teilnehmerkosten von Konsortialstelle bearbeiten
+
 3137    19.02.2021  rc2.0   2.0         Moe     Bug         meine titel nicht aufrufbar
 
 3139    19.02.2021  rc2.0   2.0         David   Feature     Reporting: Zusammenfassung: Gesetzte Filter
