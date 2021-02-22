@@ -51,7 +51,7 @@
 <table id="costTable_${customerType}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
     <thead>
         <tr>
-            <g:if test="${tmplShowCheckbox}">
+            <g:if test="${tmplShowCheckbox && editable}">
                 <th>
                     <g:if test="${data.costItems}">
                         <g:checkBox name="costItemListToggler" id="costItemListToggler" checked="false"/>
@@ -168,7 +168,7 @@
                     }
                 %>
                 <tr id="bulkdelete-b${ci.id}">
-                    <g:if test="${tmplShowCheckbox}">
+                    <g:if test="${tmplShowCheckbox && editable}">
                         <td>
                             <g:checkBox id="selectedCostItems_${ci.id}" name="selectedCostItems" value="${ci.id}" checked="false"/>
                         </td>
@@ -203,7 +203,7 @@
                             </g:each>
                             <br />
                         </g:if>
-                        <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
+                        <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" overwriteEditable="${editable}"/>
                     </td>
                     <g:if test="${!fixedSubscription}">
                         <td>
@@ -240,9 +240,9 @@
                         <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
                     </td>
                     <td>
-                        <semui:xEditable owner="${ci}" type="date" field="startDate" />
+                        <semui:xEditable owner="${ci}" type="date" field="startDate" overwriteEditable="${editable}"/>
                         <br />
-                        <semui:xEditable owner="${ci}" type="date" field="endDate" />
+                        <semui:xEditable owner="${ci}" type="date" field="endDate" overwriteEditable="${editable}"/>
                     </td>
                     <td>
                         ${ci.costItemElement?.getI10n("value")}

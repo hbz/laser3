@@ -12,7 +12,7 @@
     </semui:breadcrumbs>
 
     <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.public.all_titles')}
-      <semui:totalNumber total="${resultsTotal >= 10000 ? '10000+' : resultsTotal}"/>
+      <semui:totalNumber total="${resultsTotal >= 10000 ? '10000+' : (resultsTotal > 0 ? resultsTotal : 0)}"/>
     </h1>
 
     <g:render template="/templates/filter/javascript" />
@@ -89,6 +89,14 @@
                   </table>
                 </div><!-- #resultsarea -->
              </g:if>
+            <g:else>
+                <g:if test="${filterSet}">
+                    <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"title.plural")]}"/></strong>
+                </g:if>
+                <g:else>
+                    <br /><strong><g:message code="result.empty.object" args="${[message(code:"title.plural")]}"/></strong>
+                </g:else>
+            </g:else>
 
               <g:if test="${hits}" >
                 <semui:paginate controller="title" action="index" params="${params}" next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}" maxsteps="10" total="${resultsTotal}" />

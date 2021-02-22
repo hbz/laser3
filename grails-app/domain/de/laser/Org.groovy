@@ -159,7 +159,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
              scope          column:'org_scope'
         categoryId          column:'org_cat'
         eInvoice            column:'org_e_invoice'
-        eInvoicePortal      column:'org_e_invoice_portal_fk'
+        eInvoicePortal      column:'org_e_invoice_portal_fk', lazy: false
         gokbId              column:'org_gokb_id', type:'text'
             sector          column:'org_sector_rv_fk', lazy: false
             status          column:'org_status_rv_fk'

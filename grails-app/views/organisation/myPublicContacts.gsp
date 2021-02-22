@@ -14,7 +14,8 @@
 
 <semui:breadcrumbs>
     <g:if test="${inContextOrg}">
-        <semui:crumb text="${orgInstance.getDesignation()}" controller="organisation" show="show" params="[id: orgInstance.id]" />
+        <semui:crumb text="${orgInstance.getDesignation()}" controller="organisation" show="show"
+                     params="[id: orgInstance.id]"/>
     </g:if>
     <semui:crumb message="menu.institutions.publicContacts" class="active"/>
 </semui:breadcrumbs>
@@ -24,10 +25,22 @@
 <semui:controlButtons>
     <semui:actionsDropdown>
         <g:if test="${editable}">
-            <a href="#createPersonModal" class="item" data-semui="modal" onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPerson.label"/></a>
-        </g:if><g:else>
-        <semui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}" message="person.create_new.contactPerson.label"/>
-    </g:else>
+            <a href="#createPersonModal" class="item" data-semui="modal"
+               onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message
+                    code="person.create_new.contactPerson.label"/></a>
+        </g:if>
+        <g:else>
+            <semui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}"
+                                               message="person.create_new.contactPerson.label"/>
+        </g:else>
+        <g:if test="${editable}">
+            <a href="#addressFormModal" class="item" data-semui="modal"
+               onclick="JSPC.app.addresscreate_org('${orgInstance.id}');"><g:message code="address.add.label"/></a>
+        </g:if>
+        <g:else>
+            <semui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}"
+                                               message="address.add.label"/>
+        </g:else>
         <semui:actionsDropdownItem notActive="true" data-semui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
                                    message="menu.institutions.copy_emailaddresses.button"/>
     </semui:actionsDropdown>
@@ -54,7 +67,7 @@
 <div class="ui bottom attached tab segment ${params.tab == 'contacts' ? 'active' : ''}" data-tab="contacts">
 
     <g:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
-    <br />
+    <br/>
 
 
     <semui:filter>
@@ -104,8 +117,8 @@
     </semui:filter>
 
     <g:render template="/templates/cpa/person_table"
-              model="${[persons: visiblePersons,
-                        showContacts: true,
+              model="${[persons       : visiblePersons,
+                        showContacts  : true,
                         tmplConfigShow: ['lineNumber', 'name', 'showContacts', 'function', 'position']
               ]}"/>
 
@@ -118,7 +131,8 @@
 </div>
 
 %{--------------------}%
-<div class="ui bottom attached tab segment ${params.tab == 'personAddresses' ? 'active' : ''}" data-tab="personAddresses">
+<div class="ui bottom attached tab segment ${params.tab == 'personAddresses' ? 'active' : ''}"
+     data-tab="personAddresses">
 
     <semui:filter>
         <g:form action="${actionName}" controller="organisation" method="get" params="${params}" class="ui small form">
@@ -167,9 +181,9 @@
     </semui:filter>
 
     <g:render template="/templates/cpa/person_table"
-              model="${[persons: visiblePersons,
-                        showAddresses: true,
-                        showContacts: true,
+              model="${[persons       : visiblePersons,
+                        showAddresses : true,
+                        showContacts  : true,
                         tmplConfigShow: ['lineNumber', 'name', 'showAddresses', 'function', 'position']
               ]}"/>
 
@@ -187,18 +201,7 @@
 %{--------------------}%
 <div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
 
-    <semui:controlButtons>
-        <semui:actionsDropdown>
-            <g:if test="${editable}">
-                <a href="#addressFormModal" class="item" data-semui="modal" onclick="JSPC.app.addresscreate_org('${orgInstance.id}');"><g:message code="address.add.label"/></a>
-            </g:if><g:else>
-            <semui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}"
-                                               message="address.add.label"/>
-        </g:else>
-
-        </semui:actionsDropdown>
-    </semui:controlButtons>
-    <br />
+    <br/>
 
 
     <g:render template="/templates/cpa/address_table" model="${[

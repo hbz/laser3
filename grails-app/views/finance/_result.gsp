@@ -66,7 +66,7 @@
                 </g:if>
                 <g:if test="${view == 'subscr'}">
                     <div data-tab="subscr" class="ui bottom attached tab">
-                        <g:render template="result_tab_cons" model="[tmplShowCheckbox: false, fixedSubscription: fixedSubscription, editable: editable, data:subscr, showView: view, offset: offsets.subscrOffset]"/>
+                        <g:render template="result_tab_cons" model="[tmplShowCheckbox: false, fixedSubscription: fixedSubscription, editable: false, data:subscr, showView: view, offset: offsets.subscrOffset]"/>
                     </div>
                 </g:if>
             </g:each>
