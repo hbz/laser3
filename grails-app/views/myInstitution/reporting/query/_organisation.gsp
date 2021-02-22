@@ -38,7 +38,7 @@
             if (! JSPC.app.reporting.current) { JSPC.app.reporting.current = {}; }
 
             JSPC.app.reporting.current.request = {
-                orgIdList: [${result.orgIdList.join(',')}]
+                token: '${token}'
             }
         </laser:script>
 

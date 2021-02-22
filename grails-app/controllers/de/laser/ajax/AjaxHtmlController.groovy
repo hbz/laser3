@@ -20,6 +20,7 @@ import de.laser.PersonRole
 import de.laser.SubscriptionService
 import de.laser.Task
 import de.laser.TaskService
+import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.helper.RDConstants
@@ -423,7 +424,10 @@ class AjaxHtmlController {
 
     // ----- reporting -----
 
-    @Secured(['ROLE_ADMIN'])
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
+    })
     def chartDetails() {
         Map<String, Object> result = [
             query: params.query
@@ -450,7 +454,7 @@ class AjaxHtmlController {
             }
         }
 
-        println result
+        //println result
         render template: '/myInstitution/reporting/chart/details', model: result
     }
 }

@@ -36,7 +36,7 @@
             <g:each in="${contextService.getSessionCache().list()}" var="entry">
                 <dt>${entry.key}</dt>
                 <dd>
-                     ${entry.value} <em>(${entry.value.class.name})</em>
+                     ${entry.value} <em>(${entry.value.class?.name})</em>
                 </dd>
             </g:each>
         </dl>

@@ -28,20 +28,20 @@ class SubscriptionFilter extends GenericFilter {
         Map<String, Object> result      = [ filterLabels : [:] ]
 
         List<String> queryParts         = [ 'select sub.id from Subscription sub']
-        List<String> whereParts         = [ 'where sub.id in (:subIdList)']
-        Map<String, Object> queryParams = [ subIdList : [] ]
+        List<String> whereParts         = [ 'where sub.id in (:subscriptionIdList)']
+        Map<String, Object> queryParams = [ subscriptionIdList : [] ]
 
         String filterSource = params.get(GenericConfig.FILTER_PREFIX + 'subscription' + GenericConfig.FILTER_SOURCE_POSTFIX)
         result.filterLabels.put('base', [source: getFilterSourceLabel(SubscriptionConfig.CONFIG.base, filterSource)])
 
         switch (filterSource) {
             case 'all-sub':
-                queryParams.subIdList = Subscription.executeQuery( 'select s.id from Subscription s' )
+                queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id from Subscription s' )
                 break
             case 'my-sub':
                 List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery( [validOn: null], contextService.getOrg() )
                 //println tmp
-                queryParams.subIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
+                queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
                 break
         }
 
@@ -108,12 +108,12 @@ class SubscriptionFilter extends GenericFilter {
 //        println queryParams
 //        println whereParts
 
-        result.subIdList = Subscription.executeQuery( query, queryParams )
+        result.subscriptionIdList = Subscription.executeQuery( query, queryParams )
 
         handleInternalOrgFilter(params, 'member', result)
         handleInternalOrgFilter(params, 'provider', result)
 
-//        println 'subscriptions >> ' + result.subIdList.size()
+//        println 'subscriptions >> ' + result.subscriptionIdList.size()
 //        println 'member >> ' + result.memberIdList.size()
 //        println 'provider >> ' + result.providerIdList.size()
 
@@ -126,21 +126,21 @@ class SubscriptionFilter extends GenericFilter {
         result.filterLabels.put(partKey, [source: getFilterSourceLabel(SubscriptionConfig.CONFIG.get(partKey), filterSource)])
 
         //println 'internalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
-        if (! result.subIdList) {
+        if (! result.subscriptionIdList) {
             result.put( partKey + 'IdList', [] )
             return
         }
 
         String queryBase = 'select distinct (org.id) from Org org join org.links orgLink'
-        List<String> whereParts = [ 'orgLink.roleType in (:roleTypes)', 'orgLink.sub.id in (:subIdList)' ]
-        Map<String, Object> queryParams = [ 'subIdList': result.subIdList ]
+        List<String> whereParts = [ 'orgLink.roleType in (:roleTypes)', 'orgLink.sub.id in (:subscriptionIdList)' ]
+        Map<String, Object> queryParams = [ 'subscriptionIdList': result.subscriptionIdList ]
 
         if (partKey == 'member') {
             queryParams.put( 'roleTypes', [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN] ) // TODO <- RDStore.OR_SUBSCRIBER
             // check ONLY members
-            queryParams.subIdList = Subscription.executeQuery(
-                    'select distinct (sub.id) from Subscription sub where sub.instanceOf.id in (:subIdList)',
-                    [ subIdList: queryParams.subIdList ]
+            queryParams.subscriptionIdList = Subscription.executeQuery(
+                    'select distinct (sub.id) from Subscription sub where sub.instanceOf.id in (:subscriptionIdList)',
+                    [ subscriptionIdList: queryParams.subscriptionIdList ]
             )
         }
         if (partKey == 'provider') {

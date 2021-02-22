@@ -18,7 +18,7 @@ class OrganisationQuery extends GenericQuery {
         ]
 
         String prefix = params.query.split('-')[0]
-        List idList = params.list(prefix + 'IdList[]').collect { it as Long }
+        List idList = params.list(prefix + 'IdList').collect { it as Long }
 
         if (! idList) {
         }
