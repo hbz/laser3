@@ -15,9 +15,11 @@
                 <g:select name="filter:subscription_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:sub_source')}" />
             </div>
 
-            <g:each in="${config.filter}" var="cfgFormGroup">
-                <div class="fields">
-                    <g:each in="${cfgFormGroup.keySet()}" var="field">
+            <br /><br />
+
+            <g:each in="${config.filter.default}" var="cfgFilter">
+                <div class="fields <laser:numberToString number="${cfgFilter.size()}"/>">
+                    <g:each in="${cfgFilter}" var="field">
                         <laser:reportFilterField config="${config}" field="${field}" />
                     </g:each>
                 </div>
@@ -32,9 +34,11 @@
                 <g:select name="filter:member_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:member_source')}" />
             </div>
 
-            <g:each in="${config.filter}" var="cfgFormGroup">
-                <div class="fields">
-                    <g:each in="${cfgFormGroup.keySet()}" var="field">
+            <br /><br />
+
+            <g:each in="${config.filter.default}" var="cfgFilter">
+                <div class="fields <laser:numberToString number="${cfgFilter.size()}"/>">
+                    <g:each in="${cfgFilter}" var="field">
                         <laser:reportFilterField config="${config}" field="${field}" key="member" />
                     </g:each>
                 </div>
@@ -49,9 +53,11 @@
                 <g:select name="filter:provider_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:provider_source')}" />
             </div>
 
-            <g:each in="${config.filter}" var="cfgFormGroup">
-                <div class="fields">
-                    <g:each in="${cfgFormGroup.keySet()}" var="field">
+            <br /><br />
+
+            <g:each in="${config.filter.default}" var="cfgFilter">
+                <div class="fields <laser:numberToString number="${cfgFilter.size()}"/>">
+                    <g:each in="${cfgFilter}" var="field">
                         <laser:reportFilterField config="${config}" field="${field}" key="provider" />
                     </g:each>
                 </div>
@@ -63,6 +69,7 @@
             <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
             <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
             <input type="hidden" name="filter" value="subscription" />
+            <input type="hidden" name="token" value="${token}" />
         </div>
 
     </g:form>

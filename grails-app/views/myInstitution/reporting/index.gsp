@@ -18,6 +18,8 @@
             <g:message code="myinst.reporting"/> <span class="ui label red">DEMO</span>
         </h1>
 
+        <h2 class="ui header hidden">Diese Funktionalität befindet sich in Entwicklung</h2>
+
         <div class="ui message info">
             <p>
                 <strong>1. Suchanfrage</strong>
@@ -37,7 +39,7 @@
                 Die in Schritt 2 erzeugte Visualisierung ist interaktiv und bietet Zugriff auf weitere Informationen.
             </p>
         </div>
-        <h2 class="ui header">1. Suchanfrage</h2>
+        <h3 class="ui header">1. Suchanfrage</h3>
 
         <g:set var="hidden" value="hidden" />
 
@@ -71,7 +73,7 @@
         </g:if>
 
         <g:if test="${result}">
-            <h2 class="ui header">2. Ergebnis</h2>
+            <h3 class="ui header">2. Ergebnis</h3>
 
             <g:if test="${filter == SubscriptionConfig.KEY}">
                 <g:render template="/myInstitution/reporting/query/subscription" />
@@ -127,8 +129,7 @@
             })
 
             JSPC.app.reporting.requestExport = function() {
-                console.log(JSPC.app.reporting.current.request);
-                alert('[c1] - Noch nicht implementiert');
+                alert('[msg:1] - Nicht implementiert');
             }
 
             JSPC.app.reporting.requestChart = function() {
@@ -139,15 +140,18 @@
                         url: "<g:createLink controller="ajaxJson" action="chart" />",
                         dataType: 'script',
                         method: 'post',
-                        data: JSPC.app.reporting.current.request
+                        data: JSPC.app.reporting.current.request,
+                        beforeSend: function (xhr) {
+                            //$('#chart-export').attr('disabled', 'disabled');
+                        }
                     })
                     .done( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
 
-                        var chart = echarts.init($('#chart-wrapper')[0]);
-                        chart.setOption( JSPC.app.reporting.current.chart.option );
-                        chart.on( 'click', function (params) {
+                        var echart = echarts.init($('#chart-wrapper')[0]);
+                        echart.setOption( JSPC.app.reporting.current.chart.option );
+                        echart.on( 'click', function (params) {
                             var valid = false;
 
                             if (JSPC.app.reporting.current.request.chart == 'pie') {
@@ -167,9 +171,16 @@
                                 })
                             }
                             if (! valid) {
-                                alert('[c2] - Keine Details verfügbar');
+                                alert('[msg:2] - Keine Details verfügbar');
+                            } else {
                             }
                         });
+                        echart.on( 'legendselectchanged', function (params) {
+                            // console.log(params);
+                        });
+
+                        JSPC.app.reporting.current.chart.echart = echart;
+                        //$('#chart-export').removeAttr('disabled');
                     })
                     .fail( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );

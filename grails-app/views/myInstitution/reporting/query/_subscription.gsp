@@ -2,11 +2,11 @@
 <laser:serviceInjection/>
 
 <g:if test="${result}">
-    <g:if test="${result.subIdList || result.memberIdList || result.providerIdList}">
+    <g:if test="${result.subscriptionIdList || result.memberIdList || result.providerIdList}">
 
         <div class="ui message success">
             <p>
-                ${result.subIdList.size()} Lizenzen,
+                ${result.subscriptionIdList.size()} Lizenzen,
                 ${result.memberIdList.size()} Teilnehmer und
                 ${result.providerIdList.size()} Anbieter
                 wurden anhand der Filtereinstellungen gefunden.
@@ -66,9 +66,7 @@
             if (! JSPC.app.reporting.current) { JSPC.app.reporting.current = {}; }
 
             JSPC.app.reporting.current.request = {
-                subscriptionIdList: [${result.subIdList.join(',')}],
-                memberIdList: [${result.memberIdList.join(',')}],
-                providerIdList: [${result.providerIdList.join(',')}]
+                token: '${token}'
             }
         </laser:script>
 
@@ -76,7 +74,11 @@
     <g:else>
 
         <div class="ui message negative">
-            ${message(code: 'default.search.no.matches')}
+            <p>
+                Mit diesen Filtereinstellungen wurden keine Treffer gefunden.
+            </p>
+
+            <g:render template="/myInstitution/reporting/query/base.part1" />
         </div>
 
     </g:else>
