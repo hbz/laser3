@@ -16,13 +16,25 @@
 
             <br /><br />
 
-            <g:each in="${config.filter}" var="cfgFormGroup">
-                <div class="fields <laser:numberToString number="${cfgFormGroup.size()}"/>">
-                    <g:each in="${cfgFormGroup.keySet()}" var="field">
+            <div id="filter-wrapper-default">
+                <g:each in="${config.filter.default}" var="cfgFilter">
+                    <div class="fields <laser:numberToString number="${cfgFilter.size()}"/>">
+                    <g:each in="${cfgFilter}" var="field">
                         <laser:reportFilterField config="${config}" field="${field}" />
                     </g:each>
-                </div>
-            </g:each>
+                    </div>
+                </g:each>
+            </div>
+
+            <div id="filter-wrapper-provider">
+                <g:each in="${config.filter.provider}" var="cfgFilter">
+                    <div class="fields <laser:numberToString number="${cfgFilter.size()}"/>">
+                        <g:each in="${cfgFilter}" var="field">
+                            <laser:reportFilterField config="${config}" field="${field}" />
+                        </g:each>
+                    </div>
+                </g:each>
+            </div>
 
         </div><!-- .first -->
 
@@ -37,18 +49,23 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('#filter\\:org_source').on( 'change', function(e) {
-        var providerNegativeList = ['org_libraryType', 'org_libraryNetwork', 'org_funderType', 'org_funderHskType', 'org_eInvoice']
-        var selector = $(providerNegativeList).map(function() { return '#filter\\:' + this; }).get().join()
+
+        var $fwDefault = $('#filter-wrapper-default')
+        var $fwProvider = $('#filter-wrapper-provider')
 
         if (JSPC.helper.contains( ['all-provider', 'my-provider'], $(e.target).dropdown('get value') )) {
-            $(selector).attr('disabled', 'disabled');
-            $(selector).parent().addClass('disabled');
-            $(selector).parent().parent().hide();
+            $fwDefault.find('*').attr('disabled', 'disabled');
+            $fwDefault.hide();
+
+            $fwProvider.find('*').removeAttr('disabled');
+            $fwProvider.show();
         }
         else {
-            $(selector).removeAttr('disabled');
-            $(selector).parent().removeClass('disabled');
-            $(selector).parent().parent().show();
+            $fwProvider.find('*').attr('disabled', 'disabled');
+            $fwProvider.hide();
+
+            $fwDefault.find('*').removeAttr('disabled');
+            $fwDefault.show();
         }
     })
 

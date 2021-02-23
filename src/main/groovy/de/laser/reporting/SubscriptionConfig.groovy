@@ -17,28 +17,26 @@ class SubscriptionConfig extends GenericConfig {
                             //'all-sub' : 'Alle Lizenzen',
                             'my-sub' : 'Meine Lizenzen'
                     ],
+                    fields: [
+                            'endDate'               : FIELD_TYPE_PROPERTY,
+                            'form'                  : FIELD_TYPE_REFDATA,
+                            'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
+                            'isPublicForApi'        : FIELD_TYPE_PROPERTY,
+                            'kind'                  : FIELD_TYPE_REFDATA,
+                            'resource'              : FIELD_TYPE_REFDATA,
+                            'startDate'             : FIELD_TYPE_PROPERTY,
+                            'status'                : FIELD_TYPE_REFDATA,
+                            //'type'                : FIELD_TYPE_REFDATA,
+                            //'isMultiYear'         : FIELD_TYPE_PROPERTY,
+                            //'manualRenewalDate'       : FIELD_TYPE_PROPERTY,
+                            //'manualCancellationDate'  : FIELD_TYPE_PROPERTY
+                    ],
                     filter : [
-                            [
-                                    'form'          : FIELD_TYPE_REFDATA,
-                                    'kind'          : FIELD_TYPE_REFDATA,
-                                    'status'        : FIELD_TYPE_REFDATA,
-                                    //'type'        : FIELD_TYPE_REFDATA
-                            ],
-                            [
-                                    'resource'              : FIELD_TYPE_REFDATA,
-                                    'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
-                                    'isPublicForApi'        : FIELD_TYPE_PROPERTY
-                            ],
-                            [
-                                    'startDate'     : FIELD_TYPE_PROPERTY,
-                                    'endDate'       : FIELD_TYPE_PROPERTY,
-
-                            ],
-                            /*[
-                                    //'isMultiYear'           : FIELD_TYPE_PROPERTY,
-                                    //'manualRenewalDate'         : FIELD_TYPE_PROPERTY,
-                                    //'manualCancellationDate'    : FIELD_TYPE_PROPERTY
-                            ]*/
+                            default: [
+                                    [ 'form', 'kind', 'status' ],
+                                    [ 'resource', 'hasPerpetualAccess', 'isPublicForApi' ],
+                                    [ 'startDate', 'endDate' ]
+                            ]
                     ],
                     query : [
                             'Verteilung' : [
@@ -57,24 +55,24 @@ class SubscriptionConfig extends GenericConfig {
                     source : [
                             'depending-member' : 'Alle betroffenen Teilnehmer'
                     ],
+                    fields : [
+                            'country'           : FIELD_TYPE_REFDATA,
+                            'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
+                            'eInvoice'          : FIELD_TYPE_PROPERTY,
+                            'funderHskType'     : FIELD_TYPE_REFDATA,
+                            'funderType'        : FIELD_TYPE_REFDATA,
+                            'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
+                            'libraryNetwork'    : FIELD_TYPE_REFDATA,
+                            'libraryType'       : FIELD_TYPE_REFDATA,
+                            //'region'            : FIELD_TYPE_REFDATA,
+                            'subjectGroup'      : FIELD_TYPE_REFDATA_RELTABLE
+                    ],
                     filter : [
-                            [
-                                    'country'           : FIELD_TYPE_REFDATA,
-                                    //'region'            : FIELD_TYPE_REFDATA,
-                                    'subjectGroup'      : FIELD_TYPE_REFDATA_RELTABLE,
-                                    'libraryType'       : FIELD_TYPE_REFDATA
-                            ],
-                            [
-                                    'libraryNetwork'    : FIELD_TYPE_REFDATA,
-                                    'funderType'        : FIELD_TYPE_REFDATA,
-                            ],
-                            [
-                                    'funderHskType'     : FIELD_TYPE_REFDATA,
-                                    'eInvoice'          : FIELD_TYPE_PROPERTY,
-                            ],
-                            [
-                                    'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
-                                    'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL
+                            default: [
+                                    [ 'country', 'subjectGroup', 'libraryType' ],
+                                    [ 'libraryNetwork', 'funderType' ],
+                                    [ 'funderHskType', 'eInvoice' ],
+                                    [ 'customerType', 'legalInfo' ]
                             ]
                     ],
                     query : [
@@ -96,9 +94,12 @@ class SubscriptionConfig extends GenericConfig {
                     source : [
                             'depending-provider' : 'Alle betroffenen Anbieter'
                     ],
+                    fields : [
+                            'country' : FIELD_TYPE_REFDATA
+                    ],
                     filter : [
-                            [
-                                    'country' : FIELD_TYPE_REFDATA
+                            default: [
+                                    [ 'country' ]
                             ]
                     ],
                     query : [

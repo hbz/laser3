@@ -17,9 +17,9 @@
 
             <br /><br />
 
-            <g:each in="${config.filter}" var="cfgFormGroup">
-                <div class="fields <laser:numberToString number="${cfgFormGroup.size()}"/>">
-                    <g:each in="${cfgFormGroup.keySet()}" var="field">
+            <g:each in="${config.filter.default}" var="cfgFilter">
+                <div class="fields <laser:numberToString number="${cfgFilter.size()}"/>">
+                    <g:each in="${cfgFilter}" var="field">
                         <laser:reportFilterField config="${config}" field="${field}" />
                     </g:each>
                 </div>
@@ -36,9 +36,9 @@
 
             <br /><br />
 
-            <g:each in="${config.filter}" var="cfgFormGroup">
-                <div class="fields <laser:numberToString number="${cfgFormGroup.size()}"/>">
-                    <g:each in="${cfgFormGroup.keySet()}" var="field">
+            <g:each in="${config.filter.default}" var="cfgFilter">
+                <div class="fields <laser:numberToString number="${cfgFilter.size()}"/>">
+                    <g:each in="${cfgFilter}" var="field">
                         <laser:reportFilterField config="${config}" field="${field}" key="member" />
                     </g:each>
                 </div>
@@ -55,9 +55,9 @@
 
             <br /><br />
 
-            <g:each in="${config.filter}" var="cfgFormGroup">
-                <div class="fields <laser:numberToString number="${cfgFormGroup.size()}"/>">
-                    <g:each in="${cfgFormGroup.keySet()}" var="field">
+            <g:each in="${config.filter.default}" var="cfgFilter">
+                <div class="fields <laser:numberToString number="${cfgFilter.size()}"/>">
+                    <g:each in="${cfgFilter}" var="field">
                         <laser:reportFilterField config="${config}" field="${field}" key="provider" />
                     </g:each>
                 </div>

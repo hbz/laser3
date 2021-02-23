@@ -4,6 +4,7 @@ import de.laser.annotations.RefdataAnnotation
 import de.laser.helper.RDConstants
 import de.laser.reporting.GenericConfig
 import de.laser.reporting.GenericFilter
+import org.apache.commons.lang3.RandomStringUtils
 
 import java.lang.reflect.Field
 
@@ -40,7 +41,7 @@ class LaserReportingTagLib {
 
     def reportFilterField = { attrs, body ->
 
-        String fieldType = GenericFilter.getFilterFieldType(attrs.config, attrs.field) // [ property, refdata ]
+        String fieldType = GenericFilter.getFieldType(attrs.config, attrs.field) // [ property, refdata ]
 
         if (fieldType == GenericConfig.FIELD_TYPE_PROPERTY) {
             out << laser.reportFilterProperty(config: attrs.config, property: attrs.field, key: attrs.key)
@@ -74,6 +75,7 @@ class LaserReportingTagLib {
             out << laser.select([
                     class      : "ui fluid dropdown",
                     name       : filterName,
+                    id         : getUniqueId(filterName),
                     from       : RefdataCategory.getAllRefdataValues(RDConstants.Y_N),
                     optionKey  : "id",
                     optionValue: "value",
@@ -85,8 +87,8 @@ class LaserReportingTagLib {
         else if (prop.getType() == Date) {
             out << semui.datepicker([
                     label      : filterLabel,
-                    id         : filterName,
                     name       : filterName,
+                    id         : getUniqueId(filterName),
                     placeholder: "filter.placeholder",
                     value      : filterValue,
                     modifiers  : true
@@ -113,6 +115,7 @@ class LaserReportingTagLib {
         out << laser.select([
                 class      : "ui fluid dropdown",
                 name       : filterName,
+                id         : getUniqueId(filterName),
                 from       : RefdataCategory.getAllRefdataValues(rdCat),
                 optionKey  : "id",
                 optionValue: "value",
@@ -138,6 +141,7 @@ class LaserReportingTagLib {
         out << laser.select([
                 class      : "ui fluid dropdown",
                 name       : filterName,
+                id         : getUniqueId(filterName),
                 from       : customRdv.get('from'),
                 optionKey  : "id",
                 optionValue: "value",
@@ -145,5 +149,9 @@ class LaserReportingTagLib {
                 noSelection: ['': message(code: 'default.select.choose.label')]
         ])
         out << '</div>'
+    }
+
+    static String getUniqueId(String id) {
+        return id + '-' + RandomStringUtils.randomAlphanumeric(8).toLowerCase()
     }
 }

@@ -2,7 +2,6 @@ package de.laser.reporting
 
 import de.laser.Org
 import de.laser.OrgSetting
-import de.laser.OrgSubjectGroup
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.auth.Role
@@ -56,7 +55,7 @@ class SubscriptionFilter extends GenericFilter {
                 //println key + " >> " + params.get(key)
 
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = getFilterFieldType(SubscriptionConfig.CONFIG.base, p)
+                String pType = getFieldType(SubscriptionConfig.CONFIG.base, p)
 
                 def filterLabelValue
 
@@ -102,7 +101,7 @@ class SubscriptionFilter extends GenericFilter {
                 }
 
                 if (filterLabelValue) {
-                    result.filterLabels.get('base').put(p, [label: getFilterFieldLabel(SubscriptionConfig.CONFIG.base, p), value: filterLabelValue])
+                    result.filterLabels.get('base').put(p, [label: getFieldLabel(SubscriptionConfig.CONFIG.base, p), value: filterLabelValue])
                 }
             }
         }
@@ -164,10 +163,10 @@ class SubscriptionFilter extends GenericFilter {
                 String p = key.replaceFirst(cmbKey,'')
                 String pType
                 if (partKey == 'member') {
-                    pType = getFilterFieldType(SubscriptionConfig.CONFIG.member, p)
+                    pType = getFieldType(SubscriptionConfig.CONFIG.member, p)
                 }
                 else if (partKey == 'provider') {
-                    pType = getFilterFieldType(SubscriptionConfig.CONFIG.provider, p)
+                    pType = getFieldType(SubscriptionConfig.CONFIG.provider, p)
                 }
 
                 def filterLabelValue
@@ -244,10 +243,10 @@ class SubscriptionFilter extends GenericFilter {
 
                 if (filterLabelValue) {
                     if (partKey == 'member') {
-                        result.filterLabels.get(partKey).put(p, [label: getFilterFieldLabel(SubscriptionConfig.CONFIG.member, p), value: filterLabelValue])
+                        result.filterLabels.get(partKey).put(p, [label: getFieldLabel(SubscriptionConfig.CONFIG.member, p), value: filterLabelValue])
                     }
                     else if (partKey == 'provider') {
-                        result.filterLabels.get(partKey).put(p, [label: getFilterFieldLabel(SubscriptionConfig.CONFIG.provider, p), value: filterLabelValue])
+                        result.filterLabels.get(partKey).put(p, [label: getFieldLabel(SubscriptionConfig.CONFIG.provider, p), value: filterLabelValue])
                     }
                 }
             }

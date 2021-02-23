@@ -12,22 +12,14 @@ class GenericFilter {
         objConfig.source.get(key)
     }
 
-    static String getFilterFieldType(Map<String, Object> objConfig, String fieldName) {
-
-        String type = '?' // [ property, refdata ]
-
-        objConfig.filter.each {
-            if (it.keySet().contains(fieldName)) {
-                type = it.get(fieldName)
-            }
-        }
-        type
+    static String getFieldType(Map<String, Object> objConfig, String fieldName) {
+        objConfig.fields.get(fieldName)
     }
 
-    static String getFilterFieldLabel(Map<String, Object> objConfig, String fieldName) {
+    static String getFieldLabel(Map<String, Object> objConfig, String fieldName) {
 
         String label = '?'
-        String type = getFilterFieldType(objConfig, fieldName)
+        String type = getFieldType(objConfig, fieldName)
 
         Object messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()

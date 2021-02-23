@@ -143,7 +143,9 @@
                                 <div class="divider"></div>
                                 <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="users" message="menu.institutions.users" />
 
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
+                                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                    <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
+                                </sec:ifAnyGranted>
 
                                 <sec:ifAnyGranted roles="ROLE_YODA">
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</semui:link>

@@ -87,7 +87,7 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = getFilterFieldType(OrganisationConfig.CONFIG.base, p)
+                String pType = getFieldType(OrganisationConfig.CONFIG.base, p)
 
                 def filterLabelValue
 
@@ -165,7 +165,7 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                 }
 
                 if (filterLabelValue) {
-                    result.filterLabels.get('base').put(p, [label: getFilterFieldLabel(OrganisationConfig.CONFIG.base, p), value: filterLabelValue])
+                    result.filterLabels.get('base').put(p, [label: getFieldLabel(OrganisationConfig.CONFIG.base, p), value: filterLabelValue])
                 }
             }
         }
