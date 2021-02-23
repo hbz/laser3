@@ -23,18 +23,27 @@ class OrganisationConfig extends GenericConfig {
                             [
                                     'country'           : FIELD_TYPE_REFDATA,
                                     //'region'            : FIELD_TYPE_REFDATA,
-                                    'libraryType'       : FIELD_TYPE_REFDATA,
-                                    'libraryNetwork'    : FIELD_TYPE_REFDATA,
-                                    'funderType'        : FIELD_TYPE_REFDATA,
-                                    'funderHskType'     : FIELD_TYPE_REFDATA
+                                    'subjectGroup'      : FIELD_TYPE_REFDATA_RELTABLE,
+                                    'libraryType'       : FIELD_TYPE_REFDATA
+
                             ],
                             [
-                                    'eInvoice'          : FIELD_TYPE_PROPERTY,
-                                    'subjectGroup'      : FIELD_TYPE_REFDATA_RELTABLE
+                                    'libraryNetwork'    : FIELD_TYPE_REFDATA,
+                                    'funderType'        : FIELD_TYPE_REFDATA,
+                                    'orgType'           : FIELD_TYPE_REFDATA_RELTABLE,
+                            ],
+                            [
+                                    'funderHskType'     : FIELD_TYPE_REFDATA,
+                                    'eInvoice'          : FIELD_TYPE_PROPERTY
+                            ],
+                            [
+                                    'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                             ]
                     ],
                     query : [
                             'Verteilung' : [
+                                    'org-orgType'           : 'Organisationstyp',
                                     'org-libraryType'       : 'Bibliothekstyp',
                                     'org-region'            : 'Bundesländer',
                                     'org-subjectGroup'      : 'Fächergruppen',

@@ -11,6 +11,33 @@ class LaserReportingTagLib {
 
     static namespace = "laser"
 
+    def numberToString = { attrs, body ->
+        Map <String, String> map = [
+            '0' : 'zero',
+            '1' : 'one',
+            '2' : 'two',
+            '3' : 'three',
+            '4' : 'four',
+            '5' : 'five',
+            '6' : 'six',
+            '7' : 'seven',
+            '8' : 'eight',
+            '9' : 'nine',
+            '10' : 'ten',
+            '11' : 'eleven',
+            '12' : 'twelve',
+            '13' : 'thirteen',
+            '14' : 'fourteen'
+        ]
+        String n = attrs.number
+        if (n && map.containsKey(n)) {
+            out << map.get(n)
+        }
+        else {
+            out << 'xyz'
+        }
+    }
+
     def reportFilterField = { attrs, body ->
 
         String fieldType = GenericFilter.getFilterFieldType(attrs.config, attrs.field) // [ property, refdata ]
@@ -22,6 +49,9 @@ class LaserReportingTagLib {
             out << laser.reportFilterRefdata(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
         if (fieldType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
+            out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
+        }
+        if (fieldType == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {
             out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
     }
@@ -94,11 +124,11 @@ class LaserReportingTagLib {
 
     def reportFilterRefdataRelTable = { attrs, body ->
 
-        Map<String, Object> rdvInfo = GenericConfig.getRefdataRelTableInfo(attrs.refdata)
+        Map<String, Object> customRdv = GenericConfig.getCustomRefdata(attrs.refdata)
 
         String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
 
-        String filterLabel    = rdvInfo.get('label')
+        String filterLabel    = customRdv.get('label')
         String filterName     = "filter:" + (attrs.key ? attrs.key : todo) + '_' + attrs.refdata
         String filterValue    = params.get(filterName)
 
@@ -108,7 +138,7 @@ class LaserReportingTagLib {
         out << laser.select([
                 class      : "ui fluid dropdown",
                 name       : filterName,
-                from       : rdvInfo.get('from'),
+                from       : customRdv.get('from'),
                 optionKey  : "id",
                 optionValue: "value",
                 value      : filterValue,

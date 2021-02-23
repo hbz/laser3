@@ -6,7 +6,7 @@
 
         <div class="ui message success">
             <p>
-                ${result.orgIdList.size()} Einrichtungen
+                ${result.orgIdList.size()} Organisationen
                 wurden anhand der Filtereinstellungen gefunden.
             </p>
 
@@ -46,7 +46,11 @@
     <g:else>
 
         <div class="ui message negative">
-            ${message(code: 'default.search.no.matches')}
+            <p>
+                Mit diesen Filtereinstellungen wurden keine Treffer gefunden.
+            </p>
+
+            <g:render template="/myInstitution/reporting/query/base.part1" />
         </div>
 
     </g:else>

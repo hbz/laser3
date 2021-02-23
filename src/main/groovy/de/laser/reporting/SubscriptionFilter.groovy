@@ -1,9 +1,11 @@
 package de.laser.reporting
 
 import de.laser.Org
+import de.laser.OrgSetting
 import de.laser.OrgSubjectGroup
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import grails.util.Holders
@@ -27,7 +29,7 @@ class SubscriptionFilter extends GenericFilter {
         // notice: params is cloned
         Map<String, Object> result      = [ filterLabels : [:] ]
 
-        List<String> queryParts         = [ 'select sub.id from Subscription sub']
+        List<String> queryParts         = [ 'select distinct (sub.id) from Subscription sub']
         List<String> whereParts         = [ 'where sub.id in (:subscriptionIdList)']
         Map<String, Object> queryParams = [ subscriptionIdList : [] ]
 
@@ -94,6 +96,10 @@ class SubscriptionFilter extends GenericFilter {
                 else if (pType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
                     println ' ------------ not implemented ------------ '
                 }
+                // --> custom filter implementation
+                else if (pType == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {
+                    println ' ------------ not implemented ------------ '
+                }
 
                 if (filterLabelValue) {
                     result.filterLabels.get('base').put(p, [label: getFilterFieldLabel(SubscriptionConfig.CONFIG.base, p), value: filterLabelValue])
@@ -103,10 +109,10 @@ class SubscriptionFilter extends GenericFilter {
 
         String query = queryParts.unique().join(' , ') + ' ' + whereParts.join(' and ')
 
-//        println 'SubscriptionFilter.filter() -->'
-//        println query
-//        println queryParams
-//        println whereParts
+        println 'SubscriptionFilter.filter() -->'
+        println query
+        println queryParams
+        println whereParts
 
         result.subscriptionIdList = Subscription.executeQuery( query, queryParams )
 
@@ -203,12 +209,36 @@ class SubscriptionFilter extends GenericFilter {
                 }
                 // --> refdata relation tables
                 else if (pType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
-                    if (p == 'subjectGroup') {
+
+                    if (p == GenericConfig.CUSTOM_KEY_SUBJECT_GROUP) {
                         queryBase = queryBase + ' join org.subjectGroup osg join osg.subjectGroup rdvsg'
                         whereParts.add('rdvsg.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))
 
                         filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                    }
+                }
+                // --> custom filter implementation
+                else if (pType == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {
+
+                    if (p == GenericConfig.CUSTOM_KEY_LEGAL_INFO) {
+                        long li = params.long(key)
+                        whereParts.add( getLegalInfoQueryWhereParts(li) )
+
+                        Map<String, Object> customRdv = GenericConfig.getCustomRefdata(p)
+                        filterLabelValue = customRdv.get('from').find{ it.id == li }.value_de
+                    }
+                    else if (p == GenericConfig.CUSTOM_KEY_CUSTOMER_TYPE) {
+                        queryBase = queryBase + ' , OrgSetting oss'
+
+                        whereParts.add('oss.org = org and oss.key = :p' + (++pCount))
+                        queryParams.put('p' + pCount, OrgSetting.KEYS.CUSTOMER_TYPE)
+
+                        whereParts.add('oss.roleValue = :p' + (++pCount))
+                        queryParams.put('p' + pCount, Role.get(params.get(key)))
+
+                        Map<String, Object> customRdv = GenericConfig.getCustomRefdata(p)
+                        filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de
                     }
                 }
 
@@ -225,8 +255,8 @@ class SubscriptionFilter extends GenericFilter {
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
 
-//        println 'SubscriptionFilter.internalOrgFilter() -->'
-//        println query
+        println 'SubscriptionFilter.internalOrgFilter() -->'
+        println query
 
         result.put( partKey + 'IdList', Org.executeQuery(query, queryParams) )
     }

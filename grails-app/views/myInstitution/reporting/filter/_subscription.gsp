@@ -15,8 +15,10 @@
                 <g:select name="filter:subscription_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:sub_source')}" />
             </div>
 
+            <br /><br />
+
             <g:each in="${config.filter}" var="cfgFormGroup">
-                <div class="fields">
+                <div class="fields <laser:numberToString number="${cfgFormGroup.size()}"/>">
                     <g:each in="${cfgFormGroup.keySet()}" var="field">
                         <laser:reportFilterField config="${config}" field="${field}" />
                     </g:each>
@@ -32,8 +34,10 @@
                 <g:select name="filter:member_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:member_source')}" />
             </div>
 
+            <br /><br />
+
             <g:each in="${config.filter}" var="cfgFormGroup">
-                <div class="fields">
+                <div class="fields <laser:numberToString number="${cfgFormGroup.size()}"/>">
                     <g:each in="${cfgFormGroup.keySet()}" var="field">
                         <laser:reportFilterField config="${config}" field="${field}" key="member" />
                     </g:each>
@@ -49,8 +53,10 @@
                 <g:select name="filter:provider_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:provider_source')}" />
             </div>
 
+            <br /><br />
+
             <g:each in="${config.filter}" var="cfgFormGroup">
-                <div class="fields">
+                <div class="fields <laser:numberToString number="${cfgFormGroup.size()}"/>">
                     <g:each in="${cfgFormGroup.keySet()}" var="field">
                         <laser:reportFilterField config="${config}" field="${field}" key="provider" />
                     </g:each>

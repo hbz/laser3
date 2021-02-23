@@ -55,9 +55,14 @@ class GenericFilter {
         if (type == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
             // LaserReportingTagLib:reportFilterRefdata
 
-            Map<String, Object> rdvInfo = GenericConfig.getRefdataRelTableInfo(fieldName)
+            Map<String, Object> customRdv = GenericConfig.getCustomRefdata(fieldName)
+            label = customRdv.get('label')
+        }
+        if (type == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {
+            // LaserReportingTagLib:reportFilterRefdata
 
-            label = rdvInfo.get('label')
+            Map<String, Object> customRdv = GenericConfig.getCustomRefdata(fieldName)
+            label = customRdv.get('label')
         }
         label
     }
@@ -78,6 +83,22 @@ class GenericFilter {
         }
         else {
             return '='
+        }
+    }
+
+    static String getLegalInfoQueryWhereParts(Long key) {
+
+        if (key == 0){
+            return 'org.createdBy is null and org.legallyObligedBy is null'
+        }
+        else if (key == 1){
+            return 'org.createdBy is not null and org.legallyObligedBy is not null'
+        }
+        else if (key == 2){
+            return 'org.createdBy is not null and org.legallyObligedBy is null'
+        }
+        else if (key == 3){
+            return 'org.createdBy is null and org.legallyObligedBy is not null'
         }
     }
 }

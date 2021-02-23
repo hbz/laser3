@@ -19,23 +19,26 @@ class SubscriptionConfig extends GenericConfig {
                     ],
                     filter : [
                             [
-                                    'form'              : FIELD_TYPE_REFDATA,
-                                    'kind'              : FIELD_TYPE_REFDATA,
-                                    'resource'          : FIELD_TYPE_REFDATA,
-                                    'status'            : FIELD_TYPE_REFDATA,
-                                    //'type'              : FIELD_TYPE_REFDATA
+                                    'form'          : FIELD_TYPE_REFDATA,
+                                    'kind'          : FIELD_TYPE_REFDATA,
+                                    'status'        : FIELD_TYPE_REFDATA,
+                                    //'type'        : FIELD_TYPE_REFDATA
                             ],
                             [
-                                    //'isMultiYear'           : FIELD_TYPE_PROPERTY,
+                                    'resource'              : FIELD_TYPE_REFDATA,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY
                             ],
                             [
-                                    'startDate'             : FIELD_TYPE_PROPERTY,
-                                    'endDate'               : FIELD_TYPE_PROPERTY,
+                                    'startDate'     : FIELD_TYPE_PROPERTY,
+                                    'endDate'       : FIELD_TYPE_PROPERTY,
+
+                            ],
+                            /*[
+                                    //'isMultiYear'           : FIELD_TYPE_PROPERTY,
                                     //'manualRenewalDate'         : FIELD_TYPE_PROPERTY,
                                     //'manualCancellationDate'    : FIELD_TYPE_PROPERTY
-                            ]
+                            ]*/
                     ],
                     query : [
                             'Verteilung' : [
@@ -58,14 +61,20 @@ class SubscriptionConfig extends GenericConfig {
                             [
                                     'country'           : FIELD_TYPE_REFDATA,
                                     //'region'            : FIELD_TYPE_REFDATA,
-                                    'libraryType'       : FIELD_TYPE_REFDATA,
-                                    'libraryNetwork'    : FIELD_TYPE_REFDATA,
-                                    'funderType'        : FIELD_TYPE_REFDATA,
-                                    'funderHskType'     : FIELD_TYPE_REFDATA,
-                                    'subjectGroup'      : FIELD_TYPE_REFDATA_RELTABLE
+                                    'subjectGroup'      : FIELD_TYPE_REFDATA_RELTABLE,
+                                    'libraryType'       : FIELD_TYPE_REFDATA
                             ],
                             [
-                                    'eInvoice'          : FIELD_TYPE_PROPERTY
+                                    'libraryNetwork'    : FIELD_TYPE_REFDATA,
+                                    'funderType'        : FIELD_TYPE_REFDATA,
+                            ],
+                            [
+                                    'funderHskType'     : FIELD_TYPE_REFDATA,
+                                    'eInvoice'          : FIELD_TYPE_PROPERTY,
+                            ],
+                            [
+                                    'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL
                             ]
                     ],
                     query : [
@@ -94,8 +103,8 @@ class SubscriptionConfig extends GenericConfig {
                     ],
                     query : [
                             'Anbieter' : [
-                                    'provider-region'       : 'Bundesländer',
-                                    'provider-country'      : 'Länder'
+                                    'provider-country'      : 'Länder',
+                                    'provider-region'       : 'Bundesländer'
                             ]
                     ]
             ],

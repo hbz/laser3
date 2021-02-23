@@ -14,8 +14,10 @@
                 <g:select name="filter:org_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:org_source')}" />
             </div>
 
+            <br /><br />
+
             <g:each in="${config.filter}" var="cfgFormGroup">
-                <div class="fields">
+                <div class="fields <laser:numberToString number="${cfgFormGroup.size()}"/>">
                     <g:each in="${cfgFormGroup.keySet()}" var="field">
                         <laser:reportFilterField config="${config}" field="${field}" />
                     </g:each>
@@ -32,4 +34,24 @@
         </div>
 
     </g:form>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('#filter\\:org_source').on( 'change', function(e) {
+        var providerNegativeList = ['org_libraryType', 'org_libraryNetwork', 'org_funderType', 'org_funderHskType', 'org_eInvoice']
+        var selector = $(providerNegativeList).map(function() { return '#filter\\:' + this; }).get().join()
+
+        if (JSPC.helper.contains( ['all-provider', 'my-provider'], $(e.target).dropdown('get value') )) {
+            $(selector).attr('disabled', 'disabled');
+            $(selector).parent().addClass('disabled');
+            $(selector).parent().parent().hide();
+        }
+        else {
+            $(selector).removeAttr('disabled');
+            $(selector).parent().removeClass('disabled');
+            $(selector).parent().parent().show();
+        }
+    })
+
+    $('#filter\\:org_source').trigger('change');
+</laser:script>
 

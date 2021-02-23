@@ -46,25 +46,47 @@ class OrganisationQuery extends GenericQuery {
 
             processSimpleRefdataQuery(params.query, 'funderHskType', idList, result)
         }
-        else if ( params.query in ['org-subjectGroup', 'member-subjectGroup']) {
+        else if ( params.query in ['org-orgType']) {
 
             result.data = Org.executeQuery(
-                    PROPERTY_QUERY[0] + 'from Org o join o.subjectGroup rt join rt.subjectGroup p where o.id in (:idList)' + PROPERTY_QUERY[1],
+                    PROPERTY_QUERY[0] + 'from Org o join o.orgType p where o.id in (:idList)' + PROPERTY_QUERY[1],
                     [idList: idList]
             )
-
             result.data.each { d ->
                 result.dataDetails.add( [
                         query:  params.query,
                         id:     d[0],
                         label:  RefdataValue.get(d[0]).getI10n('value'),
                         idList: Org.executeQuery(
+                                'select o.id from Org o join o.orgType p where o.id in (:idList) and p.id = :d order by o.name',
+                                [idList: idList, d: d[0]]
+                        )
+                ])
+            }
+            handleNonMatchingData(
+                    params.query,
+                    'select distinct o.id from Org o where o.id in (:idList) and not exists (select ot from o.orgType ot)',
+                    idList,
+                    result
+            )
+        }
+        else if ( params.query in ['org-subjectGroup', 'member-subjectGroup']) {
+
+            result.data = Org.executeQuery(
+                    PROPERTY_QUERY[0] + 'from Org o join o.subjectGroup rt join rt.subjectGroup p where o.id in (:idList)' + PROPERTY_QUERY[1],
+                    [idList: idList]
+            )
+            result.data.each { d ->
+                result.dataDetails.add([
+                        query : params.query,
+                        id    : d[0],
+                        label : RefdataValue.get(d[0]).getI10n('value'),
+                        idList: Org.executeQuery(
                                 'select o.id from Org o join o.subjectGroup rt join rt.subjectGroup p where o.id in (:idList) and p.id = :d order by o.name',
                                 [idList: idList, d: d[0]]
                         )
                 ])
             }
-
             handleNonMatchingData(
                     params.query,
                     'select distinct o.id from Org o where o.id in (:idList) and not exists (select osg from OrgSubjectGroup osg where osg.org = o)',
@@ -92,7 +114,6 @@ class OrganisationQuery extends GenericQuery {
                     )
             ])
         }
-
         handleNonMatchingData(
                 query,
                 'select distinct o.id from Org o where o.id in (:idList) and o.' + refdata + ' is null',
