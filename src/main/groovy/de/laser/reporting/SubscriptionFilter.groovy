@@ -109,10 +109,10 @@ class SubscriptionFilter extends GenericFilter {
 
         String query = queryParts.unique().join(' , ') + ' ' + whereParts.join(' and ')
 
-        println 'SubscriptionFilter.filter() -->'
-        println query
-        println queryParams
-        println whereParts
+//        println 'SubscriptionFilter.filter() -->'
+//        println query
+//        println queryParams
+//        println whereParts
 
         result.subscriptionIdList = Subscription.executeQuery( query, queryParams )
 
@@ -255,8 +255,8 @@ class SubscriptionFilter extends GenericFilter {
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
 
-        println 'SubscriptionFilter.internalOrgFilter() -->'
-        println query
+//        println 'SubscriptionFilter.internalOrgFilter() -->'
+//        println query
 
         result.put( partKey + 'IdList', Org.executeQuery(query, queryParams) )
     }

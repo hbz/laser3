@@ -172,10 +172,10 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
 
         String query = queryParts.unique().join(' , ') + ' ' + whereParts.join(' and ')
 
-        println 'OrganisationFilter.filter() -->'
-        println query
-        println queryParams
-        println whereParts
+//        println 'OrganisationFilter.filter() -->'
+//        println query
+//        println queryParams
+//        println whereParts
 
         result.orgIdList = Subscription.executeQuery( query, queryParams )
 
