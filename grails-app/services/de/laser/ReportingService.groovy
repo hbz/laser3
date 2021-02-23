@@ -10,12 +10,12 @@ class ReportingService {
 
     def contextService
 
-    Map<String, Object>  filterOrganisation(GrailsParameterMap params) {
+    Map<String, Object> filterOrganisation(GrailsParameterMap params) {
         OrganisationFilter filter = new OrganisationFilter()
         filter.filter(params.clone() as GrailsParameterMap)
     }
 
-    Map<String, Object>  filterSubscription(GrailsParameterMap params) {
+    Map<String, Object> filterSubscription(GrailsParameterMap params) {
         SubscriptionFilter filter = new SubscriptionFilter()
         filter.filter(params.clone() as GrailsParameterMap)
     }

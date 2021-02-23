@@ -3,8 +3,11 @@
 <g:if test="${key == OrganisationConfig.KEY}">
     <h2 class="ui header">3. Details</h2>
 
+    <div class="ui message success">
+        <p>${label}</p>
+    </div>
+
     <div class="ui segment">
-        <p style="text-align: center"><strong>${label}</strong></p>
         <table class="ui table la-table compact">
             %{-- <thead>
             <tr>
@@ -28,8 +31,11 @@
 <g:if test="${key == SubscriptionConfig.KEY}">
     <h2 class="ui header">3. Details</h2>
 
+    <div class="ui message success">
+        <p>${label}</p>
+    </div>
+
     <div class="ui segment">
-        <p style="text-align: center"><strong>${label}</strong></p>
         <table class="ui table la-table compact">
             %{-- <thead>
             <tr>

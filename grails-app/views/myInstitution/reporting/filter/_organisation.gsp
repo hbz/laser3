@@ -14,13 +14,27 @@
                 <g:select name="filter:org_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:org_source')}" />
             </div>
 
-            <g:each in="${config.filter}" var="cfgFormGroup">
-                <div class="fields">
-                    <g:each in="${cfgFormGroup.keySet()}" var="field">
+            <br /><br />
+
+            <div id="filter-wrapper-default">
+                <g:each in="${config.filter.default}" var="cfgFilter">
+                    <div class="fields <laser:numberToString number="${cfgFilter.size()}"/>">
+                    <g:each in="${cfgFilter}" var="field">
                         <laser:reportFilterField config="${config}" field="${field}" />
                     </g:each>
-                </div>
-            </g:each>
+                    </div>
+                </g:each>
+            </div>
+
+            <div id="filter-wrapper-provider">
+                <g:each in="${config.filter.provider}" var="cfgFilter">
+                    <div class="fields <laser:numberToString number="${cfgFilter.size()}"/>">
+                        <g:each in="${cfgFilter}" var="field">
+                            <laser:reportFilterField config="${config}" field="${field}" />
+                        </g:each>
+                    </div>
+                </g:each>
+            </div>
 
         </div><!-- .first -->
 
@@ -28,7 +42,33 @@
             <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
             <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
             <input type="hidden" name="filter" value="organisation" />
+            <input type="hidden" name="token" value="${token}" />
         </div>
 
     </g:form>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('#filter\\:org_source').on( 'change', function(e) {
+
+        var $fwDefault = $('#filter-wrapper-default')
+        var $fwProvider = $('#filter-wrapper-provider')
+
+        if (JSPC.helper.contains( ['all-provider', 'my-provider'], $(e.target).dropdown('get value') )) {
+            $fwDefault.find('*').attr('disabled', 'disabled');
+            $fwDefault.hide();
+
+            $fwProvider.find('*').removeAttr('disabled');
+            $fwProvider.show();
+        }
+        else {
+            $fwProvider.find('*').attr('disabled', 'disabled');
+            $fwProvider.hide();
+
+            $fwDefault.find('*').removeAttr('disabled');
+            $fwDefault.show();
+        }
+    })
+
+    $('#filter\\:org_source').trigger('change');
+</laser:script>
 

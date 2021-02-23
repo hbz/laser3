@@ -33,6 +33,9 @@ JSPC = {
             else {
                 return input;
             }
+        },
+        contains : function (list, value) {
+            return $.inArray(value, list) >= 0
         }
     }
 }
