@@ -32,6 +32,26 @@
 <g:render template="/templates/meta/identifier" model="${[object: issueEntitlementInstance, editable: false]}"/>
 
 <div class="la-inline-lists">
+
+    <div class="ui card">
+        <div class="content">
+            <h3 class="ui header">
+                <g:message code="subscription.label"/>
+            </h3>
+        </div>
+
+        <div class="content">
+            <g:link controller="subscription" action="show" id="${issueEntitlementInstance.subscription.id}">
+                ${issueEntitlementInstance.subscription.dropdownNamingConvention()}
+            </g:link>
+            <br>
+            <br>
+            <g:link controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}">
+                <g:message code="subscription.details.current_ent"/>
+            </g:link>
+        </div>
+    </div>
+
     <div class="ui card">
         <div class="content">
             <h3 class="ui header">
