@@ -47,9 +47,11 @@
           <g:each in="${todoHistoryLines}" var="hl">
             <tr>
               <td>
-
                   <g:if test="${hl.msgToken && hl.msgParams}">
                       <g:message code="${hl.msgToken}" args="${hl.getParsedParams()}" default="${hl.desc}" />
+                  </g:if>
+                  <g:if test="${hl.msgToken}">
+                      ${message(code: 'subscription.packages.' + hl.msgToken)}
                   </g:if>
                   <g:else>
                       <% print hl.desc; /* avoid auto encodeAsHTML() */ %>
@@ -70,7 +72,7 @@
                 </g:if>
               </td>
               <td>
-                  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${hl.ts}"/>
+                  <g:formatDate format="${message(code:'default.date.format.noZ')}" date="${hl.ts}"/>
               </td>
             </tr>
           </g:each>

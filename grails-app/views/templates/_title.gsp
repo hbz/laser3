@@ -45,7 +45,7 @@
 
     <g:if test="${ie && (ie.medium || showEmptyFields)}">
         <div class="item">
-            <i class="grey icon la-popup-tooltip la-delay"
+            <i class="grey medium icon la-popup-tooltip la-delay"
                data-content="${message(code: 'tipp.medium')}"></i>
 
             <div class="content">
@@ -174,18 +174,6 @@
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'tipp.subjectReference') + ':'} ${tipp.subjectReference}
-            </div>
-        </div>
-
-    </g:if>
-
-    <g:if test="${(tipp.statusReason || showEmptyFields)}">
-        <div class="item">
-            <i class="grey edit icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.show.statusReason')}"></i>
-
-            <div class="content">
-                ${showCompact ? '' : message(code: 'tipp.show.statusReason') + ':'} ${tipp.statusReason?.getI10n("value")}
             </div>
         </div>
 

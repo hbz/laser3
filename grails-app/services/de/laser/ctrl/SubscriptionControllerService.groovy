@@ -1524,6 +1524,8 @@ class SubscriptionControllerService {
                 pkgList << sp.pkg
                 pendingOrWithNotification.addAll(sp.pendingChangeConfig.findAll { PendingChangeConfiguration pcc -> pcc.settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT || pcc.withNotification }.collect{ PendingChangeConfiguration pcc -> pcc.settingKey })
             }
+
+            /*OLD
             if(pkgList && pendingOrWithNotification) {
                 String query1 = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = null and pc.status = :history and pc.msgToken in (:pendingOrWithNotification)',
                        query2 = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = null and pc.status = :history and pc.msgToken in (:pendingOrWithNotification)',
@@ -1541,11 +1543,45 @@ class SubscriptionControllerService {
                 subscriptionHistory.each { row ->
                     accepted << changesOfPage.find { PendingChange pc -> row[1] in [pc.tipp,pc.tippCoverage,pc.priceItem] }?.id
                 }
+            }*/
+
+            if(pkgList && pendingOrWithNotification) {
+                String query1a = 'select pc.id,pc.tipp from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
+                       query2a = 'select pc.id,pc.tippCoverage from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
+                       query3a = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
+                       query1b = 'select pc.id,pc.tipp from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status not in (:pendingStatus)',
+                       query2b = 'select pc.id,pc.tippCoverage from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status not in (:pendingStatus)',
+                       query3b = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status not in (:pendingStatus)'
+                subscriptionHistory.addAll(PendingChange.executeQuery(query1a,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
+                subscriptionHistory.addAll(PendingChange.executeQuery(query2a,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
+                subscriptionHistory.addAll(PendingChange.executeQuery(query3a,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
+                changesOfPage.addAll(PendingChange.executeQuery(query1b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
+                changesOfPage.addAll(PendingChange.executeQuery(query2b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
+                changesOfPage.addAll(PendingChange.executeQuery(query3b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
+
+
             }
 
-            result.num_pkgHistory_rows = changesOfPage.size()
-            result.packageHistory = changesOfPage.drop(result.offset).take(result.max)
-            result.accepted = accepted
+            params.tab = params.tab ?: 'changes'
+            params.sort = params.sort ?: 'ts'
+            params.order = params.order ?: 'asc'
+
+            List acceptedChanges = subscriptionHistory ? PendingChange.findAllByIdInList(subscriptionHistory, params) : []
+            List changes = changesOfPage ? PendingChange.findAllByIdInList(changesOfPage, params) : []
+            result.countPendingChanges = changes.size()
+            result.countAcceptedChanges = acceptedChanges.size()
+
+            if(params.tab == 'changes') {
+                result.num_change_rows = changes.size()
+                result.changes = changes.drop(result.offset).take(result.max)
+                result.accepted = accepted
+            }
+
+            if(params.tab == 'acceptedChanges') {
+                result.num_change_rows = acceptedChanges.size()
+                result.changes = acceptedChanges.drop(result.offset).take(result.max)
+                result.accepted = accepted
+            }
             [result:result,status:STATUS_OK]
         }
     }
