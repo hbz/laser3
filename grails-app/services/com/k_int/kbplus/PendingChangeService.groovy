@@ -675,7 +675,8 @@ class PendingChangeService extends AbstractLockableService {
                     IssueEntitlement ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:pc.tippCoverage.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
                     targetCov = (IssueEntitlementCoverage) pc.tippCoverage.findEquivalent(ie.coverages)
                 }
-                if(targetCov) {
+                if(targetCov && pc.targetProperty) {
+
                     targetCov[pc.targetProperty] = parsedNewValue
                     if(targetCov.save()) {
                         done = true

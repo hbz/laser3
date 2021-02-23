@@ -338,6 +338,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         running = false
     }
 
+    //Used for Sync with Json
     void updateRecords(List<Map> records) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         Set<String> platformUUIDs = records.collect { Map tipp -> tipp.hostPlatformUuid } as Set<String>
@@ -461,6 +462,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * This records the package changes so that subscription holders may decide whether they apply them or not
      * @param packagesToTrack
      */
+    //Used for Sync with Json
     void trackPackageHistory() {
         //Package.withSession { Session sess ->
             //loop through all packages
@@ -484,7 +486,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         switch(covEntry.event) {
                                             case 'add': PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_COVERAGE,target:covEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
                                                 break
-                                            case 'update': PendingChange.construct([msgToken:PendingChangeConfiguration.COVERAGE_UPDATED,target:covEntry.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:diff.prop,newValue:diff.newValue,oldValue:diff.oldValue])
+                                            case 'update': covEntry.diffs.each { covDiff ->
+                                                    PendingChange.construct([msgToken: PendingChangeConfiguration.COVERAGE_UPDATED, target: covEntry.target, status: RDStore.PENDING_CHANGE_HISTORY, prop: covDiff.prop, newValue: covDiff.newValue, oldValue: covDiff.oldValue])
+                                                    //log.debug("tippDiff.covDiffs.covDiff: " + covDiff)
+                                                }
                                                 break
                                             case 'delete': JSON oldMap = covEntry.target.properties as JSON
                                                 PendingChange.construct([msgToken:PendingChangeConfiguration.COVERAGE_DELETED, target:covEntry.targetParent, oldValue: oldMap.toString() , status:RDStore.PENDING_CHANGE_HISTORY])
@@ -497,6 +502,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             case 'add': PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_PRICE,target:priceEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
                                                 break
                                             case 'update': PendingChange.construct([msgToken:PendingChangeConfiguration.PRICE_UPDATED,target:priceEntry.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:diff.prop,newValue:diff.newValue,oldValue:diff.oldValue])
+                                                //log.debug("tippDiff.priceDiffs: "+ priceEntry)
                                                 break
                                             case 'delete': JSON oldMap = priceEntry.target.properties as JSON
                                                 PendingChange.construct([msgToken:PendingChangeConfiguration.PRICE_DELETED,target:priceEntry.targetParent,oldValue:oldMap.toString(),status:RDStore.PENDING_CHANGE_HISTORY])
@@ -569,6 +575,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         [tippsOnPage:tippsOnPage, providersOnPage: providersOnPage, platformsOnPage: platformsOnPage, titleInstancesOnPage: titleInstancesOnPage]
     }
 
+    // Used for Sync with OAI
     List<List<Map<String,Object>>> processTippPage(Set<TitleInstancePackagePlatform> existingTIPPs, Map<String,Map<String,Object>> tippNodesOnPage, Set<Package> packagesExisting, Map<String,Platform> newPlatforms, Map<String,TitleInstance> newTitleInstances) {
         Map<String,List<Map<String,Object>>> packagesToNotify = [:]
         tippNodesOnPage.each { String tippUUID, Map<String,Object> tippB ->
@@ -593,7 +600,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         result
     }
-
+    //Used for Sync with Json
     Map<String,Object> createOrUpdateTIPP(TitleInstancePackagePlatform tippA,Map tippB, Map<String,Package> newPackages,Map<String,Platform> newPlatforms) {
         Map<String,Object> result = [:]
         //TitleInstancePackagePlatform.withSession { Session sess ->
