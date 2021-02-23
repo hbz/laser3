@@ -34,19 +34,20 @@ class OrganisationConfig extends GenericConfig {
                     ],
                     filter : [
                             default: [
-                                    [ 'country',  'subjectGroup', 'libraryType' ],
-                                    [ 'libraryNetwork', 'funderType', 'orgType' ] ,
-                                    [ 'funderHskType', 'eInvoice' ],
+                                    [ 'country',  'subjectGroup', 'orgType' ],
+                                    [ 'libraryNetwork', 'funderType', 'funderHskType' ] ,
+                                    [ 'libraryType', 'eInvoice' ],
                                     [ 'customerType', 'legalInfo' ]
                             ],
                             provider: [
-                                    [ 'country',  'subjectGroup', 'orgType'],
+                                    [ 'country', 'orgType'],
                                     [ 'customerType', 'legalInfo' ]
                             ]
                     ],
                     query : [
                             'Verteilung' : [
                                     'org-orgType'           : 'Organisationstyp',
+                                    'org-customerType'      : 'Kundentyp',
                                     'org-libraryType'       : 'Bibliothekstyp',
                                     'org-region'            : 'Bundesländer',
                                     'org-subjectGroup'      : 'Fächergruppen',

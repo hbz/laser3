@@ -48,10 +48,12 @@ class SubscriptionQuery extends GenericQuery {
                 PROPERTY_QUERY[0] + 'from Subscription s join s.' + refdata + ' p where s.id in (:idList)' + PROPERTY_QUERY[1], [idList: idList]
         )
         result.data.each { d ->
+            d[1] = RefdataValue.get(d[0]).getI10n('value')
+
             result.dataDetails.add( [
                     query:  query,
                     id:     d[0],
-                    label:  RefdataValue.get(d[0]).getI10n('value'),
+                    label:  d[1],
                     idList: Org.executeQuery(
                         'select s.id from Subscription s join s.' + refdata + ' p where s.id in (:idList) and p.id = :d order by s.name',
                         [idList: idList, d: d[0]]
