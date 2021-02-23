@@ -202,7 +202,7 @@
                         <th>${message(code: 'sidewide.number')}</th>
                         <g:sortableColumn params="${params}" property="tipp.sortName"
                                           title="${message(code: 'title.label')}"/>
-                        <th>
+                        <th style="width: 50%">
                             <div class="ui three column grid">
                                 <div class="sixteen wide column">
                                     ${message(code: 'myinst.currentTitles.sub_content')}

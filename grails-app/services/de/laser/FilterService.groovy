@@ -1014,6 +1014,18 @@ class FilterService {
     }
 
     Map<String,Object> getIssueEntitlementQuery(GrailsParameterMap params, Subscription subscription) {
+
+        Map newParams = [:]
+
+        params.each {
+            newParams."${it.key}" = it.value
+        }
+
+        getIssueEntitlementQuery(newParams, subscription)
+
+    }
+
+    Map<String,Object> getIssueEntitlementQuery(Map params, Subscription subscription) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Map result = [:]
 
