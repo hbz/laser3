@@ -1,5 +1,5 @@
 <div class="ui segment form">
-    <div class="fields">
+    <div class="fields <laser:numberToString number="${2 + cfgQueryList.size()}"/>">
         <g:each in="${cfgQueryList}" var="cfgQuery" status="qci">
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">

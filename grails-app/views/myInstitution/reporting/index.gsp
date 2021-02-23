@@ -18,6 +18,8 @@
             <g:message code="myinst.reporting"/> <span class="ui label red">DEMO</span>
         </h1>
 
+        <h2 class="ui header hidden">Diese Funktionalität befindet sich in Entwicklung</h2>
+
         <div class="ui message info">
             <p>
                 <strong>1. Suchanfrage</strong>
@@ -37,7 +39,7 @@
                 Die in Schritt 2 erzeugte Visualisierung ist interaktiv und bietet Zugriff auf weitere Informationen.
             </p>
         </div>
-        <h2 class="ui header">1. Suchanfrage</h2>
+        <h3 class="ui header">1. Suchanfrage</h3>
 
         <g:set var="hidden" value="hidden" />
 
@@ -71,7 +73,7 @@
         </g:if>
 
         <g:if test="${result}">
-            <h2 class="ui header">2. Ergebnis</h2>
+            <h3 class="ui header">2. Ergebnis</h3>
 
             <g:if test="${filter == SubscriptionConfig.KEY}">
                 <g:render template="/myInstitution/reporting/query/subscription" />
