@@ -12,22 +12,14 @@ class GenericFilter {
         objConfig.source.get(key)
     }
 
-    static String getFilterFieldType(Map<String, Object> objConfig, String fieldName) {
-
-        String type = '?' // [ property, refdata ]
-
-        objConfig.filter.each {
-            if (it.keySet().contains(fieldName)) {
-                type = it.get(fieldName)
-            }
-        }
-        type
+    static String getFieldType(Map<String, Object> objConfig, String fieldName) {
+        objConfig.fields.get(fieldName)
     }
 
-    static String getFilterFieldLabel(Map<String, Object> objConfig, String fieldName) {
+    static String getFieldLabel(Map<String, Object> objConfig, String fieldName) {
 
         String label = '?'
-        String type = getFilterFieldType(objConfig, fieldName)
+        String type = getFieldType(objConfig, fieldName)
 
         Object messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
@@ -55,9 +47,14 @@ class GenericFilter {
         if (type == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
             // LaserReportingTagLib:reportFilterRefdata
 
-            Map<String, Object> rdvInfo = GenericConfig.getRefdataRelTableInfo(fieldName)
+            Map<String, Object> customRdv = GenericConfig.getCustomRefdata(fieldName)
+            label = customRdv.get('label')
+        }
+        if (type == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {
+            // LaserReportingTagLib:reportFilterRefdata
 
-            label = rdvInfo.get('label')
+            Map<String, Object> customRdv = GenericConfig.getCustomRefdata(fieldName)
+            label = customRdv.get('label')
         }
         label
     }
@@ -78,6 +75,22 @@ class GenericFilter {
         }
         else {
             return '='
+        }
+    }
+
+    static String getLegalInfoQueryWhereParts(Long key) {
+
+        if (key == 0){
+            return 'org.createdBy is null and org.legallyObligedBy is null'
+        }
+        else if (key == 1){
+            return 'org.createdBy is not null and org.legallyObligedBy is not null'
+        }
+        else if (key == 2){
+            return 'org.createdBy is not null and org.legallyObligedBy is null'
+        }
+        else if (key == 3){
+            return 'org.createdBy is null and org.legallyObligedBy is not null'
         }
     }
 }

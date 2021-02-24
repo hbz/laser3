@@ -19,22 +19,35 @@ class OrganisationConfig extends GenericConfig {
                             'my-inst'       : 'Meine Einrichtungen',
                             'my-provider'   : 'Meine Anbieter und Lieferanten'
                     ],
+                    fields: [
+                            'country'           : FIELD_TYPE_REFDATA,
+                            'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
+                            'eInvoice'          : FIELD_TYPE_PROPERTY,
+                            'funderHskType'     : FIELD_TYPE_REFDATA,
+                            'funderType'        : FIELD_TYPE_REFDATA,
+                            'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
+                            'libraryNetwork'    : FIELD_TYPE_REFDATA,
+                            'libraryType'       : FIELD_TYPE_REFDATA,
+                            'orgType'           : FIELD_TYPE_REFDATA_RELTABLE,
+                            //'region'            : FIELD_TYPE_REFDATA,
+                            'subjectGroup'      : FIELD_TYPE_REFDATA_RELTABLE,
+                    ],
                     filter : [
-                            [
-                                    'country'           : FIELD_TYPE_REFDATA,
-                                    //'region'            : FIELD_TYPE_REFDATA,
-                                    'libraryType'       : FIELD_TYPE_REFDATA,
-                                    'libraryNetwork'    : FIELD_TYPE_REFDATA,
-                                    'funderType'        : FIELD_TYPE_REFDATA,
-                                    'funderHskType'     : FIELD_TYPE_REFDATA
+                            default: [
+                                    [ 'country',  'subjectGroup', 'orgType' ],
+                                    [ 'libraryNetwork', 'funderType', 'funderHskType' ] ,
+                                    [ 'libraryType', 'eInvoice' ],
+                                    [ 'customerType', 'legalInfo' ]
                             ],
-                            [
-                                    'eInvoice'          : FIELD_TYPE_PROPERTY,
-                                    'subjectGroup'      : FIELD_TYPE_REFDATA_RELTABLE
+                            provider: [
+                                    [ 'country', 'orgType'],
+                                    [ 'customerType', 'legalInfo' ]
                             ]
                     ],
                     query : [
                             'Verteilung' : [
+                                    'org-orgType'           : 'Organisationstyp',
+                                    'org-customerType'      : 'Kundentyp',
                                     'org-libraryType'       : 'Bibliothekstyp',
                                     'org-region'            : 'Bundesländer',
                                     'org-subjectGroup'      : 'Fächergruppen',

@@ -41,7 +41,15 @@
             <br/>
             <br/>
 
-            <div class="la-title"><g:message code="tipp.coverage"/></div>
+            <g:if test="${tipp.titleType.contains('Book')}">
+                <div class="la-title">${message(code: 'tipp.print')} & ${message(code: 'tipp.online')}</div>
+            </g:if>
+            <g:elseif test="${tipp.titleType == "Journal"}">
+                <div class="la-title">${message(code: 'tipp.coverage')}</div>
+            </g:elseif>
+            <g:else>
+                <div class="la-title">${message(code: 'tipp.online')}</div>
+            </g:else>
 
             <div class="la-icon-list">
                 <g:render template="/templates/tipps/coverages"

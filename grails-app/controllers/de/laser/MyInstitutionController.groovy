@@ -31,7 +31,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
-
+import org.apache.commons.lang3.RandomStringUtils
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.FillPatternType
@@ -88,11 +88,10 @@ class MyInstitutionController  {
         redirect(action:'dashboard')
     }
 
-    //@DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM")
-    //@Secured(closure = {
-    //    ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_ADM")
-    //})
-    @Secured(['ROLE_ADMIN'])
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
+    })
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -100,6 +99,7 @@ class MyInstitutionController  {
         result.cfgChartsList = GenericConfig.CHARTS
 
         if (params.filter) {
+            result.token  = params.token ?: RandomStringUtils.randomAlphanumeric(16)
             result.filter = params.filter
             result.cfgQueryList = [:]
 
@@ -115,8 +115,21 @@ class MyInstitutionController  {
                 result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.member.query )
                 result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.provider.query )
             }
+
+            SessionCacheWrapper sessionCache = contextService.getSessionCache()
+            sessionCache.put("MyInstitutionController/reporting/" + result.token, result.result)
         }
         render view: 'reporting/index', model: result
+    }
+
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
+    })
+    def reportingExport() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        render params as JSON
     }
 
     @Secured(['ROLE_USER'])

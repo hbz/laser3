@@ -1,7 +1,7 @@
 <div class="ui segment form">
-    <div class="fields">
-        <g:each in="${cfgQueryList}" var="cfgQueryGroup" status="qci">
-            <g:each in="${cfgQueryGroup}" var="field">
+    <div class="fields <laser:numberToString number="${2 + cfgQueryList.size()}"/>">
+        <g:each in="${cfgQueryList}" var="cfgQuery" status="qci">
+            <g:each in="${cfgQuery}" var="field">
                 <div class="field">
                     <label for="query-chooser-${qci}">${field.key}</label>
                     <g:select name="query-chooser"

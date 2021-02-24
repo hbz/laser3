@@ -1,10 +1,13 @@
 <%@ page import="de.laser.reporting.OrganisationConfig;de.laser.reporting.SubscriptionConfig;" %>
 
 <g:if test="${key == OrganisationConfig.KEY}">
-    <h2 class="ui header">3. Details</h2>
+    <h3 class="ui header">3. Details</h3>
+
+    <div class="ui message success">
+        <p>${label}</p>
+    </div>
 
     <div class="ui segment">
-        <p style="text-align: center"><strong>${label}</strong></p>
         <table class="ui table la-table compact">
             %{-- <thead>
             <tr>
@@ -26,10 +29,13 @@
     </div>
 </g:if>
 <g:if test="${key == SubscriptionConfig.KEY}">
-    <h2 class="ui header">3. Details</h2>
+    <h3 class="ui header">3. Details</h3>
+
+    <div class="ui message success">
+        <p>${label}</p>
+    </div>
 
     <div class="ui segment">
-        <p style="text-align: center"><strong>${label}</strong></p>
         <table class="ui table la-table compact">
             %{-- <thead>
             <tr>

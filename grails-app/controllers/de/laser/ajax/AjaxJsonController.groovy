@@ -3,6 +3,7 @@ package de.laser.ajax
 import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.auth.Role
+import de.laser.helper.SessionCacheWrapper
 import de.laser.properties.LicenseProperty
 import de.laser.Org
 import de.laser.properties.OrgProperty
@@ -32,6 +33,7 @@ import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -661,19 +663,29 @@ class AjaxJsonController {
 
     // ----- reporting -----
 
-    @Secured(['ROLE_ADMIN'])
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
+    })
     def chart() {
         Map<String, Object> result = [:]
 
-        if (params.query) {
-            String prefix = params.query.split('-')[0]
+        if (params.token && params.query) {
+
+            SessionCacheWrapper sessionCache = contextService.getSessionCache()
+            Map<String, Object> cached = sessionCache.get("MyInstitutionController/reporting/" + params.token)
+
+            GrailsParameterMap clone = params.clone() // TODO: simplify
+            clone.putAll(cached)
+
+            String prefix = clone.query.split('-')[0]
             if (prefix in ['org', 'member', 'provider']) {
-                result = OrganisationQuery.query(params)
+                result = OrganisationQuery.query(clone)
                 render template: '/myInstitution/reporting/chart/generic', model: result
                 return
             }
             if (prefix in ['subscription']) {
-                result = SubscriptionQuery.query(params)
+                result = SubscriptionQuery.query(clone)
                 render template: '/myInstitution/reporting/chart/generic', model: result
                 return
             }

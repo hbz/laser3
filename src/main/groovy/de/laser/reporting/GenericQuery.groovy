@@ -5,7 +5,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 
 class GenericQuery {
 
-    static String NO_DATA_LABEL = '- keine Angabe -'
+    static String NO_DATA_LABEL = 'keine Angabe'
 
     static void handleNonMatchingData(String query, String hql, List idList, Map<String, Object> result) {
 

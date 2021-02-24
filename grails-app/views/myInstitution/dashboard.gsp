@@ -168,7 +168,7 @@
                             </div><!-- .column -->
                             <div class="seven wide column">
                                 <g:if test="${entry.subPkg}">
-                                    <g:link controller="subscription" action="entitlementChanges" id="${entry.subPkg.subscription.id}">${raw(entry.eventString)}</g:link>
+                                    <g:link controller="subscription" action="entitlementChanges" id="${entry.subPkg.subscription.id}" params="[tab: 'changes']">${raw(entry.eventString)}</g:link>
                                 </g:if>
                                 <g:else>
                                     ${raw(entry.eventString)}
@@ -222,7 +222,7 @@
                         </div><!-- .column -->
                         <div class="ten wide column">
                             <g:if test="${entry.subPkg}">
-                                <g:link controller="subscription" action="entitlementChanges" id="${entry.subPkg.subscription.id}">${raw(entry.eventString)}</g:link>
+                                <g:link controller="subscription" action="entitlementChanges" id="${entry.subPkg.subscription.id}" params="[tab: 'acceptedChanges']">${raw(entry.eventString)}</g:link>
                             </g:if>
                             <g:else>
                                 ${raw(entry.eventString)}
