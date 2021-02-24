@@ -25,7 +25,7 @@ class TIPPCoverage extends AbstractCoverage {
     }
 
     static mapping = {
-        id column:'tc_id'
+        id column:'tc_id', index: 'tc_id_idx'
         version column:'tc_version'
         startDate column:'tc_start_date', index: 'tc_dates_idx'
         startVolume column:'tc_start_volume'
@@ -36,7 +36,7 @@ class TIPPCoverage extends AbstractCoverage {
         embargo column:'tc_embargo'
         coverageDepth column:'tc_coverage_depth'
         coverageNote column:'tc_coverage_note', type: 'text'
-        tipp column:'tc_tipp_fk'
+        tipp column:'tc_tipp_fk', index: 'tc_tipp_idx'
         lastUpdated column:'tc_last_updated'
         dateCreated column:'tc_date_created'
         sort startDate: 'asc', startVolume: 'asc', startIssue: 'asc', endDate: 'asc', endVolume: 'asc', endIssue: 'asc'

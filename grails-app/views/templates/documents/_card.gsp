@@ -81,14 +81,20 @@
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                 <%-- START First Button --%>
                                 <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
+                                <button type="button" class="ui icon mini button editable-cancel"
+                                        data-semui="modal"
+                                        data-href="#modalEditDocument_${docctx.id}"
+                                        aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                    <i class="pencil icon"></i></button>
                                 <%-- STOP First Small Column --%>
                                 <g:if test="${!docctx.isShared}">
                                 <%-- START Second Button --%>
                                     <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="ui icon mini negative button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
-                                            params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'>
+                                            params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </g:if>
@@ -173,7 +179,10 @@
                         <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                             <div class="two wide column">
                                 <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
+                                <button type="button" class="ui icon mini button editable-cancel" data-semui="modal"
+                                        data-href="#modalEditDocument_${docctx.id}"
+                                        aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                <i class="pencil icon"></i></button>
                             </div>
                         </g:if>
                     </div>

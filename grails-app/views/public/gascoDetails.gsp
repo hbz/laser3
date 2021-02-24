@@ -69,8 +69,8 @@
                 <tr>
                     <td>${counter + 1}</td>
                     <td>
-                        <semui:listIcon type="${tipp.title.medium?.value}"/>
-                        <strong>${tipp.title.title}</strong>
+                        <semui:listIcon type="${tipp.medium?.value}"/>
+                        <strong>${tipp.name}</strong>
                         <br />
 
                         <g:if test="${tipp.hostPlatformURL}">
@@ -98,7 +98,7 @@
                     </td>
 
                     <td>
-                        <g:each in="${tipp.title?.ids?.sort{it?.ns?.ns}}" var="title_id">
+                        <g:each in="${tipp.ids?.sort{it?.ns?.ns}}" var="title_id">
                             ${title_id.ns.ns}: <strong>${title_id.value}</strong>
                             <br />
                         </g:each>

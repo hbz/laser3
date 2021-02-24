@@ -64,15 +64,19 @@
 
                     <td class="x">
                         <g:if test="${overwriteEditable}">
-                            <a onclick="JSPC.app.taskedit(${taskInstance.id});" class="ui icon button">
-                                <i class="write icon"></i>
+                            <a onclick="JSPC.app.taskedit(${taskInstance.id});" class="ui icon button"
+                               role="button"
+                               aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                <i aria-hidden="true" class="write icon"></i>
                             </a>
                         </g:if>
                         <g:if test="${(user == taskInstance.creator) || contextService.getUser().hasAffiliation("INST_ADM")}">
                             <g:link class="ui icon negative button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                     data-confirm-term-how="delete"
-                                    action="tasks" params="[deleteId:taskInstance.id, id: params.id]" >
+                                    action="tasks" params="[deleteId:taskInstance.id, id: params.id]"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.delete.task')}">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>

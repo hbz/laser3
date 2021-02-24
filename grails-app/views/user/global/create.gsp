@@ -27,19 +27,19 @@
             <g:form name="newUser" class="ui form" controller="${controllerName}" action="processCreateUser" method="post">
                 <fieldset>
                     <div class="field required">
-                        <label for="username">${message(code:'user.username.label')}</label>
+                        <label for="username">${message(code:'user.username.label')} ${message(code: 'messageRequiredField')}</label>
                         <input type="text" id="username" name="username" value="${params.username}"/>
                     </div>
                     <div class="field required">
-                        <label for="displayName">${message(code:'user.displayName.label')}</label>
+                        <label for="displayName">${message(code:'user.displayName.label')} ${message(code: 'messageRequiredField')}</label>
                         <input class="validateNotEmpty" type="text" id="displayName" name="display" value="${params.display}"/>
                     </div>
                     <div class="field required">
-                        <label for="password">${message(code:'user.password.label')}</label>
+                        <label for="password">${message(code:'user.password.label')} ${message(code: 'messageRequiredField')}</label>
                         <input class="validateNotEmpty" type="text" id="password" name="password" value="${params.password}"/>
                     </div>
                     <div class="field required">
-                        <label for="email">${message(code:'user.email')}</label>
+                        <label for="email">${message(code:'user.email')} ${message(code: 'messageRequiredField')}</label>
                         <input class="validateNotEmpty" type="text" id="email" name="email" value="${params.email}"/>
                     </div>
 

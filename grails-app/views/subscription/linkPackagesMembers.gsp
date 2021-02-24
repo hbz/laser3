@@ -101,7 +101,7 @@
                 <h4 class="ui header">${message(code: 'subscription.linkPackagesMembers.info', args: args.memberType)}</h4>
 
                 <label><g:message code="subscription.linkPackagesMembers.package.label"
-                                  args="${args.superOrgType}"/></label>
+                                  args="${args.superOrgType}"/> <g:message code="messageRequiredField" /></label>
                 <g:if test="${validPackages}">
                     <g:select class="ui search dropdown"
                               optionKey="id" optionValue="${{ it.getPackageName() }}"
@@ -226,8 +226,11 @@
                         </td>
 
                         <td class="x">
-                            <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i
-                                    class="write icon"></i></g:link>
+                            <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                <i aria-hidden="true" class="write icon"></i>
+                            </g:link>
                         </td>
                     </tr>
                 </g:each>
@@ -263,7 +266,8 @@
 
         $.ajax({url: req_url,
           done: function(result){
-             $('#magicArea').html(result);
+            $("#unlinkPackageModal").remove();
+            $('#magicArea').html(result);
             $("#unlinkPackageModal").modal("show");
           }
         });

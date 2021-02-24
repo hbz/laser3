@@ -51,7 +51,7 @@
 <table id="costTable_${customerType}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
     <thead>
         <tr>
-            <g:if test="${tmplShowCheckbox}">
+            <g:if test="${tmplShowCheckbox && editable}">
                 <th>
                     <g:if test="${data.costItems}">
                         <g:checkBox name="costItemListToggler" id="costItemListToggler" checked="false"/>
@@ -168,7 +168,7 @@
                     }
                 %>
                 <tr id="bulkdelete-b${ci.id}">
-                    <g:if test="${tmplShowCheckbox}">
+                    <g:if test="${tmplShowCheckbox && editable}">
                         <td>
                             <g:checkBox id="selectedCostItems_${ci.id}" name="selectedCostItems" value="${ci.id}" checked="false"/>
                         </td>
@@ -203,7 +203,7 @@
                             </g:each>
                             <br />
                         </g:if>
-                        <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
+                        <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" overwriteEditable="${editable}"/>
                     </td>
                     <g:if test="${!fixedSubscription}">
                         <td>
@@ -240,9 +240,9 @@
                         <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
                     </td>
                     <td>
-                        <semui:xEditable owner="${ci}" type="date" field="startDate" />
+                        <semui:xEditable owner="${ci}" type="date" field="startDate" overwriteEditable="${editable}"/>
                         <br />
-                        <semui:xEditable owner="${ci}" type="date" field="endDate" />
+                        <semui:xEditable owner="${ci}" type="date" field="endDate" overwriteEditable="${editable}"/>
                     </td>
                     <td>
                         ${ci.costItemElement?.getI10n("value")}
@@ -251,8 +251,10 @@
                         <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_EDITOR")}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
-                                    <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
-                                        <i class="write icon"></i>
+                                    <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal"
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                        <i aria-hidden="true" class="write icon"></i>
                                     </g:link>
                                     <span data-position="top right la-popup-tooltip la-delay" data-content="${message(code:'financials.costItem.copy.tooltip')}">
                                         <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
@@ -261,8 +263,10 @@
                                     </span>
                                 </g:if>
                                 <g:else>
-                                    <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
-                                        <i class="write icon"></i>
+                                    <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                        <i aria-hidden="true" class="write icon"></i>
                                     </g:link>
                                     <span  class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
                                         <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons"]' class="ui icon button trigger-modal">
@@ -272,7 +276,9 @@
                                 </g:else>
                                 <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ showView:'cons']" class="ui icon negative button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem.participant")}"
-                                        data-confirm-term-how="delete">
+                                        data-confirm-term-how="delete"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="trash alternate icon"></i>
                                 </g:link>
                             </td>

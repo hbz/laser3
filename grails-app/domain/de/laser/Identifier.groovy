@@ -29,7 +29,6 @@ class Identifier implements CalculatedLastUpdated {
             org:    Org,
             pkg:    Package,
             sub:    Subscription,
-            ti:     TitleInstance,
             tipp:   TitleInstancePackagePlatform
     ]
 
@@ -46,7 +45,6 @@ class Identifier implements CalculatedLastUpdated {
 	  	org     (nullable:true)
 	  	pkg     (nullable:true)
 	  	sub     (nullable:true)
-	  	ti      (nullable:true)
 	  	tipp    (nullable:true)
 
 		// Nullable is true, because values are already in the database
@@ -65,7 +63,6 @@ class Identifier implements CalculatedLastUpdated {
        org  column:'id_org_fk'
        pkg  column:'id_pkg_fk'
        sub  column:'id_sub_fk'
-       ti   column:'id_ti_fk',      index:'id_title_idx'
        tipp column:'id_tipp_fk',    index:'id_tipp_idx'
 
         dateCreated column: 'id_date_created'
@@ -86,6 +83,7 @@ class Identifier implements CalculatedLastUpdated {
         String value     = map.get('value')
         Object reference = map.get('reference')
         def namespace    = map.get('namespace')
+        String name_de   = map.get('name_de')
         String nsType    = map.get('nsType')
         boolean isUnique = true
         if(map.containsKey('isUnique') && map.get('isUnique') == false)
@@ -104,11 +102,17 @@ class Identifier implements CalculatedLastUpdated {
 
 			if(! ns) {
                 if (nsType){
-                    ns = new IdentifierNamespace(ns: namespace, isUnique: isUnique, isHidden: false, nsType: nsType)
+                    ns = new IdentifierNamespace(ns: namespace, isUnique: isUnique, isHidden: false, nsType: nsType, name_de: name_de)
                 } else {
-                    ns = new IdentifierNamespace(ns: namespace, isUnique: isUnique, isHidden: false)
+                    ns = new IdentifierNamespace(ns: namespace, isUnique: isUnique, isHidden: false, name_de: name_de)
                 }
                 ns.save()
+            }
+            else {
+                if(ns.name_de != name_de) {
+                    ns.name_de = name_de
+                    ns.save()
+                }
             }
         }
 
@@ -161,7 +165,7 @@ class Identifier implements CalculatedLastUpdated {
         pkg  = owner instanceof Package ? owner : pkg
         sub  = owner instanceof Subscription ? owner : sub
         tipp = owner instanceof TitleInstancePackagePlatform ? owner : tipp
-        ti   = owner instanceof TitleInstance ? owner : ti
+        //ti   = owner instanceof TitleInstance ? owner : ti
     }
 
     Object getReference() {

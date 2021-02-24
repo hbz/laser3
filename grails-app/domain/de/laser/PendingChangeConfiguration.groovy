@@ -13,11 +13,16 @@ class PendingChangeConfiguration {
     static final String COVERAGE_UPDATED = "pendingChange.message_TC01"
     static final String NEW_COVERAGE = "pendingChange.message_TC02"
     static final String COVERAGE_DELETED = "pendingChange.message_TC03"
+    static final String PRICE_UPDATED = "pendingChange.message_TR01"
+    static final String NEW_PRICE = "pendingChange.message_TR02"
+    static final String PRICE_DELETED = "pendingChange.message_TR03"
     static final String PACKAGE_PROP = "pendingChange.message_PK01"
     static final String PACKAGE_DELETED = "pendingChange.message_PK02"
+    static final String PACKAGE_TIPP_COUNT_CHANGED = "pendingChange.message_PK03"
     static final String BILLING_SUM_UPDATED = "pendingChange.message_CI01"
     static final String LOCAL_SUM_UPDATED = "pendingChange.message_CI02"
-    static final Set<String> SETTING_KEYS = [NEW_TITLE, TITLE_UPDATED, TITLE_DELETED, NEW_COVERAGE, COVERAGE_UPDATED, COVERAGE_DELETED, PACKAGE_PROP, PACKAGE_DELETED]
+    static final String NOTIFICATION_SUFFIX = "_N" //TODO is for making the notification itself inheritable, not just the behavior
+    static final Set<String> SETTING_KEYS = [NEW_TITLE, TITLE_UPDATED, TITLE_DELETED, NEW_COVERAGE, COVERAGE_UPDATED, COVERAGE_DELETED, NEW_PRICE, PRICE_UPDATED, PRICE_DELETED, PACKAGE_PROP, PACKAGE_DELETED]
 
     String settingKey
     @RefdataAnnotation(cat = RDConstants.PENDING_CHANGE_CONFIG_SETTING)
@@ -27,14 +32,14 @@ class PendingChangeConfiguration {
     static belongsTo = [subscriptionPackage: SubscriptionPackage]
 
     static mapping = {
-        subscriptionPackage     column: 'pcc_sp_fk'
+        subscriptionPackage     column: 'pcc_sp_fk', index: 'pcc_sp_idx'
         settingKey              column: 'pcc_setting_key_enum'
         settingValue            column: 'pcc_setting_value_rv_fk'
-        withNotification        column: 'pcc_with_information'
+        withNotification        column: 'pcc_with_notification'
     }
 
     static constraints = {
-        settingValue(nullable:true,blank:false)
+        settingValue(nullable:true) //for package changes; they are with notification only
     }
 
     static PendingChangeConfiguration construct(Map<String,Object> configMap) throws CreationException {

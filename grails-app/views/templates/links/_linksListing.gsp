@@ -1,7 +1,7 @@
 <%@page import="de.laser.helper.RDStore; de.laser.Subscription; de.laser.License" %>
 <laser:serviceInjection/>
 <div class="content">
-    <h5 class="ui header">
+    <h2 class="ui header">
         <g:if test="${subscriptionLicenseLink}">
             <g:message code="license.plural"/>
         </g:if>
@@ -11,7 +11,7 @@
         <g:elseif test="${license}">
             <g:message code="license.details.linksHeader"/>
         </g:elseif>
-    </h5>
+    </h2>
     <g:if test="${links.entrySet()}">
         <table class="ui three column table">
             <g:each in="${links.entrySet()}" var="linkTypes">
@@ -47,11 +47,11 @@
                             </td>
                             <td class="right aligned">
                                 <g:if test="${pair.propertySet && pair instanceof License}">
-                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.viewLicenseProperties')}">
-                                        <button id="derived-license-properties-toggle${link.id}" class="ui icon button la-js-dont-hide-button">
-                                            <i class="ui angle double down icon"></i>
-                                        </button>
-                                    </span>
+                                    <button id="derived-license-properties-toggle${link.id}"
+                                            class="ui icon button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                            data-content="${message(code:'subscription.details.viewLicenseProperties')}">
+                                        <i class="ui angle double down icon"></i>
+                                    </button>
                                     <laser:script file="${this.getGroovyPageFileName()}">
                                         $("#derived-license-properties-toggle${link.id}").on('click', function() {
                                             $("#derived-license-properties${link.id}").transition('slide down');
@@ -68,7 +68,7 @@
                                 <g:render template="/templates/links/subLinksModal"
                                           model="${[tmplText:message(code:'subscription.details.editLink'),
                                                     tmplIcon:'write',
-                                                    tmplCss: 'icon la-selectable-button',
+                                                    tmplCss: 'icon la-selectable-button la-popup-tooltip la-delay',
                                                     tmplID:'editLink',
                                                     tmplModalID:"sub_edit_link_${link.id}",
                                                     subscriptionLicenseLink: subscriptionLicenseLink,
@@ -84,7 +84,9 @@
                                                 <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                         data-confirm-term-how="unlink"
-                                                        controller="subscription" action="unlinkLicense" params="${[license: link.sourceLicense.id, id:subscription.id]}">
+                                                        controller="subscription" action="unlinkLicense" params="${[license: link.sourceLicense.id, id:subscription.id]}"
+                                                        role="button"
+                                                        aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                                     <i class="unlink icon"></i>
                                                 </g:link>
                                             </span>
@@ -95,7 +97,9 @@
                                             <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                     data-confirm-term-how="unlink"
-                                                    controller="myInstitution" action="unlinkObjects" params="${[oid : genericOIDService.getOID(link)]}">
+                                                    controller="myInstitution" action="unlinkObjects" params="${[oid : genericOIDService.getOID(link)]}"
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                                 <i class="unlink icon"></i>
                                             </g:link>
                                         </span>

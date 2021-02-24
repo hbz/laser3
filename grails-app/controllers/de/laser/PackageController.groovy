@@ -2,7 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.ExecutorWrapperService
 import de.laser.auth.User
- 
+import de.laser.exceptions.CreationException
 import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
@@ -18,12 +18,14 @@ import org.apache.poi.hssf.usermodel.HSSFSheet
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class PackageController  {
+class PackageController {
 
     def genericOIDService
     def yodaService
@@ -36,71 +38,79 @@ class PackageController  {
     def addressbookService
     def docstoreService
     def gokbService
-    def globalSourceSyncService
     def filterService
     EscapeService escapeService
+    MessageSource messageSource
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
+    //Data from GOKB ES
     @Secured(['ROLE_USER'])
     def index() {
 
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        if (!apiSource) {
+            redirect controller: 'package', action: 'list'
+            return
+        }
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        params.max = params.max ?: result.user.getDefaultPageSize()
+        SwissKnife.setPaginationParams(result, params, result.user)
 
-            if (params.q == "") params.remove('q');
+        result.editUrl = apiSource.baseUrl + apiSource.fixToken
 
-            if (params.search.equals("yes")) {
-                //when searching make sure results start from first page
-                params.offset = 0
-                params.remove("search")
-            }
+        String esQuery = "?componentType=Package"
+        if (params.q) {
+            result.filterSet = true
+            //for ElasticSearch
+            esQuery += "&name=${params.q}"
+            //the result set has to be broadened down by IdentifierNamespace queries! Problematic if the package is not in LAS:eR yet!
+        }
 
-            def old_q = params.q
-            def old_sort = params.sort
+        if (params.provider) {
+            result.filterSet = true
+            esQuery += "&providerName=${params.provider}"
+        }
 
-            if (!ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)) {
-                redirect controller: 'package', action: 'list'
-                return
-            }
+        if (params.curatoryGroup) {
+            result.filterSet = true
+            esQuery += "&curatoryGroup=${params.curatoryGroup}"
+        }
 
-            def gokbRecords = []
+        if (params.resourceTyp) {
+            result.filterSet = true
+            esQuery += "&contentType=${params.resourceTyp}"
+        }
 
-            ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
-                gokbRecords << gokbService.getPackagesMap(api, params.q, false).records
-            }
 
-            params.sort = params.sort ?: 'name'
-            params.order = params.order ?: 'asc'
+        /*
+        to implement:
+        - provider
+        - componentType
+        - series
+        - subjectArea
+        - curatoryGroup
+        - year (combination of dateFirstPrint and dateFirstOnline)
+         */
 
-            result.records = gokbRecords ? gokbRecords.flatten().sort() : null
+        String sort = params.sort ? "&sort="+params.sort: "&sort=sortname"
+        String order = params.order ? "&order="+params.order: "&order=asc"
+        String max = params.max ? "&max=${params.max}" : "&max=${result.max}"
+        String offset = params.offset ? "&offset=${params.offset}" : "&offset=${result.offset}"
 
-            result.records?.sort { x, y ->
-                if (params.order == 'desc') {
-                    y."${params.sort}".toString().compareToIgnoreCase x."${params.sort}".toString()
-                } else {
-                    x."${params.sort}".toString().compareToIgnoreCase y."${params.sort}".toString()
-                }
-            }
+        Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups')
+        if (queryCuratoryGroups.warning) {
+            List recordsCuratoryGroups = queryCuratoryGroups.warning.result
+            result.curatoryGroups = recordsCuratoryGroups
+        }
 
-            result.resultsTotal2 = result.records?.size()
 
-            Integer start = params.offset ? params.int('offset') : 0
-            Integer end = params.offset ? params.int('max') + params.int('offset') : params.int('max')
-            end = (end > result.records?.size()) ? result.records?.size() : end
-
-            result.records = result.records?.subList(start, end)
-
-            //Double-Quoted search strings wont display without this
-            params.q = old_q?.replace("\"", "&quot;")
-
-            if (!old_q) {
-                params.remove('q')
-            }
-            if (!old_sort) {
-                params.remove('sort')
-            }
+        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + sort + order + max + offset)
+        if (queryResult.warning) {
+            List records = queryResult.warning.records
+            result.recordsCount = queryResult.warning.count
+            result.records = records
+        }
 
         result
     }
@@ -156,18 +166,18 @@ class PackageController  {
 
 
         log.debug(base_qry + ' <<< ' + qry_params)
-        result.packageInstanceTotal = Subscription.executeQuery( "select p.id " + base_qry, qry_params ).size()
+        result.packageInstanceTotal = Subscription.executeQuery("select p.id " + base_qry, qry_params).size()
 
 
         withFormat {
             html {
-                result.packageInstanceList = Subscription.executeQuery( "select p " + base_qry, qry_params, [max: result.max, offset: result.offset] )
+                result.packageInstanceList = Subscription.executeQuery("select p " + base_qry, qry_params, [max: result.max, offset: result.offset])
                 result
             }
             csv {
                 response.setHeader("Content-disposition", "attachment; filename=\"packages.csv\"")
                 response.contentType = "text/csv"
-                def packages = Subscription.executeQuery( "select p " + base_qry, qry_params )
+                def packages = Subscription.executeQuery("select p " + base_qry, qry_params)
                 def out = response.outputStream
                 log.debug('colheads');
                 out.withWriter { writer ->
@@ -185,7 +195,7 @@ class PackageController  {
         }
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
@@ -217,11 +227,11 @@ class PackageController  {
                 return
             }
 
-            def groupedA = listA.groupBy({ it.title.title })
-            def groupedB = listB.groupBy({ it.title.title })
+            def groupedA = listA.groupBy({ it.name })
+            def groupedB = listB.groupBy({ it.name })
 
-            def mapA = listA.collectEntries { [it.title.title, it] }
-            def mapB = listB.collectEntries { [it.title.title, it] }
+            def mapA = listA.collectEntries { [it.name, it] }
+            def mapB = listB.collectEntries { [it.name, it] }
 
             result.listACount = [tipps: listA.size(), titles: mapA.size()]
             result.listBCount = [tipps: listB.size(), titles: mapB.size()]
@@ -263,8 +273,8 @@ class PackageController  {
                                 def tippA = values[0]
                                 def tippB = values[1]
                                 def colorCode = values[2]
-                                def pissn = tippA ? tippA.title.getIdentifierValue('issn') : tippB.title.getIdentifierValue('issn');
-                                def eissn = tippA ? tippA.title.getIdentifierValue('eISSN') : tippB.title.getIdentifierValue('eISSN');
+                                def pissn = tippA ? tippA.getIdentifierValue('issn') : tippB.getIdentifierValue('issn');
+                                def eissn = tippA ? tippA.getIdentifierValue('eISSN') : tippB.getIdentifierValue('eISSN');
 
                                 writer.write("\"${title}\",\"${pissn ?: ''}\",\"${eissn ?: ''}\",\"${formatDateOrNull(dateFormatter, tippA?.startDate)}\",\"${formatDateOrNull(dateFormatter, tippB?.startDate)}\",\"${tippA?.startVolume ?: ''}\",\"${tippB?.startVolume ?: ''}\",\"${tippA?.startIssue ?: ''}\",\"${tippB?.startIssue ?: ''}\",\"${formatDateOrNull(dateFormatter, tippA?.endDate)}\",\"${formatDateOrNull(dateFormatter, tippB?.endDate)}\",\"${tippA?.endVolume ?: ''}\",\"${tippB?.endVolume ?: ''}\",\"${tippA?.endIssue ?: ''}\",\"${tippB?.endIssue ?: ''}\",\"${tippA?.coverageNote ?: ''}\",\"${tippB?.coverageNote ?: ''}\",\"${colorCode}\"\n")
                             }
@@ -331,40 +341,41 @@ class PackageController  {
 
     @Secured(['ROLE_USER'])
     def show() {
-        exportService.printStart("Package show")
-
         Map<String, Object> result = [:]
 
         result.user = contextService.getUser()
         Package packageInstance = Package.get(params.id)
         if (!packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
 
-        result.pkg_link_str = "${grailsApplication.config.grails.serverURL}/package/show/${params.id}"
+        result.currentTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_CURRENT).size()
+        result.plannedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateGreaterThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+        result.expiredTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateLessThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+        result.deletedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_DELETED).size()
+
+        result.contextOrg = contextService.getOrg()
+        result.contextCustomerType = result.contextOrg.getCustomerType()
 
         // tasks
-        Org contextOrg = contextService.getOrg()
-        result.tasks = taskService.getTasksByResponsiblesAndObject(contextService.getUser(), contextOrg, packageInstance)
-        Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
-        result << preCon
-
-        result.contextOrg = contextOrg
+        /*
+        result.tasks = taskService.getTasksByResponsiblesAndObject(contextService.getUser(), result.contextOrg, packageInstance)
+        Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(result.contextOrg)
+        result << preCon*/
 
         result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific package editor', RDConstants.PERSON_RESPONSIBILITY)
-        result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
+        result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.contextOrg)
 
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgs = packageInstance.orgs
         //result.visibleOrgs.sort { it.org.sortname }
 
         List<RefdataValue> roleTypes = [RDStore.OR_SUBSCRIBER]
-        if(accessService.checkPerm('ORG_CONSORTIUM')) {
+        if (accessService.checkPerm('ORG_CONSORTIUM')) {
             roleTypes.addAll([RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS])
-        }
-        else if(accessService.checkPerm('ORG_INST_COLLECTIVE')) {
+        } else if (accessService.checkPerm('ORG_INST_COLLECTIVE')) {
             roleTypes.addAll([RDStore.OR_SUBSCRIPTION_COLLECTIVE, RDStore.OR_SUBSCRIBER_COLLECTIVE])
         }
 
@@ -381,18 +392,26 @@ class PackageController  {
             }
         }
 
-        result.unfiltered_num_tipp_rows = TitleInstancePackagePlatform.executeQuery(
-                "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg", [pkg: packageInstance]).size()
-
         result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
 
-        if (OrgSetting.get(contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting){
-            result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
+        if (OrgSetting.get(result.contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting) {
+            result.statsWibid = result.contextOrg.getIdentifierByType('wibid')?.value
             result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
             result.packageIdentifier = packageInstance.getIdentifierByType('isil')?.value
         }
 
         result.packageInstance = packageInstance
+
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+
+        String esQuery = "?componentType=Package&uuid=${packageInstance.gokbId}"
+
+        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery)
+        if (queryResult.warning) {
+            List records = queryResult.warning.records
+            result.packageInstanceRecord = records ? records[0] : [:]
+        }
+
         result
     }
 
@@ -400,17 +419,23 @@ class PackageController  {
     def current() {
         log.debug("current ${params}");
         Map<String, Object> result = [:]
-        boolean showDeletedTipps = false
         result.user = contextService.getUser()
         result.editable = isEditable()
+        result.contextOrg = contextService.getOrg()
+        result.contextCustomerType = result.contextOrg.getCustomerType()
 
         Package packageInstance = Package.get(params.id)
         if (!packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
         result.packageInstance = packageInstance
+
+        result.currentTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_CURRENT).size()
+        result.plannedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateGreaterThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+        result.expiredTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateLessThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+        result.deletedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_DELETED).size()
 
         if (executorWrapperService.hasRunningProcess(packageInstance)) {
             result.processingpc = true
@@ -422,40 +447,30 @@ class PackageController  {
         )
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-        params.max = result.max
 
-        // def base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = ? "
-        Map<String,Object> qry_params = [pkgInstance: packageInstance]
-        Date date_filter = params.mode == 'advanced' ? null : new Date()
-
-        Map<String,Object> query = filterService.generateBasePackageQuery(params, qry_params, showDeletedTipps, date_filter,"Package")
+        Map<String, Object> query = filterService.getTippQuery(params, [packageInstance])
         result.filterSet = query.filterSet
 
-        List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp "+query.base_qry, query.qry_params)
-        result.titlesList = titlesList.drop(result.offset).take(result.max)
-        result.num_tipp_rows = titlesList.size()
+        List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.query, query.queryParams)
 
-        result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
+        String filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.current'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
 
-        String filename = "${escapeService.escapeString(packageInstance.name)}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
-
-        if(params.exportKBart) {
+        if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
             Map<String,List> tableData = exportService.generateTitleExportKBART(titlesList)
             out.withWriter { writer ->
-                writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
+                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
             out.flush()
             out.close()
-        }
-        else if(params.exportXLSX) {
+        } else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             Map<String,List> export = exportService.generateTitleExportXLS(titlesList)
             Map sheetData = [:]
-            sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
+            sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
             workbook.write(response.outputStream)
             response.outputStream.flush()
@@ -464,6 +479,11 @@ class PackageController  {
         }
         withFormat {
             html {
+
+                result.titlesList = titlesList.drop(result.offset).take(result.max)
+                result.num_tipp_rows = titlesList.size()
+
+                result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
                 result
             }
             csv {
@@ -471,9 +491,9 @@ class PackageController  {
                 response.contentType = "text/csv"
 
                 ServletOutputStream out = response.outputStream
-                Map<String,List> tableData = exportService.generateTitleExportCSV(titlesList)
+                Map<String, List> tableData = exportService.generateTitleExportCSV(titlesList)
                 out.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.rows,';'))
+                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.rows, ';'))
                 }
                 out.flush()
                 out.close()
@@ -482,7 +502,7 @@ class PackageController  {
     }
 
     @Deprecated
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def deleteDocuments() {
         def ctxlist = []
 
@@ -494,11 +514,13 @@ class PackageController  {
     }
 
     @Deprecated
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def documents() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        result.institution = contextService.getOrg()
+        result.contextOrg = contextService.getOrg()
+        result.contextCustomerType = result.contextOrg.getCustomerType()
+        result.institution = result.contextOrg
         result.packageInstance = Package.get(params.id)
         result.editable = isEditable()
 
@@ -506,54 +528,111 @@ class PackageController  {
     }
 
     @Secured(['ROLE_USER'])
-    def expected() {
-        previous_expected(params, "expected")
+    def planned() {
+        planned_expired_deleted(params, "planned")
     }
 
     @Secured(['ROLE_USER'])
-    def previous() {
-        previous_expected(params, "previous")
+    def expired() {
+        planned_expired_deleted(params, "expired")
     }
 
     @Secured(['ROLE_USER'])
-    def previous_expected(params, func) {
-        log.debug("previous_expected ${params}");
+    def deleted() {
+        planned_expired_deleted(params, "deleted")
+    }
+
+    @Secured(['ROLE_USER'])
+    def planned_expired_deleted(params, func) {
+        log.debug("planned_expired_deleted ${params}");
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         result.editable = isEditable()
+        result.contextOrg = contextService.getOrg()
+        result.contextCustomerType = result.contextOrg.getCustomerType()
 
         Package packageInstance = Package.get(params.id)
         if (!packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
         result.packageInstance = packageInstance
 
+        result.currentTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_CURRENT).size()
+        result.plannedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateGreaterThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+        result.expiredTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateLessThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+        result.deletedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_DELETED).size()
+
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-        params.max = result.max
 
         def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
 
-        String base_qry = "from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status != :status "
-        Map<String, Object> qry_params = [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED, date: new Date()]
-
-        if (func == "expected") {
-            base_qry += " and ( coalesce(tipp.accessStartDate, tipp.pkg.startDate) >= :date ) "
+        String filename
+        if (func == "planned") {
+            params.planned = true
+            params.notStatus = RDStore.TIPP_STATUS_DELETED.id
+            filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.planned'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
+        } else if (func == "expired"){
+            params.expired = true
+            params.notStatus = RDStore.TIPP_STATUS_DELETED.id
+            filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.expired'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
         }
-        else {
-            base_qry += " and ( tipp.accessEndDate <= :date ) "
+        else if (func == "deleted"){
+            params.status = RDStore.TIPP_STATUS_DELETED.id
+            filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.deleted'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
         }
 
-        base_qry += " order by ${params.sort ?: 'tipp.title.sortTitle'} ${params.order ?: 'asc'} "
+        Map<String, Object> query = filterService.getTippQuery(params, [packageInstance])
+        result.filterSet = query.filterSet
+        //println(query)
 
-        log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
-        result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + base_qry, qry_params, limits)
-        result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params ).size()
+        List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.query, query.queryParams)
 
-        result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
+        if (params.exportKBart) {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+            response.contentType = "text/tsv"
+            ServletOutputStream out = response.outputStream
+            Map<String,List> tableData = exportService.generateTitleExportKBART(titlesList)
+            out.withWriter { writer ->
+                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+            }
+            out.flush()
+            out.close()
+        } else if (params.exportXLSX) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            Map<String,List> export = exportService.generateTitleExportXLS(titlesList)
+            Map sheetData = [:]
+            sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+        }
+        withFormat {
+            html {
 
-        result
+                result.titlesList = titlesList.drop(result.offset).take(result.max)
+                result.num_tipp_rows = titlesList.size()
+
+                result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
+                result
+            }
+            csv {
+                response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+                response.contentType = "text/csv"
+
+                ServletOutputStream out = response.outputStream
+                Map<String, List> tableData = exportService.generateTitleExportCSV(titlesList)
+                out.withWriter { writer ->
+                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.rows, ';'))
+                }
+                out.flush()
+                out.close()
+            }
+        }
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -698,47 +777,103 @@ class PackageController  {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
-    def addToSub() {
-        Package pkg = Package.get(params.id)
-        Subscription sub = Subscription.get(params.subid)
-        boolean add_entitlements = params.addEntitlements == 'true'
-        String baseUrl = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true).baseUrl
-        GlobalRecordSource source = GlobalRecordSource.findByUri("${baseUrl}/gokb/oai/packages")
-        log.debug("addToSub. Global Record Source URL: " +source.baseUrl)
-        globalSourceSyncService.source = source
-        GPathResult packageRecord = globalSourceSyncService.fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:'gokb',identifier:pkg.gokbId])
-        if(packageRecord && packageRecord.record?.header?.status?.text() != 'deleted') {
-            pkg.addToSubscription(sub, add_entitlements)
-            if(add_entitlements) {
-                flash.message = message(code:'subscription.details.link.processingWithEntitlements')
-                redirect controller: 'subscription', action: 'index', id: params.subid
+    def processLinkToSub() {
+        Map<String, Object> result = [:]
+        result.pkg = Package.get(params.id)
+        result.subscription = genericOIDService.resolveOID(params.targetObjectId)
+
+        if(result.subscription) {
+            Locale locale = LocaleContextHolder.getLocale()
+            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+            threadArray.each { Thread thread ->
+                if (thread.name == 'PackageSync_' + result.subscription.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription, result.pkg)) {
+                    result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running', null, locale)
+                }
             }
-            else {
-                flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
-                redirect controller: 'subscription', action: 'addEntitlements', params: [id: params.subid, pkgfilter: pkg.gokbId]
+            //to be deployed in parallel thread
+            if (result.pkg) {
+                String addType = params.addType
+                log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
+                if (addType == 'With') {
+                    result.pkg.addToSubscription(result.subscription, true)
+                } else if (addType == 'Without') {
+                    result.pkg.addToSubscription(result.subscription, false)
+                }
+
+                if (addType != null && addType != '') {
+                    SubscriptionPackage subscriptionPackage = SubscriptionPackage.findBySubscriptionAndPkg(result.subscription, result.pkg)
+                    if (subscriptionPackage) {
+                        PendingChangeConfiguration.SETTING_KEYS.each { String settingKey ->
+                            Map<String, Object> configMap = [subscriptionPackage: subscriptionPackage, settingKey: settingKey, withNotification: false]
+                            boolean auditable = false
+                            //Set because we have up to three keys in params with the settingKey
+                            Set<String> keySettings = params.keySet().findAll { k -> k.contains(settingKey) }
+                            keySettings.each { key ->
+                                List<String> settingData = key.split('!§!')
+                                switch (settingData[1]) {
+                                    case 'setting': configMap.settingValue = RefdataValue.get(params[key])
+                                        break
+                                    case 'notification': configMap.withNotification = params[key] != null
+                                        break
+                                    case 'auditable': auditable = params[key] != null
+                                        break
+                                }
+                            }
+                            try {
+                                PendingChangeConfiguration.construct(configMap)
+                                boolean hasConfig = AuditConfig.getConfig(subscriptionPackage.subscription, settingKey) != null
+                                if (auditable && !hasConfig) {
+                                    AuditConfig.addConfig(subscriptionPackage.subscription, settingKey)
+                                } else if (!auditable && hasConfig) {
+                                    AuditConfig.removeConfig(subscriptionPackage.subscription, settingKey)
+                                }
+                            }
+                            catch (CreationException e) {
+                                log.error("ProcessLinkPackage -> PendingChangeConfiguration: " + e.message)
+                            }
+                        }
+                    }
+                }
             }
+            switch (params.addType) {
+                case "With": flash.message = message(code: 'subscription.details.link.processingWithEntitlements')
+                    redirect controller: 'subscription', action: 'index', params: [id: result.subscription.id, gokbId: result.pkg.gokbId]
+                    return
+                    break
+                case "Without": flash.message = message(code: 'subscription.details.link.processingWithoutEntitlements')
+                    redirect controller: 'subscription', action: 'addEntitlements', params: [id: result.subscription.id, packageLinkPreselect: result.pkg.gokbId, preselectedName: result.pkg.name]
+                    return
+                    break
+            }
+        }else {
+            flash.error = message(code: 'package.show.linkToSub.noSubSelection')
+            redirect controller: 'package', action: 'show', params: [id: params.id]
+            return
         }
-        else {
-            flash.error = message(code:'subscription.details.link.packageNotFound')
-            redirect controller: 'subscription', action: 'linkPackage', id: params.subid
-        }
+
+        redirect(url: request.getHeader("referer"))
     }
 
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def notes() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
+        result.contextOrg = contextService.getOrg()
+        result.contextCustomerType = result.contextOrg.getCustomerType()
         result.packageInstance = Package.get(params.id)
         result.editable = isEditable()
         result
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     @Transactional
     def tasks() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
+        result.contextOrg = contextService.getOrg()
+        result.contextCustomerType = result.contextOrg.getCustomerType()
         result.packageInstance = Package.get(params.id)
         result.editable = isEditable()
 
@@ -760,7 +895,7 @@ class PackageController  {
         result.taskInstanceCount = result.taskInstanceList.size()
         result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
 
-        result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.packageInstance)
+        result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user, result.packageInstance)
         result.myTaskInstanceCount = result.myTaskInstanceList.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
@@ -769,7 +904,7 @@ class PackageController  {
         result
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     @Transactional
     def history() {
         Map<String, Object> result = [:]
@@ -785,10 +920,10 @@ class PackageController  {
             params.max = result.max
         }
 
-    result.packageInstance = Package.get(params.id)
-    result.editable=isEditable()
+        result.packageInstance = Package.get(params.id)
+        result.editable = isEditable()
 
-      def limits = (!params.format||params.format.equals("html"))?[max:result.max, offset:result.offset]:[offset:0]
+        def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
 
         // postgresql migration
         String subQuery = 'select cast(id as string) from TitleInstancePackagePlatform as tipp where tipp.pkg = cast(:pkgid as int)'
@@ -797,10 +932,10 @@ class PackageController  {
         //def base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string)) or ( e.className = :tippcls and e.persistedObjectId in ( select id from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgid ) )'
         //def query_params = [ pkgcls: Package.class.name, tippcls: TitleInstancePackagePlatform.class.name, pkgid: params.id, subQueryResult: subQueryResult ]
 
-        String base_query   = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string))'
-        def query_params = [ pkgcls: Package.class.name, pkgid: params.id]
+        String base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string))'
+        def query_params = [pkgcls: Package.class.name, pkgid: params.id]
 
-      // postgresql migration
+        // postgresql migration
         if (subQueryResult) {
             base_query += ' or ( e.className = :tippcls and e.persistedObjectId in (:subQueryResult) )'
             query_params.'tippcls' = TitleInstancePackagePlatform.class.name
@@ -810,9 +945,9 @@ class PackageController  {
 
         log.debug("base_query: ${base_query}, params:${query_params}, limits:${limits}");
 
-    result.historyLines = AuditLogEvent.executeQuery('select e ' + base_query + ' order by e.lastUpdated desc', query_params, limits);
-    result.num_hl = AuditLogEvent.executeQuery('select e.id '+ base_query, query_params).size()
-    result.formattedHistoryLines = []
+        result.historyLines = AuditLogEvent.executeQuery('select e ' + base_query + ' order by e.lastUpdated desc', query_params, limits);
+        result.num_hl = AuditLogEvent.executeQuery('select e.id ' + base_query, query_params).size()
+        result.formattedHistoryLines = []
 
 
         result.historyLines.each { hl ->
@@ -821,7 +956,7 @@ class PackageController  {
             def linetype = null
 
             switch (hl.className) {
-                case Package.class.name :
+                case Package.class.name:
                     Package package_object = Package.get(hl.persistedObjectId);
                     line_to_add = [link        : createLink(controller: 'package', action: 'show', id: hl.persistedObjectId),
                                    name        : package_object.toString(),
@@ -833,11 +968,11 @@ class PackageController  {
                     ]
                     linetype = 'Package'
                     break;
-                case TitleInstancePackagePlatform.class.name :
+                case TitleInstancePackagePlatform.class.name:
                     TitleInstancePackagePlatform tipp_object = TitleInstancePackagePlatform.get(hl.persistedObjectId);
                     if (tipp_object != null) {
                         line_to_add = [link        : createLink(controller: 'tipp', action: 'show', id: hl.persistedObjectId),
-                                       name        : tipp_object.title?.title + " / " + tipp_object.pkg?.name,
+                                       name        : tipp_object.name + " / " + tipp_object.pkg?.name,
                                        lastUpdated : hl.lastUpdated,
                                        propertyName: hl.propertyName,
                                        actor       : User.findByUsername(hl.actor),
@@ -879,11 +1014,10 @@ class PackageController  {
     @Secured(['ROLE_YODA'])
     def purgeDuplicatePackages() {
         List<Long> toDelete = (List<Long>) JSON.parse(params.toDelete)
-        if(params.doIt == "true") {
+        if (params.doIt == "true") {
             yodaService.executePackageCleanup(toDelete)
             redirect action: 'index'
-        }
-        else {
+        } else {
             flash.message = "Betroffene Paket-IDs wären gelöscht worden: ${toDelete.join(", ")}"
             redirect action: 'getDuplicatePackages'
         }

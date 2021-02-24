@@ -27,58 +27,8 @@
 <%-- <g:render template="nav"/> --%>
 
 <g:set var="counter" value="${offset + 1}"/>
-${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'default.paginate.offset', args: [(offset + 1), (offset + (tipps?.size())), num_tipp_rows])} )
 
-<g:render template="/templates/filter/javascript" />
-<semui:filter showFilterButton="true">
-    <g:form class="ui form" action="addEntitlements" params="${params}" method="get">
-        <input type="hidden" name="sort" value="${params.sort}">
-        <input type="hidden" name="order" value="${params.order}">
-
-        <div class="fields two">
-            <div class="field">
-                <label for="filter">${message(code: 'subscription.compare.filter.title')}</label>
-                <input id="filter" name="filter" value="${params.filter}"/>
-            </div>
-
-            <div class="field">
-                <label for="pkgfilter">${message(code: 'subscription.details.from_pkg')}</label>
-                <select id="pkgfilter" name="pkgfilter">
-                    <option value="">${message(code: 'subscription.details.from_pkg.all')}</option>
-                    <g:if test="${params.packageLinkPreselect}">
-                        <option value="${params.packageLinkPreselect}" selected=selected>${params.preselectedName}</option>
-                    </g:if>
-                    <%--<g:elseif test="${!subscription.packages.find { sp -> sp.pkg.gokbId == params.pkgFilter}}">
-                        <option value="${params.pkgFilter}" selected=selected>${params.preselectedName}</option>
-                    </g:elseif>--%>
-                    <g:each in="${subscription.packages}" var="sp">
-                        <option value="${sp.pkg.gokbId}" ${sp.pkg.gokbId == params.pkgfilter ? 'selected=selected' : ''}>${sp.pkg.name}</option>
-                    </g:each>
-                </select>
-            </div>
-        </div>
-
-        <div class="three fields">
-            <div class="field">
-                <semui:datepicker label="default.startsBefore.label" id="startsBefore" name="startsBefore"
-                                  value="${params.startsBefore}"/>
-            </div>
-
-            <div class="field">
-                <semui:datepicker label="default.endsAfter.label" id="endsAfter" name="endsAfter"
-                                  value="${params.endsAfter}"/>
-            </div>
-
-            <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui secondary button"
-                       value="${message(code: 'default.button.filter.label')}">
-            </div>
-        </div>
-
-    </g:form>
-</semui:filter>
+<g:render template="/templates/filter/tipp_ieFilter"/>
 
     <semui:messages data="${flash}"/>
 
@@ -159,17 +109,16 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                             allChecked = ""
                     }
                 %>
-                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}
-                                                onClick="javascript:selectAll()"/></g:if>
+                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
             </th>
             <th rowspan="3"><g:message code="sidewide.number"/></th>
-            <g:sortableColumn class="ten wide" params="${params}" property="tipp.title.sortTitle" title="${message(code: 'title.label')}"/>
+            <g:sortableColumn class="ten wide" params="${params}" property="tipp.sortName" title="${message(code: 'title.label')}"/>
             <th><g:message code="tipp.coverage"/></th>
             <th><g:message code="tipp.access"/></th>
             <g:if test="${uploadPriceInfo}">
                 <th><g:message code="tipp.listPrice"/></th>
                 <th><g:message code="tipp.localPrice"/></th>
-                <th><g:message code="tipp.priceDate"/></th>
+                <th><g:message code="tipp.priceStartDate"/></th>
             </g:if>
             <th><g:message code="default.actions.label"/></th>
         </tr>
@@ -194,139 +143,26 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
             <td>${counter++}</td>
 
             <td>
-            <semui:listIcon type="${tipp.title.class.name}"/>
-            <strong><g:link controller="title" action="show"
-                            id="${tipp.title.id}">${tipp.title.title}</g:link></strong>
-
-            <g:if test="${tipp.title instanceof BookInstance && tipp.title.volume}">
-                (${message(code: 'title.volume.label')} ${tipp.title.volume})
-            </g:if>
-
-            <g:if test="${tipp.title instanceof BookInstance && (tipp.title.firstAuthor || tipp.title.firstEditor)}">
-                <br /><strong>${tipp.title.getEbookFirstAutorOrFirstEditor()}</strong>
-            </g:if>
-
-            <br />
-                <g:if test="${tipp?.id}">
-                    <div class="la-title">${message(code: 'default.details.label')}</div>
-                    <g:link class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                            data-content="${message(code: 'laser')}"
-                            href="${tipp?.hostPlatformURL.contains('http') ? tipp?.hostPlatformURL : 'http://' + tipp?.hostPlatformURL}"
-                            target="_blank"
-                            controller="tipp" action="show"
-                            id="${tipp?.id}">
-                        <i class="book icon"></i>
-                    </g:link>
-                </g:if>
-                <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
-                        var="gokbAPI">
-                    <g:if test="${tipp?.gokbId}">
-                        <a role="button"
-                           class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                           data-content="${message(code: 'gokb')}"
-                           href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + tipp?.gokbId : '#'}"
-                           target="_blank"><i class="la-gokb  icon"></i>
-                        </a>
-                    </g:if>
-                </g:each>
-            <br />
-
-            <g:if test="${tipp.title instanceof BookInstance}">
-                <g:if test="${tipp.title.editionStatement}">
-                <div class="item"><strong>${message(code: 'title.editionStatement.label')}:</strong> ${tipp.title.editionStatement}
-                </div>
-                </g:if>
-                <g:if test="${tipp.title.summaryOfContent}">
-                <div class="item">
-                     ${tipp.title.summaryOfContent}
-                </div>
-                </g:if>
-            </g:if>
-
-                <g:if test="${tipp.title.seriesName}">
-                    <div class="item">
-                        <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.seriesName.label')}"></i>
-                        <div class="content">
-                            ${tipp.title.seriesName}
-                        </div>
-                    </div>
-                </g:if>
-
-                <g:if test="${tipp.title.subjectReference}">
-                    <div class="item">
-                        <i class="grey icon comment alternate la-popup-tooltip la-delay" data-content="${message(code: 'title.subjectReference.label')}"></i>
-                        <div class="content">
-                            ${tipp.title.subjectReference}
-                        </div>
-                    </div>
-                </g:if>
-
-            <g:if test="${tipp.hostPlatformURL}">
-                <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
-            </g:if>
-            <br />
-            <g:each in="${tipp.title.ids?.sort { it.ns.ns }}" var="id">
-                <span class="ui small blue image label">
-                    ${id.ns.ns}: <div class="detail">${id.value}</div>
-                </span>
-            </g:each>
-
-
-            <div class="ui list">
-                <div class="item" title="${tipp.availabilityStatusExplanation}">
-                    <strong>${message(code: 'default.access.label')}:</strong> ${tipp.availabilityStatus?.getI10n('value')}
-                </div>
-
-            </div>
-
-            <div class="item">
-                <strong>${message(code: 'default.status.label')}:</strong>
-                <%--<semui:xEditableRefData owner="${tipp}" field="status" config="${de.laser.helper.RDConstants.TIPP_STATUS}"/>--%>
-                ${tipp.status.getI10n('value')}
-            </div>
-
-            <div class="item"><strong>${message(code: 'package.label')}:</strong>
-
-                <div class="la-flexbox">
-                    <i class="icon gift scale la-list-icon"></i>
-                    <g:link controller="package" action="show" id="${tipp?.pkg?.id}">${tipp?.pkg?.name}</g:link>
-                </div>
-            </div>
-
-            <div class="item"><strong>${message(code: 'tipp.platform')}:</strong>
-                <g:if test="${tipp?.platform.name}">
-                    ${tipp?.platform.name}
-                </g:if>
-                <g:else>${message(code: 'default.unknown')}</g:else>
-                <g:if test="${tipp?.platform.name}">
-                    <g:link class="ui icon mini  button la-url-button la-popup-tooltip la-delay"
-                            data-content="${message(code: 'tipp.tooltip.changePlattform')}"
-                            controller="platform" action="show" id="${tipp?.platform.id}">
-                        <i class="pencil alternate icon"></i>
-                    </g:link>
-                </g:if>
-                <g:if test="${tipp?.platform?.primaryUrl}">
-                    <a role="button" class="ui icon mini blue button la-url-button la-popup-tooltip la-delay"
-                       data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                       href="${tipp?.platform?.primaryUrl?.contains('http') ? tipp?.platform?.primaryUrl : 'http://' + tipp?.platform?.primaryUrl}"
-                       target="_blank"><i class="share square icon"></i></a>
-                </g:if>
-            </div>
-        </td>
+                <!-- START TEMPLATE -->
+                <g:render template="/templates/title"
+                          model="${[ie: null, tipp: tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                                    showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
+                <!-- END TEMPLATE -->
+            </td>
 
             <td>
-                <g:if test="${tipp.title instanceof BookInstance}">
+                <g:if test="${tipp.titleType.contains('Book')}">
                     <%-- TODO contact Ingrid! ---> done as of subtask of ERMS-1490 --%>
-                    <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                   %{-- <semui:datepicker class="ieOverwrite" placeholder="${message(code: 'title.dateFirstInPrint.label')}" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstInPrint : tipp.title?.dateFirstInPrint}"/>
+                    <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.dateFirstInPrint')}"></i>
+                   %{-- <semui:datepicker class="ieOverwrite" placeholder="${message(code: 'tipp.dateFirstInPrint')}" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstInPrint : tipp.title?.dateFirstInPrint}"/>
                     <%--${tipp.title.dateFirstInPrint}--%>--}%
                     <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${tipp.title.dateFirstInPrint}"/>
-                    <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                    %{--<semui:datepicker class="ieOverwrite" placeholder="${message(code: 'title.dateFirstOnline.label')}" name="ieAccessEnd" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstOnline : tipp.title?.dateFirstOnline}"/>
+                                  date="${tipp.dateFirstInPrint}"/>
+                    <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
+                    %{--<semui:datepicker class="ieOverwrite" placeholder="${message(code: 'tipp.dateFirstOnline')}" name="ieAccessEnd" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstOnline : tipp.title?.dateFirstOnline}"/>
                     <%--${tipp.title.dateFirstOnline}--%>--}%
                     <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${tipp.title.dateFirstOnline}"/>
+                                  date="${tipp.dateFirstOnline}"/>
                 </g:if>
                 <g:else>
                     <%-- The check if preselectCoverageStatements is set is done server-side; this is implicitely done when checking if the issueEntitlementOverwrite map has the coverage statement list.
@@ -337,21 +173,21 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                         <!-- von -->
                         <semui:datepicker class="ieOverwrite coverage" name="startDate${key}" value="${covStmt.startDate}" placeholder="${message(code:'tipp.startDate')}"/>
                         <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.startDate}"/>--%><br />
-                        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
-                        <input data-coverage="true" name="startVolume${key}" type="text" class="ui input ieOverwrite" value="${covStmt.startVolume}" placeholder="${message(code: 'tipp.volume')}">
+                        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.startVolume')}"></i>
+                        <input data-coverage="true" name="startVolume${key}" type="text" class="ui input ieOverwrite" value="${covStmt.startVolume}" placeholder="${message(code: 'tipp.startVolume')}">
                         <%--${tipp?.startVolume}--%><br />
-                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
-                        <input data-coverage="true" name="startIssue${key}" type="text" class="ui input ieOverwrite" value="${covStmt.startIssue}" placeholder="${message(code: 'tipp.issue')}">
+                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.startIssue')}"></i>
+                        <input data-coverage="true" name="startIssue${key}" type="text" class="ui input ieOverwrite" value="${covStmt.startIssue}" placeholder="${message(code: 'tipp.startIssue')}">
                         <%--${tipp?.startIssue}--%>
                         <semui:dateDevider/>
                         <!-- bis -->
                         <semui:datepicker class="ieOverwrite coverage" name="endDate${key}" value="${covStmt.endDate}" placeholder="${message(code:'tipp.endDate')}"/>
                         <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.endDate}"/><br />--%>
-                        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
-                        <input data-coverage="true" name="endVolume${key}" type="text" class="ui input ieOverwrite" value="${covStmt.endVolume}" placeholder="${message(code: 'tipp.volume')}">
+                        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.endVolume')}"></i>
+                        <input data-coverage="true" name="endVolume${key}" type="text" class="ui input ieOverwrite" value="${covStmt.endVolume}" placeholder="${message(code: 'tipp.endVolume')}">
                         <%--${tipp?.endVolume}--%><br />
-                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.issue')}"></i>
-                        <input data-coverage="true" name="endIssue${key}" type="text" class="ui input ieOverwrite" value="${covStmt.endIssue}" placeholder="${message(code: 'tipp.issue')}">
+                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.endIssue')}"></i>
+                        <input data-coverage="true" name="endIssue${key}" type="text" class="ui input ieOverwrite" value="${covStmt.endIssue}" placeholder="${message(code: 'tipp.endIssue')}">
                         <%--${tipp?.endIssue}--%><br />
                         <%--${tipp.coverageDepth}--%>
                         <input data-coverage="true" class="ieOverwrite" name="coverageDepth${key}" type="text" placeholder="${message(code:'tipp.coverageDepth')}" value="${covStmt.coverageDepth}"><br />
@@ -379,7 +215,7 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                     <g:formatNumber number="${issueEntitlementOverwrite[tipp.gokbId]?.localPrice}" type="currency" currencySymbol="${issueEntitlementOverwrite[tipp.gokbId]?.localCurrency}" currencyCode="${issueEntitlementOverwrite[tipp.gokbId]?.localCurrency}"/>
                 </td>
                 <td>
-                    <semui:datepicker class="ieOverwrite" name="priceDate" value="${issueEntitlementOverwrite[tipp.gokbId]?.priceDate}" placeholder="${message(code:'tipp.priceDate')}"/>
+                    <semui:datepicker class="ieOverwrite" name="priceDate" value="${issueEntitlementOverwrite[tipp.gokbId]?.priceDate}" placeholder="${message(code:'tipp.priceStartDate')}"/>
                 </td>
             </g:if>
             <td>
@@ -438,6 +274,10 @@ ${message(code: 'subscription.details.availableTitles')} ( ${message(code: 'defa
                 console.log("error occurred, consult logs!");
             });
     }
+
+    $("#select-all").change(function() {
+        JSPC.app.selectAll();
+    });
 
     $(".bulkcheck").change(function() {
         JSPC.app.updateSelectionCache($(this).parents("tr").attr("data-index"),$(this).prop('checked'));

@@ -32,97 +32,11 @@
             <div class="sixteen wide column">
 
                 <semui:form>
-                <div class="la-icon-list">
-                    <div class="item">
-                        <semui:listIcon type="${ti.printTitleType()}"/>
-                        <div class="content">
-                            ${ti.printTitleType()}
-                        </div>
-                    </div>
-                    <g:if test="${ti instanceof BookInstance && (ti.firstAuthor || ti.firstEditor)}">
-                        <div class="item">
-                            <i class="grey icon user circle la-popup-tooltip la-delay" data-content="${message(code: 'author.slash.editor')}"></i>
-                            <div class="content">
-                                ${ti.getEbookFirstAutorOrFirstEditor()}
-                            </div>
-                        </div>
-                    </g:if>
-
-                    <g:if test="${ti instanceof BookInstance}">
-                        <g:if test="${ti.volume}">
-                        <div class="item">
-                            <i class="grey icon la-books la-popup-tooltip la-delay" data-content="${message(code: 'tipp.volume')}"></i>
-                            <div class="content">
-                                 ${ti.volume})
-                            </div>
-                        </div>
-                        </g:if>
-                        <g:if test="${ti.editionStatement}">
-                        <div class="item">
-                            <i class="grey icon copy la-popup-tooltip la-delay" data-content="${message(code: 'title.editionStatement.label')}"></i>
-                            <div class="content">
-                                ${ti.editionStatement}
-                            </div>
-                        </div>
-                        </g:if>
-                        <g:if test="${ti.editionNumber}">
-                        <div class="item">
-                            <i class="grey icon copy outline la-popup-tooltip la-delay" data-content="${message(code: 'title.editionNumber.label')}"></i>
-                            <div class="content">
-                                ${ti.editionNumber}
-                            </div>
-                        </div>
-                        </g:if>
-                        <g:if test="${ti.summaryOfContent}">
-                        <div class="item">
-                            <i class="grey icon desktop la-popup-tooltip la-delay" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
-                            <div class="content">
-                                ${ti.summaryOfContent}
-                            </div>
-                        </div>
-                        </g:if>
-                        <g:if test="${ti.seriesName}">
-                            <div class="item">
-                                <i class="grey icon list la-popup-tooltip la-delay" data-content="${message(code: 'title.seriesName.label')}"></i>
-                                <div class="content">
-                                    ${ti.seriesName}
-                                </div>
-                            </div>
-                        </g:if>
-                        <g:if test="${ti.subjectReference}">
-                            <div class="item">
-                                <i class="grey icon comment alternate la-popup-tooltip la-delay" data-content="${message(code: 'title.subjectReference.label')}"></i>
-                                <div class="content">
-                                    ${ti.subjectReference}
-                                </div>
-                            </div>
-                        </g:if>
-
-                        <div class="item">
-                            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                               data-content="${message(code: 'title.dateFirstInPrint.label')}"></i>
-                        <div class="content">
-                            <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${ti.dateFirstInPrint}"/>
-                        </div>
-                        </div>
-                        <div class="item">
-                            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                                   data-content="${message(code: 'title.dateFirstOnline.label')}"></i>
-                        <div class="content"><g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                              date="${ti.dateFirstOnline}"/>
-                        </div>
-                        </div>
-                    </g:if>
-
-                    <div class="item">
-                        <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.status.label')}"></i>
-                        <div class="content">
-                            ${ti.status.getI10n("value")}
-                        </div>
-                    </div>
-
-                </div>
+                    <!-- START TEMPLATE -->
+                    <g:render template="/templates/title"
+                              model="${[ie: null, tipp: ti, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
+                                        showPackage: true, showPlattform: true, showCompact: false, showEmptyFields: true]}"/>
+                    <!-- END TEMPLATE -->
                 </semui:form>
             </div>
 
@@ -258,7 +172,7 @@
                   </g:if>
 
                   <g:each in="${t?.title?.ids?.sort{it?.ns?.ns}}" var="id">
-                      <span class="ui small blue image label">
+                      <span class="ui small basic image label">
                           ${id.ns.ns}: <div class="detail">${id.value}</div>
                       </span>
                   </g:each>
@@ -311,7 +225,7 @@
                           <g:if test="${t?.gokbId}">
                               <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                  data-content="${message(code: 'gokb')}"
-                                 href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + t?.gokbId : '#'}"
+                                 href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/?id=' + t?.gokbId : '#'}"
                                  target="_blank"><i class="la-gokb  icon"></i>
                               </a>
                           </g:if>
@@ -324,13 +238,13 @@
                       <p>
                           <!-- von -->
                           <g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.startDate}"/><br />
-                          <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>${covStmt.startVolume}<br />
-                          <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>${covStmt.startIssue}<br />
+                          <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.startVolume')}"></i>${covStmt.startVolume}<br />
+                          <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.startIssue')}"></i>${covStmt.startIssue}<br />
                           <semui:dateDevider/>
                           <!-- bis -->
                           <g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.endDate}"/><br />
-                          <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>${covStmt.endVolume}<br />
-                          <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>${covStmt.endIssue}<br />
+                          <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.endVolume')}"></i>${covStmt.endVolume}<br />
+                          <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.endIssue')}"></i>${covStmt.endIssue}<br />
                           <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageNote')}"></i>${covStmt.coverageNote}<br />
                           <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>${covStmt.coverageDepth}<br />
                           <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>${covStmt.embargo}<br />

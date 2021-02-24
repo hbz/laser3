@@ -76,12 +76,12 @@
                                     <div class="content">
                                         <div class="ui list">
                                             <g:if test="${ies}">
-                                                <g:each in="${ies.sort { it.tipp.title.title.toLowerCase() }}" var="ie">
+                                                <g:each in="${ies}" var="ie">
                                                     <div class="item">
                                                         <semui:listIcon hideTooltip="true"
-                                                                        type="${ie.tipp.title.class.name}"/>
-                                                        <strong><g:link controller="title" action="show"
-                                                                        id="${ie.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
+                                                                        type="${ie.tipp.titleType}"/>
+                                                        <strong><g:link controller="tipp" action="show"
+                                                                        id="${ie.tipp.id}">${ie.tipp.name}</g:link></strong>
                                                         <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
                                                     </div>
                                                 </g:each>
@@ -168,12 +168,12 @@
                                     <div class="content">
                                         <div class="ui list">
                                             <g:if test="${ies}">
-                                                <g:each in="${ies.sort { it.tipp.title.title.toLowerCase() }}" var="ie">
+                                                <g:each in="${ies}" var="ie">
                                                     <div class="item">
                                                         <semui:listIcon hideTooltip="true"
-                                                                        type="${ie.tipp.title.class.name}"/>
-                                                        <strong><g:link controller="title" action="show"
-                                                                        id="${ie.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
+                                                                        type="${ie.tipp.titleType}"/>
+                                                        <strong><g:link controller="tipp" action="show"
+                                                                        id="${ie.tipp.id}">${ie.tipp.name}</g:link></strong>
                                                         <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
                                                     </div>
                                                 </g:each>
@@ -259,13 +259,13 @@
 
                                         <div class="content">
                                             <div class="ui list">
-                                                <g:each in="${titleGroup.items?.sort { it.ie.tipp.title.title.toLowerCase() }}"
+                                                <g:each in="${titleGroup.items?.sort { it.ie.tipp.sortName }}"
                                                         var="item">
                                                     <div class="item">
                                                         <semui:listIcon hideTooltip="true"
-                                                                        type="${item.ie.tipp.title.class.name}"/>
-                                                        <strong><g:link controller="title" action="show"
-                                                                        id="${item.ie.tipp.title.id}">${item.ie.tipp.title.title}</g:link></strong>
+                                                                        type="${item.ie.tipp.titleType}"/>
+                                                        <strong><g:link controller="tipp" action="show"
+                                                                        id="${item.ie.tipp.id}">${item.ie.tipp.name}</g:link></strong>
                                                     </div>
                                                 </g:each>
                                             </div>
@@ -306,13 +306,13 @@
 
                                         <div class="content">
                                             <div class="ui list">
-                                                <g:each in="${titleGroup.items?.sort { it.ie.tipp.title.title.toLowerCase() }}"
+                                                <g:each in="${titleGroup.items?.sort { it.ie.tipp.titleType }}"
                                                         var="item">
                                                     <div class="item">
                                                         <semui:listIcon hideTooltip="true"
-                                                                        type="${item.ie.tipp.title.class.name}"/>
-                                                        <strong><g:link controller="title" action="show"
-                                                                        id="${item.ie.tipp.title.id}">${item.ie.tipp.title.title}</g:link></strong>
+                                                                        type="${item.ie.tipp.titleType}"/>
+                                                        <strong><g:link controller="tipp" action="show"
+                                                                        id="${item.ie.tipp.id}">${item.ie.tipp.name}</g:link></strong>
                                                     </div>
                                                 </g:each>
                                             </div>
@@ -335,44 +335,6 @@
                 </td>
             </g:if>
             </tr>
-            %{--<tr>
-                <td name="subscription.takeEntitlements.source">
-                    <strong>${message(code: 'issueEntitlement.countSubscription')} </strong>${sourceObject? sourceIEs?.size() : ""}<br />
-                    <g:each in="${sourceIEs}" var="ie">
-                        <div class="la-copyPack-container la-element">
-                            <div  data-ieoid="${genericOIDService.getOID(ie)}" class="la-copyPack-item">
-                                    <label>
-                                        <semui:listIcon hideTooltip="true" type="${ie.tipp.title.class.name}"/>
-                                        <strong><g:link controller="title" action="show" id="${ie.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
-                                        <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
-                                    </label>
-                            </div>
-
-                            --}%%{--COPY:--}%%{--
-                            <div class="ui checkbox la-toggle-radio la-replace">
-                                <g:checkBox name="subscription.takeEntitlementIds" value="${genericOIDService.getOID(ie)}" data-action="copy" checked="${true}"/>
-                            </div>
-                        </div>
-                    </g:each>
-                </td>
-                <td name="subscription.takeEntitlements.target">
-                    <strong>${message(code: 'issueEntitlement.countSubscription')} </strong>${targetObject? targetIEs?.size(): ""} <br />
-                    <g:each in="${targetIEs}" var="ie">
-                        <div class="la-copyPack-container la-element">
-                            <div data-pkgoid="${genericOIDService.getOID(ie.tipp.pkg)}" data-ieoid="${genericOIDService.getOID(ie)}" class=" la-copyPack-item">
-                                <semui:listIcon hideTooltip="true" type="${ie.tipp.title.class.name}"/>
-                                <strong><g:link controller="title" action="show" id="${ie.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
-                                <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
-                            </div>
-
-                             --}%%{--DELETE--}%%{--
-                            <div class="ui checkbox la-toggle-radio la-noChange">
-                                <g:checkBox name="subscription.deleteEntitlementIds" value="${genericOIDService.getOID(ie)}" data-action="delete" checked="${false}"/>
-                            </div>
-                        </div>
-                    </g:each>
-                </td>
-            </tr>--}%
             </tbody>
         </table>
         <g:set var="submitButtonText" value="${isRenewSub ?

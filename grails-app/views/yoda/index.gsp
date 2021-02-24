@@ -66,9 +66,6 @@
                         <g:link controller="yoda" action="userMatrix" target="_blank">${message(code:'menu.yoda.userMatrix')}</g:link>
                     </div>
                     <div class="item">
-                        <g:link class="item" controller="yoda" action="userRoleDefinitions" target="_blank">${message(code:'menu.yoda.userRoleDefinitions')}</g:link>
-                    </div>
-                    <div class="item">
                         <g:link controller="admin" action="databaseStatistics" target="_blank">${message(code: "menu.admin.databaseStatistics")}</g:link>
                     </div>
                     <div class="item">
@@ -98,10 +95,6 @@
     </laser:script>
 
     <%--
-    <p>TODO: Offene Beitrittsanfragen</p>
-
-    <br />
-
     <p>TODO: New Errors</p>
 
     <br />

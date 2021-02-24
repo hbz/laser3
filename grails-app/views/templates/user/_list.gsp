@@ -25,7 +25,7 @@
                 <td>
                     ${fieldValue(bean: us, field: "username")}
 
-                    <g:if test="${! UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_USER'))}">
+                    <g:if test="${! SpringSecurityUtils.ifAnyGranted('ROLE_USER')}">
                         <span  class="la-popup-tooltip la-delay" data-content="Dieser Account besitzt keine ROLE_USER-Rechte." data-position="top right">
                             <i class="icon minus circle red"></i>
                         </span>
@@ -35,7 +35,6 @@
                 <td>${us.email}</td>
                 <td>
                     <g:each in="${us.getAuthorizedAffiliations()}" var="affi">
-                        <g:set var="uoId" value="${affi.id}"/><%-- ERMS-2370 fix this for count>1 --%>
                         <g:if test="${showAllAffiliations}">
                             ${affi.org?.getDesignation()} <span>(${affi.formalRole.authority})</span> <br />
                         </g:if>
@@ -59,35 +58,80 @@
                     </g:else>
                 </td>
                 <td class="x">
-                    <g:if test="${editable && (instAdmService.isUserEditableForInstAdm(us, editor) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
+                    <%
+                        boolean check = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN');
+                        if (! check) {
+                            check = editable && instAdmService.isUserEditableForInstAdm(us, editor);
+                        }
+                    %>
+
+                    <g:if test="${check}">
 
                         <g:if test="${controllerName == 'user'}">
-                            <g:link controller="${controllerName}" action="${editLink}" params="${[id: us.id]}" class="ui icon button"><i class="write icon"></i></g:link>
+                            <g:link controller="${controllerName}" action="${editLink}" params="${[id: us.id]}" class="ui icon button"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                <i aria-hidden="true" class="write icon"></i>
+                            </g:link>
                         </g:if>
                         <g:if test="${controllerName == 'myInstitution'}">
-                            <g:link controller="${controllerName}" action="${editLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon button"><i class="write icon"></i></g:link>
+                            <g:link controller="${controllerName}" action="${editLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon button"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                <i aria-hidden="true" class="write icon"></i>
+                            </g:link>
                         </g:if>
                         <g:if test="${controllerName == 'organisation'}">
-                            <g:link controller="${controllerName}" action="${editLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon button"><i class="write icon"></i></g:link>
+                            <g:link controller="${controllerName}" action="${editLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon button"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                <i aria-hidden="true" class="write icon"></i>
+                            </g:link>
                         </g:if>
 
-                        <g:if test="${! instAdmService.isUserLastInstAdminForOrg(us, orgInstance)}">
-                            <g:if test="${us == contextService.getUser()}">
-                                <g:link controller="profile" action="deleteProfile" class="ui icon negative button"><i class="trash alternate icon"></i></g:link>
+                        <%
+                            boolean check2 = false
+                            if (controllerName == 'user') {
+                                // check2 = ! instAdmService.isUserLastInstAdminForAnyOrgInList(us, us.getAuthorizedOrgs()); // correct, but expensive
+                                check2 = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN');
+                            }
+                            else {
+                                check2 = ! instAdmService.isUserLastInstAdminForOrg(us, orgInstance);
+                            }
+                        %>
+                        <g:if test="${check2}">
+
+                            <g:if test="${us.id == editor.id}">
+                                <g:link controller="profile" action="delete" class="ui icon negative button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                <i class="trash alternate icon"></i></g:link>
                             </g:if>
                             <g:elseif test="${controllerName == 'user'}">
-                                <g:link controller="${controllerName}" action="${deleteLink}" params="${[id: us.id]}" class="ui icon negative button"><i class="trash alternate icon"></i></g:link>
+                                <g:link controller="${controllerName}" action="${deleteLink}" params="${[id: us.id]}" class="ui icon negative button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                <i class="trash alternate icon"></i></g:link>
                             </g:elseif>
                             <g:elseif test="${controllerName == 'myInstitution'}">
-                                <g:link controller="${controllerName}" action="${deleteLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button"><i class="trash alternate icon"></i></g:link>
+                                <g:link controller="${controllerName}" action="${deleteLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                <i class="trash alternate icon"></i></g:link>
                             </g:elseif>
                             <g:elseif test="${controllerName == 'organisation'}">
-                                <g:link controller="${controllerName}" action="${deleteLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button"><i class="trash alternate icon"></i></g:link>
+                                <g:link controller="${controllerName}" action="${deleteLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                <i class="trash alternate icon"></i></g:link>
                             </g:elseif>
+
                         </g:if>
                         <g:else>
                             <span  class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg1', args: [us.getDisplayName()])}">
-                                <button class="ui icon negative button" disabled="disabled">
+                                <button class="ui icon negative button" disabled="disabled"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="trash alternate icon"></i>
                                 </button>
                             </span>

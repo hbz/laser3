@@ -13,8 +13,8 @@
             <div class="field required">
                 <label>URL
                     <span class="la-long-tooltip la-popup-tooltip la-delay"
-                          data-tooltip="${message(code: "accessPoint.url.help")}">
-                        <i class="question circle icon la-popup"></i></span>
+                          data-content="${message(code: "accessPoint.url.help")}">
+                        <i class="question circle icon la-popup"></i></span> <g:message code="messageRequiredField" />
                 </label>
                 <g:textField name="url" value="${url}" />
             </div>
@@ -23,13 +23,13 @@
             <div class="field required">
                 <label>${message(code: 'accessPoint.oa.name.label')}
                     <span class="la-long-tooltip la-popup-tooltip la-delay"
-                          data-tooltip="${message(code:'accessPoint.oa.help')}">
-                        <i class="question circle icon la-popup"></i></span>
+                          data-content="${message(code:'accessPoint.oa.help')}">
+                        <i class="question circle icon la-popup"></i></span>  <g:message code="messageRequiredField" />
                 </label>
                 <g:field type="text" name="name" value="" />
             </div>
             <div class="field required">
-                <label>${message(code: 'accessPoint.entitiyId.label')}</label>
+                <label>${message(code: 'accessPoint.entitiyId.label')} <g:message code="messageRequiredField" /></label>
                 <g:textField name="entityId" value="${entityId}" />
             </div>
         </g:elseif>
@@ -40,8 +40,8 @@
             <div class="field required">
                 <label>${message(code: 'accessPoint.shibboleth.name.label')}
                     <span class="la-long-tooltip la-popup-tooltip la-delay"
-                          data-tooltip="${message(code:'accessPoint.shibboleth.help')}">
-                        <i class="question circle icon la-popup"></i></span>
+                          data-content="${message(code:'accessPoint.shibboleth.help')}">
+                        <i class="question circle icon la-popup"></i></span> <g:message code="messageRequiredField" />
                 </label>
                 <g:field type="text" name="name" value="" />
             </div>

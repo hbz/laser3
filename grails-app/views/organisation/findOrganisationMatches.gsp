@@ -89,7 +89,9 @@
 													data-content="${message(code:'org.consortiaToggle.remove.label')}"
 													controller="organisation"
 													action="toggleCombo"
-													params="${params+[direction:'remove', fromOrg:organisationInstance.id]}">
+													params="${params+[direction:'remove', fromOrg:organisationInstance.id]}"
+													role="button"
+													aria-label="${message(code: 'ariaLabel.unlink.universal')}">
 												<i class="minus icon"></i>
 											</g:link>
 										</g:if>

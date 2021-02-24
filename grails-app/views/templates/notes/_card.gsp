@@ -58,7 +58,9 @@
                                 <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="ui mini icon negative button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.notes", args: [docctx.owner.title])}"
                                         data-confirm-term-how="delete"
-                                        params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'>
+                                        params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="trash alternate icon"></i>
                                 </g:link>
                             </g:if>

@@ -22,7 +22,7 @@
         <g:if test="${copyObject}">
             <div class="ui big form">
                 <div class="field required">
-                    <label>${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.name.label")}</label>
+                    <label>${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.name.label")} <g:message code="messageRequiredField" /></label>
                     <input required type="text" name="name" value="" placeholder=""/>
                 </div>
             </div>

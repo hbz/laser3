@@ -12,7 +12,7 @@ buildscript {
     }
 }
 
-version '2.0.alpha'
+version '2.0-RC'
 group 'laser2'
 
 apply plugin:'eclipse'
@@ -176,9 +176,8 @@ assets {
             'laser/**',
         // vendor/*
             'bulma/**',
-            'chartist/**',
-            'chartist-plugin-legend/**',
             'cryptoJS-v3.1.2/**',
+            'echarts/**',
             'datatables/**',
             'select2/**/*.js',
             'select2/**/*.css',

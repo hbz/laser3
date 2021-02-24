@@ -64,7 +64,7 @@
         <div class="field required">
             <h4 class="ui header">${message(code: 'subscription.linkLicenseMembers.info', args: args.memberType)}</h4>
 
-            <label>${message(code: 'subscription.linktoLicense')}</label>
+            <label>${message(code: 'subscription.linktoLicense')} ${message(code: 'messageRequiredField')}</label>
             <g:if test="${validLicenses}">
                 <g:select class="ui search dropdown"
                           optionKey="id" optionValue="reference"
@@ -173,8 +173,8 @@
                         <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"
                                 data-tooltip="${message(code:'subscription.details.viewMember.label')}"
                                 data-position="left center"
-                        >
-                            <i class="write icon"></i></g:link>
+                                role="button">
+                            <i aria-hidden="true" class="write icon"></i></g:link>
                     </td>
                 </tr>
             </g:each>

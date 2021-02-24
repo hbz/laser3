@@ -2,25 +2,24 @@ package de.laser
 
 
 import de.laser.base.AbstractBase
+import de.laser.finance.PriceItem
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
-import de.laser.titles.TitleInstance
+import de.laser.helper.RDStore
+import de.laser.titles.TitleHistoryEvent
+import de.laser.titles.TitleHistoryEventParticipant
 import groovy.time.TimeCategory
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
+import java.text.Normalizer
 import java.text.SimpleDateFormat
+import java.util.regex.Pattern
 
 class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTrait*/ {
 
-  def grailsLinkGenerator
-  def grailsApplication
+  @Transient
   def messageSource
-  def changeNotificationService
-
-  static Log static_logger = LogFactory.getLog(TitleInstancePackagePlatform)
 
     // AuditableTrait
     //static auditable = true
@@ -28,10 +27,31 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
 
     Date accessStartDate
     Date accessEndDate
-    Date coreStatusStart
-    Date coreStatusEnd
-    String rectype="so"
+  //Date coreStatusStart
+  //Date coreStatusEnd
+    String name
+    String sortName
+    String normName
+    String seriesName
+    String subjectReference
+    String imprint
+    String titleType
+    @RefdataAnnotation(cat = RDConstants.TITLE_MEDIUM)
+    RefdataValue medium
+    Date dateFirstInPrint
+    Date dateFirstOnline
+    String summaryOfContent
+    String volume
+
+    String firstAuthor
+    String firstEditor
+
+    Integer editionNumber
+    String  editionStatement
+    String editionDifferentiator
+  //String rectype="so"
     String gokbId
+  //TitleInstance title
 
     @RefdataAnnotation(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
@@ -56,14 +76,21 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     Date dateCreated
     Date lastUpdated
 
-  static mappedBy = [ids: 'tipp']
+  static mappedBy = [ids: 'tipp',
+                     orgs: 'tipp',
+                     prsLinks: 'tipp',
+                     priceItems: 'tipp',
+                     historyEvents: 'tipp']
   static hasMany = [ids: Identifier,
-                    coverages: TIPPCoverage]
+                    coverages: TIPPCoverage,
+                    orgs: OrgRole,
+                    historyEvents: TitleHistoryEvent,
+                    prsLinks: PersonRole,
+                    priceItems: PriceItem]
 
   static belongsTo = [
     pkg:Package,
-    platform:Platform,
-    title:TitleInstance
+    platform:Platform
   ]
 
     static transients = [
@@ -74,11 +101,19 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
   static mapping = {
                 id column:'tipp_id'
          globalUID column:'tipp_guid'
-           rectype column:'tipp_rectype'
+        // rectype column:'tipp_rectype'
            version column:'tipp_version'
                pkg column:'tipp_pkg_fk',    index: 'tipp_idx'
           platform column:'tipp_plat_fk',   index: 'tipp_idx'
-             title column:'tipp_ti_fk',     index: 'tipp_idx'
+          // title column:'tipp_ti_fk',     index: 'tipp_idx'
+         titleType column:'tipp_title_type'
+            medium column:'tipp_medium_rv_fk'
+              name column:'tipp_name', type: 'text'
+          sortName column:'tipp_sort_name', type: 'text'
+          normName column:'tipp_norm_name', type: 'text'
+        seriesName column:'tipp_series_name', type: 'text'
+           imprint column:'tipp_imprint', type: 'text'
+  subjectReference column:'tipp_subject_reference', type: 'text'
             gokbId column:'tipp_gokb_id'
             status column:'tipp_status_rv_fk'
          delayedOA column:'tipp_delayedoa_rv_fk'
@@ -89,21 +124,38 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
    hostPlatformURL column:'tipp_host_platform_url', type: 'text'
       accessStartDate column:'tipp_access_start_date'
       accessEndDate column:'tipp_access_end_date'
-      coreStatusStart column:'tipp_core_status_start_date'
-      coreStatusEnd column:'tipp_core_status_end_date'
+    //coreStatusStart column:'tipp_core_status_start_date'
+    //coreStatusEnd column:'tipp_core_status_end_date'
+      dateFirstInPrint column:'tipp_date_first_in_print'
+      dateFirstOnline column:'tipp_date_first_online'
+      summaryOfContent column:'tipp_summary_of_content'
+      volume column:'tipp_volume'
+      firstEditor column: 'tipp_first_editor'
+      firstAuthor column: 'tipp_first_author'
+      editionNumber column: 'tipp_edition_number'
+      editionStatement column: 'tipp_edition_statement'
+      editionDifferentiator column: 'tipp_edition_differentiator'
+      dateCreated column: 'tipp_date_created'
+      lastUpdated column: 'tipp_last_updated'
 
       ids                   batchSize: 10
     //additionalPlatforms   batchSize: 10
       coverages             batchSize: 10, sort: 'startDate', order: 'asc'
-
-      dateCreated column: 'tipp_date_created'
-      lastUpdated column: 'tipp_last_updated'
+      priceItems            batchSize: 10, sort: 'startDate', order: 'asc'
   }
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
         gokbId (blank:false, unique: true, maxSize:511)
         status      (nullable:true)
+        name        (nullable:true)
+        sortName    (nullable:true)
+        normName    (nullable:true)
+        seriesName  (nullable:true)
+        imprint     (nullable:true)
+    subjectReference(nullable:true)
+        titleType   (nullable:true)
+        medium      (nullable:true)
         delayedOA   (nullable:true)
         hybridOA    (nullable:true)
         statusReason(nullable:true)
@@ -112,13 +164,23 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         hostPlatformURL(nullable:true, blank:true, maxSize:2048)
         accessStartDate (nullable:true)
         accessEndDate (nullable:true)
-        coreStatusStart (nullable:true)
-        coreStatusEnd (nullable:true)
-
+      //coreStatusStart (nullable:true)
+      //coreStatusEnd (nullable:true)
+        dateFirstInPrint(nullable:true)
+        dateFirstOnline(nullable:true)
+        summaryOfContent(nullable:true, blank:false)
+        volume(nullable:true, blank:false)
+        firstAuthor (nullable:true, blank:false)
+        firstEditor (nullable:true, blank:false)
+        editionDifferentiator (nullable:true, blank:false)
+        editionNumber       (nullable:true)
+        editionStatement (nullable:true, blank:false)
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true)
         dateCreated (nullable: true)
     }
+
+    static final Pattern alphanum = Pattern.compile("\\p{Punct}|\\p{Cntrl}")
 
     @Override
     def beforeUpdate(){
@@ -128,6 +190,8 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     @Override
     def beforeInsert() {
         touchPkgLastUpdated()
+        generateSortTitle()
+        generateNormTitle()
         super.beforeInsertHandler()
     }
     @Override
@@ -145,6 +209,29 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     }
   }
 
+    void generateSortTitle() {
+        if ( name ) {
+            sortName = Normalizer.normalize(name, Normalizer.Form.NFKD).trim().toLowerCase()
+            sortName = sortName.replaceFirst('^copy of ', '')
+            sortName = sortName.replaceFirst('^the ', '')
+            sortName = sortName.replaceFirst('^a ', '')
+            sortName = sortName.replaceFirst('^der ', '')
+            sortName = sortName.replaceFirst('^die ', '')
+            sortName = sortName.replaceFirst('^das ', '')
+        }
+    }
+
+    void generateNormTitle() {
+        if (name) {
+            normName = name.replaceAll('&',' and ')
+            normName = normName.trim()
+            normName = normName.toLowerCase()
+            normName = alphanum.matcher(normName).replaceAll("")
+            normName = normName.replaceAll("\\s+", " ")
+            normName = asciify(normName)
+        }
+    }
+
   String getIdentifierValue(idtype) {
       String result
     ids?.each { ident ->
@@ -153,51 +240,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     }
     result
   }
-
-  @Transient
-  /*
-  def onChange = { oldMap,newMap ->
-
-    log.debug("onChange Tipp")
-
-    controlledProperties.each { cp ->
-      log.debug("checking ${cp}")
-        if(cp != 'coverages') {
-            if ( oldMap[cp] != newMap[cp] ) {
-                raisePendingChange(oldMap,newMap,cp)
-            }
-        }
-    }
-    log.debug("onChange completed")
-  }
-    */
-
-  /*
-  void raisePendingChange(oldMap,newMap,cp) {
-      GrailsClass domain_class = AppUtils.getDomainClassGeneric( 'TitleInstancePackagePlatform' )
-      def prop_info = domain_class.getPersistentProperty(cp)
-
-      def oldLabel = stringify(oldMap[cp])
-      def newLabel = stringify(newMap[cp])
-
-      if ( prop_info.isAssociation() ) {
-          log.debug("Convert object reference into OID")
-          oldMap[cp]= oldMap[cp] != null ? "${ClassUtils.deproxy(oldMap[cp]).class.name}:${oldMap[cp].id}" : null
-          newMap[cp]= newMap[cp] != null ? "${ClassUtils.deproxy(newMap[cp]).class.name}:${newMap[cp].id}" : null
-      }
-
-      log.debug("notify change event")
-      changeNotificationService.fireEvent([
-              OID:"${this.class.name}:${this.id}",
-              event:'TitleInstancePackagePlatform.updated',
-              prop:cp,
-              old:oldMap[cp],
-              oldLabel:oldLabel,
-              new:newMap[cp],
-              newLabel:newLabel
-      ])
-  }
-    */
 
     private String stringify(obj) {
       String result
@@ -213,198 +255,35 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         result
     }
 
-    /*
-  @Transient
-  def onSave = {
+    String getEbookFirstAutorOrFirstEditor(){
 
-    log.debug("onSave")
-
-    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-
-    changeNotificationService.fireEvent([
-                                                 OID:"${this.class.name}:${this.id}",
-                                                 event:'TitleInstancePackagePlatform.added',
-                                                 linkedTitle:title.title,
-                                                 linkedTitleId:title.id,
-                                                 linkedPackage:pkg.name,
-                                                 linkedPlatform:platform.name
-                                                ])
-
-  }
-
-  @Transient
-  def onDelete = {
-
-    log.debug("onDelete")
-    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-
-    changeNotificationService.fireEvent([
-                                                 OID:"${this.class.name}:${this.id}",
-                                                 event:'TitleInstancePackagePlatform.deleted',
-                                                 linkedTitle:title.title,
-                                                 linkedTitleId:title.id,
-                                                 linkedPackage:pkg.name,
-                                                 linkedPlatform:platform.name
-                                                ])
-  }
-    */
-
-    /*
-  @Transient
-  def notifyDependencies(changeDocument) {
-    log.debug("notifyDependencies(${changeDocument})")
-    changeNotificationService.broadcastEvent("${Package.class.name}:${pkg.id}", changeDocument)
-    changeNotificationService.broadcastEvent("${this.class.name}:${this.id}", changeDocument)
-    Locale locale = LocaleContextHolder.getLocale()
-
-    RefdataValue deleted_tipp_status = RDStore.TIPP_STATUS_DELETED
-    String deleted_tipp_status_oid = "${RefdataValue.class.name}:${deleted_tipp_status.id}".toString()
-    // Tipp Property Change Event.. notify any dependent IEs
-    List<IssueEntitlement> dep_ies = IssueEntitlement.findAllByTipp(this)
-
-    if ( ( changeDocument.event=='TitleInstancePackagePlatform.updated' ) && 
-         ( changeDocument.prop == 'status' ) && 
-         ( changeDocument.new == deleted_tipp_status_oid ) ) {
-
-      log.debug("TIPP STATUS CHANGE:: Broadcast pending change to IEs based on this tipp new status: ${changeDocument.new}");
-      dep_ies.each { dep_ie ->
-        def sub = ClassUtils.deproxy(dep_ie.subscription)
-        log.debug("Notify dependent ie ${dep_ie.id} whos sub is ${sub.id} and subscriber is ${sub.getSubscriber()}");
-
-        if ( sub.getSubscriber() == null ) {
-          // SO - Ignore!
+        String label = messageSource.getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
+        if(firstEditor && firstAuthor) {
+            return firstAuthor + ' ; ' + firstEditor + ' ' + label
         }
-        else {
-          changeNotificationService.registerPendingChange(
-                  PendingChange.PROP_SUBSCRIPTION,
-                                                          dep_ie.subscription,
-                  // pendingChange.message_TP01
-                                                          "Der Paketeintrag für den Titel \"${this.title.title}\" wurde gelöscht. Wenden Sie diese Änderung an, um die entsprechende Problembenachrichtigung aus dieser Lizenz zu entfernen",
-                                                          sub.getSubscriber(),
-                                                          [
-                                                            changeType:PendingChangeService.EVENT_TIPP_DELETE,
-                                                            tippId:"${this.class.name}:${this.id}",
-                                                            subId:"${sub.id}"
-                                                          ])
+        else if(firstAuthor) {
+            return firstAuthor
         }
-      }
+        else if(firstEditor) {
+            return firstEditor + ' ' + label
+        }
+        else return ""
     }
-    else if ( (changeDocument.event=='TitleInstancePackagePlatform.updated') && ( changeDocument.new != changeDocument.old ) ) {
-        ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.tipp."+changeDocument.prop, locale.toString())
-        String description = messageSource.getMessage('default.accept.change.ie',null,locale)
-        if(contentItemDesc){
-            description = contentItemDesc.content
-        }
-        else {
-            ContentItem defaultMsg =  ContentItem.findByKeyAndLocale("kbplus.change.tipp.default",locale.toString())
-            if(defaultMsg)
-                description = defaultMsg.content
-        }
-        dep_ies.each { dep_ie ->
-        def sub = ClassUtils.deproxy(dep_ie.subscription)
-        if(dep_ie.subscription && sub) {
-        def titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: this.title.id, absolute: true)
-        def pkgLink =  grailsLinkGenerator.link(controller: 'package', action: 'show', id: this.pkg.id, absolute: true)
-        changeNotificationService.registerPendingChange(
-                PendingChange.PROP_SUBSCRIPTION,
-                                                        dep_ie.subscription,
-                // pendingChange.message_TP02
-                                                        "Die Information vom Titel <a href=\"${titleLink}\">${this.title.title}</a> haben sich im Paket <a href=\"${pkgLink}\">${this.pkg.name}</a> geändert. " +
-                                                                "<strong>${messageSource.getMessage("tipp.${changeDocument.prop}",null,locale)?:changeDocument.prop}</strong> wurde aktualisiert von <strong>\"${changeDocument.oldLabel}\"</strong>(${changeDocument.old}) zu <strong>\"${changeDocument.newLabel}\"</strong>" +
-                                                                "(${changeDocument.new}). "+description,
-                                                        sub?.getSubscriber(),
-                                                        [
-                                                          changeTarget:"${IssueEntitlement.class.name}:${dep_ie.id}",
-                                                          changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
-                                                          changeDoc:changeDocument
-                                                        ])
-          
-        }else{
-          log.error("Something went terribly wrong, IssueEntitlement.subscription returned null.This can be DB issue.")
-        }
-      }
-    }
-    else if(changeDocument.event.contains('TitleInstancePackagePlatform.added')) {
-        List<Subscription> dep_subs = Subscription.executeQuery('select sp.subscription from SubscriptionPackage sp where sp.pkg = :pkg',[pkg:this.pkg])
-        dep_subs.each { Subscription sub ->
-            def titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: this.title.id, absolute: true)
-            def pkgLink =  grailsLinkGenerator.link(controller: 'package', action: 'show', id: this.pkg.id, absolute: true)
-            changeNotificationService.registerPendingChange(
-                    PendingChange.PROP_SUBSCRIPTION,
-                    sub,
-                    // pendingChange.message_GS01
-                    "Eine neue Verknüpfung (TIPP) für den Titel <a href='${titleLink}'>${this.title.title}</a> mit der Plattform <a href='${pkgLink}'>${this.platform.name}</a>",
-                    sub.subscriber,
-                    [
-                            newObjectClass: "${TitleInstancePackagePlatform.class.name}",
-                            changeType    : PendingChangeService.EVENT_TIPP_ADD,
-                            changeDoc     : changeDocument
-                    ])
-        }
-    }
-    else if(changeDocument.event.contains('TitleInstancePackagePlatform.coverage')) {
-        String coverageEvent = changeDocument.event.split('.coverage.')[1]
-        String titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: this.title.id,absolute:true)
-        String pkgLink =  grailsLinkGenerator.link(controller: 'package', action: 'show', id: this.pkg.id, absolute: true)
-        dep_ies.each { ie ->
-            if(changeDocument.affectedCoverage) {
-                IssueEntitlementCoverage equivalentIECoverage = changeDocument.affectedCoverage.findEquivalent(ie.coverages)
-                if(equivalentIECoverage) {
-                    switch(coverageEvent) {
-                        case 'deleted': String coverageRangeString = "${equivalentIECoverage.startDate?.format(messageSource.getMessage('default.date.format.notime',null,locale))} (Band ${equivalentIECoverage.startVolume}, Ausgabe ${equivalentIECoverage.startIssue}) - ${equivalentIECoverage.endDate?.format(messageSource.getMessage('default.date.format.notime',null,locale))} (Band ${equivalentIECoverage.endVolume}, Ausgabe ${equivalentIECoverage.endIssue})"
-                            changeNotificationService.registerPendingChange(
-                                    PendingChange.PROP_SUBSCRIPTION,
-                                    ie.subscription,
-                                    "Ein Lizenzzeitraum für den Titel <a href='${titleLink}'>${this.title.title}</a> des Pakets <a href='${pkgLink}'>${this.pkg.name}</a> wurde gelöscht: ${coverageRangeString}",
-                                    ie.subscription.getSubscriber(),
-                                    [changeTarget: "${equivalentIECoverage.class.name}:${equivalentIECoverage.id}",
-                                     changeType: PendingChangeService.EVENT_COVERAGE_DELETE,
-                                     changeDoc: changeDocument])
-                            break
-                        case 'updated': changeNotificationService.registerPendingChange(
-                                PendingChange.PROP_SUBSCRIPTION,
-                                ie.subscription,
-                                "Ein Lizenzzeitraum für den Titel <a href='${titleLink}'>${this.title.title}</a> des Pakets <a href='${pkgLink}'>${this.pkg.name}</a> wurde geändert. Das Feld <strong>${changeDocument.propLabel}</strong> wurde geändert von ${changeDocument.old} in ${changeDocument.new}",
-                                ie.subscription.getSubscriber(),
-                                [changeTarget: "${equivalentIECoverage.class.name}:${equivalentIECoverage.id}",
-                                 changeType: PendingChangeService.EVENT_COVERAGE_UPDATE,
-                                 changeDoc: changeDocument])
-                            break
-                    }
-                }
-            }
-            else if(changeDocument.coverageData) {
-                Map newCov = changeDocument.coverageData
-                String newCovStart = "${newCov.startDate} (Band ${newCov.startVolume}, Ausgabe ${newCov.startIssue})"
-                String newCovEnd = "${newCov.endDate} (Band ${newCov.endVolume}, Ausgabe ${newCov.endIssue})"
-                String newCovNotes = "(Umfang: ${newCov.coverageDepth}, Anmerkung: ${newCov.coverageNotes}, Embargo: ${newCov.embargo})"
-                changeNotificationService.registerPendingChange(
-                        PendingChange.PROP_SUBSCRIPTION,
-                        ie.subscription,
-                        "Ein Lizenzzeitraum für den Titel <a href='${titleLink}'>${this.title.title}</a> des Pakets <a href='${pkgLink}'>${this.pkg.name}</a> wurde hinzugefügt: ${newCovStart} - ${newCovEnd} ${newCovNotes}",
-                        ie.subscription.getSubscriber(),
-                        [changeTarget: "${ie.class.name}:${ie.id}",
-                         changeType: PendingChangeService.EVENT_COVERAGE_ADD,
-                         changeDoc: newCov])
-            }
-        }
-    }
-    //If the change is in a controller property, store it up and note it against subs
-  }
-    */
 
+  @Deprecated
   Date getDerivedAccessStartDate() {
-    accessStartDate ? accessStartDate : pkg?.startDate
+    accessStartDate ? accessStartDate : null
   }
-
+  @Deprecated
   Date getDerivedAccessEndDate() {
-    accessEndDate ? accessEndDate : pkg?.endDate
+    accessEndDate ? accessEndDate : null
   }
-
+  @Deprecated
   RefdataValue getAvailabilityStatus() {
     return getAvailabilityStatus(new Date());
   }
-  
+
+  @Deprecated
   String getAvailabilityStatusAsString() {
 	  String result
 	  def loc = LocaleContextHolder.locale?.toString()
@@ -429,7 +308,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
 	  result
   }
   
-
+  @Deprecated
   RefdataValue getAvailabilityStatus(Date as_at) {
       RefdataValue result
     // If StartDate <= as_at <= EndDate - Current
@@ -455,11 +334,11 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     }
     result
   }
-
+    @Deprecated
     String getAvailabilityStatusExplanation() {
         return getAvailabilityStatusExplanation(new Date());
     }
-
+    @Deprecated
     String getAvailabilityStatusExplanation(Date as_at) {
         StringWriter sw = new StringWriter()
         sw.write("This tipp is ${getAvailabilityStatus(as_at).value} as at ${as_at} because the date specified was between the start date (${getDerivedAccessStartDate()} ${accessStartDate ? 'Set explicitly on this TIPP' : 'Defaulted from package start date'}) and the end date (${getDerivedAccessEndDate()} ${accessEndDate ? 'Set explicitly on this TIPP' : 'Defaulted from package end date'})");
@@ -469,11 +348,245 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
    * Compare the controlledPropertie of two tipps
   **/
   int compare(TitleInstancePackagePlatform tippB){
-      if(!tippB) return -1;
+      if(!tippB) return -1
       boolean noChange = true
       controlledProperties.each{ noChange &= this."${it}" == tippB."${it}" }
       
-      if( noChange ) return 0;      
-      return 1;
-  }  
+      if( noChange ) return 0
+      return 1
+      }
+
+    private static String asciify(String s) {
+        char[] c = s.toCharArray()
+        StringBuffer b = new StringBuffer()
+        for (char element : c) {
+            b.append(translate(element))
+        }
+        return b.toString()
     }
+
+    /**
+     * Translate the given unicode char in the closest ASCII representation
+     * NOTE: this function deals only with latin-1 supplement and latin-1 extended code charts
+     */
+    private static char translate(char c) {
+        switch(c) {
+            case '\u00C0':
+            case '\u00C1':
+            case '\u00C2':
+            case '\u00C3':
+            case '\u00C4':
+            case '\u00C5':
+            case '\u00E0':
+            case '\u00E1':
+            case '\u00E2':
+            case '\u00E3':
+            case '\u00E4':
+            case '\u00E5':
+            case '\u0100':
+            case '\u0101':
+            case '\u0102':
+            case '\u0103':
+            case '\u0104':
+            case '\u0105':
+                return 'a'
+            case '\u00C7':
+            case '\u00E7':
+            case '\u0106':
+            case '\u0107':
+            case '\u0108':
+            case '\u0109':
+            case '\u010A':
+            case '\u010B':
+            case '\u010C':
+            case '\u010D':
+                return 'c'
+            case '\u00D0':
+            case '\u00F0':
+            case '\u010E':
+            case '\u010F':
+            case '\u0110':
+            case '\u0111':
+                return 'd'
+            case '\u00C8':
+            case '\u00C9':
+            case '\u00CA':
+            case '\u00CB':
+            case '\u00E8':
+            case '\u00E9':
+            case '\u00EA':
+            case '\u00EB':
+            case '\u0112':
+            case '\u0113':
+            case '\u0114':
+            case '\u0115':
+            case '\u0116':
+            case '\u0117':
+            case '\u0118':
+            case '\u0119':
+            case '\u011A':
+            case '\u011B':
+                return 'e'
+            case '\u011C':
+            case '\u011D':
+            case '\u011E':
+            case '\u011F':
+            case '\u0120':
+            case '\u0121':
+            case '\u0122':
+            case '\u0123':
+                return 'g'
+            case '\u0124':
+            case '\u0125':
+            case '\u0126':
+            case '\u0127':
+                return 'h'
+            case '\u00CC':
+            case '\u00CD':
+            case '\u00CE':
+            case '\u00CF':
+            case '\u00EC':
+            case '\u00ED':
+            case '\u00EE':
+            case '\u00EF':
+            case '\u0128':
+            case '\u0129':
+            case '\u012A':
+            case '\u012B':
+            case '\u012C':
+            case '\u012D':
+            case '\u012E':
+            case '\u012F':
+            case '\u0130':
+            case '\u0131':
+                return 'i'
+            case '\u0134':
+            case '\u0135':
+                return 'j'
+            case '\u0136':
+            case '\u0137':
+            case '\u0138':
+                return 'k'
+            case '\u0139':
+            case '\u013A':
+            case '\u013B':
+            case '\u013C':
+            case '\u013D':
+            case '\u013E':
+            case '\u013F':
+            case '\u0140':
+            case '\u0141':
+            case '\u0142':
+                return 'l'
+            case '\u00D1':
+            case '\u00F1':
+            case '\u0143':
+            case '\u0144':
+            case '\u0145':
+            case '\u0146':
+            case '\u0147':
+            case '\u0148':
+            case '\u0149':
+            case '\u014A':
+            case '\u014B':
+                return 'n'
+            case '\u00D2':
+            case '\u00D3':
+            case '\u00D4':
+            case '\u00D5':
+            case '\u00D6':
+            case '\u00D8':
+            case '\u00F2':
+            case '\u00F3':
+            case '\u00F4':
+            case '\u00F5':
+            case '\u00F6':
+            case '\u00F8':
+            case '\u014C':
+            case '\u014D':
+            case '\u014E':
+            case '\u014F':
+            case '\u0150':
+            case '\u0151':
+                return 'o'
+            case '\u0154':
+            case '\u0155':
+            case '\u0156':
+            case '\u0157':
+            case '\u0158':
+            case '\u0159':
+                return 'r'
+            case '\u015A':
+            case '\u015B':
+            case '\u015C':
+            case '\u015D':
+            case '\u015E':
+            case '\u015F':
+            case '\u0160':
+            case '\u0161':
+            case '\u017F':
+                return 's'
+            case '\u0162':
+            case '\u0163':
+            case '\u0164':
+            case '\u0165':
+            case '\u0166':
+            case '\u0167':
+                return 't'
+            case '\u00D9':
+            case '\u00DA':
+            case '\u00DB':
+            case '\u00DC':
+            case '\u00F9':
+            case '\u00FA':
+            case '\u00FB':
+            case '\u00FC':
+            case '\u0168':
+            case '\u0169':
+            case '\u016A':
+            case '\u016B':
+            case '\u016C':
+            case '\u016D':
+            case '\u016E':
+            case '\u016F':
+            case '\u0170':
+            case '\u0171':
+            case '\u0172':
+            case '\u0173':
+                return 'u'
+            case '\u0174':
+            case '\u0175':
+                return 'w'
+            case '\u00DD':
+            case '\u00FD':
+            case '\u00FF':
+            case '\u0176':
+            case '\u0177':
+            case '\u0178':
+                return 'y'
+            case '\u0179':
+            case '\u017A':
+            case '\u017B':
+            case '\u017C':
+            case '\u017D':
+            case '\u017E':
+                return 'z'
+        }
+        return c
+    }
+
+    List<Org> getPublishers() {
+        List<Org> result = []
+
+
+        orgs.each { or ->
+            if ( or.roleType.id in [RDStore.OR_PUBLISHER.id] )
+                result << or.org
+
+        }
+
+        result
+    }
+
+}
+

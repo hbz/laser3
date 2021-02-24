@@ -932,7 +932,7 @@ class OrganisationController  {
         }
 
         Map filterParams = params
-        filterParams.org = result.orgInstance
+        filterParams.org = genericOIDService.getOID(result.orgInstance)
 
         result.users = userService.getUserSet(filterParams)
         result.titleMessage = "${result.orgInstance.name} - ${message(code:'org.nav.users')}"
@@ -965,6 +965,7 @@ class OrganisationController  {
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
+        result.orgInstance = Org.get(params.id) // overwrite
 
         if (! result.editable) {
             redirect controller: 'organisation', action: 'users', params: params
@@ -979,7 +980,7 @@ class OrganisationController  {
                 redirect action: 'editUser', params: [uoid: params.uoid, id: params.id]
                 return
             }
-            else if (affils.size() == 1 && (affils.get(0).id != contextService.getOrg().id)) {
+            else if (affils.size() == 1 && ! result.editable) {
                 flash.error = message(code: 'user.delete.error.foreignOrg') as String
                 redirect action: 'editUser', params: [uoid: params.uoid, id: params.id]
                 return
@@ -1008,7 +1009,6 @@ class OrganisationController  {
     def editUser() {
         Map result = [
                 user: genericOIDService.resolveOID(params.uoid),
-                editor: contextService.getUser(),
                 orgInstance: Org.get(params.id),
                 manipulateAffiliations: contextService.getUser().hasRole(['ROLE_ADMIN', 'ROLE_YODA'])
         ]
@@ -1047,6 +1047,8 @@ class OrganisationController  {
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
     def addAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
+        result.orgInstance = Org.get(params.id) // overwrite
+
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions') as String
             redirect action: 'editUser', params: [id: params.id, uoid: params.uoid]

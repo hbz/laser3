@@ -7,7 +7,7 @@
 
         <div class="ui grid">
                 <div class="field" style="width:100%">
-                    <label><g:message code="subscription.details.ieGroupsforIE" args="[ie.tipp.title.title]"/></label>
+                    <label><g:message code="subscription.details.ieGroupsforIE" args="[ie.tipp.name]"/></label>
 
                     <br />
                     <br />

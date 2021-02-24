@@ -72,7 +72,7 @@
                 </g:if>
             </div>
             <div class="field required">
-                <label for="filterPropValue">${message(code: 'subscription.property.value')}</label>
+                <label for="filterPropValue">${message(code: 'subscription.property.value')}  <g:message code="messageRequiredField" /></label>
                 <g:if test="${filterPropDef.isRefdataValueType()}">
                     <g:select class="ui search dropdown"
                               optionKey="id" optionValue="${{ it.getI10n('value') }}"
@@ -264,7 +264,11 @@
                                 </div>
                             </td>
                             <td class="x">
-                                <g:link controller="${objWithoutProp.displayController}" action="show" id="${objWithoutProp.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                                <g:link controller="${objWithoutProp.displayController}" action="show" id="${objWithoutProp.id}" class="ui icon button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                    <i aria-hidden="true" class="write icon"></i>
+                                </g:link>
                             </td>
                         </tr>
                     </g:each>
@@ -502,7 +506,11 @@
                             </td>
 
                             <td class="x">
-                                <g:link controller="${row.displayController}" action="${row.displayAction}" id="${row.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                                <g:link controller="${row.displayController}" action="${row.displayAction}" id="${row.id}" class="ui icon button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                    <i aria-hidden="true" class="write icon"></i>
+                                </g:link>
                                 <g:if test="${row.manageChildren}">
                                     <g:link controller="${row.displayController}" action="${row.manageChildren}" params="${row.manageChildrenParams}" class="ui icon button"><i class="users icon"></i></g:link>
                                 </g:if>

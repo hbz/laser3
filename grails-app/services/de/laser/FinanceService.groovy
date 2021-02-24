@@ -414,7 +414,6 @@ class FinanceService {
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark("load filter params")
         Map<String,Object> filterQuery = processFilterParams(params)
-        pu.setBenchmark("get cache")
         Map<String,Object> result = [filterPresets:filterQuery.filterData]
         result.filterSet = filterQuery.subFilter || filterQuery.ciFilter
         Org org = (Org) configMap.institution
@@ -509,12 +508,15 @@ class FinanceService {
      * @return an array with the filter string on position 0 and the filter parameter map on position 1
      */
     Map<String,Object> processFilterParams(GrailsParameterMap params) {
+        Map<String,Object> result
+        String subFilterQuery = "", costItemFilterQuery = ""
+        Map<String,Object> queryParams = [:]
         EhcacheWrapper cache = contextService.getCache("/finance/filter/",ContextService.USER_SCOPE)
-        if(cache && cache.get('cachedFilter'))
-            (Map<String,Object>) cache.get('cachedFilter')
+        if((cache && cache.get('cachedFilter')) && params.reset == null && params.submit == null) {
+            Map<String,Object> cachedFilter = (Map<String, Object>) cache.get('cachedFilter')
+            result = [subFilter:cachedFilter.subFilter,ciFilter:cachedFilter.ciFilter,filterData:cachedFilter.filterData]
+        }
         else {
-            String subFilterQuery = "", costItemFilterQuery = ""
-            Map<String,Object> queryParams = [:]
             SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             //subscription filter settings
             //subscription members A (from /subFinance)
@@ -712,11 +714,11 @@ class FinanceService {
                     queryParams.filterCIPaidTo = invoiceTo
                 }
             }
-            Map<String,Object> result = [subFilter:subFilterQuery,ciFilter:costItemFilterQuery,filterData:queryParams]
+            result = [subFilter:subFilterQuery,ciFilter:costItemFilterQuery,filterData:queryParams]
             if(params.reset || params.submit)
                 cache.put('cachedFilter',result)
-            result
         }
+        result
     }
 
     /**
@@ -1001,18 +1003,18 @@ class FinanceService {
                     else {
                         // TODO [ticket=1789]
                         // List<TitleInstance> titleMatches = TitleInstance.executeQuery("select distinct idOcc.ti from IdentifierOccurrence idOcc join idOcc.identifier id where id.value = :idCandidate and id.ns in :namespaces",[idCandidate: ieIdentifier, namespaces: [namespaces.isbn,namespaces.doi,namespaces.zdb,namespaces.issn,namespaces.eissn]])
-                        List<TitleInstance> titleMatches = TitleInstance.executeQuery("select distinct id.ti from Identifier id where id.value = :idCandidate and id.ns in :namespaces", [idCandidate: ieIdentifier, namespaces: [namespaces.isbn,namespaces.doi,namespaces.zdb,namespaces.issn,namespaces.eissn]])
+                        List<TitleInstancePackagePlatform> titleMatches = TitleInstancePackagePlatform.executeQuery("select distinct id.tipp from Identifier id where id.value = :idCandidate and id.ns in :namespaces", [idCandidate: ieIdentifier, namespaces: [namespaces.isbn,namespaces.doi,namespaces.zdb,namespaces.issn,namespaces.eissn]])
                         if(!titleMatches)
                             mappingErrorBag.noValidTitle = ieIdentifier
                         else if(titleMatches.size() > 1)
                             mappingErrorBag.multipleTitleError = titleMatches.collect { ti -> ti.title }
                         else if(titleMatches.size() == 1) {
-                            TitleInstance tiMatch = titleMatches[0]
-                            List<IssueEntitlement> ieMatches = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription and tipp.title = :titleInstance',[subscription:subscription,titleInstance:tiMatch])
+                            TitleInstancePackagePlatform tiMatch = titleMatches[0]
+                            List<IssueEntitlement> ieMatches = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription ',[subscription:subscription,titleInstance:tiMatch])
                             if(!ieMatches)
                                 mappingErrorBag.noValidEntitlement = ieIdentifier
                             else if(ieMatches.size() > 1)
-                                mappingErrorBag.multipleEntitlementError = ieMatches.collect { entMatch -> "${entMatch.subscription.dropdownNamingConvention(contextOrg)} - ${entMatch.tipp.title.title}" }
+                                mappingErrorBag.multipleEntitlementError = ieMatches.collect { entMatch -> "${entMatch.subscription.dropdownNamingConvention(contextOrg)} - ${entMatch.tipp.name}" }
                             else if(ieMatches.size() == 1) {
                                 ie = ieMatches[0]
                                 if(ie.tipp.pkg.gokbId != subPkg.pkg.gokbId)

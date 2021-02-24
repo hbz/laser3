@@ -516,7 +516,7 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
-    //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="" />
+    //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="" modifiers="" />
 
     def datepicker = { attrs, body ->
 
@@ -527,7 +527,7 @@ class SemanticUiTagLib {
         def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : "${message(code: 'default.date.label')}"
 
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-        def value = ''
+        String value = ''
         try {
             value = attrs.value ? sdf.format(attrs.value) : value
         }
@@ -537,6 +537,8 @@ class SemanticUiTagLib {
 
         String classes    = attrs.containsKey('required') ? 'field required' : 'field'
         String required   = attrs.containsKey('required') ? 'required=""' : ''
+        String mandatoryField   = attrs.containsKey('required') ? "${message(code: 'messageRequiredField')}" :""
+
         boolean hideLabel = attrs.hideLabel ? false : true
 
         if (attrs.class) {
@@ -547,16 +549,58 @@ class SemanticUiTagLib {
             classes += ' error'
         }
 
-        out << '<div class="' + classes + '">'
-        if (hideLabel) {
-            out << '<label for="' + id + '">' + label + '</label>'
+        // reporting -->
+        if (attrs.modifiers) {
+            String modName = name + '_modifier'
+            String modIconClass = 'small icon la-equals'
+
+            switch(params.get(modName)) {
+                case 'less':
+                    modIconClass = 'small icon la-less-than'
+                    break
+                case 'greater':
+                    modIconClass = 'small icon la-greater-than'
+                    break
+                case 'equals':
+                    modIconClass = 'small icon la-equals'
+                    break
+                case 'less-equal':
+                    modIconClass = 'small icon la-less-than-equal'
+                    break
+                case 'greater-equal':
+                    modIconClass = 'small icon la-greater-than-equal'
+                    break
+            }
+            out << '<div class="field la-combi-input-left">'
+            out <<   '<label for="dateBeforeVal">&nbsp;</label>'
+            out <<   '<div class="ui compact selection dropdown la-not-clearable">'
+            out <<     '<input type="hidden" name="' + modName + '" value="' + params.get(modName) + '">'
+            out <<     '<i class="dropdown icon"></i>'
+            out <<      '<div class="text"><i class="' + modIconClass + '"></i></div>'
+            out <<      '<div class="menu">'
+            out <<        '<div class="item' + ( params.get(modName) == 'less' ? ' active' : '' ) + '" data-value="less"><i class="la-less-than small icon"></i></div>'
+            out <<        '<div class="item' + ( params.get(modName) == 'greater' ? ' active' : '' ) + '" data-value="greater"><i class="la-greater-than small icon"></i></div>'
+            out <<        '<div class="item' + ( params.get(modName) == 'equals' ? ' active' : '' ) + '" data-value="equals"><i class="la-equals small icon"></i></div>'
+            out <<        '<div class="item' + ( params.get(modName) == 'less-equal' ? ' active' : '' ) + '" data-value="less-equal"><i class="la-less-than-equal small icon"></i></div>'
+            out <<        '<div class="item' + ( params.get(modName) == 'greater-equal' ? ' active' : '' ) + '" data-value="greater-equal"><i class="la-greater-than-equal small icon"></i></div>'
+            out <<     '</div>'
+            out <<   '</div>'
+            out << '</div>'
         }
-        out << '<div class="ui calendar datepicker">'
-        out << '<div class="ui input left icon">'
-        out << '<i aria-hidden="true" class="calendar icon"></i>'
-        out << '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '" ' + required + '>'
-        out << '</div>'
-        out << '</div>'
+
+        String modClass = attrs.modifiers ? ' la-combi-input-right' : ''
+
+        out << '<div class="' + classes + modClass +'">'
+        if (hideLabel) {
+            out << '<label for="' + id + '">' + label + ' ' + mandatoryField + '</label>'
+        }
+        out <<   '<div class="ui calendar datepicker">'
+        out <<     '<div class="ui input left icon">'
+        out <<       '<i aria-hidden="true" class="calendar icon"></i>'
+        out <<       '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '" ' + required + '>'
+        out <<     '</div>'
+        out <<   '</div>'
+
         out << '</div>'
     }
 

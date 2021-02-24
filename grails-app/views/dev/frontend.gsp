@@ -5,8 +5,6 @@
     <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : Frontend for Developers</title>
 
-    <asset:stylesheet src="chartist.css"/><laser:javascript src="chartist.js"/>%{-- dont move --}%
-
     <style>
     #example .example .column .icon {
         opacity: 1;
@@ -92,6 +90,11 @@
 
             <div class="column"><i aria-hidden="true" class="la-laser icon"></i>la-laser</div>
 
+            <div class="column"><i aria-hidden="true" class="la-less-than icon"></i>la-less-than </div>
+            <div class="column"><i aria-hidden="true" class="la-greater-than icon"></i>la-greater-than</div>
+            <div class="column"><i aria-hidden="true" class="la-equals icon"></i>la-equals</div>
+            <div class="column"><i aria-hidden="true" class="la-less-than-equal icon"></i>la-less-than-equal</div>
+            <div class="column"><i aria-hidden="true" class="la-greater-than-equal icon"></i>la-greater-than-equal</div>
         </div>
 
         <div class="ui top attached label">Zusätzliche Icons in Laser</div>
@@ -325,45 +328,10 @@ if (customerType) {
                           data-content="Hier kommt der Tooltip rein"
                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
                           data-confirm-term-how="delete"
-                          data-done=""
-                          data-always=""
-                          data-update=""
-                          role="button"
+                          role="button">
         >
             <i aria-hidden="true" class="trash alternate icon"></i>
         </laser:remoteLink>
-    </div>
-
-
-    <%-- Charts --%>
-
-    <h2 class="ui dividing header">Charts<a class="anchor" id="icons"></a></h2>
-    <h4 class="ui header">Einbindung von Chartist als Javascript Library zum Rendern von Daten</h4>
-    <div class="html ui top attached segment example">
-        <div class="ui top attached label">Require-Tag für Chartist eingebauen</div>
-
-        <pre aria-hidden="true">        &ltasset:stylesheet src="chartist.css"/&gt;&ltasset:javascript src="chartist.js"/&gt;
-        </pre>
-
-    </div>
-    <div class="html ui top attached segment example">
-        <div class="ui top attached label">Chartis-Objekt mit Javascript aufrufen innerhalb r:script</div>
-        <pre aria-hidden="true">        &ltscript&gt;
-                new Chartist.Line('.ct-chart', data);
-        &lt/script&gt;
-        </pre>
-    </div>
-    <div class="html ui top attached segment example">
-        <div class="ui top attached label">Beispiel LINE CHART - Legende oben mitte</div>
-        <div class="ct-chart"></div>
-    </div>
-    <div class="html ui top attached segment example">
-        <div class="ui top attached label">Beispiel PIE CHART- Legende rechts untereinander</div>
-        <div class="ct-chart-pie"></div>
-    </div>
-    <div class="html ui top attached segment example">
-        <div class="ui top attached label">Beispiel BAR CHART - Legende unten mitte</div>
-        <div class="ct-chart-bar"></div>
     </div>
 
 </section>
@@ -400,59 +368,6 @@ if (customerType) {
 <g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="dev" action="frontend" params="" class="ui icon positive button">
     <i aria-hidden="true" class="checkmark icon"></i>
 </g:link>
-
-<laser:script file="${this.getGroovyPageFileName()}">
-    new Chartist.Line('.ct-chart', {
-        labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        series: [
-            { "name": "Money A", "data": [12, 9, 7, 8, 5] },
-            { "name": "Money B", "data": [2, 1, 3.5, 7, 3] },
-            { "name": "Money C", "data": [1, 3, 4, 5, 6] }
-        ]
-    }, {
-        fullWidth: true,
-        chartPadding: {
-            right: 40
-        },
-        plugins: [
-            Chartist.plugins.legend({
-
-                classNames: ['ct-dimmed', 'ct-hidden', ''],
-
-            })
-        ]
-    });
-</laser:script>
-<laser:script file="${this.getGroovyPageFileName()}">
-    new Chartist.Pie('.ct-chart-pie', {
-        labels: ['Piece A', 'Piece B', 'Piece C', 'Piece D'],
-        series: [20, 10, 30, 40]
-    }, {
-        showLabel: false,
-        plugins: [
-            Chartist.plugins.legend({
-                className: 'ct-legend-inside'
-            })
-        ]
-    });
-</laser:script>
-<laser:script file="${this.getGroovyPageFileName()}">
-    new Chartist.Bar('.ct-chart-bar', {
-        labels: ['First quarter of the year', 'Second quarter of the year', 'Third quarter of the year', 'Fourth quarter of the year'],
-        series: [
-            { "name": "Money A", "data": [60000, 40000, 80000, 70000] },
-            { "name": "Money B", "data": [40000, 30000, 70000, 65000] },
-            { "name": "Money C", "data": [8000, 3000, 10000, 6000] }
-        ]
-    }, {
-        plugins: [
-            Chartist.plugins.legend({
-                position: 'bottom'
-            })
-        ]
-    });
-</laser:script>
-
-
+<g:message code="task.title.label" /> <g:message code="messageRequiredField" />
 </body>
 </html>

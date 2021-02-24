@@ -12,10 +12,11 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.properties.PersonProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
-import de.laser.titles.TitleInstance
+import de.laser.reporting.OrganisationConfig
+import de.laser.reporting.SubscriptionConfig
+import de.laser.reporting.GenericConfig
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
  
 import de.laser.finance.BudgetCode
@@ -30,8 +31,6 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
-
-//import de.laser.TaskService //unused for quite a long time
 
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
@@ -70,6 +69,7 @@ class MyInstitutionController  {
     def organisationService
     def orgTypeService
     def propertyService
+    def reportingService
     def subscriptionsQueryService
     def subscriptionService
     def surveyService
@@ -82,36 +82,41 @@ class MyInstitutionController  {
     PendingChangeService pendingChangeService
     UserControllerService userControllerService
 
-    // copied from
-    static String INSTITUTIONAL_LICENSES_QUERY      =
-            " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = :lic_org and ol.roleType IN (:org_roles) ) "
-
-    // copied from
-    static String INSTITUTIONAL_SUBSCRIPTION_QUERY  =
-            " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) "
-
-    // Map the parameter names we use in the webapp with the ES fields
-    def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
-    def reversemap = ['subject': 'subject', 'provider': 'provid', 'studyMode': 'presentations.studyMode', 'qualification': 'qual.type', 'level': 'qual.level']
-
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def index() {
         redirect(action:'dashboard')
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-    })
+    //@DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM")
+    //@Secured(closure = {
+    //    ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_ADM")
+    //})
+    @Secured(['ROLE_ADMIN'])
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        result.subStatus = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)
-        result.subProp = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], result.institution)
-        result.subForm = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)
-        result.subResourceType = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)
-        result.subKind = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)
-        result
+
+        result.cfgFilterList = GenericConfig.FILTER
+        result.cfgChartsList = GenericConfig.CHARTS
+
+        if (params.filter) {
+            result.filter = params.filter
+            result.cfgQueryList = [:]
+
+            if (params.filter == OrganisationConfig.KEY) {
+                result.result = reportingService.filterOrganisation(params)
+
+                result.cfgQueryList.putAll( OrganisationConfig.CONFIG.base.query )
+            }
+            else if (params.filter == SubscriptionConfig.KEY) {
+                result.result = reportingService.filterSubscription(params)
+
+                result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.base.query )
+                result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.member.query )
+                result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.provider.query )
+            }
+        }
+        render view: 'reporting/index', model: result
     }
 
     @Secured(['ROLE_USER'])
@@ -266,54 +271,6 @@ class MyInstitutionController  {
         }
         result.licenseFilterTable = licenseFilterTable
 
-        if(params.subKind || params.subStatus || ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) || !params.filterSubmit) {
-            Set<String> subscrQueryFilter = ["oo.org = :context"]
-            qry_params.context = result.institution
-
-            //the if needs to be done twice, here is the second case because the keyword may occur in subscriptions but also in licenses!
-            if(params['keyword-search'] != null && params['keyword-search'].trim().length() > 0) {
-                subscrQueryFilter << "genfunc_filter_matcher(s.name, :name_filter) = true"
-            }
-
-            if(params.subStatus || !params.filterSubmit) {
-                subscrQueryFilter <<  "s.status.id = :subStatus"
-                if(!params.filterSubmit) {
-                    params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
-                    result.filterSet = true
-                }
-                qry_params.subStatus = params.subStatus as Long
-            }
-
-            if(params.subKind) {
-                subscrQueryFilter << "s.kind.id in (:subKinds)"
-                List<Long> subKinds = []
-                List<String> selKinds = params.list('subKind')
-                selKinds.each { String sel ->
-                    subKinds << Long.parseLong(sel)
-                }
-                qry_params.subKinds = subKinds
-            }
-
-            if(accessService.checkPerm("ORG_CONSORTIUM")) {
-                subscrQueryFilter << "s.instanceOf is null"
-            }
-
-            base_qry += " or exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" )"
-            qry_params.linkType = RDStore.LINKTYPE_LICENSE
-        }
-        if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
-            base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
-                    + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
-                    + "   orgR.roleType in (:licRoleTypes) and ( "
-                    + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
-                    + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
-                    + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
-                    + " ) ) ) ) ")
-            qry_params.name_filter = params['keyword-search']
-            qry_params.licRoleTypes = [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]
-            result.keyWord = params['keyword-search']
-        }
-
         if(params.consortium) {
             base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType = :licCons and o.org.id in (:cons) ) ) "
             List<Long> consortia = []
@@ -368,6 +325,55 @@ class MyInstitutionController  {
             }
             qry_params.status = params.status as Long
         }
+
+        if(params.subKind || params.subStatus || ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) || !params.filterSubmit) {
+            Set<String> subscrQueryFilter = ["oo.org = :context"]
+            qry_params.context = result.institution
+
+            //the if needs to be done twice, here is the second case because the keyword may occur in subscriptions but also in licenses!
+            if(params['keyword-search'] != null && params['keyword-search'].trim().length() > 0) {
+                subscrQueryFilter << "genfunc_filter_matcher(s.name, :name_filter) = true"
+            }
+
+            if(params.subStatus || !params.filterSubmit) {
+                subscrQueryFilter <<  "s.status.id = :subStatus"
+                if(!params.filterSubmit) {
+                    params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
+                    result.filterSet = true
+                }
+                qry_params.subStatus = params.subStatus as Long
+            }
+
+            if(params.subKind) {
+                subscrQueryFilter << "s.kind.id in (:subKinds)"
+                List<Long> subKinds = []
+                List<String> selKinds = params.list('subKind')
+                selKinds.each { String sel ->
+                    subKinds << Long.parseLong(sel)
+                }
+                qry_params.subKinds = subKinds
+            }
+
+            if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                subscrQueryFilter << "s.instanceOf is null"
+            }
+
+            base_qry += " or exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" )"
+            qry_params.linkType = RDStore.LINKTYPE_LICENSE
+        }
+        if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
+            base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
+                    + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
+                    + "   orgR.roleType in (:licRoleTypes) and ( "
+                    + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
+                    + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
+                    + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
+                    + " ) ) ) ) ")
+            qry_params.name_filter = params['keyword-search']
+            qry_params.licRoleTypes = [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]
+            result.keyWord = params['keyword-search']
+        }
+
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
             base_qry += " order by l.${params.sort} ${params.order}"
@@ -726,14 +732,14 @@ join sub.orgRelations or_sub where
         //Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP],contextOrg)
         Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where (sp.owner in (:subscriptions) or sp.owner.instanceOf in (:subscriptions)) and sp.tenant = :ctx",[subscriptions:subscriptions,ctx:contextOrg])
         titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
-        Map<Subscription,Set> providers = [:], agencies = [:], identifiers = [:], licenseReferences = [:], subChildMap = [:]
-        Map costItemCounts = [:]
-        List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
-        List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
-        List allIdentifiers = Identifier.findAllBySubIsNotNull()
+        Map<Subscription,Set> licenseReferences = [:], subChildMap = [:]
+        Map<Long,Integer> costItemCounts = [:]
+        //List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
+        //List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
+        //List allIdentifiers = Identifier.findAllBySubIsNotNull()
         List allLicenses = Links.executeQuery("select li from Links li where li.destinationSubscription in (:subscriptions) and li.linkType = :linkType",[subscriptions:subscriptions, linkType:RDStore.LINKTYPE_LICENSE])
         List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
-        allProviders.each { OrgRole provider ->
+        /*allProviders.each { OrgRole provider ->
             Set subProviders = providers.get(provider.sub)
             if(!providers.get(provider.sub))
                 subProviders = new TreeSet()
@@ -755,9 +761,9 @@ join sub.orgRelations or_sub where
                 subIdentifiers = new TreeSet()
             subIdentifiers.add("(${identifier.ns.ns}) ${identifier.value}")
             identifiers.put(identifier.sub,subIdentifiers)
-        }
+        }*/
         allCostItems.each { row ->
-            costItemCounts.put(row[1],row[0])
+            costItemCounts.put((Long) row[1],(Integer) row[0])
         }
         allLicenses.each { Links row ->
             Subscription s = row.destinationSubscription
@@ -768,12 +774,12 @@ join sub.orgRelations or_sub where
             subLicenses.add(l.reference)
             licenseReferences.put(s,subLicenses)
         }
-        List membershipCounts = Subscription.executeQuery('select count(s.id),s.instanceOf.id from Subscription s where s.instanceOf != null group by s.instanceOf.id')
-        Map subscriptionMembers = [:]
+        List membershipCounts = Subscription.executeQuery('select count(s.id),s.instanceOf.id from Subscription s where s.instanceOf in (:parentSubs) group by s.instanceOf.id',[parentSubs:subscriptions])
+        Map<Long,Integer> subscriptionMembers = [:]
         membershipCounts.each { row ->
-            subscriptionMembers.put(row[1],row[0])
+            subscriptionMembers.put((Long) row[1],(Integer) row[0])
         }
-        List<Subscription> childSubsOfSet = subscriptions.isEmpty() ? [] : Subscription.findAllByInstanceOfInList(subscriptions)
+        List<Subscription> childSubsOfSet = subscriptions.isEmpty() ? [] : Subscription.executeQuery('select s from Subscription s where s.instanceOf in (:parentSubs) and exists (select sp.id from SubscriptionProperty sp where sp.owner = s and sp.instanceOf = null and sp.tenant = :context)',[parentSubs:subscriptions,context:contextOrg])
         childSubsOfSet.each { Subscription child ->
             Set<Subscription> children = subChildMap.get(child.instanceOf)
             if(!children)
@@ -792,6 +798,9 @@ join sub.orgRelations or_sub where
         List subscriptionData = []
         subscriptions.each { Subscription sub ->
             List row = []
+            TreeSet subProviders = sub.orgRelations.findAll { OrgRole oo -> oo.roleType == RDStore.OR_PROVIDER }.collect { OrgRole oo -> oo.org.name }
+            TreeSet subAgencies = sub.orgRelations.findAll { OrgRole oo -> oo.roleType == RDStore.OR_AGENCY }.collect { OrgRole oo -> oo.org.name }
+            TreeSet subIdentifiers = sub.ids.collect { Identifier id -> "(${id.ns.ns}) ${id.value}" }
             switch (format) {
                 case "xls":
                 case "xlsx":
@@ -803,12 +812,12 @@ join sub.orgRelations or_sub where
                     }
                     row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
                     row.add([field: sub.getConsortia()?.name ?: '', style: null])
-                    row.add([field: providers.get(sub) ? providers.get(sub).join(", ") : '', style: null])
-                    row.add([field: agencies.get(sub) ? agencies.get(sub).join(", ") : '', style: null])
+                    row.add([field: subProviders.join(', '), style: null])
+                    row.add([field: subAgencies.join(', '), style: null])
                     row.add([field: sub.startDate ? sdf.format(sub.startDate) : '', style: null])
                     row.add([field: sub.endDate ? sdf.format(sub.endDate) : '', style: null])
                     row.add([field: sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '', style: null])
-                    row.add([field: identifiers.get(sub) ? identifiers.get(sub).join(", ") : '',style: null])
+                    row.add([field: subIdentifiers.join(", "),style: null])
                     row.add([field: sub.status?.getI10n("value"), style: null])
                     row.add([field: sub.kind?.getI10n("value") ?: '', style: null])
                     row.add([field: sub.form?.getI10n("value") ?: '', style: null])
@@ -819,7 +828,7 @@ join sub.orgRelations or_sub where
                         row.add([field: subscriptionMembers.get(sub.id) ?: 0, style: null])
                         row.add([field: costItemCounts.get(sub.id) ?: 0, style: null])
                     }
-                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub,subChildMap,objectNames))
+                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub,subChildMap,objectNames,contextOrg))
                     subscriptionData.add(row)
                     break
                 case "csv":
@@ -831,12 +840,12 @@ join sub.orgRelations or_sub where
                     }
                     row.add(packageNames ? packageNames.join("; ") : '')
                     row.add(sub.getConsortia()?.name ?: '')
-                    row.add(providers.get(sub) ? providers.get(sub).join("; ").replace(',','') : '')
-                    row.add(agencies.get(sub) ? agencies.get(sub).join("; ").replace(',','') : '')
+                    row.add(subProviders.join("; ").replace(',',''))
+                    row.add(subAgencies.join("; ").replace(',',''))
                     row.add(sub.startDate ? sdf.format(sub.startDate) : '')
                     row.add(sub.endDate ? sdf.format(sub.endDate) : '')
                     row.add(sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '')
-                    row.add(identifiers.get(sub) ? identifiers.get(sub).join("; ") : '')
+                    row.add(subIdentifiers.join("; "))
                     row.add(sub.status?.getI10n("value"))
                     row.add(sub.kind?.getI10n("value"))
                     row.add(sub.form?.getI10n("value"))
@@ -847,7 +856,7 @@ join sub.orgRelations or_sub where
                         row.add(subscriptionMembers.get(sub.id) ? (int) subscriptionMembers.get(sub.id) : 0)
                         row.add(costItemCounts.get(sub.id) ? (int) costItemCounts.get(sub.id) : 0)
                     }
-                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub,subChildMap,objectNames))
+                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub,subChildMap,objectNames,contextOrg))
                     subscriptionData.add(row)
                     break
             }
@@ -1007,6 +1016,7 @@ join sub.orgRelations or_sub where
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
             orgRoles << RDStore.OR_SUBSCRIPTION_CONSORTIA
+            queryFilter << " sub.instanceOf is null "
         }
         else {
             orgRoles << RDStore.OR_SUBSCRIBER
@@ -1079,8 +1089,7 @@ join sub.orgRelations or_sub where
         }
 
         if ((params.filter) && (params.filter.length() > 0)) {
-            log.debug("Adding title filter ${params.filter}");
-            queryFilter << "genfunc_filter_matcher(ti.title, :titlestr) = true "
+            queryFilter << "genfunc_filter_matcher(tipp.name, :titlestr) = true "
             qryParams.titlestr = params.get('filter').toString()
         }
 
@@ -1099,23 +1108,21 @@ join sub.orgRelations or_sub where
 
         //String havingClause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
 
-        String orderByClause = ''
+        String orderByClause
         if (params.order == 'desc') {
-            orderByClause = 'order by ti.sortTitle desc'
+            orderByClause = 'order by tipp.sortName desc, tipp.name desc'
         } else {
-            orderByClause = 'order by ti.sortTitle asc'
+            orderByClause = 'order by tipp.sortName asc, tipp.name asc'
         }
 
-        String qryString = "select ie from IssueEntitlement ie join ie.tipp tipp join tipp.title ti join ie.subscription sub join sub.orgRelations oo where ie.status != :deleted and sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
+        String qryString = "select ie.id from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo where ie.status != :deleted and sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
         if(queryFilter)
             qryString += ' and '+queryFilter.join(' and ')
-        qryString += orderByClause
 
-        //all ideas to move the .unique() into a group by clause are greately appreciated, a half day's attempts were unsuccessful!
-        Set<IssueEntitlement> currentIssueEntitlements = IssueEntitlement.executeQuery(qryString,qryParams).unique { ie -> ie.tipp.title }
-        Set<TitleInstance> allTitles = currentIssueEntitlements.collect { IssueEntitlement ie -> ie.tipp.title }
-        result.num_ti_rows = allTitles.size()
-        result.titles = allTitles.drop(result.offset).take(result.max)
+        Set<Long> currentIssueEntitlements = IssueEntitlement.executeQuery(qryString+' group by tipp, ie.id',qryParams)
+        Set<TitleInstancePackagePlatform> allTitles = TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) '+orderByClause,[ids:currentIssueEntitlements],[max:result.max,offset:result.offset])
+        result.num_ti_rows = currentIssueEntitlements.size()
+        result.titles = allTitles
 
         result.filterSet = params.filterSet || defaultSet
         String filename = "${message(code:'export.my.currentTitles')}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
@@ -1840,7 +1847,7 @@ join sub.orgRelations or_sub where
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         Map filterParams = params
-        filterParams.org = result.institution
+        filterParams.org = genericOIDService.getOID(result.institution)
 
         result.users = userService.getUserSet(filterParams)
         result.titleMessage = "${result.institution}"

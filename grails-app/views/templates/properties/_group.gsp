@@ -54,7 +54,7 @@
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
                             ${prop.type.getI10n('name')}
                             <g:if test="${prop.type.getI10n('expl')}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
+                                <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
                                     <i class="question circle icon"></i>
                                 </span>
                             </g:if>
@@ -182,7 +182,7 @@
                             <g:if test="${! AuditConfig.getConfig(prop)}">
                                 <g:if test="${(ownobj.instanceOf && !prop.instanceOf) || !ownobj.hasProperty("instanceOf")}">
                                     <g:if test="${prop.isPublic}">
-                                        <laser:remoteLink class="ui orange icon button" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                        <laser:remoteLink class="ui orange icon button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                           params='[oid: genericOIDService.getOID(prop),
                                                                    editable:"${overwriteEditable}",
                                                                    custom_props_div: "${custom_props_div}",
@@ -190,13 +190,13 @@
                                                                    showConsortiaFunctions: "${showConsortiaFunctions}",
                                                                    (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
                                                           data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
-                                                          data-tooltip="${message(code:'property.visible.active.tooltip')}" data-position="left center"
+                                                          data-content="${message(code:'property.visible.active.tooltip')}" data-position="left center"
                                                           data-update="${custom_props_div}">
                                             <i class="icon eye la-js-editmode-icon"></i>
                                         </laser:remoteLink>
                                     </g:if>
                                     <g:else>
-                                        <laser:remoteLink class="ui icon button" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                        <laser:remoteLink class="ui icon button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                           params='[oid: genericOIDService.getOID(prop),
                                                                    editable:"${overwriteEditable}",
                                                                    custom_props_div: "${custom_props_div}",
@@ -204,8 +204,9 @@
                                                                    showConsortiaFunctions: "${showConsortiaFunctions}",
                                                                    (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()]'
                                                           data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
-                                                          data-tooltip="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
-                                                          data-update="${custom_props_div}">
+                                                          data-content="${message(code:'property.visible.inactive.tooltip')}" data-position="left center"
+                                                          data-update="${custom_props_div}"
+                                        >
                                             <i class="icon eye slash la-js-editmode-icon"></i>
                                         </laser:remoteLink>
                                     </g:else>
@@ -231,7 +232,7 @@
                                                   data-done="c3po.initGroupedProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')"
                                                   data-update="${custom_props_div}"
                                                   role="button"
-                                >
+                                                  ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="trash alternate icon"></i>
                                 </laser:remoteLink>
                             </g:if>

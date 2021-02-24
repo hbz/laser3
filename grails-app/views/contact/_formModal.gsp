@@ -11,7 +11,7 @@
 
                 <div class="field eight wide required">
                     <label for="contentType">
-                        <g:message code="contact.contentType.label" />
+                        <g:message code="contact.contentType.label" /> <g:message code="messageRequiredField" />
                     </label>
                     <laser:select class="ui dropdown" id="contentType" name="contentType.id"
                         from="${Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
@@ -22,7 +22,7 @@
 
                 <div class="field eight wide required">
                     <label for="type">
-                        ${RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}
+                        ${RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')} <g:message code="messageRequiredField" />
                     </label>
                     <laser:select class="ui dropdown" id="type" name="type.id"
                                   from="${Contact.getAllRefdataValues(RDConstants.CONTACT_TYPE)}"
@@ -35,7 +35,7 @@
 
         <div class="field required">
             <label for="content">
-                <g:message code="contact.content.label" />
+                <g:message code="contact.content.label" /> <g:message code="messageRequiredField" />
             </label>
             <g:textField id="content" name="content" value="${contactInstance?.content}"/>
         </div>

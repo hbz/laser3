@@ -24,7 +24,6 @@
 
     <semui:form>
         <g:form action="processEmptyLicense" controller="myInstitution" method="post" class="ui form newLicence">
-
             <g:if test="${subInstance}">
                 <g:hiddenField id="sub_id_${subInstance.id}" name="sub" value="${subInstance.id}"/>
                 <div class="ui info message">${message(code: 'myinst.licensewithSub.notice', args: [subInstance.name])}</div>
@@ -36,7 +35,7 @@
             </g:if>
 
             <div class="field required">
-                <label>${message(code: 'myinst.emptyLicense.name')}</label>
+                <label>${message(code: 'myinst.emptyLicense.name')} <g:message code="messageRequiredField" /></label>
                 <input required type="text" name="licenseName" value="${params.licenseName}" placeholder=""/>
             </div>
 
@@ -47,7 +46,7 @@
             </div>
 
             <div class="field required">
-                <label>${message(code:'default.status.label')}</label>
+                <label>${message(code:'default.status.label')} <g:message code="messageRequiredField" /></label>
                 <%
                     def fakeList = []
                     fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS))

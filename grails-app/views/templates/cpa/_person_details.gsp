@@ -2,19 +2,21 @@
     <div class="ui divided middle aligned selection list la-flex-list">
 
         <div class="ui item person-details">
-            <h5 class="ui header">
+            <div class="header">
 
                     ${person.title}
                     ${person.first_name}
                     ${person.middle_name}
                     ${person.last_name}
 
-            </h5>
+            </div>
 
             <g:if test="${overwriteEditable}">
                 <div class="content la-space-right">
-                    <button class="ui mini icon button" type="button" onclick="JSPC.app.editPerson(${person.id})" >
-                        <i class="write icon"></i>
+                    <button class="ui mini icon button" type="button" onclick="JSPC.app.editPerson(${person.id})"
+                            role="button"
+                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                        <i aria-hidden="true" class="write icon"></i>
                     </button>
                 </div>
             </g:if>
@@ -56,14 +58,14 @@
 
         <div class="ui item person-details">
             <div class="content la-space-right">
-                <h5 class="ui header">
+                <div class="header">
 
                         ${personRole.prs.title}
                         ${personRole.prs.first_name}
                         ${personRole.prs.middle_name}
                         ${personRole.prs.last_name}
 
-                </h5>
+                </div>
                 <g:if test="${personRole.functionType}">
                     (${personRole.functionType.getI10n('value')})
                 </g:if>
@@ -91,7 +93,9 @@
                     <g:link class="ui mini icon negative button js-open-confirm-modal"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                             data-confirm-term-how="unlink"
-                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
+                            role="button"
+                            aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                         <i class="unlink icon"></i>
                     </g:link>
                 </g:if>

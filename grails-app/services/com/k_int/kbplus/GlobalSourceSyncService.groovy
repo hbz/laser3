@@ -1,5 +1,9 @@
 package com.k_int.kbplus
 
+import de.laser.ApiSource
+import de.laser.AuditConfig
+import de.laser.AuditService
+import de.laser.EscapeService
 import de.laser.GlobalRecordSource
 import de.laser.Identifier
 import de.laser.IssueEntitlement
@@ -13,6 +17,7 @@ import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.TitleInstancePackagePlatform
+import de.laser.finance.PriceItem
 import de.laser.system.SystemEvent
 import de.laser.base.AbstractCoverage
 import de.laser.IssueEntitlementCoverage
@@ -29,30 +34,35 @@ import de.laser.titles.JournalInstance
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
 import de.laser.titles.TitleInstance
+import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChild
 import groovy.util.slurpersupport.NodeChildren
+import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.HttpResponseException
+import groovyx.net.http.Method
 import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 import org.hibernate.Session
-import org.springframework.transaction.TransactionStatus
 
 import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.TimeUnit
 
 /**
  * Implements the synchronisation workflow according to https://dienst-wiki.hbz-nrw.de/display/GDI/GOKB+Sync+mit+LASER
  */
-//@Transactional
+@Transactional
 class GlobalSourceSyncService extends AbstractLockableService {
 
     ExecutorService executorService
     ChangeNotificationService changeNotificationService
+    PendingChangeService pendingChangeService
     def genericOIDService
-     //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    EscapeService escapeService
     GlobalRecordSource source
+    ApiSource apiSource
+    AuditService auditService
 
     final static long RECTYPE_PACKAGE = 0
     final static long RECTYPE_TITLE = 1
@@ -60,9 +70,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
     final static long RECTYPE_TIPP = 3
     final static Map<Long,String> RECTYPES = [(RECTYPE_PACKAGE):'packages',(RECTYPE_TITLE):'titles',(RECTYPE_ORG):'orgs',(RECTYPE_TIPP):'tipps']
 
-    Map<String, RefdataValue> titleStatus = [:], titleMedium = [:], tippStatus = [:], packageStatus = [:], orgStatus = [:]
-    Set<String> newPackages = [], newTIPPs = []
+    Map<String, RefdataValue> titleStatus = [:], titleMedium = [:], tippStatus = [:], packageStatus = [:], orgStatus = [:], currency = [:]
     Long maxTimestamp = 0
+    Map<String,Integer> initialPackagesCounter = [:]
+    Map<String,Set<Map<String,Object>>> pkgPropDiffsContainer = [:]
+    Map<String,Set<Map<String,Object>>> packagesToNotify = [:]
 
     SimpleDateFormat xmlTimestampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
@@ -76,23 +88,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
         if (!running) {
             executorService.execute({ doSync() })
             //doSync()
-            return true
-        }
-        else {
-            log.warn("Sync already running, not starting again")
-            return false
-        }
-    }
-
-    /**
-     * A modified copy of startSync - triggering the multithreading variant.
-     * This is the entry point for triggering the sync workflow. To ensure locking, a flag will be set when a process is already running
-     * @return a flag whether a process is already running
-     */
-    boolean startMultithreadSync() {
-        if (!running) {
-            //doSync()
-            doMultithreadSync()
             return true
         }
         else {
@@ -127,19 +122,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     String resumption = null
                     // perform GET request, expection XML response data
                     while(more) {
-                        Map<String,String> queryParams = [verb:'ListRecords',metadataPrefix:'gokb']
+                        Map<String,String> queryParams = [verb:'ListRecords']
                         //Map<String,String> queryParams = [verb:'GetRecord',metadataPrefix:'gokb',identifier:'a3f41aef-8316-442e-99e9-29e2f011fc22'] //for debugging
                         if(resumption) {
                             queryParams.resumptionToken = resumption
-                            log.info("in loop, making request with link ${source.uri}?verb=ListRecords&metadataPrefix=gokb&resumptionToken=${resumption} ...")
+                            log.info("in loop, making request with link ${source.uri}?verb=ListRecords&metadataPrefix=${source.fullPrefix}&resumptionToken=${resumption} ...")
                         }
                         else {
                             String fromParam = oldDate ? xmlTimestampFormat.format(oldDate) : ''
                             log.info("in loop, making first request, timestamp: ${fromParam} ...")
-                            queryParams.metadataPrefix = source.fullPrefix
                             queryParams.from = fromParam
                         }
-                        GPathResult listOAI = fetchRecord(source.uri,RECTYPES[source.rectype],queryParams)
+                        GPathResult listOAI = fetchRecordOAI(RECTYPES[source.rectype],queryParams)
                         if(listOAI) {
                             switch(source.rectype) {
                                 case RECTYPE_PACKAGE:
@@ -167,7 +161,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     Map<String,Object> updateMap = collectDataToUpdate(listOAI,packagesExisting)
                                     updateMap.tippsOnPage.each { tippNode ->
                                         tippUUIDsOnPage << tippNode.'@uuid'.text()
-                                        tippNodesOnPage.put(tippNode.'@uuid'.text(),tippConvOAI(tippNode))
+                                        tippNodesOnPage.put(tippNode.'@uuid'.text(),tippConv(tippNode))
                                     }
                                     updateMap.platformsOnPage.each { platformNode ->
                                         platformsOnPage << platformNode.'@uuid'.text()
@@ -205,7 +199,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     //add new ones
                                     packageUUIDs.each { String uuid ->
                                         if(!packagesExisting.find{ Package pkg -> pkg.gokbId == uuid }) {
-                                            NodeChildren packageRecord = fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:uuid])
+                                            NodeChildren packageRecord = fetchRecordOAI('packages',[verb:'GetRecord', identifier:uuid])
                                             updateNonPackageData(packageRecord)
                                             createOrUpdatePackageOAI(packageRecord.record.metadata.gokb.package)
                                         }
@@ -242,200 +236,317 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     log.error("sync job has failed, please consult stacktrace as follows: ",e)
                 }
             }
-        }
-        running = false
-    }
-
-    void doMultithreadSync() {
-        running = true
-        defineMapFields()
-        List<GlobalRecordSource> jobs = GlobalRecordSource.findAllByActive(true)
-        jobs.each { GlobalRecordSource source ->
-            this.source = source
-            try {
-                SystemEvent.createEvent('GSSS_OAI_START',['jobId':source.id])
-                Thread.currentThread().setName("principal thread")
-                Date oldDate = source.haveUpTo
-                Map<String,String> queryParams = [verb:'ListRecords',metadataPrefix:'gokb']
-                String fromParam = oldDate ? xmlTimestampFormat.format(oldDate) : ''
-                log.info("getting first record for job #${source.id} with uri ${source.uri} since ${oldDate} using ${source.fullPrefix}, timestamp: ${fromParam} ...")
-                queryParams.metadataPrefix = source.fullPrefix
-                queryParams.from = fromParam
-                GPathResult listOAI = fetchRecord(source.uri,RECTYPES[source.rectype],queryParams)
-                if(listOAI.resumptionToken.size() > 0 && listOAI.resumptionToken.text().length() > 0) {
-                    int completeListSize = Integer.parseInt(listOAI.resumptionToken.'@completeListSize'.text())
-                    log.info("Total number of records: ${completeListSize}")
-                    Set<Set<String>> threads = divideWork(listOAI.resumptionToken.text(),completeListSize)
-                    threads.eachWithIndex { Set<String> tokens, int threadN ->
-                        executorService.execute ({
-                            startThread(listOAI,tokens,threadN)
-                            if(maxTimestamp+1000 > oldDate.time) {
-                                log.info("all OAI info fetched, timestamp ${source.haveUpTo} updated to ${DateUtils.getSDF_NoTime().format(new Date(maxTimestamp+1000))}")
-                                source.haveUpTo = new Date(maxTimestamp+1000)
+            else if(source.type == "JSON") {
+                try {
+                    SystemEvent.createEvent('GSSS_JSON_START',['jobId':source.id])
+                    Thread.currentThread().setName("GlobalDataSync_Json")
+                    this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
+                    Date oldDate = source.haveUpTo
+                    log.info("getting records from job #${source.id} with uri ${source.uri} since ${oldDate}")
+                    SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss')
+                    String componentType
+                    /*
+                        structure:
+                        { packageUUID: [
+                            diffs of tipp 1 concerned,
+                            diffs of tipp 2 concerned,
+                            ...
+                            diffs of tipp n concerned
+                            ]
+                        }
+                     */
+                    switch(source.rectype) {
+                        case RECTYPE_PACKAGE: componentType = 'Package'
+                            break
+                        case RECTYPE_TIPP: componentType = 'TitleInstancePackagePlatform'
+                            //do prequest: are we needing the scroll api?
+                            Map<String,Object> result
+                            //5000 records because of local testing ability
+                            result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),max:5000])
+                            if(result && result.count >= 5000) {
+                                String scrollId
+                                boolean more = true
+                                while(more) {
+                                    //actually, scrollId alone should do the trick but tests revealed that other parameters are necessary, too, because of current workaround solution
+                                    if(scrollId)
+                                        result = fetchRecordJSON(true,[component_type: componentType,changedSince:sdf.format(oldDate),scrollId: scrollId])
+                                    else result = fetchRecordJSON(true,[component_type: componentType,changedSince:sdf.format(oldDate)])
+                                    if(result.count > 0) {
+                                        updateRecords(result.records)
+                                        if(result.hasMoreRecords) {
+                                            scrollId = result.scrollId
+                                        }
+                                        else {
+                                            more = false
+                                        }
+                                    }
+                                    else {
+                                        //workaround until GOKb-ES migration is done and hopefully works ...
+                                        if(result.hasMoreRecords) {
+                                            scrollId = result.scrollId
+                                            log.info("page is empty, turning to next page ...")
+                                        }
+                                        else {
+                                            more = false
+                                            log.info("no records updated - leaving everything as is ...")
+                                        }
+                                    }
+                                }
                             }
-                        })
+                            else if(result && result.count > 0 && result.count < 5000) {
+                                updateRecords(result.records)
+                            }
+                            else {
+                                log.info("no records updated - leaving everything as is ...")
+                            }
+                            break
                     }
-                    executorService.shutdown()
-                    try {
-                        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
-                        log.info("after last thread, timestamp is at ${source.haveUpTo}")
+                    if(maxTimestamp+1000 > source.haveUpTo.getTime()) {
+                        log.debug("old ${sdf.format(source.haveUpTo)}")
+                        source.haveUpTo = new Date(maxTimestamp+1000)
+                        log.debug("new ${sdf.format(source.haveUpTo)}")
                         source.save()
                     }
-                    catch (InterruptedException e) {
-                        throw new SyncException(e.getMessage())
+                    if(packagesToNotify.keySet().size() > 0) {
+                        log.info("notifying subscriptions ...")
+                        trackPackageHistory()
+                        //get subscription packages and their respective holders, parent level only!
+                        String query = 'select oo.org,sp from SubscriptionPackage sp join sp.pkg pkg ' +
+                                'join sp.subscription s ' +
+                                'join s.orgRelations oo ' +
+                                'where s.instanceOf = null and pkg.gokbId in (:packages) ' +
+                                'and oo.roleType in (:roleTypes)'
+                        List subPkgHolders = SubscriptionPackage.executeQuery(query,[packages:packagesToNotify.keySet(),roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+                        subPkgHolders.each { row ->
+                            Org org = (Org) row[0]
+                            SubscriptionPackage sp = (SubscriptionPackage) row[1]
+                            autoAcceptPendingChanges(org,sp)
+                        }
                     }
+                    else {
+                        log.info("no diffs recorded ...")
+                    }
+                    log.info("sync job finished")
+                    SystemEvent.createEvent('GSSS_JSON_COMPLETE',['jobId',source.id])
                 }
-            }
-            catch (Exception e) {
-                SystemEvent.createEvent('GSSS_OAI_ERROR',['jobId':source.id])
-                log.error("sync job has failed, please consult stacktrace as follows: ",e)
+                catch (Exception e) {
+                    SystemEvent.createEvent('GSSS_JSON_ERROR',['jobId':source.id])
+                    log.error("sync job has failed, please consult stacktrace as follows: ",e)
+                }
             }
         }
         running = false
     }
 
-    Set<Set<String>> divideWork(String baseToken, int completeListSize) {
-        Set<Set<String>> threadSet = []
-        Set<String> tokenSet = [baseToken] //i = 10
-        for(int i = 20;i < completeListSize;i+=10) {
-            tokenSet << baseToken.replaceFirst('\\|(\\d+)\\|',"|${i}|")
-            if(i % 2000 == 0) {
-                log.debug("new thread opened")
-                threadSet << tokenSet
-                tokenSet = []
+    void updateRecords(List<Map> records) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        Set<String> platformUUIDs = records.collect { Map tipp -> tipp.hostPlatformUuid } as Set<String>
+        Set<String> packageUUIDs = records.collect { Map tipp -> tipp.tippPackageUuid } as Set<String>
+        Set<String> tippUUIDs = records.collect { Map tipp -> tipp.uuid } as Set<String>
+        Map<String,Package> packagesOnPage = [:]
+        Map<String,Platform> platformsOnPage = [:]
+        Set<String> existingPlatformUUIDs = Platform.executeQuery('select pkg.gokbId from Package pkg where pkg.gokbId in (:pkgUUIDs)',[pkgUUIDs:packageUUIDs])
+        Map<String,TitleInstancePackagePlatform> tippsOnPage = [:]
+        //collect existing TIPPs
+        TitleInstancePackagePlatform.findAllByGokbIdInList(tippUUIDs.toList()).each { TitleInstancePackagePlatform tipp ->
+            tippsOnPage.put(tipp.gokbId,tipp)
+        }
+        //create or update packages
+        packageUUIDs.each { String packageUUID ->
+            try {
+                packagesOnPage.put(packageUUID,createOrUpdatePackage(packageUUID))
+            }
+            catch (SyncException e) {
+                log.error("Error on updating package ${packageUUID}: ",e)
+                SystemEvent.createEvent("GSSS_JSON_WARNING",[packageRecordKey:packageUUID])
             }
         }
-        threadSet
+        //create or update platforms
+        platformUUIDs.each { String platformUUID ->
+            try {
+                platformsOnPage.put(platformUUID,createOrUpdatePlatformJSON(platformUUID))
+            }
+            catch (SyncException e) {
+                log.error("Error on updating platform ${platformUUID}: ",e)
+                SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:platformUUID])
+            }
+        }
+        records.eachWithIndex { Map tipp, int idx ->
+            log.debug("now processing entry #${idx}")
+            try {
+                Map<String,Object> updatedTIPP = [
+                        titleType: tipp.titleType,
+                        name: tipp.name ?: tipp.tippTitleName,
+                        packageUUID: tipp.tippPackageUuid ?: null,
+                        platformUUID: tipp.hostPlatformUuid ?: null,
+                        titlePublishers: [],
+                        firstAuthor: tipp.titleFirstAuthor ?: null,
+                        firstEditor: tipp.titleFirstEditor ?: null,
+                        dateFirstInPrint: tipp.dateFirstInPrint ? DateUtils.parseDateGeneric(tipp.dateFirstInPrint) : null,
+                        dateFirstOnline: tipp.dateFirstOnline ? DateUtils.parseDateGeneric(tipp.dateFirstOnline) : null,
+                        imprint: tipp.titleImprint ?: null,
+                        status: tipp.status,
+                        seriesName: tipp.series ?: null,
+                        subjectReference: tipp.subjectArea ?: null,
+                        volume: tipp.titleVolumeNumber ?: null,
+                        coverages: [],
+                        priceItems: [],
+                        hostPlatformURL: tipp.url ?: null,
+                        identifiers: [],
+                        history: [],
+                        uuid: tipp.uuid,
+                        accessStartDate : tipp.accessStartDate ? DateUtils.parseDateGeneric(tipp.accessStartDate) : null,
+                        accessEndDate   : tipp.accessEndDate ? DateUtils.parseDateGeneric(tipp.accessEndDate) : null,
+                        medium: tipp.tippTitleMedium
+                ]
+                if(tipp.titleType == 'Journal') {
+                    tipp.coverage.each { cov ->
+                        updatedTIPP.coverages << [
+                                startDate: cov.startDate ? DateUtils.parseDateGeneric(cov.startDate) : null,
+                                endDate: cov.endDate ? DateUtils.parseDateGeneric(cov.endDate) : null,
+                                startVolume: cov.startVolume ?: null,
+                                endVolume: cov.endVolume ?: null,
+                                startIssue: cov.startIssue ?: null,
+                                endIssue: cov.endIssue ?: null,
+                                coverageDepth: cov.coverageDepth ?: null,
+                                coverageNote: cov.coverageNote ?: null,
+                                embargo: cov.embargo ?: null
+                        ]
+                    }
+                    updatedTIPP.coverages = updatedTIPP.coverages.toSorted { a, b -> a.startDate <=> b.startDate }
+                }
+                tipp.prices.each { price ->
+                    updatedTIPP.priceItems << [
+                            listPrice: escapeService.parseFinancialValue(price.amount),
+                            startDate: DateUtils.parseDateGeneric(price.startDate),
+                            endDate: DateUtils.parseDateGeneric(price.endDate),
+                            listCurrency: currency.get(price.currency)
+                    ]
+                }
+                tipp.titlePublishers.each { publisher ->
+                    updatedTIPP.titlePublishers << [uuid:publisher.uuid,name:publisher.name]
+                }
+                tipp.identifiers.each { identifier ->
+                    updatedTIPP.identifiers << [namespace:identifier.namespace, value: identifier.value, name_de: identifier.namespaceName]
+                }
+                tipp.titleHistory.each { historyEvent ->
+                    updatedTIPP.history << [date:DateUtils.parseDateGeneric(historyEvent.date),from:historyEvent.from,to:historyEvent.to]
+                }
+                if(updatedTIPP.packageUUID in existingPlatformUUIDs) {
+                    Map<String,Object> diffs = createOrUpdateTIPP(tippsOnPage.get(updatedTIPP.uuid),updatedTIPP,packagesOnPage,platformsOnPage)
+                    Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(updatedTIPP.packageUUID)
+                    if(!diffsOfPackage)
+                        diffsOfPackage = []
+                    diffsOfPackage << diffs
+                    if(pkgPropDiffsContainer.get(updatedTIPP.packageUUID))
+                        diffsOfPackage.addAll(pkgPropDiffsContainer.get(updatedTIPP.packageUUID)) //test with set, otherwise make check
+                    packagesToNotify.put(updatedTIPP.packageUUID,diffsOfPackage)
+                }
+                else {
+                    addNewTIPP(packagesOnPage.get(updatedTIPP.packageUUID),updatedTIPP,platformsOnPage,null)
+                }
+                Date lastUpdatedTime = DateUtils.parseDateGeneric(tipp.lastUpdatedDisplay)
+                if(lastUpdatedTime.getTime() > maxTimestamp) {
+                    maxTimestamp = lastUpdatedTime.getTime()
+                }
+            }
+            catch (SyncException e) {
+                log.error("Error on updating tipp ${tipp.uuid}: ",e)
+                SystemEvent.createEvent("GSSS_JSON_WARNING",[tippRecordKey:tipp.uuid])
+            }
+        }
     }
 
-    void startThread(GPathResult listOAI, Set<String> tokens, int threadN) {
-        Thread.currentThread().setName("parallelSync ${threadN}")
-        try {
-            Map<String,String> queryParams = [verb:'ListRecords',metadataPrefix:'gokb']
-            List<List<Map<String,Object>>> tippsToNotify = []
-            if(threadN == 0) {
-                log.debug(listOAI.toString())
-                tippsToNotify.addAll(syncRecords(listOAI,0))
-            }
-            tokens.each { String token ->
-                log.info("in loop, making request with link ${source.uri}?verb=ListRecords&metadataPrefix=gokb&resumptionToken=${token} ...")
-                queryParams.resumptionToken = token
-                listOAI = fetchRecord(source.uri,RECTYPES[source.rectype],queryParams)
-                if(listOAI) {
-                    tippsToNotify.addAll(syncRecords(listOAI, threadN))
-                    log.info("Continue with next iteration, token: ${token}")
+    /**
+     * This records the package changes so that subscription holders may decide whether they apply them or not
+     * @param packagesToTrack
+     */
+    void trackPackageHistory() {
+        //Package.withSession { Session sess ->
+            //loop through all packages
+            packagesToNotify.each { String packageUUID, Set<Map<String,Object>> diffsOfPackage ->
+                if(diffsOfPackage.find { Map<String,Object> diff -> diff.event in [PendingChangeConfiguration.NEW_TITLE,PendingChangeConfiguration.TITLE_DELETED] }) {
+                    int newCount = TitleInstancePackagePlatform.executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp where tipp.pkg.gokbId = :gokbId',[gokbId:packageUUID])[0]
+                    String newValue = newCount.toString()
+                    String oldValue = initialPackagesCounter.get(packageUUID).toString()
+                    PendingChange.construct([msgToken:PendingChangeConfiguration.PACKAGE_TIPP_COUNT_CHANGED,target:Package.findByGokbId(packageUUID),status:RDStore.PENDING_CHANGE_HISTORY,prop:"tippCount",newValue:newValue,oldValue:oldValue])
                 }
+                diffsOfPackage.each { Map<String,Object> diff ->
+                    log.debug(diff.toMapString())
+                    //[event:update, target:de.laser.TitleInstancePackagePlatform : 196477, diffs:[[prop:price, priceDiffs:[[event:add, target:de.laser.finance.PriceItem : 10791]]]]]
+                    switch(diff.event) {
+                        case 'add': PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_TITLE,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY])
+                            break
+                        case 'update':
+                            diff.diffs.each { tippDiff ->
+                                switch(tippDiff.prop) {
+                                    case 'coverage': tippDiff.covDiffs.each { covEntry ->
+                                        switch(covEntry.event) {
+                                            case 'add': PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_COVERAGE,target:covEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
+                                                break
+                                            case 'update': PendingChange.construct([msgToken:PendingChangeConfiguration.COVERAGE_UPDATED,target:covEntry.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:diff.prop,newValue:diff.newValue,oldValue:diff.oldValue])
+                                                break
+                                            case 'delete': JSON oldMap = covEntry.target.properties as JSON
+                                                PendingChange.construct([msgToken:PendingChangeConfiguration.COVERAGE_DELETED, target:covEntry.targetParent, oldValue: oldMap.toString() , status:RDStore.PENDING_CHANGE_HISTORY])
+                                                break
+                                        }
+                                    }
+                                        break
+                                    case 'price': tippDiff.priceDiffs.each { priceEntry ->
+                                        switch(priceEntry.event) {
+                                            case 'add': PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_PRICE,target:priceEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
+                                                break
+                                            case 'update': PendingChange.construct([msgToken:PendingChangeConfiguration.PRICE_UPDATED,target:priceEntry.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:diff.prop,newValue:diff.newValue,oldValue:diff.oldValue])
+                                                break
+                                            case 'delete': JSON oldMap = priceEntry.target.properties as JSON
+                                                PendingChange.construct([msgToken:PendingChangeConfiguration.PRICE_DELETED,target:priceEntry.targetParent,oldValue:oldMap.toString(),status:RDStore.PENDING_CHANGE_HISTORY])
+                                                break
+                                        }
+                                    }
+                                        break
+                                    default: PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_UPDATED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:tippDiff.prop,newValue:tippDiff.newValue,oldValue:tippDiff.oldValue])
+                                        break
+                                }
+                            }
+                            break
+                        case 'delete': PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_DELETED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY])
+                            break
+                    }
+                    //PendingChange.construct([msgToken,target,status,prop,newValue,oldValue])
+                }
+                //sess.flush()
             }
-            notifyDependencies(tippsToNotify)
-            log.info("thread ${threadN} finished")
-        }
-        catch (Exception e) {
-            SystemEvent.createEvent('GSSS_OAI_ERROR',['jobId':source.id])
-            log.error("sync job has failed, please consult stacktrace as follows: ",e)
-        }
+        //}
     }
 
-    List syncRecords(GPathResult listOAI,int threadN) {
-        List<List<Map<String,Object>>> tippsToNotify = []
-        boolean dryRun = false //is for debugging
-        Set<String> tippUUIDsOnPage = [], platformsOnPage = [], titleInstancesOnPage = [], packageUUIDs = listOAI.'**'.findAll { node ->
-            node.name() == "package"
-        }.collect { node -> node.'@uuid'.text() }.toSet()
-        Map<String,Map<String,Object>> tippNodesOnPage = [:]
-        if(packageUUIDs) {
-            Set<Package> packagesExisting = Package.findAllByGokbIdInList(packageUUIDs.toList())
-            Map<String,Object> updateMap = collectDataToUpdate(listOAI,packagesExisting)
-            //make package check: which ones do exist in LAS:eR at all, which do not?
-            if(!dryRun) {
-                //log.warn("do it ...")
-                updateTitleInstances(updateMap.titleInstancesOnPage)
-                updateProviders(updateMap.providersOnPage)
-                updatePlatforms(updateMap.platformsOnPage)
-                updateMap.tippsOnPage.each { tippNode ->
-                    tippUUIDsOnPage << tippNode.'@uuid'.text()
-                    tippNodesOnPage.put(tippNode.'@uuid'.text(),tippConvOAI(tippNode))
+    void autoAcceptPendingChanges(Org contextOrg, SubscriptionPackage subPkg) {
+        //get for each subscription package the tokens which should be accepted
+        String query = 'select pcc.settingKey from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where pcc.settingValue = :accept and sp = :sp'
+        List<String> pendingChangeConfigurations = PendingChangeConfiguration.executeQuery(query,[accept:RDStore.PENDING_CHANGE_CONFIG_ACCEPT,sp:subPkg])
+        if(pendingChangeConfigurations) {
+            Map<String,Object> changeParams = [pkg:subPkg.pkg,history:RDStore.PENDING_CHANGE_HISTORY,subscriptionJoin:subPkg.dateCreated,msgTokens:pendingChangeConfigurations]
+            Set<PendingChange> newChanges = [],
+                               acceptedChanges = PendingChange.findAllByOidAndStatusAndMsgTokenIsNotNull(genericOIDService.getOID(subPkg.subscription),RDStore.PENDING_CHANGE_ACCEPTED)
+            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
+            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
+            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.priceItem pi join pi.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
+            newChanges.each { PendingChange newChange ->
+                boolean processed = false
+                if(newChange.tipp)
+                    processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken } != null
+                else if(newChange.tippCoverage)
+                    processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken } != null
+                else if(newChange.priceItem && newChange.priceItem.tipp)
+                    processed = acceptedChanges.find { PendingChange accepted -> accepted.priceItem == newChange.priceItem && accepted.msgToken == newChange.msgToken } != null
+                if(!processed) {
+                    /*
+                    get each change for each subscribed package and token, fetch issue entitlement equivalent and process the change
+                    if a change is being accepted, create a copy with target = subscription of subscription package and oid = the target of the processed change
+                     */
+                    pendingChangeService.applyChangeForHolding(newChange,subPkg,contextOrg)
                 }
-                updateMap.platformsOnPage.each { platformNode ->
-                    platformsOnPage << platformNode.'@uuid'.text()
-                }
-                updateMap.titleInstancesOnPage.each { titleInstanceNode ->
-                    titleInstancesOnPage << titleInstanceNode.'@uuid'.text()
-                }
-                log.info("fetching objects for keys ...")
-                Map<String,Platform> newPlatforms = [:]
-                if(platformsOnPage) {
-                    Platform.findAllByGokbIdInList(platformsOnPage.toList()).each { Platform plat ->
-                        newPlatforms.put(plat.gokbId,plat)
-                    }
-                }
-                Map<String,TitleInstance> newTitleInstances = [:]
-                if(titleInstancesOnPage) {
-                    //may cause crashes when processing 5 000 000 entries
-                    TitleInstance.findAllByGokbIdInList(titleInstancesOnPage.toList()).each { TitleInstance ti ->
-                        newTitleInstances.put(ti.gokbId,ti)
-                    }
-                }
-                //process existing ones
-                if(tippUUIDsOnPage) {
-                    Set<TitleInstancePackagePlatform> existingTIPPs = TitleInstancePackagePlatform.findAllByGokbIdInList(tippUUIDsOnPage.toList())
-                    tippsToNotify.addAll(processTippPage(existingTIPPs,tippNodesOnPage,packagesExisting,newPlatforms,newTitleInstances))
-                }
-                else if(!tippUUIDsOnPage) {
-                    log.info("no tipp UUIDs on page???")
-                }
-                //add new ones
-                packageUUIDs.each { String uuid ->
-                    Package pkgExisting = packagesExisting.find { Package pkg -> pkg.gokbId == uuid }
-                    if(pkgExisting)
-                        log.debug("existing: ${uuid} with LAS:eR ID ${pkgExisting.id}")
-                    else if(!newPackages.contains(uuid)) {
-                        log.debug("existing: ${uuid} not existing, need to load")
-                        //filter here all TIPP-UUIDs and jump to next unprocessed entry
-                        GPathResult packageRecord = fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:uuid])
-                        packageRecord.record.metadata.gokb.package.TIPPs.TIPP.each { tippNode ->
-                            newTIPPs.add(tippNode.'@uuid'.text()) //must be COMMON for each thread!
-                        }
-                        updateNonPackageData(packageRecord)
-                        createOrUpdatePackageOAI(packageRecord.record.metadata.gokb.package)
-                        newPackages << uuid
-                    }
-                    else log.info("package ${uuid} already in process by another thread, no double loading ...")
-                }
-            }
-            else {
-                log.debug("thread ${threadN} has package UUIDs located: ${packageUUIDs}")
-                packageUUIDs.each { String uuid ->
-                    Package pkgExisting = packagesExisting.find { Package pkg -> pkg.gokbId == uuid }
-                    if(pkgExisting)
-                        log.debug("existing: ${uuid} with LAS:eR ID ${pkgExisting.id}")
-                    else if(!newPackages.contains(uuid)) {
-                        log.debug("existing: ${uuid} not existing, need to load")
-                        GPathResult packageRecord = fetchRecord(source.uri,'packages',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:uuid])
-                        packageRecord.record.metadata.gokb.package.TIPPs.TIPP.each { tippNode ->
-                            newTIPPs.add(tippNode.'@uuid'.text()) //must be COMMON for each thread!
-                        }
-                        newPackages << uuid
-                    }
-                }
-                listOAI.record.each { r ->
-                    NodeChildren tippNode = r.metadata.gokb.tipp
-                    if(packagesExisting.find{ Package pkg -> pkg.gokbId == tippNode.package.'@uuid'.text() }) {
-                        if(!newTIPPs.contains(tippNode.'@uuid'.text())) {
-                            tippUUIDsOnPage << tippNode.'@uuid'.text()
-                            platformsOnPage << tippNode.platform.'@uuid'.text()
-                            titleInstancesOnPage << tippNode.title.'@uuid'.text()
-                        }
-                        else {
-                            log.debug("omit TIPP ${tippNode.'@uuid'.text()}, already processed when adding its package")
-                        }
-                    }
-                }
-                log.debug("located TIPPs to update: ${tippUUIDsOnPage.toListString()}")
-                log.debug("located platforms to update: ${platformsOnPage.toListString()}")
-                log.debug("located titles to update: ${titleInstancesOnPage.toListString()}")
             }
         }
-        tippsToNotify
     }
 
     Map<String,Object> collectDataToUpdate(GPathResult listOAI, Set<Package> packagesExisting) {
@@ -480,6 +591,23 @@ class GlobalSourceSyncService extends AbstractLockableService {
         packagesToNotify.values().each { List<Map<String,Object>> value ->
             result << value
         }
+        result
+    }
+
+    Map<String,Object> createOrUpdateTIPP(TitleInstancePackagePlatform tippA,Map tippB, Map<String,Package> newPackages,Map<String,Platform> newPlatforms) {
+        Map<String,Object> result = [:]
+        //TitleInstancePackagePlatform.withSession { Session sess ->
+            if(tippA) {
+                //update or delete TIPP
+                result.putAll(processTippDiffs(tippA,tippB)) //maybe I have to make some adaptations on tippB!
+            }
+            else {
+                //new TIPP
+                TitleInstancePackagePlatform target = addNewTIPP(newPackages.get(tippB.packageUUID), tippB, newPlatforms, null)
+                result.event = 'add'
+                result.target = target
+            }
+        //}
         result
     }
 
@@ -595,7 +723,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         List<String> platformsInPackage = [], titleInstancesInPackage = []
         packageData.TIPPs.TIPP.eachWithIndex { tipp, int ctr ->
             if(tipp.title.type.text() in ['BookInstance','DatabaseInstance','JournalInstance']) {
-                tipps << tippConvOAI(tipp)
+                tipps << tippConv(tipp)
                 platformsInPackage << tipp.platform.'@uuid'.text()
                 titleInstancesInPackage << tipp.title.'@uuid'.text()
             }
@@ -680,9 +808,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             if(pkgPropDiffs)
                                 tippsToNotify << [event:"pkgPropUpdate",diffs:pkgPropDiffs,target:result]
                             tipps.eachWithIndex { Map<String, Object> tippB, int index ->
-                                if (index % 10 == 0 && index > 0) {
-                                    sess.flush()
-                                }
                                 TitleInstancePackagePlatform tippA = result.tipps.find { TitleInstancePackagePlatform a -> a.gokbId == tippB.uuid }
                                 //we have to consider here TIPPs, too, which were deleted but have been reactivated
                                 if (tippA) {
@@ -727,7 +852,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 result.nominalPlatform = Platform.findByGokbId(platformUUID)
                             }
                             tipps.eachWithIndex { Map<String,Object> tipp, int idx ->
-                                //TODO split up here into multithread processing!
                                 log.info("now processing entry #${idx} with UUID ${tipp.uuid}")
                                 addNewTIPP(result,tipp,newPlatforms,newTitleInstances)
                             }
@@ -744,7 +868,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 }
                 log.info("after processing identifiers")
-                sess.flush()
             }
             catch (Exception e) {
                 log.error("Error on updating package ${result.id} ... rollback!")
@@ -755,161 +878,77 @@ class GlobalSourceSyncService extends AbstractLockableService {
         tippsToNotify
     }
 
-    /**
-     * Converts the TIPP data from OAI-XML elements into an object structure, reflected by a {@link Map}, representing the {@link TitleInstancePackagePlatform} and {@link TIPPCoverage} class structures
-     * @param TIPPData - the base branch ({@link NodeChildren}) containing the OAI extract for {@link TitleInstancePackagePlatform} data
-     * @return a {@link Map} containing the underlying TIPP data
-     */
-    Map<String,Object> tippConvOAI(tipp) {
-        Map<String,Object> updatedTIPP = [
-            title: [
-                gokbId: tipp.title.'@uuid'.text()
-            ],
-            packageUUID: tipp.package.'@uuid'.text(), //needed for TIPP endpoint processing
-            platformUUID: tipp.platform.'@uuid'.text(),
-            status: tipp.status.text(),
-            coverages: [],
-            hostPlatformURL: tipp.url.text(),
-            identifiers: [],
-            id: tipp.'@id'.text(),
-            uuid: tipp.'@uuid'.text(),
-            accessStartDate : tipp.access.'@start'.text() ? DateUtils.parseDateGeneric(tipp.access.'@start'.text()) : null,
-            accessEndDate   : tipp.access.'@end'.text() ? DateUtils.parseDateGeneric(tipp.access.'@end'.text()) : null,
-            medium      : tipp.medium.text()
-        ]
-        updatedTIPP.identifiers.add([namespace: 'uri', value: tipp.'@id'.tippId])
-        if(tipp.title.type.text() == 'JournalInstance') {
-            tipp.coverage.each { cov ->
-                updatedTIPP.coverages << [
-                    startDate: cov.'@startDate'.text() ? DateUtils.parseDateGeneric(cov.'@startDate'.text()) : null,
-                    endDate: cov.'@endDate'.text() ? DateUtils.parseDateGeneric(cov.'@endDate'.text()) : null,
-                    startVolume: cov.'@startVolume'.text() ?: null,
-                    endVolume: cov.'@endVolume'.text() ?: null,
-                    startIssue: cov.'@startIssue'.text() ?: null,
-                    endIssue: cov.'@endIssue'.text() ?: null,
-                    coverageDepth: cov.'@coverageDepth'.text() ?: null,
-                    coverageNote: cov.'@coverageNote'.text() ?: null,
-                    embargo: cov.'@embargo'.text() ?: null
+    Package createOrUpdatePackage(String packageUUID) throws SyncException {
+        Map<String,Object> packageJSON = fetchRecordJSON(false,[uuid: packageUUID])
+        if(packageJSON.records) {
+            Map packageRecord = (Map) packageJSON.records[0]
+            RefdataValue packageStatus = RefdataValue.getByValueAndCategory(packageRecord.status, RDConstants.PACKAGE_STATUS)
+            RefdataValue packageListStatus = RefdataValue.getByValueAndCategory(packageRecord.listStatus,RDConstants.PACKAGE_LIST_STATUS)
+            RefdataValue contentType = packageRecord.contentType ? RefdataValue.getByValueAndCategory(packageRecord.contentType,RDConstants.PACKAGE_CONTENT_TYPE) : null
+            //Package.withNewSession { Session sess ->
+                log.info("package record loaded, reconciling package record for UUID ${packageUUID}")
+                Package result = Package.findByGokbId(packageUUID)
+                Date listVerifiedDate = packageRecord.listVerifiedDate ? DateUtils.parseDateGeneric(packageRecord.listVerifiedDate) : null
+                Map<String,Object> newPackageProps = [
+                        uuid: packageUUID,
+                        name: packageRecord.name,
+                        packageStatus: packageStatus,
+                        listVerifiedDate: listVerifiedDate,
+                        packageListStatus: packageListStatus,
+                        contentType: packageRecord.contentType
                 ]
-            }
-            updatedTIPP.coverages = updatedTIPP.coverages.toSorted { a, b -> a.startDate <=> b.startDate }
-        }
-        updatedTIPP
-    }
-
-    Map<String,Object> processTippDiffs(TitleInstancePackagePlatform tippA, Map tippB) {
-        //ex updatedTippClosure / tippUnchangedClosure
-        RefdataValue status = tippStatus.get(tippB.status)
-        //there are some weird diffs; make single-thread, then multi-thread checkup!
-        if (status == RDStore.TIPP_STATUS_DELETED && tippA.status != status) {
-            log.info("TIPP with UUID ${tippA.gokbId} has been deleted from package ${tippA.pkg.gokbId}")
-            tippA.status = RDStore.TIPP_STATUS_DELETED
-            tippA.save()
-            [event: "delete", target: tippA]
-        }
-        else {
-            Set<Map<String, Object>> diffs = getTippDiff(tippA, tippB)
-            //includes also changes in coverage statement set
-            if (diffs) {
-                log.info("Got tipp diffs: ${diffs}")
-                //process actual diffs
-                diffs.each { Map<String,Object> diff ->
-                    if (diff.prop == 'coverage') {
-                        diff.covDiffs.each { entry ->
-                            switch (entry.event) {
-                                case 'add':
-                                    if (!entry.target.save())
-                                        throw new SyncException("Error on adding coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
-                                    break
-                                case 'delete': tippA.coverages.remove(entry.target)
-                                    entry.target.delete()
-                                    break
-                                case 'update': entry.diffs.each { covDiff ->
-                                        entry.target[covDiff.prop] = covDiff.newValue
-                                    }
-                                    if (!entry.target.save())
-                                        throw new SyncException("Error on updating coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
-                                    break
-                            }
-                        }
+                if(result) {
+                    if(packageStatus == RDStore.PACKAGE_STATUS_DELETED && result.packageStatus != RDStore.PACKAGE_STATUS_DELETED) {
+                        log.info("package #${result.id}, with GOKb id ${result.gokbId} got deleted, mark as deleted and rapport!")
+                        result.packageStatus = packageStatus
                     }
                     else {
-                        if (diff.prop in PendingChange.REFDATA_FIELDS) {
-                            tippA[diff.prop] = tippStatus.values().find { RefdataValue rdv -> rdv.id == diff.newValue }
-                        } else {
-                            tippA[diff.prop] = diff.newValue
+                        if(packageRecord.nominalPlatformUuid) {
+                            newPackageProps.nominalPlatform = Platform.findByGokbId(packageRecord.nominalPlatformUuid)
                         }
+                        if(packageRecord.providerUuid) {
+                            newPackageProps.contentProvider = Org.findByGokbId(packageRecord.providerUuid)
+                        }
+                        pkgPropDiffsContainer.put(packageUUID,getPkgPropDiff(result, newPackageProps))
+                        if(!initialPackagesCounter.get(packageUUID))
+                            initialPackagesCounter.put(packageUUID,TitleInstancePackagePlatform.executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg:result])[0] as Integer)
                     }
                 }
-                if (tippA.save())
-                   [event: 'update', target: tippA, diffs: diffs]
-                else throw new SyncException("Error on updating TIPP with UUID ${tippA.gokbId}: ${tippA.errors}")
-            }
-        }
-        null
-    }
-
-    /**
-     * Replaces the onNewTipp closure.
-     * Creates a new {@link TitleInstance} with its respective {@link TIPPCoverage} statements
-     * @param pkg
-     * @param tippData
-     * @return the new {@link TitleInstancePackagePlatform} object
-     */
-    TitleInstancePackagePlatform addNewTIPP(Package pkg, Map<String,Object> tippData,Map<String,Platform> platformsInPackage,Map<String,TitleInstance> titleInstancesInPackage) throws SyncException {
-        TitleInstancePackagePlatform newTIPP = new TitleInstancePackagePlatform(
-                gokbId: tippData.uuid,
-                status: tippStatus.get(tippData.status),
-                hostPlatformURL: tippData.hostPlatformURL,
-                accessStartDate: (Date) tippData.accessStartDate,
-                accessEndDate: (Date) tippData.accessEndDate,
-                pkg: pkg
-        )
-        //ex updatedTitleAfterPackageReconcile
-        //long start = System.currentTimeMillis()
-        TitleInstance titleInstance = titleInstancesInPackage.get(tippData.title.gokbId)
-        Platform platform = platformsInPackage.get(tippData.platformUUID)
-        //log.debug("time needed for queries: ${System.currentTimeMillis()-start}")
-        //to bypass session error ... further attempt! Should *only* be used in exception!
-        if(!titleInstance) {
-            titleInstance = TitleInstance.findByGokbId(tippData.title.gokbId)
-        }
-        if(!titleInstance) {
-            titleInstance = createOrUpdateTitle(tippData.title.gokbId)
-        }
-        if(!platform) {
-            platform = Platform.findByGokbId(tippData.platformUUID)
-        }
-        if(!platform) {
-            platform = createOrUpdatePlatform(tippData.platformUUID)
-        }
-        if(titleInstance && platform) {
-            newTIPP.title = titleInstance //check if newTIPP.title.id = titleId is not possible
-            newTIPP.platform = platform
-            if(newTIPP.save()) {
-                tippData.coverages.each { covB ->
-                    TIPPCoverage covStmt = new TIPPCoverage(
-                            startDate: (Date) covB.startDate ?: null,
-                            startVolume: covB.startVolume,
-                            startIssue: covB.startIssue,
-                            endDate: (Date) covB.endDate ?: null,
-                            endVolume: covB.endVolume,
-                            endIssue: covB.endIssue,
-                            embargo: covB.embargo,
-                            coverageDepth: covB.coverageDepth,
-                            coverageNote: covB.coverageNote,
-                            tipp: newTIPP
-                    )
-                    if (!covStmt.save())
-                        throw new SyncException("Error on saving coverage data: ${covStmt.errors}")
+                else {
+                    result = new Package(gokbId: packageRecord.uuid)
                 }
-                newTIPP
-            }
-            else
-                throw new SyncException("Error on saving TIPP data: ${newTIPP.errors}")
+                result.name = packageRecord.name
+                result.packageStatus = packageStatus
+                result.listVerifiedDate = listVerifiedDate
+                result.packageListStatus = packageStatus
+                result.contentType = contentType
+                if(result.save()) {
+                    if(packageRecord.nominalPlatformUuid) {
+                        result.nominalPlatform = Platform.findByGokbId(packageRecord.nominalPlatformUuid)
+                    }
+                    if(packageRecord.providerUuid) {
+                        try {
+                            Org provider = createOrUpdateProviderJSON(packageRecord.providerUuid)
+                            createOrUpdatePackageProvider(provider,result)
+                        }
+                        catch (SyncException e) {
+                            throw e
+                        }
+                    }
+                    packageRecord.identifiers.each { id ->
+                        if(id.namespace.toLowerCase() != 'originediturl') {
+                            Identifier.construct([namespace: id.namespace, value: id.value, reference: result, isUnique: false, nsType: Package.class.name])
+                        }
+                    }
+                    result
+                }
+                else {
+                    throw new SyncException(result.errors)
+                }
+            //}
         }
         else {
-            throw new SyncException("Title loading error for UUID ${tippData.title.gokbId}!")
+            throw new SyncException("Package creation for ${packageUUID} called without record data! PANIC!")
         }
     }
 
@@ -921,7 +960,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @return the new or updated {@link TitleInstance}
      */
     TitleInstance createOrUpdateTitle(String titleUUID) throws SyncException {
-        GPathResult titleOAI = fetchRecord(source.uri,'titles',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:titleUUID])
+        GPathResult titleOAI = fetchRecordOAI('titles',[verb:'GetRecord', identifier:titleUUID])
         if(titleOAI) {
             TitleInstance.withNewSession { Session session ->
                 GPathResult titleRecord = titleOAI.record.metadata.gokb.title
@@ -986,7 +1025,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if(titleInstance.save()) {
                         //titleInstance.refresh()
                         if(titleRecord.publishers) {
-                            OrgRole.withTransaction { TransactionStatus ts ->
+                            //OrgRole.withTransaction { TransactionStatus ts ->
                                 OrgRole.executeUpdate('delete from OrgRole oo where oo.title = :titleInstance',[titleInstance: titleInstance])
                                 titleRecord.publishers.publisher.each { pubData ->
                                     Map<String,Object> publisherParams = [
@@ -1018,24 +1057,24 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             throw new SyncException("Error on creating title link: ${titleLink.errors}")
                                     }
                                 }
-                            }
+                            //}
                         }
                         if(titleRecord.identifiers) {
                             //I hate this solution ... wrestlers of GOKb stating that Identifiers do not need UUIDs were stronger.
-                            Identifier.withTransaction { TransactionStatus ts ->
+                            //Identifier.withTransaction { TransactionStatus ts ->
                                 if(titleInstance.ids){
                                     Identifier.executeUpdate('delete from Identifier i where i.ti = :title',[title:titleInstance]) //damn those wrestlers ...
                                 }
                                 titleRecord.identifiers.identifier.each { idData ->
                                     if(idData.'@namespace'.text().toLowerCase() != 'originediturl') {
                                         Identifier.construct([namespace: idData.'@namespace'.text(), value: idData.'@value'.text(), reference: titleInstance, isUnique: false, nsType: TitleInstance.class.name])
-                                        ts.flush()
+                                        //ts.flush()
                                     }
                                 }
-                            }
+                            //}
                         }
                         if(titleRecord.history) {
-                            TitleHistoryEvent.withTransaction { TransactionStatus ts ->
+                            //TitleHistoryEvent.withTransaction { TransactionStatus ts ->
                                 titleRecord.history.historyEvent.each { eventData ->
                                     if(eventData.date.text()) {
                                         Set<TitleInstance> from = [], to = []
@@ -1094,7 +1133,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         SystemEvent.createEvent('GSSS_OAI_WARNING',[titleHistoryEvent:eventData.@id.text(),errorType:"historyEventWithoutDate"])
                                     }
                                 }
-                            }
+                            //}
                         }
                         titleInstance
                     }
@@ -1163,7 +1202,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      */
     void createOrUpdateProvider(String providerUUID) throws SyncException {
         //Org.lookupOrCreate2 simplified
-        GPathResult providerOAI = fetchRecord(source.uri,'orgs',[verb:'GetRecord',metadataPrefix:source.fullPrefix,identifier:providerUUID])
+        GPathResult providerOAI = fetchRecordOAI('orgs',[verb:'GetRecord', identifier:providerUUID])
         if(providerOAI) {
             Org.withNewSession { Session sess ->
                 GPathResult providerRecord = providerOAI.record.metadata.gokb.org
@@ -1200,6 +1239,36 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else throw new SyncException("Provider loading failed for UUID ${providerUUID}!")
     }
 
+    Org createOrUpdateProviderJSON(String providerUUID) throws SyncException {
+        //This method is under Package.newSession! Do not hook up new session here!
+        Map<String,Object> providerJSON = fetchRecordJSON(false,[uuid:providerUUID])
+        if(providerJSON.records) {
+            Map providerRecord = providerJSON.records[0]
+            log.info("provider record loaded, reconciling provider record for UUID ${providerUUID}")
+            Org provider = Org.findByGokbId(providerUUID)
+            if(provider) {
+                provider.name = providerRecord.name
+                provider.status = orgStatus.get(providerRecord.status)
+            }
+            else {
+                provider = new Org(
+                        name: providerRecord.name,
+                        sector: RDStore.O_SECTOR_PUBLISHER,
+                        status: orgStatus.get(providerRecord.status),
+                        orgType: [RDStore.OT_PROVIDER],
+                        gokbId: providerUUID
+                )
+            }
+            if(provider.save()) {
+                //providedPlatforms are missing in ES output -> see GOKb-ticket #378! But maybe, it is wiser to not implement it at all
+                provider
+            }
+            else throw new SyncException(provider.errors)
+        }
+        else
+            throw new SyncException("Provider loading failed for UUID ${providerUUID}!")
+    }
+
     /**
      * Was complicatedly included in the Org domain class, has been deployed externally for better maintainability
      * Retrieves an {@link Org} instance as title publisher, if the given {@link Org} instance does not exist, it will be created.
@@ -1213,12 +1282,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
             //Org.lookupOrCreate simplified, leading to Org.lookupOrCreate2
             Org publisher = Org.findByGokbId((String) publisherParams.gokbId)
             if(!publisher) {
-                Org.withTransaction {
+                //Org.withTransaction {
                     publisher = new Org(
                             name: publisherParams.name,
                             status: RDStore.O_STATUS_CURRENT,
                             gokbId: publisherParams.gokbId,
-                            sector: publisherParams.status instanceof RefdataValue ? (RefdataValue) publisherParams.status : null
+                            orgType: [RDStore.OT_PUBLISHER],
+                            sector: RDStore.O_SECTOR_PUBLISHER
                     )
                     if(publisher.save()) {
                         publisherParams.identifiers.each { Map<String,Object> pubId ->
@@ -1231,12 +1301,30 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     else {
                         throw new SyncException(publisher.errors)
                     }
-                }
+                //}
             }
             publisher
         }
         else {
             throw new SyncException("Org submitted without UUID! No checking possible!")
+        }
+    }
+
+    /**
+     * Checks for a given provider uuid if there is a link with the package for the given uuid
+     * @param providerUUID - the provider UUID
+     * @param pkg - the package to check against
+     */
+    void createOrUpdatePackageProvider(Org provider, Package pkg) throws SyncException {
+        OrgRole providerRole = OrgRole.findByPkgAndRoleTypeInList(pkg,[RDStore.OR_PROVIDER,RDStore.OR_CONTENT_PROVIDER])
+        if(providerRole) {
+            providerRole.org = provider
+        }
+        else {
+            providerRole = new OrgRole(org:provider,pkg:pkg,roleType: RDStore.OR_PROVIDER, isShared: false)
+        }
+        if(!providerRole.save()) {
+            throw new SyncException("Error on saving org role: ${providerRole.errors}")
         }
     }
 
@@ -1266,21 +1354,28 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
     }
 
-    /**
-     * Checks for a given provider uuid if there is a link with the package for the given uuid
-     * @param providerUUID - the provider UUID
-     * @param pkg - the package to check against
-     */
-    void createOrUpdatePackageProvider(Org provider, Package pkg) throws SyncException {
-        OrgRole providerRole = OrgRole.findByPkgAndRoleTypeInList(pkg,[RDStore.OR_PROVIDER,RDStore.OR_CONTENT_PROVIDER])
-        if(providerRole) {
-            providerRole.org = provider
-        }
-        else {
-            providerRole = new OrgRole(org:provider,pkg:pkg,roleType: RDStore.OR_PROVIDER, isShared: false)
-        }
-        if(!providerRole.save()) {
-            throw new SyncException("Error on saving org role: ${providerRole.errors}")
+    Platform createOrUpdatePlatformJSON(String platformUUID) throws SyncException {
+        Map<String,Object> platformJSON = fetchRecordJSON(false,[uuid: platformUUID])
+        if(platformJSON.records) {
+            Map platformRecord = platformJSON.records[0]
+            //Platform.withTransaction { TransactionStatus ts ->
+                Platform platform = Platform.findByGokbId(platformUUID)
+                if(platform) {
+                    platform.name = platformRecord.name
+                }
+                else {
+                    platform = new Platform(name: platformRecord.name, gokbId: platformRecord.uuid)
+                }
+                platform.normname = platformRecord.name.toLowerCase()
+                if(platformRecord.primaryUrl)
+                    platform.primaryUrl = new URL(platformRecord.primaryUrl)
+                if(platformRecord.providerUuid)
+                    platform.org = createOrUpdateProviderJSON(platformRecord.providerUuid)
+                if(platform.save()) {
+                   platform
+                }
+                else throw new SyncException("Error on saving platform: ${platform.errors}")
+            //}
         }
     }
 
@@ -1295,7 +1390,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         Set<Map<String,Object>> result = []
         Set<String> controlledProperties = ['name','packageStatus','listVerifiedDate','packageScope','packageListStatus','breakable','consistent','fixed']
 
-        controlledProperties.each { prop ->
+        controlledProperties.each { String prop ->
             if(pkgA[prop] != pkgB[prop]) {
                 if(prop in PendingChange.REFDATA_FIELDS)
                     result.add([prop: prop, newValue: pkgB[prop]?.id, oldValue: pkgA[prop]?.id])
@@ -1311,7 +1406,259 @@ class GlobalSourceSyncService extends AbstractLockableService {
             result.add([prop: 'nominalProvider', newValue: pkgB.contentProvider?.name, oldValue: pkgA.contentProvider?.name])
         }
 
+        //the tipp diff count cannot be executed at this place because it depends on TIPP processing result
+
         result
+    }
+
+    /**
+     * Converts the TIPP data from OAI-XML elements into an object structure, reflected by a {@link Map}, representing the {@link TitleInstancePackagePlatform} and {@link TIPPCoverage} class structures
+     * @param TIPPData - the base branch ({@link NodeChildren}) containing the OAI extract for {@link TitleInstancePackagePlatform} data
+     * @return a {@link Map} containing the underlying TIPP data
+     */
+    Map<String,Object> tippConv(tipp) {
+        Map<String,Object> updatedTIPP = [
+                title: [
+                        gokbId: tipp.title.'@uuid'.text()
+                ],
+                packageUUID: tipp.package.'@uuid'.text(), //needed for TIPP endpoint processing
+                platformUUID: tipp.platform.'@uuid'.text(),
+                status: tipp.status.text(),
+                coverages: [],
+                hostPlatformURL: tipp.url.text(),
+                identifiers: [],
+                id: tipp.'@id'.text(),
+                uuid: tipp.'@uuid'.text(),
+                accessStartDate : tipp.access.'@start'.text() ? DateUtils.parseDateGeneric(tipp.access.'@start'.text()) : null,
+                accessEndDate   : tipp.access.'@end'.text() ? DateUtils.parseDateGeneric(tipp.access.'@end'.text()) : null,
+                medium      : tipp.medium.text()
+        ]
+        if(tipp.title.type.text() == 'JournalInstance') {
+            tipp.coverage.each { cov ->
+                updatedTIPP.coverages << [
+                        startDate: cov.'@startDate'.text() ? DateUtils.parseDateGeneric(cov.'@startDate'.text()) : null,
+                        endDate: cov.'@endDate'.text() ? DateUtils.parseDateGeneric(cov.'@endDate'.text()) : null,
+                        startVolume: cov.'@startVolume'.text() ?: null,
+                        endVolume: cov.'@endVolume'.text() ?: null,
+                        startIssue: cov.'@startIssue'.text() ?: null,
+                        endIssue: cov.'@endIssue'.text() ?: null,
+                        coverageDepth: cov.'@coverageDepth'.text() ?: null,
+                        coverageNote: cov.'@coverageNote'.text() ?: null,
+                        embargo: cov.'@embargo'.text() ?: null
+                ]
+            }
+            updatedTIPP.coverages = updatedTIPP.coverages.toSorted { a, b -> a.startDate <=> b.startDate }
+        }
+        updatedTIPP
+    }
+
+    Map<String,Object> processTippDiffs(TitleInstancePackagePlatform tippA, Map tippB) {
+        //ex updatedTippClosure / tippUnchangedClosure
+        RefdataValue status = tippStatus.get(tippB.status)
+        //there are some weird diffs; make single-thread, then multi-thread checkup!
+        if (status == RDStore.TIPP_STATUS_DELETED && tippA.status != status) {
+            log.info("TIPP with UUID ${tippA.gokbId} has been deleted from package ${tippA.pkg.gokbId}")
+            tippA.status = RDStore.TIPP_STATUS_DELETED
+            tippA.save()
+            [event: "delete", target: tippA]
+        }
+        else {
+            //process central differences which are without effect to issue entitlements
+            tippA.titleType = tippB.titleType
+            tippA.name = tippB.name //TODO include name, sortName in IssueEntitlements, then, this property may move to the controlled ones
+            tippA.firstAuthor = tippB.firstAuthor
+            tippA.firstEditor = tippB.firstEditor
+            tippA.dateFirstInPrint = (Date) tippB.dateFirstInPrint
+            tippA.dateFirstOnline = (Date) tippB.dateFirstOnline
+            tippA.imprint = tippB.imprint
+            tippA.seriesName = tippB.seriesName
+            tippA.subjectReference = tippB.subjectReference
+            tippA.volume = tippB.volume
+            tippA.medium = titleMedium.get(tippB.medium)
+            if(!tippA.save())
+                throw new SyncException("Error on updating base title data: ${tippA.errors}")
+            if(tippB.identifiers) {
+                //I hate this solution ... wrestlers of GOKb stating that Identifiers do not need UUIDs were stronger.
+                //Identifier.withTransaction { TransactionStatus ts ->
+                    if(tippA.ids){
+                        Identifier.executeUpdate('delete from Identifier i where i.tipp = :tipp',[tipp:tippA]) //damn those wrestlers ...
+                    }
+                    tippB.identifiers.each { idData ->
+                        if(idData.namespace.toLowerCase() != 'originediturl') {
+                            Identifier.construct([namespace: idData.namespace, value: idData.value, name_de: idData.namespaceName, reference: tippA, isUnique: false, nsType: TitleInstancePackagePlatform.class.name])
+                        }
+                    }
+                //}
+            }
+            if(tippB.history) {
+                if(tippA.historyEvents) {
+                    TitleHistoryEvent.executeUpdate('delete from TitleHistoryEvent the where the.tipp = :tipp',[tipp:tippA])
+                }
+                tippB.history.each { historyEvent ->
+                    historyEvent.from.each { from ->
+                        TitleHistoryEvent the = new TitleHistoryEvent(tipp:tippA,from:from.name,eventDate:historyEvent.date)
+                        if(!the.save())
+                            throw new SyncException("Error on saving title history data: ${the.errors}")
+                    }
+                    historyEvent.to.each { to ->
+                        TitleHistoryEvent the = new TitleHistoryEvent(tipp:tippA,from:to.name,eventDate:historyEvent.date)
+                        if(!the.save())
+                            throw new SyncException("Error on saving title history data: ${the.errors}")
+                    }
+                }
+            }
+            //get to diffs that need to be notified
+            Set<Map<String, Object>> diffs = getTippDiff(tippA, tippB)
+            //includes also changes in coverage statement set
+            if (diffs) {
+                //process actual diffs
+                diffs.each { Map<String,Object> diff ->
+                    log.info("Got tipp diff: ${diff}")
+                    switch(diff.prop) {
+                        case 'coverage':
+                            diff.covDiffs.each { entry ->
+                                switch (entry.event) {
+                                    case 'add':
+                                        if (!entry.target.save())
+                                            throw new SyncException("Error on adding coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
+                                        break
+                                    case 'delete': tippA.coverages.remove(entry.target)
+                                        entry.target.delete()
+                                        break
+                                    case 'update': entry.diffs.each { covDiff ->
+                                        entry.target[covDiff.prop] = covDiff.newValue
+                                    }
+                                        if (!entry.target.save())
+                                            throw new SyncException("Error on updating coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
+                                        break
+                                }
+                            }
+                            break
+                        case 'price':
+                            diff.priceDiffs.each { entry ->
+                                switch (entry.event) {
+                                    case 'add':
+                                        if (!entry.target.save())
+                                            throw new SyncException("Error on adding price item for TIPP ${tippA.gokbId}: ${entry.target.errors}")
+                                        break
+                                    case 'delete': tippA.priceItems.remove(entry.target)
+                                        entry.target.delete()
+                                        break
+                                    case 'update': entry.diffs.each { priceDiff ->
+                                        entry.target[priceDiff.prop] = priceDiff.newValue
+                                    }
+                                        if (!entry.target.save())
+                                            throw new SyncException("Error on updating coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
+                                        break
+                                }
+                            }
+                            break
+                        default:
+                            if (diff.prop in PendingChange.REFDATA_FIELDS) {
+                                tippA[diff.prop] = tippStatus.values().find { RefdataValue rdv -> rdv.id == diff.newValue }
+                            } else {
+                                tippA[diff.prop] = diff.newValue
+                            }
+                            break
+                    }
+                }
+                if (tippA.save())
+                    [event: 'update', target: tippA, diffs: diffs]
+                else throw new SyncException("Error on updating TIPP with UUID ${tippA.gokbId}: ${tippA.errors}")
+            }
+            else [:]
+        }
+    }
+
+    /**
+     * Replaces the onNewTipp closure.
+     * Creates a new {@link TitleInstancePackagePlatform} with its respective {@link TIPPCoverage} statements
+     * @param pkg
+     * @param tippData
+     * @return the new {@link TitleInstancePackagePlatform} object
+     */
+    TitleInstancePackagePlatform addNewTIPP(Package pkg, Map<String,Object> tippData,Map<String,Platform> platformsInPackage,Map<String,TitleInstance> titleInstancesInPackage) throws SyncException {
+        TitleInstancePackagePlatform newTIPP = new TitleInstancePackagePlatform(
+                titleType: tippData.titleType,
+                name: tippData.name,
+                firstAuthor: tippData.FirstAuthor,
+                firstEditor: tippData.FirstEditor,
+                dateFirstInPrint: (Date) tippData.dateFirstInPrint,
+                dateFirstOnline: (Date) tippData.dateFirstOnline,
+                imprint: tippData.imprint,
+                seriesName: tippData.seriesName,
+                subjectReference: tippData.subjectReference,
+                volume: tippData.volume,
+                medium: titleMedium.get(tippData.medium),
+                gokbId: tippData.uuid,
+                status: tippStatus.get(tippData.status),
+                hostPlatformURL: tippData.hostPlatformURL,
+                accessStartDate: (Date) tippData.accessStartDate,
+                accessEndDate: (Date) tippData.accessEndDate,
+                pkg: pkg
+        )
+        //ex updatedTitleAfterPackageReconcile
+        //long start = System.currentTimeMillis()
+        Platform platform = platformsInPackage.get(tippData.platformUUID)
+        //log.debug("time needed for queries: ${System.currentTimeMillis()-start}")
+        if(!platform) {
+            platform = Platform.findByGokbId(tippData.platformUUID)
+        }
+        if(!platform) {
+            platform = createOrUpdatePlatformJSON(tippData.platformUUID)
+        }
+        newTIPP.platform = platform
+        if(newTIPP.save()) {
+            tippData.coverages.each { covB ->
+                TIPPCoverage covStmt = new TIPPCoverage(
+                        startDate: (Date) covB.startDate ?: null,
+                        startVolume: covB.startVolume,
+                        startIssue: covB.startIssue,
+                        endDate: (Date) covB.endDate ?: null,
+                        endVolume: covB.endVolume,
+                        endIssue: covB.endIssue,
+                        embargo: covB.embargo,
+                        coverageDepth: covB.coverageDepth,
+                        coverageNote: covB.coverageNote,
+                        tipp: newTIPP
+                )
+                if (!covStmt.save())
+                    throw new SyncException("Error on saving coverage data: ${covStmt.errors}")
+            }
+            tippData.priceItems.each { piB ->
+                PriceItem priceItem = new PriceItem(startDate: (Date) piB.startDate ?: null,
+                        endDate: (Date) piB.endDate ?: null,
+                        listPrice: piB.listPrice,
+                        listCurrency: piB.listCurrency,
+                        tipp: newTIPP
+                )
+                priceItem.setGlobalUID()
+                if(!priceItem.save())
+                    throw new SyncException("Error on saving price data: ${priceItem.errors}")
+            }
+            tippData.titlePublishers.each { publisher ->
+                lookupOrCreateTitlePublisher([name: publisher.name, gokbId: publisher.uuid])
+            }
+            tippData.identifiers.each { idB ->
+                if(idB.namespace.toLowerCase() != 'originediturl') {
+                    Identifier.construct([namespace: idB.namespace, value: idB.value, name_de: idB.name_de, reference: newTIPP, isUnique: false, nsType: TitleInstancePackagePlatform.class.name])
+                }
+            }
+            tippData.history.each { historyEvent ->
+                historyEvent.from.each { from ->
+                    TitleHistoryEvent the = new TitleHistoryEvent(tipp:newTIPP,from:from.name,eventDate:historyEvent.date)
+                    if(!the.save())
+                        throw new SyncException("Error on saving title history data: ${the.errors}")
+                }
+                historyEvent.to.each { to ->
+                    TitleHistoryEvent the = new TitleHistoryEvent(tipp:newTIPP,from:to.name,eventDate:historyEvent.date)
+                    if(!the.save())
+                        throw new SyncException("Error on saving title history data: ${the.errors}")
+                }
+            }
+            newTIPP
+        }
+        else throw new SyncException("Error on saving TIPP data: ${newTIPP.errors}")
     }
 
     /**
@@ -1328,22 +1675,31 @@ class GlobalSourceSyncService extends AbstractLockableService {
         Set<Map<String, Object>> result = []
 
         if (tippa.hasProperty("hostPlatformURL") && tippa.hostPlatformURL != tippb.hostPlatformURL) {
-            result.add([prop: 'hostPlatformURL', newValue: tippb.hostPlatformURL, oldValue: tippa.hostPlatformURL])
+            if(!((tippa.hostPlatformURL == null && tippb.hostPlatformURL == "") || (tippa.hostPlatformURL == "" && tippb.hostPlatformUrl == null)))
+                result.add([prop: 'hostPlatformURL', newValue: tippb.hostPlatformURL, oldValue: tippa.hostPlatformURL])
         }
 
         // This is the boss enemy when refactoring coverage statements ... works so far, is going to be kept
         // the question marks are necessary because only JournalInstance's TIPPs are supposed to have coverage statements
-        if(tippa.coverages?.size() > 0 && tippb.coverages?.size() > 0){
-            Set<Map<String, Object>> coverageDiffs = getCoverageDiffs(tippa,tippb.coverages)
-            if(!coverageDiffs.isEmpty())
-                result.add([prop: 'coverage', covDiffs: coverageDiffs])
-        }
+        Set<Map<String, Object>> coverageDiffs = getSubListDiffs(tippa,tippb.coverages,'coverage')
+        if(!coverageDiffs.isEmpty())
+            result.add([prop: 'coverage', covDiffs: coverageDiffs])
 
-        if (tippa.accessStartDate != tippb.accessStartDate) {
+        Set<Map<String, Object>> priceDiffs = getSubListDiffs(tippa,tippb.priceItems,'price')
+        if(!priceDiffs.isEmpty())
+            result.add([prop: 'price', priceDiffs: priceDiffs])
+
+        /* is perspectively ordered; needs more refactoring
+        if (tippb.containsKey("name") && tippa.name != tippb.name) {
+            result.add([prop: 'name', newValue: tippb.name, oldValue: tippa.name])
+        }
+        */
+
+        if (tippb.containsKey("accessStartDate") && tippa.accessStartDate != tippb.accessStartDate) {
             result.add([prop: 'accessStartDate', newValue: tippb.accessStartDate, oldValue: tippa.accessStartDate])
         }
 
-        if (tippa.accessEndDate != tippb.accessEndDate) {
+        if (tippb.containsKey("accessEndDate") && tippa.accessEndDate != tippb.accessEndDate) {
             result.add([prop: 'accessEndDate', newValue: tippb.accessEndDate, oldValue: tippa.accessEndDate])
         }
 
@@ -1362,91 +1718,174 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     /**
-     * Compares two coverage entries against each other, retrieving the differences between both.
-     * @param tippA - the old {@link TitleInstancePackagePlatform} object, containing the current {@link Set} of coverages
-     * @param covListB - the new coverage statements (a {@link List} of remote records, kept in {@link Map}s)
-     * @return a {@link Set} of {@link Map}s reflecting the differences between the coverage statements
+     * Compares two sub list entries against each other, retrieving the differences between both.
+     * @param tippA - the old {@link TitleInstancePackagePlatform} object, containing the current {@link Set} of  or price items
+     * @param listB - the new statements (a {@link List} of remote records, kept in {@link Map}s)
+     * @return a {@link Set} of {@link Map}s reflecting the differences between the statements
      */
-    Set<Map<String,Object>> getCoverageDiffs(TitleInstancePackagePlatform tippA,covListB) {
-        Set covDiffs = []
-        Set covListA = tippA.coverages
-        if(covListA.size() == covListB.size()) {
-            //coverage statements may have changed or not, no deletions or insertions
-            //sorting has been done by mapping (listA) resp. when converting XML data (listB)
-            covListB.eachWithIndex { covB, int i ->
-                def covA = locateEquivalent(covB,covListA)
-                if(!covA)
-                    covA = covListA[i]
-                Set<Map<String,Object>> currDiffs = covA.compareWith(covB)
-                if(currDiffs)
-                    covDiffs << [event: 'update', target: covA, diffs: currDiffs]
+    Set<Map<String,Object>> getSubListDiffs(TitleInstancePackagePlatform tippA, listB, String instanceType) {
+        Set subDiffs = []
+        Set listA
+        if(instanceType == "coverage")
+            listA = tippA.coverages
+        else if(instanceType == "price")
+            listA = tippA.priceItems
+        if(listA != null) {
+            if(listA.size() == listB.size()) {
+                //statements may have changed or not, no deletions or insertions
+                //sorting has been done by mapping (listA) resp. when converting data (listB)
+                listB.eachWithIndex { itemB, int i ->
+                    def itemA = locateEquivalent(itemB,listA)
+                    if(!itemA)
+                        itemA = listA[i]
+                    Set<Map<String,Object>> currDiffs = compareSubListItem(itemA,itemB)
+                    if(currDiffs)
+                        subDiffs << [event: 'update', target: itemA, diffs: currDiffs]
+                }
+            }
+            else if(listA.size() > listB.size()) {
+                //statements have been deleted
+                Set toKeep = []
+                listB.each { itemB ->
+                    def itemA = locateEquivalent(itemB,listA)
+                    if(itemA) {
+                        toKeep << itemA
+                        Set<Map<String,Object>> currDiffs = compareSubListItem(itemA,itemB)
+                        if(currDiffs)
+                            subDiffs << [event: 'update', target: itemA, diffs: currDiffs]
+                    }
+                    else {
+                        //a new statement may have been added for which I cannot determine an equivalent
+                        def newItem
+                        if(instanceType == 'coverage')
+                            newItem = addNewStatement(tippA,itemB)
+                        else if(instanceType == 'price')
+                            newItem = addNewPriceItem(tippA,itemB)
+                        if(newItem)
+                            subDiffs << [event: 'add', target: newItem]
+                    }
+                }
+                listA.each { itemA ->
+                    if(!toKeep.contains(itemA)) {
+                        subDiffs << [event: 'delete', target: itemA, targetParent: tippA]
+                    }
+                }
+            }
+            else if(listA.size() < listB.size()) {
+                //coverage statements have been added
+                listB.each { itemB ->
+                    def itemA = locateEquivalent(itemB,listA)
+                    if(itemA) {
+                        Set<Map<String,Object>> currDiffs = compareSubListItem(itemA,itemB)
+                        if(currDiffs)
+                            subDiffs << [event: 'update', target: itemA, diffs: currDiffs]
+                    }
+                    else {
+                        def newItem
+                        if(instanceType == 'coverage')
+                            newItem = addNewStatement(tippA,itemB)
+                        else if(instanceType == 'price')
+                            newItem = addNewPriceItem(tippA,itemB)
+                        if(newItem)
+                            subDiffs << [event: 'add', target: newItem]
+                    }
+                }
             }
         }
-        else if(covListA.size() > covListB.size()) {
-            //coverage statements have been deleted
-            Set toKeep = []
-            covListB.each { covB ->
-                def covA = locateEquivalent(covB,covListA)
-                if(covA) {
-                    toKeep << covA
-                    Set<Map<String,Object>> currDiffs = covA.compareWith(covB)
-                    if(currDiffs)
-                        covDiffs << [event: 'update', target: covA, diffs: currDiffs]
+
+        subDiffs
+    }
+
+    Set<Map<String,Object>> compareSubListItem(itemA,itemB) {
+        Set<String> controlledProperties = []
+        if(itemA instanceof AbstractCoverage) {
+            controlledProperties.addAll([
+                    'startDate',
+                    'startVolume',
+                    'startIssue',
+                    'endDate',
+                    'endVolume',
+                    'endIssue',
+                    'embargo',
+                    'coverageDepth',
+                    'coverageNote',
+            ])
+        }
+        else if(itemA instanceof PriceItem) {
+            controlledProperties.addAll([
+                    'startDate',
+                    'endDate',
+                    'listPrice',
+                    'listCurrency'
+            ])
+        }
+        Set<Map<String,Object>> diffs = []
+        controlledProperties.each { String cp ->
+            if(cp in ['startDate','endDate']) {
+                Calendar calA = Calendar.getInstance(), calB = Calendar.getInstance()
+                if(itemA[cp] != null && itemB[cp] != null) {
+                    calA.setTime((Date) itemA[cp])
+                    calB.setTime((Date) itemB[cp])
+                    if(!(calA.get(Calendar.YEAR) == calB.get(Calendar.YEAR) && calA.get(Calendar.DAY_OF_YEAR) == calB.get(Calendar.DAY_OF_YEAR))) {
+                        diffs << [prop: cp, oldValue: itemA[cp], newValue: itemB[cp]]
+                    }
                 }
                 else {
-                    //a new statement may have been added for which I cannot determine an equivalent
-                    covDiffs << [event: 'add', target: addNewStatement(tippA,covB)]
+                    /*
+                    Means that one of the coverage dates is null or became null.
+                    Cases to cover: null -> date (covA == null, covB instanceof Date)
+                    date -> null (covA instanceof Date, covB == null)
+                     */
+                    if(itemA[cp] != null && itemB[cp] == null) {
+                        calA.setTime((Date) itemA[cp])
+                        diffs << [prop:cp, oldValue:itemA[cp],newValue:null]
+                    }
+                    else if(itemA[cp] == null && itemB[cp] != null) {
+                        calB.setTime((Date) itemB[cp])
+                        diffs << [prop:cp, oldValue:null, newValue: itemB[cp]]
+                    }
                 }
             }
-            covListA.each { covA ->
-                if(!toKeep.contains(covA)) {
-                    covDiffs << [event: 'delete', target: covA]
-                }
-            }
-        }
-        else if(covListA.size() < covListB.size()) {
-            //coverage statements have been added
-            covListB.each { covB ->
-                def covA = locateEquivalent(covB,covListA)
-                if(covA) {
-                    Set<Map<String,Object>> currDiffs = covA.compareWith(covB)
-                    if(currDiffs)
-                        covDiffs << [event: 'update', target: covA, diffs: currDiffs]
-                }
-                else {
-                    covDiffs << [event: 'add', target: addNewStatement(tippA,covB)]
+            else {
+                if(itemA[cp] != itemB[cp] && !((itemA[cp] == '' && itemB[cp] == null) || (itemA[cp] == null && itemB[cp] == ''))) {
+                    diffs << [prop:cp, oldValue: itemA[cp], newValue: itemB[cp]]
                 }
             }
         }
-        covDiffs
+        diffs
     }
 
     /**
-     * Contrary to {@link AbstractCoverage}.findEquivalent(), this method locates a non-persisted coverage statement an equivalent from the given {@link Collection}
-     * @param covB - a {@link Map}, reflecting the OAI coverage node
-     * @param listA - a {@link Collection} on {@link TIPPCoverage} statements, the list to be updated
-     * @return the equivalent LAS:eR {@link TIPPCoverage} from the collection
+     * Contrary to {@link AbstractCoverage}.findEquivalent() resp {@link PriceItem}.findEquivalent(), this method locates a non-persisted coverage statement an equivalent from the given {@link Collection}
+     * @param itemB - a {@link Map}, reflecting the non-persisited item
+     * @param listA - a {@link Collection} on {@link TIPPCoverage} or {@link PriceItem} statements, the list to be updated
+     * @return the equivalent LAS:eR {@link TIPPCoverage} or {@link PriceItem} from the collection
      */
-    AbstractCoverage locateEquivalent(covB, listA) {
-        AbstractCoverage equivalent = null
-        for (String k : ['startDate','startVolume','endDate','endVolume']) {
+    def locateEquivalent(itemB, listA) {
+        def equivalent = null
+        Set<String> equivalencyProperties = []
+        if(listA[0] instanceof AbstractCoverage)
+            equivalencyProperties.addAll(AbstractCoverage.equivalencyProperties)
+        else if(listA[0] instanceof PriceItem)
+            equivalencyProperties.addAll(PriceItem.equivalencyProperties)
+        for (String k : equivalencyProperties) {
             if(k in ['startDate','endDate']) {
                 Calendar calA = Calendar.getInstance(), calB = Calendar.getInstance()
-                listA.each { covA ->
-                    if(covA[k] != null && covB[k] != null) {
-                        calA.setTime(covA[k])
-                        calB.setTime(covB[k])
+                listA.each { itemA ->
+                    if(itemA[k] != null && itemB[k] != null) {
+                        calA.setTime(itemA[k])
+                        calB.setTime(itemB[k])
                         if (calA.get(Calendar.YEAR) == calB.get(Calendar.YEAR) && calA.get(Calendar.DAY_OF_YEAR) == calB.get(Calendar.DAY_OF_YEAR))
-                            equivalent = covA
+                            equivalent = itemA
                     }
-                    else if(covA[k] == null && covB[k] == null)
-                        equivalent = covA
+                    else if(itemA[k] == null && itemB[k] == null)
+                        equivalent = itemA
                 }
             }
             else
-                equivalent = listA.find { it[k] == covB[k] }
+                equivalent = listA.find { it[k] == itemB[k] }
             if (equivalent != null) {
-                println "Coverage statement ${equivalent.id} located as equivalent to ${covB}"
+                println "Statement ${equivalent.id} located as equivalent to ${itemB}"
                 break
             }
         }
@@ -1473,9 +1912,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else null
     }
 
+    PriceItem addNewPriceItem(tippA, piB) {
+        Map<String,Object> params = [startDate: (Date) piB.startDate,
+                                     endDate: (Date) piB.endDate,
+                                     listPrice: piB.listPrice,
+                                     listCurrency: piB.listCurrency,
+                                     tipp: tippA]
+        PriceItem pi = new PriceItem(params)
+        pi.setGlobalUID()
+        pi
+    }
+
     void notifyDependencies(List<List<Map<String,Object>>> tippsToNotify) {
         //if everything went well, we should have here the list of tipps to notify ...
-        TitleInstancePackagePlatform.withTransaction { TransactionStatus ts ->
+        //TitleInstancePackagePlatform.withTransaction { TransactionStatus ts ->
             tippsToNotify.eachWithIndex { List<Map<String,Object>> entry, int i ->
                 entry.eachWithIndex { Map<String,Object> notify, int index ->
                     log.debug("now processing entry #${index}, payload: ${notify}")
@@ -1580,10 +2030,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 if(i > 0 && i % 30 == 0) {
                     log.info("clean up transaction")
-                    ts.flush()
+                    //ts.flush()
                 }
             }
-        }
+        //}
 
     }
 
@@ -1596,9 +2046,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param queryParams - parameters to pass along with the query
      * @return a {@link GPathResult} containing the OAI-PMH conform XML extract of the given record
      */
-    GPathResult fetchRecord(String url, String object, Map<String,String> queryParams) {
+    GPathResult fetchRecordOAI(String object, Map<String,String> queryParams) {
         try {
-            HTTPBuilder http = new HTTPBuilder(url)
+            HTTPBuilder http = new HTTPBuilder(source.uri)
+            queryParams.metadataPrefix = source.fullPrefix
             GPathResult record = (GPathResult) http.post(path:object,query:queryParams,contentType:'xml') { resp, xml ->
                 log.info("record successfully loaded, parsing XML ...")
                 XmlSlurper xs = new XmlSlurper()
@@ -1627,6 +2078,41 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
     }
 
+    Map<String,Object> fetchRecordJSON(boolean useScroll, Map<String,Object> queryParams) throws SyncException {
+        //I need to address a bulk output endpoint like https://github.com/hbz/lobid-resources/blob/f93201bec043cc732b27814a6ab4aea390d1aa9e/web/app/controllers/resources/Application.java, method bulkResult().
+        //By then, I should query the "normal" endpoint /gokb/api/find?
+        HTTPBuilder http
+        if(useScroll) {
+            http = new HTTPBuilder(source.uri + '/scroll')
+        }
+        else http = new HTTPBuilder(source.uri+'/find')
+        Map<String,Object> result = [:]
+        //setting default status
+        queryParams.status = ["Current","Expected","Retired"]
+        log.debug("mem check: ${Runtime.getRuntime().freeMemory()} bytes")
+        http.request(Method.POST, ContentType.JSON) { req ->
+            body = queryParams
+            requestContentType = ContentType.URLENC
+            response.success = { resp, json ->
+                if(resp.status == 200) {
+                    result.count = json.size ?: json.count
+                    result.records = json.records
+                    result.scrollId = json.scrollId
+                    result.hasMoreRecords = Boolean.valueOf(json.hasMoreRecords)
+                }
+                else {
+                    throw new SyncException("erroneous response")
+                }
+            }
+            response.failure = { resp, reader ->
+                log.error("server response: ${resp.statusLine}")
+                throw new SyncException("error on request: ${resp.statusLine} : ${reader}")
+            }
+        }
+        http.shutdown()
+        result
+    }
+
     void defineMapFields() {
         //define map fields
         tippStatus.put(RDStore.TIPP_STATUS_CURRENT.value,RDStore.TIPP_STATUS_CURRENT)
@@ -1646,6 +2132,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         RefdataCategory.getAllRefdataValues(RDConstants.ORG_STATUS).each { RefdataValue rdv ->
             orgStatus.put(rdv.value,rdv)
+        }
+        RefdataCategory.getAllRefdataValues(RDConstants.CURRENCY).each { RefdataValue rdv ->
+            currency.put(rdv.value,rdv)
         }
     }
 }

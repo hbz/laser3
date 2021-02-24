@@ -512,7 +512,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def surveys() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.surveys(this)
+        Map<String,Object> ctrlResult = subscriptionControllerService.surveys(this, params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             response.sendError(401)
         }
@@ -563,6 +563,32 @@ class SubscriptionController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    def processLinkPackage() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.processLinkPackage(this,params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+            }
+        }
+        else {
+            if(params.addUUID) {
+                switch(params.addType) {
+                    case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
+                        redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
+                        return
+                        break
+                    case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
+                        redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: ctrlResult.result.packageName]
+                        return
+                        break
+                }
+            }
+        }
+        redirect(url: request.getHeader("referer"))
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def unlinkPackage() {
         Map<String, Object> ctrlResult = subscriptionControllerService.unlinkPackage(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -580,7 +606,8 @@ class SubscriptionController {
                 redirect(action:'show', id: params.subscription)
             }
             else {
-                render(template: "unlinkPackageModal", model: [pkg: ctrlResult.result.package, subscription: ctrlResult.result.subscription, conflicts_list: ctrlResult.result.conflicts_list])
+
+                render(template: "unlinkPackageModal", model: [pkg: ctrlResult.result.package, subscription: ctrlResult.result.subscription, conflicts_list: ctrlResult.result.conflict_list])
             }
         }
     }
@@ -642,6 +669,20 @@ class SubscriptionController {
                     }
                 }
             }
+        }
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    def entitlementChanges() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.entitlementChanges(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if(!ctrlResult.result) {
+                response.sendError(401)
+            }
+        }
+        else {
+            ctrlResult.result
         }
     }
 
@@ -766,7 +807,7 @@ class SubscriptionController {
                 TitleInstancePackagePlatform tipp = ie.tipp
                 try {
                     if(subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItem != null) , RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)) {
-                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.title.title])
+                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name])
                     }
                 }
                 catch(EntitlementCreationException e) {
@@ -947,68 +988,41 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def renewEntitlementsWithSurvey() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = contextService.getUser()
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        Subscription newSub = params.targetObjectId ? Subscription.get(params.targetObjectId) : Subscription.get(params.id)
-        Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
-        params.id = newSub.id
-        params.sourceObjectId = baseSub.id
-        params.tab = params.tab ?: 'allIEs'
-        List<IssueEntitlement> sourceIEs
-        if(params.tab == 'allIEs') {
-            sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(baseSub, params+[max:5000,offset:0])
-        }
-        if(params.tab == 'selectedIEs') {
-            sourceIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, params+[ieAcceptStatusNotFixed: true])
-        }
-
-        List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlementsWithFilter(newSub, [max: 5000, offset: 0])
-        List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
-        List<IssueEntitlement> notFixedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub)
-
-        result.subjects = subscriptionService.getSubjects(allIEs.collect {it.tipp.title.id})
-        result.seriesNames = subscriptionService.getSeriesNames(allIEs.collect {it.tipp.title.id})
-        result.countSelectedIEs = notFixedIEs.size()
-        result.countAllIEs = allIEs.size()
-        result.countAllSourceIEs = sourceIEs.size()
-        result.num_ies_rows = sourceIEs.size()//subscriptionService.getIssueEntitlementsFixed(baseSub).size()
-        result.sourceIEs = sourceIEs.drop(result.offset).take(result.max)
-        result.targetIEs = targetIEs
-        result.newSub = newSub
-        result.subscription = baseSub
-        result.subscriber = result.newSub.getSubscriber()
-        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
-        String filename = escapeService.escapeString(message(code:'renewEntitlementsWithSurvey.selectableTitles')+'_'+result.newSub.dropdownNamingConvention())
-        if (params.exportKBart) {
-            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-            response.contentType = "text/tsv"
-            ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = exportService.generateTitleExportKBART(sourceIEs)
-            out.withWriter { Writer writer ->
-                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+        Map<String, Object> ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this,params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if(!ctrlResult.result)
+                response.sendError(401)
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
             }
-            out.flush()
-            out.close()
-        }
-        else if(params.exportXLS) {
-            response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportXLS(sourceIEs)
-            Map sheetData = [:]
-            sheetData[g.message(code:'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow:export.titles,columnData:export.rows]
-            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
-            workbook.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            workbook.dispose()
         }
         else {
-            result
+            String filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
+            if (params.exportKBart) {
+                response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+                response.contentType = "text/tsv"
+                ServletOutputStream out = response.outputStream
+                Map<String, List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.sourceIEs)
+                out.withWriter { Writer writer ->
+                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                }
+                out.flush()
+                out.close()
+            } else if (params.exportXLS) {
+                response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                Map<String, List> export = exportService.generateTitleExportXLS(ctrlResult.result.sourceIEs)
+                Map sheetData = [:]
+                sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
+                SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
+                workbook.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                workbook.dispose()
+            } else {
+                ctrlResult.result
+            }
         }
     }
 

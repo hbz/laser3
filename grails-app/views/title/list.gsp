@@ -12,7 +12,7 @@
     </semui:breadcrumbs>
 
     <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.public.all_titles')}
-      <semui:totalNumber total="${resultsTotal >= 10000 ? '10000+' : resultsTotal}"/>
+      <semui:totalNumber total="${resultsTotal >= 10000 ? '10000+' : (resultsTotal > 0 ? resultsTotal : 0)}"/>
     </h1>
 
     <g:render template="/templates/filter/javascript" />
@@ -26,7 +26,7 @@
           </div>
           <div class="field">
             <label for="filter">${message(code: 'title.search_in')}</label>
-            <g:select class="ui dropdown" id="filter" name="filter" from="${[[key:'name',value:"${message(code: 'title.title.label')}"],[key:'publisher',value:"${message(code:'title.publisher.label')}"],[key:'',value:"${message(code: 'title.all.label')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
+            <g:select class="ui dropdown" id="filter" name="filter" from="${[[key:'name',value:"${message(code: 'title.title.label')}"],[key:'publisher',value:"${message(code:'tipp.publisher')}"],[key:'',value:"${message(code: 'title.all.label')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
           </div>
             <div class="field la-field-right-aligned">
               <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
@@ -60,7 +60,7 @@
                           <th>${message(code:'sidewide.number')}</th>
                       <g:sortableColumn property="sortTitle" title="${message(code: 'title.title.label')}" params="${params}" />
                       <g:sortableColumn property="typTitle" title="${message(code: 'title.type.label')}" params="${params}" />
-                      <g:sortableColumn property="publisher" style="white-space:nowrap" title="${message(code: 'title.publisher.label')}" params="${params}" />
+                      <g:sortableColumn property="publisher" style="white-space:nowrap" title="${message(code: 'tipp.publisher')}" params="${params}" />
                       <th style="white-space:nowrap"><g:message code="title.identifiers.label" /></th>
                       </tr>
                     </thead>
@@ -89,6 +89,14 @@
                   </table>
                 </div><!-- #resultsarea -->
              </g:if>
+            <g:else>
+                <g:if test="${filterSet}">
+                    <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"title.plural")]}"/></strong>
+                </g:if>
+                <g:else>
+                    <br /><strong><g:message code="result.empty.object" args="${[message(code:"title.plural")]}"/></strong>
+                </g:else>
+            </g:else>
 
               <g:if test="${hits}" >
                 <semui:paginate controller="title" action="index" params="${params}" next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}" maxsteps="10" total="${resultsTotal}" />

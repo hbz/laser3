@@ -1040,26 +1040,21 @@ aside.ui.accordion .title:not(.ui) {
   text-align: right;
 }
 
-.ui.form .fields > .field.la-combi-input-left {
+.ui.form .fields .field.la-combi-input-left {
   padding-right: 0;
 }
 
-.ui.form .fields > .field.la-combi-input-left input,
-.ui.form .fields > .field.la-combi-input-left select {
-  border-bottom-right-radius: 0;
-  border-top-right-radius: 0;
+.ui.form .fields .field.la-combi-input-left > .dropdown {
   border-right: 2px dotted lightgrey;
 }
 
-.ui.form .fields > .field.la-combi-input-right {
+.ui.form .fields .field.la-combi-input-right {
   padding-left: 0;
 }
 
-.ui.form .fields > .field.la-combi-input-right input,
-.ui.form .fields > .field.la-combi-input-right select {
-  border-bottom-left-radius: 0;
-  border-top-left-radius: 0;
+.ui.form .fields .field.la-combi-input-right input[type=text] {
   border-left: none;
+  padding-bottom: 0.71em;
 }
 
 .ui.form .field.la-field-right-aligned {
@@ -13401,6 +13396,28 @@ i.icon.la-laser {
   font-family: 'icomoon';
 }
 
+/* ICONS FOR MATH*/
+
+i.icon.la-less-than {
+  font-family: 'icomoon';
+}
+
+i.icon.la-greater-than {
+  font-family: 'icomoon';
+}
+
+i.icon.la-equals {
+  font-family: 'icomoon';
+}
+
+i.icon.la-less-than-equal {
+  font-family: 'icomoon';
+}
+
+i.icon.la-greater-than-equal {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
@@ -13467,6 +13484,28 @@ i.icon.la-gokb:before {
 
 i.icon.la-laser:before {
   content: "\e90f";
+}
+
+/**/
+
+i.icon.la-less-than:before {
+  content: "\e910";
+}
+
+i.icon.la-greater-than:before {
+  content: "\e911";
+}
+
+i.icon.la-equals:before {
+  content: "\e912";
+}
+
+i.icon.la-less-than-equal:before {
+  content: "\e913";
+}
+
+i.icon.la-greater-than-equal:before {
+  content: "\e914";
 }
 
 /*******************************
@@ -17233,7 +17272,7 @@ ol.ui.horizontal.list li:before,
   opacity: 1;
 }
 
-.la-list-border-around {
+td .la-list-border-around {
   border: 1px solid #d3dae3;
 }
 
@@ -29851,7 +29890,7 @@ a.ui.card:hover,
 }
 
 .ui.cards > .card > .content > .header,
-.ui.card > .content > .header {
+.ui.card > .content .header {
   color: #767676;
   font-size: 1rem;
 }
@@ -29864,6 +29903,12 @@ a.ui.card:hover,
   font-size: 1rem;
   margin-top: -0.21425em;
   line-height: 1.28571429em;
+}
+
+.ui.cards > .card > .content > .header:not(.ui).la-primary-header,
+.ui.card > .content > .header:not(.ui).la-primary-header {
+  text-transform: uppercase;
+  font-size: 0.85rem;
 }
 
 .ui.card.la-role-admin {
@@ -29897,7 +29942,7 @@ a.ui.card:hover,
 .la-inline-lists dl dd {
   display: table-cell;
   padding-top: 0.4rem;
-  padding-bottom: 0.4rem;
+  padding-bottom: 1rem;
 }
 
 .la-inline-lists dl dd {

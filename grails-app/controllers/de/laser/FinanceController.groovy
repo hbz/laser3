@@ -58,6 +58,7 @@ class FinanceController  {
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
             result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
+
             result
         }
         catch (FinancialDataException e) {
@@ -223,7 +224,7 @@ class FinanceController  {
                                 row.add(ci.subPkg ? ci.subPkg.pkg.name:'')
                                 //issue entitlement
                                 cellnum++
-                                row.add(ci.issueEntitlement ? ci.issueEntitlement?.tipp?.title?.title:'')
+                                row.add(ci.issueEntitlement ? ci.issueEntitlement?.tipp?.name:'')
                                 //date paid
                                 cellnum++
                                 row.add(paid_date ?: '')

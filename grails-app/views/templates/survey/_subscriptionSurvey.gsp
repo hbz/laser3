@@ -358,7 +358,7 @@
                                     <dd>
                                         <g:each in="${subscription.ids?.sort { it.ns.ns }}"
                                                 var="id">
-                                            <span class="ui small blue image label">
+                                            <span class="ui small basic image label">
                                                 ${id.ns.ns}: <div class="detail">${id.value}</div>
                                             </span>
                                         </g:each>
@@ -447,8 +447,11 @@
                                                 </td>
                                                 <td class="right aligned">
                                                     <g:if test="${pair.propertySet}">
-                                                        <button id="derived-license-properties-toggle${link.id}" class="ui icon button la-js-dont-hide-button">
-                                                            <i class="ui angle double down icon"></i></button>
+                                                        <button id="derived-license-properties-toggle${link.id}"
+                                                                class="ui icon button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                                data-content="${message(code:'subscription.details.viewLicenseProperties')}">
+                                                            <i class="ui angle double down icon"></i>
+                                                        </button>
                                                         <laser:script file="${this.getGroovyPageFileName()}">
                                                     $("#derived-license-properties-toggle${link.id}").on('click', function() {
                                                         $("#derived-license-properties${link.id}").transition('slide down');
@@ -907,7 +910,9 @@
                                 && (RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id)}">
                             <g:link class="ui icon negative button"
                                     controller="survey" action="deleteSurveyPropFromConfig"
-                                    id="${surveyProperty.id}">
+                                    id="${surveyProperty.id}"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>
@@ -924,7 +929,7 @@
                             <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
 
                             <div class="field required">
-                                <label>${message(code: 'surveyConfigs.property')}</label>
+                                <label>${message(code: 'surveyConfigs.property')} <g:message code="messageRequiredField" /></label>
                                 <semui:dropdown name="selectedProperty"
 
                                                 class="la-filterPropDef"

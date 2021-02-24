@@ -61,7 +61,9 @@
                 <g:formatDate date="${msg.lastUpdated}" format="${message(code: 'default.date.format.noZ')}"/>
             </td>
             <td class="x">
-                <g:link controller="admin" action="deleteSystemMessage" id="${msg.id}" class="ui negative icon button">
+                <g:link controller="admin" action="deleteSystemMessage" id="${msg.id}" class="ui negative icon button"
+                        role="button"
+                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
                     <i class="trash alternate icon"></i>
                 </g:link>
             </td>

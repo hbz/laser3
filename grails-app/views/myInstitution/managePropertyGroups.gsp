@@ -64,8 +64,10 @@
                             <g:if test="${editable}">
                                 <td class="x">
                                     <g:set var="pdgOID" value="${genericOIDService.getOID(pdGroup)}" />
-                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button trigger-modal">
-                                        <i class="write icon"></i>
+                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button trigger-modal"
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                        <i aria-hidden="true" class="write icon"></i>
                                     </g:link>
                                     <g:link controller="myInstitution"
                                             action="managePropertyGroups"
@@ -73,7 +75,8 @@
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.prop_groups", args: [fieldValue(bean: pdGroup, field: "name")])}"
                                             data-confirm-term-how="delete"
                                             class="ui icon negative button js-open-confirm-modal"
-                                            role="button">
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </td>

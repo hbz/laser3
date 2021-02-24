@@ -49,7 +49,7 @@
                             var="gokbAPI">
                       <g:if test="${platformInstance?.gokbId}">
                         <a target="_blank"
-                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/' + platformInstance?.gokbId : '#'}"><i
+                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/?id=' + platformInstance?.gokbId : '#'}"><i
                             title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
                       </g:if>
                     </g:each>
@@ -126,7 +126,8 @@
                                     <g:link class="ui negative icon button button js-open-confirm-modal" controller="accessPoint" action="unlinkPlatform" id="${orgAccessPoint.id}"
                                             data-confirm-tokenMsg="${message(code: 'confirm.dialog.unlink.accessPoint.platform', args: [orgAccessPoint.oap.name, platformInstance.name])}"
                                             data-confirm-term-how="unlink"
-                                    >
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                         <i class="unlink icon"></i>
                                     </g:link>
                                 </g:if>

@@ -1,6 +1,5 @@
 <%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.helper.RDConstants" %>
 <laser:serviceInjection />
-
 <table class="ui three column table">
     <g:each in="${roleLinks}" var="role">
         <g:if test="${role.org}">
@@ -17,7 +16,7 @@
                         <g:if test="${roleObject.showUIShareButton()}">
                             <g:if test="${role.isShared}">
                                 <span class="la-js-editmode-container">
-                                    <g:link id="test" class="ui icon button green la-selectable-button la-popup-tooltip la-delay test"
+                                    <g:link id="test" class="ui icon button green la-selectable-button la-popup-tooltip la-delay"
                                             controller="ajax" action="toggleShare"
                                             params="${[owner:genericOIDService.getOID(roleObject), sharedObject:genericOIDService.getOID(role), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]}"
                                             data-position="top right" data-content="${message(code:'property.share.tooltip.on')}"
@@ -28,7 +27,7 @@
                             </g:if>
                             <g:else>
                                 <span class="la-js-editmode-container">
-                                    <g:link  class="ui icon button la-selectable-button la-popup-tooltip la-delay test "
+                                    <g:link  class="ui icon button la-selectable-button la-popup-tooltip la-delay  "
                                             controller="ajax" action="toggleShare"
                                             params="${[owner:genericOIDService.getOID(roleObject), sharedObject:genericOIDService.getOID(role), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]}"
                                              data-position="top right" data-content="${message(code:'property.share.tooltip.off')}"
@@ -42,7 +41,9 @@
                             <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.unlinkProviderAgency')}">
                                 <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal" controller="ajax" action="delOrgRole" id="${role.id}"
                                     data-confirm-tokenMsg = "${message(code:'confirm.dialog.unlink.provider-agency.subscription')}"
-                                    data-confirm-how = "unlink">
+                                    data-confirm-how = "unlink"
+                                    role="button"
+                                    aria-label="${message(code:'ariaLabel.unlink.provider-agency.subscription')}">
                                     <i class="unlink icon"></i>
                                 </g:link>
                             </span>
@@ -55,11 +56,10 @@
                         </g:if>
 
                         <g:if test="${showPersons}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.addNewContact')}">
-                                <button class="ui icon button la-selectable-button" data-semui="modal" data-href="#${cssId}">
+                                <button class="ui icon button la-selectable-button la-popup-tooltip la-delay" data-semui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
                                     <i class="address plus icon"></i>
                                 </button>
-                            </span>
+
                         <g:render template="/templates/links/orgLinksAsListAddPrsModal"
                                   model="['cssId': cssId,
                                           'orgRole': role,

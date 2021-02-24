@@ -79,7 +79,7 @@ class TitleController  {
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
-        result.ti = TitleInstance.get(params.id)
+        result.ti = TitleInstancePackagePlatform.get(params.id)
         if (! result.ti) {
             flash.error = message(code:'titleInstance.error.notFound.es')
             redirect action: 'list'
@@ -87,45 +87,9 @@ class TitleController  {
             return
         }
 
-        result.duplicates = reusedIdentifiers(result.ti);
-        result.titleHistory = TitleHistoryEvent.executeQuery("select distinct thep.event from TitleHistoryEventParticipant as thep where thep.participant = :participant", [participant: result.ti] )
+        result.titleHistory = TitleHistoryEvent.executeQuery("select distinct thep.event from TitleHistoryEventParticipant as thep where thep.participant = :participant", [participant: result.tipp] )
 
         result
-    }
-
-    private def reusedIdentifiers(title) {
-        // Test for identifiers that are used accross multiple titles
-        def duplicates = [:]
-        def identifiers = title?.ids?.collect{it}
-
-        identifiers.each { ident ->
-            List<Identifier> dups = Identifier.findAll {
-                value == ident.value && ti != null && ti.id != title.id && ti.status?.value == 'Current'
-            }
-            dups.each {
-                if (duplicates."${it.ns.ns}:${it.value}") {
-                    duplicates."${it.ns.ns}:${it.value}" += [it.ti]
-                }
-                else{
-                    duplicates."${it.ns.ns}:${it.value}" = [it.ti]
-                }
-            }
-        }
-
-        /*
-    identifiers.each{ident ->
-      ident.occurrences.each{
-        if(it.ti != title && it.ti!=null && it.ti.status?.value == 'Current'){
-          if(duplicates."${ident.ns.ns}:${ident.value}"){
-            duplicates."${ident.ns.ns}:${ident.value}" += [it.ti]
-          }else{
-            duplicates."${ident.ns.ns}:${ident.value}" = [it.ti]
-          }
-        }
-      }
-
-         */
-        return duplicates
     }
 
     @Secured(['ROLE_ADMIN'])

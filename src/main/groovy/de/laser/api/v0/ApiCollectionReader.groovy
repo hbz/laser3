@@ -298,8 +298,8 @@ class ApiCollectionReader {
             if (it.sub && (ApiReader.IGNORE_SUBSCRIPTION != ignoreRelationType)) {
                 tmp.subscription = ApiStubReader.requestSubscriptionStub(it.sub, context) // com.k_int.kbplus.Subscription
             }
-            if (it.title && (ApiReader.IGNORE_TITLE != ignoreRelationType)) {
-                tmp.title = ApiUnsecuredMapReader.getTitleStubMap(it.title) // de.laser.titles.TitleInstance
+            if (it.tipp && (ApiReader.IGNORE_TITLE != ignoreRelationType)) {
+                tmp.title = ApiUnsecuredMapReader.getTitleStubMap(it.tipp) // de.laser.titles.TitleInstancePackagePlatform
             }
 
             result << ApiToolkit.cleanUp(tmp, true, false)

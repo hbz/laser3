@@ -362,13 +362,13 @@
                                       tableID         : 'costTable'
                               ]"/>
 
-                    </div>
-
                 </g:if>
 
                 <br />
                 <br />
-                <button name="deleteCostItems" value="true" type="submit" class="ui icon negative button" onclick="return confirm('${message(code:'confirm.dialog.delete.surveyCostItems')}')">
+                <button name="deleteCostItems" value="true" type="submit" class="ui icon negative button" onclick="return confirm('${message(code:'confirm.dialog.delete.surveyCostItems')}')"
+                        role="button"
+                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
                     <i class="trash alternate icon"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
                 </button>
 

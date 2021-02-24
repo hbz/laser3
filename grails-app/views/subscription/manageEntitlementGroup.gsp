@@ -59,20 +59,27 @@
                 </td>
                 <td class="x">
 
-                    <g:link action="index" class="ui icon button" id="${params.id}" params="[titleGroup: titleGroup.id]">
+                    <g:link action="index" class="ui icon button" id="${params.id}"
+                            params="[titleGroup: titleGroup.id]"
+                            role="button"
+                            aria-label="${message(code: 'ariaLabel.change.universal')}">
                         <i class="pencil icon"></i>
                     </g:link>
                     <g:if test="${editable}">
                         <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.issueEntitlementGroup = :titleGroup',[titleGroup:titleGroup])}"/>
                         <g:if test="${!hasCostItems}">
                             <g:link action="removeEntitlementGroup" class="ui icon negative button"
-                                    params="${[titleGroup: titleGroup.id, sub: subscription.id]}">
+                                    params="${[titleGroup: titleGroup.id, sub: subscription.id]}"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>
                         <g:else>
                             <div class="ui icon negative buttons la-popup-tooltip" data-content="${message(code:'issueEntitlementGroup.delete.existingCostItems')}">
-                                <button class="ui disabled button la-selectable-button">
+                                <button class="ui disabled button la-selectable-button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="trash alternate icon"></i>
                                 </button>
                             </div>
@@ -89,9 +96,8 @@
 
     <g:form action="processCreateEntitlementGroup" controller="subscription" params="[id: params.id]"
             method="post" class="ui form">
-
         <div class="field required ">
-            <label>${message(code: 'issueEntitlementGroup.name.label')}</label>
+            <label>${message(code: 'issueEntitlementGroup.name.label')} <g:message code="messageRequiredField" /></label>
             <input type="text" name="name" placeholder="" value="${params.name}" required/>
         </div>
 

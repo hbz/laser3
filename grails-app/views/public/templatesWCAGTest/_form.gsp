@@ -1,8 +1,7 @@
 <g:form class="ui form" id="create_task" url="[controller: 'dev', action: 'index']" method="post">
-
     <div class="field required">
         <label for="title">
-            <g:message code="task.title.label"/>
+            <g:message code="task.title.label"/> <g:message code="messageRequiredField" />
         </label>
         <g:textField id="title" name="title" required="required" value=""/>
     </div>
@@ -18,7 +17,7 @@
     <div class="field required">
         <fieldset>
             <legend>
-                <g:message code="task.typ"/>
+                <g:message code="task.typ"/> <g:message code="messageRequiredField" />
             </legend>
 
             <div class="ui radio checkbox">
@@ -61,7 +60,7 @@
 
     <div id="licensediv" class="field required" >
         <label for="license">
-            Art der Lizenz
+            Art der Lizenz <g:message code="messageRequiredField" />
         </label>
         <select id="license" class="ui dropdown search many-to-one required "  required="required" name="license">
             <option value="">Bitte auswählen</option>

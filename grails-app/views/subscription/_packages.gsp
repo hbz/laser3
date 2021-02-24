@@ -3,7 +3,7 @@
 
 <div class="ui card">
     <div class="content">
-        <h5 class="ui header">${message(code: 'subscription.packages.label')}</h5>
+        <h2 class="ui header">${message(code: 'subscription.packages.label')}</h2>
         <table class="ui three column table">
             <g:each in="${subscription.packages}" var="sp">
                 <% String buttonColor = ""
@@ -43,11 +43,12 @@
                         </div>
                     </td>
                     <td style="border-top: none" class="right aligned">
-                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.config.header')}">
-                            <button id="pendingChangeConfigurationToggle${sp.id}" class="ui icon button ${buttonColor} la-js-dont-hide-button">
-                                <i class="ui angle double down icon"></i>
-                            </button>
-                        </span>
+                        <button id="pendingChangeConfigurationToggle${sp.id}"
+                                class="ui icon button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
+                                data-content="${message(code:'subscription.packages.config.header')}">
+                            <i class="ui angle double down icon"></i>
+                        </button>
+
                         <laser:script file="${this.getGroovyPageFileName()}">
                             $("#pendingChangeConfigurationToggle${sp.id}").on('click', function() {
                                 $("#pendingChangeConfiguration${sp.id}").transition('slide down');
@@ -67,7 +68,8 @@
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
                                     data-confirm-term-how="delete"
                                     class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
-                                    role="button">
+                                    role="button"
+                                    aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                 <i aria-hidden="true" class="trash alternate icon"></i>
                             </g:link>
                         </g:if>

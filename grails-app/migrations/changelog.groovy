@@ -118,4 +118,8 @@ databaseChangeLog = {
     // include file: 'changelog-2021-01-13.groovy' -- runs locally but breaks production
 	include file: 'changelog-2021-01-22.groovy'
     include file: 'changelog-2021-01-25.groovy'
+    include file: 'changelog-2021-01-27.groovy'
+    include file: 'changelog-2021-02-03.groovy'
+    include file: 'changelog-2021-02-04.groovy'
+    include file: 'changelog-2021-02-08.groovy'
 }

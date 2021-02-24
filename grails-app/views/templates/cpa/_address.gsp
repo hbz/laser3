@@ -56,7 +56,10 @@
         <div class="content">
             <g:if test="${editable && tmplShowDeleteButton}">
                 <div class="ui mini icon buttons">
-                    <a class="ui icon button" onclick="JSPC.app.editAddress(${address.id});">
+                    <a class="ui icon button"
+                       onclick="JSPC.app.editAddress(${address.id});"
+                       role="button"
+                       aria-label="${message(code: 'ariaLabel.change.universal')}">
                         <i class="pencil icon"></i>
                     </a>
 
@@ -64,7 +67,9 @@
                     <g:link class="ui negative button js-open-confirm-modal"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"
                             data-confirm-term-how="delete"
-                            controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: oid]"  >
+                            controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: oid]"
+                            role="button"
+                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                         <i class="trash alternate icon"></i>
                     </g:link>
                 </div>

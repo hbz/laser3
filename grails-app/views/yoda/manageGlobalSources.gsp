@@ -35,6 +35,19 @@
         </thead>
         <tbody>
           <g:each in="${sources}" var="source">
+              <%
+                  String component
+                  switch(source.rectype) {
+                      case GlobalSourceSyncService.RECTYPE_PACKAGE: component = "Package"
+                          break
+                      case GlobalSourceSyncService.RECTYPE_TITLE: component = "Title"
+                          break
+                      case GlobalSourceSyncService.RECTYPE_ORG: component = "Org"
+                          break
+                      case GlobalSourceSyncService.RECTYPE_TIPP: component = "TitleInstancePackagePlatform"
+                          break
+                  }
+              %>
             <tr>
               <td>${source.identifier}</td>
               <td>${source.name}</td>
@@ -42,25 +55,27 @@
               <td>${source.haveUpTo}</td>
               <td>${source.uri}</td>
               <td>${source.editUri}</td>
-              <td><g:link
-                      uri="${source.uri + '?verb=ListRecords&metadataPrefix=' + source.fullPrefix + '&from=' + formatDate(format: "yyyy-MM-dd'T'HH:mm:ss'Z'", date: source.haveUpTo)}"
-                      target="_blank">Link</g:link></td>
+              <td>
+                  <g:if test="${source.type == "OAI"}">
+                      <g:link uri="${source.uri + '?verb=ListRecords&metadataPrefix=' + source.fullPrefix + '&from=' + formatDate(format: "yyyy-MM-dd'T'HH:mm:ss'Z'", date: source.haveUpTo)}" target="_blank">Link</g:link>
+                  </g:if>
+                  <g:elseif test="${source.type == "JSON"}">
+                      <g:link uri="${source.uri + 'find?componentType='+component+'&changedSince=' + formatDate(format: "yyyy-MM-dd HH:mm:ss", date: source.haveUpTo)}" target="_blank">Link</g:link>
+                  </g:elseif>
+              </td>
               <td>${source.listPrefix}</td>
               <td>${source.fullPrefix}</td>
               <td>${source.principal}</td>
               <td>${source.credentials}</td>
               <td>
-                  <g:if test="${source.rectype == GlobalSourceSyncService.RECTYPE_PACKAGE}">Package</g:if>
-                  <g:elseif test="${source.rectype == GlobalSourceSyncService.RECTYPE_TITLE}">Title</g:elseif>
-                  <g:elseif test="${source.rectype == GlobalSourceSyncService.RECTYPE_ORG}">Org</g:elseif>
-                  <g:elseif test="${source.rectype == GlobalSourceSyncService.RECTYPE_TIPP}">TIPP</g:elseif>
+                  ${component}
               </td>
               <td>
-                <g:link class="ui button"
+                <%--<g:link class="ui button"
                         controller="yoda"
                         onclick="return confirm('Deleting this package will remove all tracking info and unlink any local packages - Are you sure?')"
                         action="deleteGlobalSource"
-                        id="${source.id}">${message('code':'default.button.delete.label')}</g:link>
+                        id="${source.id}">${message('code':'default.button.delete.label')}</g:link>--%>
               </td>
             </tr>
           </g:each>

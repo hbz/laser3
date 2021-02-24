@@ -12,6 +12,7 @@ import de.laser.PendingChange
 import de.laser.PendingChangeConfiguration
 import de.laser.RefdataValue
 import de.laser.SubscriptionPackage
+import de.laser.exceptions.ChangeAcceptException
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
@@ -29,6 +30,7 @@ class ChangeNotificationService extends AbstractLockableService {
     def genericOIDService
     def globalService
     ContextService contextService
+    PendingChangeService pendingChangeService
 
     // N,B, This is critical for this service as it's called from domain object OnChange handlers
     static transactional = false
@@ -319,7 +321,6 @@ class ChangeNotificationService extends AbstractLockableService {
         }
     }
 
-    @Transactional
     def determinePendingChangeBehavior(Map<String,Object> args, String msgToken, SubscriptionPackage subscriptionPackage) {
         /*
             decision tree:
@@ -371,7 +372,7 @@ class ChangeNotificationService extends AbstractLockableService {
                 if(settingValue == RDStore.PENDING_CHANGE_CONFIG_ACCEPT) {
                     //set up announcement and do accept! Pending because if some error occurs, the notification should still take place
                     PendingChange pc = PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING,owner:contextOrg])
-                    pc.accept()
+                    pendingChangeService.accept(pc)
                 }
                 /*
                     else we have case three - a child subscription with no inherited settings ->
@@ -388,7 +389,7 @@ class ChangeNotificationService extends AbstractLockableService {
                 else contextOrg = ie.subscription.getSubscriber()
                 //set up announcement and do accept! Pending because if some error occurs, the notification should still take place
                 PendingChange pc = PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING,owner:contextOrg])
-                pc.accept()
+                pendingChangeService.accept(pc)
             }
         }
     }

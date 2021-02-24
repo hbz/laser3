@@ -13,7 +13,6 @@
             <thead>
                 <tr>
                     <th>TIPP ID</th>
-                    <th>Titel ID</th>
                     <th>Titel</th>
                     <th>alternatives TIPP mit GOKb ID</th>
                     <th>betroffener Lizenzbestand</th>
@@ -23,8 +22,7 @@
                 <g:each in="${tipps}" var="entry">
                     <tr>
                         <td>${entry.tipp.id}</td>
-                        <td>${entry.tipp.title.id}</td>
-                        <td>${entry.tipp.title.title}</td>
+                        <td>${entry.tipp.name}</td>
                         <td>
                             <g:if test="${entry.tipp.altTIPP}">
                                 alternatives TIPP im gleichen Paket: ${entry.altTIPP.id}, verfügt über GOKb ID ${entry.altTIPP.gokbId}

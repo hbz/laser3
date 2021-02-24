@@ -32,14 +32,17 @@
     <td>${id.note}</td>
     <td>
         <g:if test="${editable}">
-            <button class="ui icon button" onclick="JSPC.app.IdContoller.editIdentifier(${id.id});"><i class="write icon"></i></button>
+            <button class="ui icon button" onclick="JSPC.app.IdContoller.editIdentifier(${id.id});"
+                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                <i aria-hidden="true" class="write icon"></i>
+            </button>
             <g:link controller="ajax"
                     action="deleteIdentifier"
                     class="ui button icon red js-open-confirm-modal"
                     params='${[owner: "${orgInstance.class.name}:${orgInstance.id}", target: "${id.class.name}:${id.id}"]}'
                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [id?.ns?.ns+": "+id.value])}"
-                    data-confirm-term-how="delete"
-            >
+                    role="button"
+                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
                 <i class="trash alternate icon"></i>
             </g:link>
         </g:if>

@@ -312,7 +312,9 @@
                                 && (RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id)}">
                             <g:link class="ui icon negative button"
                                     controller="survey" action="deleteSurveyPropFromConfig"
-                                    id="${surveyProperty.id}">
+                                    id="${surveyProperty.id}"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>
@@ -329,7 +331,7 @@
                             <g:hiddenField id="surveyConfig_id_${surveyConfig?.id}" name="surveyConfigID" value="${surveyConfig?.id}"/>
 
                             <div class="field required">
-                                <label>${message(code: 'surveyConfigs.property')}</label>
+                                <label>${message(code: 'surveyConfigs.property')} <g:message code="messageRequiredField" /></label>
                                 <semui:dropdown name="selectedProperty"
 
                                                 class="la-filterPropDef"

@@ -18,7 +18,7 @@
   z-index: @zIndex;
 }
 .ui.cards > .card > .content > .header,
-.ui.card > .content > .header {
+.ui.card > .content  .header {
   color: @headerColor;
   font-size: @headerFontSize;
 }
@@ -29,6 +29,11 @@
   font-size: @headerFontSize;
   margin-top: @headerLineHeightOffset;
   line-height: @headerLineHeight;
+}
+.ui.cards > .card > .content > .header:not(.ui).la-primary-header ,
+.ui.card > .content > .header:not(.ui).la-primary-header {
+  text-transform: uppercase;
+    font-size: 0.85rem;
 }
 .ui.card.la-role-admin {
   border-right: 10px solid @blue;
@@ -57,7 +62,7 @@
 .la-inline-lists dl  dd {
   display: table-cell;
   padding-top: 0.4rem;
-  padding-bottom: 0.4rem;
+  padding-bottom: 1rem;
 }
 .la-inline-lists  dl  dt,
 .la-inline-lists th{

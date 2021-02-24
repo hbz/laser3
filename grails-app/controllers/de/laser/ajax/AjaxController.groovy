@@ -68,8 +68,8 @@ class AjaxController {
     ],
     'Currency' : [
       domain:'RefdataValue',
-      countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='${RDConstants.CURRENCY}'",
-      rowQry:"select rdv from RefdataValue as rdv where rdv.owner.desc='${RDConstants.CURRENCY}'",
+      countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + RDConstants.CURRENCY + "'",
+      rowQry:"select rdv from RefdataValue as rdv where rdv.owner.desc='" + RDConstants.CURRENCY + "'",
       qryParams:[
                    [
                       param:'iDisplayLength',
