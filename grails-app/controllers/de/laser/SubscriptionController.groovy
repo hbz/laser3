@@ -328,9 +328,9 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processLinkLicenseMembers() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processLinkLicenseMembers(this,params)
@@ -345,9 +345,9 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processUnLinkLicenseMembers() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processUnLinkLicenseMembers(this,params)
@@ -397,9 +397,9 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processUnLinkPackagesMembers() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processUnLinkPackagesMembers(this,params)
@@ -431,9 +431,9 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processPropertiesMembers() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processPropertiesMembers(this,params)
@@ -485,9 +485,9 @@ class SubscriptionController {
         }
     }
 
-    @DebugAnnotation(perm = "ORG_INST_COLLECTIVE,ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def processSubscriptionPropertiesMembers() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processSubscriptionPropertiesMembers(this,params)
