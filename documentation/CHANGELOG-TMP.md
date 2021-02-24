@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3150    24.02.2021  rc2.0   2.0         Moe     Bug         Filter Bestand nach Fachbereich
+
 3148    24.02.2021  rc2.0   2.0         Moe     Bug         Änderungen uuups
 
 3142    23.02.2021  rc2.0   2.0         David   Feature     Reporting: Session-Cache für Reporting nutzen

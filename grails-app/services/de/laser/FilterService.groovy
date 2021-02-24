@@ -1014,20 +1014,10 @@ class FilterService {
     }
 
     Map<String,Object> getIssueEntitlementQuery(GrailsParameterMap params, Subscription subscription) {
-
-        Map newParams = [:]
-
-        params.each {
-            newParams."${it.key}" = it.value
-        }
-
-        getIssueEntitlementQuery(newParams, subscription)
-
-    }
-
-    Map<String,Object> getIssueEntitlementQuery(Map params, Subscription subscription) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Map result = [:]
+
+
 
         String base_qry
         Map<String,Object> qry_params = [subscription: subscription]
@@ -1111,6 +1101,7 @@ class FilterService {
             qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
             filterSet = true
         }
+
         if (params.series_names && params.series_names != "" && params.list('series_names')) {
             base_qry += " and lower(ie.tipp.seriesName) in (:series_names)"
             qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
@@ -1177,7 +1168,7 @@ class FilterService {
         result.query = base_qry
         result.queryParams = qry_params
         result.filterSet = filterSet
-
+        println(result)
         result
 
     }

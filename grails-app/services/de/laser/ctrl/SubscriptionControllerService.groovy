@@ -1169,16 +1169,16 @@ class SubscriptionControllerService {
             params.tab = params.tab ?: 'allIEs'
             List<IssueEntitlement> sourceIEs
             if(params.tab == 'allIEs') {
-                Map query = filterService.getIssueEntitlementQuery(params+[max:5000,offset:0], baseSub)
-                sourceIEs = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams)
+                Map query = filterService.getIssueEntitlementQuery(params, baseSub)
+                sourceIEs = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams+[max:5000,offset:0])
             }
             if(params.tab == 'selectedIEs') {
                 Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
                 sourceIEs = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams)
             }
 
-            Map query = filterService.getIssueEntitlementQuery([max: 5000, offset: 0], newSub)
-            List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams)
+            Map query = filterService.getIssueEntitlementQuery(params, newSub)
+            List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams+[max: 5000, offset: 0])
             List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
             List<IssueEntitlement> notFixedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub)
 
@@ -1487,8 +1487,8 @@ class SubscriptionControllerService {
             }
 
             if(result.subscription.ieGroups.size() > 0) {
-                def query2 = filterService.getIssueEntitlementQuery([offset: 0, max: 5000, ieAcceptStatusFixed: true], result.subscription)
-                result.num_ies = IssueEntitlement.executeQuery("select ie " + query2.query, query2.queryParams).size()
+                def query2 = filterService.getIssueEntitlementQuery(params, result.subscription)
+                result.num_ies = IssueEntitlement.executeQuery("select ie " + query2.query, query2.queryParams+[max: 5000, offset: 0]).size()
             }
             result.num_ies_rows = entitlements.size()
             result.entitlements = entitlements.drop(result.offset).take(result.max)
