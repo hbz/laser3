@@ -9,6 +9,8 @@
 
 3148    24.02.2021  rc2.0   2.0         Moe     Bug         Änderungen uuups
 
+3142    23.02.2021  rc2.0   2.0         David   Feature     Reporting: Session-Cache für Reporting nutzen
+
 3144    22.02.2021  rc2.0   2.0         Moe     Bug         Anbieter-Darstellung in Dev
 
 3145    22.02.2021  rc2.0   2.0         Moe     Bug         Dinge auf DEV

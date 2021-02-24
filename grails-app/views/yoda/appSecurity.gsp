@@ -46,7 +46,6 @@
 <div class="secInfoWrapper">
     <div class="ui list">
         <div class="item">
-            <span class="ROLE_YODA">ORG_INST_COLLECTIVE</span> &rArr;
             <span class="IS_AUTHENTICATED_FULLY">ORG_INST</span> &rArr;
             <span class="ROLE_USER">ORG_BASIC_MEMBER</span> |
             <span class="ROLE_DATAMANAGER">ORG_CONSORTIUM</span> |

@@ -12,6 +12,7 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.properties.PersonProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
+import de.laser.reporting.GenericFilter
 import de.laser.reporting.OrganisationConfig
 import de.laser.reporting.SubscriptionConfig
 import de.laser.reporting.GenericConfig
@@ -95,6 +96,8 @@ class MyInstitutionController  {
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
+        SessionCacheWrapper sessionCache = contextService.getSessionCache()
+
         result.cfgFilterList = GenericConfig.FILTER
         result.cfgChartsList = GenericConfig.CHARTS
 
@@ -116,9 +119,17 @@ class MyInstitutionController  {
                 result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.provider.query )
             }
 
-            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            sessionCache.put("MyInstitutionController/reporting/" + result.token, result.result)
+            Map<String, Object> filterMap = [ filterMap: [:] ]
+            params.each{it ->
+                if (it.key.startsWith(GenericConfig.FILTER_PREFIX) && it.value) {
+                    filterMap.filterMap.put(it.key, it.value)
+                }
+            }
+            filterMap.putAll(result.result)
+            sessionCache.put("MyInstitutionController/reporting/" + result.token, filterMap)
         }
+        //result.filterHistory = sessionCache.list().keySet().findAll{it.startsWith("MyInstitutionController/reporting/")}
+
         render view: 'reporting/index', model: result
     }
 
