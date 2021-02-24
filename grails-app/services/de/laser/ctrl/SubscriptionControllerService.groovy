@@ -1328,8 +1328,8 @@ class SubscriptionControllerService {
                 if(!Package.findByGokbId(pkgUUID)) {
                     ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                     result.source = apiSource.baseUrl+apiSource.fixToken
-                    GlobalRecordSource source = GlobalRecordSource.findByUri("${result.source}/gokb/api/")
-                    log.debug("linkPackage. Global Record Source URL: " +source.baseUrl)
+                    GlobalRecordSource source = GlobalRecordSource.findByUriLike(result.source)
+                    log.debug("linkPackage. Global Record Source URL: " +source.uri)
                     globalSourceSyncService.source = source
                     executorService.execute({
                         Thread.currentThread().setName("PackageSync_"+result.subscription.id)

@@ -1,6 +1,6 @@
 <g:render template="/templates/filter/javascript"/>
 <semui:filter showFilterButton="true">
-    <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form clearing">
+    <g:form action="${actionName}" controller="${controllerName}" params="${params}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
 
         <div class="two fields">
