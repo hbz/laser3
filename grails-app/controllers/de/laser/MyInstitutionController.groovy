@@ -1342,8 +1342,9 @@ join sub.orgRelations or_sub where
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),max:result.max,pendingOffset:result.offset,pending:true,notifications:false]
+        result.acceptedOffset = 0
+        def periodInDays = 600
+        Map<String,Object> pendingChangeConfigMap = [contextOrg: result.institution, consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"), periodInDays:periodInDays, max:result.max, offset:result.acceptedOffset]
 
         result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 

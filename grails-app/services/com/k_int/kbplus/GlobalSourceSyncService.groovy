@@ -308,7 +308,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         source.save()
                     }
                     if(packagesToNotify.keySet().size() > 0) {
-                        log.info("notifying subscriptions ...")
+                        log.info("notifying subscriptions ..."+packagesToNotify)
                         trackPackageHistory()
                         //get subscription packages and their respective holders, parent level only!
                         String query = 'select oo.org,sp from SubscriptionPackage sp join sp.pkg pkg ' +
@@ -435,6 +435,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 if(updatedTIPP.packageUUID in existingPlatformUUIDs) {
                     Map<String,Object> diffs = createOrUpdateTIPP(tippsOnPage.get(updatedTIPP.uuid),updatedTIPP,packagesOnPage,platformsOnPage)
+                    println("Moe:" + diffs)
                     Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(updatedTIPP.packageUUID)
                     if(!diffsOfPackage)
                         diffsOfPackage = []
@@ -1515,6 +1516,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
             }
             //get to diffs that need to be notified
+            println("tippA:"+tippA)
+            println("tippB:"+tippB)
             Set<Map<String, Object>> diffs = getTippDiff(tippA, tippB)
             //includes also changes in coverage statement set
             if (diffs) {
