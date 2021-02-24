@@ -24,9 +24,10 @@ class TippController  {
 
     result.tipp = TitleInstancePackagePlatform.get(params.id)
 
-    result.currentTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(result.tipp.pkg, RDStore.TIPP_STATUS_CURRENT).size()
-    result.plannedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateGreaterThan(result.tipp.pkg, RDStore.TIPP_STATUS_DELETED, new Date()).size()
-    result.expiredTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateLessThan(result.tipp.pkg, RDStore.TIPP_STATUS_DELETED, new Date()).size()
+    result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.tipp.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0]
+    result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.tipp.pkg, status: RDStore.TIPP_STATUS_EXPECTED])[0]
+    result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.tipp.pkg, status: RDStore.TIPP_STATUS_RETIRED])[0]
+    result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.tipp.pkg, status: RDStore.TIPP_STATUS_DELETED])[0]
 
 
     if (!result.tipp) {
