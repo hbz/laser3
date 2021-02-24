@@ -1293,7 +1293,7 @@ class SubscriptionControllerService {
             Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/groups')
             if(queryCuratoryGroups.warning) {
                 List recordsCuratoryGroups = queryCuratoryGroups.warning.result
-                result.curatoryGroups = recordsCuratoryGroups
+                result.curatoryGroups = recordsCuratoryGroups?.findAll {it.status == "Current"}
             }
 
 
