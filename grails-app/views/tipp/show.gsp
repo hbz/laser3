@@ -147,6 +147,11 @@
                     <g:message code="package.show.nav.expired"/>: <g:message code="package.compare.overview.tipps"/> ${expiredTippsCounts}</g:link>
 
                 <br>
+                <g:link controller="package" action="deleted"
+                        id="${tipp.pkg?.id}">
+                    <g:message code="package.show.nav.deleted"/>: <g:message code="package.compare.overview.tipps"/> ${deletedTippsCounts}</g:link>
+
+                <br>
                 <br>
                 <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                         var="gokbAPI">

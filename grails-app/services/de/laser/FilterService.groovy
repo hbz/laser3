@@ -1240,14 +1240,14 @@ class FilterService {
             qry_params.current = RDStore.TIPP_STATUS_CURRENT
         }
 
-        if (params.planned) {
+        /*if (params.planned) {
             base_qry += " and ( coalesce(tipp.accessStartDate, tipp.pkg.startDate) >= :date ) "
             qry_params.date = new Date()
         }
         if (params.expired) {
             base_qry += " and ( tipp.accessEndDate <= :date ) "
             qry_params.date = new Date()
-        }
+        }*/
 
         if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
             base_qry += " and lower(tipp.subjectReference) in (:subject_references)"
