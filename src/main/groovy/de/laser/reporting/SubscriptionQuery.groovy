@@ -38,6 +38,24 @@ class SubscriptionQuery extends GenericQuery {
 
             processSimpleRefdataQuery(params.query,'status', idList, result)
         }
+        else if ( params.query in ['subscription-provider-assignment']) {
+
+            result.data = Org.executeQuery(
+                    'select o.id, o.name, count(*) from Org o join o.links orgLink where o.id in (:providerIdList) and orgLink.sub.id in (:idList) group by o.id',
+                    [providerIdList: params.list('providerIdList').collect { it as Long }, idList: idList]
+            )
+            result.data.each { d ->
+                result.dataDetails.add([
+                        query : params.query,
+                        id    : d[0],
+                        label : d[1],
+                        idList: Org.executeQuery(
+                                'select s.id from Subscription s join s.orgRelations orgRel join orgRel.org o where s.id in (:idList) and o.id = :d order by s.name',
+                                [idList: idList, d: d[0]]
+                        )
+                ])
+            }
+        }
 
         result
     }

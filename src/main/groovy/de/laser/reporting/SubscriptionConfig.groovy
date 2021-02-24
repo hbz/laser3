@@ -44,6 +44,7 @@ class SubscriptionConfig extends GenericConfig {
                                     'subscription-kind'         : 'Lizenztyp',
                                     'subscription-resource'     : 'Ressourcentyp',
                                     'subscription-status'       : 'Lizenzstatus',
+                                    'subscription-provider-assignment' : 'Nach Anbieter'
                             ]
                     ]
             ],
