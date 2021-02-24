@@ -2219,7 +2219,7 @@ class SubscriptionControllerService {
                     IssueEntitlement ie = IssueEntitlement.findById(ieID)
                     TitleInstancePackagePlatform tipp = ie.tipp
                     try {
-                        if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItem != null), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)) {
+                        if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)) {
                             log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
                             ++countIEsToAdd
                         }

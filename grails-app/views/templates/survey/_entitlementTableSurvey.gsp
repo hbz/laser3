@@ -56,7 +56,7 @@
                     <!-- END TEMPLATE -->
                 </td>
                 <td>
-                    <g:if test="${targetIE?.priceItem}">
+                    <g:if test="${targetIE?.priceItems}">
                             <g:each in="${targetIE.priceItems}" var="priceItem" status="i">
                                 <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice"
                                                                                      owner="${priceItem}"

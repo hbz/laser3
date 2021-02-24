@@ -6,6 +6,7 @@ import com.k_int.kbplus.InstitutionsService
 import de.laser.annotations.DebugAnnotation
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
+import de.laser.finance.PriceItem
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import com.k_int.kbplus.PendingChangeService
@@ -1744,15 +1745,25 @@ join sub.orgRelations or_sub where
 
         result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscription)
         result.iesListPriceSum = 0.0
-        result.ies?.each{
-            result.iesListPriceSum = result.iesListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0.0) : 0.0)
+        result.ies.each{ IssueEntitlement ie ->
+            Double priceSum = 0.0
+
+            ie.priceItems.each { PriceItem priceItem ->
+                priceSum = priceItem.listPrice ?: 0.0
+            }
+            result.iesListPriceSum = result.iesListPriceSum + priceSum
         }
 
 
         result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscription)
         result.iesFixListPriceSum = 0.0
-        result.iesFix?.each{
-            result.iesFixListPriceSum = result.iesFixListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0.0) : 0.0)
+        result.iesFix.each{ IssueEntitlement ie ->
+            Double priceSum = 0.0
+
+            ie.priceItems.each { PriceItem priceItem ->
+                priceSum = priceItem.listPrice ?: 0.0
+            }
+            result.iesFixListPriceSum = result.iesListPriceSum + priceSum
         }
 
 
