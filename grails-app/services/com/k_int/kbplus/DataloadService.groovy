@@ -1190,7 +1190,7 @@ class DataloadService {
                     SystemEvent.createEvent('YODA_ES_RESET_CREATE_OK')
                     log.debug("Create ES index completed OK")
                     FTControl.withTransaction {
-                        FTControl.executeUpdate("update FTControl set dbElements=0, esElements=0, lastTimestamp=0, dateCreated='${new Date()}', lastUpdated='${new Date()}'")
+                        FTControl.executeUpdate("update FTControl set dbElements = :value, esElements = :value, lastTimestamp = :value, dateCreated = :dateValue, lastUpdated = :dateValue", [value: 0, dateValue: new Date()])
                     }
                     log.debug("Delete all existing FT Control entries");
                     log.debug("Do updateFTIndexes");
