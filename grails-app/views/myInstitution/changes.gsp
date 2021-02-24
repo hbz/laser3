@@ -69,13 +69,20 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${entry.changeId}">
+                        <g:if test="${entry.changeId && entry.subPkg}">
+                            <div class="ui buttons">
+                                <g:link class="ui positive button" controller="pendingChange" action="accept" id="${entry.changeId}" params="[subId: entry.subPkg.subscription.id]"><g:message code="default.button.accept.label"/></g:link>
+                                <div class="or" data-text="${message(code:'default.or')}"></div>
+                                <g:link class="ui negative button" controller="pendingChange" action="reject" id="${entry.changeId}" params="[subId: entry.subPkg.subscription.id]"><g:message code="default.button.reject.label"/></g:link>
+                            </div>
+                        </g:if>
+                        <g:elseif test="${entry.changeId}">
                             <div class="ui buttons">
                                 <g:link class="ui positive button" controller="pendingChange" action="accept" id="${entry.changeId}"><g:message code="default.button.accept.label"/></g:link>
                                 <div class="or" data-text="${message(code:'default.or')}"></div>
                                 <g:link class="ui negative button" controller="pendingChange" action="reject" id="${entry.changeId}"><g:message code="default.button.reject.label"/></g:link>
                             </div>
-                        </g:if>
+                        </g:elseif>
                     </td>
                 </tr>
 
