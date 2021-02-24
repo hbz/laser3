@@ -346,11 +346,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
         Set<String> tippUUIDs = records.collect { Map tipp -> tipp.uuid } as Set<String>
         Map<String,Package> packagesOnPage = [:]
         Map<String,Platform> platformsOnPage = [:]
-        Set<String> existingPlatformUUIDs = Platform.executeQuery('select pkg.gokbId from Package pkg where pkg.gokbId in (:pkgUUIDs)',[pkgUUIDs:packageUUIDs])
+
+        //packageUUIDs is null if package have no tipps
+        Set<String> existingPlatformUUIDs = packageUUIDs ? Platform.executeQuery('select pkg.gokbId from Package pkg where pkg.gokbId in (:pkgUUIDs)',[pkgUUIDs:packageUUIDs]) : []
         Map<String,TitleInstancePackagePlatform> tippsOnPage = [:]
         //collect existing TIPPs
-        TitleInstancePackagePlatform.findAllByGokbIdInList(tippUUIDs.toList()).each { TitleInstancePackagePlatform tipp ->
-            tippsOnPage.put(tipp.gokbId,tipp)
+        if(tippUUIDs) {
+            TitleInstancePackagePlatform.findAllByGokbIdInList(tippUUIDs.toList()).each { TitleInstancePackagePlatform tipp ->
+                tippsOnPage.put(tipp.gokbId, tipp)
+            }
         }
         //create or update packages
         packageUUIDs.each { String packageUUID ->
