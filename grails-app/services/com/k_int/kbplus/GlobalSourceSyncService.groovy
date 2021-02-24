@@ -435,7 +435,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 if(updatedTIPP.packageUUID in existingPlatformUUIDs) {
                     Map<String,Object> diffs = createOrUpdateTIPP(tippsOnPage.get(updatedTIPP.uuid),updatedTIPP,packagesOnPage,platformsOnPage)
-                    println("Moe:" + diffs)
+                    //println("Moe:" + diffs)
                     Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(updatedTIPP.packageUUID)
                     if(!diffsOfPackage)
                         diffsOfPackage = []
@@ -1516,8 +1516,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
             }
             //get to diffs that need to be notified
-            println("tippA:"+tippA)
-            println("tippB:"+tippB)
+            //println("tippA:"+tippA)
+            //println("tippB:"+tippB)
             Set<Map<String, Object>> diffs = getTippDiff(tippA, tippB)
             //includes also changes in coverage statement set
             if (diffs) {
