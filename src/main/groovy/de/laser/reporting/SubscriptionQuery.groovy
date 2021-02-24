@@ -41,7 +41,7 @@ class SubscriptionQuery extends GenericQuery {
         else if ( params.query in ['subscription-provider-assignment']) {
 
             result.data = Org.executeQuery(
-                    'select o.id, o.name, count(*) from Org o join o.links orgLink where o.id in (:providerIdList) and orgLink.sub.id in (:idList) group by o.id',
+                    'select o.id, o.name, count(*) from Org o join o.links orgLink where o.id in (:providerIdList) and orgLink.sub.id in (:idList) group by o.id order by o.name',
                     [providerIdList: params.list('providerIdList').collect { it as Long }, idList: idList]
             )
             result.data.each { d ->
