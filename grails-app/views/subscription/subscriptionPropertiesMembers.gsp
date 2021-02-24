@@ -281,7 +281,7 @@
                                                 <i class="thumbtack blue icon"></i>
                                             </span>
                                         </g:if>
-                                        <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                        <g:if test="${subscr.getCustomerType() in ['ORG_INST']}">
                                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                                   data-content="${subscr.getCustomerTypeI10n()}">
                                                 <i class="chess rook grey icon"></i>
@@ -418,7 +418,7 @@
                                                     </span>
                                                 </g:if>
 
-                                                <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                                <g:if test="${subscr.getCustomerType() in ['ORG_INST']}">
                                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                                           data-content="${subscr.getCustomerTypeI10n()}">
                                                         <i class="chess rook grey icon"></i>
@@ -657,7 +657,7 @@
                                         </span>
                                     </g:if>
 
-                                    <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                    <g:if test="${subscr.getCustomerType() in ['ORG_INST']}">
                                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                               data-content="${subscr.getCustomerTypeI10n()}">
                                             <i class="chess rook grey icon"></i>

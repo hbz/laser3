@@ -1958,9 +1958,7 @@ join sub.orgRelations or_sub where
         result.availableComboDeptOrgs << result.orgInstance
         result.manipulateAffiliations = true
 
-        if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-            result.orgLabel = message(code:'collective.member.plural')
-        else result.orgLabel = message(code:'default.institution')
+        result.orgLabel = message(code:'default.institution') as String
 
         render view: '/user/global/edit', model: result
     }

@@ -239,7 +239,7 @@
                             </g:if>
                         </g:link>
                     </g:else>
-                    <g:if test="${org.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                    <g:if test="${org.getCustomerType() in ['ORG_INST']}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                               data-content="${org.getCustomerTypeI10n()}">
                             <i class="chess rook grey icon"></i>

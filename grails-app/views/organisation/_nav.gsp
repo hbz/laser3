@@ -53,7 +53,7 @@
         </g:if>
         <g:elseif test="${accessService.checkForeignOrgComboPermAffiliationX([
                     org: orgInstance,
-                    comboPerm: "ORG_INST_COLLECTIVE, ORG_CONSORTIUM",
+                    comboPerm: "ORG_CONSORTIUM",
                     comboAffiliation: "INST_ADM",
                     specRoles: "ROLE_ORG_EDITOR, ROLE_ADMIN"
         ])}">

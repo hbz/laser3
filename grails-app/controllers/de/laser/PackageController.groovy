@@ -375,8 +375,6 @@ class PackageController {
         List<RefdataValue> roleTypes = [RDStore.OR_SUBSCRIBER]
         if (accessService.checkPerm('ORG_CONSORTIUM')) {
             roleTypes.addAll([RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS])
-        } else if (accessService.checkPerm('ORG_INST_COLLECTIVE')) {
-            roleTypes.addAll([RDStore.OR_SUBSCRIPTION_COLLECTIVE, RDStore.OR_SUBSCRIBER_COLLECTIVE])
         }
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)

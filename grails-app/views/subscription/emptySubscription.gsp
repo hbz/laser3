@@ -59,7 +59,7 @@
                 <br />
                 <div id="dynHiddenValues"></div>
 
-                <%--<g:if test="${accessService.checkPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")}">
+                <%--<g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                     <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
                 </g:if>--%>
                 <input id="submitterFallback" type="submit" class="ui button js-click-control" value="${message(code:'default.button.create.label')}" />

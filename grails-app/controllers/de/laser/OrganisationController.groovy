@@ -961,8 +961,8 @@ class OrganisationController  {
         render view: '/user/global/list', model: result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         result.orgInstance = Org.get(params.id) // overwrite
@@ -1004,8 +1004,8 @@ class OrganisationController  {
         render view: '/user/global/delete', model: result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
     def editUser() {
         Map result = [
                 user: genericOIDService.resolveOID(params.uoid),
@@ -1018,8 +1018,8 @@ class OrganisationController  {
         render view: '/user/global/edit', model: result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
     def createUser() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         result.availableOrgs = Org.get(params.id)
@@ -1028,8 +1028,8 @@ class OrganisationController  {
         render view: '/user/global/create', model: result
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
     def processCreateUser() {
         def success = userService.addNewUser(params, flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
@@ -1043,8 +1043,8 @@ class OrganisationController  {
         }
     }
 
-    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_INST_COLLECTIVE,ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
     def addAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         result.orgInstance = Org.get(params.id) // overwrite

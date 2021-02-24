@@ -590,8 +590,6 @@ class LicenseController {
         tmpParams.remove("offset")
         if (accessService.checkPerm("ORG_CONSORTIUM"))
             tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        else if (accessService.checkPerm("ORG_INST_COLLECTIVE"))
-            tmpParams.comboType = RDStore.COMBO_TYPE_DEPARTMENT.value
         def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
 
         if (tmpParams.filterPropDef) {

@@ -52,9 +52,6 @@ class SubscriptionsQueryService {
             if (accessService.checkPerm(contextOrg,'ORG_CONSORTIUM')) {
                 params.orgRole = 'Subscription Consortia'
             }
-            else if(accessService.checkPerm(contextOrg,'ORG_INST_COLLECTIVE')) {
-                params.orgRole = 'Subscription Collective'
-            }
             else {
                 params.orgRole = 'Subscriber'
             }
