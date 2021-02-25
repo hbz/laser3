@@ -592,7 +592,7 @@
 
             <g:set var="systemMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)}" />
             <g:if test="${systemMessages}">
-                <div class="ui segment center aligned orange">
+                <div class="ui segment center aligned inverted orange">
                     <strong>SYSTEMMELDUNG</strong>
 
                     <g:each in="${systemMessages}" var="message">
