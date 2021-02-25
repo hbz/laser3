@@ -1434,9 +1434,9 @@ class SubscriptionControllerService {
             else {
                 SwissKnife.setPaginationParams(result, params, (User) result.user)
             }
-            List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription = :sub and ( pc.status is null or pc.status = :status ) order by ts desc",
+           /* List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription = :sub and ( pc.status is null or pc.status = :status ) order by ts desc",
                     [sub: result.subscription, status: RDStore.PENDING_CHANGE_PENDING])
-            result.pendingChanges = pendingChanges
+            result.pendingChanges = pendingChanges*/
 
             params.ieAcceptStatusFixed = true
             def query = filterService.getIssueEntitlementQuery(params, result.subscription)
@@ -1454,7 +1454,7 @@ class SubscriptionControllerService {
 
             if(result.subscription.ieGroups.size() > 0) {
                 def query2 = filterService.getIssueEntitlementQuery(params, result.subscription)
-                result.num_ies = IssueEntitlement.executeQuery("select ie " + query2.query, query2.queryParams+[max: 5000, offset: 0]).size()
+                result.num_ies = IssueEntitlement.executeQuery("select count(ie) " + query2.query, query2.queryParams+[max: 5000, offset: 0])[0]
             }
             result.num_ies_rows = entitlements.size()
             result.entitlements = entitlements.drop(result.offset).take(result.max)
