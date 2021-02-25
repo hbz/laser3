@@ -111,8 +111,8 @@ class UserController  {
         }
         else {
             result.availableOrgs = Org.executeQuery(
-                    "select o from Org o left join o.status s where exists (select os.org from OrgSetting os where os.org = o and os.key = :customerType) and (s = null or s.value != 'Deleted') and o not in ( select c.fromOrg from Combo c where c.type = :type ) order by o.sortname",
-                        [customerType: OrgSetting.KEYS.CUSTOMER_TYPE, type: RDStore.COMBO_TYPE_DEPARTMENT]
+                    "select o from Org o left join o.status s where exists (select os.org from OrgSetting os where os.org = o and os.key = :customerType) and (s = null or s.value != 'Deleted') order by o.sortname",
+                        [customerType: OrgSetting.KEYS.CUSTOMER_TYPE]
                 )
             result.manipulateAffiliations = true
         }

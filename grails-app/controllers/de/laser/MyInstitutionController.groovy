@@ -1952,10 +1952,7 @@ join sub.orgRelations or_sub where
             return
         }
 
-        result.availableComboDeptOrgs = Combo.executeQuery("select c.fromOrg from Combo c where (c.fromOrg.status = null or c.fromOrg.status = :current) and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name",
-                [ctxOrg: result.orgInstance, current: RDStore.O_STATUS_CURRENT, type: RDStore.COMBO_TYPE_DEPARTMENT])
-
-        result.availableComboDeptOrgs << result.orgInstance
+        result.availableComboDeptOrgs = [ result.orgInstance ]
         result.manipulateAffiliations = true
 
         result.orgLabel = message(code:'default.institution') as String
@@ -1970,9 +1967,7 @@ join sub.orgRelations or_sub where
         result.orgInstance = result.institution
         result.editor = result.user
         result.inContextOrg = true
-
-        result.availableOrgs = Combo.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg and c.type = :dept order by c.fromOrg.name', [ctxOrg: result.orgInstance, dept: RDStore.COMBO_TYPE_DEPARTMENT])
-        result.availableOrgs.add(result.orgInstance)
+        result.availableOrgs = [ result.orgInstance ]
 
         render view: '/user/global/create', model: result
     }

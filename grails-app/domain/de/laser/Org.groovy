@@ -100,7 +100,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     static transients = [
             'deleted', 'customerType', 'customerTypeI10n', 'designation',
-            'calculatedPropDefGroups', 'empty', 'consortiaMember', 'department'
+            'calculatedPropDefGroups', 'empty', 'consortiaMember'
     ] // mark read-only accessor methods
 
     static mappedBy = [
@@ -415,12 +415,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
   }
 
     String getDesignation() {
-        String ret = ""
-        Org hasDept = Combo.findByFromOrgAndType(this,RDStore.COMBO_TYPE_DEPARTMENT)?.toOrg
-        if(hasDept)
-            ret = "${hasDept.shortname?:(hasDept.sortname?: hasDept.name)} – "
-        ret += shortname?:(sortname?:(name?:(globalUID?:id)))
-        return ret
+        shortname ?: (sortname ?: (name ?: (globalUID ?: id)))
     }
 
     boolean isEmpty() {
@@ -507,11 +502,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         isInComboOfType(RDStore.COMBO_TYPE_CONSORTIUM)
     }
 
-    boolean isDepartment() {
-        isInComboOfType(RDStore.COMBO_TYPE_DEPARTMENT) && !hasPerm("ORG_INST")
-    }
     void createCoreIdentifiersIfNotExist(){
-        if(!Combo.findByFromOrgAndType(this, RDStore.COMBO_TYPE_DEPARTMENT) && !(RDStore.OT_PROVIDER.id in this.getAllOrgTypeIds())){
+        if(!(RDStore.OT_PROVIDER.id in this.getAllOrgTypeIds())){
 
             boolean isChanged = false
             IdentifierNamespace.CORE_ORG_NS.each{ coreNs ->

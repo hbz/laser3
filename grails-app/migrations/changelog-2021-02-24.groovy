@@ -8,4 +8,13 @@ databaseChangeLog = {
             rollback {}
         }
     }
+
+    changeSet(author: "klober (modified)", id: "1614160052993-2") {
+        grailsChange {
+            change {
+                sql.execute("delete from refdata_value where rdv_value = 'Department' and rdv_owner = (select rdc_id from refdata_category where rdc_description = 'combo.type')")
+            }
+            rollback {}
+        }
+    }
 }

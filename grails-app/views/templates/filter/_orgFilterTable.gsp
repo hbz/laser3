@@ -181,14 +181,7 @@
                     </g:if>
                 </g:if>
                 <g:else>
-                    <g:if test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
-                        <g:if test="${org.isEmpty()}">
-                            <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
-                        </g:if>
-                    </g:if>
-                    <g:else>
-                        <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
-                    </g:else>
+                    <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
                 </g:else>
             </td>
         </g:if>
