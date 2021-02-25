@@ -137,6 +137,7 @@ tipp.payment.type,TitleInstancePackagePlatform.PaymentType,TitleInstancePackageP
 tipp.status,TIPP Status,TIPP Status
 tipp.status.reason,Tipp.StatusReason,Tipp.StatusReason
 title.status,TitleInstanceStatus,TitleInstanceStatus
+title.medium,Title Medium,Title Medium
 title.type,Title Type,Title Type
 transform.format,Transform Format,Transform Format
 transform.type,Transform Type,Transform Type

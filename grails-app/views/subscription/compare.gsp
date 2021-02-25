@@ -190,8 +190,8 @@
 							<g:set var="highlight" value="${entry.value[2]}"/>
 							<tr>
 								
-								<td><semui:listIcon type="${currentTitle.medium?.value}"/>
-								<strong><g:link action="show" controller="title" id="${currentTitle.id}">${entry.key}</g:link></strong>
+								<td><semui:listIcon type="${currentTitle.titletype}"/>
+								<strong><g:link action="show" controller="tipp" id="${currentTitle.id}">${entry.key}</g:link></strong>
 								<i onclick="showMore('${currentTitle.id}')" class="icon-info-sign"></i>
 
 								<g:each in="${currentTitle?.ids?.sort{it?.ns?.ns}}" var="id">

@@ -11,10 +11,12 @@ import de.laser.Org
 import de.laser.OrgRole
 import de.laser.Package
 import de.laser.Platform
+import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.SurveyConfig
 import de.laser.SurveyOrg
 import de.laser.TitleInstancePackagePlatform
+import de.laser.helper.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.properties.SubscriptionProperty
 import de.laser.system.SystemEvent
@@ -199,9 +201,9 @@ class DataloadService {
                     result.sortName = tipp.sortName
 
                     result.medium = tipp.medium?.getMapForES()
-                    result.type = tipp.titleType
+                    RefdataValue titleType = RefdataValue.getByValueAndCategory(tipp.titleType, RDConstants.TITLE_MEDIUM)
+                    result.type = titleType ? titleType.getMapForES() : []
 
-                    result.type = tipp.titleType
                     Org publishers = tipp.getPublishers()
                     result.publisher = []
                     if(publishers) {
