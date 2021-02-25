@@ -1168,7 +1168,7 @@ class FilterService {
         result.query = base_qry
         result.queryParams = qry_params
         result.filterSet = filterSet
-        println(result)
+        
         result
 
     }
