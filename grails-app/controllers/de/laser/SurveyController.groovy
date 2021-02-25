@@ -8,6 +8,7 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.SurveyControllerService
+import de.laser.finance.PriceItem
 import de.laser.properties.SubscriptionProperty
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
@@ -1494,14 +1495,24 @@ class SurveyController {
         result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscription)
         result.iesListPriceSum = 0
         result.ies.each{
-            result.iesListPriceSum = result.iesListPriceSum + (it.priceItem ? (it.priceItem.listPrice ? it.priceItem.listPrice : 0) : 0)
+            Double priceSum = 0.0
+
+            ie.priceItems.each { PriceItem priceItem ->
+                priceSum = priceItem.listPrice ?: 0.0
+            }
+            result.iesListPriceSum = result.iesListPriceSum + priceSum
         }
 
 
         result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscription)
         result.iesFixListPriceSum = 0
         result.iesFix.each{
-            result.iesFixListPriceSum = result.iesFixListPriceSum + (it.priceItem ? (it.priceItem.listPrice ? it.priceItem.listPrice : 0) : 0)
+            Double priceSum = 0.0
+
+            ie.priceItems.each { PriceItem priceItem ->
+                priceSum = priceItem.listPrice ?: 0.0
+            }
+            result.iesFixListPriceSum = result.iesListPriceSum + priceSum
         }
 
 

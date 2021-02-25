@@ -32,7 +32,7 @@ class TitleController  {
 
         Map<String, Object> result = [:]
 
-            params.rectype = ["EBookInstance", "JournalInstance", "BookInstance", "TitleInstance", "DatabaseInstance"] // Tells ESSearchService what to look for
+            params.rectype = "TitleInstancePackagePlatform" // Tells ESSearchService what to look for
             params.showAllTitles = true
             result.user = contextService.getUser()
             params.max = params.max ?: result.user.getDefaultPageSize()
@@ -48,7 +48,7 @@ class TitleController  {
             def old_sort = params.sort
 
             params.q = params.q ?: null
-            params.sort = params.sort ?: "sortTitle.keyword"
+            params.sort = params.sort ?: "name.keyword"
 
             if (params.filter) {
                 params.put(params.filter, params.q)

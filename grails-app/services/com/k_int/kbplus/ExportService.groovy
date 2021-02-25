@@ -1109,7 +1109,7 @@ class ExportService {
 			}
 			//publisher_name (no value?)
 			row.add(' ')
-			if(tipp.titleType.contains('Book')) {
+			if(tipp.titleType == 'Book') {
 				//date_monograph_published_print (no value unless BookInstance)
 				row.add(tipp.dateFirstInPrint ? formatter.format(tipp.dateFirstInPrint) : ' ')
 				//date_monograph_published_online (no value unless BookInstance)
@@ -1453,7 +1453,7 @@ class ExportService {
 			}
 			//publisher_name (no value?)
 			row.add(' ')
-			if(tipp.titleType.contains('Book')) {
+			if(tipp.titleType == 'Book') {
 				//date_monograph_published_print (no value unless BookInstance)
 				row.add(tipp.dateFirstInPrint ? formatter.format(tipp.dateFirstInPrint) : ' ')
 				//date_monograph_published_online (no value unless BookInstance)
@@ -1764,7 +1764,7 @@ class ExportService {
 				row.add([field: '', style:null])
 			}
 
-			if(tipp.titleType.contains('Book')) {
+			if(tipp.titleType == 'Book') {
 				row.add([field: tipp.dateFirstInPrint ? formatter.format(tipp.dateFirstInPrint) : ' ', style:null])
 				row.add([field: tipp.dateFirstOnline ? formatter.format(tipp.dateFirstOnline) : ' ', style:null])
 				row.add([field: tipp.volume ?: ' ', style:null])

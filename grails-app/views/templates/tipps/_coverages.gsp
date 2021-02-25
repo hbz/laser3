@@ -1,13 +1,12 @@
-<g:if test="${tipp.titleType.contains('Book')}">
+<g:if test="${(tipp.titleType == 'Book')}">
     <div class="ui card">
         <div class="content">
-            <!-- von -->
+
             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                data-content="${message(code: 'tipp.dateFirstInPrint')}"></i>
             <g:formatDate format="${message(code: 'default.date.format.notime')}"
                           date="${tipp.dateFirstInPrint}"/>
-            <semui:dateDevider/>
-            <!-- bis -->
+            <span class='ui grey horizontal divider la-date-devider'></span>
             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
             <g:formatDate format="${message(code: 'default.date.format.notime')}"

@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3150    24.02.2021  rc2.0   2.0         Moe     Bug         Filter Bestand nach Fachbereich
+
+3148    24.02.2021  rc2.0   2.0         Moe     Bug         Änderungen uuups
+
 3142    23.02.2021  rc2.0   2.0         David   Feature     Reporting: Session-Cache für Reporting nutzen
 
 3144    22.02.2021  rc2.0   2.0         Moe     Bug         Anbieter-Darstellung in Dev
@@ -31,11 +35,11 @@
 
 3111    10.02.2021  rc2.0   2.0         Andreas Bug         Finanzfiltercache wieder korrekt eingebunden, Rechnungsnummer korrigiert
 
+3113    09.02.2021  rc2.0   2.0         Andreas Bug         Bug bei Lizenzexport behoben, leichte Performanzverbesserung
+
 3120    09.02.2021  rc2.0   2.0         David   Feature     Reporting: Pattern für Relationstabellen erstellen (Org.subjectGroup)
 
 3117    09.02.2021  rc2.0   2.0         David   Feature     Reporting: Basisvariante (als Pattern) implementieren
-
-3113    09.02.2021  rc2.0   2.0         Andreas Bug         Bug bei Lizenzexport behoben, leichte Performanzverbesserung
 
 3115    08.02.2021  rc2.0   2.0         Andreas Feature     OA-relevante Lizenzmerkmale und Referenzwerte incl. -kategorien eingefügt
 
