@@ -5,6 +5,7 @@ import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 
 @Transactional
 class CompareService {
@@ -199,12 +200,12 @@ class CompareService {
 
     }
 
-    Map compareEntitlements(List objects) {
+    Map compareEntitlements(GrailsParameterMap grailsParameterMap, List objects) {
         LinkedHashMap result = [ies: [:]]
         objects.each { object ->
             Map ies = result.ies
-            Map query = filterService.getIssueEntitlementQuery([max:5000,offset:0], object)
-            ies = comparisonService.buildComparisonTreeIEs(ies, object, IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams))
+            Map query = filterService.getIssueEntitlementQuery(grailsParameterMap, object)
+            ies = comparisonService.buildComparisonTreeIEs(ies, object, IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams+[max:5000,offset:0]))
             result.ies = ies
         }
         result

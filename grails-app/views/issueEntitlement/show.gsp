@@ -70,7 +70,7 @@
 
 
 
-            <g:if test="${issueEntitlementInstance.tipp.titleType.contains('Book')}">
+            <g:if test="${issueEntitlementInstance.tipp.titleType == 'Book'}">
                 <div class="la-title">${message(code: 'tipp.print')} & ${message(code: 'tipp.online')}</div>
             </g:if>
             <g:elseif test="${issueEntitlementInstance.tipp.titleType == "Journal"}">

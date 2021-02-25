@@ -1,4 +1,4 @@
-<g:if test="${tipp.titleType.contains('Book')}">
+<g:if test="${(tipp.titleType == 'Book')}">
     <div class="ui card">
         <div class="content">
 

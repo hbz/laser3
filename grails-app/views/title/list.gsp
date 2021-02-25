@@ -26,7 +26,7 @@
           </div>
           <div class="field">
             <label for="filter">${message(code: 'title.search_in')}</label>
-            <g:select class="ui dropdown" id="filter" name="filter" from="${[[key:'name',value:"${message(code: 'title.title.label')}"],[key:'publisher',value:"${message(code:'tipp.publisher')}"],[key:'',value:"${message(code: 'title.all.label')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
+            <g:select class="ui dropdown" id="filter" name="filter" from="${[[key:'name',value:"${message(code: 'title.title.label')}"],[key:'publisher.name',value:"${message(code:'tipp.publisher')}"],[key:'',value:"${message(code: 'title.all.label')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
           </div>
             <div class="field la-field-right-aligned">
               <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
@@ -69,14 +69,19 @@
                         <tr>
                           <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                           <td>
-                            <semui:listIcon type="${hit.getSourceAsMap().typTitle}"/>
-                            <strong><g:link controller="title" action="show" id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link></strong>
+                            <semui:listIcon type="${hit.getSourceAsMap().type}"/>
+                            <strong><g:link controller="tipp" action="show" id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link></strong>
                           </td>
                           <td>
-                            ${hit.getSourceAsMap().typTitle ? RefdataValue.getByValueAndCategory(hit.getSourceAsMap().typTitle, RDConstants.TITLE_MEDIUM)?.getI10n('value') : hit.getSourceAsMap().typTitle}
+                            ${hit.getSourceAsMap().type ? RefdataValue.getByValueAndCategory(hit.getSourceAsMap().type, RDConstants.TITLE_MEDIUM)?.getI10n('value') : hit.getSourceAsMap().type}
                           </td>
                           <td>
-                            ${hit.getSourceAsMap().publisher?:''}
+                            <g:if test="${hit.getSourceAsMap().publisher}">
+                              <g:link controller="organisation" action="show" id="${hit.getSourceAsMap().publisher.id}">
+                                ${hit.getSourceAsMap().publisher.name}
+                              </g:link>
+                            </g:if>
+
                           </td>
                           <td>
                             <g:each in="${hit.getSourceAsMap().identifiers?.sort{it.type}}" var="id">

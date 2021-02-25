@@ -41,7 +41,7 @@
             <br/>
             <br/>
 
-            <g:if test="${tipp.titleType.contains('Book')}">
+            <g:if test="${(tipp.titleType == 'Book')}">
                 <div class="la-title">${message(code: 'tipp.print')} & ${message(code: 'tipp.online')}</div>
             </g:if>
             <g:elseif test="${tipp.titleType == "Journal"}">

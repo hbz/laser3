@@ -866,19 +866,23 @@ class SubscriptionService {
                     }
                 }
                 if(withPriceData && issueEntitlementOverwrite) {
-                    if(issueEntitlementOverwrite instanceof IssueEntitlement && issueEntitlementOverwrite.priceItem) {
-                        PriceItem pi = new PriceItem(startDate: issueEntitlementOverwrite.priceItem.startDate ?: null,
-                                listPrice: issueEntitlementOverwrite.priceItem.listPrice ?: null,
-                                listCurrency: issueEntitlementOverwrite.priceItem.listCurrency ?: null,
-                                localPrice: issueEntitlementOverwrite.priceItem.localPrice ?: null,
-                                localCurrency: issueEntitlementOverwrite.priceItem.localCurrency ?: null,
-                                issueEntitlement: new_ie
-                        )
-                        pi.setGlobalUID()
-                        if(pi.save())
-                            return true
-                        else {
-                            throw new EntitlementCreationException(pi.errors)
+                    if(issueEntitlementOverwrite instanceof IssueEntitlement && issueEntitlementOverwrite.priceItems) {
+                        issueEntitlementOverwrite.priceItems.each { PriceItem priceItem ->
+                            PriceItem pi = new PriceItem(
+                                    startDate: priceItem.startDate ?: null,
+                                    endDate: priceItem.endDate ?: null,
+                                    listPrice: priceItem.listPrice ?: null,
+                                    listCurrency: priceItem.listCurrency ?: null,
+                                    localPrice: priceItem.localPrice ?: null,
+                                    localCurrency: priceItem.localCurrency ?: null,
+                                    issueEntitlement: new_ie
+                            )
+                            pi.setGlobalUID()
+                            if (pi.save())
+                                return true
+                            else {
+                                throw new EntitlementCreationException(pi.errors)
+                            }
                         }
 
                     }
@@ -1558,7 +1562,7 @@ class SubscriptionService {
                     IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
                     if (issueEntitlement) {
                         count++
-                        PriceItem priceItem = issueEntitlement.priceItem ?: new PriceItem(issueEntitlement: issueEntitlement)
+                        PriceItem priceItem = issueEntitlement.priceItems ? issueEntitlement.priceItems[0] : new PriceItem(issueEntitlement: issueEntitlement)
                         colMap.each { String colName, int colNo ->
                             if (colNo > -1 && cols[colNo]) {
                                 String cellEntry = cols[colNo].trim()

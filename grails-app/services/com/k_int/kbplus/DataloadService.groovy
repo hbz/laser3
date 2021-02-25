@@ -197,10 +197,16 @@ class DataloadService {
                     result.rectype = tipp.getClass().getSimpleName()
 
                     result.sortName = tipp.sortName
-                    result.normName = tipp.normName
 
                     result.medium = tipp.medium?.getMapForES()
-                    result.titleType = tipp.titleType
+                    result.type = tipp.titleType
+
+                    result.type = tipp.titleType
+                    Org publishers = tipp.getPublishers()
+                    result.publisher = []
+                    if(publishers) {
+                        result.identifiers.add([id: publishers[0].id, name: publishers[0].name])
+                    }
 
                     result.identifiers = []
                     tipp.ids.each { Identifier ident ->
@@ -1190,7 +1196,7 @@ class DataloadService {
                     SystemEvent.createEvent('YODA_ES_RESET_CREATE_OK')
                     log.debug("Create ES index completed OK")
                     FTControl.withTransaction {
-                        FTControl.executeUpdate("update FTControl set dbElements=0, esElements=0, lastTimestamp=0, dateCreated='${new Date()}', lastUpdated='${new Date()}'")
+                        FTControl.executeUpdate("update FTControl set dbElements = :value, esElements = :value, lastTimestamp = :value, dateCreated = :dateValue, lastUpdated = :dateValue", [value: 0, dateValue: new Date()])
                     }
                     log.debug("Delete all existing FT Control entries");
                     log.debug("Do updateFTIndexes");

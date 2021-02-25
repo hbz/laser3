@@ -69,7 +69,7 @@ class PackageController {
 
         if (params.provider) {
             result.filterSet = true
-            esQuery += "&providerName=${params.provider}"
+            esQuery += "&provider=${params.provider}"
         }
 
         if (params.curatoryGroup) {
@@ -101,7 +101,7 @@ class PackageController {
         Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups')
         if (queryCuratoryGroups.warning) {
             List recordsCuratoryGroups = queryCuratoryGroups.warning.result
-            result.curatoryGroups = recordsCuratoryGroups
+            result.curatoryGroups = recordsCuratoryGroups?.findAll {it.status == "Current"}
         }
 
 
