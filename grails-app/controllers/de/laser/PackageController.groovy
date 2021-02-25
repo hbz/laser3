@@ -69,7 +69,7 @@ class PackageController {
 
         if (params.provider) {
             result.filterSet = true
-            esQuery += "&providerName=${params.provider}"
+            esQuery += "&provider=${params.provider}"
         }
 
         if (params.curatoryGroup) {
