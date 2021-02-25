@@ -292,7 +292,7 @@ class ESSearchService{
     }
 
     if(params.showAllTitles) {
-      sw.write(  " AND ((rectype: \"EBookInstance\") OR (rectype: \"JournalInstance\") OR (rectype: \"BookInstance\") OR (rectype: \"TitleInstance\") OR (rectype: \"DatabaseInstance\")) ")
+      sw.write(  " AND (rectype: \"TitleInstancePackagePlatform\") ")
     }
 
     sw.toString()

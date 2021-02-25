@@ -89,6 +89,15 @@
     "lastUpdated": {
       "type": "date"
     },
+    "medium": {
+      "type": "nested",
+      "properties": {
+        "id": { "type": "long" },
+        "value": { "type": "keyword" },
+        "value_de": { "type": "text" },
+        "value_en": { "type": "text" }
+      }
+    },
     "members": {
       "properties": {
         "dbId": {
@@ -233,6 +242,13 @@
         }
       },
       "type": "text"
+    },
+    "publisher": {
+      "type": "nested",
+      "properties": {
+        "id": { "type": "long" },
+        "name": { "type": "keyword" }
+      }
     },
     "rectype": {
       "fields": {
