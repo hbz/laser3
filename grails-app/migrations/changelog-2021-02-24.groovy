@@ -35,10 +35,10 @@ update org_setting
     changeSet(author: "klober (modified)", id: "1614160052993-4") {
         grailsChange {
             change {
-                String rdc_query = "(select rdc_id from refdata_category where rdc_description='organisational.role')"
+                String rdc_query = "where rdv_value='Licensee_Collective' and rdv_owner = (select rdc_id from refdata_category where rdc_description='organisational.role')"
 
-                sql.execute("delete from org_role where or_roletype_fk = (select rdv_id from refdata_value where rdv_value = 'Licensee_Collective' and rdv_owner = " + rdc_query + ")")
-                sql.execute("delete from refdata_value where rdv_value='Licensee_Collective' and rdv_owner = " + rdc_query)
+                sql.execute("delete from org_role where or_roletype_fk = (select rdv_id from refdata_value " + rdc_query + ")")
+                sql.execute("delete from refdata_value " + rdc_query)
             }
             rollback {}
         }
@@ -46,10 +46,10 @@ update org_setting
     changeSet(author: "klober (modified)", id: "1614160052993-5") {
         grailsChange {
             change {
-                String rdc_query = "(select rdc_id from refdata_category where rdc_description = 'organisational.role')"
+                String rdc_query = "where rdv_value='Subscriber_Collective' and rdv_owner = (select rdc_id from refdata_category where rdc_description = 'organisational.role')"
 
-                sql.execute("delete from org_role where or_roletype_fk = (select rdv_id from refdata_value where rdv_value='Subscriber_Collective' and rdv_owner = " + rdc_query + ")")
-                sql.execute("delete from refdata_value where rdv_value='Subscriber_Collective' and rdv_owner = " + rdc_query)
+                sql.execute("delete from org_role where or_roletype_fk = (select rdv_id from refdata_value " + rdc_query + ")")
+                sql.execute("delete from refdata_value " + rdc_query)
             }
             rollback {}
         }
@@ -57,10 +57,10 @@ update org_setting
     changeSet(author: "klober (modified)", id: "1614160052993-6") {
         grailsChange {
             change {
-                String rdc_query = "(select rdc_id from refdata_category where rdc_description = 'organisational.role')"
+                String rdc_query = "where rdv_value='Subscription Collective' and rdv_owner = (select rdc_id from refdata_category where rdc_description = 'organisational.role')"
 
-                sql.execute("delete from org_role where or_roletype_fk = (select rdv_id from refdata_value where rdv_value='Subscription Collective' and rdv_owner = " + rdc_query + ")")
-                sql.execute("delete from refdata_value where rdv_value='Subscription Collective' and rdv_owner = " + rdc_query)
+                sql.execute("delete from org_role where or_roletype_fk = (select rdv_id from refdata_value " + rdc_query + ")")
+                sql.execute("delete from refdata_value " + rdc_query)
             }
             rollback {}
         }

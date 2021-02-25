@@ -291,8 +291,6 @@ class LicenseController {
         // TODO: not longer used? -> remove and refactor params
         //RefdataValue role_lic      = OR_LICENSEE_CONS
         //RefdataValue role_lic_cons = OR_LICENSING_CONSORTIUM
-        //if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-        //    role_lic = OR_LICENSEE_COLL
 
         License licenseCopy
             if (accessService.checkPerm(" ORG_CONSORTIUM")) {
