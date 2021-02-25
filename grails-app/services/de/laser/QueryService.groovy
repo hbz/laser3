@@ -33,8 +33,8 @@ class QueryService {
             def manualCancellationDateFrom = (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==RDStore.YN_YES)? today : null
             def manualCancellationDateTo =   (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==RDStore.YN_YES)? computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD) : null
             getDueSubscriptions(contextOrg, endDateFrom, endDateTo, manualCancellationDateFrom, manualCancellationDateTo).each{
-                boolean isConsortialOrCollective = it._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]
-                if ( ! isConsortialOrCollective ) {
+
+                if ( ! (it._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION]) ) {
                     dueObjects << it
                 }
             }
@@ -80,8 +80,7 @@ class QueryService {
         if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_LICENSE_CUSTOM_PROP)==RDStore.YN_YES) {
             getDueLicenseCustomProperties(contextOrg, today, computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_LICENSE_CUSTOM_PROP)).each{
 
-                boolean isConsortialOrCollective = it.owner._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]
-                if ( ! isConsortialOrCollective ) {
+                if ( ! (it.owner._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION]) ) {
                     dueObjects << it
                 }
             }
@@ -101,9 +100,7 @@ class QueryService {
         if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP)==RDStore.YN_YES) {
             getDueSubscriptionCustomProperties(contextOrg, today, computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_CUSTOM_PROP)).each{
 
-                boolean isConsortialOrCollective = it.owner._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]
-
-                if ( ! isConsortialOrCollective ) {
+                if ( ! (it.owner._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION]) ) {
                     dueObjects << it
                 }
             }

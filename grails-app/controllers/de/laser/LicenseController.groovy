@@ -291,8 +291,6 @@ class LicenseController {
         // TODO: not longer used? -> remove and refactor params
         //RefdataValue role_lic      = OR_LICENSEE_CONS
         //RefdataValue role_lic_cons = OR_LICENSING_CONSORTIUM
-        //if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-        //    role_lic = OR_LICENSEE_COLL
 
         License licenseCopy
             if (accessService.checkPerm(" ORG_CONSORTIUM")) {
@@ -426,7 +424,7 @@ class LicenseController {
             result.subscriptionsForFilter = Subscription.executeQuery("select l.destinationSubscription from Links l where l.sourceLicense = :lic and l.linkType = :linkType" , [lic:result.license, linkType:RDStore.LINKTYPE_LICENSE] )
         }
         if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
-            Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE]
+            Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
             Map<String,Object> queryParams = [lic:result.license, subscriberRoleTypes:subscriberRoleTypes, linkType:RDStore.LINKTYPE_LICENSE]
             String whereClause = ""
             if(params.status != 'FETCH_ALL') {
@@ -590,8 +588,6 @@ class LicenseController {
         tmpParams.remove("offset")
         if (accessService.checkPerm("ORG_CONSORTIUM"))
             tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        else if (accessService.checkPerm("ORG_INST_COLLECTIVE"))
-            tmpParams.comboType = RDStore.COMBO_TYPE_DEPARTMENT.value
         def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
 
         if (tmpParams.filterPropDef) {

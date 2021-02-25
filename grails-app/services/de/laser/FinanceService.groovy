@@ -424,7 +424,7 @@ class FinanceService {
                 case "own":
                     //exclude double listing of cost items belonging to member subscriptions
                     String instanceFilter = ""
-                    if(org.hasPerm("ORG_INST_COLLECTIVE,ORG_CONSORTIUM")) {
+                    if(org.hasPerm("ORG_CONSORTIUM")) {
                         instanceFilter = " and sub.instanceOf = null "
                     }
                     String subJoin = filterQuery.subFilter || instanceFilter ? "join ci.sub sub " : ""

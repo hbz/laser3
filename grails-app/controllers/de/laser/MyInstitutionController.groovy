@@ -1250,12 +1250,12 @@ join sub.orgRelations or_sub where
 
         idsCategory1 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
                 org: contextService.getOrg(), roleTypes: [
-                RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE
+                RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS
         ]
         ])
         idsCategory2 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
                 org: contextService.getOrg(), roleTypes: [
-                RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIPTION_COLLECTIVE
+                RDStore.OR_SUBSCRIPTION_CONSORTIA
         ]
         ])
 
@@ -1964,15 +1964,10 @@ join sub.orgRelations or_sub where
             return
         }
 
-        result.availableComboDeptOrgs = Combo.executeQuery("select c.fromOrg from Combo c where (c.fromOrg.status = null or c.fromOrg.status = :current) and c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name",
-                [ctxOrg: result.orgInstance, current: RDStore.O_STATUS_CURRENT, type: RDStore.COMBO_TYPE_DEPARTMENT])
-
-        result.availableComboDeptOrgs << result.orgInstance
+        result.availableComboDeptOrgs = [ result.orgInstance ]
         result.manipulateAffiliations = true
 
-        if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-            result.orgLabel = message(code:'collective.member.plural')
-        else result.orgLabel = message(code:'default.institution')
+        result.orgLabel = message(code:'default.institution') as String
 
         render view: '/user/global/edit', model: result
     }
@@ -1984,9 +1979,7 @@ join sub.orgRelations or_sub where
         result.orgInstance = result.institution
         result.editor = result.user
         result.inContextOrg = true
-
-        result.availableOrgs = Combo.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg and c.type = :dept order by c.fromOrg.name', [ctxOrg: result.orgInstance, dept: RDStore.COMBO_TYPE_DEPARTMENT])
-        result.availableOrgs.add(result.orgInstance)
+        result.availableOrgs = [ result.orgInstance ]
 
         render view: '/user/global/create', model: result
     }

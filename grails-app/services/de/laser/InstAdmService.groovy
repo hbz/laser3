@@ -56,7 +56,7 @@ class InstAdmService {
 
             userOrgs.each { org ->
                 if (result) {
-                    result = hasInstAdmPivileges(editor, org, [RDStore.COMBO_TYPE_DEPARTMENT, RDStore.COMBO_TYPE_CONSORTIUM])
+                    result = hasInstAdmPivileges(editor, org, [RDStore.COMBO_TYPE_CONSORTIUM])
                 }
                 else {
                     result = false

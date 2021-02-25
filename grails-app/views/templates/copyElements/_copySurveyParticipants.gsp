@@ -48,7 +48,7 @@
                                         <g:link controller="organisation"
                                                 action="show"
                                                 id="${surveyOrg.org.id}">${surveyOrg.org.sortname}</g:link>
-                                        <g:if test="${surveyOrg.org.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                        <g:if test="${surveyOrg.org.getCustomerType() in ['ORG_INST']}">
                                             <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                   data-position="bottom center"
                                                   data-content="${surveyOrg.org.getCustomerTypeI10n()}">
@@ -132,7 +132,7 @@
                                         <g:link controller="organisation"
                                                 action="show"
                                                 id="${surveyOrg.org.id}">${surveyOrg.org.sortname}</g:link>
-                                        <g:if test="${surveyOrg.org.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                        <g:if test="${surveyOrg.org.getCustomerType() in ['ORG_INST']}">
                                             <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                   data-position="bottom center"
                                                   data-content="${surveyOrg.org.getCustomerTypeI10n()}">

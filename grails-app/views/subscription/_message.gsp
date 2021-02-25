@@ -36,13 +36,6 @@
             </g:link>
         </g:if>
 
-        <g:elseif test="${checkColl}">
-            <g:message code="myinst.subscriptionDetails.message.hereLink" />
-            <g:link controller="subscription" action="show" id="${subscription.instanceOf.id}">
-                <g:message code="myinst.subscriptionDetails.message.collectiveSubscription" />
-            </g:link>
-        </g:elseif>
-
         <g:message code="myinst.subscriptionDetails.message.and" />
 
         <g:link controller="subscription" action="members" id="${subscription.instanceOf.id}">

@@ -9,9 +9,6 @@
         <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
             <g:message code="subscription.details.consortiaMembers.label"/>
         </g:if>
-        <g:elseif test="${accessService.checkPerm("ORG_INST_COLLECTIVE")}">
-            <g:message code="subscription.details.collectiveMembers.label"/>
-        </g:elseif>
     </title>
 </head>
 <body>
@@ -107,16 +104,9 @@
 
     <semui:filter showFilterButton="true">
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
-            <%
-                List<List<String>> tmplConfigShow
-                if(accessService.checkPerm("ORG_CONSORTIUM"))
-                    tmplConfigShow = [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['subRunTimeMultiYear']]
-                else if(accessService.checkPerm("ORG_INST_COLLECTIVE"))
-                    tmplConfigShow = [['name', 'identifier'], ['property&value']]
-            %>
             <g:render template="/templates/filter/orgFilter"
                   model="[
-                      tmplConfigShow: tmplConfigShow,
+                      tmplConfigShow: [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['subRunTimeMultiYear']],
                       tmplConfigFormFilter: true
                   ]"/>
         </g:form>
@@ -185,7 +175,7 @@
                                 </span>
                             </g:if>
 
-                            <g:if test="${subscr.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                            <g:if test="${subscr.getCustomerType() in ['ORG_INST']}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${subscr.getCustomerTypeI10n()}">
                                     <i class="chess rook grey icon"></i>
@@ -303,7 +293,7 @@
                             <i aria-hidden="true" class="write icon"></i>
                         </g:link>
                         <g:if test="${sub.isEditableBy(contextService.getUser())}"> <%-- needs to be checked for child subscription because of collective subscriptions! --%>
-                            <g:if test="${sub._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE] && sub.instanceOf._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE}">
+                            <g:if test="${sub._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION] && sub.instanceOf._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE}">
                                 <g:if test="${sub.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
                                         <g:link class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
                                             <i class="ui icon eye orange"></i>

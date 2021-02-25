@@ -173,7 +173,7 @@
                                     data-content="GASCO-Eintrag ändern" data-position="top left"><i class="globe icon"></i></button>
                         </g:if>
 
-                        <g:if test="${org.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST','ORG_INST_COLLECTIVE']}">
+                        <g:if test="${org.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST']}">
                             <button type="button" class="ui icon button la-popup-tooltip la-delay"
                                     data-liTarget="${Org.class.name}:${org.id}"
                                     data-createdBy="${org.createdBy?.id}"

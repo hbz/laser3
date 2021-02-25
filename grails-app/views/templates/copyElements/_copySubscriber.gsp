@@ -52,7 +52,7 @@
                                             <g:link controller="subscription"
                                                     action="show"
                                                     id="${sub.id}">${subscriberOrg.sortname}</g:link>
-                                            <g:if test="${subscriberOrg.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                                            <g:if test="${subscriberOrg.getCustomerType() in ['ORG_INST']}">
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
                                                       data-position="bottom center"
                                                       data-content="${subscriberOrg.getCustomerTypeI10n()}">

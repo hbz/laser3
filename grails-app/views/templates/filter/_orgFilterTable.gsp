@@ -181,14 +181,7 @@
                     </g:if>
                 </g:if>
                 <g:else>
-                    <g:if test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
-                        <g:if test="${org.isEmpty()}">
-                            <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
-                        </g:if>
-                    </g:if>
-                    <g:else>
-                        <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
-                    </g:else>
+                    <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
                 </g:else>
             </td>
         </g:if>
@@ -239,7 +232,7 @@
                             </g:if>
                         </g:link>
                     </g:else>
-                    <g:if test="${org.getCustomerType() in ['ORG_INST', 'ORG_INST_COLLECTIVE']}">
+                    <g:if test="${org.getCustomerType() in ['ORG_INST']}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                               data-content="${org.getCustomerTypeI10n()}">
                             <i class="chess rook grey icon"></i>

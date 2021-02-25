@@ -53,11 +53,6 @@
 										<th>${message(code:'org.country.label')}</th>
 										<th>${message(code: 'org.consortiaToggle.label')}</th>
 									</g:if>
-									<g:elseif test="${comboType == RDStore.COMBO_TYPE_DEPARTMENT}">
-										<th>
-											${message(code: 'org.departmentRemoval.label')}
-										</th>
-									</g:elseif>
 								</tr>
 							</thead>
 							<tbody>
