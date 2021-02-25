@@ -220,19 +220,16 @@ class BootStrapService {
             Map<String,Org> modelOrgs = [konsorte: Org.findByName('Musterkonsorte'),
                                          institut: Org.findByName('Musterinstitut'),
                                          singlenutzer: Org.findByName('Mustereinrichtung'),
-                                         kollektivnutzer: Org.findByName('Mustereinrichtung Kollektiv'),
                                          konsortium: Org.findByName('Musterkonsortium')]
 
             Map<String,Org> testOrgs = [konsorte: Org.findByName('Testkonsorte'),
                                         institut: Org.findByName('Testinstitut'),
                                         singlenutzer: Org.findByName('Testeinrichtung'),
-                                        kollektivnutzer: Org.findByName('Testeinrichtung Kollektiv'),
                                         konsortium: Org.findByName('Testkonsortium')]
 
             Map<String,Org> QAOrgs = [konsorte: Org.findByName('QA-Konsorte'),
                                       institut: Org.findByName('QA-Institut'),
                                       singlenutzer: Org.findByName('QA-Einrichtung'),
-                                      kollektivnutzer: Org.findByName('QA-Einrichtung Kollektiv'),
                                       konsortium: Org.findByName('QA-Konsortium')]
 
             userService.setupAdminAccounts(modelOrgs)
@@ -312,13 +309,11 @@ class BootStrapService {
         Role fakeRole                = locOrgRole('FAKE',                   'fake', [en: 'Fake', de: 'Fake'])
         Role orgMemberRole           = locOrgRole('ORG_BASIC_MEMBER',       'org', [en: 'Institution consortium member', de: 'Konsorte'])
         Role orgSingleRole           = locOrgRole('ORG_INST',               'org', [en: 'Institution basic', de: 'Singlenutzer'])
-        Role orgCollectiveRole       = locOrgRole('ORG_INST_COLLECTIVE',    'org', [en: 'Institution collective', de: 'Kollektivnutzer'])
         Role orgConsortiumRole       = locOrgRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium mit Umfragefunktion'])
 
         createOrgPerms(fakeRole,                    ['FAKE'])
         createOrgPerms(orgMemberRole,               ['ORG_BASIC_MEMBER'])
         createOrgPerms(orgSingleRole,               ['ORG_INST', 'ORG_BASIC_MEMBER'])
-        createOrgPerms(orgCollectiveRole,           ['ORG_INST_COLLECTIVE', 'ORG_INST', 'ORG_BASIC_MEMBER'])
         createOrgPerms(orgConsortiumRole,           ['ORG_CONSORTIUM'])
     }
 

@@ -41,7 +41,7 @@
             <br/>
             <br/>
 
-            <g:if test="${tipp.titleType.contains('Book')}">
+            <g:if test="${(tipp.titleType == 'Book')}">
                 <div class="la-title">${message(code: 'tipp.print')} & ${message(code: 'tipp.online')}</div>
             </g:if>
             <g:elseif test="${tipp.titleType == "Journal"}">
@@ -145,6 +145,11 @@
                 <g:link controller="package" action="expired"
                         id="${tipp.pkg?.id}">
                     <g:message code="package.show.nav.expired"/>: <g:message code="package.compare.overview.tipps"/> ${expiredTippsCounts}</g:link>
+
+                <br>
+                <g:link controller="package" action="deleted"
+                        id="${tipp.pkg?.id}">
+                    <g:message code="package.show.nav.deleted"/>: <g:message code="package.compare.overview.tipps"/> ${deletedTippsCounts}</g:link>
 
                 <br>
                 <br>

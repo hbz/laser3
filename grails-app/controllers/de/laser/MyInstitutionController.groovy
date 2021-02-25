@@ -6,12 +6,14 @@ import com.k_int.kbplus.InstitutionsService
 import de.laser.annotations.DebugAnnotation
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
+import de.laser.finance.PriceItem
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import com.k_int.kbplus.PendingChangeService
 import de.laser.properties.PersonProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
+import de.laser.reporting.GenericFilter
 import de.laser.reporting.OrganisationConfig
 import de.laser.reporting.SubscriptionConfig
 import de.laser.reporting.GenericConfig
@@ -95,6 +97,8 @@ class MyInstitutionController  {
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
+        SessionCacheWrapper sessionCache = contextService.getSessionCache()
+
         result.cfgFilterList = GenericConfig.FILTER
         result.cfgChartsList = GenericConfig.CHARTS
 
@@ -116,9 +120,17 @@ class MyInstitutionController  {
                 result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.provider.query )
             }
 
-            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            sessionCache.put("MyInstitutionController/reporting/" + result.token, result.result)
+            Map<String, Object> filterMap = [ filterMap: [:] ]
+            params.each{it ->
+                if (it.key.startsWith(GenericConfig.FILTER_PREFIX) && it.value) {
+                    filterMap.filterMap.put(it.key, it.value)
+                }
+            }
+            filterMap.putAll(result.result)
+            sessionCache.put("MyInstitutionController/reporting/" + result.token, filterMap)
         }
+        //result.filterHistory = sessionCache.list().keySet().findAll{it.startsWith("MyInstitutionController/reporting/")}
+
         render view: 'reporting/index', model: result
     }
 
@@ -1133,7 +1145,7 @@ join sub.orgRelations or_sub where
             qryString += ' and '+queryFilter.join(' and ')
 
         Set<Long> currentIssueEntitlements = IssueEntitlement.executeQuery(qryString+' group by tipp, ie.id',qryParams)
-        Set<TitleInstancePackagePlatform> allTitles = TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) '+orderByClause,[ids:currentIssueEntitlements],[max:result.max,offset:result.offset])
+        Set<TitleInstancePackagePlatform> allTitles = currentIssueEntitlements ? TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) '+orderByClause,[ids:currentIssueEntitlements],[max:result.max,offset:result.offset]) : []
         result.num_ti_rows = currentIssueEntitlements.size()
         result.titles = allTitles
 
@@ -1342,8 +1354,9 @@ join sub.orgRelations or_sub where
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),max:result.max,pendingOffset:result.offset,pending:true,notifications:false]
+        result.acceptedOffset = 0
+        def periodInDays = 600
+        Map<String,Object> pendingChangeConfigMap = [contextOrg: result.institution, consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"), periodInDays:periodInDays, max:result.max, offset:result.acceptedOffset]
 
         result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 
@@ -1732,15 +1745,25 @@ join sub.orgRelations or_sub where
 
         result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscription)
         result.iesListPriceSum = 0.0
-        result.ies?.each{
-            result.iesListPriceSum = result.iesListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0.0) : 0.0)
+        result.ies.each{ IssueEntitlement ie ->
+            Double priceSum = 0.0
+
+            ie.priceItems.each { PriceItem priceItem ->
+                priceSum = priceItem.listPrice ?: 0.0
+            }
+            result.iesListPriceSum = result.iesListPriceSum + priceSum
         }
 
 
         result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscription)
         result.iesFixListPriceSum = 0.0
-        result.iesFix?.each{
-            result.iesFixListPriceSum = result.iesFixListPriceSum + (it?.priceItem ? (it.priceItem?.listPrice ? it.priceItem.listPrice : 0.0) : 0.0)
+        result.iesFix.each{ IssueEntitlement ie ->
+            Double priceSum = 0.0
+
+            ie.priceItems.each { PriceItem priceItem ->
+                priceSum = priceItem.listPrice ?: 0.0
+            }
+            result.iesFixListPriceSum = result.iesListPriceSum + priceSum
         }
 
 

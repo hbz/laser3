@@ -70,7 +70,7 @@ class ESWrapperService {
     }
 
     Object getESMapping(){
-        JSONParser jsonParser = new JSONParser(this.class.classLoader.getResourceAsStream("elasticsearch/es_mapping.json"))
+        JSONParser jsonParser = new JSONParser(this.class.classLoader.getResourceAsStream("es_mapping.json"))
 
         jsonParser.parse()
     }

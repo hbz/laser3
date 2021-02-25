@@ -69,7 +69,7 @@ class PackageController {
 
         if (params.provider) {
             result.filterSet = true
-            esQuery += "&providerName=${params.provider}"
+            esQuery += "&provider=${params.provider}"
         }
 
         if (params.curatoryGroup) {
@@ -101,7 +101,7 @@ class PackageController {
         Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups')
         if (queryCuratoryGroups.warning) {
             List recordsCuratoryGroups = queryCuratoryGroups.warning.result
-            result.curatoryGroups = recordsCuratoryGroups
+            result.curatoryGroups = recordsCuratoryGroups?.findAll {it.status == "Current"}
         }
 
 
@@ -351,11 +351,10 @@ class PackageController {
             return
         }
 
-        result.currentTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_CURRENT).size()
-        result.plannedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateGreaterThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
-        result.expiredTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateLessThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
-        result.deletedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_DELETED).size()
-
+        result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
+        result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
+        result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
+        result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
         result.contextOrg = contextService.getOrg()
         result.contextCustomerType = result.contextOrg.getCustomerType()
 
@@ -432,11 +431,10 @@ class PackageController {
         }
         result.packageInstance = packageInstance
 
-        result.currentTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_CURRENT).size()
-        result.plannedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateGreaterThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
-        result.expiredTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateLessThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
-        result.deletedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_DELETED).size()
-
+        result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
+        result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
+        result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
+        result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
         if (executorWrapperService.hasRunningProcess(packageInstance)) {
             result.processingpc = true
         }
@@ -559,10 +557,10 @@ class PackageController {
         }
         result.packageInstance = packageInstance
 
-        result.currentTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_CURRENT).size()
-        result.plannedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateGreaterThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
-        result.expiredTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqualAndAccessEndDateLessThan(packageInstance, RDStore.TIPP_STATUS_DELETED, new Date()).size()
-        result.deletedTippsCounts = TitleInstancePackagePlatform.findAllByPkgAndStatus(packageInstance, RDStore.TIPP_STATUS_DELETED).size()
+        result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
+        result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
+        result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
+        result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
@@ -570,12 +568,10 @@ class PackageController {
 
         String filename
         if (func == "planned") {
-            params.planned = true
-            params.notStatus = RDStore.TIPP_STATUS_DELETED.id
+            params.status = RDStore.TIPP_STATUS_EXPECTED.id
             filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.planned'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
         } else if (func == "expired"){
-            params.expired = true
-            params.notStatus = RDStore.TIPP_STATUS_DELETED.id
+            params.status = RDStore.TIPP_STATUS_RETIRED.id
             filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.expired'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
         }
         else if (func == "deleted"){

@@ -35,7 +35,7 @@
             </thead>
             <tbody>
             <g:each in="${pending}" var="entry">
-                <g:set var="row" value="${pendingChangeService.printRow(entry.change)}" />
+                <g:set var="row" value="${pendingChangeService.printRow(PendingChange.get(entry.changeId))}" />
                 <g:set var="event" value="${row.eventData}"/>
                 <tr>
                     <td>
@@ -45,29 +45,44 @@
                         ${raw(row.instanceIcon)}
                     </td>
                     <td>
-                        <g:if test="${entry.change.subscription}">
-                            <g:link controller="subscription" action="index" id="${entry.target.id}">${entry.target.dropdownNamingConvention()}</g:link>
+                        <g:if test="${entry.subPkg}">
+                            <g:link controller="subscription" action="index" id="${entry.subPkg.subscription.id}">${entry.subPkg.subscription.dropdownNamingConvention()}</g:link>
                         </g:if>
-                        <g:elseif test="${entry.change.costItem}">
-                            <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.target.sub.id]}">${entry.target.sub.dropdownNamingConvention()}</g:link>
+                        <g:elseif test="${entry.costItem}">
+                            <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.costItem.sub.id]}">${entry.costItem.sub.dropdownNamingConvention()}</g:link>
                         </g:elseif>
                     </td>
                     <td>
-                        ${raw(row.eventString)}
+                        <g:if test="${entry.subPkg}">
+                            <g:link controller="subscription" action="entitlementChanges" id="${entry.subPkg.subscription.id}" params="[tab: 'changes']">${raw(entry.eventString)}</g:link>
+                        </g:if>
+                        <g:else>
+                            ${raw(entry.eventString)}
+                        </g:else>
 
-                        <g:if test="${entry.change.msgToken == "pendingChange.message_SU_NEW_01"}">
+                        <g:if test="${entry.subscription}">
                             <div class="right aligned wide column">
-                                <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(entry.change.subscription)]}">
+                                <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(entry.subscription._getCalculatedPrevious()), targetObjectId: genericOIDService.getOID(entry.subscription)]}">
                                     <g:message code="myinst.copyMyElements"/>
                                 </g:link>
                             </div>
                         </g:if>
                     </td>
                     <td>
-                        <div class="ui buttons">
-                            <g:link class="ui positive button" controller="pendingChange" action="accept" id="${entry.change.id}"><g:message code="default.button.accept.label"/></g:link>
-                            <g:link class="ui negative button" controller="pendingChange" action="reject" id="${entry.change.id}"><g:message code="default.button.reject.label"/></g:link>
-                        </div>
+                        <g:if test="${entry.changeId && entry.subPkg}">
+                            <div class="ui buttons">
+                                <g:link class="ui positive button" controller="pendingChange" action="accept" id="${entry.changeId}" params="[subId: entry.subPkg.subscription.id]"><g:message code="default.button.accept.label"/></g:link>
+                                <div class="or" data-text="${message(code:'default.or')}"></div>
+                                <g:link class="ui negative button" controller="pendingChange" action="reject" id="${entry.changeId}" params="[subId: entry.subPkg.subscription.id]"><g:message code="default.button.reject.label"/></g:link>
+                            </div>
+                        </g:if>
+                        <g:elseif test="${entry.changeId}">
+                            <div class="ui buttons">
+                                <g:link class="ui positive button" controller="pendingChange" action="accept" id="${entry.changeId}"><g:message code="default.button.accept.label"/></g:link>
+                                <div class="or" data-text="${message(code:'default.or')}"></div>
+                                <g:link class="ui negative button" controller="pendingChange" action="reject" id="${entry.changeId}"><g:message code="default.button.reject.label"/></g:link>
+                            </div>
+                        </g:elseif>
                     </td>
                 </tr>
 

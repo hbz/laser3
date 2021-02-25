@@ -39,6 +39,11 @@
                 Die in Schritt 2 erzeugte Visualisierung ist interaktiv und bietet Zugriff auf weitere Informationen.
             </p>
         </div>
+
+       %{-- <g:if test="${filterHistory}">
+            ${filterHistory}
+        </g:if> --}%
+
         <h3 class="ui header">1. Suchanfrage</h3>
 
         <g:set var="hidden" value="hidden" />
@@ -88,11 +93,7 @@
             <div id="chart-details"></div>
 
             <style>
-            #chart-wrapper {
-                height: 450px;
-                width: 98%;
-                margin: 1em auto;
-            }
+                #chart-wrapper { height: 400px; width: 98%; margin: 1em auto; }
             </style>
 
         </g:if>
@@ -148,6 +149,7 @@
                     .done( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
+                        $('#chart-wrapper').css('height', 350 + (13 * JSPC.app.reporting.current.chart.details.length) + 'px');
 
                         var echart = echarts.init($('#chart-wrapper')[0]);
                         echart.setOption( JSPC.app.reporting.current.chart.option );
@@ -172,7 +174,6 @@
                             }
                             if (! valid) {
                                 alert('[msg:2] - Keine Details verfügbar');
-                            } else {
                             }
                         });
                         echart.on( 'legendselectchanged', function (params) {

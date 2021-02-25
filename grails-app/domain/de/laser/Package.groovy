@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.exceptions.CreationException
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.oap.OrgAccessPointLink
@@ -656,5 +656,42 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
             result = this.tipps?.findAll{it?.status?.id == RDStore.TIPP_STATUS_CURRENT.id}
         }
         result
+    }
+
+    @Transient
+    void addPendingChangeConfiguration(Subscription subscription, GrailsParameterMap grailsParameterMap) {
+
+        SubscriptionPackage subscriptionPackage = SubscriptionPackage.findBySubscriptionAndPkg(subscription, this)
+        if(subscriptionPackage) {
+            PendingChangeConfiguration.SETTING_KEYS.each { String settingKey ->
+                Map<String, Object> configMap = [subscriptionPackage: subscriptionPackage, settingKey: settingKey, withNotification: false]
+                boolean auditable = false
+                //Set because we have up to three keys in params with the settingKey
+                Set<String> keySettings = grailsParameterMap.keySet().findAll { k -> k.contains(settingKey) }
+                keySettings.each { key ->
+                    List<String> settingData = key.split('!§!')
+                    switch (settingData[1]) {
+                        case 'setting': configMap.settingValue = RefdataValue.get(grailsParameterMap[key])
+                            break
+                        case 'notification': configMap.withNotification = grailsParameterMap[key] != null
+                            break
+                        case 'auditable': auditable = grailsParameterMap[key] != null
+                            break
+                    }
+                }
+                try {
+                    PendingChangeConfiguration.construct(configMap)
+                    boolean hasConfig = AuditConfig.getConfig(subscriptionPackage.subscription, settingKey) != null
+                    if (auditable && !hasConfig) {
+                        AuditConfig.addConfig(subscriptionPackage.subscription, settingKey)
+                    } else if (!auditable && hasConfig) {
+                        AuditConfig.removeConfig(subscriptionPackage.subscription, settingKey)
+                    }
+                }
+                catch (CreationException e) {
+                    log.error("ProcessLinkPackage -> PendingChangeConfiguration: " + e.message)
+                }
+            }
+        }
     }
 }

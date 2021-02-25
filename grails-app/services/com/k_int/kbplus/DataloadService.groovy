@@ -11,10 +11,12 @@ import de.laser.Org
 import de.laser.OrgRole
 import de.laser.Package
 import de.laser.Platform
+import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.SurveyConfig
 import de.laser.SurveyOrg
 import de.laser.TitleInstancePackagePlatform
+import de.laser.helper.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.properties.SubscriptionProperty
 import de.laser.system.SystemEvent
@@ -197,10 +199,16 @@ class DataloadService {
                     result.rectype = tipp.getClass().getSimpleName()
 
                     result.sortName = tipp.sortName
-                    result.normName = tipp.normName
 
                     result.medium = tipp.medium?.getMapForES()
-                    result.titleType = tipp.titleType
+                    RefdataValue titleType = RefdataValue.getByValueAndCategory(tipp.titleType, RDConstants.TITLE_MEDIUM)
+                    result.type = titleType ? titleType.getMapForES() : []
+
+                    Org publishers = tipp.getPublishers()
+                    result.publisher = []
+                    if(publishers) {
+                        result.identifiers.add([id: publishers[0].id, name: publishers[0].name])
+                    }
 
                     result.identifiers = []
                     tipp.ids.each { Identifier ident ->
@@ -1190,7 +1198,7 @@ class DataloadService {
                     SystemEvent.createEvent('YODA_ES_RESET_CREATE_OK')
                     log.debug("Create ES index completed OK")
                     FTControl.withTransaction {
-                        FTControl.executeUpdate("update FTControl set dbElements=0, esElements=0, lastTimestamp=0, dateCreated='${new Date()}', lastUpdated='${new Date()}'")
+                        FTControl.executeUpdate("update FTControl set dbElements = :value, esElements = :value, lastTimestamp = :value, dateCreated = :dateValue, lastUpdated = :dateValue", [value: 0, dateValue: new Date()])
                     }
                     log.debug("Delete all existing FT Control entries");
                     log.debug("Do updateFTIndexes");

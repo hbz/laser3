@@ -460,8 +460,8 @@ class PendingChangeService extends AbstractLockableService {
         List query1Clauses = [], query2Clauses = []
         String query1 = "select pc from PendingChange pc where pc.owner = :contextOrg and pc.status in (:status) and (pc.msgToken = :newSubscription or pc.costItem != null)",
         query2 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'pkg\' from PendingChange pc join pc.pkg pkg where pkg in (:packages) and pc.oid = null',
-        query3 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'tipp.pkg\' from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = null',
-        query4 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'tippCoverage.tipp.pkg\' from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = null',
+        query3 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'tipp.pkg\'  from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = null',
+        query4 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'tippCoverage.tipp.pkg\'  from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = null',
         query5 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'priceItem.tipp.pkg\' from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = null'
         Map<String,Object> query1Params = [contextOrg:configMap.contextOrg, status:[RDStore.PENDING_CHANGE_PENDING,RDStore.PENDING_CHANGE_ACCEPTED], newSubscription: "pendingChange.message_SU_NEW_01"],
         query2Params = [packages:subscribedPackages]
@@ -502,8 +502,12 @@ class PendingChangeService extends AbstractLockableService {
                     Object[] args = [row[2]]
                     Map<String,Object> eventRow = [subPkg:sp,eventString:messageSource.getMessage(row[0],args,locale)]
                     if(setting == "prompt") {
-                        if(!PendingChange.executeQuery('select pc.id from PendingChange pc where pc.'+row[3]+' = :package and pc.oid = :oid and pc.status = :accepted',[package:sp.pkg,oid:genericOIDService.getOID(sp.subscription),accepted:RDStore.PENDING_CHANGE_ACCEPTED]))
+                        PendingChange pendingChange1 = PendingChange.executeQuery('select pc.id from PendingChange pc where pc.'+row[3]+' = :package and pc.oid = :oid and pc.status != :accepted',[package:sp.pkg,oid:genericOIDService.getOID(sp.subscription),accepted:RDStore.PENDING_CHANGE_ACCEPTED])
+
+                        if(!PendingChange.executeQuery('select pc.id from PendingChange pc where pc.'+row[3]+' = :package and pc.oid = :oid and pc.status = :accepted',[package:sp.pkg,oid:genericOIDService.getOID(sp.subscription),accepted:RDStore.PENDING_CHANGE_ACCEPTED])){
+                            eventRow.changeId = pendingChange1[0] ?: null
                             pending << eventRow
+                        }
                     }
                     else if(setting == "notify") {
                         notifications << eventRow
