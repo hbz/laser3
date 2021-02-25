@@ -390,8 +390,7 @@ class TaskService {
                     lic_org:    contextOrg,
                     org_roles:  [
                             RDStore.OR_LICENSEE.id,
-                            RDStore.OR_LICENSEE_CONS.id,
-                            RDStore.OR_LICENSEE_COLL.id
+                            RDStore.OR_LICENSEE_CONS.id
                     ]
                 ]
                 validLicensesOhneInstanceOf = License.executeQuery(licensesQueryOhneInstanceOf, qry_params_for_lic)

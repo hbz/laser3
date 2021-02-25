@@ -205,17 +205,13 @@ class ControlledListService {
 
             switch (params.ltype) {
                 case CalculatedType.TYPE_PARTICIPATION:
-                    if (s._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_PARTICIPATION_AS_COLLECTIVE]){
+                    if (s._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION]){
                         if(org.id == s.getConsortia().id)
                             result.results.add([name:s.dropdownNamingConvention(org), value:genericOIDService.getOID(s)])
                     }
                     break
                 case CalculatedType.TYPE_CONSORTIAL:
                     if (s._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
-                        result.results.add([name:s.dropdownNamingConvention(org), value:genericOIDService.getOID(s)])
-                    break
-                case CalculatedType.TYPE_COLLECTIVE:
-                    if (s._getCalculatedType() == CalculatedType.TYPE_COLLECTIVE)
                         result.results.add([name:s.dropdownNamingConvention(org), value:genericOIDService.getOID(s)])
                     break
                 default:
@@ -239,7 +235,7 @@ class ControlledListService {
         LinkedHashMap issueEntitlements = [results:[]]
         //build up set of subscriptions which are owned by the current organisation or instances of such - or filter for a given subscription
         String filter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
-        LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIPTION_COLLECTIVE,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE], current:RDStore.SUBSCRIPTION_CURRENT]
+        LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
         if(params.sub) {
             filter = '= :sub'
             filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
@@ -282,7 +278,7 @@ class ControlledListService {
         LinkedHashMap issueEntitlementGroup = [results:[]]
         //build up set of subscriptions which are owned by the current organisation or instances of such - or filter for a given subscription
         String filter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
-        LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIPTION_COLLECTIVE,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE], current:RDStore.SUBSCRIPTION_CURRENT]
+        LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
         if(params.sub) {
             filter = '= :sub'
             filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
@@ -355,7 +351,7 @@ class ControlledListService {
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
         String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles )'
-        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIPTION_COLLECTIVE,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_COLLECTIVE,RDStore.OR_SUBSCRIBER]]
+        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
         //may be generalised later - here it is where to expand the query filter
         if(params.query && params.query.length() > 0) {
             filter.put("query",params.query)

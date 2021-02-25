@@ -214,7 +214,7 @@ class ApiOAMonitor {
 
             Collection<CostItem> filtered = []
 
-            if (sub._getCalculatedType() in [Subscription.TYPE_PARTICIPATION, Subscription.TYPE_PARTICIPATION_AS_COLLECTIVE]) {
+            if (sub._getCalculatedType() in [Subscription.TYPE_PARTICIPATION]) {
                 List<Org> validOwners = getAccessibleOrgs()
                 List<Org> subSubscribers = sub.getAllSubscribers()
                 //filtered = sub.costItems.findAll{ it.owner in validOwners && it.owner in subSubscribers }

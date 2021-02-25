@@ -119,7 +119,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                       ]
 
     static transients = [
-            'nameConcatenated', 'isSlavedAsString', 'provider', 'collective', 'multiYearSubscription',
+            'nameConcatenated', 'isSlavedAsString', 'provider', 'multiYearSubscription',
             'currentMultiYearSubscription', 'currentMultiYearSubscriptionNew', 'renewalDate',
             'commaSeperatedPackagesIsilList', 'calculatedPropDefGroups', 'allocationTerm',
             'subscriber', 'providers', 'agencies', 'consortia'
@@ -247,7 +247,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     @Override
     boolean showUIShareButton() {
-        _getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_COLLECTIVE]
+        _getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL]
     }
 
     @Override
@@ -405,7 +405,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     List<Org> getAllSubscribers() {
         List<Org> result = []
         orgRelations.each { OrgRole or ->
-            if ( or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_COLLECTIVE] )
+            if ( or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN] )
                 result.add(or.org)
             }
         result

@@ -790,7 +790,7 @@ class OrganisationController  {
                     result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
                 }
             } else if (isComboRelated) {
-                log.debug('settings for combo related org: consortia or collective')
+                log.debug('settings for combo related org: consortia')
                 result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.institution, [sort: 'platform'])
             }
         }

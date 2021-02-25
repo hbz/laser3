@@ -34,7 +34,7 @@
                             ${message(code: 'myinst.currentSubscriptions.subscription_type', default: RDConstants.SUBSCRIPTION_TYPE)}
                         </th>
                         */ %>
-                        <g:if test="${params.orgRole in ['Subscriber', 'Subscription Collective'] && accessService.checkPerm("ORG_BASIC_MEMBER")}">
+                        <g:if test="${params.orgRole in ['Subscriber'] && accessService.checkPerm("ORG_BASIC_MEMBER")}">
                             <th scope="col" rowspan="2" >${message(code: 'consortium')}</th>
                         </g:if>
                         <g:elseif test="${params.orgRole == 'Subscriber'}">
@@ -48,7 +48,7 @@
                         </g:if>
                         --%>
                         <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label')}"/>
-                        <g:if test="${params.orgRole in ['Subscription Consortia','Subscription Collective']}">
+                        <g:if test="${params.orgRole in ['Subscription Consortia']}">
                             <th scope="col" rowspan="2">
                                 <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
                                     <i class="users large icon"></i>

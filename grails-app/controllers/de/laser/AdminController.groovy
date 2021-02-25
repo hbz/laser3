@@ -1299,6 +1299,8 @@ class AdminController  {
 
             if (osObj != OrgSetting.SETTING_NOT_FOUND) {
                 OrgSetting oss = (OrgSetting) osObj
+
+                /*
                 // ERMS-1615
                 if (oss.roleValue.authority in ['ORG_INST', 'ORG_BASIC_MEMBER'] && customerType.authority == 'ORG_INST_COLLECTIVE') {
                     log.debug('changing ' + oss.roleValue.authority + ' to ' + customerType.authority)
@@ -1326,10 +1328,8 @@ class AdminController  {
                             role.sub.save()
                         }
                     }
-                    /*
-                      todo: IGNORED for 0.20
+                    // todo: IGNORED for 0.20
 
-                    }*/
                     conSubscriberRoles.each { role ->
                         if (role.sub._getCalculatedType() == Subscription.TYPE_PARTICIPATION) {
                             OrgRole newRole = new OrgRole(
@@ -1345,6 +1345,8 @@ class AdminController  {
                         }
                     }
                 }
+                */
+
                 oss.roleValue = customerType
                 oss.save()
 

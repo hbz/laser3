@@ -1250,12 +1250,12 @@ join sub.orgRelations or_sub where
 
         idsCategory1 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
                 org: contextService.getOrg(), roleTypes: [
-                RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_COLLECTIVE
+                RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS
         ]
         ])
         idsCategory2 = OrgRole.executeQuery("select distinct (sub.id) from OrgRole where org=:org and roleType in (:roleTypes)", [
                 org: contextService.getOrg(), roleTypes: [
-                RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIPTION_COLLECTIVE
+                RDStore.OR_SUBSCRIPTION_CONSORTIA
         ]
         ])
 
