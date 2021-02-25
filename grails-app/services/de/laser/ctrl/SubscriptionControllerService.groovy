@@ -1812,7 +1812,7 @@ class SubscriptionControllerService {
                         String serial
                         String electronicSerial
                         String checked = ""
-                        if (tipp.titleType.contains('Book')) {
+                        if (tipp.titleType == 'Book') {
                             serial = tipp.getIdentifierValue('pISBN')
                             electronicSerial = tipp.getIdentifierValue('ISBN')
                         } else if (tipp.titleType == "Journal") {
