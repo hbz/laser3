@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+----    26.02.2021  rc2.0   2.0         Moe     Bug         Umfrage Bemerkung wird nicht gespeichert
+
+----    26.02.2021  rc2.0   2.0         Moe     Bug         Vertrag kopieren
+
+3163    26.02.2021  rc2.0   2.0         Moe     Bug         Fehlermeldung auf Dashboard nach Anmeldung
+
 3150    24.02.2021  rc2.0   2.0         Moe     Bug         Filter Bestand nach Fachbereich
 
 3148    24.02.2021  rc2.0   2.0         Moe     Bug         Änderungen uuups
