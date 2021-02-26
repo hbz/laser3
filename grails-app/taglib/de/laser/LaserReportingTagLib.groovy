@@ -31,7 +31,11 @@ class LaserReportingTagLib {
             '14' : 'fourteen'
         ]
         String n = attrs.number
-        if (n && map.containsKey(n)) {
+
+        if (attrs.min) {
+            n = Integer.max(attrs.min as int, attrs.number as int).toString()
+        }
+        if (map.containsKey(n)) {
             out << map.get(n)
         }
         else {

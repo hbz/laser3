@@ -28,12 +28,16 @@ class GenericQuery {
         List<String> meta = []
 
         config.each {it ->
-            if (it.value.containsKey('query')) {
-                it.value.get('query').each { it2 ->
-                    println it2
-                    if (it2.value.containsKey(params.query)) {
-                        meta = [ it2.key, it2.value.get(params.query), params.label ]
-                    }
+            it.value.get('query')?.each { it2 ->
+                //println it2
+                if (it2.value.containsKey(params.query)) {
+                    meta = [ it2.key, it2.value.get(params.query), params.label ]
+                }
+            }
+            it.value.get('query2')?.each { it2 ->
+                //println it2
+                if (it2.value.containsKey(params.query)) {
+                    meta = [ it2.key, it2.value.get(params.query), params.label ]
                 }
             }
         }

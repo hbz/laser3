@@ -1,7 +1,10 @@
 package de.laser.reporting
 
+import de.laser.ContextService
 import de.laser.Org
 import de.laser.RefdataValue
+import de.laser.properties.PropertyDefinition
+import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 
 class SubscriptionQuery extends GenericQuery {
@@ -9,6 +12,8 @@ class SubscriptionQuery extends GenericQuery {
     static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
 
     static Map<String, Object> query(GrailsParameterMap params) {
+
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
         Map<String, Object> result = [
                 chart    : params.chart,
@@ -52,6 +57,26 @@ class SubscriptionQuery extends GenericQuery {
                         idList: Org.executeQuery(
                                 'select s.id from Subscription s join s.orgRelations orgRel join orgRel.org o where s.id in (:idList) and o.id = :d order by s.name',
                                 [idList: idList, d: d[0]]
+                        )
+                ])
+            }
+        }
+        else if ( params.query in ['subscription-property-assignment']) {
+
+            result.data = Org.executeQuery(
+                    'select pd.id, pd.name, count(*) from Subscription sub join sub.propertySet sp join sp.type pd where sub.id in (:idList) and (sp.owner = :ctxOrg or sp.isPublic = true) group by pd.id order by pd.name',
+                    [idList: idList, ctxOrg: contextService.getOrg()]
+            )
+            result.data.each { d ->
+                d[1] = PropertyDefinition.get(d[0]).getI10n('name')
+
+                result.dataDetails.add([
+                        query : params.query,
+                        id    : d[0],
+                        label : d[1],
+                        idList: Org.executeQuery(
+                                'select sub.id from Subscription sub join sub.propertySet sp join sp.type pd where sub.id in (:idList) and (sp.owner = :ctxOrg or sp.isPublic = true) and pd.id = :d order by pd.name',
+                                [idList: idList, d: d[0], ctxOrg: contextService.getOrg()]
                         )
                 ])
             }

@@ -310,6 +310,7 @@
                             <div class="menu" role="menu">
 
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="index">Dashboard</semui:link>
+                                <semui:link generateElementId="true" class="item" role="menuitem" controller="myInstitution" action="dashboard" onclick="return confirm('TEST')">TEST JS CONFIRM</semui:link>
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     <i class="ui icon keyboard outline"></i>${message(code:'menu.yoda.engine')}
@@ -368,10 +369,10 @@
                                     <div class="menu" role="menu">
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">${message(code:'menu.yoda.updateESIndex')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageESSources" >Manage ES Source</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageFTControl" >Manage FTControl</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageESSources">Manage ES Source</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageFTControl">Manage FTControl</semui:link>
                                         <div class="divider"></div>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="killDataloadService" >Kill ES Update Index</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="killDataloadService">Kill ES Update Index</semui:link>
                                     </div>
                                 </div>
 
