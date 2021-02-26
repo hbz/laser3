@@ -39,12 +39,17 @@ class SubscriptionConfig extends GenericConfig {
                             ]
                     ],
                     query : [
-                            'Verteilung' : [
+                            'Lizenz' : [
                                     'subscription-form'         : 'Lizenzform',
                                     'subscription-kind'         : 'Lizenztyp',
                                     'subscription-resource'     : 'Ressourcentyp',
-                                    'subscription-status'       : 'Lizenzstatus',
-                                    'subscription-provider-assignment' : 'Nach Anbieter'
+                                    'subscription-status'       : 'Lizenzstatus'
+                            ]
+                    ],
+                    query2 : [
+                            'Verteilung' : [
+                                    'subscription-provider-assignment' : 'Lizenz nach Anbieter',
+                                    'subscription-property-assignment' : 'Lizenz nach Merkmal (eigene/öffentliche)'
                             ]
                     ]
             ],

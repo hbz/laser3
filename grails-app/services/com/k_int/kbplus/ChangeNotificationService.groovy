@@ -322,6 +322,7 @@ class ChangeNotificationService extends AbstractLockableService {
     }
 
     def determinePendingChangeBehavior(Map<String,Object> args, String msgToken, SubscriptionPackage subscriptionPackage) {
+        println("determinePendingChangeBehavior")
         /*
             decision tree:
             is there a configuration map directly for the subscription?

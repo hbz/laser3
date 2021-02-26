@@ -126,13 +126,19 @@
             </div>
 
             <div class="field">
-                <label for="publisher">${message(code: 'tipp.publisher')}
+                <label for="publishers">${message(code: 'tipp.publisher')}
                 </label>
-                <g:select name="publisher" id="publisher"
-                          from="${publishers}"
-                          class="ui fluid search selection dropdown"
-                          value="${params.publisher}"
-                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                <select name="publishers" id="publishers" multiple=""
+                        class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <g:each in="${publishers}"
+                            var="publisher">
+                        <option <%=(params.list('publishers')?.contains(publisher)) ? 'selected="selected"' : ''%>
+                                value="${publisher}">
+                            ${publisher}
+                        </option>
+                    </g:each>
+                </select>
             </div>
 
         </div>
@@ -142,11 +148,18 @@
             <div class="field">
                 <label for="yearsFirstOnline">${message(code: 'tipp.YearFirstOnline')}
                 </label>
-                <g:select name="yearsFirstOnline" id="yearsFirstOnline"
-                          from="${yearsFirstOnline}"
-                          class="ui fluid search selection dropdown"
-                          value="${params.yearsFirstOnline}"
-                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                <select name="yearsFirstOnline" id="yearsFirstOnline" multiple=""
+                        class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <g:each in="${yearsFirstOnline}"
+                            var="yearFirstOnline">
+                        <option <%=(params.list('yearsFirstOnline')?.contains(yearFirstOnline.toString())) ? 'selected="selected"' : ''%>
+                                value="${yearFirstOnline}">
+                            ${yearFirstOnline}
+                        </option>
+                    </g:each>
+                </select>
+
             </div>
 
             <div class="field la-field-right-aligned">
