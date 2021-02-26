@@ -1671,7 +1671,9 @@ class SurveyController {
             IssueEntitlementGroup issueEntitlementGroup
             if (params.issueEntitlementGroupNew) {
 
-                issueEntitlementGroup = IssueEntitlementGroup.findBySubAndName(participantSub, params.issueEntitlementGroupNew) ?: new IssueEntitlementGroup(sub: participantSub, name: params.issueEntitlementGroupNew).save()
+                IssueEntitlementGroup.withTransaction {
+                    issueEntitlementGroup = IssueEntitlementGroup.findBySubAndName(participantSub, params.issueEntitlementGroupNew) ?: new IssueEntitlementGroup(sub: participantSub, name: params.issueEntitlementGroupNew).save()
+                }
             }
 
 
@@ -2568,9 +2570,10 @@ class SurveyController {
         }
 
         result.surveyConfig.comment = params.comment
-
-        if (!result.surveyConfig.save()) {
-            flash.error = g.message(code: 'default.save.error.general.message')
+        SurveyConfig.withTransaction {
+            if (!result.surveyConfig.save()) {
+                flash.error = g.message(code: 'default.save.error.general.message')
+            }
         }
 
         redirect(url: request.getHeader('referer'))
