@@ -45,7 +45,7 @@ class OrganisationConfig extends GenericConfig {
                             ]
                     ],
                     query : [
-                            'Verteilung' : [
+                            'Organisation' : [
                                     'org-orgType'           : 'Organisationstyp',
                                     'org-customerType'      : 'Kundentyp',
                                     'org-libraryType'       : 'Bibliothekstyp',

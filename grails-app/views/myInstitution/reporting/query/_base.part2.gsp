@@ -1,11 +1,28 @@
 <div class="ui segment form">
-    <div class="fields <laser:numberToString number="${2 + cfgQueryList.size()}"/>">
+    <div class="fields <laser:numberToString number="${cfgQueryList.size() > 1 ? cfgQueryList.size() : 2}"/>">
         <g:each in="${cfgQueryList}" var="cfgQuery" status="qci">
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
-                    <label for="query-chooser-${qci}">${field.key}</label>
+                    <label for="query-chooser-1-${qci}">${field.key}</label>
                     <g:select name="query-chooser"
-                              id="query-chooser-${qci}"
+                              id="query-chooser-1-${qci}"
+                              from="${field.value}"
+                              optionKey="key"
+                              optionValue="value"
+                              class="ui selection dropdown la-not-clearable"
+                              noSelection="${['': message(code: 'default.select.choose.label')]}" />
+                </div>
+            </g:each>
+        </g:each>
+    </div>
+
+    <div class="fields <laser:numberToString number="${2 + cfgQuery2List.size()}"/>">
+        <g:each in="${cfgQuery2List}" var="cfgQuery" status="qci">
+            <g:each in="${cfgQuery}" var="field">
+                <div class="field">
+                    <label for="query-chooser-2-${qci}">${field.key}</label>
+                    <g:select name="query-chooser"
+                              id="query-chooser-2-${qci}"
                               from="${field.value}"
                               optionKey="key"
                               optionValue="value"
