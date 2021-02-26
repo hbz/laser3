@@ -255,7 +255,7 @@
                                         <div class="sixteen wide column">
                                             <i class="icon clipboard outline outline la-list-icon"></i>
                                             <g:link controller="subscription" action="index"
-                                                    id="${ie.subscription.id}">${ie.subscription.name}</g:link>
+                                                    id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(institution)}</g:link>
                                             &nbsp;
                                             <br/>
                                             <g:link controller="issueEntitlement" action="show"
