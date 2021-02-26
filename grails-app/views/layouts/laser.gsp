@@ -143,9 +143,7 @@
                                 <div class="divider"></div>
                                 <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="users" message="menu.institutions.users" />
 
-                                <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                    <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
-                                </sec:ifAnyGranted>
+                                <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
 
                                 <sec:ifAnyGranted roles="ROLE_YODA">
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</semui:link>
@@ -310,6 +308,7 @@
                             <div class="menu" role="menu">
 
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="index">Dashboard</semui:link>
+                                <semui:link generateElementId="true" class="item" role="menuitem" controller="myInstitution" action="dashboard" onclick="return confirm('TEST')">TEST JS CONFIRM</semui:link>
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     <i class="ui icon keyboard outline"></i>${message(code:'menu.yoda.engine')}
@@ -366,12 +365,13 @@
                                     ElasticSearch
                                     <i  class="dropdown icon"></i>
                                     <div class="menu" role="menu">
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">${message(code:'menu.yoda.updateESIndex')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageESSources" >Manage ES Source</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageFTControl" >Manage FTControl</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageESSources">Manage ES Source</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageFTControl">Manage FTControl</semui:link>
                                         <div class="divider"></div>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="killDataloadService" >Kill ES Update Index</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</semui:link>
+                                        <div class="divider"></div>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="killDataloadService">Kill ES Update Index</semui:link>
                                     </div>
                                 </div>
 
@@ -591,7 +591,7 @@
 
             <g:set var="systemMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)}" />
             <g:if test="${systemMessages}">
-                <div class="ui segment center aligned orange">
+                <div class="ui segment center aligned inverted orange">
                     <strong>SYSTEMMELDUNG</strong>
 
                     <g:each in="${systemMessages}" var="message">

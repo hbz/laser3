@@ -315,18 +315,17 @@ class SemanticUiNavigationTagLib {
 
     def link = { attrs, body ->
 
+        Map<Object, Object> filteredAttrs = attrs.findAll{ it ->
+            ! (it.key in ['generateElementId', 'class'])
+        }
+        String css = attrs.class ? (attrs.class != 'item' ? attrs.class + ' item' : attrs.class) : 'item'
+        filteredAttrs.put('class', css)
+
         if (attrs.generateElementId) {
-            attrs.elementId = generateElementId(attrs)
+            filteredAttrs.put('elementId', generateElementId(attrs))
         }
 
-        out << g.link(body,
-                controller: attrs.controller,
-                action: attrs.action,
-                params: attrs.params,
-                class: 'item' + (attrs.class ? " ${attrs.class}" : ''),
-                elementId: attrs.elementId,
-                role: attrs.role
-        )
+        out << g.link(filteredAttrs, body)
     }
 
     private String generateElementId(Map<String, Object> attrs) {

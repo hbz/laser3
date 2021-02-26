@@ -93,15 +93,15 @@ class PackageController {
         - year (combination of dateFirstPrint and dateFirstOnline)
          */
 
-        String sort = params.sort ? "&sort="+params.sort: "&sort=sortname"
-        String order = params.order ? "&order="+params.order: "&order=asc"
+        String sort = params.sort ? "&sort=" + params.sort : "&sort=sortname"
+        String order = params.order ? "&order=" + params.order : "&order=asc"
         String max = params.max ? "&max=${params.max}" : "&max=${result.max}"
         String offset = params.offset ? "&offset=${params.offset}" : "&offset=${result.offset}"
 
         Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups')
         if (queryCuratoryGroups.warning) {
             List recordsCuratoryGroups = queryCuratoryGroups.warning.result
-            result.curatoryGroups = recordsCuratoryGroups?.findAll {it.status == "Current"}
+            result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
         }
 
 
@@ -449,13 +449,13 @@ class PackageController {
 
         List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.query, query.queryParams)
 
-        String filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.current'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
+        String filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
 
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String,List> tableData = exportService.generateTitleExportKBART(titlesList)
+            Map<String, List> tableData = exportService.generateTitleExportKBART(titlesList)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -464,7 +464,7 @@ class PackageController {
         } else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportXLS(titlesList)
+            Map<String, List> export = exportService.generateTitleExportXLS(titlesList)
             Map sheetData = [:]
             sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -567,14 +567,13 @@ class PackageController {
         String filename
         if (func == "planned") {
             params.status = RDStore.TIPP_STATUS_EXPECTED.id
-            filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.planned'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
-        } else if (func == "expired"){
+            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.planned'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
+        } else if (func == "expired") {
             params.status = RDStore.TIPP_STATUS_RETIRED.id
-            filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.expired'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
-        }
-        else if (func == "deleted"){
+            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.expired'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
+        } else if (func == "deleted") {
             params.status = RDStore.TIPP_STATUS_DELETED.id
-            filename = "${escapeService.escapeString(packageInstance.name+'_'+message(code: 'package.show.nav.deleted'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
+            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.deleted'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
         }
 
         Map<String, Object> query = filterService.getTippQuery(params, [packageInstance])
@@ -587,7 +586,7 @@ class PackageController {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String,List> tableData = exportService.generateTitleExportKBART(titlesList)
+            Map<String, List> tableData = exportService.generateTitleExportKBART(titlesList)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -596,7 +595,7 @@ class PackageController {
         } else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportXLS(titlesList)
+            Map<String, List> export = exportService.generateTitleExportXLS(titlesList)
             Map sheetData = [:]
             sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -627,6 +626,49 @@ class PackageController {
                 out.close()
             }
         }
+    }
+
+    @Secured(['ROLE_USER'])
+    def tippChanges() {
+        Map<String, Object> result = [:]
+
+        result.user = contextService.getUser()
+        Package packageInstance = Package.get(params.id)
+        if (!packageInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
+            redirect action: 'index'
+            return
+        }
+
+        result.packageInstance = packageInstance
+
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
+        result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
+        result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
+        result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
+        result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
+
+        Set<Long> packageHistory = []
+
+        String query1 = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :pkg and pc.oid = null and pc.status = :history ',
+               query2 = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :pkg and pc.oid = null and pc.status = :history ',
+               query3 = 'select pc.id from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg = :pkg and pc.oid = null and pc.status = :history '
+
+        packageHistory.addAll(PendingChange.executeQuery(query1, [pkg: packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
+        packageHistory.addAll(PendingChange.executeQuery(query2, [pkg: packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
+        packageHistory.addAll(PendingChange.executeQuery(query3, [pkg: packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
+
+        params.sort = params.sort ?: 'ts'
+        params.order = params.order ?: 'desc'
+
+        List changes = packageHistory ? PendingChange.findAllByIdInList(packageHistory, params) : []
+        result.countPendingChanges = changes.size()
+
+        result.num_change_rows = changes.size()
+        result.changes = changes.drop(result.offset).take(result.max)
+
+        result
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -776,7 +818,7 @@ class PackageController {
         result.pkg = Package.get(params.id)
         result.subscription = genericOIDService.resolveOID(params.targetObjectId)
 
-        if(result.subscription) {
+        if (result.subscription) {
             Locale locale = LocaleContextHolder.getLocale()
             Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
             Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
@@ -840,7 +882,7 @@ class PackageController {
                     return
                     break
             }
-        }else {
+        } else {
             flash.error = message(code: 'package.show.linkToSub.noSubSelection')
             redirect controller: 'package', action: 'show', params: [id: params.id]
             return

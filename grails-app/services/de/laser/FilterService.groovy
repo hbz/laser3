@@ -1139,9 +1139,9 @@ class FilterService {
             filterSet = true
         }
 
-        if (params.publisher) {
-            base_qry += "and exists (select orgRole from OrgRole orgRole where orgRole.tipp = ie.tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name like :publisher) "
-            qry_params.publisher = "%${params.publisher}%"
+        if (params.publishers) {
+            base_qry += "and exists (select orgRole from OrgRole orgRole where orgRole.tipp = ie.tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) "
+            qry_params.publishers = params.list('publishers').collect {it }
             filterSet = true
         }
 
@@ -1271,15 +1271,20 @@ class FilterService {
             qry_params.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
         }
 
+        if(params.yearsFirstOnline) {
+            base_qry += " and (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
+            qry_params.yearsFirstOnline = params.list('yearsFirstOnline').collect { Integer.parseInt(it) }
+        }
+
         if (params.identifier) {
             base_qry += "and ( exists ( from Identifier ident. where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
             qry_params.identifier = "${params.identifier}"
             filterSet = true
         }
 
-        if (params.publisher) {
-            base_qry += "and exists (select orgRole from OrgRole orgRole where orgRole.tipp = tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name like :publisher) "
-            qry_params.publisher = "%${params.publisher}%"
+        if (params.publishers) {
+            base_qry += "and exists (select orgRole from OrgRole orgRole where orgRole.tipp = tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) "
+            qry_params.publishers = params.list('publishers').collect {it }
             filterSet = true
         }
 
@@ -1301,6 +1306,7 @@ class FilterService {
         result.query = base_qry
         result.queryParams = qry_params
         result.filterSet = filterSet
+
 
         result
 

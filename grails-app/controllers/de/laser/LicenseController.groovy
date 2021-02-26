@@ -788,34 +788,36 @@ class LicenseController {
         if (params.name && !result.targetObject) {
             String lic_name = params.name ?: "Kopie von ${result.sourceObject.reference}"
 
-            Object targetObject = new License(
-                    reference: lic_name,
-                    type: result.sourceObject.type,
-                    status: RDStore.LICENSE_NO_STATUS,
-                    openEnded: result.sourceObject.openEnded)
+            License.withTransaction {
+                Object targetObject = new License(
+                        reference: lic_name,
+                        type: result.sourceObject.type,
+                        status: RDStore.LICENSE_NO_STATUS,
+                        openEnded: result.sourceObject.openEnded)
 
-            //Copy InstanceOf
-            if (params.targetObject?.copylinktoLicense) {
-                targetObject.instanceOf = result.sourceObject.instanceOf ?: null
-            }
-
-
-            if (!targetObject.save()) {
-                log.error("Problem saving subscription ${targetObject.errors}");
-            }else {
-                result.targetObject = targetObject
-                params.targetObjectId = genericOIDService.getOID(targetObject)
-
-                //Copy References
-                result.sourceObject.orgRelations.each { OrgRole or ->
-                    if ((or.org.id == result.contextOrg.id) || (or.roleType.id in [RDStore.OR_LICENSEE.id, RDStore.OR_LICENSEE_CONS.id])) {
-                        OrgRole newOrgRole = new OrgRole()
-                        InvokerHelper.setProperties(newOrgRole, or.properties)
-                        newOrgRole.lic = result.targetObject
-                        newOrgRole.save()
-                    }
+                //Copy InstanceOf
+                if (params.targetObject?.copylinktoLicense) {
+                    targetObject.instanceOf = result.sourceObject.instanceOf ?: null
                 }
 
+
+                if (!targetObject.save()) {
+                    log.error("Problem saving license ${targetObject.errors}");
+                } else {
+                    result.targetObject = targetObject
+                    params.targetObjectId = genericOIDService.getOID(targetObject)
+
+                    //Copy References
+                    result.sourceObject.orgRelations.each { OrgRole or ->
+                        if ((or.org.id == result.contextOrg.id) || (or.roleType.id in [RDStore.OR_LICENSEE.id, RDStore.OR_LICENSEE_CONS.id])) {
+                            OrgRole newOrgRole = new OrgRole()
+                            InvokerHelper.setProperties(newOrgRole, or.properties)
+                            newOrgRole.lic = result.targetObject
+                            newOrgRole.save()
+                        }
+                    }
+
+                }
             }
         }
 

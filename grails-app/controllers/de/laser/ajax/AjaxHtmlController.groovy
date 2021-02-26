@@ -70,65 +70,6 @@ class AjaxHtmlController {
         render view: '/reporting/_displayConfigurations', model: result
     }
 
-    //------------------------------------------------- reporting tool -------------------------------------------------
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def loadThirdLevel() {
-        Map<String,Object> result = [secondLevel:params.secondLevel,institution:contextService.getOrg(),queried:params.queried]
-        switch(result.secondLevel) {
-            case 'orgProperty':
-                result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
-                //rendering the prop list must be done from the other template fragment because of the service injection <-> r <-> accessibility issue conflict
-                break
-            case 'subscription': //move here the ajax loading the subscription cloud
-                break
-            default: log.info("unimplemented second level trigger")
-                break
-        }
-        render view: '/reporting/_selections', model: result
-    }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def getGraphsForGeneral() {
-        def options = JSON.parse(params.requestOptions)
-        Map<String,Object> result = [:], configMap = [institution: contextService.getOrg(),requestParam: options.requestParam]
-        if(options.groupOptions) {
-            def groupOptions = options.groupOptions
-            if(groupOptions.contains(","))
-                configMap.groupOptions = groupOptions.split(",")
-            else
-                configMap.groupOptions = [groupOptions]
-        }
-        if(options.propDef) {
-            configMap.propDef = genericOIDService.resolveOID(options.propDef)
-            result.propDef = configMap.propDef.getI10n("name")
-        }
-        if(configMap.groupOptions)
-            result.growth = reporting_OldService.generateGrowth(configMap)
-        result.requestObject = configMap.requestParam
-        log.debug(result.toMapString())
-        render view: '/reporting/_generalGraphs', model: result
-    }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def getGraphsForSubscription() {
-        Map<String, Object> result = [institution:contextService.getOrg()]
-        def options = JSON.parse(params.requestOptions)
-
-        if (params.costItem) {
-            Subscription entry = (Subscription) genericOIDService.resolveOID(params.subscription)
-            //get cost item groupings
-            result.putAll(reporting_OldService.groupCostItemsBySubscription([institution:result.institution, entry:entry, options:options]))
-            result.entry = entry
-            result.displayConfig = options.displayConfiguration
-        }
-        log.debug(result.toMapString())
-        render view: '/reporting/_subscriptionGraphs', model: result
-    }
-
     //-------------------------------------------------- subscription/show ---------------------------------------------
 
     @Secured(['ROLE_USER'])
@@ -430,7 +371,8 @@ class AjaxHtmlController {
     })
     def chartDetails() {
         Map<String, Object> result = [
-            query: params.query
+            query:  params.query,
+            id:     params.id
         ]
 
         if (params.query) {
