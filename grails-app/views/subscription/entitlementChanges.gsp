@@ -125,7 +125,7 @@
                 </g:if>
                 <g:elseif test ="${entry.targetProperty}">
                     <i class="grey question circle icon la-popup-tooltip la-delay"
-                       data-content="${(message(code: 'tipp.'+entry.targetProperty)}"></i>
+                       data-content="${message(code: 'tipp.'+entry.targetProperty)}"></i>
                 </g:elseif>
 
             </td>
