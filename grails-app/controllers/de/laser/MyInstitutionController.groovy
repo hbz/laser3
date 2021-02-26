@@ -105,7 +105,9 @@ class MyInstitutionController  {
         if (params.filter) {
             result.token  = params.token ?: RandomStringUtils.randomAlphanumeric(16)
             result.filter = params.filter
+
             result.cfgQueryList = [:]
+            result.cfgQuery2List = [:]
 
             if (params.filter == OrganisationConfig.KEY) {
                 result.result = reportingService.filterOrganisation(params)
@@ -118,6 +120,8 @@ class MyInstitutionController  {
                 result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.base.query )
                 result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.member.query )
                 result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.provider.query )
+
+                result.cfgQuery2List.putAll( SubscriptionConfig.CONFIG.base.query2 )
             }
 
             Map<String, Object> filterMap = [ filterMap: [:] ]

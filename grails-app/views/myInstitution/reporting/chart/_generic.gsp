@@ -40,7 +40,11 @@ JSPC.app.reporting.current.chart.option = {
                 <% data.reverse().each{ it -> println "[${it[0]}, '${it[1]}', ${it[2]}]," } %>
         ]
     },
-    grid:  {containLabel: true},
+    grid:  {
+        top: 10,
+        bottom: 10,
+        containLabel: true
+    },
     xAxis: {},
     yAxis: {type: 'category'},
     series: [

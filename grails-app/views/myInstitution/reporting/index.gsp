@@ -93,7 +93,7 @@
             <div id="chart-details"></div>
 
             <style>
-                #chart-wrapper { height: 400px; width: 98%; margin: 1em auto; }
+                #chart-wrapper { height: 400px; width: 98%; margin: 2em auto; }
             </style>
 
         </g:if>
@@ -149,7 +149,7 @@
                     .done( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
-                        $('#chart-wrapper').css('height', 350 + (13 * JSPC.app.reporting.current.chart.details.length) + 'px');
+                        $('#chart-wrapper').css('height', 300 + (13 * JSPC.app.reporting.current.chart.details.length) + 'px');
 
                         var echart = echarts.init($('#chart-wrapper')[0]);
                         echart.setOption( JSPC.app.reporting.current.chart.option );
