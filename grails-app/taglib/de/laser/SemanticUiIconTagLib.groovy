@@ -120,6 +120,10 @@ class SemanticUiIconTagLib {
                 dc = message(code: 'spotlight.ebooktitle')
                 icon = 'tablet alternate'
                 break
+            case 'Other':
+                dc = message(code: 'spotlight.othertitle')
+                icon = 'film'
+                break
         }
 
         out << '<div class="la-inline-flexbox la-popup-tooltip la-delay"'
