@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3162    26.02.2021  rc2.0   2.0         Moe     Bug         Filter auf Paket detailsicht 
+
 ----    26.02.2021  rc2.0   2.0         Moe     Bug         Umfrage Bemerkung wird nicht gespeichert
 
 ----    26.02.2021  rc2.0   2.0         Moe     Bug         Vertrag kopieren
