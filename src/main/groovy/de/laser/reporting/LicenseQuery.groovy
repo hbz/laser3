@@ -44,6 +44,16 @@ class LicenseQuery extends GenericQuery {
 
     static void processSimpleRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
 
+        handleSimpleRefdataQuery(
+                query,
+                PROPERTY_QUERY[0] + 'from License l join l.' + refdata + ' p where l.id in (:idList)' + PROPERTY_QUERY[1],
+                'select l.id from License l join l.' + refdata + ' p where l.id in (:idList) and p.id = :d order by l.reference',
+                'select distinct l.id from License l where l.id in (:idList) and l.'+ refdata + ' is null',
+                idList,
+                result
+        )
+
+        /*
         result.data = Org.executeQuery(
                 PROPERTY_QUERY[0] + 'from License l join l.' + refdata + ' p where l.id in (:idList)' + PROPERTY_QUERY[1], [idList: idList]
         )
@@ -66,5 +76,6 @@ class LicenseQuery extends GenericQuery {
                 idList,
                 result
         )
+        */
     }
 }

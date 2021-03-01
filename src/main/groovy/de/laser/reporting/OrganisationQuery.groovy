@@ -169,6 +169,16 @@ class OrganisationQuery extends GenericQuery {
 
     static void processSimpleRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
 
+        handleSimpleRefdataQuery(
+                query,
+                PROPERTY_QUERY[0] + 'from Org o join o.' + refdata + ' p where o.id in (:idList)' + PROPERTY_QUERY[1],
+                'select o.id from Org o join o.' + refdata + ' p where o.id in (:idList) and p.id = :d order by o.name',
+                'select distinct o.id from Org o where o.id in (:idList) and o.' + refdata + ' is null',
+                idList,
+                result
+        )
+
+        /*
         result.data = Org.executeQuery(
                 PROPERTY_QUERY[0] + 'from Org o join o.' + refdata + ' p where o.id in (:idList)' + PROPERTY_QUERY[1], [idList: idList]
         )
@@ -191,5 +201,6 @@ class OrganisationQuery extends GenericQuery {
                 idList,
                 result
         )
+        */
     }
 }
