@@ -103,7 +103,6 @@ class SubscriptionQuery extends GenericQuery {
                     )
             ])
         }
-
         handleNonMatchingData(
                 query,
                 'select distinct s.id from Subscription s where s.id in (:idList) and s.'+ refdata + ' is null',

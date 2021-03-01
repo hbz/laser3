@@ -3,13 +3,19 @@ package de.laser.reporting
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.auth.Role
+import de.laser.helper.RDStore
+import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.i18n.LocaleContextHolder
 
 class OrganisationQuery extends GenericQuery {
 
     static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
 
     static Map<String, Object> query(GrailsParameterMap params) {
+
+        //def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        //Locale locale = LocaleContextHolder.getLocale()
 
         Map<String, Object> result = [
                 chart    : params.chart,
@@ -27,11 +33,11 @@ class OrganisationQuery extends GenericQuery {
 
             processSimpleRefdataQuery(params.query, 'libraryType', idList, result)
         }
-        else if ( params.query in ['org-region', 'member-region', 'provider-region']) {
+        else if ( params.query in ['org-region', 'member-region', 'provider-region', 'licensor-region']) {
 
             processSimpleRefdataQuery(params.query,'region', idList, result)
         }
-        else if ( params.query in ['provider-country']) {
+        else if ( params.query in ['provider-country', 'licensor-country']) {
 
             processSimpleRefdataQuery(params.query,'country', idList, result)
         }
@@ -47,7 +53,7 @@ class OrganisationQuery extends GenericQuery {
 
             processSimpleRefdataQuery(params.query, 'funderHskType', idList, result)
         }
-        else if ( params.query in ['org-orgType', 'member-orgType', 'provider-orgType']) {
+        else if ( params.query in ['org-orgType', 'member-orgType', 'provider-orgType', 'licensor-orgType']) {
 
             result.data = Org.executeQuery(
                     PROPERTY_QUERY[0] + 'from Org o join o.orgType p where o.id in (:idList)' + PROPERTY_QUERY[1],
@@ -126,6 +132,37 @@ class OrganisationQuery extends GenericQuery {
                     result
             )
         }
+            /*
+        else if ( params.query in ['org-serverAccess-assignment']) {
+
+            result.data = Org.executeQuery(
+                    'select oss.key, oss.rdValue.id, count(*) from Org o, OrgSetting oss where oss.org = o and oss.key in (\'OAMONITOR_SERVER_ACCESS\', \'NATSTAT_SERVER_ACCESS\') and oss.rdValue is not null and o.id in (:idList) group by oss.key, oss.rdValue.id',
+                    [idList: idList]
+            )
+            result.data.each { d ->
+                String id1 = d[0].toString() + '-' + d[1]
+                String id2 = messageSource.getMessage('org.setting.' + d[0].toString(), null, locale) + ': ' + RefdataValue.get(d[1])?.getI10n('value')
+
+                result.dataDetails.add([
+                        query : params.query,
+                        id    : id1,
+                        label : id2,
+                        idList: Org.executeQuery(
+                                'select o.id from Org o, OrgSetting oss where oss.org = o and oss.key = :d and oss.rdValue.id = :rdvId and o.id in (:idList) order by o.name',
+                                [idList: idList, d: d[0], rdvId: d[1]]
+                        )
+                ])
+                d[0] = "'${id1}'"
+                d[1] = id2
+            }
+
+            handleNonMatchingData( // FEHLER ?????
+                    params.query,
+                    'select distinct o.id from Org o where o.id in (:idList) and not exists (select oss from OrgSetting oss where oss.org = o and oss.key in (\'OAMONITOR_SERVER_ACCESS\', \'NATSTAT_SERVER_ACCESS\'))',
+                    idList,
+                    result
+            )
+        } */
 
         result
     }

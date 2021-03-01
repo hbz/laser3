@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3166    01.03.2021  rc2.0   2.0         David   Feature     Reporting: Einstiegspunkt: Verträge
+
+3161    26.02.2021  rc2.0   2.0         David   Feature     Reporting: Zugriff auf Merkmale
+
+3160    26.02.2021  rc2.0   2.0         David   Feature     Reporting: Query-spezifische Detailauswertung
+
+3152    25.02.2021  dev     2.1         David   Feature     "Kollektivnutzer" - Code entfernen
+
 3150    24.02.2021  rc2.0   2.0         Moe     Bug         Filter Bestand nach Fachbereich
 
 3148    24.02.2021  rc2.0   2.0         Moe     Bug         Änderungen uuups

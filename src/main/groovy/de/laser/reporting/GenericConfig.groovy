@@ -27,7 +27,8 @@ class GenericConfig {
     static Map<String, String> FILTER = [
 
             organisation : 'Organisationen',
-            subscription : 'Lizenzen'
+            subscription : 'Lizenzen',
+            license      : 'Verträge'
     ]
 
     static Map<String, String> CHARTS = [
@@ -72,9 +73,9 @@ class GenericConfig {
                     label: 'Erstellt bzw. organisiert durch ..',
                     from: [
                         [id: 0, value_de: 'Keine Einträge'],
-                        [id: 1, value_de: 'Erstellt von / Organisiert durch (beides)'],  // ui icon green check circle
-                        [id: 2, value_de: 'Erstellt von (exklusive)'],          // ui icon grey outline circle
-                        [id: 3, value_de: 'Organisiert durch (exklusive)']      // ui icon red question mark
+                        [id: 1, value_de: 'Erstellt von / Organisiert durch (beides)'], // ui icon green check circle
+                        [id: 2, value_de: 'Erstellt von (exklusive)'],                  // ui icon grey outline circle
+                        [id: 3, value_de: 'Organisiert durch (exklusive)']              // ui icon red question mark
             ]]
         }
     }

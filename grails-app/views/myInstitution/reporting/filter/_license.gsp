@@ -1,0 +1,75 @@
+<%@page import="de.laser.reporting.LicenseConfig;de.laser.ReportingService;de.laser.Org;de.laser.License" %>
+<laser:serviceInjection/>
+
+    <g:form action="reporting" method="POST" class="ui form">
+
+        <div class="menu ui top attached tabular">
+            <a class="active item" data-tab="lic-filter-tab-1">Verträge</a>
+            <a class="item" data-tab="lic-filter-tab-2">Teilnehmer</a>
+            <a class="item" data-tab="lic-filter-tab-3">Lizenzgeber</a>
+        </div><!-- .menu -->
+        <div class="ui bottom attached active tab segment" data-tab="lic-filter-tab-1">
+            <div class="field">
+                <label for="filter:license_source">Auswahl</label>
+                <g:set var="config" value="${LicenseConfig.CONFIG.base}" />
+                <g:select name="filter:license_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:license_source')}" />
+            </div>
+
+            <br /><br />
+
+            <g:each in="${config.filter.default}" var="cfgFilter">
+                <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
+                    <g:each in="${cfgFilter}" var="field">
+                        <laser:reportFilterField config="${config}" field="${field}" />
+                    </g:each>
+                </div>
+            </g:each>
+
+        </div><!-- .first -->
+
+        <div class="ui bottom attached tab segment" data-tab="lic-filter-tab-2">
+            <div class="field">
+                <label for="filter:member_source">Teilnehmerauswahl</label>
+                <g:set var="config" value="${LicenseConfig.CONFIG.member}" />
+                <g:select name="filter:member_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:member_source')}" />
+            </div>
+
+            <br /><br />
+
+            <g:each in="${config.filter.default}" var="cfgFilter">
+                <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
+                    <g:each in="${cfgFilter}" var="field">
+                        <laser:reportFilterField config="${config}" field="${field}" key="member" />
+                    </g:each>
+                </div>
+            </g:each>
+
+        </div><!-- .second -->
+
+        <div class="ui bottom attached tab segment" data-tab="lic-filter-tab-3">
+            <div class="field">
+                <label for="filter:licensor_source">Lizenzgeberauswahl</label>
+                <g:set var="config" value="${LicenseConfig.CONFIG.licensor}" />
+                <g:select name="filter:licensor_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:licensor_source')}" />
+            </div>
+
+            <br /><br />
+
+            <g:each in="${config.filter.default}" var="cfgFilter">
+                <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
+                    <g:each in="${cfgFilter}" var="field">
+                        <laser:reportFilterField config="${config}" field="${field}" key="licensor" />
+                    </g:each>
+                </div>
+            </g:each>
+
+        </div><!-- .second -->
+
+        <div class="field">
+            <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
+            <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
+            <input type="hidden" name="filter" value="license" />
+            <input type="hidden" name="token" value="${token}" />
+        </div>
+
+    </g:form>
