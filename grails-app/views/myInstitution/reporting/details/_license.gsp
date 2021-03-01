@@ -24,7 +24,7 @@
                         <td><g:link controller="license" action="show" id="${lic.id}" target="_blank">${lic.reference}</g:link></td>
                     </g:if>
                     <g:else>  %{-- default --}%
-                        <td><g:link controller="license" action="show" id="${org.id}" target="_blank">${lic.reference}</g:link></td>
+                        <td><g:link controller="license" action="show" id="${lic.id}" target="_blank">${lic.reference}</g:link></td>
                     </g:else>
                 </tr>
             </g:each>
