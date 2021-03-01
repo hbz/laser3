@@ -18,7 +18,12 @@
             <br /><br />
 
             <g:each in="${config.filter.default}" var="cfgFilter">
-                <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
+                <g:if test="${cfgFilter.findAll{it.contains('Date')}.size() == cfgFilter.size()}">%{-- tmp datepicker layout fix --}%
+                    <div class="fields">
+                </g:if>
+                <g:else>
+                    <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
+                </g:else>
                     <g:each in="${cfgFilter}" var="field">
                         <laser:reportFilterField config="${config}" field="${field}" />
                     </g:each>
