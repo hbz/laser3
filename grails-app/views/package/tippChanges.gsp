@@ -9,51 +9,18 @@
 
 <body>
 
-<g:render template="breadcrumb" model="${[params: params]}"/>
+<semui:breadcrumbs>
+    <semui:crumb controller="package" action="index" text="${message(code: 'package.show.all')}"/>
+    <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
+</semui:breadcrumbs>
 
 <h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
-<semui:xEditable owner="${subscription}" field="name"/>
+<semui:xEditable owner="${packageInstance}" field="name"/>
 </h1>
-<semui:anualRings object="${subscription}" controller="subscription" action="entitlementChanges"
-                  navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+
 
 <g:render template="nav"/>
 
-<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
-    <g:render template="message"/>
-</g:if>
-
-
-<div class="ui top attached tabular menu">
-    <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}" params="[tab: 'changes']"
-            class="item ${params.tab == "changes" ? 'active' : '' }">
-        <g:message code="myinst.pendingChanges.label"/>
-        <span class="ui circular label">
-            ${countPendingChanges}
-        </span>
-    </g:link>
-
-    <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}" params="[tab: 'acceptedChanges']"
-            class="item ${params.tab == "acceptedChanges" ? 'active' : '' }">
-        <g:message code="myinst.acceptedChanges.label"/>
-        <span class="ui circular label">
-            ${countAcceptedChanges}
-        </span>
-    </g:link>
-
-</div>
-
-<div class="ui bottom attached tab active segment">
-<g:if test="${packages}">
-    <g:form controller="pendingChange" action="processAll">
-        <g:select from="${packages}" noSelection="${['': message(code: 'default.select.choose.label')]}"
-                  name="acceptChangesForPackages" class="ui select search multiple dropdown" optionKey="${{ it.id }}"
-                  optionValue="${{ it.pkg.name }}"/>
-        <g:submitButton class="ui button positive" name="acceptAll" value="${message(code: 'pendingChange.takeAll')}"/>
-        <g:submitButton class="ui button negative" name="rejectAll"
-                        value="${message(code: 'pendingChange.rejectAll')}"/>
-    </g:form>
-</g:if>
 
 
 <g:set var="counter" value="${offset + 1}"/>
@@ -74,7 +41,6 @@
                 ${counter++}
             </td>
             <td>
-                <g:set var="ie" value="${IssueEntitlement.findByTippAndSubscription(entry.tipp, subscription)}"/>
                 <g:if test="${entry.tipp}">
                     <g:if test="${ie}">
                         <g:link controller="issueEntitlement" action="show" id="${ie.id}">${entry.tipp.name}</g:link>
@@ -134,15 +100,7 @@
             </td>
             <td>
                 <g:if test="${!(entry.status in [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED])}">
-                    <div class="ui buttons">
-                        <g:link class="ui positive button" controller="pendingChange" action="accept" id="${entry.id}"
-                                params="[subId: subscription.id]"><g:message
-                                code="default.button.accept.label"/></g:link>
-                        <%--
-                        <div class="or" data-text="${message(code:'default.or')}"></div>
-                        <g:link class="ui negative button" controller="pendingChange" action="reject" id="${entry.id}"><g:message code="default.button.reject.label"/></g:link>
-                        --%>
-                    </div>
+
                 </g:if>
             </td>
         </tr>
