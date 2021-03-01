@@ -2,7 +2,9 @@ package de.laser.reporting
 
 import de.laser.License
 import de.laser.Org
+import de.laser.OrgSetting
 import de.laser.RefdataValue
+import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import grails.util.Holders
@@ -212,11 +214,37 @@ class LicenseFilter extends GenericFilter {
                 }
                 // --> refdata relation tables
                 else if (pType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
-                    println ' ------------ not implemented ------------ '
+
+                    if (p == GenericConfig.CUSTOM_KEY_SUBJECT_GROUP) {
+                        queryBase = queryBase + ' join org.subjectGroup osg join osg.subjectGroup rdvsg'
+                        whereParts.add('rdvsg.id = :p' + (++pCount))
+                        queryParams.put('p' + pCount, params.long(key))
+
+                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                    }
                 }
                 // --> custom filter implementation
                 else if (pType == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    println ' ------------ not implemented ------------ '
+
+                    if (p == GenericConfig.CUSTOM_KEY_LEGAL_INFO) {
+                        long li = params.long(key)
+                        whereParts.add( getLegalInfoQueryWhereParts(li) )
+
+                        Map<String, Object> customRdv = GenericConfig.getCustomRefdata(p)
+                        filterLabelValue = customRdv.get('from').find{ it.id == li }.value_de
+                    }
+                    else if (p == GenericConfig.CUSTOM_KEY_CUSTOMER_TYPE) {
+                        queryBase = queryBase + ' , OrgSetting oss'
+
+                        whereParts.add('oss.org = org and oss.key = :p' + (++pCount))
+                        queryParams.put('p' + pCount, OrgSetting.KEYS.CUSTOMER_TYPE)
+
+                        whereParts.add('oss.roleValue = :p' + (++pCount))
+                        queryParams.put('p' + pCount, Role.get(params.get(key)))
+
+                        Map<String, Object> customRdv = GenericConfig.getCustomRefdata(p)
+                        filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de
+                    }
                 }
 
                 if (filterLabelValue) {

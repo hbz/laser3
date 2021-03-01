@@ -138,6 +138,7 @@ class MyInstitutionController  {
             params.each{it ->
                 if (it.key.startsWith(GenericConfig.FILTER_PREFIX) && it.value) {
                     filterMap.filterMap.put(it.key, it.value)
+                    //println ' -------------> ' + it.key + ' : ' + it.value
                 }
             }
             filterMap.putAll(result.result)
