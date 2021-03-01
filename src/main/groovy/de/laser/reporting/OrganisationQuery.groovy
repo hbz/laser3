@@ -1,12 +1,8 @@
 package de.laser.reporting
 
 import de.laser.Org
-import de.laser.RefdataValue
 import de.laser.auth.Role
-import de.laser.helper.RDStore
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.i18n.LocaleContextHolder
 
 class OrganisationQuery extends GenericQuery {
 
@@ -55,25 +51,10 @@ class OrganisationQuery extends GenericQuery {
         }
         else if ( params.query in ['org-orgType', 'member-orgType', 'provider-orgType', 'licensor-orgType']) {
 
-            result.data = Org.executeQuery(
-                    PROPERTY_QUERY[0] + 'from Org o join o.orgType p where o.id in (:idList)' + PROPERTY_QUERY[1],
-                    [idList: idList]
-            )
-            result.data.each { d ->
-                d[1] = RefdataValue.get(d[0]).getI10n('value')
-
-                result.dataDetails.add( [
-                        query:  params.query,
-                        id:     d[0],
-                        label:  d[1],
-                        idList: Org.executeQuery(
-                                'select o.id from Org o join o.orgType p where o.id in (:idList) and p.id = :d order by o.name',
-                                [idList: idList, d: d[0]]
-                        )
-                ])
-            }
-            handleNonMatchingData(
+            handleSimpleRefdataQuery(
                     params.query,
+                    PROPERTY_QUERY[0] + 'from Org o join o.orgType p where o.id in (:idList)' + PROPERTY_QUERY[1],
+                    'select o.id from Org o join o.orgType p where o.id in (:idList) and p.id = :d order by o.name',
                     'select distinct o.id from Org o where o.id in (:idList) and not exists (select ot from o.orgType ot)',
                     idList,
                     result
@@ -108,25 +89,10 @@ class OrganisationQuery extends GenericQuery {
         }
         else if ( params.query in ['org-subjectGroup', 'member-subjectGroup']) {
 
-            result.data = Org.executeQuery(
-                    PROPERTY_QUERY[0] + 'from Org o join o.subjectGroup rt join rt.subjectGroup p where o.id in (:idList)' + PROPERTY_QUERY[1],
-                    [idList: idList]
-            )
-            result.data.each { d ->
-                d[1] = RefdataValue.get(d[0]).getI10n('value')
-
-                result.dataDetails.add([
-                        query : params.query,
-                        id    : d[0],
-                        label : d[1],
-                        idList: Org.executeQuery(
-                                'select o.id from Org o join o.subjectGroup rt join rt.subjectGroup p where o.id in (:idList) and p.id = :d order by o.name',
-                                [idList: idList, d: d[0]]
-                        )
-                ])
-            }
-            handleNonMatchingData(
+            handleSimpleRefdataQuery(
                     params.query,
+                    PROPERTY_QUERY[0] + 'from Org o join o.subjectGroup rt join rt.subjectGroup p where o.id in (:idList)' + PROPERTY_QUERY[1],
+                    'select o.id from Org o join o.subjectGroup rt join rt.subjectGroup p where o.id in (:idList) and p.id = :d order by o.name',
                     'select distinct o.id from Org o where o.id in (:idList) and not exists (select osg from OrgSubjectGroup osg where osg.org = o)',
                     idList,
                     result
@@ -177,30 +143,5 @@ class OrganisationQuery extends GenericQuery {
                 idList,
                 result
         )
-
-        /*
-        result.data = Org.executeQuery(
-                PROPERTY_QUERY[0] + 'from Org o join o.' + refdata + ' p where o.id in (:idList)' + PROPERTY_QUERY[1], [idList: idList]
-        )
-        result.data.each { d ->
-            d[1] = RefdataValue.get(d[0]).getI10n('value')
-
-            result.dataDetails.add( [
-                    query:  query,
-                    id:     d[0],
-                    label:  d[1],
-                    idList: Org.executeQuery(
-                        'select o.id from Org o join o.' + refdata + ' p where o.id in (:idList) and p.id = :d order by o.name',
-                        [idList: idList, d: d[0]]
-                    )
-            ])
-        }
-        handleNonMatchingData(
-                query,
-                'select distinct o.id from Org o where o.id in (:idList) and o.' + refdata + ' is null',
-                idList,
-                result
-        )
-        */
     }
 }

@@ -2,9 +2,7 @@ package de.laser.reporting
 
 import de.laser.License
 import de.laser.Org
-import de.laser.OrgSetting
 import de.laser.RefdataValue
-import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import grails.util.Holders
@@ -114,10 +112,10 @@ class LicenseFilter extends GenericFilter {
 
         String query = queryParts.unique().join(' , ') + ' ' + whereParts.join(' and ')
 
-        println 'LicenseFilter.filter() -->'
-        println query
-        println queryParams
-        println whereParts
+//        println 'LicenseFilter.filter() -->'
+//        println query
+//        println queryParams
+//        println whereParts
 
         result.licenseIdList = License.executeQuery( query, queryParams )
 

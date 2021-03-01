@@ -1,8 +1,6 @@
 package de.laser.reporting
 
 import de.laser.ContextService
-import de.laser.Org
-import de.laser.RefdataValue
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -52,30 +50,5 @@ class LicenseQuery extends GenericQuery {
                 idList,
                 result
         )
-
-        /*
-        result.data = Org.executeQuery(
-                PROPERTY_QUERY[0] + 'from License l join l.' + refdata + ' p where l.id in (:idList)' + PROPERTY_QUERY[1], [idList: idList]
-        )
-        result.data.each { d ->
-            d[1] = RefdataValue.get(d[0]).getI10n('value')
-
-            result.dataDetails.add( [
-                    query:  query,
-                    id:     d[0],
-                    label:  d[1],
-                    idList: Org.executeQuery(
-                        'select l.id from License l join l.' + refdata + ' p where l.id in (:idList) and p.id = :d order by l.reference',
-                        [idList: idList, d: d[0]]
-                    )
-            ])
-        }
-        handleNonMatchingData(
-                query,
-                'select distinct l.id from License l where l.id in (:idList) and l.'+ refdata + ' is null',
-                idList,
-                result
-        )
-        */
     }
 }
