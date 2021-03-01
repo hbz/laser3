@@ -15,6 +15,14 @@
 
 3152    25.02.2021  dev     2.1         David   Feature     "Kollektivnutzer" - Code entfernen
 
+3162    26.02.2021  rc2.0   2.0         Moe     Bug         Filter auf Paket detailsicht 
+
+----    26.02.2021  rc2.0   2.0         Moe     Bug         Umfrage Bemerkung wird nicht gespeichert
+
+----    26.02.2021  rc2.0   2.0         Moe     Bug         Vertrag kopieren
+
+3163    26.02.2021  rc2.0   2.0         Moe     Bug         Fehlermeldung auf Dashboard nach Anmeldung
+
 3150    24.02.2021  rc2.0   2.0         Moe     Bug         Filter Bestand nach Fachbereich
 
 3148    24.02.2021  rc2.0   2.0         Moe     Bug         Änderungen uuups

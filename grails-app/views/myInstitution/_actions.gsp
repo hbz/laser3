@@ -74,9 +74,7 @@
 <g:if test="${actionName == 'managePropertyGroups'}">
     <g:if test="${editable}">
         <semui:actionsDropdown>
-            <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'new']}" class="ui button trigger-modal">
-                ${message(code:'propertyDefinitionGroup.create_new.label')}
-            </g:link>
+            <semui:actionsDropdownItem message="propertyDefinitionGroup.create_new.label" controller="myInstitution" action="managePropertyGroups" params="${[cmd:'new']}" class=" trigger-modal" />
         </semui:actionsDropdown>
     </g:if>
 </g:if>

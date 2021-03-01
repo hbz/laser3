@@ -467,11 +467,24 @@ class PendingChangeService extends AbstractLockableService {
         query2Params = [packages:subscribedPackages]
         if(configMap.periodInDays) {
             query1Clauses << "pc.ts >= :time"
-            query2Clauses << "((pc.ts >= :time and pc.msgToken in (:withNotification)) or pc.msgToken in (:prompt))"
             query1Params.time = time
-            query2Params.time = time
-            query2Params.withNotification = withNotification
-            query2Params.prompt = prompt
+            if(withNotification && prompt)
+            {
+                query2Clauses << "((pc.ts >= :time and pc.msgToken in (:withNotification)) or pc.msgToken in (:prompt))"
+                query2Params.time = time
+                query2Params.withNotification = withNotification
+                query2Params.prompt = prompt
+            }
+            else if (withNotification && !prompt){
+                query2Clauses << "(pc.ts >= :time and pc.msgToken in (:withNotification))"
+                query2Params.time = time
+                query2Params.withNotification = withNotification
+            }
+            else if (!withNotification && prompt){
+                query2Clauses << "(pc.msgToken in (:prompt))"
+                query2Params.prompt = prompt
+            }
+
         }
         if(query1Clauses) {
             query1 += ' and ' + query1Clauses.join(" and ")
