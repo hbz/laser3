@@ -39,7 +39,7 @@ class LicenseFilter extends GenericFilter {
             case 'all-lic':
                 queryParams.licenseIdList = License.executeQuery( 'select l.id from License l' )
                 break
-            case 'my-lic':
+            case 'consortia-lic':
                 List tmp1 = licenseService.getLicensesConsortiaQuery( [:] )                 // roleType:Licensing Consortium
                 //List tmp2 = licenseService.getLicensesConsortialLicenseQuery( [:] )       // roleType:Licensee_Consortial
                 //List tmp3 = licenseService.getLicensesLocalLicenseQuery( [:] )            // roleType:Licensee
@@ -260,6 +260,7 @@ class LicenseFilter extends GenericFilter {
 
 //        println 'LicenseFilter.internalOrgFilter() -->'
 //        println query
+//        println queryParams
 
         result.put( partKey + 'IdList', Org.executeQuery(query, queryParams) )
     }

@@ -15,7 +15,7 @@ class SubscriptionConfig extends GenericConfig {
                     ],
                     source : [
                             //'all-sub' : 'Alle Lizenzen',
-                            'my-sub' : 'Meine Lizenzen'
+                            'consortia-sub' : 'Meine Lizenzen'
                     ],
                     fields: [
                             'endDate'               : FIELD_TYPE_PROPERTY,

@@ -39,8 +39,9 @@ class SubscriptionFilter extends GenericFilter {
             case 'all-sub':
                 queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id from Subscription s' )
                 break
-            case 'my-sub':
-                List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery( [validOn: null], contextService.getOrg() ) // roleType:Subscription Consortia
+            case 'consortia-sub':
+                List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(    // roleType:Subscription Consortia
+                        [validOn: null, orgRole: 'Subscription Consortia'], contextService.getOrg() )
                 queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
                 break
         }
@@ -253,6 +254,7 @@ class SubscriptionFilter extends GenericFilter {
 
 //        println 'SubscriptionFilter.internalOrgFilter() -->'
 //        println query
+//        println queryParams
 
         result.put( partKey + 'IdList', Org.executeQuery(query, queryParams) )
     }

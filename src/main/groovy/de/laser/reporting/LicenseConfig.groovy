@@ -16,7 +16,7 @@ class LicenseConfig extends GenericConfig {
                     ],
                     source : [
                             //'all-lic' : 'Alle Verträge',
-                            'my-lic' : 'Meine Verträge'
+                            'consortia-lic' : 'Meine Verträge'
                     ],
                     fields: [
                             'endDate'               : FIELD_TYPE_PROPERTY,
