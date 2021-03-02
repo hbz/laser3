@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3173    02.03.2021  rc2.0   2.0         Moe     Bug         Meine Lizenzen: Filterergebnis/-zählung nicht korrekt
+
+----    02.03.2021  rc2.0   2.0         Moe     Bug         Status von geplanten Lizenzen bzw. Verträge auf Aktiv setzen wenn auch kein EndDatum vorhanden ist 
+
 3166    01.03.2021  rc2.0   2.0         David   Feature     Reporting: Einstiegspunkt: Verträge
 
 3161    26.02.2021  rc2.0   2.0         David   Feature     Reporting: Zugriff auf Merkmale
