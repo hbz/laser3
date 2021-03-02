@@ -55,7 +55,12 @@ class OrganisationConfig extends GenericConfig {
                                     'org-funderType'        : 'Unterhaltsträger',
                                     'org-funderHskType'     : 'Trägerschaft'
                             ]
-                    ]
+                    ],/*
+                    query2 : [
+                            'Verteilung' : [
+                                    'org-serverAccess-assignment' : 'Organisation nach Datenweitergabe',
+                            ]
+                    ]*/
             ]
     ]
 }

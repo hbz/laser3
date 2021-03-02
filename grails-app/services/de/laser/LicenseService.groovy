@@ -68,7 +68,6 @@ class LicenseService {
             )))"""
 
             if (params.status) {
-
                 if(params.status instanceof List){
                     base_qry += " and l.status.id in (:status) "
                     qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
@@ -89,7 +88,6 @@ class LicenseService {
             )"""
 
         if (params.status) {
-
             if(params.status instanceof List){
                 base_qry += " and l.status.id in (:status) "
                 qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
@@ -110,7 +108,6 @@ class LicenseService {
             )"""
 
         if (params.status) {
-
             if(params.status instanceof List){
                 base_qry += " and l.status.id in (:status) "
                 qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })

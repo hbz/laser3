@@ -27,6 +27,7 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
+import de.laser.reporting.LicenseQuery
 import de.laser.reporting.OrganisationQuery
 import de.laser.reporting.SubscriptionQuery
 import de.laser.traits.I10nTrait
@@ -676,15 +677,23 @@ class AjaxJsonController {
             Map<String, Object> cached = sessionCache.get("MyInstitutionController/reporting/" + params.token)
 
             GrailsParameterMap clone = params.clone() // TODO: simplify
-            clone.putAll(cached)
+            if (cached) {
+                clone.putAll(cached)
+            }
 
             String prefix = clone.query.split('-')[0]
-            if (prefix in ['org', 'member', 'provider']) {
+
+            if (prefix in ['license']) {
+                result = LicenseQuery.query(clone)
+                render template: '/myInstitution/reporting/chart/generic', model: result
+                return
+            }
+            else if (prefix in ['org', 'member', 'provider', 'licensor']) {
                 result = OrganisationQuery.query(clone)
                 render template: '/myInstitution/reporting/chart/generic', model: result
                 return
             }
-            if (prefix in ['subscription']) {
+            else if (prefix in ['subscription']) {
                 result = SubscriptionQuery.query(clone)
                 render template: '/myInstitution/reporting/chart/generic', model: result
                 return
