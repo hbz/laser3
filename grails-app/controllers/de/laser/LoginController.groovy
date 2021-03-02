@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.auth.User
+import de.laser.helper.PasswordUtils
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -159,7 +160,7 @@ class LoginController {
     else {
       User user = User.findByUsername(params.forgotten_username)
       if (user) {
-        String newPassword = User.generateRandomPassword()
+        String newPassword = PasswordUtils.getRandomUserPassword()
         user.password = newPassword
         if (user.save()) {
           flash.message = message(code: 'user.newPassword.successNoOutput')

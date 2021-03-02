@@ -2,9 +2,7 @@ package de.laser.auth
 
 import de.laser.Org
 import de.laser.UserSetting
-import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
-import org.apache.commons.lang.RandomStringUtils
 
 import javax.persistence.Transient
 
@@ -192,10 +190,6 @@ class User {
             }
         }
         lia
-    }
-
-    static String generateRandomPassword() {
-        RandomStringUtils.randomAlphanumeric(24)
     }
 
     @Override
