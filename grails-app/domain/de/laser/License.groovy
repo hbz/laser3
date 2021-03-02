@@ -45,13 +45,13 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     boolean isSlaved = false
     boolean isPublicForApi = false
 
-    @RefdataAnnotation(cat = RDConstants.LICENSE_STATUS)
+    @RefdataAnnotation(cat = RDConstants.LICENSE_STATUS, i18n = 'license.status.label')
     RefdataValue status
 
-    @RefdataAnnotation(cat = RDConstants.LICENSE_TYPE)
+    @RefdataAnnotation(cat = RDConstants.LICENSE_TYPE, i18n = 'license.type.label')
     RefdataValue type
 
-    @RefdataAnnotation(cat = RDConstants.LICENSE_CATEGORY)
+    @RefdataAnnotation(cat = RDConstants.LICENSE_CATEGORY, i18n = 'license.category.label')
     RefdataValue licenseCategory
 
     String reference

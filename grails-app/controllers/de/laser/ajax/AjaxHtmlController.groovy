@@ -25,12 +25,11 @@ import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.properties.PropertyDefinition
-import de.laser.reporting.GenericConfig
 import de.laser.reporting.GenericQuery
+import de.laser.reporting.LicenseConfig
 import de.laser.reporting.OrganisationConfig
 import de.laser.reporting.SubscriptionConfig
-import grails.converters.JSON
+
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -379,24 +378,34 @@ class AjaxHtmlController {
             String prefix = params.query.split('-')[0]
             List idList = params.list('idList[]').collect { it as Long }
 
-            if (prefix in ['org']) {
-                result.key   = OrganisationConfig.KEY
+            if (prefix in ['license']) {
+                result.label = GenericQuery.getQueryLabels(LicenseConfig.CONFIG, params).join(' > ')
+                result.list  = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
+                result.tmpl  = '/myInstitution/reporting/details/license'
+            }
+            else if (prefix in ['licensor']) {
+                result.label = GenericQuery.getQueryLabels(LicenseConfig.CONFIG, params).join(' > ')
+                result.list  = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
+                result.tmpl  = '/myInstitution/reporting/details/organisation'
+            }
+            else if (prefix in ['org']) {
                 result.label = GenericQuery.getQueryLabels(OrganisationConfig.CONFIG, params).join(' > ')
                 result.list  = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
+                result.tmpl  = '/myInstitution/reporting/details/organisation'
             }
-            if (prefix in ['subscription']) {
-                result.key   = SubscriptionConfig.KEY
+            else if (prefix in ['subscription']) {
                 result.label = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params).join(' > ')
                 result.list  = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
+                result.tmpl  = '/myInstitution/reporting/details/subscription'
             }
-            if (prefix in ['member', 'provider']) {
-                result.key   = OrganisationConfig.KEY
+            else if (prefix in ['member', 'provider']) {
                 result.label = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params).join(' > ')
                 result.list  = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
+                result.tmpl  = '/myInstitution/reporting/details/organisation'
             }
         }
 
         //println result
-        render template: '/myInstitution/reporting/chart/details', model: result
+        render template: result.tmpl, model: result
     }
 }

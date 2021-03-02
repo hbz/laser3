@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.SubscriptionConfig; de.laser.reporting.OrganisationConfig; de.laser.reporting.GenericConfig; de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.SubscriptionConfig; de.laser.reporting.LicenseConfig; de.laser.reporting.OrganisationConfig; de.laser.reporting.GenericConfig; de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -50,14 +50,16 @@
 
         <g:if test="${!filter}">
             <div class="ui segment form">
-                <div class="field">
-                    <label for="filter-chooser">Einstiegspunkt</label>
-                    <g:select name="filter-chooser"
-                              from="${cfgFilterList}"
-                              optionKey="key"
-                              optionValue="value"
-                              class="ui selection dropdown la-not-clearable"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}" />
+                <div class="fields two">
+                    <div class="field">
+                        <label for="filter-chooser">Einstiegspunkt</label>
+                        <g:select name="filter-chooser"
+                                  from="${cfgFilterList}"
+                                  optionKey="key"
+                                  optionValue="value"
+                                  class="ui selection dropdown la-not-clearable"
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}" />
+                    </div>
                 </div>
             </div>
         </g:if>
@@ -65,9 +67,9 @@
             <g:set var="hidden" value="" />
         </g:else>
 
-        <g:if test="${!filter || filter == SubscriptionConfig.KEY}">
-            <div id="filter-subscription" class="filter-form-wrapper ${hidden}">
-               <g:render template="/myInstitution/reporting/filter/subscription" />
+        <g:if test="${!filter || filter == LicenseConfig.KEY}">
+            <div id="filter-license" class="filter-form-wrapper ${hidden}">
+                <g:render template="/myInstitution/reporting/filter/license" />
             </div>
         </g:if>
 
@@ -77,27 +79,40 @@
             </div>
         </g:if>
 
+        <g:if test="${!filter || filter == SubscriptionConfig.KEY}">
+            <div id="filter-subscription" class="filter-form-wrapper ${hidden}">
+                <g:render template="/myInstitution/reporting/filter/subscription" />
+            </div>
+        </g:if>
+
+
         <g:if test="${result}">
             <h3 class="ui header">2. Ergebnis</h3>
 
-            <g:if test="${filter == SubscriptionConfig.KEY}">
-                <g:render template="/myInstitution/reporting/query/subscription" />
+            <g:if test="${filter == LicenseConfig.KEY}">
+                <g:render template="/myInstitution/reporting/query/license" />
             </g:if>
 
             <g:if test="${filter == OrganisationConfig.KEY}">
                 <g:render template="/myInstitution/reporting/query/organisation" />
             </g:if>
 
+            <g:if test="${filter == SubscriptionConfig.KEY}">
+                <g:render template="/myInstitution/reporting/query/subscription" />
+            </g:if>
+
             <div id="chart-wrapper"></div>
-
             <div id="chart-details"></div>
-
-            <style>
-                #chart-wrapper { height: 400px; width: 98%; margin: 2em auto; }
-            </style>
 
         </g:if>
 
+        <style>
+            #chart-wrapper { height: 400px; width: 98%; margin: 2em auto 1em; }
+
+            h3.ui.header { margin-top: 3em !important; }
+
+            .ui.form .fields .field { margin-bottom: 0 !important; }
+        </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
             if (! JSPC.app.reporting) { JSPC.app.reporting = {}; }
