@@ -81,8 +81,7 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
         String cmbKey = GenericConfig.FILTER_PREFIX + 'org_'
         int pCount = 0
 
-        Set<String> keys = params.keySet().findAll{ it.toString().startsWith(cmbKey) && ! it.toString().endsWith(GenericConfig.FILTER_SOURCE_POSTFIX) }
-        keys.each { key ->
+        getCurrentFilterKeys(params, cmbKey).each { key ->
             //println key + " >> " + params.get(key)
 
             if (params.get(key)) {

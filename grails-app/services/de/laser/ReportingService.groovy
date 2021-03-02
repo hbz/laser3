@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.reporting.LicenseFilter
 import de.laser.reporting.OrganisationFilter
 import de.laser.reporting.SubscriptionFilter
 import grails.gorm.transactions.Transactional
@@ -9,6 +10,11 @@ import grails.web.servlet.mvc.GrailsParameterMap
 class ReportingService {
 
     def contextService
+
+    Map<String, Object> filterLicense(GrailsParameterMap params) {
+        LicenseFilter filter = new LicenseFilter()
+        filter.filter(params.clone() as GrailsParameterMap)
+    }
 
     Map<String, Object> filterOrganisation(GrailsParameterMap params) {
         OrganisationFilter filter = new OrganisationFilter()

@@ -14,8 +14,6 @@
                 <g:select name="filter:org_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:org_source')}" />
             </div>
 
-            <br /><br />
-
             <div id="filter-wrapper-default">
                 <g:each in="${config.filter.default}" var="cfgFilter">
                     <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
