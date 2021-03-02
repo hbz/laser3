@@ -68,7 +68,7 @@ class SubscriptionQuery extends GenericQuery {
                     [idList: idList, ctxOrg: contextService.getOrg()]
             )
             result.data.each { d ->
-                d[1] = PropertyDefinition.get(d[0]).getI10n('name')
+                d[1] = PropertyDefinition.get(d[0]).getI10n('name').replaceAll("'", '"')
 
                 result.dataDetails.add([
                         query : params.query,

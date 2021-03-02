@@ -116,6 +116,8 @@ class MyInstitutionController  {
                 result.cfgQueryList.putAll( LicenseConfig.CONFIG.base.query )
                 //result.cfgQueryList.putAll( LicenseConfig.CONFIG.member.query )
                 result.cfgQueryList.putAll( LicenseConfig.CONFIG.licensor.query )
+
+                result.cfgQuery2List.putAll( LicenseConfig.CONFIG.base.query2 )
             }
             if (params.filter == OrganisationConfig.KEY) {
                 result.result = reportingService.filterOrganisation(params)

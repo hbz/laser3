@@ -36,7 +36,8 @@
                     <td>${i + 1}.</td>
                     <td><g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link></td>
                     <g:if test="${query == 'subscription-property-assignment'}">
-                        <td><%
+                        <td>
+                            <%
                                 SubscriptionProperty sp = SubscriptionProperty.findByOwnerAndType(sub, PropertyDefinition.get(id))
                                 if (sp) {
                                     if (sp.getType().isRefdataValueType()) {
@@ -45,18 +46,20 @@
                                         println sp.getValue()
                                     }
                                 }
-                            %></td>
+                            %>
+                        </td>
                         <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}" /></td>
                         <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.endDate}" /></td>
                     </g:if>
                     <g:else> %{-- default --}%
-                        <td><%
-                            int members = Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
-                                    [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
-                            )[0]
-
-                            println members
-                        %></td>
+                        <td>
+                            <%
+                                int members = Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
+                                        [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
+                                )[0]
+                                println members
+                            %>
+                        </td>
                         <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}" /></td>
                         <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.endDate}" /></td>
                     </g:else>

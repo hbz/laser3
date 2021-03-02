@@ -9,29 +9,56 @@
 <div class="ui segment">
     <table class="ui table la-table compact">
         <thead>
-        <tr>
-            <th></th>
-            <th>Vertrag</th>
-            %{--<th>Lizenzen</th>--}%
-            %{--<th>Teilnehmerverträge / Lizenzen</th>--}%
-            <th>Startdatum</th>
-            <th>Enddatum</th>
-        </tr>
+            <tr>
+                <th></th>
+                <th>Vertrag</th>
+                    <g:if test="${query == 'license-property-assignment'}">
+                        <th>Merkmalswert</th>
+                    </g:if>
+                    <g:else>
+                        <th>Lizenzen</th>
+                        <th>Teilnehmerverträge</th>
+                    </g:else>
+                <th>Startdatum</th>
+                <th>Enddatum</th>
+            </tr>
         </thead>
         <tbody>
             <g:each in="${list}" var="lic" status="i">
                 <tr>
                     <td>${i + 1}.</td>
-                    <g:if test="${true}">%{-- default --}%
-                        <td><g:link controller="license" action="show" id="${lic.id}" target="_blank">${lic.reference}</g:link></td>
+                    <td><g:link controller="license" action="show" id="${lic.id}" target="_blank">${lic.reference}</g:link></td>
+                    <g:if test="${query == 'license-property-assignment'}">
+                        <td>
+                            <%
+                                LicenseProperty lp = LicenseProperty.findByOwnerAndType(lic, PropertyDefinition.get(id))
+                                if (lp) {
+                                    if (lp.getType().isRefdataValueType()) {
+                                        println lp.getRefValue()?.getI10n('value')
+                                    } else {
+                                        println lp.getValue()
+                                    }
+                                }
+                            %>
+                        </td>
                     </g:if>
-                    %{--<g:else>
-                        <td><g:link controller="license" action="show" id="${lic.id}" target="_blank">${lic.reference}</g:link></td>
-                        <td><%
-                            print License.executeQuery('select count(li.destinationSubscription) from Links li where li.sourceLicense = :license and li.linkType = :linkType',
-                                    [license: lic, linkType: RDStore.LINKTYPE_LICENSE]
+                <g:else>
+                    <td>
+                        <%
+                            int subs = License.executeQuery('select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
+                                    [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
                             )[0]
-                        %></td>
+                            println subs
+                        %>
+                    </td>
+                    <td>
+                        <%
+                            int instanceOf = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
+                            println instanceOf
+                        %>
+                    </td>
+                </g:else>
+                    %{--<g:else>
                         <td><%
                             int instanceOf = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
 
@@ -40,7 +67,6 @@
                             )[0]
 
                             println instanceOf + ' / ' + members
-
                         %></td>
                     </g:else>--}%
                     <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${lic.startDate}" /></td>

@@ -39,6 +39,11 @@ class LicenseConfig extends GenericConfig {
                                     //'license-openEnded'         : 'Unbefristet',
                                     'license-status'            : 'Lizenzstatus'
                             ]
+                    ],
+                    query2 : [
+                            'Verteilung' : [
+                                    'license-property-assignment' : 'Vertrag nach Merkmal (eigene/öffentliche)'
+                            ]
                     ]
             ],
 

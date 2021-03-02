@@ -34,7 +34,7 @@ class GenericQuery {
         result.data = Org.executeQuery( dataHql, [idList: idList] )
 
         result.data.each { d ->
-            d[1] = RefdataValue.get(d[0]).getI10n('value')
+            d[1] = RefdataValue.get(d[0]).getI10n('value').replaceAll("'", '"')
 
             result.dataDetails.add( [
                     query:  query,

@@ -1,6 +1,8 @@
 package de.laser.reporting
 
 import de.laser.ContextService
+import de.laser.Org
+import de.laser.properties.PropertyDefinition
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -35,6 +37,26 @@ class LicenseQuery extends GenericQuery {
         else if ( params.query in ['license-status']) {
 
             processSimpleRefdataQuery(params.query,'status', idList, result)
+        }
+        else if ( params.query in ['license-property-assignment']) {
+
+            result.data = Org.executeQuery(
+                    'select pd.id, pd.name, count(*) from License lic join lic.propertySet lp join lp.type pd where lic.id in (:idList) and (lp.owner = :ctxOrg or lp.isPublic = true) group by pd.id order by pd.name',
+                    [idList: idList, ctxOrg: contextService.getOrg()]
+            )
+            result.data.each { d ->
+                d[1] = PropertyDefinition.get(d[0]).getI10n('name').replaceAll("'", '"')
+
+                result.dataDetails.add([
+                        query : params.query,
+                        id    : d[0],
+                        label : d[1],
+                        idList: Org.executeQuery(
+                                'select lic.id from License lic join lic.propertySet lp join lp.type pd where lic.id in (:idList) and (lp.owner = :ctxOrg or lp.isPublic = true) and pd.id = :d order by pd.name',
+                                [idList: idList, d: d[0], ctxOrg: contextService.getOrg()]
+                        )
+                ])
+            }
         }
 
         result

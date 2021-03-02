@@ -8,13 +8,13 @@
 
 <div class="ui segment">
     <table class="ui table la-table compact">
-        %{--<thead>
+        <thead>
         <tr>
             <th></th>
-            <th></th>
-            <th></th>
+            <th>Sortiername</th>
+            <th>${label.split('>').first().trim()}</th>
         </tr>
-        </thead>--}%
+        </thead>
         <tbody>
             <g:each in="${list}" var="org" status="i">
                 <tr>
