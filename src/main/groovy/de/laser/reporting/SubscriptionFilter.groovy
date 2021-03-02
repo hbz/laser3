@@ -40,8 +40,7 @@ class SubscriptionFilter extends GenericFilter {
                 queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id from Subscription s' )
                 break
             case 'my-sub':
-                List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery( [validOn: null], contextService.getOrg() )
-                //println tmp
+                List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery( [validOn: null], contextService.getOrg() ) // roleType:Subscription Consortia
                 queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
                 break
         }

@@ -42,7 +42,7 @@ class LicenseConfig extends GenericConfig {
                     ]
             ],
 
-            member : [
+            /*member : [
                     meta : [
                             class: Org
                     ],
@@ -82,7 +82,7 @@ class LicenseConfig extends GenericConfig {
                                     'member-funderHskType'      : 'Trägerschaft'
                             ]
                     ]
-            ],
+            ],*/
 
             licensor : [
                     meta : [

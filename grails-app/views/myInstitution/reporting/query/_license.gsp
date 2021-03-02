@@ -6,8 +6,8 @@
 
         <div class="ui message success">
             <p>
-                ${result.licenseIdList.size()} Verträge,
-                ${result.memberIdList.size()} Teilnehmer und
+                ${result.licenseIdList.size()} Verträge und
+                %{-- ${result.memberIdList.size()} Teilnehmer und --}%
                 ${result.licensorIdList.size()} Lizenzgeber
                 wurden anhand der Filtereinstellungen gefunden.
             </p>

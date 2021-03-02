@@ -40,13 +40,13 @@ class LicenseFilter extends GenericFilter {
                 queryParams.licenseIdList = License.executeQuery( 'select l.id from License l' )
                 break
             case 'my-lic':
-                List tmp1 = licenseService.getLicensesConsortiaQuery( [:] )
-                List tmp2 = licenseService.getLicensesConsortialLicenseQuery( [:] )
-                List tmp3 = licenseService.getLicensesLocalLicenseQuery( [:] )
+                List tmp1 = licenseService.getLicensesConsortiaQuery( [:] )                 // roleType:Licensing Consortium
+                //List tmp2 = licenseService.getLicensesConsortialLicenseQuery( [:] )       // roleType:Licensee_Consortial
+                //List tmp3 = licenseService.getLicensesLocalLicenseQuery( [:] )            // roleType:Licensee
 
                 queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp1[0], tmp1[1]) )
-                queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp2[0], tmp2[1]) )
-                queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp3[0], tmp3[1]) )
+                //queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp2[0], tmp2[1]) )
+                //queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp3[0], tmp3[1]) )
 
                 queryParams.licenseIdList.unique()
                 break
@@ -120,7 +120,7 @@ class LicenseFilter extends GenericFilter {
 
         result.licenseIdList = License.executeQuery( query, queryParams )
 
-        handleInternalOrgFilter(params, 'member', result)
+        //handleInternalOrgFilter(params, 'member', result)
         handleInternalOrgFilter(params, 'licensor', result)
 
 //        println 'licenses >> ' + result.licenseIdList.size()

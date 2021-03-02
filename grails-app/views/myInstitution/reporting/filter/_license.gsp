@@ -5,7 +5,7 @@
 
         <div class="menu ui top attached tabular">
             <a class="active item" data-tab="lic-filter-tab-1">Verträge</a>
-            <a class="item" data-tab="lic-filter-tab-2">Teilnehmer</a>
+            %{--<a class="item" data-tab="lic-filter-tab-2">Teilnehmer</a>--}%
             <a class="item" data-tab="lic-filter-tab-3">Lizenzgeber</a>
         </div><!-- .menu -->
         <div class="ui bottom attached active tab segment" data-tab="lic-filter-tab-1">
@@ -30,7 +30,7 @@
 
         </div><!-- .first -->
 
-        <div class="ui bottom attached tab segment" data-tab="lic-filter-tab-2">
+        %{--<div class="ui bottom attached tab segment" data-tab="lic-filter-tab-2">
             <div class="field">
                 <label for="filter:member_source">Teilnehmerauswahl</label>
                 <g:set var="config" value="${LicenseConfig.CONFIG.member}" />
@@ -45,7 +45,7 @@
                 </div>
             </g:each>
 
-        </div><!-- .second -->
+        </div><!-- .second --> --}%
 
         <div class="ui bottom attached tab segment" data-tab="lic-filter-tab-3">
             <div class="field">
