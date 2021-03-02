@@ -19,7 +19,7 @@
             </tr>
             </thead>
         </g:if>
-        <g:elseif test="${query == 'subscription-provider-assignment'}">
+        <g:else>
             <thead>
             <tr>
                 <th></th>
@@ -29,7 +29,7 @@
                 <th>Enddatum</th>
             </tr>
             </thead>
-        </g:elseif>
+        </g:else>
         <tbody>
             <g:each in="${list}" var="sub" status="i">
                 <tr>
@@ -49,7 +49,7 @@
                         <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}" /></td>
                         <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.endDate}" /></td>
                     </g:if>
-                    <g:elseif test="${query == 'subscription-provider-assignment'}">
+                    <g:else> %{-- default --}%
                         <td><%
                             int members = Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
                                     [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
@@ -57,10 +57,6 @@
 
                             println members
                         %></td>
-                        <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}" /></td>
-                        <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.endDate}" /></td>
-                    </g:elseif>
-                    <g:else>  %{-- default --}%
                         <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}" /></td>
                         <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.endDate}" /></td>
                     </g:else>

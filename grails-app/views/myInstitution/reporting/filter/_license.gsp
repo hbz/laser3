@@ -15,8 +15,6 @@
                 <g:select name="filter:license_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:license_source')}" />
             </div>
 
-            <br /><br />
-
             <g:each in="${config.filter.default}" var="cfgFilter">
                 <g:if test="${cfgFilter.findAll{it.contains('Date')}.size() == cfgFilter.size()}">%{-- tmp datepicker layout fix --}%
                     <div class="fields">
@@ -39,8 +37,6 @@
                 <g:select name="filter:member_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:member_source')}" />
             </div>
 
-            <br /><br />
-
             <g:each in="${config.filter.default}" var="cfgFilter">
                 <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
                     <g:each in="${cfgFilter}" var="field">
@@ -57,8 +53,6 @@
                 <g:set var="config" value="${LicenseConfig.CONFIG.licensor}" />
                 <g:select name="filter:licensor_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:licensor_source')}" />
             </div>
-
-            <br /><br />
 
             <g:each in="${config.filter.default}" var="cfgFilter">
                 <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
