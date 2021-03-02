@@ -14,6 +14,7 @@ import de.laser.properties.PersonProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
 import de.laser.reporting.GenericFilter
+import de.laser.reporting.LicenseConfig
 import de.laser.reporting.OrganisationConfig
 import de.laser.reporting.SubscriptionConfig
 import de.laser.reporting.GenericConfig
@@ -109,10 +110,19 @@ class MyInstitutionController  {
             result.cfgQueryList = [:]
             result.cfgQuery2List = [:]
 
+            if (params.filter == LicenseConfig.KEY) {
+                result.result = reportingService.filterLicense(params)
+
+                result.cfgQueryList.putAll( LicenseConfig.CONFIG.base.query )
+                result.cfgQueryList.putAll( LicenseConfig.CONFIG.member.query )
+                result.cfgQueryList.putAll( LicenseConfig.CONFIG.licensor.query )
+            }
             if (params.filter == OrganisationConfig.KEY) {
                 result.result = reportingService.filterOrganisation(params)
 
                 result.cfgQueryList.putAll( OrganisationConfig.CONFIG.base.query )
+
+                //result.cfgQuery2List.putAll( OrganisationConfig.CONFIG.base.query2 )
             }
             else if (params.filter == SubscriptionConfig.KEY) {
                 result.result = reportingService.filterSubscription(params)
@@ -128,6 +138,7 @@ class MyInstitutionController  {
             params.each{it ->
                 if (it.key.startsWith(GenericConfig.FILTER_PREFIX) && it.value) {
                     filterMap.filterMap.put(it.key, it.value)
+                    //println ' -------------> ' + it.key + ' : ' + it.value
                 }
             }
             filterMap.putAll(result.result)

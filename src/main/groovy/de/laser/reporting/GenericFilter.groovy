@@ -2,6 +2,7 @@ package de.laser.reporting
 
 import de.laser.annotations.RefdataAnnotation
 import grails.util.Holders
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.lang.reflect.Field
@@ -57,6 +58,11 @@ class GenericFilter {
             label = customRdv.get('label')
         }
         label
+    }
+
+    static Set<String> getCurrentFilterKeys(GrailsParameterMap params, String cmbKey) {
+
+        params.keySet().findAll{ it.toString().startsWith(cmbKey) && ! it.toString().endsWith(GenericConfig.FILTER_SOURCE_POSTFIX) }
     }
 
     static String getDateModifier(String modifier) {

@@ -87,25 +87,10 @@ class SubscriptionQuery extends GenericQuery {
 
     static void processSimpleRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
 
-        result.data = Org.executeQuery(
-                PROPERTY_QUERY[0] + 'from Subscription s join s.' + refdata + ' p where s.id in (:idList)' + PROPERTY_QUERY[1], [idList: idList]
-        )
-        result.data.each { d ->
-            d[1] = RefdataValue.get(d[0]).getI10n('value')
-
-            result.dataDetails.add( [
-                    query:  query,
-                    id:     d[0],
-                    label:  d[1],
-                    idList: Org.executeQuery(
-                        'select s.id from Subscription s join s.' + refdata + ' p where s.id in (:idList) and p.id = :d order by s.name',
-                        [idList: idList, d: d[0]]
-                    )
-            ])
-        }
-
-        handleNonMatchingData(
+        handleSimpleRefdataQuery(
                 query,
+                PROPERTY_QUERY[0] + 'from Subscription s join s.' + refdata + ' p where s.id in (:idList)' + PROPERTY_QUERY[1],
+                'select s.id from Subscription s join s.' + refdata + ' p where s.id in (:idList) and p.id = :d order by s.name',
                 'select distinct s.id from Subscription s where s.id in (:idList) and s.'+ refdata + ' is null',
                 idList,
                 result
