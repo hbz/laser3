@@ -1,4 +1,5 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.LicenseProperty; de.laser.reporting.OrganisationConfig;de.laser.reporting.LicenseConfig;" %>
+<%@ page import="de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.LicenseProperty; de.laser.reporting.OrganisationConfig;de.laser.reporting.LicenseConfig;" %>
+<laser:serviceInjection />
 
 <h3 class="ui header">3. Details</h3>
 
@@ -9,42 +10,78 @@
 <div class="ui segment">
     <table class="ui table la-table compact">
         <thead>
-        <tr>
-            <th></th>
-            <th>Vertrag</th>
-            %{--<th>Lizenzen</th>--}%
-            %{--<th>Teilnehmerverträge / Lizenzen</th>--}%
-            <th>Startdatum</th>
-            <th>Enddatum</th>
-        </tr>
+            <tr>
+                <th></th>
+                <th>Vertrag</th>
+                    <g:if test="${query == 'license-property-assignment'}">
+                        <th>Merkmalswert</th>
+                    </g:if>
+                    <g:elseif test="${query == 'org-identifier-assignment'}">
+                        <th>Identifikator</th>
+                    </g:elseif>
+                    <g:else>
+                        <th>Lizenzen</th>
+                        <th>Teilnehmerverträge</th>
+                    </g:else>
+                <th>Startdatum</th>
+                <th>Enddatum</th>
+            </tr>
         </thead>
         <tbody>
             <g:each in="${list}" var="lic" status="i">
                 <tr>
                     <td>${i + 1}.</td>
-                    <g:if test="${true}">%{-- default --}%
-                        <td><g:link controller="license" action="show" id="${lic.id}" target="_blank">${lic.reference}</g:link></td>
+                    <td>
+                        <g:link controller="license" action="show" id="${lic.id}" target="_blank">${lic.reference}</g:link>
+                    </td>
+                    <g:if test="${query == 'license-property-assignment'}">
+                        <td>
+                            <%
+                                List<LicenseProperty> properties = LicenseProperty.executeQuery(
+                                        "select lp from LicenseProperty lp join lp.type pd where lp.owner = :lic and pd.id = :pdId " +
+                                        "and (lp.isPublic = true or lp.tenant = :ctxOrg) and pd.descr like '%Property' ",
+                                        [lic: lic, pdId: id as Long, ctxOrg: contextService.getOrg()]
+                                        )
+                                println properties.collect { lp ->
+                                    if (lp.getType().isRefdataValueType()) {
+                                        lp.getRefValue()?.getI10n('value')
+                                    } else {
+                                        lp.getValue()
+                                    }
+                                }.findAll().join(' ,<br/>') // removing empty and null values
+                            %>
+                        </td>
                     </g:if>
-                    %{--<g:else>
-                        <td><g:link controller="license" action="show" id="${lic.id}" target="_blank">${lic.reference}</g:link></td>
-                        <td><%
-                            print License.executeQuery('select count(li.destinationSubscription) from Links li where li.sourceLicense = :license and li.linkType = :linkType',
-                                    [license: lic, linkType: RDStore.LINKTYPE_LICENSE]
-                            )[0]
-                        %></td>
-                        <td><%
-                            int instanceOf = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
-
-                            int members = License.executeQuery('select count(li.destinationSubscription) from Links li where li.sourceLicense in (select distinct l from License l where l.instanceOf = :parent) and li.linkType = :linkType',
-                                    [parent: lic, linkType: RDStore.LINKTYPE_LICENSE]
-                            )[0]
-
-                            println instanceOf + ' / ' + members
-
-                        %></td>
-                    </g:else>--}%
-                    <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${lic.startDate}" /></td>
-                    <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${lic.endDate}" /></td>
+                    <g:elseif test="${query == 'org-identifier-assignment'}">
+                        <td>
+                            <%
+                                List<Identifier> identList = Identifier.findAllByLicAndNs(lic, IdentifierNamespace.get(id))
+                                println identList.collect{ it.value ?: null }.findAll().join(' ,<br/>') // removing empty and null values
+                            %>
+                        </td>
+                    </g:elseif>
+                    <g:else>
+                        <td>
+                            <%
+                                int subs = License.executeQuery('select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
+                                        [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
+                                )[0]
+                                println subs
+                            %>
+                        </td>
+                        <td>
+                            <%
+                                int instanceOf = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
+                                println instanceOf
+                            %>
+                        </td>
+                    </g:else>
+                    <td>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${lic.startDate}" />
+                    </td>
+                    <td>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${lic.endDate}" />
+                    </td>
                 </tr>
             </g:each>
         </tbody>

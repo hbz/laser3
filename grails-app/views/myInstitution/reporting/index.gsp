@@ -15,7 +15,7 @@
         </semui:breadcrumbs>
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-            <g:message code="myinst.reporting"/> <span class="ui label red">DEMO</span>
+            <g:message code="myinst.reporting"/> <span class="ui label red">DEMO : in Entwicklung</span>
         </h1>
 
         <h2 class="ui header hidden">Diese Funktionalität befindet sich in Entwicklung</h2>
@@ -164,7 +164,7 @@
                     .done( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
-                        $('#chart-wrapper').css('height', 300 + (13 * JSPC.app.reporting.current.chart.details.length) + 'px');
+                        $('#chart-wrapper').css('height', 300 + (14 * JSPC.app.reporting.current.chart.details.length) + 'px');
 
                         var echart = echarts.init($('#chart-wrapper')[0]);
                         echart.setOption( JSPC.app.reporting.current.chart.option );

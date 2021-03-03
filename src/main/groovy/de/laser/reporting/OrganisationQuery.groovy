@@ -1,7 +1,9 @@
 package de.laser.reporting
 
+import de.laser.ContextService
 import de.laser.Org
 import de.laser.auth.Role
+import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 
 class OrganisationQuery extends GenericQuery {
@@ -9,6 +11,8 @@ class OrganisationQuery extends GenericQuery {
     static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
 
     static Map<String, Object> query(GrailsParameterMap params) {
+
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
         //def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         //Locale locale = LocaleContextHolder.getLocale()
@@ -51,7 +55,7 @@ class OrganisationQuery extends GenericQuery {
         }
         else if ( params.query in ['org-orgType', 'member-orgType', 'provider-orgType', 'licensor-orgType']) {
 
-            handleSimpleRefdataQuery(
+            handleGenericRefdataQuery(
                     params.query,
                     PROPERTY_QUERY[0] + 'from Org o join o.orgType p where o.id in (:idList)' + PROPERTY_QUERY[1],
                     'select o.id from Org o join o.orgType p where o.id in (:idList) and p.id = :d order by o.name',
@@ -80,7 +84,7 @@ class OrganisationQuery extends GenericQuery {
                         )
                 ])
             }
-            handleNonMatchingData(
+            handleGenericNonMatchingData(
                     params.query,
                     'select distinct o.id from Org o where o.id in (:idList) and not exists (select oss from OrgSetting oss where oss.org = o and oss.key = \'CUSTOMER_TYPE\')',
                     idList,
@@ -89,12 +93,33 @@ class OrganisationQuery extends GenericQuery {
         }
         else if ( params.query in ['org-subjectGroup', 'member-subjectGroup']) {
 
-            handleSimpleRefdataQuery(
+            handleGenericRefdataQuery(
                     params.query,
                     PROPERTY_QUERY[0] + 'from Org o join o.subjectGroup rt join rt.subjectGroup p where o.id in (:idList)' + PROPERTY_QUERY[1],
                     'select o.id from Org o join o.subjectGroup rt join rt.subjectGroup p where o.id in (:idList) and p.id = :d order by o.name',
                     'select distinct o.id from Org o where o.id in (:idList) and not exists (select osg from OrgSubjectGroup osg where osg.org = o)',
                     idList,
+                    result
+            )
+        }
+        else if ( params.query in ['org-identifier-assignment']) {
+
+            handleGenericIdentifierAssignmentQuery(
+                    params.query,
+                    'select ns.id, ns.ns, count(*) from Org o join o.ids ident join ident.ns ns where o.id in (:idList)',
+                    'select o.id from Org o join o.ids ident join ident.ns ns where o.id in (:idList)',
+                    idList,
+                    result
+            )
+        }
+        else if ( params.query in ['org-property-assignment']) {
+
+            handleGenericPropertyAssignmentQuery(
+                    params.query,
+                    'select pd.id, pd.name, count(*) from Org o join o.propertySet prop join prop.type pd where o.id in (:idList)',
+                    'select o.id from Org o join o.propertySet prop join prop.type pd where o.id in (:idList)',
+                    idList,
+                    contextService.getOrg(),
                     result
             )
         }
@@ -135,7 +160,7 @@ class OrganisationQuery extends GenericQuery {
 
     static void processSimpleRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
 
-        handleSimpleRefdataQuery(
+        handleGenericRefdataQuery(
                 query,
                 PROPERTY_QUERY[0] + 'from Org o join o.' + refdata + ' p where o.id in (:idList)' + PROPERTY_QUERY[1],
                 'select o.id from Org o join o.' + refdata + ' p where o.id in (:idList) and p.id = :d order by o.name',

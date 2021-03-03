@@ -114,15 +114,17 @@ class MyInstitutionController  {
                 result.result = reportingService.filterLicense(params)
 
                 result.cfgQueryList.putAll( LicenseConfig.CONFIG.base.query )
-                result.cfgQueryList.putAll( LicenseConfig.CONFIG.member.query )
+                //result.cfgQueryList.putAll( LicenseConfig.CONFIG.member.query )
                 result.cfgQueryList.putAll( LicenseConfig.CONFIG.licensor.query )
+
+                result.cfgQuery2List.putAll( LicenseConfig.CONFIG.base.query2 )
             }
             if (params.filter == OrganisationConfig.KEY) {
                 result.result = reportingService.filterOrganisation(params)
 
                 result.cfgQueryList.putAll( OrganisationConfig.CONFIG.base.query )
 
-                //result.cfgQuery2List.putAll( OrganisationConfig.CONFIG.base.query2 )
+                result.cfgQuery2List.putAll( OrganisationConfig.CONFIG.base.query2 )
             }
             else if (params.filter == SubscriptionConfig.KEY) {
                 result.result = reportingService.filterSubscription(params)

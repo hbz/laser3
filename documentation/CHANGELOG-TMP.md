@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3123    03.03.2021  rc2.0   2.0         David   Feature     Reporting: Zugriff auf Identifikatoren
+
 3169    02.03.2021  rc2.0   2.0.1       Moe     Bug         Neue Fehlermeldung Dasboad nach Deploy vom Freitag
 
 3179    03.03.2021  rc2.0   2.0.1       Moe     Bug         allgemeines Merkmal bei einzelnem Teilnehmer
