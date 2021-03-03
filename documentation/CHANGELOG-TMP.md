@@ -9,6 +9,14 @@
 
 3123    03.03.2021  rc2.0   2.0         David   Feature     Reporting: Zugriff auf Identifikatoren
 
+3169    02.03.2021  rc2.0   2.0.1       Moe     Bug         Neue Fehlermeldung Dasboad nach Deploy vom Freitag
+
+3179    03.03.2021  rc2.0   2.0.1       Moe     Bug         allgemeines Merkmal bei einzelnem Teilnehmer
+
+3173    02.03.2021  rc2.0   2.0.1       Moe     Bug         Meine Lizenzen: Filterergebnis/-zählung nicht korrekt
+
+----    02.03.2021  rc2.0   2.0.1       Moe     Bug         Status von geplanten Lizenzen bzw. Verträge auf Aktiv setzen wenn auch kein EndDatum vorhanden ist 
+
 3166    01.03.2021  rc2.0   2.0         David   Feature     Reporting: Einstiegspunkt: Verträge
 
 3161    26.02.2021  rc2.0   2.0         David   Feature     Reporting: Zugriff auf Merkmale

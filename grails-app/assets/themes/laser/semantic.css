@@ -7060,6 +7060,22 @@ h1 ~ h2.ui.header {
   align-items: center;
 }
 
+body[class*="Organisation"] .ui.icon.header .circular.icon.la-object,
+body[class*="organisation"] .ui.icon.header .circular.icon.la-object,
+body[class*="myPublicContacts"] .ui.icon.header .circular.icon.la-object,
+body[class*="myInstitution"] .ui.icon.header .circular.icon.la-object {
+  display: inline-block;
+  background-color: #00B5AD;
+  border-color: #00B5AD;
+}
+
+body[class*="Organisation"] .ui.icon.header .circular.icon.la-object:before,
+body[class*="organisation"] .ui.icon.header .circular.icon.la-object:before,
+body[class*="myPublicContacts"] .ui.icon.header .circular.icon.la-object:before,
+body[class*="myInstitution"] .ui.icon.header .circular.icon.la-object:before {
+  content: "\f19c";
+}
+
 body[class*="License"] .ui.icon.header .circular.icon.la-object,
 body[class*="license"] .ui.icon.header .circular.icon.la-object {
   display: inline-block;
@@ -7116,22 +7132,6 @@ body[class*="title"] .ui.icon.header .circular.icon.la-object {
 body[class*="Title"] .ui.icon.header .circular.icon.la-object:before,
 body[class*="title"] .ui.icon.header .circular.icon.la-object:before {
   content: "\f02d";
-}
-
-body[class*="Organisation"] .ui.icon.header .circular.icon.la-object,
-body[class*="organisation"] .ui.icon.header .circular.icon.la-object,
-body[class*="myPublicContacts"] .ui.icon.header .circular.icon.la-object,
-body[class*="myInstitution"] .ui.icon.header .circular.icon.la-object {
-  display: inline-block;
-  background-color: #00B5AD;
-  border-color: #00B5AD;
-}
-
-body[class*="Organisation"] .ui.icon.header .circular.icon.la-object:before,
-body[class*="organisation"] .ui.icon.header .circular.icon.la-object:before,
-body[class*="myPublicContacts"] .ui.icon.header .circular.icon.la-object:before,
-body[class*="myInstitution"] .ui.icon.header .circular.icon.la-object:before {
-  content: "\f19c";
 }
 
 body[class*="Platform"] .ui.icon.header .circular.icon.la-object,

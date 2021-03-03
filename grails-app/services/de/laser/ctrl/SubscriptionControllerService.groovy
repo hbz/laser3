@@ -1001,7 +1001,7 @@ class SubscriptionControllerService {
                         else {
                             //custom Property
                             existingProp = subChild.propertySet.find { SubscriptionProperty sp ->
-                                it.type.id == filterPropDef.id && it.owner.id == subChild.id && it.tenant.id == result.institution.id
+                                sp.type.id == filterPropDef.id && sp.owner.id == subChild.id && sp.tenant.id == result.institution.id
                             }
                             if (existingProp && !(existingProp.hasProperty('instanceOf') && existingProp.instanceOf && AuditConfig.getConfig(existingProp.instanceOf))){
                                 try {
@@ -1335,8 +1335,13 @@ class SubscriptionControllerService {
                         Thread.currentThread().setName("PackageSync_"+result.subscription.id)
                         try {
                             globalSourceSyncService.defineMapFields()
-                            Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID])
-                            globalSourceSyncService.updateRecords(queryResult.records)
+                            Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID,max:5000])
+
+                            if(queryResult.records.count > 0) {
+                                globalSourceSyncService.updateRecords(queryResult.records)
+                            }else {
+                                globalSourceSyncService.createOrUpdatePackage(pkgUUID)
+                            }
                             Package pkgToLink = Package.findByGokbId(pkgUUID)
                             result.packageName = pkgToLink.name
                             log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
