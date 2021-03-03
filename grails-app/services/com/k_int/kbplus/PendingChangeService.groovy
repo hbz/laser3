@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.AuditService
+import de.laser.EscapeService
 import de.laser.IssueEntitlement
 import de.laser.Org
 import de.laser.Package
@@ -47,6 +48,7 @@ class PendingChangeService extends AbstractLockableService {
     AuditService auditService
     LinkGenerator grailsLinkGenerator
     def messageSource
+    EscapeService escapeService
 
 
     final static EVENT_OBJECT_NEW = 'New Object'
@@ -624,6 +626,8 @@ class PendingChangeService extends AbstractLockableService {
             if(pc.newValue)
                 parsedNewValue = RefdataValue.get(Long.parseLong(pc.newValue))
             else reject(pc) //i.e. do nothing, wrong value
+        }else if(pc.targetProperty in PendingChange.PRICE_FIELDS) {
+            parsedNewValue = escapeService.parseFinancialValue(pc.newValue)
         }
         else parsedNewValue = pc.newValue
         switch(pc.msgToken) {
@@ -693,9 +697,6 @@ class PendingChangeService extends AbstractLockableService {
                     targetCov = (IssueEntitlementCoverage) pc.tippCoverage.findEquivalent(ie.coverages)
                 }
                 if(targetCov && pc.targetProperty) {
-                    println(targetCov)
-                    println(pc.targetProperty)
-                    println(parsedNewValue)
                     targetCov[pc.targetProperty] = parsedNewValue
                     if(targetCov.save()) {
                         done = true
@@ -766,7 +767,7 @@ class PendingChangeService extends AbstractLockableService {
                     targetPi = (PriceItem) target
                 }
                 else if(target instanceof Subscription) {
-                    IssueEntitlement ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:priceItem.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
+                    IssueEntitlement ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:pc.priceItem.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
                     targetPi = pc.priceItem.findEquivalent(ie.priceItems)
                 }
                 if(targetPi) {
@@ -776,7 +777,7 @@ class PendingChangeService extends AbstractLockableService {
                     }
                     else throw new ChangeAcceptException("problems when updating price item - pending change not accepted: ${targetPi.errors}")
                 }
-                else throw new ChangeAcceptException("no instance of PriceItem stored: ${oid}! Pending change is void!")
+                else throw new ChangeAcceptException("no instance of PriceItem stored: ${pc.oid}! Pending change is void!")
                 break
         //pendingChange.message_TR02 (newPrice)
             case PendingChangeConfiguration.NEW_PRICE:
@@ -804,7 +805,7 @@ class PendingChangeService extends AbstractLockableService {
                     }
                     else throw new ChangeAcceptException("problems when creating new entitlement - pending change not accepted: ${iePrice.errors}")
                 }
-                else throw new ChangeAcceptException("no instance of PriceItem stored: ${oid}! Pending change is void!")
+                else throw new ChangeAcceptException("no instance of PriceItem stored: ${pc.oid}! Pending change is void!")
                 break
         //pendingChange.message_TR03 (priceDeleted)
             case PendingChangeConfiguration.PRICE_DELETED:
@@ -854,7 +855,7 @@ class PendingChangeService extends AbstractLockableService {
             pc.status = RDStore.PENDING_CHANGE_ACCEPTED
             pc.actionDate = new Date()
             if(!pc.save()) {
-                throw new ChangeAcceptException("problems when submitting new pending change status: ${errors}")
+                throw new ChangeAcceptException("problems when submitting new pending change status: ${pc.errors}")
             }
         }
         done
