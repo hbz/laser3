@@ -525,7 +525,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         switch(priceEntry.event) {
                                             case 'add': PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_PRICE,target:priceEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
                                                 break
-                                            case 'update': PendingChange.construct([msgToken:PendingChangeConfiguration.PRICE_UPDATED,target:priceEntry.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:diff.prop,newValue:priceEntry.newValue,oldValue:priceEntry.oldValue])
+                                            case 'update':
+                                                priceEntry.diffs.each { priceDiff ->
+                                                    PendingChange.construct([msgToken: PendingChangeConfiguration.PRICE_UPDATED, target: priceEntry.target, status: RDStore.PENDING_CHANGE_HISTORY, prop: priceDiff.prop, newValue: priceDiff.newValue, oldValue: priceDiff.oldValue])
+                                                }
                                                 //log.debug("tippDiff.priceDiffs: "+ priceEntry)
                                                 break
                                             case 'delete': JSON oldMap = priceEntry.target.properties as JSON

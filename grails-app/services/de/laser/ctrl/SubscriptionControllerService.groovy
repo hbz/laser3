@@ -990,6 +990,7 @@ class SubscriptionControllerService {
                             }
                             if (existingProp){
                                 try {
+                                    subChild.propertySet.remove(existingProp)
                                     existingProp.delete()
                                     deletedProperties++
                                 }
@@ -1005,6 +1006,7 @@ class SubscriptionControllerService {
                             }
                             if (existingProp && !(existingProp.hasProperty('instanceOf') && existingProp.instanceOf && AuditConfig.getConfig(existingProp.instanceOf))){
                                 try {
+                                    subChild.propertySet.remove(existingProp)
                                     existingProp.delete()
                                     deletedProperties++
                                 }
@@ -1337,7 +1339,7 @@ class SubscriptionControllerService {
                             globalSourceSyncService.defineMapFields()
                             Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID,max:5000])
 
-                            if(queryResult.records.count > 0) {
+                            if(queryResult.records && queryResult.records.count > 0) {
                                 globalSourceSyncService.updateRecords(queryResult.records)
                             }else {
                                 globalSourceSyncService.createOrUpdatePackage(pkgUUID)
