@@ -30,7 +30,7 @@
                     ${message(code: 'subscription.properties.orphaned')}
                 </g:if>
                 <g:else>
-                    myInstitution/currentSubscriptions             ${message(code: 'subscription.properties')}
+                    ${message(code: 'subscription.properties')}
                 </g:else>
             </h2>
 
