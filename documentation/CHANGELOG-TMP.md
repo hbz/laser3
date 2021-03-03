@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3123    03.03.2021  rc2.0   2.0         David   Feature     Reporting: Zugriff auf Identifikatoren
+
 3166    01.03.2021  rc2.0   2.0         David   Feature     Reporting: Einstiegspunkt: Verträge
 
 3161    26.02.2021  rc2.0   2.0         David   Feature     Reporting: Zugriff auf Merkmale
