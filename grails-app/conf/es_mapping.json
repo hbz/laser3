@@ -250,6 +250,12 @@
         "name": { "type": "keyword" }
       }
     },
+    "publishers": {
+      "properties": {
+        "id": { "type": "long" },
+        "name": { "type": "keyword" }
+      }
+    },
     "rectype": {
       "fields": {
         "keyword": {

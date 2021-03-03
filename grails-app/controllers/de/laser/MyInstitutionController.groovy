@@ -366,6 +366,20 @@ class MyInstitutionController  {
             qry_params.status = params.status as Long
         }
 
+
+        if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
+            base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
+                    + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
+                    + "   orgR.roleType in (:licRoleTypes) and ( "
+                    + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
+                    + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
+                    + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
+                    + " ) ) ) ) ")
+            qry_params.name_filter = params['keyword-search']
+            qry_params.licRoleTypes = [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]
+            result.keyWord = params['keyword-search']
+        }
+
         if(params.subKind || params.subStatus || ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) || !params.filterSubmit) {
             Set<String> subscrQueryFilter = ["oo.org = :context"]
             qry_params.context = result.institution
@@ -400,18 +414,6 @@ class MyInstitutionController  {
 
             base_qry += " or exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" )"
             qry_params.linkType = RDStore.LINKTYPE_LICENSE
-        }
-        if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
-            base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
-                    + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
-                    + "   orgR.roleType in (:licRoleTypes) and ( "
-                    + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
-                    + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
-                    + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
-                    + " ) ) ) ) ")
-            qry_params.name_filter = params['keyword-search']
-            qry_params.licRoleTypes = [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]
-            result.keyWord = params['keyword-search']
         }
 
 
