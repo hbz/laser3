@@ -1337,7 +1337,7 @@ class SubscriptionControllerService {
                             globalSourceSyncService.defineMapFields()
                             Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID,max:5000])
 
-                            if(queryResult.records.count > 0) {
+                            if(queryResult.records && queryResult.records.count > 0) {
                                 globalSourceSyncService.updateRecords(queryResult.records)
                             }else {
                                 globalSourceSyncService.createOrUpdatePackage(pkgUUID)
