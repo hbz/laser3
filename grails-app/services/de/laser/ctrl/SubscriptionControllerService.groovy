@@ -990,6 +990,7 @@ class SubscriptionControllerService {
                             }
                             if (existingProp){
                                 try {
+                                    subChild.propertySet.remove(existingProp)
                                     existingProp.delete()
                                     deletedProperties++
                                 }
@@ -1005,6 +1006,7 @@ class SubscriptionControllerService {
                             }
                             if (existingProp && !(existingProp.hasProperty('instanceOf') && existingProp.instanceOf && AuditConfig.getConfig(existingProp.instanceOf))){
                                 try {
+                                    subChild.propertySet.remove(existingProp)
                                     existingProp.delete()
                                     deletedProperties++
                                 }
