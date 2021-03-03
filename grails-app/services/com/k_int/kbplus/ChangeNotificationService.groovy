@@ -341,7 +341,7 @@ class ChangeNotificationService extends AbstractLockableService {
             else contextOrg = subscriptionPackage.subscription.getSubscriber()
             RefdataValue settingValue
             PendingChangeConfiguration directConf = subscriptionPackage.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == msgToken}
-            if(msgToken in [PendingChangeConfiguration.PACKAGE_PROP,PendingChangeConfiguration.PACKAGE_DELETED] || args.prop in ['hostPlatformURL']) {
+            if(msgToken in [PendingChangeConfiguration.PACKAGE_PROP,PendingChangeConfiguration.PACKAGE_DELETED]) {
                 if(directConf) {
                     if(directConf.withNotification)
                         PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_ACCEPTED,owner:contextOrg])
@@ -374,6 +374,9 @@ class ChangeNotificationService extends AbstractLockableService {
                     //set up announcement and do accept! Pending because if some error occurs, the notification should still take place
                     PendingChange pc = PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING,owner:contextOrg])
                     pendingChangeService.accept(pc)
+                }
+                if(settingValue == RDStore.PENDING_CHANGE_CONFIG_REJECT) {
+                    PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_REJECTED,owner:contextOrg])
                 }
                 /*
                     else we have case three - a child subscription with no inherited settings ->

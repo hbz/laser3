@@ -515,10 +515,10 @@ class PendingChangeService extends AbstractLockableService {
                     Object[] args = [row[2]]
                     Map<String,Object> eventRow = [subPkg:sp,eventString:messageSource.getMessage(row[0],args,locale)]
                     if(setting == "prompt") {
-                        PendingChange pendingChange1 = PendingChange.executeQuery('select pc.id from PendingChange pc where pc.'+row[3]+' = :package and pc.oid = :oid and pc.status != :accepted',[package:sp.pkg,oid:genericOIDService.getOID(sp.subscription),accepted:RDStore.PENDING_CHANGE_ACCEPTED])
+                        //List<PendingChange> pendingChange1 = PendingChange.executeQuery('select pc.id from PendingChange pc where pc.'+row[3]+' = :package and pc.oid = :oid and pc.status != :accepted',[package:sp.pkg,oid:genericOIDService.getOID(sp.subscription),accepted:RDStore.PENDING_CHANGE_ACCEPTED])
 
-                        if(!PendingChange.executeQuery('select pc.id from PendingChange pc where pc.'+row[3]+' = :package and pc.oid = :oid and pc.status = :accepted',[package:sp.pkg,oid:genericOIDService.getOID(sp.subscription),accepted:RDStore.PENDING_CHANGE_ACCEPTED])){
-                            eventRow.changeId = pendingChange1[0] ?: null
+                        if(!PendingChange.executeQuery('select pc.id from PendingChange pc where pc.'+row[3]+' = :package and pc.oid = :oid and pc.status in (:acceptedStatus)',[package:sp.pkg,oid:genericOIDService.getOID(sp.subscription),acceptedStatus:[RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED]])){
+                            //eventRow.changeId = pendingChange1 ? pendingChange1[0] : null
                             pending << eventRow
                         }
                     }
@@ -543,7 +543,7 @@ class PendingChangeService extends AbstractLockableService {
             }
             if(pc.status == RDStore.PENDING_CHANGE_PENDING)
                 pending << eventRow
-            else if(pc.status == RDStore.PENDING_CHANGE_ACCEPTED) {
+            else if(pc.status == RDStore.PENDING_CHANGE_ACCEPTED || pc.status == RDStore.PENDING_CHANGE_REJECTED) {
                 notifications << eventRow
             }
         }
@@ -623,7 +623,7 @@ class PendingChangeService extends AbstractLockableService {
         else if(pc.targetProperty in PendingChange.REFDATA_FIELDS) {
             if(pc.newValue)
                 parsedNewValue = RefdataValue.get(Long.parseLong(pc.newValue))
-            else reject() //i.e. do nothing, wrong value
+            else reject(pc) //i.e. do nothing, wrong value
         }
         else parsedNewValue = pc.newValue
         switch(pc.msgToken) {
@@ -693,7 +693,9 @@ class PendingChangeService extends AbstractLockableService {
                     targetCov = (IssueEntitlementCoverage) pc.tippCoverage.findEquivalent(ie.coverages)
                 }
                 if(targetCov && pc.targetProperty) {
-
+                    println(targetCov)
+                    println(pc.targetProperty)
+                    println(parsedNewValue)
                     targetCov[pc.targetProperty] = parsedNewValue
                     if(targetCov.save()) {
                         done = true
@@ -765,10 +767,10 @@ class PendingChangeService extends AbstractLockableService {
                 }
                 else if(target instanceof Subscription) {
                     IssueEntitlement ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:priceItem.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
-                    targetPi = priceItem.findEquivalent(ie.priceItems)
+                    targetPi = pc.priceItem.findEquivalent(ie.priceItems)
                 }
                 if(targetPi) {
-                    targetPi[targetProperty] = parsedNewValue
+                    targetPi[pc.targetProperty] = parsedNewValue
                     if(targetPi.save()) {
                         done = true
                     }
@@ -796,6 +798,7 @@ class PendingChangeService extends AbstractLockableService {
                                                     listCurrency: tippPrice.listCurrency
                     ]
                     PriceItem iePrice = new PriceItem(configMap)
+                    iePrice.setGlobalUID()
                     if(iePrice.save()) {
                         done = true
                     }
@@ -849,6 +852,7 @@ class PendingChangeService extends AbstractLockableService {
         }
         if(done) {
             pc.status = RDStore.PENDING_CHANGE_ACCEPTED
+            pc.actionDate = new Date()
             if(!pc.save()) {
                 throw new ChangeAcceptException("problems when submitting new pending change status: ${errors}")
             }
@@ -856,16 +860,37 @@ class PendingChangeService extends AbstractLockableService {
         done
     }
 
-    boolean reject() {
+    boolean reject(PendingChange pc) {
         pc.status = RDStore.PENDING_CHANGE_REJECTED
+        pc.actionDate = new Date()
         if(!pc.save()) {
             throw new ChangeAcceptException("problems when submitting new pending change status: ${pc.errors}")
         }
         true
     }
 
-    void applyChangeForHolding(PendingChange newChange,SubscriptionPackage subPkg,Org contextOrg) {
-            println("applyChangeForHolding")
+    void applyPendingChange(PendingChange newChange,SubscriptionPackage subPkg,Org contextOrg) {
+        println("applyPendingChange")
+        def target
+        if(newChange.tipp)
+            target = newChange.tipp
+        else if(newChange.tippCoverage)
+            target = newChange.tippCoverage
+        else if(newChange.priceItem && newChange.priceItem.tipp)
+            target = newChange.priceItem
+        if(target) {
+            PendingChange toApply = PendingChange.construct([target: target, oid: genericOIDService.getOID(subPkg.subscription), newValue: newChange.newValue, oldValue: newChange.oldValue, prop: newChange.targetProperty, msgToken: newChange.msgToken, status: RDStore.PENDING_CHANGE_PENDING, owner: contextOrg])
+            if(accept(toApply)) {
+                applyPendingChangeForHolding(newChange, subPkg, contextOrg)
+            }
+            else
+                log.error("Error when auto-accepting pending change ${toApply}!")
+        }
+        else log.error("Unable to determine target object! Ignoring change ${newChange}!")
+    }
+
+    void applyPendingChangeForHolding(PendingChange newChange,SubscriptionPackage subPkg,Org contextOrg) {
+            println("applyPendingChangeForHolding")
             def target
             if(newChange.tipp)
                 target = newChange.tipp
@@ -874,13 +899,11 @@ class PendingChangeService extends AbstractLockableService {
             else if(newChange.priceItem && newChange.priceItem.tipp)
                 target = newChange.priceItem
             if(target) {
-                PendingChange toApply = PendingChange.construct([target: target, oid: genericOIDService.getOID(subPkg.subscription), newValue: newChange.newValue, oldValue: newChange.oldValue, prop: newChange.targetProperty, msgToken: newChange.msgToken, status: RDStore.PENDING_CHANGE_PENDING, owner: contextOrg])
-                if(accept(toApply)) {
                     Set<Subscription> childSubscriptions = Subscription.executeQuery('select sp.subscription from SubscriptionPackage sp join sp.subscription s where s.instanceOf = :parent',[parent:subPkg.subscription])
                     if(childSubscriptions) {
                         if(auditService.getAuditConfig(subPkg.subscription,newChange.msgToken)) {
                             childSubscriptions.each { Subscription child ->
-                                log.debug("processing child ${child.id}")
+                                log.debug("applyPendingChangeForHolding: processing child ${child.id}")
                                 PendingChange toApplyChild = PendingChange.construct([target: target, oid: genericOIDService.getOID(child), newValue: newChange.newValue, oldValue: newChange.oldValue, prop: newChange.targetProperty, msgToken: newChange.msgToken, status: RDStore.PENDING_CHANGE_PENDING, owner: contextOrg])
                                 if (!accept(toApplyChild)) {
                                     log.error("Error when auto-accepting pending change ${toApplyChild}!")
@@ -888,9 +911,6 @@ class PendingChangeService extends AbstractLockableService {
                             }
                         }
                     }
-                }
-                else
-                    log.error("Error when auto-accepting pending change ${toApply}!")
             }
             else log.error("Unable to determine target object! Ignoring change ${newChange}!")
     }

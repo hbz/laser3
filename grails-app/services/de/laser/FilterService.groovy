@@ -1134,7 +1134,7 @@ class FilterService {
         }
 
         if (params.identifier) {
-            base_qry += "and ( exists ( from Identifier ident. where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) "
+            base_qry += "and ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) "
             qry_params.identifier = "${params.identifier}"
             filterSet = true
         }
@@ -1277,7 +1277,7 @@ class FilterService {
         }
 
         if (params.identifier) {
-            base_qry += "and ( exists ( from Identifier ident. where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
+            base_qry += "and ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
             qry_params.identifier = "${params.identifier}"
             filterSet = true
         }

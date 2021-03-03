@@ -51,12 +51,7 @@
                 <label for="curatoryGroup">${message(code: 'package.curatoryGroup.label')}
                 </label>
 
-                <g:select class="ui fluid dropdown" name="curatoryGroup"
-                              from="${curatoryGroups.sort{it.name.toLowerCase()}}"
-                              optionKey="name"
-                              optionValue="name"
-                              value="${params.curatoryGroup}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+
             </div>
 
         </div>
