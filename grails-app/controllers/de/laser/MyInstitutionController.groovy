@@ -124,7 +124,7 @@ class MyInstitutionController  {
 
                 result.cfgQueryList.putAll( OrganisationConfig.CONFIG.base.query )
 
-                //result.cfgQuery2List.putAll( OrganisationConfig.CONFIG.base.query2 )
+                result.cfgQuery2List.putAll( OrganisationConfig.CONFIG.base.query2 )
             }
             else if (params.filter == SubscriptionConfig.KEY) {
                 result.result = reportingService.filterSubscription(params)

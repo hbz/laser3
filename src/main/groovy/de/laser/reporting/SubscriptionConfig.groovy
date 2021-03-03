@@ -48,8 +48,9 @@ class SubscriptionConfig extends GenericConfig {
                     ],
                     query2 : [
                             'Verteilung' : [
-                                    'subscription-provider-assignment' : 'Lizenz nach Anbieter',
-                                    'subscription-property-assignment' : 'Lizenz nach Merkmal (eigene/öffentliche)'
+                                    'subscription-provider-assignment'   : 'Lizenz → Anbieter',
+                                    'subscription-property-assignment'   : 'Lizenz → Merkmale (eigene/öffentliche)',
+                                    'subscription-identifier-assignment' : 'Lizenz → Identifikatoren',
                             ]
                     ]
             ],

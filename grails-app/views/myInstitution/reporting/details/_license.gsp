@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.LicenseProperty; de.laser.reporting.OrganisationConfig;de.laser.reporting.LicenseConfig;" %>
+<%@ page import="de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.LicenseProperty; de.laser.reporting.OrganisationConfig;de.laser.reporting.LicenseConfig;" %>
 
 <h3 class="ui header">3. Details</h3>
 
@@ -15,6 +15,9 @@
                     <g:if test="${query == 'license-property-assignment'}">
                         <th>Merkmalswert</th>
                     </g:if>
+                    <g:elseif test="${query == 'org-identifier-assignment'}">
+                        <th>Identifikator</th>
+                    </g:elseif>
                     <g:else>
                         <th>Lizenzen</th>
                         <th>Teilnehmerverträge</th>
@@ -27,7 +30,9 @@
             <g:each in="${list}" var="lic" status="i">
                 <tr>
                     <td>${i + 1}.</td>
-                    <td><g:link controller="license" action="show" id="${lic.id}" target="_blank">${lic.reference}</g:link></td>
+                    <td>
+                        <g:link controller="license" action="show" id="${lic.id}" target="_blank">${lic.reference}</g:link>
+                    </td>
                     <g:if test="${query == 'license-property-assignment'}">
                         <td>
                             <%
@@ -42,35 +47,33 @@
                             %>
                         </td>
                     </g:if>
-                <g:else>
+                    <g:elseif test="${query == 'org-identifier-assignment'}">
+                        <td>
+                            <% println Identifier.findByLicAndNs(lic, IdentifierNamespace.get(id)).value %>
+                        </td>
+                    </g:elseif>
+                    <g:else>
+                        <td>
+                            <%
+                                int subs = License.executeQuery('select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
+                                        [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
+                                )[0]
+                                println subs
+                            %>
+                        </td>
+                        <td>
+                            <%
+                                int instanceOf = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
+                                println instanceOf
+                            %>
+                        </td>
+                    </g:else>
                     <td>
-                        <%
-                            int subs = License.executeQuery('select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
-                                    [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
-                            )[0]
-                            println subs
-                        %>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${lic.startDate}" />
                     </td>
                     <td>
-                        <%
-                            int instanceOf = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
-                            println instanceOf
-                        %>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${lic.endDate}" />
                     </td>
-                </g:else>
-                    %{--<g:else>
-                        <td><%
-                            int instanceOf = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
-
-                            int members = License.executeQuery('select count(li.destinationSubscription) from Links li where li.sourceLicense in (select distinct l from License l where l.instanceOf = :parent) and li.linkType = :linkType',
-                                    [parent: lic, linkType: RDStore.LINKTYPE_LICENSE]
-                            )[0]
-
-                            println instanceOf + ' / ' + members
-                        %></td>
-                    </g:else>--}%
-                    <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${lic.startDate}" /></td>
-                    <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${lic.endDate}" /></td>
                 </tr>
             </g:each>
         </tbody>
