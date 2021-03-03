@@ -21,6 +21,7 @@ class PendingChange {
     def genericOIDService
     def messageSource
 
+    final static Set<String> PRICE_FIELDS = ['listPrice']
     final static Set<String> DATE_FIELDS = ['accessStartDate', 'accessEndDate', 'startDate', 'endDate']
     final static Set<String> REFDATA_FIELDS = ['status', 'packageListStatus', 'breakable', 'fixed', 'consistent', 'packageStatus', 'packageScope']
 
@@ -141,7 +142,10 @@ class PendingChange {
      */
     static PendingChange construct(Map<String, Object> configMap) throws CreationException {
 
-        Set<String> SETTING_KEYS = PendingChangeConfiguration.SETTING_KEYS
+        Set<String> SETTING_KEYS = [PendingChangeConfiguration.TITLE_UPDATED,
+                                    PendingChangeConfiguration.COVERAGE_UPDATED,
+                                    PendingChangeConfiguration.PRICE_UPDATED,
+                                    PendingChangeConfiguration.PACKAGE_PROP]
         SETTING_KEYS << PendingChangeConfiguration.PACKAGE_TIPP_COUNT_CHANGED
 
         if ((configMap.target instanceof Subscription || configMap.target instanceof License || configMap.target instanceof CostItem || configMap.target instanceof Package ||
@@ -212,7 +216,12 @@ class PendingChange {
                     SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                     pc.newValue = (configMap.newValue && configMap.newValue instanceof Date) ? sdf.format(configMap.newValue) : (configMap.newValue ?: null)
                     pc.oldValue = (configMap.oldValue && configMap.oldValue instanceof Date) ? sdf.format(configMap.oldValue) : (configMap.oldValue ?: null)
-                } else {
+                }
+                else if (pc.targetProperty in PendingChange.PRICE_FIELDS) {
+                    pc.newValue = (configMap.newValue && configMap.newValue instanceof BigDecimal) ? configMap.newValue.toString() : (configMap.newValue ?: null)
+                    pc.oldValue = (configMap.oldValue && configMap.oldValue instanceof BigDecimal) ? configMap.oldValue.toString() : (configMap.oldValue ?: null)
+                }
+                else {
                     pc.newValue = configMap.newValue
                     pc.oldValue = configMap.oldValue
                 }
@@ -241,7 +250,12 @@ class PendingChange {
                 SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
                 changeParams.newValue = (configMap.newValue && configMap.newValue instanceof Date) ? sdf.format(configMap.newValue) : (configMap.newValue ?: null)
                 changeParams.oldValue = (configMap.oldValue && configMap.oldValue instanceof Date) ? sdf.format(configMap.oldValue) : (configMap.oldValue ?: null)
-            } else {
+            }
+            else if (configMap.prop in PendingChange.PRICE_FIELDS) {
+                changeParams.newValue = (configMap.newValue && configMap.newValue instanceof BigDecimal) ? configMap.newValue.toString() : (configMap.newValue ?: null)
+                changeParams.oldValue = (configMap.oldValue && configMap.oldValue instanceof BigDecimal) ? configMap.oldValue.toString() : (configMap.oldValue ?: null)
+            }
+            else {
                 changeParams.newValue = configMap.newValue
                 changeParams.oldValue = configMap.oldValue
             }
