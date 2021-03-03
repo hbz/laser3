@@ -10,25 +10,26 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
 import grails.converters.JSON
+import groovy.util.logging.Slf4j
 import net.sf.json.JSONObject
 import org.grails.web.json.JSONElement
 
 import java.text.SimpleDateFormat
-
+@Slf4j
 class PendingChange {
 
     def genericOIDService
     def messageSource
 
-    final static Set<String> DATE_FIELDS = ['accessStartDate','accessEndDate','startDate','endDate']
-    final static Set<String> REFDATA_FIELDS = ['status','packageListStatus','breakable','fixed','consistent','packageStatus','packageScope']
+    final static Set<String> DATE_FIELDS = ['accessStartDate', 'accessEndDate', 'startDate', 'endDate']
+    final static Set<String> REFDATA_FIELDS = ['status', 'packageListStatus', 'breakable', 'fixed', 'consistent', 'packageStatus', 'packageScope']
 
-    final static PROP_LICENSE       = 'license'
-    final static PROP_PKG           = 'pkg'
-    final static PROP_SUBSCRIPTION  = 'subscription'
-    final static PROP_TIPP          = 'tipp'
+    final static PROP_LICENSE = 'license'
+    final static PROP_PKG = 'pkg'
+    final static PROP_SUBSCRIPTION = 'subscription'
+    final static PROP_TIPP = 'tipp'
     final static PROP_TIPP_COVERAGE = 'tippCoverage'
-    final static PROP_PRICE_ITEM    = 'priceItem'
+    final static PROP_PRICE_ITEM = 'priceItem'
     final static PROP_COST_ITEM = 'costItem'
 
     final static MSG_LI01 = 'pendingChange.message_LI01'
@@ -71,64 +72,65 @@ class PendingChange {
     @RefdataAnnotation(cat = RDConstants.PENDING_CHANGE_STATUS)
     RefdataValue status
 
-    static transients = ['payloadAsJSON', 'changeDocAsJSON', 'message', 'parsedParams'] // mark read-only accessor methods
+    static transients = ['payloadAsJSON', 'changeDocAsJSON', 'message', 'parsedParams']
+    // mark read-only accessor methods
 
     static mapping = {
-        subscription column:'pc_sub_fk',        index:'pending_change_sub_idx'
-            license column:'pc_lic_fk',         index:'pending_change_lic_idx'
-                pkg column:'pc_pkg_fk',         index:'pending_change_pkg_idx'
-               tipp column:'pc_tipp_fk',        index:'pending_change_tipp_idx'
-       tippCoverage column:'pc_tc_fk',          index:'pending_change_tc_idx'
-          priceItem column:'pc_pi_fk',          index:'pending_change_pi_idx'
-           costItem column:'pc_ci_fk',          index:'pending_change_costitem_idx'
-                oid column:'pc_oid',            index:'pending_change_oid_idx'
-            payloadChangeType column:'pc_change_type'
-       payloadChangeTargetOid column:'pc_change_target_oid', index:'pending_change_pl_ct_oid_idx'
-       payloadChangeDocOid    column:'pc_change_doc_oid', index:'pending_change_pl_cd_oid_idx'
+        subscription column: 'pc_sub_fk', index: 'pending_change_sub_idx'
+        license column: 'pc_lic_fk', index: 'pending_change_lic_idx'
+        pkg column: 'pc_pkg_fk', index: 'pending_change_pkg_idx'
+        tipp column: 'pc_tipp_fk', index: 'pending_change_tipp_idx'
+        tippCoverage column: 'pc_tc_fk', index: 'pending_change_tc_idx'
+        priceItem column: 'pc_pi_fk', index: 'pending_change_pi_idx'
+        costItem column: 'pc_ci_fk', index: 'pending_change_costitem_idx'
+        oid column: 'pc_oid', index: 'pending_change_oid_idx'
+        payloadChangeType column: 'pc_change_type'
+        payloadChangeTargetOid column: 'pc_change_target_oid', index: 'pending_change_pl_ct_oid_idx'
+        payloadChangeDocOid column: 'pc_change_doc_oid', index: 'pending_change_pl_cd_oid_idx'
         targetProperty column: 'pc_target_property', type: 'text'
         oldValue column: 'pc_old_value', type: 'text'
         newValue column: 'pc_new_value', type: 'text'
-            payload column:'pc_payload', type:'text'
-           msgToken column:'pc_msg_token'
-          msgParams column:'pc_msg_doc', type:'text'
-                 ts column:'pc_ts'
-              owner column:'pc_owner',         index:'pending_change_owner_idx'
-               desc column:'pc_desc', type:'text'
-             status column:'pc_status_rdv_fk'
-         actionDate column:'pc_action_date'
-               sort "ts":"asc"
+        payload column: 'pc_payload', type: 'text'
+        msgToken column: 'pc_msg_token'
+        msgParams column: 'pc_msg_doc', type: 'text'
+        ts column: 'pc_ts'
+        owner column: 'pc_owner', index: 'pending_change_owner_idx'
+        desc column: 'pc_desc', type: 'text'
+        status column: 'pc_status_rdv_fk'
+        actionDate column: 'pc_action_date'
+        sort "ts": "asc"
 
         dateCreated column: 'pc_date_created'
         lastUpdated column: 'pc_last_updated'
     }
 
     static constraints = {
-        subscription    (nullable:true)
-        license         (nullable:true)
-        payload(nullable:true, blank:false)
-        msgToken(nullable:true, blank:false)
-        msgParams(nullable:true, blank:false)
-        pkg             (nullable:true)
-        tipp            (nullable:true)
-        tippCoverage    (nullable:true)
-        priceItem       (nullable:true)
-        costItem        (nullable:true)
-        ts              (nullable:true)
-        owner           (nullable:true)
-        oid(nullable:true, blank:false)
-        payloadChangeType       (nullable:true, blank:true)
-        payloadChangeTargetOid  (nullable:true, blank:false)
-        payloadChangeDocOid     (nullable:true, blank:false)
-        targetProperty(nullable:true, blank:true)
-        oldValue(nullable:true, blank:true)
-        newValue(nullable:true, blank:true)
-        desc(nullable:true, blank:false)
-        status          (nullable:true)
-        actionDate (nullable:true)
+        subscription(nullable: true)
+        license(nullable: true)
+        payload(nullable: true, blank: false)
+        msgToken(nullable: true, blank: false)
+        msgParams(nullable: true, blank: false)
+        pkg(nullable: true)
+        tipp(nullable: true)
+        tippCoverage(nullable: true)
+        priceItem(nullable: true)
+        costItem(nullable: true)
+        ts(nullable: true)
+        owner(nullable: true)
+        oid(nullable: true, blank: false)
+        payloadChangeType(nullable: true, blank: true)
+        payloadChangeTargetOid(nullable: true, blank: false)
+        payloadChangeDocOid(nullable: true, blank: false)
+        targetProperty(nullable: true, blank: true)
+        oldValue(nullable: true, blank: true)
+        newValue(nullable: true, blank: true)
+        desc(nullable: true, blank: false)
+        status(nullable: true)
+        actionDate(nullable: true)
 
         // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true)
-        dateCreated (nullable: true)
+        lastUpdated(nullable: true)
+        dateCreated(nullable: true)
     }
 
     /**
@@ -137,50 +139,56 @@ class PendingChange {
      * @return
      * @throws CreationException
      */
-    static PendingChange construct(Map<String,Object> configMap) throws CreationException {
-        if((configMap.target instanceof Subscription || configMap.target instanceof License || configMap.target instanceof CostItem || configMap.target instanceof Package ||
-            configMap.target instanceof TitleInstancePackagePlatform || configMap.target instanceof PriceItem || configMap.target instanceof TIPPCoverage)) {
+    static PendingChange construct(Map<String, Object> configMap) throws CreationException {
+
+        Set<String> SETTING_KEYS = PendingChangeConfiguration.SETTING_KEYS
+        SETTING_KEYS << PendingChangeConfiguration.PACKAGE_TIPP_COUNT_CHANGED
+
+        if ((configMap.target instanceof Subscription || configMap.target instanceof License || configMap.target instanceof CostItem || configMap.target instanceof Package ||
+                configMap.target instanceof TitleInstancePackagePlatform || configMap.target instanceof PriceItem || configMap.target instanceof TIPPCoverage)) {
             PendingChange pc
             String targetClass
-            if(configMap.target instanceof Package)
+            if (configMap.target instanceof Package)
                 targetClass = PROP_PKG
-            else if(configMap.target instanceof TitleInstancePackagePlatform)
+            else if (configMap.target instanceof TitleInstancePackagePlatform)
                 targetClass = PROP_TIPP
-            else if(configMap.target instanceof TIPPCoverage)
+            else if (configMap.target instanceof TIPPCoverage)
                 targetClass = PROP_TIPP_COVERAGE
-            else if(configMap.target instanceof PriceItem)
+            else if (configMap.target instanceof PriceItem)
                 targetClass = PROP_PRICE_ITEM
-            else if(configMap.target instanceof Subscription)
+            else if (configMap.target instanceof Subscription)
                 targetClass = PROP_SUBSCRIPTION
-            else if(configMap.target instanceof License)
+            else if (configMap.target instanceof License)
                 targetClass = PROP_LICENSE
-            else if(configMap.target instanceof CostItem)
+            else if (configMap.target instanceof CostItem)
                 targetClass = PROP_COST_ITEM
-            if(targetClass) {
-                if(configMap.prop) {
-                    Map<String, Object> changeParams = [target: configMap.target, prop: configMap.prop]
-                    if(!configMap.oid) {
-                        List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:processed) and pc.' + targetClass + ' = :target and pc.targetProperty = :prop', changeParams + [processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_PENDING, RDStore.PENDING_CHANGE_HISTORY]])
+            if (targetClass) {
+                if (configMap.msgToken in SETTING_KEYS) {
+                    pc = checkPendingChangeExistsForSync(configMap, targetClass)
+                } else {
+                    if (configMap.prop) {
+                        Map<String, Object> changeParams = [target: configMap.target, prop: configMap.prop]
+                        if (!configMap.oid) {
+                            List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:processed) and pc.' + targetClass + ' = :target and pc.targetProperty = :prop', changeParams + [processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_PENDING, RDStore.PENDING_CHANGE_HISTORY]])
+                            if (pendingChangeCheck)
+                                return pendingChangeCheck[0]
+                            else pc = new PendingChange()
+                            executeUpdate('update PendingChange pc set pc.status = :superseded where :target in (pc.subscription,pc.license,pc.costItem) and pc.targetProperty = :prop', changeParams + [superseded: RDStore.PENDING_CHANGE_SUPERSEDED])
+                        } else {
+                            changeParams.oid = configMap.oid
+                            List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:processed) and pc.' + targetClass + ' = :target and pc.oid = :oid and pc.targetProperty = :prop', changeParams + [processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_PENDING]])
+                            if (pendingChangeCheck)
+                                return pendingChangeCheck[0]
+                            else pc = new PendingChange()
+                        }
+                    } else {
+                        Map<String, Object> changeParams = [target: configMap.target, msgToken: configMap.msgToken, oid: configMap.oid]
+                        List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:processed) and pc.oid = :oid and pc.' + targetClass + ' = :target and pc.msgToken = :msgToken', changeParams + [processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_PENDING, RDStore.PENDING_CHANGE_HISTORY]])
                         if (pendingChangeCheck)
                             return pendingChangeCheck[0]
                         else pc = new PendingChange()
-                        executeUpdate('update PendingChange pc set pc.status = :superseded where :target in (pc.subscription,pc.license,pc.costItem) and pc.targetProperty = :prop',changeParams+[superseded:RDStore.PENDING_CHANGE_SUPERSEDED])
+                        executeUpdate('update PendingChange pc set pc.status = :superseded where :target in (pc.subscription,pc.license,pc.costItem) and pc.msgToken = :msgToken and pc.oid = :oid', changeParams + [superseded: RDStore.PENDING_CHANGE_SUPERSEDED])
                     }
-                    else {
-                        changeParams.oid = configMap.oid
-                        List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:processed) and pc.' + targetClass + ' = :target and pc.oid = :oid and pc.targetProperty = :prop', changeParams + [processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_PENDING]])
-                        if (pendingChangeCheck)
-                            return pendingChangeCheck[0]
-                        else pc = new PendingChange()
-                    }
-                }
-                else {
-                    Map<String,Object> changeParams = [target:configMap.target,msgToken:configMap.msgToken,oid:configMap.oid]
-                    List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:processed) and pc.oid = :oid and pc.'+targetClass+' = :target and pc.msgToken = :msgToken',changeParams+[processed:[RDStore.PENDING_CHANGE_ACCEPTED,RDStore.PENDING_CHANGE_PENDING,RDStore.PENDING_CHANGE_HISTORY]])
-                    if(pendingChangeCheck)
-                        return pendingChangeCheck[0]
-                    else pc = new PendingChange()
-                    executeUpdate('update PendingChange pc set pc.status = :superseded where :target in (pc.subscription,pc.license,pc.costItem) and pc.msgToken = :msgToken and pc.oid = :oid',changeParams+[superseded:RDStore.PENDING_CHANGE_SUPERSEDED])
                 }
                 switch (targetClass) {
                     case PROP_PKG: pc.pkg = (Package) configMap.target
@@ -200,12 +208,11 @@ class PendingChange {
                 }
                 pc.msgToken = configMap.msgToken
                 pc.targetProperty = configMap.prop
-                if(pc.targetProperty in PendingChange.DATE_FIELDS) {
+                if (pc.targetProperty in PendingChange.DATE_FIELDS) {
                     SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                    pc.newValue = configMap.newValue && configMap.newValue instanceof Date ? sdf.format(configMap.newValue) : null
-                    pc.oldValue = configMap.oldValue && configMap.oldValue instanceof Date ? sdf.format(configMap.oldValue) : null
-                }
-                else {
+                    pc.newValue = (configMap.newValue && configMap.newValue instanceof Date) ? sdf.format(configMap.newValue) : (configMap.newValue ?: null)
+                    pc.oldValue = (configMap.oldValue && configMap.oldValue instanceof Date) ? sdf.format(configMap.oldValue) : (configMap.oldValue ?: null)
+                } else {
                     pc.newValue = configMap.newValue
                     pc.oldValue = configMap.oldValue
                 }
@@ -213,12 +220,69 @@ class PendingChange {
                 pc.status = configMap.status
                 pc.ts = new Date()
                 pc.owner = configMap.owner
-                if(pc.save())
+                if (pc.save())
                     pc
                 else throw new CreationException("Error on hooking up pending change: ${pc.errors}")
             }
+        } else throw new CreationException("Pending changes need a target! Check if configMap.target is correctly set!")
+    }
+
+    static PendingChange checkPendingChangeExistsForSync(Map<String, Object> configMap, String targetClass) {
+        Map<String, Object> changeParams = [target  : configMap.target,
+                                            msgToken: configMap.msgToken,
+                                            newValue: configMap.newValue,
+                                            oldValue: configMap.oldValue,
+                                            owner: configMap.owner]
+        PendingChange pc
+
+        if (configMap.prop) {
+
+            if (configMap.prop in PendingChange.DATE_FIELDS) {
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                changeParams.newValue = (configMap.newValue && configMap.newValue instanceof Date) ? sdf.format(configMap.newValue) : (configMap.newValue ?: null)
+                changeParams.oldValue = (configMap.oldValue && configMap.oldValue instanceof Date) ? sdf.format(configMap.oldValue) : (configMap.oldValue ?: null)
+            } else {
+                changeParams.newValue = configMap.newValue
+                changeParams.oldValue = configMap.oldValue
+            }
+
+            changeParams << [prop: configMap.prop]
+            if (!configMap.oid) {
+                List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:pending) and pc.' + targetClass + ' = :target and pc.targetProperty = :prop and pc.msgToken = :msgToken and pc.newValue = :newValue and pc.oldValue = :oldValue and pc.owner = :owner order by pc.ts desc', changeParams + [pending: [RDStore.PENDING_CHANGE_PENDING]])
+                if (pendingChangeCheck) {
+                    pc = pendingChangeCheck[0]
+                    if (pendingChangeCheck.size() > 0) {
+                        log.error("checkPendingChangeExists: pendingChangeCheck.size() > 0 by " + changeParams)
+                    }
+                } else {
+                    pc = new PendingChange()
+                }
+            } else {
+                changeParams << [oid: configMap.oid]
+                List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:pending) and pc.' + targetClass + ' = :target and pc.oid = :oid and pc.targetProperty = :prop and pc.msgToken = :msgToken and pc.newValue = :newValue and pc.oldValue = :oldValue and pc.owner = :owner order by pc.ts desc', changeParams + [pending: [RDStore.PENDING_CHANGE_PENDING]])
+                if (pendingChangeCheck) {
+                    pc = pendingChangeCheck[0]
+                    if (pendingChangeCheck.size() > 0) {
+                        log.error("checkPendingChangeExists: pendingChangeCheck.size() > 0 by " + changeParams)
+                    }
+                } else {
+                    pc = new PendingChange()
+                }
+            }
+        } else {
+            changeParams << [oid: configMap.oid]
+            List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:pending) and pc.oid = :oid and pc.' + targetClass + ' = :target and pc.msgToken = :msgToken and pc.newValue = :newValue and pc.oldValue = :oldValue and pc.owner = :owner order by pc.ts desc', changeParams + [pending: [RDStore.PENDING_CHANGE_PENDING]])
+            if (pendingChangeCheck) {
+                pc = pendingChangeCheck[0]
+                if (pendingChangeCheck.size() > 0) {
+                    log.error("checkPendingChangeExists: pendingChangeCheck.size() > 0 by " + changeParams)
+                }
+            } else {
+                pc = new PendingChange()
+            }
         }
-        else throw new CreationException("Pending changes need a target! Check if configMap.target is correctly set!")
+
+        return pc
     }
 
     def workaroundForDatamigrate() {
@@ -310,8 +374,7 @@ class PendingChange {
 
             parsedParams[1] = rdv1.getI10n('value')
             parsedParams[2] = rdv2.getI10n('value')
-        }
-        else if (type == 'date') {
+        } else if (type == 'date') {
             //java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(messageSource.getMessage('default.date.format', null, locale))
             //TODO JSON @ Wed Jan 03 00:00:00 CET 2018
 

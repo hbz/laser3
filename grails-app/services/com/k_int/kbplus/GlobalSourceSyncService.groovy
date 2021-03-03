@@ -268,9 +268,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 boolean more = true
                                 while(more) {
                                     //actually, scrollId alone should do the trick but tests revealed that other parameters are necessary, too, because of current workaround solution
-                                    if(scrollId)
-                                        result = fetchRecordJSON(true,[component_type: componentType,changedSince:sdf.format(oldDate),scrollId: scrollId])
-                                    else result = fetchRecordJSON(true,[component_type: componentType,changedSince:sdf.format(oldDate)])
+                                    if(scrollId) {
+                                        result = fetchRecordJSON(true, [component_type: componentType, changedSince: sdf.format(oldDate), scrollId: scrollId])
+                                    }
+                                    else
+                                    {
+                                        result = fetchRecordJSON(true,[component_type: componentType,changedSince:sdf.format(oldDate)])
+                                    }
                                     if(result.count > 0) {
                                         updateRecords(result.records)
                                         if(result.hasMoreRecords) {
@@ -321,7 +325,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             Org org = (Org) row[0]
                             SubscriptionPackage sp = (SubscriptionPackage) row[1]
                             autoAcceptPendingChanges(org,sp)
+                            nonAutoAcceptPendingChanges(org, sp)
                         }
+
                     }
                     else {
                         log.info("no diffs recorded ...")
@@ -348,12 +354,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
         Map<String,Platform> platformsOnPage = [:]
 
         //packageUUIDs is null if package have no tipps
-        Set<String> existingPlatformUUIDs = packageUUIDs ? Platform.executeQuery('select pkg.gokbId from Package pkg where pkg.gokbId in (:pkgUUIDs)',[pkgUUIDs:packageUUIDs]) : []
-        Map<String,TitleInstancePackagePlatform> tippsOnPage = [:]
+        Set<String> existingPackageUUIDs = packageUUIDs ? Platform.executeQuery('select pkg.gokbId from Package pkg where pkg.gokbId in (:pkgUUIDs)',[pkgUUIDs:packageUUIDs]) : []
+        Map<String,TitleInstancePackagePlatform> tippsInLaser = [:]
         //collect existing TIPPs
         if(tippUUIDs) {
             TitleInstancePackagePlatform.findAllByGokbIdInList(tippUUIDs.toList()).each { TitleInstancePackagePlatform tipp ->
-                tippsOnPage.put(tipp.gokbId, tipp)
+                tippsInLaser.put(tipp.gokbId, tipp)
             }
         }
         //create or update packages
@@ -376,6 +382,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:platformUUID])
             }
         }
+
         records.eachWithIndex { Map tipp, int idx ->
             log.debug("now processing entry #${idx}")
             try {
@@ -437,19 +444,30 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 tipp.titleHistory.each { historyEvent ->
                     updatedTIPP.history << [date:DateUtils.parseDateGeneric(historyEvent.date),from:historyEvent.from,to:historyEvent.to]
                 }
-                if(updatedTIPP.packageUUID in existingPlatformUUIDs) {
-                    Map<String,Object> diffs = createOrUpdateTIPP(tippsOnPage.get(updatedTIPP.uuid),updatedTIPP,packagesOnPage,platformsOnPage)
-                    //println("Moe:" + diffs)
+                if(updatedTIPP.packageUUID in existingPackageUUIDs) {
+                    Map<String,Object> diffs = createOrUpdateTIPP(tippsInLaser.get(updatedTIPP.uuid),updatedTIPP,packagesOnPage,platformsOnPage)
                     Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(updatedTIPP.packageUUID)
-                    if(!diffsOfPackage)
+                    if(!diffsOfPackage) {
                         diffsOfPackage = []
+                    }
                     diffsOfPackage << diffs
-                    if(pkgPropDiffsContainer.get(updatedTIPP.packageUUID))
-                        diffsOfPackage.addAll(pkgPropDiffsContainer.get(updatedTIPP.packageUUID)) //test with set, otherwise make check
+                    if(pkgPropDiffsContainer.get(updatedTIPP.packageUUID)) {
+                        diffsOfPackage.addAll(pkgPropDiffsContainer.get(updatedTIPP.packageUUID))
+                    }//test with set, otherwise make check
                     packagesToNotify.put(updatedTIPP.packageUUID,diffsOfPackage)
                 }
                 else {
-                    addNewTIPP(packagesOnPage.get(updatedTIPP.packageUUID),updatedTIPP,platformsOnPage,null)
+                    //addNewTIPP(packagesOnPage.get(updatedTIPP.packageUUID), updatedTIPP, platformsOnPage,null)
+                    Map<String,Object> diffs = createOrUpdateTIPP(tippsInLaser.get(updatedTIPP.uuid), updatedTIPP, packagesOnPage, platformsOnPage)
+                    Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(updatedTIPP.packageUUID)
+                    if(!diffsOfPackage) {
+                        diffsOfPackage = []
+                    }
+                    diffsOfPackage << diffs
+                    if(pkgPropDiffsContainer.get(updatedTIPP.packageUUID)) {
+                        diffsOfPackage.addAll(pkgPropDiffsContainer.get(updatedTIPP.packageUUID))
+                    }//test with set, otherwise make check
+                    packagesToNotify.put(updatedTIPP.packageUUID,diffsOfPackage)
                 }
                 Date lastUpdatedTime = DateUtils.parseDateGeneric(tipp.lastUpdatedDisplay)
                 if(lastUpdatedTime.getTime() > maxTimestamp) {
@@ -478,6 +496,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     String oldValue = initialPackagesCounter.get(packageUUID).toString()
                     PendingChange.construct([msgToken:PendingChangeConfiguration.PACKAGE_TIPP_COUNT_CHANGED,target:Package.findByGokbId(packageUUID),status:RDStore.PENDING_CHANGE_HISTORY,prop:"tippCount",newValue:newValue,oldValue:oldValue])
                 }
+                //println("diffsOfPackage:"+diffsOfPackage)
                 diffsOfPackage.each { Map<String,Object> diff ->
                     log.debug(diff.toMapString())
                     //[event:update, target:de.laser.TitleInstancePackagePlatform : 196477, diffs:[[prop:price, priceDiffs:[[event:add, target:de.laser.finance.PriceItem : 10791]]]]]
@@ -506,7 +525,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         switch(priceEntry.event) {
                                             case 'add': PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_PRICE,target:priceEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
                                                 break
-                                            case 'update': PendingChange.construct([msgToken:PendingChangeConfiguration.PRICE_UPDATED,target:priceEntry.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:diff.prop,newValue:diff.newValue,oldValue:diff.oldValue])
+                                            case 'update': PendingChange.construct([msgToken:PendingChangeConfiguration.PRICE_UPDATED,target:priceEntry.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:diff.prop,newValue:priceEntry.newValue,oldValue:priceEntry.oldValue])
                                                 //log.debug("tippDiff.priceDiffs: "+ priceEntry)
                                                 break
                                             case 'delete': JSON oldMap = priceEntry.target.properties as JSON
@@ -515,7 +534,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         }
                                     }
                                         break
-                                    default: PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_UPDATED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:tippDiff.prop,newValue:tippDiff.newValue,oldValue:tippDiff.oldValue])
+                                    default:
+                                        PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_UPDATED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:tippDiff.prop,newValue:tippDiff.newValue,oldValue:tippDiff.oldValue])
                                         break
                                 }
                             }
@@ -543,18 +563,71 @@ class GlobalSourceSyncService extends AbstractLockableService {
             newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.priceItem pi join pi.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
             newChanges.each { PendingChange newChange ->
                 boolean processed = false
-                if(newChange.tipp)
+                if(newChange.tipp) {
                     processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken } != null
-                else if(newChange.tippCoverage)
+                }
+                else if(newChange.tippCoverage) {
                     processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken } != null
-                else if(newChange.priceItem && newChange.priceItem.tipp)
+                }
+                else if(newChange.priceItem && newChange.priceItem.tipp) {
                     processed = acceptedChanges.find { PendingChange accepted -> accepted.priceItem == newChange.priceItem && accepted.msgToken == newChange.msgToken } != null
+                }
+
                 if(!processed) {
                     /*
                     get each change for each subscribed package and token, fetch issue entitlement equivalent and process the change
                     if a change is being accepted, create a copy with target = subscription of subscription package and oid = the target of the processed change
                      */
-                    pendingChangeService.applyChangeForHolding(newChange,subPkg,contextOrg)
+                    pendingChangeService.applyPendingChange(newChange,subPkg,contextOrg)
+                }
+            }
+        }
+    }
+
+
+    void nonAutoAcceptPendingChanges(Org contextOrg, SubscriptionPackage subPkg) {
+        //get for each subscription package the tokens which should be accepted
+        String query = 'select pcc.settingKey from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where pcc.settingValue != :accept and sp = :sp'
+        List<String> pendingChangeConfigurations = PendingChangeConfiguration.executeQuery(query,[accept:RDStore.PENDING_CHANGE_CONFIG_ACCEPT,sp:subPkg])
+        if(pendingChangeConfigurations) {
+            Map<String,Object> changeParams = [pkg:subPkg.pkg,history:RDStore.PENDING_CHANGE_HISTORY,subscriptionJoin:subPkg.dateCreated,msgTokens:pendingChangeConfigurations]
+            Set<PendingChange> newChanges = [],
+                               acceptedChanges = PendingChange.findAllByOidAndStatusNotEqualAndMsgTokenIsNotNull(genericOIDService.getOID(subPkg.subscription),RDStore.PENDING_CHANGE_ACCEPTED)
+            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
+            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
+            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.priceItem pi join pi.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
+            newChanges.each { PendingChange newChange ->
+                boolean processed = false
+                if(newChange.tipp) {
+                    processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken } != null
+                }
+                else if(newChange.tippCoverage) {
+                    processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken } != null
+                }
+                else if(newChange.priceItem && newChange.priceItem.tipp) {
+                    processed = acceptedChanges.find { PendingChange accepted -> accepted.priceItem == newChange.priceItem && accepted.msgToken == newChange.msgToken } != null
+                }
+
+                if(!processed) {
+
+                    PendingChangeConfiguration pendingChangeConfiguration = subPkg.pendingChangeConfig.find {PendingChangeConfiguration pcc -> pcc.settingKey == newChange.msgToken}
+                    if(pendingChangeConfiguration){
+                        def target
+                        if(newChange.tipp)
+                            target = newChange.tipp
+                        else if(newChange.tippCoverage)
+                            target = newChange.tippCoverage
+                        else if(newChange.priceItem && newChange.priceItem.tipp)
+                            target = newChange.priceItem
+                        if(target) {
+                            Map<String,Object> changeMap = [target:target,
+                                                            oid: genericOIDService.getOID(subPkg.subscription),
+                                                            oldValue: newChange.oldValue,
+                                                            newValue: newChange.newValue,
+                                                            prop: newChange.targetProperty]
+                                changeNotificationService.determinePendingChangeBehavior(changeMap, newChange.msgToken, subPkg)
+                        }
+                    }
                 }
             }
         }
@@ -921,7 +994,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         if(packageRecord.providerUuid) {
                             newPackageProps.contentProvider = Org.findByGokbId(packageRecord.providerUuid)
                         }
-                        pkgPropDiffsContainer.put(packageUUID,getPkgPropDiff(result, newPackageProps))
+                        Set<Map<String,Object>> pkgPropDiffs = getPkgPropDiff(result, newPackageProps)
+                        if(pkgPropDiffs) {
+                            pkgPropDiffsContainer.put(packageUUID, [event: "pkgPropUpdate", diffs: pkgPropDiffs, target: result])
+                        }
+
                         if(!initialPackagesCounter.get(packageUUID))
                             initialPackagesCounter.put(packageUUID,TitleInstancePackagePlatform.executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg:result])[0] as Integer)
                     }
@@ -1261,15 +1338,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
             if(provider) {
                 provider.name = providerRecord.name
                 provider.status = orgStatus.get(providerRecord.status)
+                List allOrgTypeIds = provider.getAllOrgTypeIds()
+                if(!(RDStore.OT_PROVIDER.id in allOrgTypeIds)){
+                    provider.addToOrgType(RDStore.OT_PROVIDER)
+                }
+
             }
             else {
                 provider = new Org(
                         name: providerRecord.name,
                         sector: RDStore.O_SECTOR_PUBLISHER,
                         status: orgStatus.get(providerRecord.status),
-                        orgType: [RDStore.OT_PROVIDER],
                         gokbId: providerUUID
                 )
+                provider.addToOrgType(RDStore.OT_PROVIDER)
             }
             if(provider.save()) {
                 //providedPlatforms are missing in ES output -> see GOKb-ticket #378! But maybe, it is wiser to not implement it at all
@@ -1595,8 +1677,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
         TitleInstancePackagePlatform newTIPP = new TitleInstancePackagePlatform(
                 titleType: tippData.titleType,
                 name: tippData.name,
-                firstAuthor: tippData.FirstAuthor,
-                firstEditor: tippData.FirstEditor,
+                firstAuthor: tippData.firstAuthor,
+                firstEditor: tippData.firstEditor,
                 dateFirstInPrint: (Date) tippData.dateFirstInPrint,
                 dateFirstOnline: (Date) tippData.dateFirstOnline,
                 imprint: tippData.imprint,
@@ -1685,7 +1767,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         if(tippa instanceof TitleInstancePackagePlatform && tippb instanceof Map)
             log.info("processing diffs; the respective GOKb UUIDs are: ${tippa.gokbId} (LAS:eR) vs. ${tippb.uuid} (remote)")
         else if(tippa instanceof TitleInstancePackagePlatform && tippb instanceof TitleInstancePackagePlatform)
-            log.info("processing diffs; the respective objects are: ${tippa.id} (IssueEntitlement) pointing to ${tippb.id} (TIPP)")
+            log.info("processing diffs; the respective objects are: ${tippa.id} (TitleInstancePackagePlatform) pointing to ${tippb.id} (TIPP)")
         Set<Map<String, Object>> result = []
 
         if (tippa.hasProperty("hostPlatformURL") && tippa.hostPlatformURL != tippb.hostPlatformURL) {
@@ -1728,6 +1810,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
         }
 
+        //println("getTippDiff:"+result)
         result
     }
 
