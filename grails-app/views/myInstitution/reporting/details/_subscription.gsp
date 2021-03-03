@@ -1,4 +1,5 @@
 <%@ page import="de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Subscription; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty; de.laser.reporting.OrganisationConfig;de.laser.reporting.SubscriptionConfig;" %>
+<laser:serviceInjection />
 
 <h3 class="ui header">3. Details</h3>
 
@@ -36,14 +37,18 @@
                     <g:if test="${query == 'subscription-property-assignment'}">
                         <td>
                             <%
-                                SubscriptionProperty sp = SubscriptionProperty.findByOwnerAndType(sub, PropertyDefinition.get(id))
-                                if (sp) {
+                                List<SubscriptionProperty> properties = SubscriptionProperty.executeQuery(
+                                        "select sp from SubscriptionProperty sp join sp.type pd where sp.owner = :sub and pd.id = :pdId " +
+                                                "and (sp.isPublic = true or sp.tenant = :ctxOrg) and pd.descr like '%Property' ",
+                                        [sub: sub, pdId: id as Long, ctxOrg: contextService.getOrg()]
+                                )
+                                println properties.collect { sp ->
                                     if (sp.getType().isRefdataValueType()) {
-                                        println sp.getRefValue()?.getI10n('value')
+                                        sp.getRefValue()?.getI10n('value')
                                     } else {
-                                        println sp.getValue()
+                                        sp.getValue()
                                     }
-                                }
+                                }.findAll().join(' ,<br/>') // removing empty and null values
                             %>
                         </td>
                     </g:if>

@@ -1,4 +1,5 @@
 <%@ page import="de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.reporting.OrganisationConfig;" %>
+<laser:serviceInjection />
 
 <h3 class="ui header">3. Details</h3>
 
@@ -32,14 +33,18 @@
                     <g:if test="${query == 'org-property-assignment'}">
                         <td>
                             <%
-                                OrgProperty op = OrgProperty.findByOwnerAndType(org, PropertyDefinition.get(id))
-                                if (op) {
+                                List<OrgProperty> properties = OrgProperty.executeQuery(
+                                        "select op from OrgProperty op join op.type pd where op.owner = :org and pd.id = :pdId " +
+                                                "and (op.isPublic = true or op.tenant = :ctxOrg) and pd.descr like '%Property' ",
+                                        [org: org, pdId: id as Long, ctxOrg: contextService.getOrg()]
+                                )
+                                println properties.collect { op ->
                                     if (op.getType().isRefdataValueType()) {
-                                        println op.getRefValue()?.getI10n('value')
+                                        op.getRefValue()?.getI10n('value')
                                     } else {
-                                        println op.getValue()
+                                        op.getValue()
                                     }
-                                }
+                                }.findAll().join(' ,<br/>') // removing empty and null values
                             %>
                         </td>
                     </g:if>

@@ -1,4 +1,5 @@
 <%@ page import="de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.LicenseProperty; de.laser.reporting.OrganisationConfig;de.laser.reporting.LicenseConfig;" %>
+<laser:serviceInjection />
 
 <h3 class="ui header">3. Details</h3>
 
@@ -36,14 +37,18 @@
                     <g:if test="${query == 'license-property-assignment'}">
                         <td>
                             <%
-                                LicenseProperty lp = LicenseProperty.findByOwnerAndType(lic, PropertyDefinition.get(id))
-                                if (lp) {
+                                List<LicenseProperty> properties = LicenseProperty.executeQuery(
+                                        "select lp from LicenseProperty lp join lp.type pd where lp.owner = :lic and pd.id = :pdId " +
+                                        "and (lp.isPublic = true or lp.tenant = :ctxOrg) and pd.descr like '%Property' ",
+                                        [lic: lic, pdId: id as Long, ctxOrg: contextService.getOrg()]
+                                        )
+                                println properties.collect { lp ->
                                     if (lp.getType().isRefdataValueType()) {
-                                        println lp.getRefValue()?.getI10n('value')
+                                        lp.getRefValue()?.getI10n('value')
                                     } else {
-                                        println lp.getValue()
+                                        lp.getValue()
                                     }
-                                }
+                                }.findAll().join(' ,<br/>') // removing empty and null values
                             %>
                         </td>
                     </g:if>
