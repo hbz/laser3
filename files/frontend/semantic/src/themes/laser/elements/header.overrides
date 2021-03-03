@@ -25,6 +25,20 @@ h1~h2.ui.header {
   align-items: center;
 }
 
+body[class*="Organisation"],
+body[class*="organisation"],
+body[class*="myPublicContacts"],
+body[class*="myInstitution"]{
+  .ui.icon.header .circular.icon.la-object {
+    display: inline-block;
+    background-color: @organisation;
+    border-color: @organisation;
+    &:before {
+      content: "\f19c";
+    }
+  }
+}
+
 body[class*="License"]
 ,body[class*="license"]  {
   .ui.icon.header .circular.icon.la-object {
@@ -83,19 +97,7 @@ body[class*="title"]  {
   }
 }
 
-body[class*="Organisation"],
-body[class*="organisation"],
-body[class*="myPublicContacts"],
-body[class*="myInstitution"]{
-  .ui.icon.header .circular.icon.la-object {
-    display: inline-block;
-    background-color: @organisation;
-    border-color: @organisation;
-    &:before {
-      content: "\f19c";
-    }
-  }
-}
+
 
 body[class*="Platform"],
 body[class*="platform"]
