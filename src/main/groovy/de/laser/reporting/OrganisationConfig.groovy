@@ -55,6 +55,13 @@ class OrganisationConfig extends GenericConfig {
                                     'org-funderType'        : 'Unterhaltsträger',
                                     'org-funderHskType'     : 'Trägerschaft'
                             ]
+                    ],
+                    query2 : [
+                            'Verteilung' : [
+                                    'org-property-assignment'   : 'Vertrag → Merkmale (eigene/öffentliche)',
+                                    'org-identifier-assignment' : 'Organisation → Identifikatoren',
+                                    //'org-serverAccess-assignment' : 'Organisation nach Datenweitergabe',
+                            ]
                     ]
             ]
     ]

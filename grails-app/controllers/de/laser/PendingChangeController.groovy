@@ -40,7 +40,7 @@ class PendingChangeController  {
                 if(targetPkg) {
                     List<SubscriptionPackage> subPkg = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where sp.pkg = :pkg and sp.subscription.id = :subscription and oo.org = :ctx and s.instanceOf is null',[ctx:contextOrg,pkg:targetPkg,subscription:Long.parseLong(params.subId)])
                     if(subPkg.size() == 1)
-                        pendingChangeService.applyChangeForHolding(pc,(SubscriptionPackage) subPkg[0], contextOrg)
+                        pendingChangeService.applyPendingChange(pc,(SubscriptionPackage) subPkg[0], contextOrg)
                     else log.error("unable to determine subscription package for pending change ${pc}")
                 }
             }
@@ -61,7 +61,9 @@ class PendingChangeController  {
             pendingChangeService.performReject(pc)
         }
         else if (!pc.payload) {
-            if(pc.status != RDStore.PENDING_CHANGE_HISTORY) pendingChangeService.reject(pc)
+            if(pc.status != RDStore.PENDING_CHANGE_HISTORY) {
+                pendingChangeService.reject(pc)
+            }
         }
         redirect(url: request.getHeader('referer'))
     }

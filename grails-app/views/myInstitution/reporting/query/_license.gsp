@@ -1,14 +1,14 @@
-<%@page import="de.laser.reporting.SubscriptionConfig; de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.LicenseConfig; de.laser.ReportingService;de.laser.Org;de.laser.License" %>
 <laser:serviceInjection/>
 
 <g:if test="${result}">
-    <g:if test="${result.subscriptionIdList || result.memberIdList || result.providerIdList}">
+    <g:if test="${result.licenseIdList || result.memberIdList || result.licensorIdList}">
 
         <div class="ui message success">
             <p>
-                ${result.subscriptionIdList.size()} Lizenzen,
-                ${result.memberIdList.size()} Teilnehmer und
-                ${result.providerIdList.size()} Anbieter
+                ${result.licenseIdList.size()} Verträge und
+                %{-- ${result.memberIdList.size()} Teilnehmer und --}%
+                ${result.licensorIdList.size()} Lizenzgeber
                 wurden anhand der Filtereinstellungen gefunden.
             </p>
 
@@ -38,3 +38,4 @@
 
     </g:else>
 </g:if>
+

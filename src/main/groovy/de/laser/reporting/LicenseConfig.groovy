@@ -1,61 +1,54 @@
 package de.laser.reporting
 
+import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
 
-class SubscriptionConfig extends GenericConfig {
+class LicenseConfig extends GenericConfig {
 
-    static String KEY = 'subscription'
+    static String KEY = 'license'
 
     static Map<String, Object> CONFIG = [
 
             base : [
                     meta : [
-                            class: Subscription
+                            class: License
                     ],
                     source : [
-                            //'all-sub' : 'Alle Lizenzen',
-                            'consortia-sub' : 'Meine Lizenzen'
+                            //'all-lic' : 'Alle Verträge',
+                            'consortia-lic' : 'Meine Verträge'
                     ],
                     fields: [
                             'endDate'               : FIELD_TYPE_PROPERTY,
-                            'form'                  : FIELD_TYPE_REFDATA,
-                            'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
-                            'isPublicForApi'        : FIELD_TYPE_PROPERTY,
-                            'kind'                  : FIELD_TYPE_REFDATA,
-                            'resource'              : FIELD_TYPE_REFDATA,
+                            'licenseCategory'       : FIELD_TYPE_REFDATA,
+                            //'openEnded'             : FIELD_TYPE_REFDATA,
                             'startDate'             : FIELD_TYPE_PROPERTY,
                             'status'                : FIELD_TYPE_REFDATA,
-                            //'type'                : FIELD_TYPE_REFDATA,
-                            //'isMultiYear'         : FIELD_TYPE_PROPERTY,
-                            //'manualRenewalDate'       : FIELD_TYPE_PROPERTY,
-                            //'manualCancellationDate'  : FIELD_TYPE_PROPERTY
+                            'type'                  : FIELD_TYPE_REFDATA
                     ],
                     filter : [
                             default: [
-                                    [ 'form', 'kind', 'status' ],
-                                    [ 'resource', 'hasPerpetualAccess', 'isPublicForApi' ],
-                                    [ 'startDate', 'endDate' ]
+                                    [ 'licenseCategory', 'type', 'status' ],
+                                    [ 'startDate', 'endDate' /*, 'openEnded' */ ]
                             ]
                     ],
                     query : [
-                            'Lizenz' : [
-                                    'subscription-form'         : 'Lizenzform',
-                                    'subscription-kind'         : 'Lizenztyp',
-                                    'subscription-resource'     : 'Ressourcentyp',
-                                    'subscription-status'       : 'Lizenzstatus'
+                            'Vertrag' : [
+                                    'license-licenseCategory'   : 'Lizenzkategorie',
+                                    'license-type'              : 'Lizenztyp',
+                                    //'license-openEnded'         : 'Unbefristet',
+                                    'license-status'            : 'Lizenzstatus'
                             ]
                     ],
                     query2 : [
                             'Verteilung' : [
-                                    'subscription-provider-assignment'   : 'Lizenz → Anbieter',
-                                    'subscription-property-assignment'   : 'Lizenz → Merkmale (eigene/öffentliche)',
-                                    'subscription-identifier-assignment' : 'Lizenz → Identifikatoren',
+                                    'license-property-assignment'   : 'Vertrag → Merkmale (eigene/öffentliche)',
+                                    'license-identifier-assignment' : 'Vertrag → Identifikatoren',
                             ]
                     ]
             ],
 
-            member : [
+            /*member : [
                     meta : [
                             class: Org
                     ],
@@ -95,14 +88,14 @@ class SubscriptionConfig extends GenericConfig {
                                     'member-funderHskType'      : 'Trägerschaft'
                             ]
                     ]
-            ],
+            ],*/
 
-            provider : [
+            licensor : [
                     meta : [
                             class: Org
                     ],
                     source : [
-                            'depending-provider' : 'Alle betroffenen Anbieter'
+                            'depending-licensor' : 'Alle betroffenen Lizenzgeber'
                     ],
                     fields : [
                             'country'   : FIELD_TYPE_REFDATA,
@@ -114,10 +107,10 @@ class SubscriptionConfig extends GenericConfig {
                             ]
                     ],
                     query : [
-                            'Anbieter' : [
-                                    'provider-orgType'      : 'Organisationstyp',
-                                    'provider-country'      : 'Länder',
-                                    'provider-region'       : 'Bundesländer'
+                            'Lizenzgeber' : [
+                                    'licensor-orgType'      : 'Organisationstyp',
+                                    'licensor-country'      : 'Länder',
+                                    'licensor-region'       : 'Bundesländer'
                             ]
                     ]
             ],

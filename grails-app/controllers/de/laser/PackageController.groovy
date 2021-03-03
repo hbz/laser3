@@ -653,22 +653,28 @@ class PackageController {
 
         Set<Long> packageHistory = []
 
-        String query1 = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :pkg and pc.oid = null and pc.status = :history ',
+        String query = 'select pc.id from PendingChange pc where pc.pkg = :pkg and pc.oid = null and pc.status = :history ',
+               query1 = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :pkg and pc.oid = null and pc.status = :history ',
                query2 = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :pkg and pc.oid = null and pc.status = :history ',
                query3 = 'select pc.id from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg = :pkg and pc.oid = null and pc.status = :history '
 
+        packageHistory.addAll(PendingChange.executeQuery(query, [pkg: packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
         packageHistory.addAll(PendingChange.executeQuery(query1, [pkg: packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
         packageHistory.addAll(PendingChange.executeQuery(query2, [pkg: packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
         packageHistory.addAll(PendingChange.executeQuery(query3, [pkg: packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
 
         params.sort = params.sort ?: 'ts'
         params.order = params.order ?: 'desc'
+        params.max = result.max
+        params.offset = result.offset
 
         List changes = packageHistory ? PendingChange.findAllByIdInList(packageHistory, params) : []
-        result.countPendingChanges = changes.size()
+        result.countPendingChanges = packageHistory ? PendingChange.countByIdInList(packageHistory) : 0
 
-        result.num_change_rows = changes.size()
-        result.changes = changes.drop(result.offset).take(result.max)
+        result.num_change_rows = result.countPendingChanges
+        result.changes = changes
+
+        result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 
         result
     }

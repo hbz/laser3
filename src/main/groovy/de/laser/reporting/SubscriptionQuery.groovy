@@ -2,7 +2,6 @@ package de.laser.reporting
 
 import de.laser.ContextService
 import de.laser.Org
-import de.laser.RefdataValue
 import de.laser.properties.PropertyDefinition
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -63,23 +62,24 @@ class SubscriptionQuery extends GenericQuery {
         }
         else if ( params.query in ['subscription-property-assignment']) {
 
-            result.data = Org.executeQuery(
-                    'select pd.id, pd.name, count(*) from Subscription sub join sub.propertySet sp join sp.type pd where sub.id in (:idList) and (sp.owner = :ctxOrg or sp.isPublic = true) group by pd.id order by pd.name',
-                    [idList: idList, ctxOrg: contextService.getOrg()]
+            handleGenericPropertyAssignmentQuery(
+                    params.query,
+                    'select pd.id, pd.name, count(*) from Subscription sub join sub.propertySet prop join prop.type pd where sub.id in (:idList)',
+                    'select sub.id from Subscription sub join sub.propertySet prop join prop.type pd where sub.id in (:idList)',
+                    idList,
+                    contextService.getOrg(),
+                    result
             )
-            result.data.each { d ->
-                d[1] = PropertyDefinition.get(d[0]).getI10n('name')
+        }
+        else if ( params.query in ['subscription-identifier-assignment']) {
 
-                result.dataDetails.add([
-                        query : params.query,
-                        id    : d[0],
-                        label : d[1],
-                        idList: Org.executeQuery(
-                                'select sub.id from Subscription sub join sub.propertySet sp join sp.type pd where sub.id in (:idList) and (sp.owner = :ctxOrg or sp.isPublic = true) and pd.id = :d order by pd.name',
-                                [idList: idList, d: d[0], ctxOrg: contextService.getOrg()]
-                        )
-                ])
-            }
+            handleGenericIdentifierAssignmentQuery(
+                    params.query,
+                    'select ns.id, ns.ns, count(*) from Subscription sub join sub.ids ident join ident.ns ns where sub.id in (:idList)',
+                    'select sub.id from Subscription sub join sub.ids ident join ident.ns ns where sub.id in (:idList)',
+                    idList,
+                    result
+            )
         }
 
         result
@@ -87,25 +87,10 @@ class SubscriptionQuery extends GenericQuery {
 
     static void processSimpleRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
 
-        result.data = Org.executeQuery(
-                PROPERTY_QUERY[0] + 'from Subscription s join s.' + refdata + ' p where s.id in (:idList)' + PROPERTY_QUERY[1], [idList: idList]
-        )
-        result.data.each { d ->
-            d[1] = RefdataValue.get(d[0]).getI10n('value')
-
-            result.dataDetails.add( [
-                    query:  query,
-                    id:     d[0],
-                    label:  d[1],
-                    idList: Org.executeQuery(
-                        'select s.id from Subscription s join s.' + refdata + ' p where s.id in (:idList) and p.id = :d order by s.name',
-                        [idList: idList, d: d[0]]
-                    )
-            ])
-        }
-
-        handleNonMatchingData(
+        handleGenericRefdataQuery(
                 query,
+                PROPERTY_QUERY[0] + 'from Subscription s join s.' + refdata + ' p where s.id in (:idList)' + PROPERTY_QUERY[1],
+                'select s.id from Subscription s join s.' + refdata + ' p where s.id in (:idList) and p.id = :d order by s.name',
                 'select distinct s.id from Subscription s where s.id in (:idList) and s.'+ refdata + ' is null',
                 idList,
                 result
