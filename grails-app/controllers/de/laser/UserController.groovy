@@ -3,9 +3,9 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
 import de.laser.ctrl.UserControllerService
 import de.laser.annotations.DebugAnnotation
+import de.laser.helper.PasswordUtils
 import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -141,7 +141,7 @@ class UserController  {
                 redirect url: request.getHeader('referer'), id: params.id
             }
             if (result.user) {
-                String newPassword = User.generateRandomPassword()
+                String newPassword = PasswordUtils.getRandomUserPassword()
                 result.user.password = newPassword
                 if (result.user.save()) {
                     flash.message = message(code: 'user.newPassword.success') as String

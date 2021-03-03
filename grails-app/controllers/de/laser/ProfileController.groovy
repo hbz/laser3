@@ -6,6 +6,7 @@ import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.UserSetting.KEYS
 import de.laser.helper.EhcacheWrapper
+import de.laser.helper.PasswordUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
@@ -564,15 +565,16 @@ class ProfileController {
         flash.message = ""
 
         if (passwordEncoder.isPasswordValid(user.password, params.password_current, null)) {
-            if (params.password_new.trim().size() < 5) {
-                flash.message += message(code:'profile.password.update.enterValidNewPassword')
-            }
-            else {
+
+            if (PasswordUtils.isUserPasswordValid(params.password_new)) {
                 user.password = params.password_new
 
                 if (user.save()) {
                     flash.message += message(code:'profile.password.update.success')
                 }
+            }
+            else {
+                flash.error = message(code:'profile.password.update.enterValidNewPassword') as String
             }
         }
         else {
