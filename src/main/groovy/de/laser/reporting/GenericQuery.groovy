@@ -66,7 +66,7 @@ class GenericQuery {
     static void handleGenericIdentifierAssignmentQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List idList, Map<String, Object> result) {
 
         result.data = Org.executeQuery(
-                dataHqlPart + " and (ident.value is not null and ident.value != '') group by ns.id order by ns.ns",
+                dataHqlPart + " and ident.value is not null and trim(ident.value) != '' group by ns.id order by ns.ns",
                 [idList: idList]
         )
         result.data.each { d ->
@@ -75,7 +75,7 @@ class GenericQuery {
                     id    : d[0],
                     label : d[1],
                     idList: Org.executeQuery(
-                            dataDetailsHqlPart + " and ns.id = :d and (ident.value is not null and ident.value != '')",
+                            dataDetailsHqlPart + " and ns.id = :d and ident.value is not null and trim(ident.value) != ''",
                             [idList: idList, d: d[0]]
                     )
             ])

@@ -49,7 +49,10 @@
                     </g:if>
                     <g:elseif test="${query == 'subscription-identifier-assignment'}">
                         <td>
-                            <% println Identifier.findBySubAndNs(sub, IdentifierNamespace.get(id)).value %>
+                            <%
+                                List<Identifier> identList = Identifier.findAllBySubAndNs(sub, IdentifierNamespace.get(id))
+                                println identList.collect{ it.value ?: null }.findAll().join(' ,<br/>') // removing empty and null values
+                            %>
                         </td>
                     </g:elseif>
                     <g:else>

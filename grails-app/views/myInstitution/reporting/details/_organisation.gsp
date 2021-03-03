@@ -45,7 +45,10 @@
                     </g:if>
                     <g:elseif test="${query == 'org-identifier-assignment'}">
                         <td>
-                            <% println Identifier.findByOrgAndNs(org, IdentifierNamespace.get(id)).value %>
+                            <%
+                                List<Identifier> identList = Identifier.findAllByOrgAndNs(org, IdentifierNamespace.get(id))
+                                println identList.collect{ it.value ?: null }.findAll().join(' ,<br/>') // removing empty and null values
+                            %>
                         </td>
                     </g:elseif>
                 </tr>
