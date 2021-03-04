@@ -184,20 +184,20 @@
         <g:form class="ui form" action="managePrivatePropertyDefinitions" >
             <g:field type="hidden" name="cmd" value="add" />
 
-            <div class="field">
-                <label class="property-label">Name</label>
-                <input type="text" name="pd_name"/>
+            <div class="field required">
+                <label class="property-label" for="pd_name">Name <g:message code="messageRequiredField" /></label>
+                <input type="text" name="pd_name" id="pd_name" />
             </div>
 
             <div class="field">
-                <label class="property-label">${message(code:'propertyDefinition.expl.label')}</label>
+                <label class="property-label" for="pd_expl">${message(code:'propertyDefinition.expl.label')}</label>
                 <textarea name="pd_expl" id="pd_expl" class="ui textarea" rows="2"></textarea>
             </div>
 
             <div class="fields">
 
-                <div class="field six wide">
-                    <label class="property-label">${message(code:'propertyDefinition.descr.label')}</label>
+                <div class="field six wide required">
+                    <label class="property-label" for="pd_descr">${message(code:'propertyDefinition.descr.label')} <g:message code="messageRequiredField" /></label>
                     <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
                     <%
                         Map<String,Object> availablePrivateDescr = [:]
@@ -209,8 +209,8 @@
                         from="${availablePrivateDescr.entrySet()}" noSelection="${[null:message(code:'default.select.choose.label')]}"/>
                 </div>
 
-                <div class="field five wide">
-                    <label class="property-label"><g:message code="default.type.label" /></label>
+                <div class="field five wide required">
+                    <label class="property-label" for="cust_prop_modal_select"><g:message code="default.type.label" /> <g:message code="messageRequiredField" /></label>
                     <g:select class="ui dropdown"
                         from="${PropertyDefinition.validTypes.entrySet()}"
                         optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
