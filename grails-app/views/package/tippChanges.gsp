@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.helper.RDStore; de.laser.RefdataValue;" %>
+<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.helper.RDStore; de.laser.RefdataValue;" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -46,6 +46,12 @@
                 </g:if>
                 <g:elseif test="${entry.priceItem}">
                     <g:set var="tipp" value="${entry.priceItem.tipp}"/>
+                </g:elseif>
+                <g:elseif test="${entry.oid}">
+                    <g:set var="object" value="${genericOIDService.resolveOID(entry.oid)}"/>
+                    <g:if test="${object instanceof TitleInstancePackagePlatform}">
+                        <g:set var="tipp" value="${object}"/>
+                    </g:if>
                 </g:elseif>
 
                 <g:if test="${tipp}">
