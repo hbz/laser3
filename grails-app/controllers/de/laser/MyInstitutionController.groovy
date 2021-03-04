@@ -2753,10 +2753,10 @@ join sub.orgRelations or_sub where
                 PropertyDefinitionGroup.withTransaction { TransactionStatus ts ->
                     try {
                         pdg.delete()
-                        flash.message = message(code:'propertyDefinitionGroup.delete.success',args:[pdg.name])
+                        flash.message = message(code:'propertyDefinitionGroup.delete.success', args:[pdg.name]) as String
                     }
                     catch (e) {
-                        flash.error = message(code:'propertyDefinitionGroup.delete.failure',args:[pdg.name])
+                        flash.error = message(code:'propertyDefinitionGroup.delete.failure', args:[pdg.name]) as String
                     }
                 }
                 break
@@ -2764,7 +2764,7 @@ join sub.orgRelations or_sub where
                 if(formService.validateToken(params)) {
                     boolean valid
                     PropertyDefinitionGroup propDefGroup
-                    String ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
+                    String ownerType = params.prop_descr ? PropertyDefinition.getDescrClass(params.prop_descr) : null
 
                     PropertyDefinitionGroup.withTransaction { TransactionStatus ts ->
                         if (params.oid) {
@@ -2775,6 +2775,10 @@ join sub.orgRelations or_sub where
 
                             if (propDefGroup.save()) {
                                 valid = true
+                                flash.message = message(code: 'propertyDefinitionGroup.create.success', args: [propDefGroup.name]) as String
+                            }
+                            else {
+                                flash.error = message(code: 'propertyDefinitionGroup.create.error') as String
                             }
                         }
                         else {
@@ -2788,7 +2792,13 @@ join sub.orgRelations or_sub where
                                 )
                                 if (propDefGroup.save()) {
                                     valid = true
+                                    flash.message = message(code: 'propertyDefinitionGroup.create.success', args: [propDefGroup.name]) as String
                                 }
+                                else {
+                                    flash.error = message(code: 'propertyDefinitionGroup.create.error') as String
+                                }
+                            } else {
+                                flash.error = message(code: 'propertyDefinitionGroup.create.missing') as String
                             }
                         }
                         if (valid) {

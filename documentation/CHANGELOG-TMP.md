@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-3123    03.03.2021  rc2.0   2.0         David   Feature     Reporting: Zugriff auf Identifikatoren
+3175    04.03.2021  rc2.0   2.0.2       David   Bug         Neue Merkmalsgruppe erstellen
+
+3123    03.03.2021  rc2.0   2.0.1       David   Feature     Reporting: Zugriff auf Identifikatoren
 
 3169    02.03.2021  rc2.0   2.0.1       Moe     Bug         Neue Fehlermeldung Dasboad nach Deploy vom Freitag
 
