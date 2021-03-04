@@ -312,7 +312,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         source.save()
                     }
                     if(packagesToNotify.keySet().size() > 0) {
-                        log.info("notifying subscriptions ..."+packagesToNotify)
+                        log.info("notifying subscriptions ...")
                         trackPackageHistory()
                         //get subscription packages and their respective holders, parent level only!
                         String query = 'select oo.org,sp from SubscriptionPackage sp join sp.pkg pkg ' +
