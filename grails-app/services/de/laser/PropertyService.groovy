@@ -154,10 +154,18 @@ class PropertyService {
         Locale locale = LocaleContextHolder.getLocale()
         Org tenant = contextService.getOrg()
 
-        RefdataCategory rdc = null
-        if(params.pd_descr && params.pd_descr != "null" && params.pd_type && params.pd_type != "null") {
-            if (params.refdatacategory) {
-                rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
+        if ( (params.pd_name && params.pd_descr && params.pd_type) &&
+             (params.pd_name != "null" && params.pd_descr != "null" && params.pd_type != "null")
+        ) {
+
+            RefdataCategory rdc = null
+            if (params.pd_type == RefdataValue.class.name) {
+                if (params.refdatacategory) {
+                    rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
+                }
+                if (! rdc) {
+                    return ['error', messageSource.getMessage('propertyDefinition.descr.missing2', null, locale)]
+                }
             }
 
             Map<String, Object> map = [
