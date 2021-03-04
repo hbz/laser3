@@ -84,14 +84,25 @@
                 </td>
                 <td>
 
-                    <g:set var="tipp"
-                           value="${entry.tipp ?: (entry.oid ? genericOIDService.resolveOID(entry.oid) : null)}"/>
+                    <g:set var="tipp" />
 
+                    <g:if test="${entry.tipp}">
+                        <g:set var="tipp" value="${entry.tipp}"/>
+                    </g:if>
                     <g:if test="${entry.tippCoverage}">
                         <g:set var="tipp" value="${entry.tippCoverage.tipp}"/>
                     </g:if>
                     <g:elseif test="${entry.priceItem}">
                         <g:set var="tipp" value="${entry.priceItem.tipp}"/>
+                    </g:elseif>
+                    <g:elseif test="${entry.oid}">
+                        <g:set var="object" value="${genericOIDService.resolveOID(entry.oid)}"/>
+                        <g:if test="${object instanceof IssueEntitlement}">
+                            <g:set var="tipp" value="${object.tipp}"/>
+                        </g:if>
+                        <g:if test="${object instanceof TitleInstancePackagePlatform}">
+                            <g:set var="tipp" value="${object}"/>
+                        </g:if>
                     </g:elseif>
 
                     <g:set var="ie" value="${tipp instanceof TitleInstancePackagePlatform ? IssueEntitlement.findByTippAndSubscription(tipp, subscription) : null}"/>
@@ -99,7 +110,7 @@
                     <g:if test="${tipp}">
 
                         <g:if test="${ie}">
-                            <g:link controller="issueEntitlement" action="show" id="${ie.id}">${tipp.name}</g:link>
+                            <g:link controller="issueEntitlement" action="show" id="${ie.id}">${ie.tipp.name}</g:link>
                         </g:if>
                         <g:else>
                             ${tipp.name}
