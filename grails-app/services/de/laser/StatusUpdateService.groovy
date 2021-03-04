@@ -32,7 +32,7 @@ class StatusUpdateService extends AbstractLockableService {
 
             // INTENDED -> CURRENT
 
-            Set<Long> intendedSubsIds1 = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and s.startDate < :currentDate and (s.endDate != null and s.endDate >= :currentDate) and s.isMultiYear = false',
+            Set<Long> intendedSubsIds1 = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and s.startDate < :currentDate and s.isMultiYear = false',
             [status: RDStore.SUBSCRIPTION_INTENDED, currentDate: currentDate])
 
             log.info("Intended subscriptions reached start date and are now running (${currentDate}): " + intendedSubsIds1)
@@ -52,8 +52,8 @@ class StatusUpdateService extends AbstractLockableService {
 
             // MultiYear Sub INTENDED -> CURRENT
 
-           Set<Long> intendedSubsIds2 = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and ((s.instanceOf != null and s.instanceOf.startDate < :currentDate and s.instanceOf.endDate != null and s.instanceOf.endDate >= :currentDate) or '+
-                   '(s.instanceOf = null and s.startDate < :currentDate and s.endDate != null and s.endDate >= :currentDate)) and s.isMultiYear = true',
+           Set<Long> intendedSubsIds2 = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and ((s.instanceOf != null and s.instanceOf.startDate < :currentDate) or '+
+                   '(s.instanceOf = null and s.startDate < :currentDate )) and s.isMultiYear = true',
                    [status: RDStore.SUBSCRIPTION_INTENDED, currentDate: currentDate])
 
             log.info("Intended perennial subscriptions reached start date and are now running (${currentDate}): " + intendedSubsIds2)
@@ -200,7 +200,7 @@ class StatusUpdateService extends AbstractLockableService {
 
             // INTENDED -> CURRENT
 
-            Set<Long> intendedLicsIds1 = License.executeQuery('select l.id from License l where l.status = :status and (l.startDate != null and l.startDate < :currentDate) and (l.endDate != null and l.endDate >= :currentDate)',
+            Set<Long> intendedLicsIds1 = License.executeQuery('select l.id from License l where l.status = :status and (l.startDate != null and l.startDate < :currentDate) ',
                     [status: RDStore.LICENSE_INTENDED,currentDate: currentDate])
 
             log.info("Intended licenses reached start date and are now running (${currentDate}): " + intendedLicsIds1)

@@ -185,7 +185,7 @@
                data-content="${message(code: 'tipp.delayedOA')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'tipp.delayedOA') + ':'} ${tipp.delayedOA?.getI10n("value")}"
+                ${showCompact ? '' : message(code: 'tipp.delayedOA') + ':'} ${tipp.delayedOA?.getI10n("value")}
             </div>
         </div>
     </g:if>

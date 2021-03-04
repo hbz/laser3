@@ -7,6 +7,15 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3123    03.03.2021  rc2.0   2.0         David   Feature     Reporting: Zugriff auf Identifikatoren
+
+3169    02.03.2021  rc2.0   2.0.1       Moe     Bug         Neue Fehlermeldung Dasboad nach Deploy vom Freitag
+
+3179    03.03.2021  rc2.0   2.0.1       Moe     Bug         allgemeines Merkmal bei einzelnem Teilnehmer
+
+3173    02.03.2021  rc2.0   2.0.1       Moe     Bug         Meine Lizenzen: Filterergebnis/-zählung nicht korrekt
+
+----    02.03.2021  rc2.0   2.0.1       Moe     Bug         Status von geplanten Lizenzen bzw. Verträge auf Aktiv setzen wenn auch kein EndDatum vorhanden ist 
 
 3157    02.03.2021  dev     2.1         David   Feature     Passwort-Sicherheit überdenken
 
@@ -54,11 +63,11 @@
 
 3111    10.02.2021  rc2.0   2.0         Andreas Bug         Finanzfiltercache wieder korrekt eingebunden, Rechnungsnummer korrigiert
 
-3113    09.02.2021  rc2.0   2.0         Andreas Bug         Bug bei Lizenzexport behoben, leichte Performanzverbesserung
-
 3120    09.02.2021  rc2.0   2.0         David   Feature     Reporting: Pattern für Relationstabellen erstellen (Org.subjectGroup)
 
 3117    09.02.2021  rc2.0   2.0         David   Feature     Reporting: Basisvariante (als Pattern) implementieren
+
+3113    09.02.2021  rc2.0   2.0         Andreas Bug         Bug bei Lizenzexport behoben, leichte Performanzverbesserung
 
 3115    08.02.2021  rc2.0   2.0         Andreas Feature     OA-relevante Lizenzmerkmale und Referenzwerte incl. -kategorien eingefügt
 

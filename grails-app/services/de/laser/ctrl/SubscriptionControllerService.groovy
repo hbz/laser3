@@ -990,6 +990,7 @@ class SubscriptionControllerService {
                             }
                             if (existingProp){
                                 try {
+                                    subChild.propertySet.remove(existingProp)
                                     existingProp.delete()
                                     deletedProperties++
                                 }
@@ -1001,10 +1002,11 @@ class SubscriptionControllerService {
                         else {
                             //custom Property
                             existingProp = subChild.propertySet.find { SubscriptionProperty sp ->
-                                it.type.id == filterPropDef.id && it.owner.id == subChild.id && it.tenant.id == result.institution.id
+                                sp.type.id == filterPropDef.id && sp.owner.id == subChild.id && sp.tenant.id == result.institution.id
                             }
                             if (existingProp && !(existingProp.hasProperty('instanceOf') && existingProp.instanceOf && AuditConfig.getConfig(existingProp.instanceOf))){
                                 try {
+                                    subChild.propertySet.remove(existingProp)
                                     existingProp.delete()
                                     deletedProperties++
                                 }
@@ -1335,8 +1337,13 @@ class SubscriptionControllerService {
                         Thread.currentThread().setName("PackageSync_"+result.subscription.id)
                         try {
                             globalSourceSyncService.defineMapFields()
-                            Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID])
-                            globalSourceSyncService.updateRecords(queryResult.records)
+                            Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID,max:5000])
+
+                            if(queryResult.records && queryResult.records.count > 0) {
+                                globalSourceSyncService.updateRecords(queryResult.records)
+                            }else {
+                                globalSourceSyncService.createOrUpdatePackage(pkgUUID)
+                            }
                             Package pkgToLink = Package.findByGokbId(pkgUUID)
                             result.packageName = pkgToLink.name
                             log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
@@ -1512,25 +1519,29 @@ class SubscriptionControllerService {
             }*/
 
             if(pkgList && pendingOrWithNotification) {
-                String query1a = 'select pc.id,pc.tipp from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
+                String query = 'select pc.id from PendingChange pc where pc.pkg in (:packages) and pc.oid = null and pc.status = :history ',
+                       query1a = 'select pc.id,pc.tipp from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
                        query2a = 'select pc.id,pc.tippCoverage from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
                        query3a = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
                        query1b = 'select pc.id,pc.tipp from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status not in (:pendingStatus)',
                        query2b = 'select pc.id,pc.tippCoverage from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status not in (:pendingStatus)',
-                       query3b = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status not in (:pendingStatus)'
+                       query3b = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status not in (:pendingStatus)',
+                       query1c = 'select pc.id from PendingChange pc where pc.subscription = :subscription and pc.status not in (:pendingStatus)'
+                subscriptionHistory.addAll(PendingChange.executeQuery(query,[packages: pkgList, history: RDStore.PENDING_CHANGE_HISTORY]))
                 subscriptionHistory.addAll(PendingChange.executeQuery(query1a,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
                 subscriptionHistory.addAll(PendingChange.executeQuery(query2a,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
                 subscriptionHistory.addAll(PendingChange.executeQuery(query3a,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
                 changesOfPage.addAll(PendingChange.executeQuery(query1b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
                 changesOfPage.addAll(PendingChange.executeQuery(query2b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
                 changesOfPage.addAll(PendingChange.executeQuery(query3b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
+                changesOfPage.addAll(PendingChange.executeQuery(query1c,[pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subscription: result.subscription]))
 
 
             }
 
             params.tab = params.tab ?: 'changes'
             params.sort = params.sort ?: 'ts'
-            params.order = params.order ?: 'asc'
+            params.order = params.order ?: 'desc'
 
             List acceptedChanges = subscriptionHistory ? PendingChange.findAllByIdInList(subscriptionHistory, params) : []
             List changes = changesOfPage ? PendingChange.findAllByIdInList(changesOfPage, params) : []
@@ -1548,6 +1559,8 @@ class SubscriptionControllerService {
                 result.changes = acceptedChanges.drop(result.offset).take(result.max)
                 result.accepted = accepted
             }
+
+            result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
             [result:result,status:STATUS_OK]
         }
     }

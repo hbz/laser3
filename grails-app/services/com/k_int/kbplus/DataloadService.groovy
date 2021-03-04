@@ -27,6 +27,9 @@ import de.laser.interfaces.CalculatedType
 import de.laser.titles.TitleInstance
 import grails.converters.JSON
 import groovy.json.JsonOutput
+import org.elasticsearch.action.bulk.BulkItemResponse
+import org.elasticsearch.action.bulk.BulkRequest
+import org.elasticsearch.action.bulk.BulkResponse
 import org.grails.plugins.domain.DomainClassGrailsPlugin
 import org.elasticsearch.ElasticsearchException
 import org.elasticsearch.action.DocWriteResponse
@@ -204,10 +207,10 @@ class DataloadService {
                     RefdataValue titleType = RefdataValue.getByValueAndCategory(tipp.titleType, RDConstants.TITLE_MEDIUM)
                     result.type = titleType ? titleType.getMapForES() : []
 
-                    Org publishers = tipp.getPublishers()
-                    result.publisher = []
-                    if(publishers) {
-                        result.identifiers.add([id: publishers[0].id, name: publishers[0].name])
+                    List<Org> publishers = tipp.getPublishers()
+                    result.publishers = []
+                    publishers.each { publisher ->
+                        result.publishers.add([id: publisher.id, name: publisher.name])
                     }
 
                     result.identifiers = []
@@ -890,8 +893,6 @@ class DataloadService {
 
         esclient.close()
 
-        checkESElementswithDBElements()
-
         return true
     }
 
@@ -938,6 +939,8 @@ class DataloadService {
 
                     String rectype
 
+                    //BulkRequest bulkRequest = new BulkRequest()
+
                     for(domain_id in query){
                         Object r = domain.get(domain_id)
                         def idx_record = recgen_closure(r)
@@ -956,6 +959,9 @@ class DataloadService {
                         //String jsonString = JsonOutput.toJson(idx_record)
                         //println(jsonString)
                         request.source(jsonString, XContentType.JSON)
+
+                        //bulkRequest.add(request)
+
                         //println(request)
                         IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
 
@@ -989,22 +995,43 @@ class DataloadService {
                         total++
                         if (count == 100) {
                             count = 0;
+                            /*BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
+
+                            if (bulkResponse.hasFailures()) {
+                                for (BulkItemResponse bulkItemResponse : bulkResponse) {
+                                    if (bulkItemResponse.isFailed()) {
+                                        BulkItemResponse.Failure failure =
+                                                bulkItemResponse.getFailure()
+                                        println("ES Bulk operation has failure: " +failure)
+                                    }
+                                }
+                            }
+                            bulkRequest = new BulkRequest()*/
                             log.debug("processed ${total} records (${domain.name})")
                             latest_ft_record.lastTimestamp = highest_timestamp
-                            latest_ft_record.esElements = latest_ft_record.esElements ?: 0
-                            latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
                             latest_ft_record.save()
                             //globalService.cleanUpGorm();
                         }
                     }
 
+                    /*if(count > 0){
+                        BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
+
+                        if (bulkResponse.hasFailures()) {
+                            for (BulkItemResponse bulkItemResponse : bulkResponse) {
+                                if (bulkItemResponse.isFailed()) {
+                                    BulkItemResponse.Failure failure =
+                                            bulkItemResponse.getFailure()
+                                    println("ES Bulk operation has failure: " +failure)
+                                }
+                            }
+                        }
+                    }*/
+
                     log.debug("Processed ${total} records for ${domain.name}")
 
                     // update timestamp
                     latest_ft_record.lastTimestamp = highest_timestamp
-
-                    latest_ft_record.esElements = latest_ft_record.esElements ?: 0
-                    latest_ft_record.dbElements = latest_ft_record.dbElements ?: 0
                     latest_ft_record.save()
                 } else {
                     log.debug("updateES ${domain.name}: FTControle is not active")
@@ -1021,6 +1048,7 @@ class DataloadService {
             log.debug("Completed processing on ${domain.name} - saved ${total} records")
             try {
                 esclient.close()
+                checkESElementswithDBElements(domain.name)
             }
             catch (Exception e) {
                 log.error("Problem by Close ES Client", e);
@@ -1189,6 +1217,68 @@ class DataloadService {
         SystemEvent.createEvent('YODA_ES_RESET_END')
     }
 
+    boolean checkESElementswithDBElements(String domainClassName) {
+
+        log.debug("Begin to check ES Elements with DB Elements")
+
+        RestHighLevelClient esclient = ESWrapperService.getClient()
+
+        try {
+
+            if(ESWrapperService.testConnection()) {
+                FTControl ftControl = FTControl.findByDomainClassName(domainClassName)
+
+                if (ftControl && ftControl.active) {
+
+                        Class domainClass = grailsApplication.getDomainClass(ftControl.domainClassName).clazz
+
+                        String query_str = "rectype: '${ftControl.domainClassName.replaceAll("com\\.k_int\\.kbplus.", "").replaceAll("de\\.laser\\.", "")}'"
+
+                        if (ftControl.domainClassName == DocContext.name) {
+                            query_str = "rectype:'Note' OR rectype:'Document'"
+                        }
+
+                        //println(query_str)
+
+                        String index = ESWrapperService.getESSettings().indexName
+
+                        CountRequest countRequest = new CountRequest(index);
+                        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+                        searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
+                        countRequest.source(searchSourceBuilder);
+
+                        CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
+                        FTControl.withTransaction {
+                            ftControl.dbElements = domainClass.findAll().size()
+                            ftControl.esElements = countResponse ? countResponse.getCount().toInteger() : 0
+
+                            //println(ft.dbElements +' , '+ ft.esElements)
+
+                            if (ftControl.dbElements != ftControl.esElements) {
+                                log.debug("****ES NOT COMPLETE FOR ${ftControl.domainClassName}: ES Results = ${ftControl.esElements}, DB Results = ${ftControl.dbElements} -> RESET lastTimestamp****")
+                                //ft.lastTimestamp = 0
+                            }
+
+                            ftControl.save()
+                        }
+                    }
+            }
+        }
+            finally {
+                try {
+                    esclient.close()
+                }
+                catch (Exception e) {
+                    log.error("Problem by Close ES Client", e);
+                }
+            }
+
+        log.debug("End to check ES Elements with DB Elements")
+
+        return true
+
+    }
+
     boolean checkESElementswithDBElements() {
 
         log.debug("Begin to check ES Elements with DB Elements")
@@ -1210,10 +1300,6 @@ class DataloadService {
                             query_str = "rectype:'Note' OR rectype:'Document'"
                         }
 
-                        if (ft.domainClassName == TitleInstance.name) {
-                            query_str = "rectype:'TitleInstance' OR rectype:'BookInstance' OR rectype:'JournalInstance' OR rectype:'DatabaseInstance'"
-                        }
-
                         //println(query_str)
 
                         String index = ESWrapperService.getESSettings().indexName
@@ -1224,30 +1310,31 @@ class DataloadService {
                         countRequest.source(searchSourceBuilder);
 
                         CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
+                        FTControl.withTransaction {
+                            ft.dbElements = domainClass.findAll().size()
+                            ft.esElements = countResponse ? countResponse.getCount().toInteger() : 0
 
-                        ft.dbElements = domainClass.findAll().size()
-                        ft.esElements = countResponse ? countResponse.getCount().toInteger() : 0
+                            //println(ft.dbElements +' , '+ ft.esElements)
 
-                        //println(ft.dbElements +' , '+ ft.esElements)
+                            if (ft.dbElements != ft.esElements) {
+                                log.debug("****ES NOT COMPLETE FOR ${ft.domainClassName}: ES Results = ${ft.esElements}, DB Results = ${ft.dbElements} -> RESET lastTimestamp****")
+                                //ft.lastTimestamp = 0
+                            }
 
-                        if (ft.dbElements != ft.esElements) {
-                            log.debug("****ES NOT COMPLETE FOR ${ft.domainClassName}: ES Results = ${ft.esElements}, DB Results = ${ft.dbElements} -> RESET lastTimestamp****")
-                            //ft.lastTimestamp = 0
+                            ft.save()
                         }
-
-                        ft.save()
                     }
                 }
             }
         }
-            finally {
-                try {
-                    esclient.close()
-                }
-                catch (Exception e) {
-                    log.error("Problem by Close ES Client", e);
-                }
+        finally {
+            try {
+                esclient.close()
             }
+            catch (Exception e) {
+                log.error("Problem by Close ES Client", e);
+            }
+        }
 
         log.debug("End to check ES Elements with DB Elements")
 

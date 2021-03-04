@@ -16,7 +16,7 @@ class LicenseConfig extends GenericConfig {
                     ],
                     source : [
                             //'all-lic' : 'Alle Verträge',
-                            'my-lic' : 'Meine Verträge'
+                            'consortia-lic' : 'Meine Verträge'
                     ],
                     fields: [
                             'endDate'               : FIELD_TYPE_PROPERTY,
@@ -39,10 +39,16 @@ class LicenseConfig extends GenericConfig {
                                     //'license-openEnded'         : 'Unbefristet',
                                     'license-status'            : 'Lizenzstatus'
                             ]
+                    ],
+                    query2 : [
+                            'Verteilung' : [
+                                    'license-property-assignment'   : 'Vertrag → Merkmale (eigene/öffentliche)',
+                                    'license-identifier-assignment' : 'Vertrag → Identifikatoren',
+                            ]
                     ]
             ],
 
-            member : [
+            /*member : [
                     meta : [
                             class: Org
                     ],
@@ -82,7 +88,7 @@ class LicenseConfig extends GenericConfig {
                                     'member-funderHskType'      : 'Trägerschaft'
                             ]
                     ]
-            ],
+            ],*/
 
             licensor : [
                     meta : [

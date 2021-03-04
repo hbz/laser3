@@ -1,6 +1,8 @@
 package de.laser.reporting
 
 import de.laser.ContextService
+import de.laser.Org
+import de.laser.properties.PropertyDefinition
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -36,13 +38,34 @@ class LicenseQuery extends GenericQuery {
 
             processSimpleRefdataQuery(params.query,'status', idList, result)
         }
+        else if ( params.query in ['license-property-assignment']) {
+
+            handleGenericPropertyAssignmentQuery(
+                    params.query,
+                    'select pd.id, pd.name, count(*) from License lic join lic.propertySet prop join prop.type pd where lic.id in (:idList)',
+                    'select lic.id from License lic join lic.propertySet prop join prop.type pd where lic.id in (:idList)',
+                    idList,
+                    contextService.getOrg(),
+                    result
+            )
+        }
+        else if ( params.query in ['license-identifier-assignment']) {
+
+            handleGenericIdentifierAssignmentQuery(
+                    params.query,
+                    'select ns.id, ns.ns, count(*) from License lic join lic.ids ident join ident.ns ns where lic.id in (:idList)',
+                    'select lic.id from License lic join lic.ids ident join ident.ns ns where lic.id in (:idList) ',
+                    idList,
+                    result
+            )
+        }
 
         result
     }
 
     static void processSimpleRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
 
-        handleSimpleRefdataQuery(
+        handleGenericRefdataQuery(
                 query,
                 PROPERTY_QUERY[0] + 'from License l join l.' + refdata + ' p where l.id in (:idList)' + PROPERTY_QUERY[1],
                 'select l.id from License l join l.' + refdata + ' p where l.id in (:idList) and p.id = :d order by l.reference',
