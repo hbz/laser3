@@ -100,7 +100,7 @@
                 $('#dynamicModalContainer').empty().html(data);
 
                 $('#dynamicModalContainer .ui.modal').modal({
-                    onVisible: function () {
+                   onShow: function () {
                         r2d2.initDynamicSemuiStuff('#propDefGroupModal');
                         r2d2.initDynamicXEditableStuff('#propDefGroupModal');
                         $("html").css("cursor", "auto");
@@ -121,7 +121,6 @@
                             }
                         }
                         prop_descr_selector_controller.init();
-                        setTimeout( function(){ $(window).trigger('resize')}, 500);
                     },
                     detachable: true,
                     autofocus: false,
