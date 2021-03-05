@@ -1,8 +1,10 @@
 package de.laser.base
 
+import grails.gorm.dirty.checking.DirtyCheck
 
 import javax.persistence.Transient
 
+@DirtyCheck
 abstract class AbstractCoverage {
 
     Long id

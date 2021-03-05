@@ -58,7 +58,7 @@ class OrganisationConfig extends GenericConfig {
                     ],
                     query2 : [
                             'Verteilung' : [
-                                    'org-property-assignment'   : 'Vertrag → Merkmale (eigene/öffentliche)',
+                                    'org-property-assignment'   : 'Organisation → Merkmale (eigene/öffentliche)',
                                     'org-identifier-assignment' : 'Organisation → Identifikatoren',
                                     //'org-serverAccess-assignment' : 'Organisation nach Datenweitergabe',
                             ]
