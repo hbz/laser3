@@ -166,10 +166,10 @@
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
 
                         if (JSPC.app.reporting.current.request.chart == 'bar') {
-                            $('#chart-wrapper').css('height', 300 + (16 * JSPC.app.reporting.current.chart.details.length) + 'px');
+                            $('#chart-wrapper').css('height', 150 + (18 * JSPC.app.reporting.current.chart.details.length) + 'px');
                         }
                         else if (JSPC.app.reporting.current.request.chart == 'pie') {
-                            $('#chart-wrapper').css('height', 300 + (13 * JSPC.app.reporting.current.chart.details.length) + 'px');
+                            $('#chart-wrapper').css('height', 350 + (12 * JSPC.app.reporting.current.chart.details.length) + 'px');
                         }
 
                         var echart = echarts.init($('#chart-wrapper')[0]);

@@ -12,7 +12,13 @@
             ]
         },
         tooltip: {
-            trigger: 'item'
+            trigger: 'item',
+            formatter (params) {
+                var str = params.name
+                str += '<br/>' + params.marker + '${chartLabels[0]}&nbsp;&nbsp;&nbsp;<strong>' + params.value[3] + '</strong>'
+                str += '<br/>' + params.marker + '${chartLabels[1]}&nbsp;&nbsp;&nbsp;<strong>' + params.value[2] + '</strong>'
+                return str
+           }
         },
         legend: {
             orient: 'vertical',
@@ -20,8 +26,27 @@
         },
         series: [
             {
+                name: '${chartLabels[1]}',
                 type: 'pie',
-                radius: '70%',
+                radius: ['55%', '70%'],
+                center: ['65%', '50%'],
+                encode: {
+                    itemName: 'name',
+                    value: 'valueObjects',
+                    id: 'id'
+                },
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0,0,0,0.3)'
+                    }
+                }
+            },
+            {
+                name: '${chartLabels[0]}',
+                type: 'pie',
+                radius: '50%',
                 center: ['65%', '50%'],
                 encode: {
                     itemName: 'name',
@@ -34,6 +59,9 @@
                         shadowOffsetX: 0,
                         shadowColor: 'rgba(0,0,0,0.3)'
                     }
+                },
+                label: {
+                    show: false
                 }
             }
         ]
@@ -59,12 +87,18 @@
             formatter (params) {
                 var str = params[0].name
 
-                if (params.length > 1) {
+                if (params.length == 1) {
+                    if (params[0].seriesName == '${chartLabels[0]}') {
+                        str += '<br/>' + params[0].marker + params[0].seriesName + '&nbsp;&nbsp;&nbsp;<strong>' + Math.abs(params[0].value[3]) + '</strong>'
+                    } else if (params[0].seriesName == '${chartLabels[1]}') {
+                        str += '<br/>' + params[0].marker + params[0].seriesName + '&nbsp;&nbsp;&nbsp;<strong>' + params[0].value[2] + '</strong>'
+                    }
+                }
+                else if (params.length > 1) {
                     str += '<br/>' + params[0].marker + params[0].seriesName + '&nbsp;&nbsp;&nbsp;<strong>' + Math.abs(params[0].value[3]) + '</strong>'
                     str += '<br/>' + params[1].marker + params[1].seriesName + '&nbsp;&nbsp;&nbsp;<strong>' + params[1].value[2] + '</strong>'
-                    return str
                 }
-                return null
+                return str
            }
         },
         grid:  {
