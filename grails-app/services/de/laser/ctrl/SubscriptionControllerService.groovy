@@ -2039,6 +2039,18 @@ class SubscriptionControllerService {
         [result:result,status:STATUS_OK]
     }
 
+    Map<String,Object> removePriceItem(GrailsParameterMap params) {
+        PriceItem priceItem = PriceItem.get(params.priceItem)
+        if(priceItem) {
+            priceItem.delete()
+            [result:null,status:STATUS_OK]
+        }
+        else {
+            log.error("Issue entitlement priceItem with ID ${params.priceItem} could not be found")
+            [result:null,status:STATUS_ERROR]
+        }
+    }
+
     Map<String,Object> addCoverage(GrailsParameterMap params) {
         IssueEntitlement base = IssueEntitlement.get(params.issueEntitlement)
         if(base) {

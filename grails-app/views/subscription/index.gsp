@@ -364,12 +364,12 @@
                                 </td>
                                 <td>
                                     <g:each in="${ie.priceItems}" var="priceItem" status="i">
-                                        <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice"
+                                        <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
                                                                                              owner="${priceItem}"
                                                                                              format=""/> <semui:xEditableRefData
                                             field="listCurrency" owner="${priceItem}"
                                             config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
-                                        <g:message code="tipp.localPrice"/>: <semui:xEditable field="localPrice"
+                                        <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
                                                                                               owner="${priceItem}"/> <semui:xEditableRefData
                                             field="localCurrency" owner="${priceItem}"
                                             config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
@@ -377,9 +377,15 @@
                                                          owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
                                             field="endDate" type="date"
                                             owner="${priceItem}"/>  <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
+
+                                        <g:if test="${editable}">
+                                            <span class="right floated" >
+                                                <g:link controller="subscription" action="removePriceItem" params="${[priceItem: priceItem.id, id: subscription.id]}" class="ui compact icon button negative tiny"><i class="ui icon minus" data-content="Preis entfernen"></i></g:link>
+                                            </span>
+                                        </g:if>
                                         <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
                                     </g:each>
-                                    <g:if test="${editable}">
+                                    <g:if test="${editable && ie.priceItems.size() < 1 }">
                                         <g:link action="addEmptyPriceItem" class="ui icon positive button"
                                                 params="${[ieid: ie.id, id: subscription.id]}">
                                             <i class="money icon la-popup-tooltip la-delay"

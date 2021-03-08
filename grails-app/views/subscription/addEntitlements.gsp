@@ -116,9 +116,9 @@
             <th><g:message code="tipp.coverage"/></th>
             <th><g:message code="tipp.access"/></th>
             <g:if test="${uploadPriceInfo}">
-                <th><g:message code="tipp.listPrice"/></th>
-                <th><g:message code="tipp.localPrice"/></th>
-                <th><g:message code="tipp.priceStartDate"/></th>
+                <th><g:message code="tipp.price.listPrice"/></th>
+                <th><g:message code="tipp.price.localPrice"/></th>
+                <th><g:message code="tipp.price.startDate"/></th>
             </g:if>
             <th><g:message code="default.actions.label"/></th>
         </tr>
@@ -215,7 +215,7 @@
                     <g:formatNumber number="${issueEntitlementOverwrite[tipp.gokbId]?.localPrice}" type="currency" currencySymbol="${issueEntitlementOverwrite[tipp.gokbId]?.localCurrency}" currencyCode="${issueEntitlementOverwrite[tipp.gokbId]?.localCurrency}"/>
                 </td>
                 <td>
-                    <semui:datepicker class="ieOverwrite" name="priceDate" value="${issueEntitlementOverwrite[tipp.gokbId]?.priceDate}" placeholder="${message(code:'tipp.priceStartDate')}"/>
+                    <semui:datepicker class="ieOverwrite" name="priceDate" value="${issueEntitlementOverwrite[tipp.gokbId]?.priceDate}" placeholder="${message(code:'tipp.price.startDate')}"/>
                 </td>
             </g:if>
             <td>

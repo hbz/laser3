@@ -64,12 +64,12 @@
                             <g:if test="${side == 'source'}">
                                 <g:if test="${ie?.priceItems}">
                                     <g:each in="${ie.priceItems}" var="priceItem" status="i">
-                                        <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice"
+                                        <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
                                                                                              owner="${priceItem}"
                                                                                              format=""/> <semui:xEditableRefData
                                             field="listCurrency" owner="${priceItem}"
                                             config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
-                                        <g:message code="tipp.localPrice"/>: <semui:xEditable field="localPrice"
+                                        <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
                                                                                               owner="${priceItem}"/> <semui:xEditableRefData
                                             field="localCurrency" owner="${priceItem}"
                                             config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
@@ -86,12 +86,12 @@
                             <g:if test="${side == 'target'}">
                                 <g:if test="${targetIE?.priceItem}">
                                     <g:each in="${targetIE.priceItems}" var="priceItem" status="i">
-                                        <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice"
+                                        <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
                                                                                              owner="${priceItem}"
                                                                                              format=""/> <semui:xEditableRefData
                                             field="listCurrency" owner="${priceItem}"
                                             config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
-                                        <g:message code="tipp.localPrice"/>: <semui:xEditable field="localPrice"
+                                        <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
                                                                                               owner="${priceItem}"/> <semui:xEditableRefData
                                             field="localCurrency" owner="${priceItem}"
                                             config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
@@ -143,8 +143,8 @@
                 <th></th>
                 <th></th>
                 <th><g:message code="financials.export.sums"/> <br />
-                    <g:message code="tipp.listPrice"/>: <g:formatNumber number="${sumlistPrice}" type="currency"/><br />
-                    %{--<g:message code="tipp.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>--}%
+                    <g:message code="tipp.price.listPrice"/>: <g:formatNumber number="${sumlistPrice}" type="currency"/><br />
+                    %{--<g:message code="tipp.price.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>--}%
                 </th>
                 <th></th>
             </tr>
