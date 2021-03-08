@@ -7,7 +7,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 
 class GenericQuery {
 
-    static String NO_DATA_LABEL = 'keine Angabe'
+    static String NO_DATA_LABEL = '* keine Angabe'
 
     static List<String> getQueryLabels(Map<String, Object> config, GrailsParameterMap params) {
 
@@ -28,6 +28,18 @@ class GenericQuery {
             }
         }
         meta
+    }
+
+    static List findDataDetailsIdListById(Long id, List<Map<String, Object>> idList) {
+        List result =[]
+
+        idList.each{ it ->
+            if (it.id == id) {
+                result = it.idList
+                return
+            }
+        }
+        result
     }
 
     static void handleGenericRefdataQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List idList, Map<String, Object> result) {
