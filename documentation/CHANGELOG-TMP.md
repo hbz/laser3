@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      08.03.2021  rc2.0   2.0.2       Moe     Bug         Tooltip werden nicht angezeigt
+
+3194    08.03.2021  rc2.0   2.0.2       Moe     Feature     Bulk Operation für Paket-Änderungen ermöglichen
+
 3175    04.03.2021  rc2.0   2.0.2       David   Bug         Neue Merkmalsgruppe erstellen
 
 3123    03.03.2021  rc2.0   2.0.1       David   Feature     Reporting: Zugriff auf Identifikatoren
