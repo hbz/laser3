@@ -30,6 +30,18 @@ class GenericQuery {
         meta
     }
 
+    static List findDataDetailsIdListById(Long id, List<Map<String, Object>> idList) {
+        List result =[]
+
+        idList.each{ it ->
+            if (it.id == id) {
+                result = it.idList
+                return
+            }
+        }
+        result
+    }
+
     static void handleGenericRefdataQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List idList, Map<String, Object> result) {
 
         result.data = Org.executeQuery( dataHql, [idList: idList] )

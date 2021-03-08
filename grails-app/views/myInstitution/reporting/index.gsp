@@ -164,29 +164,25 @@
                     .done( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
-                        $('#chart-wrapper').css('height', 300 + (14 * JSPC.app.reporting.current.chart.details.length) + 'px');
+
+                        if (JSPC.app.reporting.current.request.chart == 'bar') {
+                            $('#chart-wrapper').css('height', 300 + (16 * JSPC.app.reporting.current.chart.details.length) + 'px');
+                        }
+                        else if (JSPC.app.reporting.current.request.chart == 'pie') {
+                            $('#chart-wrapper').css('height', 300 + (13 * JSPC.app.reporting.current.chart.details.length) + 'px');
+                        }
 
                         var echart = echarts.init($('#chart-wrapper')[0]);
                         echart.setOption( JSPC.app.reporting.current.chart.option );
                         echart.on( 'click', function (params) {
                             var valid = false;
 
-                            if (JSPC.app.reporting.current.request.chart == 'pie') {
-                                $.each( JSPC.app.reporting.current.chart.details, function(i, v) {
-                                    if (params.data.id == v.id) {
-                                        valid = true;
-                                        JSPC.app.reporting.requestChartDetails(JSPC.app.reporting.current.request, v);
-                                    }
-                                })
-                            }
-                            else if (JSPC.app.reporting.current.request.chart == 'bar') {
-                                $.each( JSPC.app.reporting.current.chart.details, function(i, v) {
-                                    if (params.data[0] == v.id) {
-                                        valid = true;
-                                        JSPC.app.reporting.requestChartDetails(JSPC.app.reporting.current.request, v);
-                                    }
-                                })
-                            }
+                            $.each( JSPC.app.reporting.current.chart.details, function(i, v) {
+                                if (params.data[0] == v.id) {
+                                    valid = true;
+                                    JSPC.app.reporting.requestChartDetails(JSPC.app.reporting.current.request, v);
+                                }
+                            })
                             if (! valid) {
                                 alert('[msg:2] - Keine Details verfügbar');
                             }
