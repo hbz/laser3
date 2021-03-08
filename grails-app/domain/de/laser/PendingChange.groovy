@@ -244,9 +244,12 @@ class PendingChange {
         Map<String, Object> changeParams = [target  : configMap.target,
                                             msgToken: configMap.msgToken,
                                             newValue: configMap.newValue,
-                                            oldValue: configMap.oldValue,
-                                            owner: configMap.owner]
+                                            oldValue: configMap.oldValue]
         PendingChange pc
+
+        if(configMap.owner){
+            changeParams << [owner: configMap.owner]
+        }
 
         if (configMap.prop) {
 
@@ -263,14 +266,21 @@ class PendingChange {
                 changeParams.newValue = (configMap.newValue && configMap.newValue instanceof Long) ? configMap.newValue.toString() : (configMap.newValue ?: null)
                 changeParams.oldValue = (configMap.oldValue && configMap.oldValue instanceof Long) ? configMap.oldValue.toString() : (configMap.oldValue ?: null)
             }
+            else if (configMap.prop in PendingChange.REFDATA_FIELDS) {
+
+                changeParams.newValue = (configMap.newValue && configMap.newValue instanceof Long) ? configMap.newValue.toString() : (configMap.newValue ?: null)
+                changeParams.oldValue = (configMap.oldValue && configMap.oldValue instanceof Long) ? configMap.oldValue.toString() : (configMap.oldValue ?: null)
+            }
             else {
                 changeParams.newValue = configMap.newValue
                 changeParams.oldValue = configMap.oldValue
             }
 
+
+
             changeParams << [prop: configMap.prop]
             if (!configMap.oid) {
-                List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:pending) and pc.' + targetClass + ' = :target and pc.targetProperty = :prop and pc.msgToken = :msgToken and pc.newValue = :newValue and pc.oldValue = :oldValue and pc.owner = :owner order by pc.ts desc', changeParams + [pending: [RDStore.PENDING_CHANGE_PENDING]])
+                List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:pending) and pc.' + targetClass + ' = :target and pc.targetProperty = :prop and pc.msgToken = :msgToken and pc.newValue = :newValue and pc.oldValue = :oldValue ' + (changeParams.owner ? 'and pc.owner = :owner' : '') + ' order by pc.ts desc', changeParams + [pending: [RDStore.PENDING_CHANGE_PENDING]])
                 if (pendingChangeCheck) {
                     pc = pendingChangeCheck[0]
                     if (pendingChangeCheck.size() > 0) {
@@ -281,7 +291,7 @@ class PendingChange {
                 }
             } else {
                 changeParams << [oid: configMap.oid]
-                List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:pending) and pc.' + targetClass + ' = :target and pc.oid = :oid and pc.targetProperty = :prop and pc.msgToken = :msgToken and pc.newValue = :newValue and pc.oldValue = :oldValue and pc.owner = :owner order by pc.ts desc', changeParams + [pending: [RDStore.PENDING_CHANGE_PENDING]])
+                List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:pending) and pc.' + targetClass + ' = :target and pc.oid = :oid and pc.targetProperty = :prop and pc.msgToken = :msgToken and pc.newValue = :newValue and pc.oldValue = :oldValue ' + (changeParams.owner ? 'and pc.owner = :owner' : '') + ' order by pc.ts desc', changeParams + [pending: [RDStore.PENDING_CHANGE_PENDING]])
                 if (pendingChangeCheck) {
                     pc = pendingChangeCheck[0]
                     if (pendingChangeCheck.size() > 0) {
@@ -293,7 +303,7 @@ class PendingChange {
             }
         } else {
             changeParams << [oid: configMap.oid]
-            List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:pending) and pc.oid = :oid and pc.' + targetClass + ' = :target and pc.msgToken = :msgToken and pc.newValue = :newValue and pc.oldValue = :oldValue and pc.owner = :owner order by pc.ts desc', changeParams + [pending: [RDStore.PENDING_CHANGE_PENDING]])
+            List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:pending) and pc.oid = :oid and pc.' + targetClass + ' = :target and pc.msgToken = :msgToken and pc.newValue = :newValue and pc.oldValue = :oldValue ' + (changeParams.owner ? 'and pc.owner = :owner' : '') + ' order by pc.ts desc', changeParams + [pending: [RDStore.PENDING_CHANGE_PENDING]])
             if (pendingChangeCheck) {
                 pc = pendingChangeCheck[0]
                 if (pendingChangeCheck.size() > 0) {
