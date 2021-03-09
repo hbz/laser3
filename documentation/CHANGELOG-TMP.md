@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
---      08.03.2021  rc2.0   2.0.2       Moe     Bug         Tooltip werden nicht angezeigt
+3199    09.03.2021  rc2.0   2.0.2       Moe     Bug       Export von Lizenzumfragen ist nicht möglich
+
+3198    08.03.2021  rc2.0   2.0.2       Moe     Bug         Fragezeichen-Mouseover fehlt bei Eigenen Merkmalen
 
 3194    08.03.2021  rc2.0   2.0.2       Moe     Feature     Bulk Operation für Paket-Änderungen ermöglichen
 
