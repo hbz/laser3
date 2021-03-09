@@ -4,7 +4,7 @@ für Sie wurde ein neues Passwort vergeben:
 
 ${serverURL}
 
-Benutzername: ${user.username}
+Benutzername: ${raw(user.username)}
 
 Passwort: ${newPass}
 

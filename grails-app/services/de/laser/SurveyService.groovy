@@ -347,8 +347,8 @@ class SurveyService {
                     row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
                     List licenseNames = []
-                    Links.findAllByDestinationSubscriptionAndLinkType(genericOIDService.getOID(subscription),RDStore.LINKTYPE_LICENSE).each { Links li ->
-                        License l = (License) genericOIDService.resolveOID(li.sourceLicense)
+                    Links.findAllByDestinationSubscriptionAndLinkType(subscription, RDStore.LINKTYPE_LICENSE).each { Links li ->
+                        License l = li.sourceLicense
                         licenseNames << l.reference
                     }
                     row.add([field: licenseNames ? licenseNames.join(", ") : '', style: null])

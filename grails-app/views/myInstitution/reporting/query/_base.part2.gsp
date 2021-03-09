@@ -21,11 +21,11 @@
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
                     <label for="query-chooser-2-${qci}">${field.key}</label>
-                    <g:select name="query-chooser"
+                         <g:select name="query-chooser"
                               id="query-chooser-2-${qci}"
                               from="${field.value}"
                               optionKey="key"
-                              optionValue="value"
+                              optionValue="${{it.value.label}}"
                               class="ui selection dropdown la-not-clearable"
                               noSelection="${['': message(code: 'default.select.choose.label')]}" />
                 </div>

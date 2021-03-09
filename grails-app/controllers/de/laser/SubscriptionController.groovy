@@ -858,20 +858,44 @@ class SubscriptionController {
         redirect action: 'index', id: params.id
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    def removePriceItem() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.removePriceItem(params)
+        Object[] args = [message(code:'tipp.price'), params.priceItem]
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            flash.error = message(code: 'default.not.found.message', args)
+        }
+        else
+        {
+            flash.message = message(code:'default.deleted.message',args)
+        }
+        redirect action: 'index', id: params.id
+    }
+
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def addCoverage() {
         Map<String,Object> ctrlResult = subscriptionControllerService.addCoverage(params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_OK)
-            redirect action: 'index', id: ctrlResult.result.subId, params: params
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            flash.error = ctrlResult.result.error
+        }
+            redirect action: 'index', id: params.id, params: params
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def removeCoverage() {
         Map<String,Object> ctrlResult = subscriptionControllerService.removeCoverage(params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_OK)
-            redirect action: 'index', id: ctrlResult.result.subId, params: params
+        Object[] args = [message(code:'tipp.coverage'), params.ieCoverage]
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            flash.error = message(code: 'default.not.found.message', args)
+        }
+        else
+        {
+            flash.message = message(code:'default.deleted.message',args)
+        }
+        redirect action: 'index', id: params.id, params: params
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
@@ -911,9 +935,13 @@ class SubscriptionController {
     def removeEntitlementGroup() {
         Map<String, Object> ctrlResult = subscriptionControllerService.removeEntitlementGroup(params)
         Object[] args = [message(code:'issueEntitlementGroup.label'),params.titleGroup]
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR)
-            flash.error = message(code:'default.not.found.message',args)
-        else flash.message = message(code:'default.deleted.message',args)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            flash.error = message(code: 'default.not.found.message', args)
+        }
+        else
+        {
+            flash.message = message(code:'default.deleted.message',args)
+        }
         redirect action: 'manageEntitlementGroup', id: params.sub
     }
 

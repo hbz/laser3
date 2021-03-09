@@ -42,8 +42,14 @@ class LicenseConfig extends GenericConfig {
                     ],
                     query2 : [
                             'Verteilung' : [
-                                    'license-property-assignment'   : 'Vertrag → Merkmale (eigene/öffentliche)',
-                                    'license-identifier-assignment' : 'Vertrag → Identifikatoren',
+                                    'license-property-assignment' : [
+                                            label : 'Vertrag → Merkmale (eigene/öffentliche)',
+                                            chartLabels : [ 'Verträge', 'Vergebene Merkmale (eigene/öffentliche)' ]
+                                    ],
+                                    'license-identifier-assignment' : [
+                                            label : 'Vertrag → Identifikatoren',
+                                            chartLabels: [ 'Verträge', 'Vergebene Identifikatoren' ]
+                                    ],
                             ]
                     ]
             ],

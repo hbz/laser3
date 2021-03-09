@@ -48,7 +48,7 @@
             </td>
             <td>
                 <g:each in="${tipp.priceItems}" var="priceItem" status="i">
-                    <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice"
+                    <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
                                                                          owner="${priceItem}"
                                                                          format=""/> <semui:xEditableRefData
                         field="listCurrency" owner="${priceItem}"

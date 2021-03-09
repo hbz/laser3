@@ -43,7 +43,8 @@ class GenericConfig {
                     meta    : [],
                     source  : [],
                     filter  : [],
-                    query   : []
+                    query   : [],
+                    query2  : []
             ]
     ]
 

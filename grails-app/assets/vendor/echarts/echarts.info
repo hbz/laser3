@@ -1,0 +1,26 @@
+
+-> echarts build
+-> 2021-03-05
+
+    chart
+        - bar *
+        - line *
+        - pie *
+        - scatter *
+        - sunburst *
+
+    coordinate systems
+        - grid *
+        - polar *
+        - singleaxis *
+
+    component
+        - title *
+        - legend *
+        - tooltip *
+        - markline *
+        - markarea *
+
+    others
+        - utilites *
+        - code compression *
