@@ -19,12 +19,12 @@ class SubscriptionReportingManager {
 
             'Zeitleiste' : [
                     'subscription-member-timeline' : [
-                            label : 'Lizenz → Teilnehmer',
+                            label : 'Datum → Teilnehmer',
                             chart : 'bar',
                             chartLabels : []
                     ],
                     'subscription-entitlement-timeline' : [
-                            label : 'Lizenz → Bestand',
+                            label : 'Datum → Bestand',
                             chart : 'bar',
                             chartLabels : []
                     ]
