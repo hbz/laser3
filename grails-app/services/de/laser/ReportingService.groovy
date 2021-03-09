@@ -1,8 +1,8 @@
 package de.laser
 
-import de.laser.reporting.LicenseFilter
-import de.laser.reporting.OrganisationFilter
-import de.laser.reporting.SubscriptionFilter
+import de.laser.reporting.myInstitution.LicenseFilter
+import de.laser.reporting.myInstitution.OrganisationFilter
+import de.laser.reporting.myInstitution.SubscriptionFilter
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 

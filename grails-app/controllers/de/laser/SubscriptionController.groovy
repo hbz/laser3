@@ -1400,6 +1400,21 @@ class SubscriptionController {
             ctrlResult.result
     }
 
+    //--------------------------------------------- reporting -------------------------------------------------
+
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    def reporting() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.reporting( params )
+
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            response.sendError(401)
+        }
+        else {
+            render view: 'reporting/index', model: ctrlResult.result
+        }
+    }
+
     //--------------------------------------------- helper section -------------------------------------------------
 
 }

@@ -1,8 +1,8 @@
-package de.laser.reporting
+package de.laser.reporting.myInstitution
 
 import de.laser.License
 import de.laser.Org
-import de.laser.Subscription
+import de.laser.reporting.myInstitution.GenericConfig
 
 class LicenseConfig extends GenericConfig {
 
@@ -19,12 +19,12 @@ class LicenseConfig extends GenericConfig {
                             'consortia-lic' : 'Meine Verträge'
                     ],
                     fields: [
-                            'endDate'               : FIELD_TYPE_PROPERTY,
-                            'licenseCategory'       : FIELD_TYPE_REFDATA,
+                            'endDate'               : GenericConfig.FIELD_TYPE_PROPERTY,
+                            'licenseCategory'       : GenericConfig.FIELD_TYPE_REFDATA,
                             //'openEnded'             : FIELD_TYPE_REFDATA,
-                            'startDate'             : FIELD_TYPE_PROPERTY,
-                            'status'                : FIELD_TYPE_REFDATA,
-                            'type'                  : FIELD_TYPE_REFDATA
+                            'startDate'             : GenericConfig.FIELD_TYPE_PROPERTY,
+                            'status'                : GenericConfig.FIELD_TYPE_REFDATA,
+                            'type'                  : GenericConfig.FIELD_TYPE_REFDATA
                     ],
                     filter : [
                             default: [
@@ -104,8 +104,8 @@ class LicenseConfig extends GenericConfig {
                             'depending-licensor' : 'Alle betroffenen Lizenzgeber'
                     ],
                     fields : [
-                            'country'   : FIELD_TYPE_REFDATA,
-                            'orgType'   : FIELD_TYPE_REFDATA_RELTABLE,
+                            'country'   : GenericConfig.FIELD_TYPE_REFDATA,
+                            'orgType'   : GenericConfig.FIELD_TYPE_REFDATA_RELTABLE,
                     ],
                     filter : [
                             default: [

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.GenericConfig; de.laser.reporting.GenericQuery" %>
+<%@ page import="de.laser.reporting.myInstitution.GenericConfig;de.laser.reporting.myInstitution.GenericQuery" %>
 <g:if test="${! data}">
     JSPC.app.reporting.current.chart.option = {}
     alert('[msg:3] - Keine Daten gefunden');

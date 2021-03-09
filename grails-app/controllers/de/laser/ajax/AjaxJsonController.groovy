@@ -27,13 +27,13 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
-import de.laser.reporting.GenericConfig
-import de.laser.reporting.LicenseConfig
-import de.laser.reporting.LicenseQuery
-import de.laser.reporting.OrganisationConfig
-import de.laser.reporting.OrganisationQuery
-import de.laser.reporting.SubscriptionConfig
-import de.laser.reporting.SubscriptionQuery
+import de.laser.reporting.myInstitution.LicenseConfig
+import de.laser.reporting.myInstitution.LicenseQuery
+import de.laser.reporting.myInstitution.OrganisationConfig
+import de.laser.reporting.myInstitution.OrganisationQuery
+import de.laser.reporting.myInstitution.SubscriptionConfig
+import de.laser.reporting.myInstitution.SubscriptionQuery
+import de.laser.reporting.subscription.SubscriptionReportingManager
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -675,12 +675,13 @@ class AjaxJsonController {
     def chart() {
         Map<String, Object> result = [:]
 
+        // token ~ myInstitution
         if (params.token && params.query) {
 
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
             Map<String, Object> cached = sessionCache.get("MyInstitutionController/reporting/" + params.token)
 
-            GrailsParameterMap clone = params.clone() // TODO: simplify
+            GrailsParameterMap clone = params.clone() as GrailsParameterMap// TODO: simplify
             if (cached) {
                 clone.putAll(cached)
             }
@@ -721,6 +722,22 @@ class AjaxJsonController {
                 return
             }
         }
+        else if (params.query) {
+            GrailsParameterMap clone = params.clone() as GrailsParameterMap // TODO: simplify
+
+            String prefix = clone.query.split('-')[0]
+            String query  = clone.query.replaceFirst(prefix + '-', '')
+
+            if (prefix == SubscriptionReportingManager.KEY) {
+
+                result = SubscriptionReportingManager.query(clone)
+
+                render template: '/subscription/reporting/chart/' + query, model: result
+                return
+            }
+
+        }
+
         render result as JSON
     }
 }

@@ -1,4 +1,4 @@
-package de.laser.reporting
+package de.laser.reporting.myInstitution
 
 import de.laser.Org
 import de.laser.RefdataValue

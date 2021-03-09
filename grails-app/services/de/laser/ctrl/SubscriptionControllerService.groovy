@@ -14,14 +14,11 @@ import de.laser.properties.OrgProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
-import de.laser.titles.BookInstance
-import de.laser.titles.JournalInstance
-import de.laser.titles.TitleInstance
+import de.laser.reporting.subscription.SubscriptionReportingManager
 import grails.doc.internal.StringEscapeCategory
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
-import groovy.util.slurpersupport.GPathResult
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
@@ -2565,4 +2562,12 @@ class SubscriptionControllerService {
         result
     }
 
+
+    Map<String,Object> reporting(GrailsParameterMap params) {
+        Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+
+        result.cfgQueryList = SubscriptionReportingManager.QUERY
+
+        [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
+    }
 }

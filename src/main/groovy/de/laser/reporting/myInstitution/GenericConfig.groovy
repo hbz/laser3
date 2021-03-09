@@ -1,4 +1,4 @@
-package de.laser.reporting
+package de.laser.reporting.myInstitution
 
 import de.laser.RefdataCategory
 import de.laser.auth.Role

@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.SubscriptionConfig; de.laser.reporting.LicenseConfig; de.laser.reporting.OrganisationConfig; de.laser.reporting.GenericConfig; de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.myInstitution.SubscriptionConfig;de.laser.reporting.myInstitution.OrganisationConfig;de.laser.reporting.myInstitution.LicenseConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -115,8 +115,8 @@
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            if (! JSPC.app.reporting) { JSPC.app.reporting = {}; }
-            if (! JSPC.app.reporting.current) { JSPC.app.reporting.current = {}; }
+            if (! JSPC.app.reporting)               { JSPC.app.reporting = {}; }
+            if (! JSPC.app.reporting.current)       { JSPC.app.reporting.current = {}; }
             if (! JSPC.app.reporting.current.chart) { JSPC.app.reporting.current.chart = {}; }
 
             $('#filter-chooser').on( 'change', function(e) {
