@@ -125,7 +125,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
                         <dd>${iesFix?.size() ?: 0}</dd>
                     </dl>
                     <dl>
-                        <dt class="control-label">${message(code: 'tipp.listPrice')}</dt>
+                        <dt class="control-label">${message(code: 'tipp.price.listPrice')}</dt>
                         <dd><g:formatNumber number="${iesFixListPriceSum}" type="currency"/></dd>
                     </dl>
 
@@ -146,7 +146,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
                         <dd>${ies?.size() ?: 0}</dd>
                     </dl>
                     <dl>
-                        <dt class="control-label">${message(code: 'tipp.listPrice')}</dt>
+                        <dt class="control-label">${message(code: 'tipp.price.listPrice')}</dt>
                         <dd><g:formatNumber number="${iesListPriceSum}" type="currency"/></dd>
                     </dl>
                 </div>

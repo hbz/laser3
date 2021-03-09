@@ -45,7 +45,7 @@
 </div>
 
 <div class="ui bottom attached tab active segment">
-    <g:if test="${packages}">
+    <g:if test="${packages && params.tab != 'acceptedChanges' && changes}">
         <g:form controller="pendingChange" action="processAll">
             <g:select from="${packages}" noSelection="${['': message(code: 'default.select.choose.label')]}"
                       name="acceptChangesForPackages" class="ui select search multiple dropdown"
@@ -154,11 +154,11 @@
 
                     <g:if test="${oldValue != null || newValue != null}">
                         <i class="grey question circle icon la-popup-tooltip la-delay"
-                           data-content="${(message(code: 'tipp.' + entry.targetProperty) ?: '') + ': ' + message(code: 'pendingChange.change', args: [oldValue, newValue])}"></i>
+                           data-content="${(message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty) ?: '') + ': ' + message(code: 'pendingChange.change', args: [oldValue, newValue])}"></i>
                     </g:if>
                     <g:elseif test="${entry.targetProperty}">
                         <i class="grey question circle icon la-popup-tooltip la-delay"
-                           data-content="${message(code: 'tipp.' + entry.targetProperty)}"></i>
+                           data-content="${message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty)}"></i>
                     </g:elseif>
 
                 </td>

@@ -648,7 +648,7 @@ class PendingChangeService extends AbstractLockableService {
                     }
                     else throw new ChangeAcceptException("problems when creating new entitlement - pending change not accepted: ${newTitle.errors}")
                 }
-                else throw new ChangeAcceptException("no instance of TitleInstancePackagePlatform stored: ${pc.oid}! Pending change is void!")
+                //else throw new ChangeAcceptException("no instance of TitleInstancePackagePlatform stored: ${pc.oid}! Pending change is void!")
                 break
         //pendingChange.message_TP02 (titleUpdated)
             case PendingChangeConfiguration.TITLE_UPDATED:
@@ -666,7 +666,7 @@ class PendingChangeService extends AbstractLockableService {
                     }
                     else throw new ChangeAcceptException("problems when updating entitlement - pending change not accepted: ${targetTitle.errors}")
                 }
-                else throw new ChangeAcceptException("no instance of IssueEntitlement stored: ${pc.oid}! Pending change is void!")
+                //else throw new ChangeAcceptException("no instance of IssueEntitlement stored: ${pc.oid}! Pending change is void!")
                 break
         //pendingChange.message_TP03 (titleDeleted)
             case PendingChangeConfiguration.TITLE_DELETED:
@@ -684,7 +684,7 @@ class PendingChangeService extends AbstractLockableService {
                     }
                     else throw new ChangeAcceptException("problems when deleting entitlement - pending change not accepted: ${targetTitle.errors}")
                 }
-                else throw new ChangeAcceptException("no instance of IssueEntitlement stored: ${pc.oid}! Pending change is void!")
+                //else throw new ChangeAcceptException("no instance of IssueEntitlement stored: ${pc.oid}! Pending change is void!")
                 break
         //pendingChange.message_TC01 (coverageUpdated)
             case PendingChangeConfiguration.COVERAGE_UPDATED:
@@ -703,7 +703,7 @@ class PendingChangeService extends AbstractLockableService {
                     }
                     else throw new ChangeAcceptException("problems when updating coverage statement - pending change not accepted: ${targetCov.errors}")
                 }
-                else throw new ChangeAcceptException("no instance of IssueEntitlementCoverage stored: ${pc.oid}! Pending change is void!")
+                //else throw new ChangeAcceptException("no instance of IssueEntitlementCoverage stored: ${pc.oid}! Pending change is void!")
                 break
         //pendingChange.message_TC02 (newCoverage)
             case PendingChangeConfiguration.NEW_COVERAGE:
@@ -735,7 +735,7 @@ class PendingChangeService extends AbstractLockableService {
                     }
                     else throw new ChangeAcceptException("problems when creating new entitlement - pending change not accepted: ${ieCov.errors}")
                 }
-                else throw new ChangeAcceptException("no instance of TIPPCoverage stored: ${pc.oid}! Pending change is void!")
+                //else throw new ChangeAcceptException("no instance of TIPPCoverage stored: ${pc.oid}! Pending change is void!")
                 break
         //pendingChange.message_TC03 (coverageDeleted)
             case PendingChangeConfiguration.COVERAGE_DELETED:
@@ -758,7 +758,7 @@ class PendingChangeService extends AbstractLockableService {
                     targetCov.delete()
                     done = true
                 }
-                else throw new ChangeAcceptException("no instance of IssueEntitlementCoverage stored: ${pc.oid}! Pending change is void!")
+                //else throw new ChangeAcceptException("no instance of IssueEntitlementCoverage stored: ${pc.oid}! Pending change is void!")
                 break
         //pendingChange.message_TR01 (priceUpdated)
             case PendingChangeConfiguration.PRICE_UPDATED:
@@ -777,7 +777,7 @@ class PendingChangeService extends AbstractLockableService {
                     }
                     else throw new ChangeAcceptException("problems when updating price item - pending change not accepted: ${targetPi.errors}")
                 }
-                else throw new ChangeAcceptException("no instance of PriceItem stored: ${pc.oid}! Pending change is void!")
+                //else throw new ChangeAcceptException("no instance of PriceItem stored: ${pc.oid}! Pending change is void!")
                 break
         //pendingChange.message_TR02 (newPrice)
             case PendingChangeConfiguration.NEW_PRICE:
@@ -805,7 +805,7 @@ class PendingChangeService extends AbstractLockableService {
                     }
                     else throw new ChangeAcceptException("problems when creating new entitlement - pending change not accepted: ${iePrice.errors}")
                 }
-                else throw new ChangeAcceptException("no instance of PriceItem stored: ${pc.oid}! Pending change is void!")
+                //else throw new ChangeAcceptException("no instance of PriceItem stored: ${pc.oid}! Pending change is void!")
                 break
         //pendingChange.message_TR03 (priceDeleted)
             case PendingChangeConfiguration.PRICE_DELETED:
@@ -828,7 +828,7 @@ class PendingChangeService extends AbstractLockableService {
                     targetPi.delete()
                     done = true
                 }
-                else throw new ChangeAcceptException("no instance of PriceItem stored: ${pc.oid}! Pending change is void!")
+                //else throw new ChangeAcceptException("no instance of PriceItem stored: ${pc.oid}! Pending change is void!")
                 break
         //pendingChange.message_CI01 (billingSum)
             case PendingChangeConfiguration.BILLING_SUM_UPDATED:

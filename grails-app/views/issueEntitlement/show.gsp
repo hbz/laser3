@@ -133,20 +133,20 @@
                                 <div class="ui card">
                                     <div class="content">
                                         <div class="la-card-column">
-                                            <g:message code="tipp.listPrice"/>:
+                                            <g:message code="tipp.price.listPrice"/>:
                                             <semui:xEditable field="listPrice"
                                                              owner="${priceItem}"/> <semui:xEditableRefData
                                                     field="listCurrency" owner="${priceItem}" config="Currency"/>
 
                                             <br/>
-                                            <g:message code="tipp.localPrice"/>: <semui:xEditable field="localPrice"
+                                            <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
                                                                                                   owner="${priceItem}"/> <semui:xEditableRefData
                                                     field="localCurrency" owner="${priceItem}" config="Currency"/>
                                             <br/>
-                                            (<g:message code="tipp.priceStartDate"/> <semui:xEditable field="startDate"
+                                            (<g:message code="tipp.price.startDate"/> <semui:xEditable field="startDate"
                                                                                                       type="date"
                                                                                                       owner="${priceItem}"/>-
-                                            <g:message code="tipp.priceEndDate"/> <semui:xEditable field="endDate"
+                                            <g:message code="tipp.price.endDate"/> <semui:xEditable field="endDate"
                                                                                                    type="date"
                                                                                                    owner="${priceItem}"/>)
                                         </div>
