@@ -78,12 +78,16 @@ class PendingChangeController  {
         if(concernedPackage){
             concernedPackage.each { String spID ->
                 if(spID) {
-                    SubscriptionPackage sp = SubscriptionPackage.get(spID)
-                    Set<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange pc where pc.subscription = :sub and pc.owner = :context and pc.status = :pending",[context:contextService.getOrg(),sub:sp.subscription,pending:RDStore.PENDING_CHANGE_PENDING])
+                    SubscriptionPackage sp = SubscriptionPackage.get(Long.parseLong(spID))
+                    Set<PendingChange> pendingChanges = []
+                    pendingChanges.addAll(PendingChange.executeQuery("select pc from PendingChange pc where pc.subscription = :sub and pc.owner = :context and pc.status = :pending", [context: contextService.getOrg(), sub: sp.subscription, pending: RDStore.PENDING_CHANGE_PENDING]))
+                    pendingChanges.addAll(PendingChange.executeQuery("select pc from PendingChange pc where pc.oid = :sub and pc.owner = :context and pc.status = :pending", [context: contextService.getOrg(),sub: genericOIDService.getOID(sp.subscription), pending: RDStore.PENDING_CHANGE_PENDING]))
+
                     pendingChanges.each { PendingChange pc ->
                         log.info("processing change ${pc}")
                         def changedObject = genericOIDService.resolveOID(pc.oid)
                         Package targetPkg
+                        List<Package> targetPkgs
                         if(changedObject instanceof TitleInstancePackagePlatform) {
                             targetPkg = changedObject.pkg
                         }
@@ -96,7 +100,11 @@ class PendingChangeController  {
                         else if(changedObject instanceof Package) {
                             targetPkg = changedObject
                         }
-                        if(targetPkg?.id == sp.pkg.id) {
+                        else if(changedObject instanceof Subscription) {
+                            targetPkgs = changedObject.packages?.pkg
+                        }
+
+                        if(targetPkg?.id == sp.pkg.id || (targetPkgs && sp.pkg.id in targetPkgs.id)) {
                             if(acceptAll) {
                                 //log.info("is rejectAll simultaneously set? ${params.rejectAll}")
                                 pendingChangeService.accept(pc)

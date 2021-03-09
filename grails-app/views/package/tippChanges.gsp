@@ -95,11 +95,11 @@
 
                 <g:if test="${oldValue != null || newValue != null}">
                     <i class="grey question circle icon la-popup-tooltip la-delay"
-                       data-content="${(message(code: 'tipp.' + entry.targetProperty) ?: '') + ': ' + message(code: 'pendingChange.change', args: [oldValue, newValue])}"></i>
+                       data-content="${(message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty) ?: '') + ': ' + message(code: 'pendingChange.change', args: [oldValue, newValue])}"></i>
                 </g:if>
                 <g:elseif test="${entry.targetProperty}">
                     <i class="grey question circle icon la-popup-tooltip la-delay"
-                       data-content="${message(code: 'tipp.' + entry.targetProperty)}"></i>
+                       data-content="${message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty)}"></i>
                 </g:elseif>
 
             </td>

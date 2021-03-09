@@ -44,7 +44,7 @@
                             <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
                                 ${prop.type.getI10n('name')}
                                 <g:if test="${prop.type.getI10n('expl')}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${prop.type.getI10n('expl')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </g:if>
@@ -53,7 +53,7 @@
                                 ${prop.type.getI10n('name')}
                             </g:else>
                             <g:if test="${prop.type.multipleOccurrence}">
-                                <span data-position="top right"  class="la-popup-tooltip la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                     <i class="redo icon orange"></i>
                                 </span>
                             </g:if>
@@ -144,7 +144,7 @@
                                     </g:if>
                                     <g:else>
 
-                                        <laser:remoteLink class="ui icon green button la-popup-tooltip la-popup-tooltip la-delay js-open-confirm-modal"
+                                        <laser:remoteLink class="ui icon green button la-popup-tooltip la-delay js-open-confirm-modal"
                                                           controller="ajax" action="togglePropertyAuditConfig"
                                                           params='[propClass: prop.getClass(),
                                                                    ownerId: "${ownobj.id}",

@@ -42,7 +42,7 @@
         <div class="la-card-row">
             <g:if test="${overwriteEditable && (covStmt instanceof IssueEntitlementCoverage)}">
                 <span class="right floated" >
-                    <g:link controller="subscription" action="removeCoverage" params="${paramData}" class="ui compact icon button negative tiny removeCoverage"><i class="ui icon minus" data-content="Lizenzzeitraum entfernen"></i></g:link>
+                    <g:link controller="subscription" action="removeCoverage" params="${paramData+ [id: subscription.id]}" class="ui compact icon button negative tiny removeCoverage"><i class="ui icon minus" data-content="Abdeckung entfernen"></i></g:link>
                 </span>
             </g:if>
         </div>
