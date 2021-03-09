@@ -23,7 +23,7 @@ class GenericQuery {
             it.value.get('query2')?.each { it2 ->
                 //println it2
                 if (it2.value.containsKey(params.query)) {
-                    meta = [ it2.key, it2.value.get(params.query), params.label ]
+                    meta = [ it2.key, it2.value.get(params.query).label, params.label ]
                 }
             }
         }
