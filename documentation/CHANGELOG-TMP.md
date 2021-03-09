@@ -7,9 +7,17 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3199    09.03.2021  rc2.0   2.0.2       Moe     Bug       Export von Lizenzumfragen ist nicht möglich
+
+3198    08.03.2021  rc2.0   2.0.2       Moe     Bug         Fragezeichen-Mouseover fehlt bei Eigenen Merkmalen
+
+3194    08.03.2021  rc2.0   2.0.2       Moe     Feature     Bulk Operation für Paket-Änderungen ermöglichen
+
 3175    04.03.2021  rc2.0   2.0.2       David   Bug         Neue Merkmalsgruppe erstellen
 
 3123    03.03.2021  rc2.0   2.0.1       David   Feature     Reporting: Zugriff auf Identifikatoren
+
+3160    03.03.2021  rc2.0   2.0.1       David   Feature     Query-spezifische Detailauswertung
 
 3169    02.03.2021  rc2.0   2.0.1       Moe     Bug         Neue Fehlermeldung Dasboad nach Deploy vom Freitag
 

@@ -27,8 +27,12 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
+import de.laser.reporting.GenericConfig
+import de.laser.reporting.LicenseConfig
 import de.laser.reporting.LicenseQuery
+import de.laser.reporting.OrganisationConfig
 import de.laser.reporting.OrganisationQuery
+import de.laser.reporting.SubscriptionConfig
 import de.laser.reporting.SubscriptionQuery
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
@@ -685,17 +689,35 @@ class AjaxJsonController {
 
             if (prefix in ['license']) {
                 result = LicenseQuery.query(clone)
-                render template: '/myInstitution/reporting/chart/generic', model: result
+
+                if (clone.query.endsWith('assignment')) {
+                    result.chartLabels = LicenseConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
+                    render template: '/myInstitution/reporting/chart/complex', model: result
+                } else {
+                    render template: '/myInstitution/reporting/chart/generic', model: result
+                }
                 return
             }
             else if (prefix in ['org', 'member', 'provider', 'licensor']) {
                 result = OrganisationQuery.query(clone)
-                render template: '/myInstitution/reporting/chart/generic', model: result
+
+                if (clone.query.endsWith('assignment')) {
+                    result.chartLabels = OrganisationConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
+                    render template: '/myInstitution/reporting/chart/complex', model: result
+                } else {
+                    render template: '/myInstitution/reporting/chart/generic', model: result
+                }
                 return
             }
             else if (prefix in ['subscription']) {
                 result = SubscriptionQuery.query(clone)
-                render template: '/myInstitution/reporting/chart/generic', model: result
+
+                if (clone.query.endsWith('assignment') && clone.query != 'subscription-provider-assignment') {
+                    result.chartLabels = SubscriptionConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
+                    render template: '/myInstitution/reporting/chart/complex', model: result
+                } else {
+                    render template: '/myInstitution/reporting/chart/generic', model: result
+                }
                 return
             }
         }

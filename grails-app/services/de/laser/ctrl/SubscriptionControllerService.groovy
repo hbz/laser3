@@ -1542,25 +1542,28 @@ class SubscriptionControllerService {
             params.tab = params.tab ?: 'changes'
             params.sort = params.sort ?: 'ts'
             params.order = params.order ?: 'desc'
+            params.max = result.max
+            params.offset = result.offset
 
-            List acceptedChanges = subscriptionHistory ? PendingChange.findAllByIdInList(subscriptionHistory, params) : []
-            List changes = changesOfPage ? PendingChange.findAllByIdInList(changesOfPage, params) : []
-            result.countPendingChanges = changes.size()
-            result.countAcceptedChanges = acceptedChanges.size()
+            result.countPendingChanges = changesOfPage ? PendingChange.countByIdInList(changesOfPage) : 0
+            result.countAcceptedChanges = subscriptionHistory ? PendingChange.countByIdInList(subscriptionHistory) : 0
 
             if(params.tab == 'changes') {
-                result.num_change_rows = changes.size()
-                result.changes = changes.drop(result.offset).take(result.max)
+                result.changes = changesOfPage ? PendingChange.findAllByIdInList(changesOfPage, params) : []
+                result.num_change_rows = result.countPendingChanges
                 result.accepted = accepted
             }
 
             if(params.tab == 'acceptedChanges') {
-                result.num_change_rows = acceptedChanges.size()
-                result.changes = acceptedChanges.drop(result.offset).take(result.max)
+                result.changes = subscriptionHistory ? PendingChange.findAllByIdInList(subscriptionHistory, params) : []
+                result.num_change_rows = result.countAcceptedChanges
                 result.accepted = accepted
             }
 
             result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+
+            result.packages = result.subscription.packages
+
             [result:result,status:STATUS_OK]
         }
     }
@@ -2034,6 +2037,18 @@ class SubscriptionControllerService {
             [result:result,status:STATUS_ERROR]
         }
         [result:result,status:STATUS_OK]
+    }
+
+    Map<String,Object> removePriceItem(GrailsParameterMap params) {
+        PriceItem priceItem = PriceItem.get(params.priceItem)
+        if(priceItem) {
+            priceItem.delete()
+            [result:null,status:STATUS_OK]
+        }
+        else {
+            log.error("Issue entitlement priceItem with ID ${params.priceItem} could not be found")
+            [result:null,status:STATUS_ERROR]
+        }
     }
 
     Map<String,Object> addCoverage(GrailsParameterMap params) {

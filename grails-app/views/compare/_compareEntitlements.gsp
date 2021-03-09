@@ -54,12 +54,12 @@
                                 <td>
                                     <g:if test="${ieValue.priceItems}">
                                         <g:each in="${ieValue.priceItems}" var="priceItem" status="i">
-                                            <g:message code="tipp.listPrice"/>: <semui:xEditable field="listPrice"
+                                            <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
                                                                                                  owner="${priceItem}"
                                                                                                  format=""/> <semui:xEditableRefData
                                                 field="listCurrency" owner="${priceItem}"
                                                 config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
-                                            <g:message code="tipp.localPrice"/>: <semui:xEditable field="localPrice"
+                                            <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
                                                                                                   owner="${priceItem}"/> <semui:xEditableRefData
                                                 field="localCurrency" owner="${priceItem}"
                                                 config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
