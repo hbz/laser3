@@ -46,7 +46,7 @@
             {
                 name: '${chartLabels[0]}',
                 type: 'pie',
-                radius: '50%',
+                radius: '53%',
                 center: ['65%', '50%'],
                 encode: {
                     itemName: 'name',
@@ -151,5 +151,3 @@
     };
     JSPC.app.reporting.current.chart.details = <%= dataDetails as grails.converters.JSON %>
 </g:elseif>
-
-"<span style=\"display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#5470c6;\"></span>"
