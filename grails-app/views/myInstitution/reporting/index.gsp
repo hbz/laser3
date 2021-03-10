@@ -171,6 +171,9 @@
                         else if (JSPC.app.reporting.current.request.chart == 'pie') {
                             $('#chart-wrapper').css('height', 350 + (12 * JSPC.app.reporting.current.chart.details.length) + 'px');
                         }
+                        else if (JSPC.app.reporting.current.request.chart == 'radar') {
+                            $('#chart-wrapper').css('height', 400 + (8 * JSPC.app.reporting.current.chart.details.length) + 'px');
+                        }
 
                         var echart = echarts.init($('#chart-wrapper')[0]);
                         echart.setOption( JSPC.app.reporting.current.chart.option );
