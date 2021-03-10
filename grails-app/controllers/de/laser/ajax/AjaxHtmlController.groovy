@@ -25,10 +25,10 @@ import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.reporting.GenericQuery
-import de.laser.reporting.LicenseConfig
-import de.laser.reporting.OrganisationConfig
-import de.laser.reporting.SubscriptionConfig
+import de.laser.reporting.myInstitution.GenericQuery
+import de.laser.reporting.myInstitution.LicenseConfig
+import de.laser.reporting.myInstitution.OrganisationConfig
+import de.laser.reporting.myInstitution.SubscriptionConfig
 
 import grails.plugin.springsecurity.annotation.Secured
 

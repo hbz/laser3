@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.GenericConfig; de.laser.reporting.GenericQuery" %>
+<%@ page import="de.laser.reporting.myInstitution.GenericConfig;de.laser.reporting.myInstitution.GenericQuery" %>
 <g:if test="${! data}">
     JSPC.app.reporting.current.chart.option = {}
     alert('[msg:3] - Keine Daten gefunden');
@@ -26,27 +26,9 @@
         },
         series: [
             {
-                name: '${chartLabels[1]}',
-                type: 'pie',
-                radius: ['55%', '70%'],
-                center: ['65%', '50%'],
-                encode: {
-                    itemName: 'name',
-                    value: 'valueObjects',
-                    id: 'id'
-                },
-                emphasis: {
-                    itemStyle: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: 'rgba(0,0,0,0.3)'
-                    }
-                }
-            },
-            {
                 name: '${chartLabels[0]}',
                 type: 'pie',
-                radius: '53%',
+                radius: '70%',
                 center: ['65%', '50%'],
                 encode: {
                     itemName: 'name',
@@ -59,11 +41,8 @@
                         shadowOffsetX: 0,
                         shadowColor: 'rgba(0,0,0,0.3)'
                     }
-                },
-                label: {
-                    show: false
                 }
-            }
+            },
         ]
     };
     JSPC.app.reporting.current.chart.details = <%= dataDetails as grails.converters.JSON %>

@@ -1,8 +1,9 @@
-package de.laser.reporting
+package de.laser.reporting.myInstitution
 
 import de.laser.ContextService
 import de.laser.Org
 import de.laser.auth.Role
+import de.laser.reporting.myInstitution.GenericQuery
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 
