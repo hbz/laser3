@@ -13,7 +13,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 
 import java.text.SimpleDateFormat
 
-class SubscriptionReportingManager {
+class SubscriptionReporting {
 
     static String KEY = 'subscription'
 

@@ -14,7 +14,7 @@ import de.laser.properties.OrgProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
-import de.laser.reporting.subscription.SubscriptionReportingManager
+import de.laser.reporting.subscription.SubscriptionReporting
 import grails.doc.internal.StringEscapeCategory
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -2581,7 +2581,7 @@ class SubscriptionControllerService {
     Map<String,Object> reporting(GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
 
-        result.cfgQueryList = SubscriptionReportingManager.QUERY
+        result.cfgQueryList = SubscriptionReporting.QUERY
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }

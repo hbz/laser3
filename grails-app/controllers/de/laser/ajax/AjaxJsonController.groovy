@@ -33,7 +33,7 @@ import de.laser.reporting.myInstitution.OrganisationConfig
 import de.laser.reporting.myInstitution.OrganisationQuery
 import de.laser.reporting.myInstitution.SubscriptionConfig
 import de.laser.reporting.myInstitution.SubscriptionQuery
-import de.laser.reporting.subscription.SubscriptionReportingManager
+import de.laser.reporting.subscription.SubscriptionReporting
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -728,11 +728,11 @@ class AjaxJsonController {
             String prefix = clone.query.split('-')[0]
             String query  = clone.query.replaceFirst(prefix + '-', '')
 
-            if (prefix == SubscriptionReportingManager.KEY) {
+            if (prefix == SubscriptionReporting.KEY) {
 
-                result = SubscriptionReportingManager.query(clone)
+                result = SubscriptionReporting.query(clone)
 
-                result.chartLabels = SubscriptionReportingManager.QUERY.getAt('Zeitleiste').getAt(clone.query).getAt('chartLabels')
+                result.chartLabels = SubscriptionReporting.QUERY.getAt('Zeitleiste').getAt(clone.query).getAt('chartLabels')
                 render template: '/subscription/reporting/chart/generic-timeline', model: result
                 //render template: '/subscription/reporting/chart/' + query, model: result
                 return
