@@ -155,10 +155,10 @@ class ConfigUtils {
             }
             if (validate) {
                 if (result == null) {
-                    println(": ${key} not found : WARNING")
+                    println(": ${key} .. not found : WARNING")
                 }
                 else {
-                    println(": ${key} found")
+                    println(": ${key} .. ok")
                 }
             }
         }

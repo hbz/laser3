@@ -24,7 +24,7 @@
         <div id="chart-details"></div>
 
         <style>
-            #chart-wrapper { height: 330px; width: 98%; margin: 2em auto 1em; }
+            #chart-wrapper { height: 360px; width: 98%; margin: 2em auto 1em; }
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">

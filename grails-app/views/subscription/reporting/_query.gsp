@@ -1,9 +1,5 @@
 <div class="ui segment form">
 
-    <h2 class="ui icon header la-clear-before la-noMargin-top">
-        <g:message code="myinst.reporting"/> <span class="ui label red">DEMO : in Entwicklung</span>
-    </h2>
-
     <div class="fields <laser:numberToString number="${2 + cfgQueryList.size()}"/>">
         <g:each in="${cfgQueryList}" var="cfgQuery" status="qci">
             <g:each in="${cfgQuery}" var="field">
@@ -23,6 +19,11 @@
         <div class="field">
             <label for="chart-export">Exportieren</label>
             <button id="chart-export" class="ui icon button" disabled><i class="ui icon download"></i></button>
+        </div>
+
+        <div class="field">
+            <label>&nbsp;</label>
+            <span class="ui label red">DEMO : in Entwicklung</span>
         </div>
     </div>
 </div>
