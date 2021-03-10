@@ -14,7 +14,7 @@
             <semui:xEditable owner="${subscription}" field="name" />
         </h1>
 
-        <semui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        <semui:anualRings object="${subscription}" controller="subscription" action="reporting" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
         <g:render template="nav" />
 
@@ -64,10 +64,9 @@
 
                         var echart = echarts.init($('#chart-wrapper')[0]);
                         echart.setOption( JSPC.app.reporting.current.chart.option );
-                        /*
+
                         echart.on( 'click', function (params) {
                             var valid = false;
-
                             $.each( JSPC.app.reporting.current.chart.details, function(i, v) {
                                 if (params.data[0] == v.id) {
                                     valid = true;
@@ -75,13 +74,12 @@
                                 }
                             })
                             if (! valid) {
-                                alert('[msg:2] - Keine Details verfügbar');
+                                $("#reporting-modal-nodata").modal('show');
                             }
                         });
                         echart.on( 'legendselectchanged', function (params) {
                             // console.log(params);
                         });
-                        */
 
                         JSPC.app.reporting.current.chart.echart = echart;
                         //$('#chart-export').removeAttr('disabled');
@@ -92,6 +90,13 @@
                 }
             }
         </laser:script>
+
+        <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
+            <p>Unbekannter Fehler.</p>
+        </semui:modal>
+        <semui:modal id="reporting-modal-nodata" text="REPORTING" hideSubmitButton="true">
+            <p>Keine Details verfügbar.</p>
+        </semui:modal>
 
 </body>
 </html>

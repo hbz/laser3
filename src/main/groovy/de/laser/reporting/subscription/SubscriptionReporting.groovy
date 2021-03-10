@@ -23,12 +23,12 @@ class SubscriptionReporting {
                     'subscription-member-timeline' : [
                             label : 'Datum → Teilnehmer',
                             chart : 'bar',
-                            chartLabels : ['Teilnehmer entfernt', 'Neue Teilnehmer', 'Aktuelle Teilnehmer']
+                            chartLabels : [ 'Teilnehmer entfernt', 'Neue Teilnehmer', 'Aktuelle Teilnehmer' ]
                     ],
                     'subscription-entitlement-timeline' : [
                             label : 'Datum → Bestand',
                             chart : 'bar',
-                            chartLabels : ['Titel entfernt', 'Neue Titel', 'Aktuelle Titel']
+                            chartLabels : [ 'Titel entfernt', 'Neue Titel', 'Aktuelle Titel' ]
                     ]
             ]
     ]
