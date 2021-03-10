@@ -1,7 +1,7 @@
 <%@ page import="de.laser.reporting.myInstitution.GenericConfig;de.laser.reporting.myInstitution.GenericQuery" %>
 <g:if test="${! data}">
     JSPC.app.reporting.current.chart.option = {}
-    alert('[msg:3] - Keine Daten gefunden');
+    $("#reporting-modal-nodata").modal('show');
 </g:if>
 <g:elseif test="${chart == GenericConfig.CHART_PIE}">
     JSPC.app.reporting.current.chart.option = {
