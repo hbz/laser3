@@ -732,7 +732,9 @@ class AjaxJsonController {
 
                 result = SubscriptionReportingManager.query(clone)
 
-                render template: '/subscription/reporting/chart/' + query, model: result
+                result.chartLabels = SubscriptionReportingManager.QUERY.getAt('Zeitleiste').getAt(clone.query).getAt('chartLabels')
+                render template: '/subscription/reporting/chart/generic-timeline', model: result
+                //render template: '/subscription/reporting/chart/' + query, model: result
                 return
             }
 
