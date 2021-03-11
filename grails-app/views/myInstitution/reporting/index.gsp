@@ -187,7 +187,7 @@
                                 }
                             })
                             if (! valid) {
-                                alert('[msg:2] - Keine Details verfügbar');
+                                $("#reporting-modal-nodetails").modal('show');
                             }
                         });
                         echart.on( 'legendselectchanged', function (params) {
@@ -214,11 +214,21 @@
                      $('#chart-details').html(data);
                 })
                 .fail( function (data) {
-                    alert('Unbekannter Fehler');
+                    $("#reporting-modal-error").modal('show');
                 })
             }
 
         </laser:script>
+
+        <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
+            <p>Unbekannter Fehler.</p>
+        </semui:modal>
+        <semui:modal id="reporting-modal-nodata" text="REPORTING" hideSubmitButton="true">
+            <p>Diese Anfrage liefert keine Daten.</p>
+        </semui:modal>
+        <semui:modal id="reporting-modal-nodetails" text="REPORTING" hideSubmitButton="true">
+            <p>Es sind leider keine Details verfügbar.</p>
+        </semui:modal>
 
     </body>
 </html>

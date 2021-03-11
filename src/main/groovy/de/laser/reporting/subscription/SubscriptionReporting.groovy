@@ -1,15 +1,18 @@
 package de.laser.reporting.subscription
 
 import de.laser.ContextService
+import de.laser.FinanceService
 import de.laser.IssueEntitlement
 import de.laser.Links
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.ctrl.FinanceControllerService
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
@@ -21,14 +24,19 @@ class SubscriptionReporting {
 
             'Zeitleiste' : [
                     'subscription-member-timeline' : [
-                            label : 'Datum → Teilnehmer',
+                            label : 'Entwicklung: Teilnehmer',
                             chart : 'bar',
                             chartLabels : [ 'Teilnehmer entfernt', 'Neue Teilnehmer', 'Aktuelle Teilnehmer' ]
                     ],
                     'subscription-entitlement-timeline' : [
-                            label : 'Datum → Bestand',
+                            label : 'Entwicklung: Bestand',
                             chart : 'bar',
                             chartLabels : [ 'Titel entfernt', 'Neue Titel', 'Aktuelle Titel' ]
+                    ],
+                    'subscription-costs-timeline' : [
+                            label : 'Entwicklung: Kosten',
+                            chart : 'bar',
+                            chartLabels : [ 'Wert', 'Endpreis (nach Steuer)']
                     ]
             ]
     ]
@@ -36,6 +44,7 @@ class SubscriptionReporting {
     static Map<String, Object> query(GrailsParameterMap params) {
 
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         Map<String, Object> result = [
@@ -131,7 +140,38 @@ class SubscriptionReporting {
                 }
             }
         }
+        else if (params.query == 'subscription-costs-timeline') {
+            Subscription sub = Subscription.get(id)
+            List<Subscription> timeline = getSubscriptionTimeline(sub)
 
+            FinanceService financeService = (FinanceService) Holders.grailsApplication.mainContext.getBean('financeService')
+            FinanceControllerService financeControllerService = (FinanceControllerService) Holders.grailsApplication.mainContext.getBean('financeControllerService')
+
+            timeline.eachWithIndex { s, i ->
+                result.data.add([
+                    s.id,
+                    s.name,
+                    sub == s,
+                    sdf.format(s.startDate),
+                    sdf.format(s.endDate)
+                ])
+            }
+
+            GrailsParameterMap clone = params.clone()
+            result.data.eachWithIndex { data, i ->
+                clone.setProperty('id', data[0])
+                Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, financeControllerService.getResultGenerics(clone))
+
+                data[5] = ""
+                data[6] = finance.cons?.sums?.localSums?.localSum ?: 0
+                data[7] = finance.cons?.sums?.localSums?.localSumAfterTax ?: 0
+
+//                data[8]  = finance.subscr?.sums?.localSums?.localSum ?: 0
+//                data[9]  = finance.subscr?.sums?.localSums?.localSumAfterTax ?: 0
+//                data[10] = finance.own?.sums?.localSums?.localSum ?: 0
+//                data[11] = finance.own?.sums?.localSums?.localSumAfterTax ?: 0
+            }
+        }
         result
     }
 

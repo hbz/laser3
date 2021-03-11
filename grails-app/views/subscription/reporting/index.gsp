@@ -74,7 +74,7 @@
                                 }
                             })
                             if (! valid) {
-                                $("#reporting-modal-nodata").modal('show');
+                                $("#reporting-modal-nodetails").modal('show');
                             }
                         });
                         echart.on( 'legendselectchanged', function (params) {
@@ -95,7 +95,10 @@
             <p>Unbekannter Fehler.</p>
         </semui:modal>
         <semui:modal id="reporting-modal-nodata" text="REPORTING" hideSubmitButton="true">
-            <p>Keine Details verfügbar.</p>
+            <p>Diese Anfrage liefert keine Daten.</p>
+        </semui:modal>
+        <semui:modal id="reporting-modal-nodetails" text="REPORTING" hideSubmitButton="true">
+            <p>Es sind leider keine Details verfügbar.</p>
         </semui:modal>
 
 </body>

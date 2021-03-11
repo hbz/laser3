@@ -155,6 +155,13 @@ class LaserReportingTagLib {
         out << '</div>'
     }
 
+    def reportingNotice = { attrs, body ->
+        // TODO ..
+        out << '<div ' + (attrs.id ? 'id="' + attrs.id + '" ' : '') + 'class="ui hidden message">'
+        out << body()
+        out << '</div>'
+    }
+
     static String getUniqueId(String id) {
         return id + '-' + RandomStringUtils.randomAlphanumeric(8).toLowerCase()
     }

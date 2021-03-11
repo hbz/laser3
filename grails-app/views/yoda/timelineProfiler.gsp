@@ -17,7 +17,7 @@
     <table class="ui celled la-table compact table">
         <thead>
             <tr class="center aligned">
-                <th>Timeline</th>
+                <th>Seitenaufrufe am Tag</th>
             </tr>
         </thead>
         <tbody>
@@ -31,29 +31,38 @@
                         <div id="ct-chart-${index}" class="echarts-wrapper"></div>
 
                         <laser:script file="${this.getGroovyPageFileName()}">
-                            JSPC.app.chartData_${index} = {
-                                xAxis: {
-                                    type: 'category',
-                                    boundaryGap: false,
-                                    data: [<% println '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>]
-                                },
-                                yAxis: {
-                                    type: 'value'
-                                },
-                                grid: {
-                                    top:20, right:30, bottom:30, left:50
-                                },
-                                tooltip: {
-                                    trigger: 'axis'
-                                },
-                                series: [{
-                                    data: [<% println itemValue.join(', ') %>],
-                                    type: 'line',
-                                    areaStyle: { color: '#bad722' },
-                                    smooth: true,
-                                    lineStyle: { color: '#98b500', width: 3 },
-                                }]
-                            };
+                            <g:if test="${index == 0}">
+                                JSPC.app.chartData_base = {
+                                    xAxis: {
+                                        type: 'category',
+                                        boundaryGap: false,
+                                        data: []
+                                    },
+                                    yAxis: {
+                                        type: 'value',
+                                        minInterval: 1
+                                    },
+                                    grid: {
+                                        top:20, right:30, bottom:30, left:50
+                                    },
+                                    tooltip: {
+                                        trigger: 'axis'
+                                    },
+                                    series: [{
+                                        data: [],
+                                        name: 'Seitenaufrufe',
+                                        type: 'line',
+                                        smooth: true,
+                                        animation: false,
+                                        areaStyle: { color: 'rgba(58,111,196, 0.3)' },
+                                        lineStyle: { color: 'rgb(58,111,196)', width: 3 },
+                                    }]
+                                }
+                            </g:if>
+
+                            JSPC.app.chartData_${index} = Object.assign({}, JSPC.app.chartData_base);
+                            JSPC.app.chartData_${index}.xAxis.data = [<% print '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>];
+                            JSPC.app.chartData_${index}.series[0].data = [<% print itemValue.join(', ') %>];
 
                             echarts.init( $('#ct-chart-${index}')[0] ).setOption( JSPC.app.chartData_${index} );
                         </laser:script>
@@ -65,7 +74,7 @@
     <style>
     .echarts-wrapper {
         width: 100%;
-        height: 130px;
+        height: 150px;
     }
     </style>
 </body>
