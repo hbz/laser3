@@ -85,6 +85,7 @@
             </div>
         </g:if>
 
+        <g:render template="/templates/reporting/helper" />
 
         <g:if test="${result}">
             <h3 class="ui header">2. Ergebnis</h3>
@@ -115,10 +116,6 @@
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            if (! JSPC.app.reporting)               { JSPC.app.reporting = {}; }
-            if (! JSPC.app.reporting.current)       { JSPC.app.reporting.current = {}; }
-            if (! JSPC.app.reporting.current.chart) { JSPC.app.reporting.current.chart = {}; }
-
             $('#filter-chooser').on( 'change', function(e) {
                 $('.filter-form-wrapper').addClass('hidden')
                 $('#filter-' + $(e.target).dropdown('get value')).removeClass('hidden');

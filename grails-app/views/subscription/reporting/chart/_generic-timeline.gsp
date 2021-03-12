@@ -37,11 +37,8 @@ JSPC.app.reporting.current.chart.option = {
                 position: 'top'
             },
             itemStyle: {
-                color: function (params) {
-                    if (params.data[2] == true) {
-                        return 'rgb(238,102,102)'
-                    }
-                    return 'rgba(238,102,102, 0.3)'
+                color: function(params) {
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('red', (params.data[2] == true))
                 }
             }
         },
@@ -58,11 +55,8 @@ JSPC.app.reporting.current.chart.option = {
                 position: 'top'
             },
             itemStyle: {
-                color: function (params) {
-                    if (params.data[2] == true) {
-                        return 'rgb(144,202,117)'
-                    }
-                    return 'rgba(144,202,117, 0.3)'
+                color: function(params) {
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('green', (params.data[2] == true))
                 }
             }
         },
@@ -79,11 +73,8 @@ JSPC.app.reporting.current.chart.option = {
                 position: 'top'
             },
             itemStyle: {
-                color: function (params) {
-                    if (params.data[2] == true) {
-                        return 'rgb(58,111,196)'
-                    }
-                    return 'rgba(58,111,196, 0.3)'
+                color: function(params) {
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('blue', (params.data[2] == true))
                 }
             }
         }

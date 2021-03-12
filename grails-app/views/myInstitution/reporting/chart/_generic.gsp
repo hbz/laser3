@@ -28,13 +28,7 @@
                     value: 'value',
                     id: 'id'
                 },
-                emphasis: {
-                    itemStyle: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: 'rgba(0,0,0,0.3)'
-                    }
-                }
+                emphasis: JSPC.app.reporting.helper.series.pie.emphasis
             }
         ]
     };
@@ -67,12 +61,7 @@
                 label: {
                     show: true,
                     position: 'right'
-                },
-                /*emphasis: {
-                    itemStyle: {
-                        color: '#94cc68'
-                    }
-                }*/
+                }
             }
         ]
     };
