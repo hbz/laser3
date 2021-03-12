@@ -7,7 +7,9 @@ JSPC.app.reporting.current.chart.option = {
     },
     grid:  {
         top: 60,
+        right: '5%',
         bottom: 10,
+        left: '5%',
         containLabel: true
     },
     legend: { top: 'top' },
@@ -21,9 +23,23 @@ JSPC.app.reporting.current.chart.option = {
         }
     },
     yAxis: {},
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        formatter (params) {
+            var c1 = new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params[0].data[ params[0].seriesIndex + 6 ])
+            var c2 = new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params[1].data[ params[1].seriesIndex + 6 ])
+
+            var str = params[0].data[3] + ' - ' +  params[0].data[4]
+            str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, c1)
+            str += JSPC.app.reporting.helper.tooltip.getEntry(params[1].marker, params[1].seriesName, c2)
+            return str
+        }
+    },
     series: [
         {
             name: '${chartLabels[0]}',
+            color: JSPC.app.reporting.helper.series.color.green,
             type: 'bar',
             encode: {
                 x: 'id',
@@ -44,6 +60,7 @@ JSPC.app.reporting.current.chart.option = {
         },
         {
             name: '${chartLabels[1]}',
+            color: JSPC.app.reporting.helper.series.color.blue,
             type: 'bar',
             encode: {
                 x: 'id',

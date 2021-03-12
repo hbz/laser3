@@ -7,7 +7,9 @@ JSPC.app.reporting.current.chart.option = {
     },
     grid:  {
         top: 60,
+        right: '5%',
         bottom: 10,
+        left: '5%',
         containLabel: true
     },
     legend: {
@@ -23,10 +25,21 @@ JSPC.app.reporting.current.chart.option = {
         }
     },
     yAxis: { },
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        formatter (params) {
+            var str = params[0].data[3] + ' - ' +  params[0].data[4]
+            str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, params[0].data[ 8 - params[0].seriesIndex ])
+            str += JSPC.app.reporting.helper.tooltip.getEntry(params[1].marker, params[1].seriesName, params[1].data[ 8 - params[1].seriesIndex ])
+            str += JSPC.app.reporting.helper.tooltip.getEntry(params[2].marker, params[2].seriesName, params[2].data[ 8 - params[2].seriesIndex ])
+            return str
+        }
+    },
     series: [
         {
             name: '${chartLabels[0]}',
-            color: 'rgb(238,102,102)',
+            color: JSPC.app.reporting.helper.series.color.red,
             type: 'bar',
             encode: {
                 x: 'id',
@@ -44,7 +57,7 @@ JSPC.app.reporting.current.chart.option = {
         },
         {
             name: '${chartLabels[1]}',
-            color: 'rgb(144,202,117)',
+            color: JSPC.app.reporting.helper.series.color.green,
             type: 'bar',
             encode: {
                 x: 'id',
@@ -62,7 +75,7 @@ JSPC.app.reporting.current.chart.option = {
         },
         {
             name: '${chartLabels[2]}',
-            color: 'rgb(58,111,196)',
+            color: JSPC.app.reporting.helper.series.color.blue,
             type: 'bar',
             encode: {
                 x: 'id',
