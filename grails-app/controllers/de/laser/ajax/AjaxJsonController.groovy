@@ -27,6 +27,7 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
+import de.laser.reporting.myInstitution.GenericQuery
 import de.laser.reporting.myInstitution.LicenseConfig
 import de.laser.reporting.myInstitution.LicenseQuery
 import de.laser.reporting.myInstitution.OrganisationConfig
@@ -675,6 +676,18 @@ class AjaxJsonController {
     def chart() {
         Map<String, Object> result = [:]
 
+        Closure getTooltipLabel = { GrailsParameterMap pm ->
+            if (pm.filter == 'license') {
+                GenericQuery.getQueryLabels(LicenseConfig.CONFIG, pm).get(1)
+            }
+            else if (pm.filter == 'organisation') {
+                GenericQuery.getQueryLabels(OrganisationConfig.CONFIG, pm).get(1)
+            }
+            else if (pm.filter == 'subscription') {
+                GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, pm).get(1)
+            }
+        }
+
         // token ~ myInstitution
         if (params.token && params.query) {
 
@@ -690,33 +703,39 @@ class AjaxJsonController {
 
             if (prefix in ['license']) {
                 result = LicenseQuery.query(clone)
+                result.tooltipLabel = getTooltipLabel(clone)
 
                 if (clone.query.endsWith('assignment')) {
                     result.chartLabels = LicenseConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
                     render template: '/myInstitution/reporting/chart/complex', model: result
-                } else {
+                }
+                else {
                     render template: '/myInstitution/reporting/chart/generic', model: result
                 }
                 return
             }
             else if (prefix in ['org', 'member', 'provider', 'licensor']) {
                 result = OrganisationQuery.query(clone)
+                result.tooltipLabel = getTooltipLabel(clone)
 
                 if (clone.query.endsWith('assignment')) {
                     result.chartLabels = OrganisationConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
                     render template: '/myInstitution/reporting/chart/complex', model: result
-                } else {
+                }
+                else {
                     render template: '/myInstitution/reporting/chart/generic', model: result
                 }
                 return
             }
             else if (prefix in ['subscription']) {
                 result = SubscriptionQuery.query(clone)
+                result.tooltipLabel = getTooltipLabel(clone)
 
                 if (clone.query.endsWith('assignment') && clone.query != 'subscription-provider-assignment') {
                     result.chartLabels = SubscriptionConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
                     render template: '/myInstitution/reporting/chart/complex', model: result
-                } else {
+                }
+                else {
                     render template: '/myInstitution/reporting/chart/generic', model: result
                 }
                 return

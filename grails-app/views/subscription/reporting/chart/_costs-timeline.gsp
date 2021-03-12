@@ -10,9 +10,7 @@ JSPC.app.reporting.current.chart.option = {
         bottom: 10,
         containLabel: true
     },
-    legend: {
-        top: 'top',
-    },
+    legend: { top: 'top' },
     xAxis: {
         type: 'category',
         axisLabel: {
@@ -39,11 +37,8 @@ JSPC.app.reporting.current.chart.option = {
                 }
             },
             itemStyle: {
-                color: function (params) {
-                    if (params.data[2] == true) {
-                        return 'rgb(58,111,196)'
-                    }
-                    return 'rgba(58,111,196, 0.3)'
+                color: function(params) {
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('green', (params.data[2] == true))
                 }
             }
         },
@@ -62,11 +57,8 @@ JSPC.app.reporting.current.chart.option = {
                 }
             },
             itemStyle: {
-                color: function (params) {
-                    if (params.data[2] == true) {
-                        return 'rgb(144,202,117)'
-                    }
-                    return 'rgba(144,202,117, 0.3)'
+                color: function(params) {
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('blue', (params.data[2] == true))
                 }
             }
         }

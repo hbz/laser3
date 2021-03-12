@@ -18,6 +18,8 @@
 
         <g:render template="nav" />
 
+        <g:render template="/templates/reporting/helper" />
+
         <g:render template="/subscription/reporting/query" />
 
         <div id="chart-wrapper"></div>
@@ -28,10 +30,6 @@
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            if (! JSPC.app.reporting)               { JSPC.app.reporting = {}; }
-            if (! JSPC.app.reporting.current)       { JSPC.app.reporting.current = {}; }
-            if (! JSPC.app.reporting.current.chart) { JSPC.app.reporting.current.chart = {}; }
-
             $('*[id^=query-chooser').on( 'change', function(e) {
                 var value = $(e.target).dropdown('get value');
                 if (value) {
