@@ -54,9 +54,7 @@
         },
         tooltip: {
             trigger: 'axis',
-            axisPointer: {
-                type: 'shadow'
-            },
+            axisPointer: { type: 'shadow' },
             formatter (params) {
                 var str = params[0].name
 
@@ -87,9 +85,7 @@
                 }
             }
         },
-        yAxis: {
-            type: 'category'
-        },
+        yAxis: { type: 'category' },
         series: [
             {
                 name: '${chartLabels[0]}',

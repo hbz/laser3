@@ -10,9 +10,7 @@ JSPC.app.reporting.current.chart.option = {
         bottom: 10,
         containLabel: true
     },
-    legend: {
-        top: 'top',
-    },
+    legend: { top: 'top' },
     xAxis: {
         type: 'category',
         axisLabel: {

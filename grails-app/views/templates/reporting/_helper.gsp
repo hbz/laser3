@@ -9,11 +9,11 @@ if (! JSPC.app.reporting) {
             series: {
                 color: {
                     red:   'rgb(238,102,102)',
-                    green: 'rgb(58,111,196)',
-                    blue:  'rgb(144,202,117)',
+                    green: 'rgb(144,202,117)',
+                    blue:  'rgb(58,111,196)',
                     redInactive:   'rgba(238,102,102, 0.3)',
-                    greenInactive: 'rgba(58,111,196, 0.3)',
-                    blueInactive:  'rgba(144,202,117, 0.3)',
+                    greenInactive: 'rgba(144,202,117, 0.3)',
+                    blueInactive: 'rgba(58,111,196, 0.3)',
                 },
                 pie: {
                     emphasis: {

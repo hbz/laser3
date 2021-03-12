@@ -16,7 +16,10 @@
         <g:render template="/myInstitution/reporting/query/base.part2" />
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.app.reporting.current.request = { token: '${token}' }
+            JSPC.app.reporting.current.request = {
+                filter: '${OrganisationConfig.KEY}',
+                token: '${token}'
+            }
         </laser:script>
 
     </g:if>
