@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3215    12.03.2021  rc2.0   2.0.4       Moe     Bug         Fehler bei Verträge
+
 3211    12.03.2021  rc2.0   2.0.4       Moe     Bug         Export von Meine Anbieter & Lieferanten nicht möglich
 
 ----    11.09.2021  rc2.0   2.0.4       David   Feature     Profiler-Charts überarbeiten

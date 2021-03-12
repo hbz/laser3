@@ -18,6 +18,7 @@ class LicenseControllerService {
     AuditService auditService
     ContextService contextService
     MessageSource messageSource
+    TaskService taskService
     LinksGenerationService linksGenerationService
 
     //------------------------------------ general or ungroupable section ------------------------------------------
