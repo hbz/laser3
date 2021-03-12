@@ -30,6 +30,7 @@
                     <th><g:message code="profile.dashboard.changes.objecttype"/></th>
                     <th><g:message code="profile.dashboard.changes.object"/></th>
                     <th><g:message code="profile.dashboard.changes.event"/></th>
+                    <th><g:message code="default.date.label"/></th>
                     <th><g:message code="profile.dashboard.changes.action"/></th>
                 </tr>
             </thead>
@@ -51,6 +52,11 @@
                         <g:elseif test="${entry.costItem}">
                             <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.costItem.sub.id]}">${entry.costItem.sub.dropdownNamingConvention()}</g:link>
                         </g:elseif>
+                        <g:elseif test="${entry.subscription}">
+                                <g:link controller="subscription" action="show" id="${entry.subscription.id}" >
+                                    ${entry.subscription.name}
+                                </g:link>
+                        </g:elseif>
                     </td>
                     <td>
                         <g:if test="${entry.subPkg}">
@@ -67,6 +73,9 @@
                                 </g:link>
                             </div>
                         </g:if>
+                    </td>
+                    <td>
+                        <g:formatDate format="${message(code: 'default.date.format.noZ')}" date="${entry.ts}"/>
                     </td>
                     <td>
                         <g:if test="${editable && entry.changeId && entry.subPkg}">
