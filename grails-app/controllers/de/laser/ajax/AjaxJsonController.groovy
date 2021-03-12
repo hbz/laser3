@@ -27,13 +27,14 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
-import de.laser.reporting.GenericConfig
-import de.laser.reporting.LicenseConfig
-import de.laser.reporting.LicenseQuery
-import de.laser.reporting.OrganisationConfig
-import de.laser.reporting.OrganisationQuery
-import de.laser.reporting.SubscriptionConfig
-import de.laser.reporting.SubscriptionQuery
+import de.laser.reporting.myInstitution.GenericQuery
+import de.laser.reporting.myInstitution.LicenseConfig
+import de.laser.reporting.myInstitution.LicenseQuery
+import de.laser.reporting.myInstitution.OrganisationConfig
+import de.laser.reporting.myInstitution.OrganisationQuery
+import de.laser.reporting.myInstitution.SubscriptionConfig
+import de.laser.reporting.myInstitution.SubscriptionQuery
+import de.laser.reporting.subscription.SubscriptionReporting
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -675,12 +676,25 @@ class AjaxJsonController {
     def chart() {
         Map<String, Object> result = [:]
 
+        Closure getTooltipLabel = { GrailsParameterMap pm ->
+            if (pm.filter == 'license') {
+                GenericQuery.getQueryLabels(LicenseConfig.CONFIG, pm).get(1)
+            }
+            else if (pm.filter == 'organisation') {
+                GenericQuery.getQueryLabels(OrganisationConfig.CONFIG, pm).get(1)
+            }
+            else if (pm.filter == 'subscription') {
+                GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, pm).get(1)
+            }
+        }
+
+        // token ~ myInstitution
         if (params.token && params.query) {
 
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
             Map<String, Object> cached = sessionCache.get("MyInstitutionController/reporting/" + params.token)
 
-            GrailsParameterMap clone = params.clone() // TODO: simplify
+            GrailsParameterMap clone = params.clone() as GrailsParameterMap// TODO: simplify
             if (cached) {
                 clone.putAll(cached)
             }
@@ -689,38 +703,68 @@ class AjaxJsonController {
 
             if (prefix in ['license']) {
                 result = LicenseQuery.query(clone)
+                result.tooltipLabel = getTooltipLabel(clone)
 
                 if (clone.query.endsWith('assignment')) {
                     result.chartLabels = LicenseConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
                     render template: '/myInstitution/reporting/chart/complex', model: result
-                } else {
+                }
+                else {
                     render template: '/myInstitution/reporting/chart/generic', model: result
                 }
                 return
             }
             else if (prefix in ['org', 'member', 'provider', 'licensor']) {
                 result = OrganisationQuery.query(clone)
+                result.tooltipLabel = getTooltipLabel(clone)
 
                 if (clone.query.endsWith('assignment')) {
                     result.chartLabels = OrganisationConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
                     render template: '/myInstitution/reporting/chart/complex', model: result
-                } else {
+                }
+                else {
                     render template: '/myInstitution/reporting/chart/generic', model: result
                 }
                 return
             }
             else if (prefix in ['subscription']) {
                 result = SubscriptionQuery.query(clone)
+                result.tooltipLabel = getTooltipLabel(clone)
 
                 if (clone.query.endsWith('assignment') && clone.query != 'subscription-provider-assignment') {
                     result.chartLabels = SubscriptionConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
                     render template: '/myInstitution/reporting/chart/complex', model: result
-                } else {
+                }
+                else {
                     render template: '/myInstitution/reporting/chart/generic', model: result
                 }
                 return
             }
         }
+        else if (params.query) {
+            GrailsParameterMap clone = params.clone() as GrailsParameterMap // TODO: simplify
+
+            String prefix = clone.query.split('-')[0]
+            String query  = clone.query.replaceFirst(prefix + '-', '')
+
+            if (prefix == SubscriptionReporting.KEY) {
+
+                result = SubscriptionReporting.query(clone)
+
+                result.chartLabels = SubscriptionReporting.QUERY.getAt('Zeitleiste').getAt(clone.query).getAt('chartLabels')
+
+                if (query == 'costs-timeline') {
+                    render template: '/subscription/reporting/chart/' + query, model: result
+                }
+                else {
+                    render template: '/subscription/reporting/chart/generic-timeline', model: result
+                }
+
+                return
+            }
+
+        }
+
         render result as JSON
     }
 }

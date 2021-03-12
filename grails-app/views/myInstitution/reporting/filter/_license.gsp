@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.LicenseConfig;de.laser.ReportingService;de.laser.Org;de.laser.License" %>
+<%@page import="de.laser.reporting.myInstitution.LicenseConfig;de.laser.ReportingService;de.laser.Org;de.laser.License" %>
 <laser:serviceInjection/>
 
     <g:form action="reporting" method="POST" class="ui form">

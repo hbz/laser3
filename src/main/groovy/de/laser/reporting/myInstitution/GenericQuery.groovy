@@ -1,4 +1,4 @@
-package de.laser.reporting
+package de.laser.reporting.myInstitution
 
 import de.laser.Org
 import de.laser.RefdataValue
@@ -15,13 +15,11 @@ class GenericQuery {
 
         config.each {it ->
             it.value.get('query')?.each { it2 ->
-                //println it2
                 if (it2.value.containsKey(params.query)) {
                     meta = [ it2.key, it2.value.get(params.query), params.label ]
                 }
             }
             it.value.get('query2')?.each { it2 ->
-                //println it2
                 if (it2.value.containsKey(params.query)) {
                     meta = [ it2.key, it2.value.get(params.query).label, params.label ]
                 }

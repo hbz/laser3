@@ -1,7 +1,7 @@
-<%@ page import="de.laser.reporting.GenericConfig; de.laser.reporting.GenericQuery" %>
+<%@ page import="de.laser.reporting.myInstitution.GenericConfig;de.laser.reporting.myInstitution.GenericQuery" %>
 <g:if test="${! data}">
     JSPC.app.reporting.current.chart.option = {}
-    alert('[msg:3] - Keine Daten gefunden');
+    $("#reporting-modal-nodata").modal('show');
 </g:if>
 <g:elseif test="${chart == GenericConfig.CHART_PIE}">
     JSPC.app.reporting.current.chart.option = {
@@ -26,44 +26,17 @@
         },
         series: [
             {
-                name: '${chartLabels[1]}',
-                type: 'pie',
-                radius: ['55%', '70%'],
-                center: ['65%', '50%'],
-                encode: {
-                    itemName: 'name',
-                    value: 'valueObjects',
-                    id: 'id'
-                },
-                emphasis: {
-                    itemStyle: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: 'rgba(0,0,0,0.3)'
-                    }
-                }
-            },
-            {
                 name: '${chartLabels[0]}',
                 type: 'pie',
-                radius: '53%',
+                radius: '70%',
                 center: ['65%', '50%'],
                 encode: {
                     itemName: 'name',
                     value: 'valueMatches',
                     id: 'id'
                 },
-                emphasis: {
-                    itemStyle: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: 'rgba(0,0,0,0.3)'
-                    }
-                },
-                label: {
-                    show: false
-                }
-            }
+                emphasis: JSPC.app.reporting.helper.series.pie.emphasis
+            },
         ]
     };
     JSPC.app.reporting.current.chart.details = <%= dataDetails as grails.converters.JSON %>
@@ -81,9 +54,7 @@
         },
         tooltip: {
             trigger: 'axis',
-            axisPointer: {
-                type: 'shadow'
-            },
+            axisPointer: { type: 'shadow' },
             formatter (params) {
                 var str = params[0].name
 
@@ -114,9 +85,7 @@
                 }
             }
         },
-        yAxis: {
-            type: 'category'
-        },
+        yAxis: { type: 'category' },
         series: [
             {
                 name: '${chartLabels[0]}',

@@ -2,8 +2,8 @@ package de.laser
 
 import de.laser.annotations.RefdataAnnotation
 import de.laser.helper.RDConstants
-import de.laser.reporting.GenericConfig
-import de.laser.reporting.GenericFilter
+import de.laser.reporting.myInstitution.GenericConfig
+import de.laser.reporting.myInstitution.GenericFilter
 import org.apache.commons.lang3.RandomStringUtils
 
 import java.lang.reflect.Field
@@ -152,6 +152,13 @@ class LaserReportingTagLib {
                 value      : filterValue,
                 noSelection: ['': message(code: 'default.select.choose.label')]
         ])
+        out << '</div>'
+    }
+
+    def reportingNotice = { attrs, body ->
+        // TODO ..
+        out << '<div ' + (attrs.id ? 'id="' + attrs.id + '" ' : '') + 'class="ui hidden message">'
+        out << body()
         out << '</div>'
     }
 

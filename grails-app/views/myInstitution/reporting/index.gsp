@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.SubscriptionConfig; de.laser.reporting.LicenseConfig; de.laser.reporting.OrganisationConfig; de.laser.reporting.GenericConfig; de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.myInstitution.SubscriptionConfig;de.laser.reporting.myInstitution.OrganisationConfig;de.laser.reporting.myInstitution.LicenseConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -85,6 +85,7 @@
             </div>
         </g:if>
 
+        <g:render template="/templates/reporting/helper" />
 
         <g:if test="${result}">
             <h3 class="ui header">2. Ergebnis</h3>
@@ -115,10 +116,6 @@
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            if (! JSPC.app.reporting) { JSPC.app.reporting = {}; }
-            if (! JSPC.app.reporting.current) { JSPC.app.reporting.current = {}; }
-            if (! JSPC.app.reporting.current.chart) { JSPC.app.reporting.current.chart = {}; }
-
             $('#filter-chooser').on( 'change', function(e) {
                 $('.filter-form-wrapper').addClass('hidden')
                 $('#filter-' + $(e.target).dropdown('get value')).removeClass('hidden');
@@ -171,6 +168,9 @@
                         else if (JSPC.app.reporting.current.request.chart == 'pie') {
                             $('#chart-wrapper').css('height', 350 + (12 * JSPC.app.reporting.current.chart.details.length) + 'px');
                         }
+                        else if (JSPC.app.reporting.current.request.chart == 'radar') {
+                            $('#chart-wrapper').css('height', 400 + (8 * JSPC.app.reporting.current.chart.details.length) + 'px');
+                        }
 
                         var echart = echarts.init($('#chart-wrapper')[0]);
                         echart.setOption( JSPC.app.reporting.current.chart.option );
@@ -184,7 +184,7 @@
                                 }
                             })
                             if (! valid) {
-                                alert('[msg:2] - Keine Details verfügbar');
+                                $("#reporting-modal-nodetails").modal('show');
                             }
                         });
                         echart.on( 'legendselectchanged', function (params) {
@@ -211,11 +211,21 @@
                      $('#chart-details').html(data);
                 })
                 .fail( function (data) {
-                    alert('Unbekannter Fehler');
+                    $("#reporting-modal-error").modal('show');
                 })
             }
 
         </laser:script>
+
+        <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
+            <p>Unbekannter Fehler.</p>
+        </semui:modal>
+        <semui:modal id="reporting-modal-nodata" text="REPORTING" hideSubmitButton="true">
+            <p>Diese Anfrage liefert keine Daten.</p>
+        </semui:modal>
+        <semui:modal id="reporting-modal-nodetails" text="REPORTING" hideSubmitButton="true">
+            <p>Es sind leider keine Details verfügbar.</p>
+        </semui:modal>
 
     </body>
 </html>

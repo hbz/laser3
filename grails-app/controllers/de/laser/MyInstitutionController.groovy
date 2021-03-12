@@ -13,11 +13,10 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.properties.PersonProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
-import de.laser.reporting.GenericFilter
-import de.laser.reporting.LicenseConfig
-import de.laser.reporting.OrganisationConfig
-import de.laser.reporting.SubscriptionConfig
-import de.laser.reporting.GenericConfig
+import de.laser.reporting.myInstitution.LicenseConfig
+import de.laser.reporting.myInstitution.OrganisationConfig
+import de.laser.reporting.myInstitution.SubscriptionConfig
+import de.laser.reporting.myInstitution.GenericConfig
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated

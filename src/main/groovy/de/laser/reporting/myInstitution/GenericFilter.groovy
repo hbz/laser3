@@ -1,6 +1,7 @@
-package de.laser.reporting
+package de.laser.reporting.myInstitution
 
 import de.laser.annotations.RefdataAnnotation
+import de.laser.reporting.myInstitution.GenericConfig
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder

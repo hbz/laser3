@@ -1,7 +1,8 @@
-package de.laser.reporting
+package de.laser.reporting.myInstitution
 
 import de.laser.Org
 import de.laser.Subscription
+import de.laser.reporting.myInstitution.GenericConfig
 
 class SubscriptionConfig extends GenericConfig {
 
@@ -18,14 +19,14 @@ class SubscriptionConfig extends GenericConfig {
                             'consortia-sub' : 'Meine Lizenzen'
                     ],
                     fields: [
-                            'endDate'               : FIELD_TYPE_PROPERTY,
-                            'form'                  : FIELD_TYPE_REFDATA,
-                            'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
-                            'isPublicForApi'        : FIELD_TYPE_PROPERTY,
-                            'kind'                  : FIELD_TYPE_REFDATA,
-                            'resource'              : FIELD_TYPE_REFDATA,
-                            'startDate'             : FIELD_TYPE_PROPERTY,
-                            'status'                : FIELD_TYPE_REFDATA,
+                            'endDate'               : GenericConfig.FIELD_TYPE_PROPERTY,
+                            'form'                  : GenericConfig.FIELD_TYPE_REFDATA,
+                            'hasPerpetualAccess'    : GenericConfig.FIELD_TYPE_PROPERTY,
+                            'isPublicForApi'        : GenericConfig.FIELD_TYPE_PROPERTY,
+                            'kind'                  : GenericConfig.FIELD_TYPE_REFDATA,
+                            'resource'              : GenericConfig.FIELD_TYPE_REFDATA,
+                            'startDate'             : GenericConfig.FIELD_TYPE_PROPERTY,
+                            'status'                : GenericConfig.FIELD_TYPE_REFDATA,
                             //'type'                : FIELD_TYPE_REFDATA,
                             //'isMultiYear'         : FIELD_TYPE_PROPERTY,
                             //'manualRenewalDate'       : FIELD_TYPE_PROPERTY,
@@ -72,17 +73,17 @@ class SubscriptionConfig extends GenericConfig {
                             'depending-member' : 'Alle betroffenen Teilnehmer'
                     ],
                     fields : [
-                            'country'           : FIELD_TYPE_REFDATA,
-                            'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
-                            'eInvoice'          : FIELD_TYPE_PROPERTY,
-                            'funderHskType'     : FIELD_TYPE_REFDATA,
-                            'funderType'        : FIELD_TYPE_REFDATA,
-                            'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
-                            'libraryNetwork'    : FIELD_TYPE_REFDATA,
-                            'libraryType'       : FIELD_TYPE_REFDATA,
-                            'orgType'           : FIELD_TYPE_REFDATA_RELTABLE,
+                            'country'           : GenericConfig.FIELD_TYPE_REFDATA,
+                            'customerType'      : GenericConfig.FIELD_TYPE_CUSTOM_IMPL,
+                            'eInvoice'          : GenericConfig.FIELD_TYPE_PROPERTY,
+                            'funderHskType'     : GenericConfig.FIELD_TYPE_REFDATA,
+                            'funderType'        : GenericConfig.FIELD_TYPE_REFDATA,
+                            'legalInfo'         : GenericConfig.FIELD_TYPE_CUSTOM_IMPL,
+                            'libraryNetwork'    : GenericConfig.FIELD_TYPE_REFDATA,
+                            'libraryType'       : GenericConfig.FIELD_TYPE_REFDATA,
+                            'orgType'           : GenericConfig.FIELD_TYPE_REFDATA_RELTABLE,
                             //'region'            : FIELD_TYPE_REFDATA,
-                            'subjectGroup'      : FIELD_TYPE_REFDATA_RELTABLE
+                            'subjectGroup'      : GenericConfig.FIELD_TYPE_REFDATA_RELTABLE
                     ],
                     filter : [
                             default: [
@@ -114,8 +115,8 @@ class SubscriptionConfig extends GenericConfig {
                             'depending-provider' : 'Alle betroffenen Anbieter'
                     ],
                     fields : [
-                            'country'   : FIELD_TYPE_REFDATA,
-                            'orgType'   : FIELD_TYPE_REFDATA_RELTABLE,
+                            'country'   : GenericConfig.FIELD_TYPE_REFDATA,
+                            'orgType'   : GenericConfig.FIELD_TYPE_REFDATA_RELTABLE,
                     ],
                     filter : [
                             default: [

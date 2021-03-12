@@ -7,7 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-3199    09.03.2021  rc2.0   2.0.2       Moe     Bug       Export von Lizenzumfragen ist nicht möglich
+----    11.09.2021  rc2.0   2.0.4       David   Feature     Profiler-Charts überarbeiten
+
+3191    10.09.2021  rc2.0   2.0.3       David   Feature     Reporting: Basis-Reporting für einzelne Lizenzen
+
+3199    09.03.2021  rc2.0   2.0.2       Moe     Bug         Export von Lizenzumfragen ist nicht möglich
 
 3198    08.03.2021  rc2.0   2.0.2       Moe     Bug         Fragezeichen-Mouseover fehlt bei Eigenen Merkmalen
 
