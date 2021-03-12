@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3211    12.03.2021  rc2.0   2.0.4       Moe     Bug         Export von Meine Anbieter & Lieferanten nicht möglich
+
 ----    11.09.2021  rc2.0   2.0.4       David   Feature     Profiler-Charts überarbeiten
 
 3191    10.09.2021  rc2.0   2.0.3       David   Feature     Reporting: Basis-Reporting für einzelne Lizenzen
