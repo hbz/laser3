@@ -1,3 +1,4 @@
+<%@ page import="de.laser.reporting.myInstitution.SubscriptionConfig" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -37,6 +38,7 @@
                     JSPC.app.reporting.current.request = {
                         id: ${subscription.id},
                         query: value,
+                        context: '${SubscriptionConfig.KEY}',
                         chart: 'default'
                     }
                     JSPC.app.reporting.requestChart();
@@ -68,7 +70,9 @@
                             $.each( JSPC.app.reporting.current.chart.details, function(i, v) {
                                 if (params.data[0] == v.id) {
                                     valid = true;
-                                    JSPC.app.reporting.requestChartDetails(JSPC.app.reporting.current.request, v);
+                                    var clone = Object.assign({}, v);
+                                    clone.context = '${SubscriptionConfig.KEY}';
+                                    JSPC.app.reporting.requestChartDetails(JSPC.app.reporting.current.request, clone);
                                 }
                             })
                             if (! valid) {
@@ -84,6 +88,20 @@
                     })
                     .fail( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
+                    })
+                }
+
+                JSPC.app.reporting.requestChartDetails = function(request, data) {
+                    $.ajax({
+                        url: "<g:createLink controller="ajaxHtml" action="chartDetails" />",
+                        method: 'post',
+                        data: data
+                    })
+                    .done( function (data) {
+                         $('#chart-details').empty().html(data);
+                    })
+                    .fail( function (data) {
+                        $("#reporting-modal-error").modal('show');
                     })
                 }
             }

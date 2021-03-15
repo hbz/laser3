@@ -7,6 +7,7 @@ import de.laser.Links
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.TitleInstancePackagePlatform
 import de.laser.ctrl.FinanceControllerService
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
@@ -23,17 +24,17 @@ class SubscriptionReporting {
     static Map<String, Object> QUERY = [
 
             'Zeitleiste' : [
-                    'subscription-member-timeline' : [
+                    'member-timeline' : [
                             label : 'Entwicklung: Teilnehmer',
                             chart : 'bar',
                             chartLabels : [ 'Teilnehmer entfernt', 'Neue Teilnehmer', 'Aktuelle Teilnehmer' ]
                     ],
-                    'subscription-entitlement-timeline' : [
+                    'entitlement-timeline' : [
                             label : 'Entwicklung: Bestand',
                             chart : 'bar',
                             chartLabels : [ 'Titel entfernt', 'Neue Titel', 'Aktuelle Titel' ]
                     ],
-                    'subscription-costs-timeline' : [
+                    'cost-timeline' : [
                             label : 'Entwicklung: Kosten',
                             chart : 'bar',
                             chartLabels : [ 'Wert', 'Endpreis (nach Steuer)']
@@ -42,9 +43,6 @@ class SubscriptionReporting {
     ]
 
     static Map<String, Object> query(GrailsParameterMap params) {
-
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         Map<String, Object> result = [
@@ -58,29 +56,27 @@ class SubscriptionReporting {
 
         if (!id) {
         }
-        else if (params.query == 'subscription-member-timeline') {
+        else if (params.query == 'member-timeline') {
             Subscription sub = Subscription.get(id)
             List<Subscription> timeline = getSubscriptionTimeline(sub)
+            List<List<Long>> subIdLists = []
 
             timeline.eachWithIndex{ s, i ->
-                Map<String, Object> details = [
-                        query   : params.query,
-                        id      : s.id,
-                        label   : '',
-                        idList  : Subscription.executeQuery(
-                                'select m.id from Subscription sub join sub.derivedSubscriptions m where sub = :sub',
-                                [sub: s]
-                        )
-                ]
-                result.dataDetails.add( details )
-
+                subIdLists.add( Subscription.executeQuery(
+                        'select m.id from Subscription sub join sub.derivedSubscriptions m where sub = :sub', [sub: s]
+                ))
                 result.data.add([
                         s.id,
                         s.name,
                         sub == s,
                         sdf.format(s.startDate),
                         sdf.format(s.endDate),
-                        details.idList.size() as Long
+                        subIdLists.get(i).size()
+                ])
+                result.dataDetails.add([
+                        query   : params.query,
+                        id      : s.id,
+                        label   : ''
                 ])
             }
 
@@ -91,46 +87,53 @@ class SubscriptionReporting {
                 List< RefdataValue> roleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
 
                 if (i>0) {
-                    List<Long> currIdList = dd.idList
-                    List<Long> prevIdList = result.dataDetails.get(i - 1).idList
+                    List<Long> currIdList = subIdLists.get(i)
+                    List<Long> prevIdList = subIdLists.get(i - 1)
 
                     List<Long> currMemberIdList = currIdList ? Org.executeQuery( orgHql, [idList: currIdList, roleTypes: roleTypes] ) : []
                     List<Long> prevMemberIdList = prevIdList ? Org.executeQuery( orgHql, [idList: prevIdList, roleTypes: roleTypes] ) : []
 
-                    d[6] = currMemberIdList.minus(prevMemberIdList).size() // plus
-                    d[7] = prevMemberIdList.minus(currMemberIdList).size() // minus
+                    dd.idList      = currMemberIdList
+                    dd.plusIdList  = currMemberIdList.minus(prevMemberIdList)
+                    dd.minusIdList = prevMemberIdList.minus(currMemberIdList)
+
+                    d[6] = dd.plusIdList.size()
+                    d[7] = dd.minusIdList.size()
                 }
                 else {
-                    List<Long> currMemberIdList = dd.idList ? Org.executeQuery( orgHql, [idList: dd.idList, roleTypes: roleTypes] ) : []
+                    List<Long> currMemberIdList = subIdLists.get(i) ? Org.executeQuery( orgHql, [idList: subIdLists.get(i), roleTypes: roleTypes] ) : []
 
-                    d[6] = currMemberIdList.size()
-                    d[7] = 0
+                    dd.idList      = currMemberIdList
+                    dd.plusIdList  = currMemberIdList
+                    dd.minusIdList = []
+
+                    d[6] = dd.plusIdList.size()
+                    d[7] = dd.minusIdList.size()
                 }
             }
         }
-        else if (params.query == 'subscription-entitlement-timeline') {
+        else if (params.query == 'entitlement-timeline') {
             Subscription sub = Subscription.get(id)
             List<Subscription> timeline = getSubscriptionTimeline(sub)
+            List<List<Long>> ieIdLists = []
 
             timeline.eachWithIndex{ s, i  ->
-                Map<String, Object> details = [
-                        query   : params.query,
-                        id      : s.id,
-                        label   : '',
-                        idList  : IssueEntitlement.executeQuery(
-                                'select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus',
-                                [sub: s, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED]
-                        )
-                ]
-                result.dataDetails.add( details )
-
+                ieIdLists.add( IssueEntitlement.executeQuery(
+                        'select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus',
+                        [sub: s, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED]
+                ))
                 result.data.add([
                         s.id,
                         s.name,
                         sub == s,
                         sdf.format(s.startDate),
                         sdf.format(s.endDate),
-                        details.idList.size() as Long
+                        ieIdLists.get(i).size()
+                ])
+                result.dataDetails.add([
+                        query   : params.query,
+                        id      : s.id,
+                        label   : ''
                 ])
             }
 
@@ -140,24 +143,31 @@ class SubscriptionReporting {
                 String tippHql = 'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.id in (:idList)'
 
                 if (i>0) {
-                    List<Long> currIdList = dd.idList
-                    List<Long> prevIdList = result.dataDetails.get(i - 1).idList
+                    List<Long> currIdList = ieIdLists.get(i)
+                    List<Long> prevIdList = ieIdLists.get(i - 1)
 
-                    List<Long> currTippIdList = currIdList ? Org.executeQuery( tippHql, [idList: currIdList] ) : []
-                    List<Long> prevTippIdList = prevIdList ? Org.executeQuery( tippHql, [idList: prevIdList] ) : []
+                    List<Long> currTippIdList = currIdList ? TitleInstancePackagePlatform.executeQuery( tippHql, [idList: currIdList] ) : []
+                    List<Long> prevTippIdList = prevIdList ? TitleInstancePackagePlatform.executeQuery( tippHql, [idList: prevIdList] ) : []
 
-                    d[6] = currTippIdList.minus(prevTippIdList).size() // plus
-                    d[7] = prevTippIdList.minus(currTippIdList).size() // minus
+                    dd.idList      = currTippIdList
+                    dd.plusIdList  = currTippIdList.minus(prevTippIdList)
+                    dd.minusIdList = prevTippIdList.minus(currTippIdList)
+
+                    d[6] = dd.plusIdList.size()
+                    d[7] = dd.minusIdList.size()
                 }
                 else {
-                    List<Long> currTippIdList = dd.idList ? Org.executeQuery( tippHql, [idList: dd.idList] ) : []
+                    List<Long> currTippIdList = ieIdLists.get(i) ? TitleInstancePackagePlatform.executeQuery( tippHql, [idList: ieIdLists.get(i)] ) : []
 
-                    d[6] = currTippIdList.size()
-                    d[7] = 0
+                    dd.plusIdList  = currTippIdList
+                    dd.minusIdList = []
+
+                    d[6] = dd.plusIdList.size()
+                    d[7] = dd.minusIdList.size()
                 }
             }
         }
-        else if (params.query == 'subscription-costs-timeline') {
+        else if (params.query == 'cost-timeline') {
             Subscription sub = Subscription.get(id)
             List<Subscription> timeline = getSubscriptionTimeline(sub)
 
@@ -170,13 +180,7 @@ class SubscriptionReporting {
                 clone.setProperty('id', s.id)
                 Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, financeControllerService.getResultGenerics(clone))
 
-                Map<String, Object> details = [
-                        query   : params.query,
-                        id      : s.id,
-                        label   : '',
-                        idList  : []
-                ]
-                result.dataDetails.add( details )
+                println finance.cons?.sums
 
                 result.data.add([
                     s.id,
@@ -186,6 +190,12 @@ class SubscriptionReporting {
                     sdf.format(s.endDate),
                     finance.cons?.sums?.localSums?.localSum ?: 0,
                     finance.cons?.sums?.localSums?.localSumAfterTax ?: 0
+                ])
+                result.dataDetails.add([
+                        query   : params.query,
+                        id      : s.id,
+                        label   : '',
+                        idList  : []
                 ])
             }
 //                data[8]  = finance.subscr?.sums?.localSums?.localSum ?: 0
