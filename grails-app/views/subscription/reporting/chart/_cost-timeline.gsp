@@ -27,12 +27,11 @@ JSPC.app.reporting.current.chart.option = {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
         formatter (params) {
-            var c1 = new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params[0].data[ params[0].seriesIndex + 5 ])
-            var c2 = new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params[1].data[ params[1].seriesIndex + 5 ])
-
             var str = params[0].data[3] + ' - ' +  params[0].data[4]
-            str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, c1)
-            str += JSPC.app.reporting.helper.tooltip.getEntry(params[1].marker, params[1].seriesName, c2)
+            for (var i=0; i<params.length; i++) {
+                var ci = new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params[i].data[ params[i].seriesIndex + 5 ])
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params[i].marker, params[i].seriesName, ci)
+            }
             return str
         }
     },

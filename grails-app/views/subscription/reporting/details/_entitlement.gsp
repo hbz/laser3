@@ -1,8 +1,6 @@
 <%@ page import="de.laser.helper.RDStore; de.laser.TitleInstancePackagePlatform;" %>
 <laser:serviceInjection />
 
-<h3 class="ui header">3. Details</h3>
-
 <div class="ui message success">
     <p>${label}</p>
 </div>

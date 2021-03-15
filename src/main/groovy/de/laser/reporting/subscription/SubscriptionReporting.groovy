@@ -42,6 +42,20 @@ class SubscriptionReporting {
             ]
     ]
 
+    static List<String> getQueryLabels(GrailsParameterMap params) {
+        List<String> meta = []
+
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        Subscription sub = Subscription.get(params.id)
+
+        QUERY.each {it ->
+            if (it.value.containsKey(params.query)) {
+                meta = [ it.key, it.value.get(params.query).label, "${sdf.format(sub.startDate)} - ${sdf.format(sub.endDate)}" ]
+            }
+        }
+        meta
+    }
+
     static Map<String, Object> query(GrailsParameterMap params) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 

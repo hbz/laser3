@@ -33,7 +33,7 @@ import de.laser.reporting.myInstitution.GenericQuery
 import de.laser.reporting.myInstitution.LicenseConfig
 import de.laser.reporting.myInstitution.OrganisationConfig
 import de.laser.reporting.myInstitution.SubscriptionConfig
-
+import de.laser.reporting.subscription.SubscriptionReporting
 import grails.plugin.springsecurity.annotation.Secured
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -412,7 +412,7 @@ class AjaxHtmlController {
         }
         else if (params.context == SubscriptionConfig.KEY && params.query) {
             if (params.query in ['cost-timeline']) {
-                result.label = "TODO"
+                result.label = SubscriptionReporting.getQueryLabels(params).join(' > ')
 
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty('id', params.id)
@@ -425,7 +425,7 @@ class AjaxHtmlController {
 
             }
             else if (params.query in ['entitlement-timeline']) {
-                result.label = "TODO"
+                result.label = SubscriptionReporting.getQueryLabels(params).join(' > ')
 
                 String hql = 'select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name'
 
@@ -439,7 +439,7 @@ class AjaxHtmlController {
                 result.tmpl      = '/subscription/reporting/details/entitlement'
             }
             else if (params.query in ['member-timeline']) {
-                result.label = "TODO"
+                result.label = SubscriptionReporting.getQueryLabels(params).join(' > ')
 
                 String hql = 'select o from Org o where o.id in (:idList) order by o.sortname, o.name'
 

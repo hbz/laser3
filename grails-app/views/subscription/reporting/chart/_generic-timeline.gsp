@@ -31,9 +31,9 @@ JSPC.app.reporting.current.chart.option = {
         formatter (params) {
             var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.length - 1
             var str = params[0].data[3] + ' - ' +  params[0].data[4]
-            str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, params[0].data[ index - params[0].seriesIndex ])
-            str += JSPC.app.reporting.helper.tooltip.getEntry(params[1].marker, params[1].seriesName, params[1].data[ index - params[1].seriesIndex ])
-            str += JSPC.app.reporting.helper.tooltip.getEntry(params[2].marker, params[2].seriesName, params[2].data[ index - params[2].seriesIndex ])
+            for (var i=0; i<params.length; i++) {
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params[i].marker, params[i].seriesName, params[i].data[ index - params[i].seriesIndex ])
+            }
             return str
         }
     },
