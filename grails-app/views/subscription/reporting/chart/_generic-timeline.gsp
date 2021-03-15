@@ -1,8 +1,8 @@
 JSPC.app.reporting.current.chart.option = {
     dataset: {
-        dimensions: ['id', 'name', 'isCurrent', 'startDate', 'endDate', 'idList', 'value', 'plus', 'minus'],
+        dimensions: ['id', 'name', 'isCurrent', 'startDate', 'endDate', 'value', 'plus', 'minus'],
         source: [
-            <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}, '${it[3]}', '${it[4]}', ${it[5]}, ${it[6]}, ${it[7]}, ${it[8]}]," } %>
+            <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}, '${it[3]}', '${it[4]}', ${it[5]}, ${it[6]}, ${it[7]}]," } %>
         ]
     },
     grid:  {
@@ -19,7 +19,7 @@ JSPC.app.reporting.current.chart.option = {
         type: 'category',
         axisLabel: {
             formatter: function(id, index) {
-                var elem = JSPC.app.reporting.current.chart.option.dataset.source[index]
+                var elem = JSPC.app.reporting.current.chart.option.dataset.source[ index ]
                 return elem[3] + ' - ' + elem[4]
             }
         }
@@ -29,10 +29,11 @@ JSPC.app.reporting.current.chart.option = {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
         formatter (params) {
+            var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.length - 1
             var str = params[0].data[3] + ' - ' +  params[0].data[4]
-            str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, params[0].data[ 8 - params[0].seriesIndex ])
-            str += JSPC.app.reporting.helper.tooltip.getEntry(params[1].marker, params[1].seriesName, params[1].data[ 8 - params[1].seriesIndex ])
-            str += JSPC.app.reporting.helper.tooltip.getEntry(params[2].marker, params[2].seriesName, params[2].data[ 8 - params[2].seriesIndex ])
+            str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, params[0].data[ index - params[0].seriesIndex ])
+            str += JSPC.app.reporting.helper.tooltip.getEntry(params[1].marker, params[1].seriesName, params[1].data[ index - params[1].seriesIndex ])
+            str += JSPC.app.reporting.helper.tooltip.getEntry(params[2].marker, params[2].seriesName, params[2].data[ index - params[2].seriesIndex ])
             return str
         }
     },
