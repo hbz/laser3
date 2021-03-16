@@ -7,13 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-3219    15.09.2021  rc2.0   2.0.4       David   Feature     Detailseiten für Zeitleisten (Lizenz-Reporting)
+3219    15.03.2021  rc2.0   2.0.4       David   Feature     Detailseiten für Zeitleisten (Lizenz-Reporting)
 
-3191    15.09.2021  rc2.0   2.0.4       David   Feature     Reporting: Basis-Reporting für einzelne Lizenzen
+3191    15.03.2021  rc2.0   2.0.4       David   Feature     Reporting: Basis-Reporting für einzelne Lizenzen
 
-3188    15.09.2021  rc2.0   2.0.4       David   Feature     Reporting: Mehr Details in Diagrammen
+3188    15.03.2021  rc2.0   2.0.4       David   Feature     Reporting: Mehr Details in Diagrammen
 
-3210    12.09.2021  rc2.0   2.0.4       David   Feature     Reporting: JS-Konfigurationen/-Helper für Charts erstellen
+3210    12.03.2021  rc2.0   2.0.4       David   Feature     Reporting: JS-Konfigurationen/-Helper für Charts erstellen
 
 --      12.03.2021  rc2.0   2.0.4       Moe     Bug         Lizenz Anzeigen in Änderungsicht
 
