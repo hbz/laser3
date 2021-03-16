@@ -4,9 +4,9 @@
 
 <g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
 
-<semui:modal id="${modalID ?: 'copyEmailaddresses_ajaxModal'}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
-    <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" scope="request"/>
-    <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" scope="request"/>
+<semui:modal id="${modalID}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
+    <g:set var="rdvAllPersonFunctions" value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" scope="request"/>
+    <g:set var="rdvAllPersonPositions" value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" scope="request"/>
     <div class="ui la-filter segment la-clear-before">
         <div class="field">
             <div>
@@ -92,7 +92,7 @@
             });
         }
 
-        JSPC.callbacks.modal.show.${modalID ?: 'copyEmailaddresses_ajaxModal'} = function(trigger) {
+        JSPC.callbacks.modal.show.${modalID} = function(trigger) {
             if ($(trigger).attr('data-orgIdList')) {
                 JSPC.app.jsonOrgIdList = $(trigger).attr('data-orgIdList').split(',');
             } else {
