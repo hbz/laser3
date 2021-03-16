@@ -17,12 +17,12 @@
         <tbody>
             <g:each in="${list}" var="org" status="i">
                 <g:if test="${plusList.contains(org)}">
-                    <tr class="positive">
-                        <td><strong>${i + 1}.</strong></td>
+                    <tr>
+                        <td style="text-align: center"><span class="ui label circular green">${i + 1}.</span></td>
                 </g:if>
                 <g:else>
                     <tr>
-                        <td>${i + 1}.</td>
+                        <td style="text-align: center">${i + 1}.</td>
                 </g:else>
                     <td>${org.sortname}</td>
                     <td>
@@ -47,7 +47,7 @@
             <tbody>
                 <g:each in="${minusList}" var="org" status="i">
                     <tr class="negative">
-                        <td>${i + 1}.</td>
+                        <td style="text-align: center">${i + 1}.</td>
                         <td>${org.sortname}</td>
                         <td>
                             <g:link controller="organisation" action="show" id="${org.id}" target="_blank">${org.name}</g:link>

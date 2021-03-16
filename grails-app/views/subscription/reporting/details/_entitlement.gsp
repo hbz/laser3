@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.TitleInstancePackagePlatform;" %>
+<%@ page import="de.laser.IssueEntitlement; de.laser.helper.RDStore; de.laser.TitleInstancePackagePlatform;" %>
 <laser:serviceInjection />
 
 <div class="ui message success">
@@ -19,16 +19,20 @@
         <tbody>
             <g:each in="${list}" var="tipp" status="i">
                 <g:if test="${plusListNames.contains(tipp.name)}">
-                    <tr class="positive">
-                        <td><strong>${i + 1}.</strong></td>
+                    <tr>
+                        <td style="text-align: center"><span class="ui label circular green">${i + 1}.</span></td>
                 </g:if>
                 <g:else>
-                    <tr>
-                        <td>${i + 1}.</td>
+                    <td style="text-align: center">${i + 1}.</td>
                 </g:else>
                     <td>
-                        ${tipp.name}
-                        %{--<g:link controller="issueEntitlement" action="show" id="${tipp.id}" target="_blank">${tipp.name}</g:link>--}%
+                        <%
+                            Long ieId = IssueEntitlement.executeQuery(
+                                'select ie.id from IssueEntitlement ie where ie.subscription.id = :id and ie.tipp = :tipp',
+                                [id: id, tipp: tipp]
+                            )[0]
+                        %>
+                        <g:link controller="issueEntitlement" action="show" id="${ieId}" target="_blank">${tipp.name}</g:link>
                     </td>
                     <td>
                         ${tipp.titleType}
@@ -56,10 +60,15 @@
             <tbody>
                 <g:each in="${minusList}" var="tipp" status="i">
                     <tr class="negative">
-                        <td>${i + 1}.</td>
+                        <td style="text-align: center">${i + 1}.</td>
                         <td>
-                            ${tipp.name}
-                            %{--<g:link controller="issueEntitlement" action="show" id="${tipp.id}" target="_blank">${tipp.name}</g:link>--}%
+                            <%
+                                Long ieId2 = IssueEntitlement.executeQuery(
+                                        'select ie.id from IssueEntitlement ie where ie.subscription.id = :id and ie.tipp = :tipp',
+                                        [id: id, tipp: tipp]
+                                )[0]
+                            %>
+                            <g:link controller="issueEntitlement" action="show" id="${ieId2}" target="_blank">${tipp.name}</g:link>
                         </td>
                         <td>
                             ${tipp.titleType}

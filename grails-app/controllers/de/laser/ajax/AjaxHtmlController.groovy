@@ -377,7 +377,7 @@ class AjaxHtmlController {
     def chartDetails() {
         Map<String, Object> result = [
             query:  params.query,
-            id:     params.id
+            id:     params.id as Long
         ]
 
         if (params.context == GenericConfig.KEY && params.query) {
@@ -411,46 +411,41 @@ class AjaxHtmlController {
             }
         }
         else if (params.context == SubscriptionConfig.KEY && params.query) {
-            if (params.query in ['cost-timeline']) {
+            if (params.query == 'cost-timeline') {
                 result.label = SubscriptionReporting.getQueryLabels(params).join(' > ')
 
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty('id', params.id)
                 Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, financeControllerService.getResultGenerics(clone))
 
-                println finance
                 result.billingSums = finance.cons.sums.billingSums ?: []
                 result.localSums   = finance.cons.sums.localSums ?: []
                 result.tmpl        = '/subscription/reporting/details/cost'
 
             }
-            else if (params.query in ['entitlement-timeline']) {
+            else if (params.query in ['entitlement-timeline', 'member-timeline']) {
                 result.label = SubscriptionReporting.getQueryLabels(params).join(' > ')
-
-                String hql = 'select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name'
 
                 List idList      = params.list('idList[]').collect { it as Long }
                 List plusIdList  = params.list('plusIdList[]').collect { it as Long }
                 List minusIdList = params.list('minusIdList[]').collect { it as Long }
 
-                result.list      = idList ? TitleInstancePackagePlatform.executeQuery (hql, [idList: idList] ) : []
-                result.plusList  = plusIdList ? TitleInstancePackagePlatform.executeQuery( hql,  [idList: plusIdList] ) : []
-                result.minusList = minusIdList ? TitleInstancePackagePlatform.executeQuery( hql, [idList: minusIdList] ) : []
-                result.tmpl      = '/subscription/reporting/details/entitlement'
-            }
-            else if (params.query in ['member-timeline']) {
-                result.label = SubscriptionReporting.getQueryLabels(params).join(' > ')
+                if (params.query == 'entitlement-timeline') {
+                    String hql = 'select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name'
 
-                String hql = 'select o from Org o where o.id in (:idList) order by o.sortname, o.name'
+                    result.list      = idList      ? TitleInstancePackagePlatform.executeQuery (hql, [idList: idList] ) : []
+                    result.plusList  = plusIdList  ? TitleInstancePackagePlatform.executeQuery( hql,  [idList: plusIdList] ) : []
+                    result.minusList = minusIdList ? TitleInstancePackagePlatform.executeQuery( hql, [idList: minusIdList] ) : []
+                    result.tmpl      = '/subscription/reporting/details/entitlement'
+                }
+                else {
+                    String hql = 'select o from Org o where o.id in (:idList) order by o.sortname, o.name'
 
-                List idList      = params.list('idList[]').collect { it as Long }
-                List plusIdList  = params.list('plusIdList[]').collect { it as Long }
-                List minusIdList = params.list('minusIdList[]').collect { it as Long }
-
-                result.list      = idList ? Org.executeQuery( hql, [idList: idList] ) : []
-                result.plusList  = plusIdList ? Org.executeQuery( hql, [idList: plusIdList] ) : []
-                result.minusList = minusIdList ? Org.executeQuery( hql, [idList: minusIdList] ) : []
-                result.tmpl      = '/subscription/reporting/details/organisation'
+                    result.list      = idList      ? Org.executeQuery( hql, [idList: idList] ) : []
+                    result.plusList  = plusIdList  ? Org.executeQuery( hql, [idList: plusIdList] ) : []
+                    result.minusList = minusIdList ? Org.executeQuery( hql, [idList: minusIdList] ) : []
+                    result.tmpl      = '/subscription/reporting/details/organisation'
+                }
             }
         }
 
