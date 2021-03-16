@@ -67,7 +67,7 @@
         <div class="field">
             <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
             <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
-            <input type="hidden" name="filter" value="license" />
+            <input type="hidden" name="filter" value="${LicenseConfig.KEY}" />
             <input type="hidden" name="token" value="${token}" />
         </div>
 

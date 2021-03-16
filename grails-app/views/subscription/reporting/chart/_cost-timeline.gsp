@@ -1,13 +1,15 @@
 JSPC.app.reporting.current.chart.option = {
     dataset: {
-        dimensions: ['id', 'name', 'isCurrent', 'startDate', 'endDate', 'placeholder', 'valueCons', 'valueConsTax' /*, 'valueSubscr', 'valueSubscrTax', 'valueOwn', 'valueOwnTax' */ ],
+        dimensions: ['id', 'name', 'isCurrent', 'startDate', 'endDate', 'valueCons', 'valueConsTax' ],
         source: [
-            <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}, '${it[3]}', '${it[4]}', ${it[5]}, ${it[6]}, ${it[7]}, ${it[8]}, ${it[9]}, ${it[10]}, ${it[11]}]," } %>
+            <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}, '${it[3]}', '${it[4]}', ${it[5]}, ${it[6]}]," } %>
         ]
     },
     grid:  {
         top: 60,
+        right: '5%',
         bottom: 10,
+        left: '5%',
         containLabel: true
     },
     legend: { top: 'top' },
@@ -21,9 +23,22 @@ JSPC.app.reporting.current.chart.option = {
         }
     },
     yAxis: {},
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        formatter (params) {
+            var str = params[0].data[3] + ' - ' +  params[0].data[4]
+            for (var i=0; i<params.length; i++) {
+                var ci = new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params[i].data[ params[i].seriesIndex + 5 ])
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params[i].marker, params[i].seriesName, ci)
+            }
+            return str
+        }
+    },
     series: [
         {
             name: '${chartLabels[0]}',
+            color: JSPC.app.reporting.helper.series.color.green,
             type: 'bar',
             encode: {
                 x: 'id',
@@ -33,7 +48,8 @@ JSPC.app.reporting.current.chart.option = {
                 show: true,
                 position: 'top',
                 formatter (params) {
-                    return new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params.data[6])
+                    var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.indexOf('valueCons')
+                    return new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params.data[ index ])
                 }
             },
             itemStyle: {
@@ -44,6 +60,7 @@ JSPC.app.reporting.current.chart.option = {
         },
         {
             name: '${chartLabels[1]}',
+            color: JSPC.app.reporting.helper.series.color.blue,
             type: 'bar',
             encode: {
                 x: 'id',
@@ -53,7 +70,8 @@ JSPC.app.reporting.current.chart.option = {
                 show: true,
                 position: 'top',
                 formatter (params) {
-                    return new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params.data[7])
+                    var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.indexOf('valueConsTax')
+                    return new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params.data[ index ])
                 }
             },
             itemStyle: {

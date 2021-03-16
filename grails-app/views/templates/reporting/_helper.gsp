@@ -34,6 +34,11 @@ if (! JSPC.app.reporting) {
                         }
                     }
                 }
+            },
+            tooltip: {
+                getEntry: function(marker, text, value) {
+                    return '<br/>' + marker + ' ' + text + '&nbsp;&nbsp;&nbsp;<strong style="float:right">' + value + '</strong>'
+                }
             }
         }
     }

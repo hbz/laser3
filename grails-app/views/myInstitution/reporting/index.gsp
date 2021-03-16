@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.SubscriptionConfig;de.laser.reporting.myInstitution.OrganisationConfig;de.laser.reporting.myInstitution.LicenseConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.myInstitution.GenericConfig; de.laser.reporting.myInstitution.SubscriptionConfig;de.laser.reporting.myInstitution.OrganisationConfig;de.laser.reporting.myInstitution.LicenseConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -180,7 +180,9 @@
                             $.each( JSPC.app.reporting.current.chart.details, function(i, v) {
                                 if (params.data[0] == v.id) {
                                     valid = true;
-                                    JSPC.app.reporting.requestChartDetails(JSPC.app.reporting.current.request, v);
+                                    var clone = Object.assign({}, v);
+                                    clone.context = '${GenericConfig.KEY}';
+                                    JSPC.app.reporting.requestChartDetails(JSPC.app.reporting.current.request, clone);
                                 }
                             })
                             if (! valid) {
@@ -207,8 +209,7 @@
                     data: data
                 })
                 .done( function (data) {
-                     $('#chart-details').empty();
-                     $('#chart-details').html(data);
+                     $('#chart-details').empty().html(data);
                 })
                 .fail( function (data) {
                     $("#reporting-modal-error").modal('show');

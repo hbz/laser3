@@ -15,8 +15,8 @@
             trigger: 'item',
             formatter (params) {
                 var str = params.name
-                str += '<br/>' + params.marker + '${chartLabels[0]}&nbsp;&nbsp;&nbsp;<strong>' + params.value[3] + '</strong>'
-                str += '<br/>' + params.marker + '${chartLabels[1]}&nbsp;&nbsp;&nbsp;<strong>' + params.value[2] + '</strong>'
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${chartLabels[0]}', params.value[3])
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${chartLabels[1]}', params.value[2])
                 return str
            }
         },
@@ -60,21 +60,23 @@
 
                 if (params.length == 1) {
                     if (params[0].seriesName == '${chartLabels[0]}') {
-                        str += '<br/>' + params[0].marker + params[0].seriesName + '&nbsp;&nbsp;&nbsp;<strong>' + Math.abs(params[0].value[3]) + '</strong>'
+                        str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, Math.abs(params[0].value[3]))
                     } else if (params[0].seriesName == '${chartLabels[1]}') {
-                        str += '<br/>' + params[0].marker + params[0].seriesName + '&nbsp;&nbsp;&nbsp;<strong>' + params[0].value[2] + '</strong>'
+                        str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, params[0].value[2])
                     }
                 }
                 else if (params.length > 1) {
-                    str += '<br/>' + params[0].marker + params[0].seriesName + '&nbsp;&nbsp;&nbsp;<strong>' + Math.abs(params[0].value[3]) + '</strong>'
-                    str += '<br/>' + params[1].marker + params[1].seriesName + '&nbsp;&nbsp;&nbsp;<strong>' + params[1].value[2] + '</strong>'
+                    str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, Math.abs(params[0].value[3]))
+                    str += JSPC.app.reporting.helper.tooltip.getEntry(params[1].marker, params[1].seriesName, params[1].value[2])
                 }
                 return str
            }
         },
         grid:  {
             top: 40,
+            right: '5%',
             bottom: 10,
+            left: '5%',
             containLabel: true
         },
         xAxis: {

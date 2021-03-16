@@ -19,7 +19,7 @@
             trigger: 'item',
             formatter (params) {
                 var str = JSPC.app.reporting.current.chart.option.title.text
-                str += '<br/>' + params.marker + params.name + '&nbsp;&nbsp;&nbsp;<strong>' + params.data[2] + '</strong>'
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
                 return str
            }
         },
@@ -59,13 +59,15 @@
             trigger: 'item',
             formatter (params) {
                 var str = JSPC.app.reporting.current.chart.option.title.text
-                str += '<br/>' + params.marker + params.name + '&nbsp;&nbsp;&nbsp;<strong>' + params.data[2] + '</strong>'
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
                 return str
            }
         },
         grid:  {
             top: 10,
+            right: '5%',
             bottom: 10,
+            left: '5%',
             containLabel: true
         },
         xAxis: { },
