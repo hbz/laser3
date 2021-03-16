@@ -4,7 +4,7 @@
 <g:if test="${accessService.checkMinUserOrgRole(user,institution,'INST_EDITOR')}">
     <semui:actionsDropdown>
 
-        <g:if test="${contextCustomerType in ["ORG_INST,ORG_CONSORTIUM"]}">
+        <g:if test="${contextCustomerType in ["ORG_INST","ORG_CONSORTIUM"]}">
             <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
             <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
         </g:if>
@@ -29,9 +29,6 @@
                 <g:if test="${(contextCustomerType == "ORG_INST" && license._getCalculatedType() == License.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && license._getCalculatedType() == License.TYPE_CONSORTIAL)}">
                     <semui:actionsDropdownItem controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(license), copyObject: true]}" message="myinst.copyLicense" />
                 </g:if>
-                <g:else>
-                    <semui:actionsDropdownItemDisabled controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(license), copyObject: true]}" message="myinst.copyLicense" />
-                </g:else>
 
                 <g:if test="${(contextCustomerType == "ORG_INST" && !license.instanceOf) || contextCustomerType == "ORG_CONSORTIUM"}">
                     <semui:actionsDropdownItem controller="license" action="copyElementsIntoLicense" params="${[sourceObjectId: genericOIDService.getOID(license)]}" message="myinst.copyElementsIntoLicense" />
