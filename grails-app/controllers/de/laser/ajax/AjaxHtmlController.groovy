@@ -12,7 +12,6 @@ import de.laser.Org
 import de.laser.OrgRole
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
-import de.laser.Reporting_OldService
 import de.laser.Subscription
 import de.laser.Address
 import de.laser.Doc

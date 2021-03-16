@@ -20,6 +20,11 @@
             <g:elseif test="${query == 'org-identifier-assignment'}">
                 <th>Identifikator</th>
             </g:elseif>
+            <th>
+                <button class="ui icon right floated button" href="#chartDetailsCopyEmailModal" data-semui="modal">
+                    <i class="icon envelope"></i>
+                </button>
+            </th>
         </tr>
         </thead>
         <tbody>
@@ -56,8 +61,15 @@
                             %>
                         </td>
                     </g:elseif>
+                    <td></td>
                 </tr>
             </g:each>
         </tbody>
     </table>
 </div>
+
+<g:render template="/templates/copyEmailaddresses" model="[orgList: list, modalID: 'chartDetailsCopyEmailModal']"/>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    r2d2.initDynamicSemuiStuff('#chart-details')
+</laser:script>

@@ -7,9 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-3219    15.03.2021  rc2.0   2.0.4       David   Feature     Detailseiten für Zeitleisten (Lizenz-Reporting)
+3226    16.03.2021  rc2.0   2.0.4       David   Feature     "Mail an"-Funktionalität für Org-Listen beim globalen Reporting
 
-3191    15.03.2021  rc2.0   2.0.4       David   Feature     Reporting: Basis-Reporting für einzelne Lizenzen
+3219    15.03.2021  rc2.0   2.0.4       David   Feature     Detailseiten für Zeitleisten (Lizenz-Reporting)
 
 3188    15.03.2021  rc2.0   2.0.4       David   Feature     Reporting: Mehr Details in Diagrammen
 

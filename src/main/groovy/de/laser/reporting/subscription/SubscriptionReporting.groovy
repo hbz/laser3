@@ -1,6 +1,5 @@
 package de.laser.reporting.subscription
 
-import de.laser.ContextService
 import de.laser.FinanceService
 import de.laser.IssueEntitlement
 import de.laser.Links
@@ -13,7 +12,6 @@ import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
