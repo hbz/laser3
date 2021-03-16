@@ -96,7 +96,11 @@
                                         </dt>
                                     </g:if>
                                 </dl>
-                                <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,PendingChangeConfiguration.PACKAGE_DELETED]}"/>
+                                <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,
+                                                                PendingChangeConfiguration.PACKAGE_DELETED,
+                                                                PendingChangeConfiguration.NEW_PRICE,
+                                                                PendingChangeConfiguration.PRICE_UPDATED,
+                                                                PendingChangeConfiguration.PRICE_DELETED]}"/>
                                 <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
                                     <%
                                         PendingChangeConfiguration pcc = sp.getPendingChangeConfig(settingKey)
