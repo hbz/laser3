@@ -6,7 +6,7 @@ import de.laser.helper.RDConstants
 
 class GenericConfig {
 
-    static String KEY                           = 'Generic'
+    static String KEY                           = 'myInstitution'
 
     static String FILTER_PREFIX                 = 'filter:'
     static String FILTER_SOURCE_POSTFIX         = '_source'

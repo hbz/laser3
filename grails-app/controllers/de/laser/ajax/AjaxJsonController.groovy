@@ -27,6 +27,7 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
+import de.laser.reporting.myInstitution.GenericConfig
 import de.laser.reporting.myInstitution.GenericQuery
 import de.laser.reporting.myInstitution.LicenseConfig
 import de.laser.reporting.myInstitution.LicenseQuery
@@ -676,27 +677,25 @@ class AjaxJsonController {
     def chart() {
         Map<String, Object> result = [:]
 
-        Closure getTooltipLabel = { GrailsParameterMap pm ->
-            if (pm.filter == 'license') {
-                GenericQuery.getQueryLabels(LicenseConfig.CONFIG, pm).get(1)
-            }
-            else if (pm.filter == 'organisation') {
-                GenericQuery.getQueryLabels(OrganisationConfig.CONFIG, pm).get(1)
-            }
-            else if (pm.filter == 'subscription') {
-                GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, pm).get(1)
-            }
-        }
-
-        // token ~ myInstitution
-        if (params.token && params.query) {
-
+        if (params.context == GenericConfig.KEY && params.query) {
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
             Map<String, Object> cached = sessionCache.get("MyInstitutionController/reporting/" + params.token)
 
             GrailsParameterMap clone = params.clone() as GrailsParameterMap// TODO: simplify
             if (cached) {
                 clone.putAll(cached)
+            }
+
+            Closure getTooltipLabel = { GrailsParameterMap pm ->
+                if (pm.filter == 'license') {
+                    GenericQuery.getQueryLabels(LicenseConfig.CONFIG, pm).get(1)
+                }
+                else if (pm.filter == 'organisation') {
+                    GenericQuery.getQueryLabels(OrganisationConfig.CONFIG, pm).get(1)
+                }
+                else if (pm.filter == 'subscription') {
+                    GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, pm).get(1)
+                }
             }
 
             String prefix = clone.query.split('-')[0]
@@ -741,28 +740,19 @@ class AjaxJsonController {
                 return
             }
         }
-        else if (params.query) {
+        else if (params.context == SubscriptionConfig.KEY && params.query) {
             GrailsParameterMap clone = params.clone() as GrailsParameterMap // TODO: simplify
 
-            String prefix = clone.query.split('-')[0]
-            String query  = clone.query.replaceFirst(prefix + '-', '')
+            result = SubscriptionReporting.query(clone)
+            result.chartLabels = SubscriptionReporting.QUERY.getAt('Zeitleiste').getAt(clone.query).getAt('chartLabels')
 
-            if (prefix == SubscriptionReporting.KEY) {
-
-                result = SubscriptionReporting.query(clone)
-
-                result.chartLabels = SubscriptionReporting.QUERY.getAt('Zeitleiste').getAt(clone.query).getAt('chartLabels')
-
-                if (query == 'costs-timeline') {
-                    render template: '/subscription/reporting/chart/' + query, model: result
-                }
-                else {
-                    render template: '/subscription/reporting/chart/generic-timeline', model: result
-                }
-
-                return
+            if (clone.query in ['cost-timeline']) {
+                render template: '/subscription/reporting/chart/' + clone.query, model: result
             }
-
+            else {
+                render template: '/subscription/reporting/chart/generic-timeline', model: result
+            }
+            return
         }
 
         render result as JSON

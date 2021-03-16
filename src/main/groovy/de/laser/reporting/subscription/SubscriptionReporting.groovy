@@ -7,6 +7,7 @@ import de.laser.Links
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.TitleInstancePackagePlatform
 import de.laser.ctrl.FinanceControllerService
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
@@ -23,17 +24,17 @@ class SubscriptionReporting {
     static Map<String, Object> QUERY = [
 
             'Zeitleiste' : [
-                    'subscription-member-timeline' : [
+                    'member-timeline' : [
                             label : 'Entwicklung: Teilnehmer',
                             chart : 'bar',
                             chartLabels : [ 'Teilnehmer entfernt', 'Neue Teilnehmer', 'Aktuelle Teilnehmer' ]
                     ],
-                    'subscription-entitlement-timeline' : [
+                    'entitlement-timeline' : [
                             label : 'Entwicklung: Bestand',
                             chart : 'bar',
                             chartLabels : [ 'Titel entfernt', 'Neue Titel', 'Aktuelle Titel' ]
                     ],
-                    'subscription-costs-timeline' : [
+                    'cost-timeline' : [
                             label : 'Entwicklung: Kosten',
                             chart : 'bar',
                             chartLabels : [ 'Wert', 'Endpreis (nach Steuer)']
@@ -41,10 +42,21 @@ class SubscriptionReporting {
             ]
     ]
 
+    static List<String> getQueryLabels(GrailsParameterMap params) {
+        List<String> meta = []
+
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        Subscription sub = Subscription.get(params.id)
+
+        QUERY.each {it ->
+            if (it.value.containsKey(params.query)) {
+                meta = [ it.key, it.value.get(params.query).label, "${sdf.format(sub.startDate)} - ${sdf.format(sub.endDate)}" ]
+            }
+        }
+        meta
+    }
+
     static Map<String, Object> query(GrailsParameterMap params) {
-
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         Map<String, Object> result = [
@@ -58,118 +70,143 @@ class SubscriptionReporting {
 
         if (!id) {
         }
-        else if (params.query == 'subscription-member-timeline') {
+        else {
             Subscription sub = Subscription.get(id)
             List<Subscription> timeline = getSubscriptionTimeline(sub)
 
-            timeline.eachWithIndex{ s, i ->
-                result.data.add([
-                        s.id,
-                        s.name,
-                        sub == s,
-                        sdf.format(s.startDate),
-                        sdf.format(s.endDate),
-                        Subscription.executeQuery(
-                                'select m.id from Subscription sub join sub.derivedSubscriptions m where sub = :sub',
-                                [sub: s]
-                        ),
-                ])
-            }
-            result.data.eachWithIndex{ data, i ->
-                String orgHql = 'select distinct ro.org.id from Subscription s join s.orgRelations ro where s.id in (:idList) and ro.roleType in (:roleTypes)'
-                List< RefdataValue> roleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
+            if (params.query == 'member-timeline') {
+                List<List<Long>> subIdLists = []
 
-                if (i>0) {
-                    List<Long> currIdList = data[5]
-                    List<Long> prevIdList = result.data.get(i - 1)[5]
-
-                    List<Long> currMemberIdList = currIdList ? Org.executeQuery( orgHql, [idList: currIdList, roleTypes: roleTypes] ) : []
-                    List<Long> prevMemberIdList = prevIdList ? Org.executeQuery( orgHql, [idList: prevIdList, roleTypes: roleTypes] ) : []
-
-                    data[6] = currMemberIdList.size()
-                    data[7] = currMemberIdList.minus(prevMemberIdList).size() // plus
-                    data[8] = prevMemberIdList.minus(currMemberIdList).size() // minus
+                timeline.eachWithIndex { s, i ->
+                    subIdLists.add(Subscription.executeQuery(
+                            'select m.id from Subscription sub join sub.derivedSubscriptions m where sub = :sub', [sub: s]
+                    ))
+                    result.data.add([
+                            s.id,
+                            s.name,
+                            sub == s,
+                            sdf.format(s.startDate),
+                            sdf.format(s.endDate),
+                            subIdLists.get(i).size()
+                    ])
+                    result.dataDetails.add([
+                            query: params.query,
+                            id   : s.id,
+                            label: ''
+                    ])
                 }
-                else {
-                    List<Long> currMemberIdList = data[5] ? Org.executeQuery( orgHql, [idList: data[5], roleTypes: roleTypes] ) : []
 
-                    data[6] = currMemberIdList.size()
-                    data[7] = currMemberIdList.size()
-                    data[8] = 0
-                }
-            }
-        }
-        else if (params.query == 'subscription-entitlement-timeline') {
-            Subscription sub = Subscription.get(id)
-            List<Subscription> timeline = getSubscriptionTimeline(sub)
+                result.dataDetails.eachWithIndex { Map<String, Object> dd, i ->
+                    List d = result.data.get(i)
 
-            timeline.eachWithIndex{ s, i  ->
-                result.data.add([
-                        s.id,
-                        s.name,
-                        sub == s,
-                        sdf.format(s.startDate),
-                        sdf.format(s.endDate),
-                        IssueEntitlement.executeQuery(
-                                'select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus',
-                                [sub: s, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED]
-                        )
-                ])
-            }
+                    String orgHql = 'select distinct ro.org.id from Subscription s join s.orgRelations ro where s.id in (:idList) and ro.roleType in (:roleTypes)'
+                    List<RefdataValue> roleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
 
-            result.data.eachWithIndex{ data, i ->
-                String tippHql = 'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.id in (:idList)'
+                    if (i > 0) {
+                        List<Long> currIdList = subIdLists.get(i)
+                        List<Long> prevIdList = subIdLists.get(i - 1)
 
-                if (i>0) {
-                    List<Long> currIdList = data[5]
-                    List<Long> prevIdList = result.data.get(i - 1)[5]
+                        List<Long> currMemberIdList = currIdList ? Org.executeQuery(orgHql, [idList: currIdList, roleTypes: roleTypes]) : []
+                        List<Long> prevMemberIdList = prevIdList ? Org.executeQuery(orgHql, [idList: prevIdList, roleTypes: roleTypes]) : []
 
-                    List<Long> currTippIdList = currIdList ? Org.executeQuery( tippHql, [idList: currIdList] ) : []
-                    List<Long> prevTippIdList = prevIdList ? Org.executeQuery( tippHql, [idList: prevIdList] ) : []
+                        dd.idList = currMemberIdList
+                        dd.plusIdList = currMemberIdList.minus(prevMemberIdList)
+                        dd.minusIdList = prevMemberIdList.minus(currMemberIdList)
 
-                    data[6] = currTippIdList.size()
-                    data[7] = currTippIdList.minus(prevTippIdList).size() // plus
-                    data[8] = prevTippIdList.minus(currTippIdList).size() // minus
-                }
-                else {
-                    List<Long> currTippIdList = data[5] ? Org.executeQuery( tippHql, [idList: data[5]] ) : []
+                        d[6] = dd.plusIdList.size()
+                        d[7] = dd.minusIdList.size()
+                    }
+                    else {
+                        List<Long> currMemberIdList = subIdLists.get(i) ? Org.executeQuery(orgHql, [idList: subIdLists.get(i), roleTypes: roleTypes]) : []
 
-                    data[6] = currTippIdList.size()
-                    data[7] = currTippIdList.size()
-                    data[8] = 0
+                        dd.idList = currMemberIdList
+                        dd.plusIdList = currMemberIdList
+                        dd.minusIdList = []
+
+                        d[6] = dd.plusIdList.size()
+                        d[7] = dd.minusIdList.size()
+                    }
                 }
             }
-        }
-        else if (params.query == 'subscription-costs-timeline') {
-            Subscription sub = Subscription.get(id)
-            List<Subscription> timeline = getSubscriptionTimeline(sub)
+            else if (params.query == 'entitlement-timeline') {
+                List<List<Long>> ieIdLists = []
 
-            FinanceService financeService = (FinanceService) Holders.grailsApplication.mainContext.getBean('financeService')
-            FinanceControllerService financeControllerService = (FinanceControllerService) Holders.grailsApplication.mainContext.getBean('financeControllerService')
+                timeline.eachWithIndex { s, i ->
+                    ieIdLists.add(IssueEntitlement.executeQuery(
+                            'select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus',
+                            [sub: s, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED]
+                    ))
+                    result.data.add([
+                            s.id,
+                            s.name,
+                            sub == s,
+                            sdf.format(s.startDate),
+                            sdf.format(s.endDate),
+                            ieIdLists.get(i).size()
+                    ])
+                    result.dataDetails.add([
+                            query: params.query,
+                            id   : s.id,
+                            label: ''
+                    ])
+                }
 
-            timeline.eachWithIndex { s, i ->
-                result.data.add([
-                    s.id,
-                    s.name,
-                    sub == s,
-                    sdf.format(s.startDate),
-                    sdf.format(s.endDate)
-                ])
+                result.dataDetails.eachWithIndex { Map<String, Object> dd, i ->
+                    List d = result.data.get(i)
+
+                    String tippHql = 'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.id in (:idList)'
+
+                    if (i > 0) {
+                        List<Long> currIdList = ieIdLists.get(i)
+                        List<Long> prevIdList = ieIdLists.get(i - 1)
+
+                        List<Long> currTippIdList = currIdList ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: currIdList]) : []
+                        List<Long> prevTippIdList = prevIdList ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: prevIdList]) : []
+
+                        dd.idList = currTippIdList
+                        dd.plusIdList = currTippIdList.minus(prevTippIdList)
+                        dd.minusIdList = prevTippIdList.minus(currTippIdList)
+
+                        d[6] = dd.plusIdList.size()
+                        d[7] = dd.minusIdList.size()
+                    }
+                    else {
+                        List<Long> currTippIdList = ieIdLists.get(i) ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: ieIdLists.get(i)]) : []
+
+                        dd.plusIdList = currTippIdList
+                        dd.minusIdList = []
+
+                        d[6] = dd.plusIdList.size()
+                        d[7] = dd.minusIdList.size()
+                    }
+                }
             }
+            else if (params.query == 'cost-timeline') {
+                GrailsParameterMap clone = params.clone() as GrailsParameterMap
 
-            GrailsParameterMap clone = params.clone()
-            result.data.eachWithIndex { data, i ->
-                clone.setProperty('id', data[0])
-                Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, financeControllerService.getResultGenerics(clone))
+                FinanceService financeService = (FinanceService) Holders.grailsApplication.mainContext.getBean('financeService')
+                FinanceControllerService financeControllerService = (FinanceControllerService) Holders.grailsApplication.mainContext.getBean('financeControllerService')
 
-                data[5] = ""
-                data[6] = finance.cons?.sums?.localSums?.localSum ?: 0
-                data[7] = finance.cons?.sums?.localSums?.localSumAfterTax ?: 0
+                timeline.eachWithIndex { s, i ->
+                    clone.setProperty('id', s.id)
+                    Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, financeControllerService.getResultGenerics(clone))
 
-//                data[8]  = finance.subscr?.sums?.localSums?.localSum ?: 0
-//                data[9]  = finance.subscr?.sums?.localSums?.localSumAfterTax ?: 0
-//                data[10] = finance.own?.sums?.localSums?.localSum ?: 0
-//                data[11] = finance.own?.sums?.localSums?.localSumAfterTax ?: 0
+                    result.data.add([
+                            s.id,
+                            s.name,
+                            sub == s,
+                            sdf.format(s.startDate),
+                            sdf.format(s.endDate),
+                            finance.cons?.sums?.localSums?.localSum ?: 0,
+                            finance.cons?.sums?.localSums?.localSumAfterTax ?: 0
+                    ])
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : s.id,
+                            label : '',
+                            idList: []
+                    ])
+                }
             }
         }
         result
