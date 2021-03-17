@@ -730,13 +730,14 @@ class AjaxJsonController {
                 result = SubscriptionQuery.query(clone)
                 result.tooltipLabel = getTooltipLabel(clone)
 
-                if (clone.query.endsWith('assignment') && clone.query != 'subscription-provider-assignment') {
-                    result.chartLabels = SubscriptionConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
-                    render template: '/myInstitution/reporting/chart/complex', model: result
+                if (clone.query.endsWith('assignment')) {
+                    if (! (clone.query in ['subscription-provider-assignment', 'subscription-platform-assignment'])) {
+                        result.chartLabels = SubscriptionConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
+                        render template: '/myInstitution/reporting/chart/complex', model: result
+                        return
+                    }
                 }
-                else {
-                    render template: '/myInstitution/reporting/chart/generic', model: result
-                }
+                render template: '/myInstitution/reporting/chart/generic', model: result
                 return
             }
         }

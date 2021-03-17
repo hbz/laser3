@@ -2,6 +2,7 @@ package de.laser.reporting.myInstitution
 
 import de.laser.ContextService
 import de.laser.Org
+import de.laser.Platform
 import de.laser.reporting.myInstitution.GenericQuery
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -55,6 +56,24 @@ class SubscriptionQuery extends GenericQuery {
                         label : d[1],
                         idList: Org.executeQuery(
                                 'select s.id from Subscription s join s.orgRelations orgRel join orgRel.org o where s.id in (:idList) and o.id = :d order by s.name',
+                                [idList: idList, d: d[0]]
+                        )
+                ])
+            }
+        }
+        else if ( params.query in ['subscription-platform-assignment']) {
+
+            result.data = Platform.executeQuery(
+                    'select p.id, p.name, count(*) from Org o join o.platforms p join o.links orgLink where o.id in (:providerIdList) and orgLink.sub.id in (:idList) group by p.id order by p.name',
+                    [providerIdList: params.list('providerIdList').collect { it as Long }, idList: idList]
+            )
+            result.data.each { d ->
+                result.dataDetails.add([
+                        query : params.query,
+                        id    : d[0],
+                        label : d[1],
+                        idList: Platform.executeQuery(
+                                'select s.id from Subscription s join s.orgRelations orgRel join orgRel.org o join o.platforms p where s.id in (:idList) and p.id = :d order by s.name',
                                 [idList: idList, d: d[0]]
                         )
                 ])

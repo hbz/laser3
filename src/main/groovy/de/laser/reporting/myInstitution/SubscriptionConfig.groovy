@@ -53,6 +53,10 @@ class SubscriptionConfig extends GenericConfig {
                                             label : 'Lizenz → Anbieter',
                                             chartLabels : []
                                     ],
+                                    'subscription-platform-assignment' : [
+                                            label : 'Lizenz → Anbieter → Plattform',
+                                            chartLabels : []
+                                    ],
                                     'subscription-property-assignment' : [
                                             label : 'Lizenz → Merkmale (eigene/öffentliche)',
                                             chartLabels : [ 'Lizenzen', 'Vergebene Merkmale (eigene/öffentliche)' ]
@@ -116,6 +120,7 @@ class SubscriptionConfig extends GenericConfig {
                     ],
                     fields : [
                             'country'   : GenericConfig.FIELD_TYPE_REFDATA,
+                            // - XYZ - 'platforms' : GenericConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'orgType'   : GenericConfig.FIELD_TYPE_REFDATA_RELTABLE,
                     ],
                     filter : [
