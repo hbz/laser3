@@ -253,7 +253,11 @@
                     </g:if>
                 </tr>
                 <g:set var="excludes"
-                       value="${[PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED]}"/>
+                       value="${[PendingChangeConfiguration.PACKAGE_PROP,
+                                 PendingChangeConfiguration.PACKAGE_DELETED,
+                                 PendingChangeConfiguration.NEW_PRICE,
+                                 PendingChangeConfiguration.PRICE_UPDATED,
+                                 PendingChangeConfiguration.PRICE_DELETED]}"/>
                 <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
                     <tr>
                         <td class="control-label">

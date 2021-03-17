@@ -1445,7 +1445,7 @@ class SubscriptionControllerService {
             params.ieAcceptStatusFixed = true
             def query = filterService.getIssueEntitlementQuery(params, result.subscription)
             result.filterSet = query.filterSet
-            Set<IssueEntitlement> entitlements = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams)
+            Set<Long> entitlements = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
             if(params.kbartPreselect) {
                 MultipartFile kbartFile = params.kbartPreselect
                 InputStream stream = kbartFile.getInputStream()
@@ -1461,7 +1461,9 @@ class SubscriptionControllerService {
                 result.num_ies = IssueEntitlement.executeQuery("select count(ie) " + query2.query, query2.queryParams+[max: 5000, offset: 0])[0]
             }
             result.num_ies_rows = entitlements.size()
-            result.entitlements = entitlements.drop(result.offset).take(result.max)
+            if(entitlements)
+                result.entitlements = IssueEntitlement.findAllByIdInList(entitlements,[offset:result.offset,max:result.max])
+            else result.entitlements = []
             Set<SubscriptionPackage> deletedSPs = result.subscription.packages.findAll { SubscriptionPackage sp -> sp.pkg.packageStatus == RDStore.PACKAGE_STATUS_DELETED}
             if(deletedSPs) {
                 result.deletedSPs = []
@@ -1519,19 +1521,19 @@ class SubscriptionControllerService {
                 String query = 'select pc.id from PendingChange pc where pc.pkg in (:packages) and pc.oid = null and pc.status = :history ',
                        query1a = 'select pc.id,pc.tipp from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
                        query2a = 'select pc.id,pc.tippCoverage from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
-                       query3a = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
+                       //query3a = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
                        query1b = 'select pc.id,pc.tipp from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status not in (:pendingStatus)',
                        query2b = 'select pc.id,pc.tippCoverage from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status not in (:pendingStatus)',
-                       query3b = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status not in (:pendingStatus)',
+                       //query3b = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status not in (:pendingStatus)',
                        query1c = 'select pc.id from PendingChange pc where pc.subscription = :subscription and pc.status not in (:pendingStatus)'
                 subscriptionHistory.addAll(PendingChange.executeQuery(query,[packages: pkgList, history: RDStore.PENDING_CHANGE_HISTORY]))
-                subscriptionHistory.addAll(PendingChange.executeQuery(query1a,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
-                subscriptionHistory.addAll(PendingChange.executeQuery(query2a,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
-                subscriptionHistory.addAll(PendingChange.executeQuery(query3a,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
-                changesOfPage.addAll(PendingChange.executeQuery(query1b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
-                changesOfPage.addAll(PendingChange.executeQuery(query2b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
-                changesOfPage.addAll(PendingChange.executeQuery(query3b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
-                changesOfPage.addAll(PendingChange.executeQuery(query1c,[pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subscription: result.subscription]))
+                subscriptionHistory.addAll(PendingChange.executeQuery(query1a,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
+                subscriptionHistory.addAll(PendingChange.executeQuery(query2a,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
+                //subscriptionHistory.addAll(PendingChange.executeQuery(query3a,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
+                changesOfPage.addAll(PendingChange.executeQuery(query1b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
+                changesOfPage.addAll(PendingChange.executeQuery(query2b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
+                //changesOfPage.addAll(PendingChange.executeQuery(query3b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
+                changesOfPage.addAll(PendingChange.executeQuery(query1c,[pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subscription: result.subscription]))
 
 
             }

@@ -40,6 +40,22 @@ if (! JSPC.app.reporting) {
                     return '<br/>' + marker + ' ' + text + '&nbsp;&nbsp;&nbsp;<strong style="float:right">' + value + '</strong>'
                 }
             }
+        },
+        requestChartHtmlDetails: function(request, data) {
+            $.ajax({
+                url: "<g:createLink controller="ajaxHtml" action="chartDetails" />",
+                method: 'post',
+                data: data,
+                beforeSend: function(xhr) {
+                   $('#chartDetailsCopyEmailModal').remove()
+                }
+            })
+            .done( function (data) {
+                $('#chart-details').empty().html(data)
+            })
+            .fail( function (data) {
+                $("#reporting-modal-error").modal('show')
+            })
         }
     }
 }

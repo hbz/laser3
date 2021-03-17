@@ -12,7 +12,6 @@ import de.laser.Org
 import de.laser.OrgRole
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
-import de.laser.Reporting_OldService
 import de.laser.Subscription
 import de.laser.Address
 import de.laser.Doc
@@ -377,7 +376,7 @@ class AjaxHtmlController {
     def chartDetails() {
         Map<String, Object> result = [
             query:  params.query,
-            id:     params.id as Long
+            id:     params.id ? params.id as Long : ''
         ]
 
         if (params.context == GenericConfig.KEY && params.query) {
@@ -385,34 +384,34 @@ class AjaxHtmlController {
             List idList = params.list('idList[]').collect { it as Long }
 
             if (prefix in ['license']) {
-                result.label = GenericQuery.getQueryLabels(LicenseConfig.CONFIG, params).join(' > ')
-                result.list  = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
-                result.tmpl  = '/myInstitution/reporting/details/license'
+                result.labels = GenericQuery.getQueryLabels(LicenseConfig.CONFIG, params)
+                result.list   = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
+                result.tmpl   = '/myInstitution/reporting/details/license'
             }
             else if (prefix in ['licensor']) {
-                result.label = GenericQuery.getQueryLabels(LicenseConfig.CONFIG, params).join(' > ')
-                result.list  = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
-                result.tmpl  = '/myInstitution/reporting/details/organisation'
+                result.labels = GenericQuery.getQueryLabels(LicenseConfig.CONFIG, params)
+                result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
+                result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
             else if (prefix in ['org']) {
-                result.label = GenericQuery.getQueryLabels(OrganisationConfig.CONFIG, params).join(' > ')
-                result.list  = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
-                result.tmpl  = '/myInstitution/reporting/details/organisation'
+                result.labels = GenericQuery.getQueryLabels(OrganisationConfig.CONFIG, params)
+                result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
+                result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
             else if (prefix in ['subscription']) {
-                result.label = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params).join(' > ')
-                result.list  = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
-                result.tmpl  = '/myInstitution/reporting/details/subscription'
+                result.labels = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params)
+                result.list   = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
+                result.tmpl   = '/myInstitution/reporting/details/subscription'
             }
             else if (prefix in ['member', 'provider']) {
-                result.label = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params).join(' > ')
-                result.list  = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
-                result.tmpl  = '/myInstitution/reporting/details/organisation'
+                result.labels = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params)
+                result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
+                result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
         }
         else if (params.context == SubscriptionConfig.KEY && params.query) {
             if (params.query == 'cost-timeline') {
-                result.label = SubscriptionReporting.getQueryLabels(params).join(' > ')
+                result.labels = SubscriptionReporting.getQueryLabels(params)
 
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty('id', params.id)
@@ -424,7 +423,7 @@ class AjaxHtmlController {
 
             }
             else if (params.query in ['entitlement-timeline', 'member-timeline']) {
-                result.label = SubscriptionReporting.getQueryLabels(params).join(' > ')
+                result.labels = SubscriptionReporting.getQueryLabels(params)
 
                 List idList      = params.list('idList[]').collect { it as Long }
                 List plusIdList  = params.list('plusIdList[]').collect { it as Long }

@@ -1,6 +1,5 @@
 package de.laser.reporting.subscription
 
-import de.laser.ContextService
 import de.laser.FinanceService
 import de.laser.IssueEntitlement
 import de.laser.Links
@@ -13,7 +12,6 @@ import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
@@ -23,19 +21,19 @@ class SubscriptionReporting {
 
     static Map<String, Object> QUERY = [
 
-            'Zeitleiste' : [
+            'Entwicklung' : [
                     'member-timeline' : [
-                            label : 'Entwicklung: Teilnehmer',
+                            label : 'Teilnehmer',
                             chart : 'bar',
                             chartLabels : [ 'Teilnehmer entfernt', 'Neue Teilnehmer', 'Aktuelle Teilnehmer' ]
                     ],
                     'entitlement-timeline' : [
-                            label : 'Entwicklung: Bestand',
+                            label : 'Bestand',
                             chart : 'bar',
                             chartLabels : [ 'Titel entfernt', 'Neue Titel', 'Aktuelle Titel' ]
                     ],
                     'cost-timeline' : [
-                            label : 'Entwicklung: Kosten',
+                            label : 'Kosten',
                             chart : 'bar',
                             chartLabels : [ 'Wert', 'Endpreis (nach Steuer)']
                     ]

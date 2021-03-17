@@ -41,11 +41,11 @@
                         context: '${SubscriptionConfig.KEY}',
                         chart: 'default'
                     }
-                    JSPC.app.reporting.requestChart();
+                    JSPC.app.reporting.requestChartJsonData();
                 }
             })
 
-            JSPC.app.reporting.requestChart = function() {
+            JSPC.app.reporting.requestChartJsonData = function() {
                 if ( JSPC.app.reporting.current.request.query && JSPC.app.reporting.current.request.chart ) {
                     JSPC.app.reporting.current.chart = {};
 
@@ -72,7 +72,7 @@
                                     valid = true;
                                     var clone = Object.assign({}, v);
                                     clone.context = '${SubscriptionConfig.KEY}';
-                                    JSPC.app.reporting.requestChartDetails(JSPC.app.reporting.current.request, clone);
+                                    JSPC.app.reporting.requestChartHtmlDetails(JSPC.app.reporting.current.request, clone);
                                 }
                             })
                             if (! valid) {
@@ -88,20 +88,6 @@
                     })
                     .fail( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
-                    })
-                }
-
-                JSPC.app.reporting.requestChartDetails = function(request, data) {
-                    $.ajax({
-                        url: "<g:createLink controller="ajaxHtml" action="chartDetails" />",
-                        method: 'post',
-                        data: data
-                    })
-                    .done( function (data) {
-                         $('#chart-details').empty().html(data);
-                    })
-                    .fail( function (data) {
-                        $("#reporting-modal-error").modal('show');
                     })
                 }
             }
