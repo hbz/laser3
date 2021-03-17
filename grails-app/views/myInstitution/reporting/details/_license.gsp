@@ -13,11 +13,11 @@
                         <th>Merkmalswert</th>
                     </g:if>
                     <g:elseif test="${query == 'org-identifier-assignment'}">
-                        <th>Identifikator</th>
+                        <th>${message(code:'identifier.label')}</th>
                     </g:elseif>
                     <g:else>
-                        <th>Lizenzen</th>
-                        <th>Teilnehmerverträge</th>
+                        <th>${message(code:'subscription.plural')}</th>
+                        <th>${message(code:'license.member.plural')}</th>
                     </g:else>
                 <th>${message(code:'default.startDate.label')}</th>
                 <th>${message(code:'default.endDate.label')}</th>

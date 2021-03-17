@@ -8,13 +8,13 @@
         <thead>
         <tr>
             <th></th>
-            <th>Sortiername</th>
+            <th>${message(code:'org.sortname.label')}</th>
             <th>${labels.first().trim()}</th>
             <g:if test="${query == 'org-property-assignment'}">
                 <th>Merkmalswert</th>
             </g:if>
             <g:elseif test="${query == 'org-identifier-assignment'}">
-                <th>Identifikator</th>
+                <th>${message(code:'identifier.label')}</th>
             </g:elseif>
         </tr>
         </thead>

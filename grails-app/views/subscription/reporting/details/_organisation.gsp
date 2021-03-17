@@ -8,7 +8,7 @@
         <thead>
         <tr>
             <th></th>
-            <th>Sortiername</th>
+            <th>${message(code:'org.sortname.label')}</th>
             <th>Name</th>
         </tr>
         </thead>

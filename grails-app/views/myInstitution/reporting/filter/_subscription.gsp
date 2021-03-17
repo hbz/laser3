@@ -5,7 +5,7 @@
 
         <div class="menu ui top attached tabular">
             <a class="active item" data-tab="sub-filter-tab-1">${message(code:'subscription.plural')}</a>
-            <a class="item" data-tab="sub-filter-tab-2">Teilnehmer</a>
+            <a class="item" data-tab="sub-filter-tab-2">${message(code:'subscription.details.consortiaMembers.label')}</a>
             <a class="item" data-tab="sub-filter-tab-3">Anbieter</a>
         </div><!-- .menu -->
         <div class="ui bottom attached active tab segment" data-tab="sub-filter-tab-1">

@@ -13,10 +13,10 @@
                 <th>Merkmalswert</th>
             </g:if>
             <g:elseif test="${query == 'subscription-identifier-assignment'}">
-                <th>Identifikator</th>
+                <th>${message(code:'identifier.label')}</th>
             </g:elseif>
             <g:else>
-                <th>Teilnehmer</th>
+                <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
             </g:else>
             <th>${message(code:'subscription.startDate.label')}</th>
             <th>${message(code:'subscription.endDate.label')}</th>

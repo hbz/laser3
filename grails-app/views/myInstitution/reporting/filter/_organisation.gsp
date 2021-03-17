@@ -4,7 +4,7 @@
     <g:form action="reporting" method="POST" class="ui form">
 
         <div class="menu ui top attached tabular">
-            <a class="active item" data-tab="org-filter-tab-1">Organisationen</a>
+            <a class="active item" data-tab="org-filter-tab-1">${message(code:'org.plural.label')}</a>
         </div><!-- .menu -->
 
         <div class="ui bottom attached active tab segment" data-tab="org-filter-tab-1">
