@@ -325,7 +325,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             Org org = (Org) row[0]
                             SubscriptionPackage sp = (SubscriptionPackage) row[1]
                             autoAcceptPendingChanges(org,sp)
-                            nonAutoAcceptPendingChanges(org, sp)
+                            //nonAutoAcceptPendingChanges(org, sp)
                         }
 
                     }
@@ -555,26 +555,32 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     void autoAcceptPendingChanges(Org contextOrg, SubscriptionPackage subPkg) {
         //get for each subscription package the tokens which should be accepted
-        String query = 'select pcc.settingKey from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where pcc.settingValue = :accept and sp = :sp'
-        List<String> pendingChangeConfigurations = PendingChangeConfiguration.executeQuery(query,[accept:RDStore.PENDING_CHANGE_CONFIG_ACCEPT,sp:subPkg])
+        String query = 'select pcc.settingKey from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where pcc.settingValue = :accept and sp = :sp and pcc.settingKey not in (:excludes)'
+        List<String> pendingChangeConfigurations = PendingChangeConfiguration.executeQuery(query,[accept:RDStore.PENDING_CHANGE_CONFIG_ACCEPT,sp:subPkg,excludes:[PendingChangeConfiguration.NEW_PRICE,PendingChangeConfiguration.PRICE_DELETED,PendingChangeConfiguration.PRICE_UPDATED]])
         if(pendingChangeConfigurations) {
             Map<String,Object> changeParams = [pkg:subPkg.pkg,history:RDStore.PENDING_CHANGE_HISTORY,subscriptionJoin:subPkg.dateCreated,msgTokens:pendingChangeConfigurations]
             Set<PendingChange> newChanges = [],
                                acceptedChanges = PendingChange.findAllByOidAndStatusAndMsgTokenIsNotNull(genericOIDService.getOID(subPkg.subscription),RDStore.PENDING_CHANGE_ACCEPTED)
             newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
             newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
-            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.priceItem pi join pi.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
+            //newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.priceItem pi join pi.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
             newChanges.each { PendingChange newChange ->
                 boolean processed = false
                 if(newChange.tipp) {
-                    processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken } != null
+                    if(newChange.targetProperty)
+                        processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty } != null
+                    else
+                        processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken } != null
                 }
                 else if(newChange.tippCoverage) {
-                    processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken } != null
+                    if(newChange.targetProperty)
+                        processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty } != null
+                    else
+                        processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken } != null
                 }
-                else if(newChange.priceItem && newChange.priceItem.tipp) {
+                /*else if(newChange.priceItem && newChange.priceItem.tipp) {
                     processed = acceptedChanges.find { PendingChange accepted -> accepted.priceItem == newChange.priceItem && accepted.msgToken == newChange.msgToken } != null
-                }
+                }*/
 
                 if(!processed) {
                     /*
@@ -1621,8 +1627,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         if (!entry.target.save())
                                             throw new SyncException("Error on adding coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
                                         break
-                                    case 'delete': tippA.coverages.remove(entry.target)
-                                        entry.target.delete()
+                                    case 'delete': PendingChange.executeUpdate('delete from PendingChange pc where pc.tippCoverage = :toDelete',[toDelete:entry.target])
+                                        TIPPCoverage.executeUpdate('delete from TIPPCoverage tc where tc.id = :id',[id:entry.target.id])
                                         break
                                     case 'update': entry.diffs.each { covDiff ->
                                         entry.target[covDiff.prop] = covDiff.newValue
@@ -1640,8 +1646,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         if (!entry.target.save())
                                             throw new SyncException("Error on adding price item for TIPP ${tippA.gokbId}: ${entry.target.errors}")
                                         break
-                                    case 'delete': tippA.priceItems.remove(entry.target)
-                                        entry.target.delete()
+                                    case 'delete': PendingChange.executeUpdate('delete from PendingChange pc where pc.priceItem = :toDelete',[toDelete:entry.target])
+                                        PriceItem.executeUpdate('delete from PriceItem pi where pi.id = :id',[id:entry.target.id])
                                         break
                                     case 'update': entry.diffs.each { priceDiff ->
                                         entry.target[priceDiff.prop] = priceDiff.newValue
