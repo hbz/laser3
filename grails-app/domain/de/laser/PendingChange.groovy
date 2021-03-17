@@ -262,12 +262,7 @@ class PendingChange {
                 changeParams.newValue = (configMap.newValue && configMap.newValue instanceof BigDecimal) ? configMap.newValue.toString() : (configMap.newValue ?: null)
                 changeParams.oldValue = (configMap.oldValue && configMap.oldValue instanceof BigDecimal) ? configMap.oldValue.toString() : (configMap.oldValue ?: null)
             }
-            else if (configMap.targetProperty in PendingChange.REFDATA_FIELDS) {
-                changeParams.newValue = (configMap.newValue && configMap.newValue instanceof Long) ? configMap.newValue.toString() : (configMap.newValue ?: null)
-                changeParams.oldValue = (configMap.oldValue && configMap.oldValue instanceof Long) ? configMap.oldValue.toString() : (configMap.oldValue ?: null)
-            }
             else if (configMap.prop in PendingChange.REFDATA_FIELDS) {
-
                 changeParams.newValue = (configMap.newValue && configMap.newValue instanceof Long) ? configMap.newValue.toString() : (configMap.newValue ?: null)
                 changeParams.oldValue = (configMap.oldValue && configMap.oldValue instanceof Long) ? configMap.oldValue.toString() : (configMap.oldValue ?: null)
             }

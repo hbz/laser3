@@ -1,6 +1,7 @@
-package de.laser.reporting
+package de.laser.reporting.myInstitution
 
 import de.laser.Org
+import de.laser.reporting.myInstitution.GenericConfig
 
 class OrganisationConfig extends GenericConfig {
 
@@ -20,17 +21,17 @@ class OrganisationConfig extends GenericConfig {
                             'my-provider'   : 'Meine Anbieter und Lieferanten'
                     ],
                     fields: [
-                            'country'           : FIELD_TYPE_REFDATA,
-                            'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
-                            'eInvoice'          : FIELD_TYPE_PROPERTY,
-                            'funderHskType'     : FIELD_TYPE_REFDATA,
-                            'funderType'        : FIELD_TYPE_REFDATA,
-                            'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
-                            'libraryNetwork'    : FIELD_TYPE_REFDATA,
-                            'libraryType'       : FIELD_TYPE_REFDATA,
-                            'orgType'           : FIELD_TYPE_REFDATA_RELTABLE,
+                            'country'           : GenericConfig.FIELD_TYPE_REFDATA,
+                            'customerType'      : GenericConfig.FIELD_TYPE_CUSTOM_IMPL,
+                            'eInvoice'          : GenericConfig.FIELD_TYPE_PROPERTY,
+                            'funderHskType'     : GenericConfig.FIELD_TYPE_REFDATA,
+                            'funderType'        : GenericConfig.FIELD_TYPE_REFDATA,
+                            'legalInfo'         : GenericConfig.FIELD_TYPE_CUSTOM_IMPL,
+                            'libraryNetwork'    : GenericConfig.FIELD_TYPE_REFDATA,
+                            'libraryType'       : GenericConfig.FIELD_TYPE_REFDATA,
+                            'orgType'           : GenericConfig.FIELD_TYPE_REFDATA_RELTABLE,
                             //'region'            : FIELD_TYPE_REFDATA,
-                            'subjectGroup'      : FIELD_TYPE_REFDATA_RELTABLE,
+                            'subjectGroup'      : GenericConfig.FIELD_TYPE_REFDATA_RELTABLE,
                     ],
                     filter : [
                             default: [

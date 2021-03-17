@@ -92,9 +92,9 @@
                     <g:if test="${entry.tippCoverage}">
                         <g:set var="tipp" value="${entry.tippCoverage.tipp}"/>
                     </g:if>
-                    <g:elseif test="${entry.priceItem}">
+                    <%--<g:elseif test="${entry.priceItem}">
                         <g:set var="tipp" value="${entry.priceItem.tipp}"/>
-                    </g:elseif>
+                    </g:elseif>--%>
                     <g:elseif test="${entry.oid}">
                         <g:set var="object" value="${genericOIDService.resolveOID(entry.oid)}"/>
                         <g:if test="${object instanceof IssueEntitlement}">
@@ -170,7 +170,7 @@
                 </g:if>
                 <g:else>
                     <td>
-                        <g:if test="${!(entry.status in [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED])}">
+                        <g:if test="${entry.status == RDStore.PENDING_CHANGE_PENDING}">
                             <div class="ui buttons">
                                 <g:link class="ui positive button" controller="pendingChange" action="accept"
                                         id="${entry.id}"

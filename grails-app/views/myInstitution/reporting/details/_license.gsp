@@ -1,18 +1,14 @@
-<%@ page import="de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.LicenseProperty; de.laser.reporting.OrganisationConfig;de.laser.reporting.LicenseConfig;" %>
+<%@ page import="de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.LicenseProperty; de.laser.reporting.myInstitution.OrganisationConfig;de.laser.reporting.myInstitution.LicenseConfig;" %>
 <laser:serviceInjection />
 
-<h3 class="ui header">3. Details</h3>
-
-<div class="ui message success">
-    <p>${label}</p>
-</div>
+<g:render template="/myInstitution/reporting/details/base.part1" />
 
 <div class="ui segment">
     <table class="ui table la-table compact">
         <thead>
             <tr>
                 <th></th>
-                <th>Vertrag</th>
+                <th>${message(code:'license.label')}</th>
                     <g:if test="${query == 'license-property-assignment'}">
                         <th>Merkmalswert</th>
                     </g:if>
@@ -23,8 +19,8 @@
                         <th>Lizenzen</th>
                         <th>Teilnehmerverträge</th>
                     </g:else>
-                <th>Startdatum</th>
-                <th>Enddatum</th>
+                <th>${message(code:'default.startDate.label')}</th>
+                <th>${message(code:'default.endDate.label')}</th>
             </tr>
         </thead>
         <tbody>

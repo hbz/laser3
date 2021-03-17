@@ -13,11 +13,7 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.properties.PersonProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
-import de.laser.reporting.GenericFilter
-import de.laser.reporting.LicenseConfig
-import de.laser.reporting.OrganisationConfig
-import de.laser.reporting.SubscriptionConfig
-import de.laser.reporting.GenericConfig
+import de.laser.reporting.myInstitution.GenericConfig
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
@@ -34,7 +30,6 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
-import org.apache.commons.lang3.RandomStringUtils
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.FillPatternType
@@ -104,37 +99,7 @@ class MyInstitutionController  {
         result.cfgChartsList = GenericConfig.CHARTS
 
         if (params.filter) {
-            result.token  = params.token ?: RandomStringUtils.randomAlphanumeric(16)
-            result.filter = params.filter
-
-            result.cfgQueryList = [:]
-            result.cfgQuery2List = [:]
-
-            if (params.filter == LicenseConfig.KEY) {
-                result.result = reportingService.filterLicense(params)
-
-                result.cfgQueryList.putAll( LicenseConfig.CONFIG.base.query )
-                //result.cfgQueryList.putAll( LicenseConfig.CONFIG.member.query )
-                result.cfgQueryList.putAll( LicenseConfig.CONFIG.licensor.query )
-
-                result.cfgQuery2List.putAll( LicenseConfig.CONFIG.base.query2 )
-            }
-            if (params.filter == OrganisationConfig.KEY) {
-                result.result = reportingService.filterOrganisation(params)
-
-                result.cfgQueryList.putAll( OrganisationConfig.CONFIG.base.query )
-
-                result.cfgQuery2List.putAll( OrganisationConfig.CONFIG.base.query2 )
-            }
-            else if (params.filter == SubscriptionConfig.KEY) {
-                result.result = reportingService.filterSubscription(params)
-
-                result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.base.query )
-                result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.member.query )
-                result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.provider.query )
-
-                result.cfgQuery2List.putAll( SubscriptionConfig.CONFIG.base.query2 )
-            }
+            reportingService.doFilter(result, params) // manipulates result, clones params
 
             Map<String, Object> filterMap = [ filterMap: [:] ]
             params.each{it ->
@@ -504,7 +469,7 @@ class MyInstitutionController  {
                 row.add([field:license.licensor ? license.licensor.name : '',style:null])
                 row.add([field:license.startDate ? sdf.format(license.startDate) : '',style:null])
                 row.add([field:license.endDate ? sdf.format(license.endDate) : '',style:null])
-                row.addAll(exportService.processPropertyListValues(propertyDefinitions,'xls',license,licChildMap,objectNames))
+                row.addAll(exportService.processPropertyListValues(propertyDefinitions, 'xls', license, licChildMap, objectNames, result.institution))
                 rows.add(row)
             }
             Map sheetData = [:]
@@ -540,7 +505,7 @@ class MyInstitutionController  {
                     row.add(license.licensor)
                     row.add(license.startDate ? sdf.format(license.startDate) : '')
                     row.add(license.endDate ? sdf.format(license.endDate) : '')
-                    row.addAll(row.addAll(exportService.processPropertyListValues(propertyDefinitions,'csv',license,licChildMap,objectNames)))
+                    row.addAll(row.addAll(exportService.processPropertyListValues(propertyDefinitions, 'csv', license, licChildMap, objectNames, result.institution)))
                     rows.add(row)
                 }
                 out.withWriter { writer ->

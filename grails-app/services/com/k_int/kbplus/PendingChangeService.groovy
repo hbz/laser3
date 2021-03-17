@@ -434,8 +434,8 @@ class PendingChangeService extends AbstractLockableService {
         Locale locale = LocaleContextHolder.getLocale()
         Date time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
         //package changes
-        String subscribedPackagesQuery = 'select new map(sp as subPackage,pcc as config) from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp join sp.subscription sub join sub.orgRelations oo where oo.org = :context and oo.roleType in (:roleTypes) and (pcc.settingValue = :prompt or pcc.withNotification = true)'
-        Map<String,Object> spQueryParams = [context:configMap.contextOrg,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER],prompt:RDStore.PENDING_CHANGE_CONFIG_PROMPT]
+        String subscribedPackagesQuery = 'select new map(sp as subPackage,pcc as config) from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp join sp.subscription sub join sub.orgRelations oo where oo.org = :context and oo.roleType in (:roleTypes) and ((pcc.settingValue = :prompt or pcc.withNotification = true) and pcc.settingKey not in (:excludes))'
+        Map<String,Object> spQueryParams = [context:configMap.contextOrg,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER],prompt:RDStore.PENDING_CHANGE_CONFIG_PROMPT,excludes:[PendingChangeConfiguration.NEW_PRICE,PendingChangeConfiguration.PRICE_UPDATED,PendingChangeConfiguration.PRICE_DELETED]]
         if(configMap.contextOrg.getCustomerType() == "ORG_CONSORTIUM") {
             subscribedPackagesQuery += ' and sub.instanceOf = null'
         }
@@ -463,8 +463,8 @@ class PendingChangeService extends AbstractLockableService {
         String query1 = "select pc from PendingChange pc where pc.owner = :contextOrg and pc.status in (:status) and (pc.msgToken = :newSubscription or pc.costItem != null)",
         query2 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'pkg\' from PendingChange pc join pc.pkg pkg where pkg in (:packages) and pc.oid = null',
         query3 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'tipp.pkg\'  from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = null',
-        query4 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'tippCoverage.tipp.pkg\'  from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = null',
-        query5 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'priceItem.tipp.pkg\' from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = null'
+        query4 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'tippCoverage.tipp.pkg\'  from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = null'
+        //query5 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'priceItem.tipp.pkg\' from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = null'
         Map<String,Object> query1Params = [contextOrg:configMap.contextOrg, status:[RDStore.PENDING_CHANGE_PENDING,RDStore.PENDING_CHANGE_ACCEPTED], newSubscription: "pendingChange.message_SU_NEW_01"],
         query2Params = [packages:subscribedPackages]
         if(configMap.periodInDays) {
@@ -495,7 +495,7 @@ class PendingChangeService extends AbstractLockableService {
             query2 += ' and ' + query2Clauses.join(" and ")
             query3 += ' and ' + query2Clauses.join(" and ")
             query4 += ' and ' + query2Clauses.join(" and ")
-            query5 += ' and ' + query2Clauses.join(" and ")
+            //query5 += ' and ' + query2Clauses.join(" and ")
         }
         List<PendingChange> nonPackageChanges = PendingChange.executeQuery(query1,query1Params) //PendingChanges need to be refilled in maps
         List tokensOnly = [], pending = [], notifications = []
@@ -503,7 +503,7 @@ class PendingChangeService extends AbstractLockableService {
             tokensOnly.addAll(PendingChange.executeQuery(query2 + ' group by pc.msgToken,pkg.id', query2Params))
             tokensOnly.addAll(PendingChange.executeQuery(query3 + ' group by pc.msgToken,pkg.id', query2Params))
             tokensOnly.addAll(PendingChange.executeQuery(query4 + ' group by pc.msgToken,pkg.id', query2Params))
-            tokensOnly.addAll(PendingChange.executeQuery(query5 + ' group by pc.msgToken,pkg.id', query2Params))
+            //tokensOnly.addAll(PendingChange.executeQuery(query5 + ' group by pc.msgToken,pkg.id', query2Params))
             /*
                I need to summarize here:
                - the subscription package (I need both)
@@ -740,12 +740,14 @@ class PendingChangeService extends AbstractLockableService {
         //pendingChange.message_TC03 (coverageDeleted)
             case PendingChangeConfiguration.COVERAGE_DELETED:
                 IssueEntitlementCoverage targetCov
+                IssueEntitlement ie
                 if(target instanceof IssueEntitlementCoverage) {
                     targetCov = (IssueEntitlementCoverage) target
+                    ie = targetCov.issueEntitlement
                 }
                 else if(target instanceof Subscription) {
                     JSONObject oldMap = JSON.parse(pc.oldValue) as JSONObject
-                    IssueEntitlement ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:oldMap.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
+                    ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp.id = :tipp and ie.status != :deleted',[target:target,tipp:oldMap.tipp.id as Long,deleted:RDStore.TIPP_STATUS_DELETED])[0]
                     for (String k : AbstractCoverage.equivalencyProperties) {
                         targetCov = ie.coverages.find { IssueEntitlementCoverage iec -> iec[k] == oldMap[k] }
                         if(targetCov) {
@@ -753,15 +755,18 @@ class PendingChangeService extends AbstractLockableService {
                         }
                     }
                 }
-                if(targetCov) {
+                if(targetCov && ie) {
                     //no way to check whether object could actually be deleted or not
+                    ie.coverages.remove(targetCov)
                     targetCov.delete()
                     done = true
                 }
                 //else throw new ChangeAcceptException("no instance of IssueEntitlementCoverage stored: ${pc.oid}! Pending change is void!")
                 break
+        /*
         //pendingChange.message_TR01 (priceUpdated)
             case PendingChangeConfiguration.PRICE_UPDATED:
+                log.debug("updating price")
                 PriceItem targetPi
                 if(target instanceof PriceItem && target.issueEntitlement) {
                     targetPi = (PriceItem) target
@@ -777,7 +782,10 @@ class PendingChangeService extends AbstractLockableService {
                     }
                     else throw new ChangeAcceptException("problems when updating price item - pending change not accepted: ${targetPi.errors}")
                 }
-                //else throw new ChangeAcceptException("no instance of PriceItem stored: ${pc.oid}! Pending change is void!")
+                else {
+                    log.warn("no equivalent price item available for ${pc.priceItem} in target ${target}")
+                    done = true
+                }
                 break
         //pendingChange.message_TR02 (newPrice)
             case PendingChangeConfiguration.NEW_PRICE:
@@ -805,7 +813,10 @@ class PendingChangeService extends AbstractLockableService {
                     }
                     else throw new ChangeAcceptException("problems when creating new entitlement - pending change not accepted: ${iePrice.errors}")
                 }
-                //else throw new ChangeAcceptException("no instance of PriceItem stored: ${pc.oid}! Pending change is void!")
+                else {
+                    log.warn("no equivalent price item available for ${pc.priceItem} in target ${target}")
+                    done = true
+                }
                 break
         //pendingChange.message_TR03 (priceDeleted)
             case PendingChangeConfiguration.PRICE_DELETED:
@@ -815,7 +826,7 @@ class PendingChangeService extends AbstractLockableService {
                 }
                 else if(target instanceof Subscription) {
                     JSONObject oldMap = JSON.parse(pc.oldValue) as JSONObject
-                    IssueEntitlement ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:oldMap.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
+                    IssueEntitlement ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp.id = :tipp and ie.status != :deleted',[target:target,tipp:oldMap.tipp.id as Long,deleted:RDStore.TIPP_STATUS_DELETED])[0]
                     for(String k : PriceItem.equivalencyProperties) {
                         targetPi = ie.priceItems.find { PriceItem pi -> pi[k] == oldMap[k] }
                         if(targetPi) {
@@ -828,8 +839,12 @@ class PendingChangeService extends AbstractLockableService {
                     targetPi.delete()
                     done = true
                 }
-                //else throw new ChangeAcceptException("no instance of PriceItem stored: ${pc.oid}! Pending change is void!")
+                else {
+                    log.warn("no equivalent price item available in target ${target}")
+                    done = true
+                }
                 break
+         */
         //pendingChange.message_CI01 (billingSum)
             case PendingChangeConfiguration.BILLING_SUM_UPDATED:
                 if(target instanceof CostItem) {
@@ -877,43 +892,64 @@ class PendingChangeService extends AbstractLockableService {
             target = newChange.tipp
         else if(newChange.tippCoverage)
             target = newChange.tippCoverage
-        else if(newChange.priceItem && newChange.priceItem.tipp)
-            target = newChange.priceItem
+        /*else if(newChange.priceItem && newChange.priceItem.tipp)
+            target = newChange.priceItem*/
         if(target) {
             PendingChange toApply = PendingChange.construct([target: target, oid: genericOIDService.getOID(subPkg.subscription), newValue: newChange.newValue, oldValue: newChange.oldValue, prop: newChange.targetProperty, msgToken: newChange.msgToken, status: RDStore.PENDING_CHANGE_PENDING, owner: contextOrg])
             if(accept(toApply)) {
-                applyPendingChangeForHolding(newChange, subPkg, contextOrg)
+                if(auditService.getAuditConfig(subPkg.subscription,newChange.msgToken)) {
+                    applyPendingChangeForHolding(newChange, subPkg, contextOrg)
+                }
             }
             else
-                log.error("Error when auto-accepting pending change ${toApply}!")
+                log.error("Error when auto-accepting pending change ${toApply} with token ${toApply.msgToken}!")
         }
         else log.error("Unable to determine target object! Ignoring change ${newChange}!")
     }
 
     void applyPendingChangeForHolding(PendingChange newChange,SubscriptionPackage subPkg,Org contextOrg) {
-            println("applyPendingChangeForHolding")
-            def target
-            if(newChange.tipp)
-                target = newChange.tipp
-            else if(newChange.tippCoverage)
-                target = newChange.tippCoverage
-            else if(newChange.priceItem && newChange.priceItem.tipp)
-                target = newChange.priceItem
-            if(target) {
-                    Set<Subscription> childSubscriptions = Subscription.executeQuery('select sp.subscription from SubscriptionPackage sp join sp.subscription s where s.instanceOf = :parent',[parent:subPkg.subscription])
-                    if(childSubscriptions) {
-                        if(auditService.getAuditConfig(subPkg.subscription,newChange.msgToken)) {
-                            childSubscriptions.each { Subscription child ->
-                                log.debug("applyPendingChangeForHolding: processing child ${child.id}")
-                                PendingChange toApplyChild = PendingChange.construct([target: target, oid: genericOIDService.getOID(child), newValue: newChange.newValue, oldValue: newChange.oldValue, prop: newChange.targetProperty, msgToken: newChange.msgToken, status: RDStore.PENDING_CHANGE_PENDING, owner: contextOrg])
-                                if (!accept(toApplyChild)) {
-                                    log.error("Error when auto-accepting pending change ${toApplyChild}!")
-                                }
-                            }
+        println("applyPendingChangeForHolding")
+        def target
+        Set<Subscription> childSubscriptions = []
+        if(newChange.tipp) {
+            target = newChange.tipp
+            childSubscriptions.addAll(Subscription.findAllByInstanceOf(subPkg.subscription))
+        }
+        else if(newChange.tippCoverage) {
+            target = newChange.tippCoverage
+            childSubscriptions.addAll(Subscription.executeQuery('select s from Subscription s join s.issueEntitlements ie where s.instanceOf = :parent and ie.tipp = :tipp and ie.status != :deleted',[parent:subPkg.subscription,tipp:target.tipp,deleted:RDStore.TIPP_STATUS_DELETED]))
+        }
+        /*else if(newChange.priceItem && newChange.priceItem.tipp) {
+            target = newChange.priceItem
+            childSubscriptions.addAll(Subscription.executeQuery('select s from Subscription s join s.issueEntitlements ie where s.instanceOf = :parent and ie.tipp = :tipp and ie.status != :deleted',[parent:subPkg.subscription,tipp:target.tipp,deleted:RDStore.TIPP_STATUS_DELETED]))
+        }*/
+        if(target) {
+            if(childSubscriptions) {
+                childSubscriptions.each { Subscription child ->
+                    String oid
+                    if(target instanceof TIPPCoverage /*|| target instanceof PriceItem*/) {
+                        IssueEntitlement childIE = child.issueEntitlements.find { childIE -> childIE.tipp == target.tipp }
+                        //if(target instanceof TIPPCoverage) {
+                            if(target.findEquivalent(childIE.coverages))
+                                oid = genericOIDService.getOID(child)
+                        //}
+                        /*else if(target instanceof PriceItem) {
+                            if(target.findEquivalent(childIE.priceItems))
+                                oid = genericOIDService.getOID(child)
+                        }*/
+                    }
+                    else oid = genericOIDService.getOID(child)
+                    if(oid) {
+                        //log.debug("applyPendingChangeForHolding: processing child ${child.id}")
+                        PendingChange toApplyChild = PendingChange.construct([target: target, oid: oid, newValue: newChange.newValue, oldValue: newChange.oldValue, prop: newChange.targetProperty, msgToken: newChange.msgToken, status: RDStore.PENDING_CHANGE_PENDING, owner: contextOrg])
+                        if (!accept(toApplyChild)) {
+                            log.error("Error when auto-accepting pending change ${toApplyChild} with token ${toApplyChild.msgToken}!")
                         }
                     }
+                }
             }
-            else log.error("Unable to determine target object! Ignoring change ${newChange}!")
+        }
+        else log.error("Unable to determine target object! Ignoring change ${newChange}!")
     }
 
     void acknowledgeChange(PendingChange changeAccepted) {

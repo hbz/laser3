@@ -1,28 +1,71 @@
 package de.laser
 
-import de.laser.reporting.LicenseFilter
-import de.laser.reporting.OrganisationFilter
-import de.laser.reporting.SubscriptionFilter
+import de.laser.reporting.myInstitution.LicenseConfig
+import de.laser.reporting.myInstitution.LicenseFilter
+import de.laser.reporting.myInstitution.OrganisationConfig
+import de.laser.reporting.myInstitution.OrganisationFilter
+import de.laser.reporting.myInstitution.SubscriptionConfig
+import de.laser.reporting.myInstitution.SubscriptionFilter
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.apache.commons.lang3.RandomStringUtils
 
 @Transactional
 class ReportingService {
 
     def contextService
 
-    Map<String, Object> filterLicense(GrailsParameterMap params) {
+    // ----- MyInstitutionController.reporting() -----
+
+    void doFilter(Map<String, Object> result, GrailsParameterMap params) {
+
+        result.filter = params.filter
+        result.token  = params.token ?: RandomStringUtils.randomAlphanumeric(16)
+
+        result.cfgQueryList = [:]
+        result.cfgQuery2List = [:]
+
+        if (params.filter == LicenseConfig.KEY) {
+            doFilterLicense(result, params.clone() as GrailsParameterMap)
+        }
+        else if (params.filter == OrganisationConfig.KEY) {
+            doFilterOrganisation(result, params.clone() as GrailsParameterMap)
+        }
+        else if (params.filter == SubscriptionConfig.KEY) {
+            doFilterSubscription(result, params.clone() as GrailsParameterMap)
+        }
+    }
+
+    void doFilterLicense(Map<String, Object> result, GrailsParameterMap params) {
+
         LicenseFilter filter = new LicenseFilter()
-        filter.filter(params.clone() as GrailsParameterMap)
+        result.result = filter.filter(params)
+
+        result.cfgQueryList.putAll( LicenseConfig.CONFIG.base.query )
+        result.cfgQueryList.putAll( LicenseConfig.CONFIG.licensor.query )
+
+        result.cfgQuery2List.putAll( LicenseConfig.CONFIG.base.query2 ) // Verteilung
     }
 
-    Map<String, Object> filterOrganisation(GrailsParameterMap params) {
+    void doFilterOrganisation(Map<String, Object> result, GrailsParameterMap params) {
+
         OrganisationFilter filter = new OrganisationFilter()
-        filter.filter(params.clone() as GrailsParameterMap)
+        result.result = filter.filter(params)
+
+        result.cfgQueryList.putAll( OrganisationConfig.CONFIG.base.query )
+
+        result.cfgQuery2List.putAll( OrganisationConfig.CONFIG.base.query2 ) // Verteilung
     }
 
-    Map<String, Object> filterSubscription(GrailsParameterMap params) {
+    void doFilterSubscription(Map<String, Object> result, GrailsParameterMap params) {
+
         SubscriptionFilter filter = new SubscriptionFilter()
-        filter.filter(params.clone() as GrailsParameterMap)
+        result.result = filter.filter(params)
+
+        result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.base.query )
+        result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.member.query )
+        result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.provider.query )
+
+        result.cfgQuery2List.putAll( SubscriptionConfig.CONFIG.base.query2 ) // Verteilung
     }
 }

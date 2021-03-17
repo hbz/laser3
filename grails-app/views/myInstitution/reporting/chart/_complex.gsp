@@ -1,7 +1,7 @@
-<%@ page import="de.laser.reporting.GenericConfig; de.laser.reporting.GenericQuery" %>
+<%@ page import="de.laser.reporting.myInstitution.GenericConfig;de.laser.reporting.myInstitution.GenericQuery" %>
 <g:if test="${! data}">
     JSPC.app.reporting.current.chart.option = {}
-    alert('[msg:3] - Keine Daten gefunden');
+    $("#reporting-modal-nodata").modal('show');
 </g:if>
 <g:elseif test="${chart == GenericConfig.CHART_PIE}">
     JSPC.app.reporting.current.chart.option = {
@@ -15,8 +15,8 @@
             trigger: 'item',
             formatter (params) {
                 var str = params.name
-                str += '<br/>' + params.marker + '${chartLabels[0]}&nbsp;&nbsp;&nbsp;<strong>' + params.value[3] + '</strong>'
-                str += '<br/>' + params.marker + '${chartLabels[1]}&nbsp;&nbsp;&nbsp;<strong>' + params.value[2] + '</strong>'
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${chartLabels[0]}', params.value[3])
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${chartLabels[1]}', params.value[2])
                 return str
            }
         },
@@ -26,44 +26,17 @@
         },
         series: [
             {
-                name: '${chartLabels[1]}',
-                type: 'pie',
-                radius: ['55%', '70%'],
-                center: ['65%', '50%'],
-                encode: {
-                    itemName: 'name',
-                    value: 'valueObjects',
-                    id: 'id'
-                },
-                emphasis: {
-                    itemStyle: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: 'rgba(0,0,0,0.3)'
-                    }
-                }
-            },
-            {
                 name: '${chartLabels[0]}',
                 type: 'pie',
-                radius: '53%',
+                radius: '70%',
                 center: ['65%', '50%'],
                 encode: {
                     itemName: 'name',
                     value: 'valueMatches',
                     id: 'id'
                 },
-                emphasis: {
-                    itemStyle: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: 'rgba(0,0,0,0.3)'
-                    }
-                },
-                label: {
-                    show: false
-                }
-            }
+                emphasis: JSPC.app.reporting.helper.series.pie.emphasis
+            },
         ]
     };
     JSPC.app.reporting.current.chart.details = <%= dataDetails as grails.converters.JSON %>
@@ -81,29 +54,29 @@
         },
         tooltip: {
             trigger: 'axis',
-            axisPointer: {
-                type: 'shadow'
-            },
+            axisPointer: { type: 'shadow' },
             formatter (params) {
                 var str = params[0].name
 
                 if (params.length == 1) {
                     if (params[0].seriesName == '${chartLabels[0]}') {
-                        str += '<br/>' + params[0].marker + params[0].seriesName + '&nbsp;&nbsp;&nbsp;<strong>' + Math.abs(params[0].value[3]) + '</strong>'
+                        str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, Math.abs(params[0].value[3]))
                     } else if (params[0].seriesName == '${chartLabels[1]}') {
-                        str += '<br/>' + params[0].marker + params[0].seriesName + '&nbsp;&nbsp;&nbsp;<strong>' + params[0].value[2] + '</strong>'
+                        str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, params[0].value[2])
                     }
                 }
                 else if (params.length > 1) {
-                    str += '<br/>' + params[0].marker + params[0].seriesName + '&nbsp;&nbsp;&nbsp;<strong>' + Math.abs(params[0].value[3]) + '</strong>'
-                    str += '<br/>' + params[1].marker + params[1].seriesName + '&nbsp;&nbsp;&nbsp;<strong>' + params[1].value[2] + '</strong>'
+                    str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, Math.abs(params[0].value[3]))
+                    str += JSPC.app.reporting.helper.tooltip.getEntry(params[1].marker, params[1].seriesName, params[1].value[2])
                 }
                 return str
            }
         },
         grid:  {
             top: 40,
+            right: '5%',
             bottom: 10,
+            left: '5%',
             containLabel: true
         },
         xAxis: {
@@ -114,9 +87,7 @@
                 }
             }
         },
-        yAxis: {
-            type: 'category'
-        },
+        yAxis: { type: 'category' },
         series: [
             {
                 name: '${chartLabels[0]}',

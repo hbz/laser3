@@ -4,6 +4,7 @@ import com.k_int.kbplus.GenericOIDService
 import de.laser.AccessService
 import de.laser.AddressbookService
 import de.laser.ContextService
+import de.laser.FinanceService
 import de.laser.GokbService
 import de.laser.License
 import de.laser.LinksGenerationService
@@ -11,7 +12,6 @@ import de.laser.Org
 import de.laser.OrgRole
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
-import de.laser.Reporting_OldService
 import de.laser.Subscription
 import de.laser.Address
 import de.laser.Doc
@@ -20,17 +20,21 @@ import de.laser.PersonRole
 import de.laser.SubscriptionService
 import de.laser.Task
 import de.laser.TaskService
+import de.laser.TitleInstancePackagePlatform
 import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
+import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.reporting.GenericQuery
-import de.laser.reporting.LicenseConfig
-import de.laser.reporting.OrganisationConfig
-import de.laser.reporting.SubscriptionConfig
-
+import de.laser.reporting.myInstitution.GenericConfig
+import de.laser.reporting.myInstitution.GenericQuery
+import de.laser.reporting.myInstitution.LicenseConfig
+import de.laser.reporting.myInstitution.OrganisationConfig
+import de.laser.reporting.myInstitution.SubscriptionConfig
+import de.laser.reporting.subscription.SubscriptionReporting
 import grails.plugin.springsecurity.annotation.Secured
+import grails.web.servlet.mvc.GrailsParameterMap
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxHtmlController {
@@ -43,9 +47,10 @@ class AjaxHtmlController {
 
     AddressbookService addressbookService
     ContextService contextService
+    FinanceService financeService
+    FinanceControllerService financeControllerService
     GenericOIDService genericOIDService
     TaskService taskService
-    Reporting_OldService reporting_OldService
     LinksGenerationService linksGenerationService
     AccessService accessService
     GokbService gokbService
@@ -371,41 +376,78 @@ class AjaxHtmlController {
     def chartDetails() {
         Map<String, Object> result = [
             query:  params.query,
-            id:     params.id
+            id:     params.id ? params.id as Long : ''
         ]
 
-        if (params.query) {
+        if (params.context == GenericConfig.KEY && params.query) {
             String prefix = params.query.split('-')[0]
             List idList = params.list('idList[]').collect { it as Long }
 
             if (prefix in ['license']) {
-                result.label = GenericQuery.getQueryLabels(LicenseConfig.CONFIG, params).join(' > ')
-                result.list  = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
-                result.tmpl  = '/myInstitution/reporting/details/license'
+                result.labels = GenericQuery.getQueryLabels(LicenseConfig.CONFIG, params)
+                result.list   = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
+                result.tmpl   = '/myInstitution/reporting/details/license'
             }
             else if (prefix in ['licensor']) {
-                result.label = GenericQuery.getQueryLabels(LicenseConfig.CONFIG, params).join(' > ')
-                result.list  = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
-                result.tmpl  = '/myInstitution/reporting/details/organisation'
+                result.labels = GenericQuery.getQueryLabels(LicenseConfig.CONFIG, params)
+                result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
+                result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
             else if (prefix in ['org']) {
-                result.label = GenericQuery.getQueryLabels(OrganisationConfig.CONFIG, params).join(' > ')
-                result.list  = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
-                result.tmpl  = '/myInstitution/reporting/details/organisation'
+                result.labels = GenericQuery.getQueryLabels(OrganisationConfig.CONFIG, params)
+                result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
+                result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
             else if (prefix in ['subscription']) {
-                result.label = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params).join(' > ')
-                result.list  = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
-                result.tmpl  = '/myInstitution/reporting/details/subscription'
+                result.labels = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params)
+                result.list   = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
+                result.tmpl   = '/myInstitution/reporting/details/subscription'
             }
             else if (prefix in ['member', 'provider']) {
-                result.label = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params).join(' > ')
-                result.list  = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
-                result.tmpl  = '/myInstitution/reporting/details/organisation'
+                result.labels = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params)
+                result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
+                result.tmpl   = '/myInstitution/reporting/details/organisation'
+            }
+        }
+        else if (params.context == SubscriptionConfig.KEY && params.query) {
+            if (params.query == 'cost-timeline') {
+                result.labels = SubscriptionReporting.getQueryLabels(params)
+
+                GrailsParameterMap clone = params.clone() as GrailsParameterMap
+                clone.setProperty('id', params.id)
+                Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, financeControllerService.getResultGenerics(clone))
+
+                result.billingSums = finance.cons.sums.billingSums ?: []
+                result.localSums   = finance.cons.sums.localSums ?: []
+                result.tmpl        = '/subscription/reporting/details/cost'
+
+            }
+            else if (params.query in ['entitlement-timeline', 'member-timeline']) {
+                result.labels = SubscriptionReporting.getQueryLabels(params)
+
+                List idList      = params.list('idList[]').collect { it as Long }
+                List plusIdList  = params.list('plusIdList[]').collect { it as Long }
+                List minusIdList = params.list('minusIdList[]').collect { it as Long }
+
+                if (params.query == 'entitlement-timeline') {
+                    String hql = 'select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name'
+
+                    result.list      = idList      ? TitleInstancePackagePlatform.executeQuery (hql, [idList: idList] ) : []
+                    result.plusList  = plusIdList  ? TitleInstancePackagePlatform.executeQuery( hql,  [idList: plusIdList] ) : []
+                    result.minusList = minusIdList ? TitleInstancePackagePlatform.executeQuery( hql, [idList: minusIdList] ) : []
+                    result.tmpl      = '/subscription/reporting/details/entitlement'
+                }
+                else {
+                    String hql = 'select o from Org o where o.id in (:idList) order by o.sortname, o.name'
+
+                    result.list      = idList      ? Org.executeQuery( hql, [idList: idList] ) : []
+                    result.plusList  = plusIdList  ? Org.executeQuery( hql, [idList: plusIdList] ) : []
+                    result.minusList = minusIdList ? Org.executeQuery( hql, [idList: minusIdList] ) : []
+                    result.tmpl      = '/subscription/reporting/details/organisation'
+                }
             }
         }
 
-        //println result
         render template: result.tmpl, model: result
     }
 }

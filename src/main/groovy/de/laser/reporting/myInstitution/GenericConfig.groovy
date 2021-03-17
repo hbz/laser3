@@ -1,4 +1,4 @@
-package de.laser.reporting
+package de.laser.reporting.myInstitution
 
 import de.laser.RefdataCategory
 import de.laser.auth.Role
@@ -6,13 +6,14 @@ import de.laser.helper.RDConstants
 
 class GenericConfig {
 
-    static String KEY                           = 'Generic'
+    static String KEY                           = 'myInstitution'
 
     static String FILTER_PREFIX                 = 'filter:'
     static String FILTER_SOURCE_POSTFIX         = '_source'
 
     static String CHART_BAR                     = 'bar'
     static String CHART_PIE                     = 'pie'
+    static String CHART_RADAR                   = 'radar'
 
     static String FIELD_TYPE_PROPERTY           = 'property'
     static String FIELD_TYPE_REFDATA            = 'refdata'
@@ -33,8 +34,9 @@ class GenericConfig {
 
     static Map<String, String> CHARTS = [
 
-            bar : 'Balkendiagramm',
-            pie : 'Tortendiagramm'
+            bar   : 'Balkendiagramm',
+            pie   : 'Tortendiagramm',
+            //radar : 'Netzdiagramm'
     ]
 
     static Map<String, Object> CONFIG = [

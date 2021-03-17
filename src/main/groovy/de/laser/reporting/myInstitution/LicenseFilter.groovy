@@ -1,4 +1,4 @@
-package de.laser.reporting
+package de.laser.reporting.myInstitution
 
 import de.laser.License
 import de.laser.Org
@@ -7,6 +7,9 @@ import de.laser.RefdataValue
 import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.reporting.myInstitution.GenericConfig
+import de.laser.reporting.myInstitution.GenericFilter
+import de.laser.reporting.myInstitution.LicenseConfig
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.ApplicationContext

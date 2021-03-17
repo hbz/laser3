@@ -1,16 +1,16 @@
-<%@page import="de.laser.reporting.LicenseConfig;de.laser.ReportingService;de.laser.Org;de.laser.License" %>
+<%@page import="de.laser.reporting.myInstitution.LicenseConfig;de.laser.ReportingService;de.laser.Org;de.laser.License" %>
 <laser:serviceInjection/>
 
     <g:form action="reporting" method="POST" class="ui form">
 
         <div class="menu ui top attached tabular">
-            <a class="active item" data-tab="lic-filter-tab-1">Verträge</a>
+            <a class="active item" data-tab="lic-filter-tab-1">${message(code:'license.plural')}</a>
             %{--<a class="item" data-tab="lic-filter-tab-2">Teilnehmer</a>--}%
             <a class="item" data-tab="lic-filter-tab-3">Lizenzgeber</a>
         </div><!-- .menu -->
         <div class="ui bottom attached active tab segment" data-tab="lic-filter-tab-1">
             <div class="field">
-                <label for="filter:license_source">Auswahl</label>
+                <label for="filter:license_source">${message(code:'reporting.filter.selection')}</label>
                 <g:set var="config" value="${LicenseConfig.CONFIG.base}" />
                 <g:select name="filter:license_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:license_source')}" />
             </div>
@@ -67,7 +67,7 @@
         <div class="field">
             <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
             <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
-            <input type="hidden" name="filter" value="license" />
+            <input type="hidden" name="filter" value="${LicenseConfig.KEY}" />
             <input type="hidden" name="token" value="${token}" />
         </div>
 

@@ -1,18 +1,14 @@
-<%@ page import="de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Subscription; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty; de.laser.reporting.OrganisationConfig;de.laser.reporting.SubscriptionConfig;" %>
+<%@ page import="de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Subscription; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty; de.laser.reporting.myInstitution.OrganisationConfig;de.laser.reporting.myInstitution.SubscriptionConfig;" %>
 <laser:serviceInjection />
 
-<h3 class="ui header">3. Details</h3>
-
-<div class="ui message success">
-    <p>${label}</p>
-</div>
+<g:render template="/myInstitution/reporting/details/base.part1" />
 
 <div class="ui segment">
     <table class="ui table la-table compact">
         <thead>
         <tr>
             <th></th>
-            <th>Lizenz</th>
+            <th>${message(code:'subscription.label')}</th>
             <g:if test="${query == 'subscription-property-assignment'}">
                 <th>Merkmalswert</th>
             </g:if>
@@ -22,8 +18,8 @@
             <g:else>
                 <th>Teilnehmer</th>
             </g:else>
-            <th>Startdatum</th>
-            <th>Enddatum</th>
+            <th>${message(code:'subscription.startDate.label')}</th>
+            <th>${message(code:'subscription.endDate.label')}</th>
         </tr>
         </thead>
         <tbody>
