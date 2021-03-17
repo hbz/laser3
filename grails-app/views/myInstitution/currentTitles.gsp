@@ -79,7 +79,6 @@
         <g:set var="filterSub" value="${params.filterSub ? params.list('filterSub') : "all"}"/>
         <g:set var="filterPvd" value="${params.filterPvd ? params.list('filterPvd') : "all"}"/>
         <g:set var="filterHostPlat" value="${params.filterHostPlat ? params.list('filterHostPlat') : "all"}"/>
-        <g:set var="filterOtherPlat" value="${params.filterOtherPlat ? params.list('filterOtherPlat') : "all"}"/>
 
 
         <div class="two fields">
@@ -118,8 +117,8 @@
                             value="">${message(code: 'myinst.currentTitles.all_providers')}</option>
                     <g:each in="${providers}" var="p">
                         <%
-                            def pvdId = p[0].id.toString()
-                            def pvdName = p[0].name
+                            def pvdId = p[0].toString()
+                            def pvdName = p[1]
                         %>
                         <option <%=(filterPvd.contains(pvdId)) ? 'selected' : ''%> value="${pvdId}" title="${pvdName}">
                             ${pvdName}
@@ -137,8 +136,8 @@
                             value="">${message(code: 'myinst.currentTitles.all_host_platforms')}</option>
                     <g:each in="${hostplatforms}" var="hp">
                         <%
-                            def hostId = hp[0].id.toString()
-                            def hostName = hp[0].name
+                            def hostId = hp[0].toString()
+                            def hostName = hp[1]
                         %>
                         <option <%=(filterHostPlat.contains(hostId)) ? 'selected' : ''%> value="${hostId}"
                                                                                          title="${hostName}">

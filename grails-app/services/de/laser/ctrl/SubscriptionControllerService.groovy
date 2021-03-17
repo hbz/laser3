@@ -1457,6 +1457,7 @@ class SubscriptionControllerService {
             }
 
             if(result.subscription.ieGroups.size() > 0) {
+                params.forCount = true
                 def query2 = filterService.getIssueEntitlementQuery(params, result.subscription)
                 result.num_ies = IssueEntitlement.executeQuery("select count(ie) " + query2.query, query2.queryParams+[max: 5000, offset: 0])[0]
             }

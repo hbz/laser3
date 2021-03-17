@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3159    17.03.2021  rc2.0   2.0.5       Andreas Bug         Filter in "Meine Titel" überarbeitet
+
+3224    17.03.2021  rc2.0   2.0.5       Andreas Bug         Bestände mit Titelgruppen konnten nicht geladen werden
+
 --      16.03.2021  rc2.0   2.0.4       Andreas Bug         Pending Change-Verhalten korrigiert, Bestand-Performance verbessert
 
 3226    16.03.2021  rc2.0   2.0.4       David   Feature     "Mail an"-Funktionalität für Org-Listen beim globalen Reporting
