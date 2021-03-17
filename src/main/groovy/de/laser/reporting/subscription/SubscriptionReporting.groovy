@@ -21,19 +21,19 @@ class SubscriptionReporting {
 
     static Map<String, Object> QUERY = [
 
-            'Zeitleiste' : [
+            'Entwicklung' : [
                     'member-timeline' : [
-                            label : 'Entwicklung: Teilnehmer',
+                            label : 'Teilnehmer',
                             chart : 'bar',
                             chartLabels : [ 'Teilnehmer entfernt', 'Neue Teilnehmer', 'Aktuelle Teilnehmer' ]
                     ],
                     'entitlement-timeline' : [
-                            label : 'Entwicklung: Bestand',
+                            label : 'Bestand',
                             chart : 'bar',
                             chartLabels : [ 'Titel entfernt', 'Neue Titel', 'Aktuelle Titel' ]
                     ],
                     'cost-timeline' : [
-                            label : 'Entwicklung: Kosten',
+                            label : 'Kosten',
                             chart : 'bar',
                             chartLabels : [ 'Wert', 'Endpreis (nach Steuer)']
                     ]

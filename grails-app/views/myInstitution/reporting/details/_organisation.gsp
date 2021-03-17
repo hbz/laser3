@@ -1,11 +1,7 @@
 <%@ page import="de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.reporting.myInstitution.OrganisationConfig;" %>
 <laser:serviceInjection />
 
-<h3 class="ui header">3. Details</h3>
-
-<div class="ui message success">
-    <p>${label}</p>
-</div>
+<g:render template="/myInstitution/reporting/details/base.part1" />
 
 <div class="ui segment">
     <table class="ui table la-table compact">
@@ -13,18 +9,13 @@
         <tr>
             <th></th>
             <th>Sortiername</th>
-            <th>${label.split('>').first().trim()}</th>
+            <th>${labels.first().trim()}</th>
             <g:if test="${query == 'org-property-assignment'}">
                 <th>Merkmalswert</th>
             </g:if>
             <g:elseif test="${query == 'org-identifier-assignment'}">
                 <th>Identifikator</th>
             </g:elseif>
-            <th>
-                <button class="ui icon right floated button" href="#chartDetailsCopyEmailModal" data-semui="modal">
-                    <i class="icon envelope"></i>
-                </button>
-            </th>
         </tr>
         </thead>
         <tbody>
@@ -61,7 +52,6 @@
                             %>
                         </td>
                     </g:elseif>
-                    <td></td>
                 </tr>
             </g:each>
         </tbody>

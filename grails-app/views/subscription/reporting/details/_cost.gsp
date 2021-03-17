@@ -1,12 +1,10 @@
 <%@ page import="de.laser.helper.RDStore; de.laser.Org;" %>
 <laser:serviceInjection />
 
-<div class="ui message success">
-    <p>${label}</p>
-</div>
+<g:render template="/subscription/reporting/details/base.part1" />
 
-<g:if test="${billingSums.size() == 1}">
-    <div class="ui segment">
+<div class="ui segment">
+    <g:if test="${billingSums.size() == 1}">
         <table class="ui table la-table compact">
             <thead>
             <tr>
@@ -27,10 +25,8 @@
             </g:each>
             </tbody>
         </table>
-    </div>
-</g:if>
-<g:else>
-    <div class="ui segment">
+    </g:if>
+    <g:else>
         <table class="ui table la-table compact">
             <thead>
             <tr>
@@ -57,8 +53,8 @@
                 </tr>
             </tbody>
         </table>
-    </div>
-</g:else>
+    </g:else>
+</div>
 
 
 

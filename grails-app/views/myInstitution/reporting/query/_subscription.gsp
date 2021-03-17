@@ -2,17 +2,17 @@
 <laser:serviceInjection/>
 
 <g:if test="${result}">
+    <g:render template="/myInstitution/reporting/query/base.part1" />
+
     <g:if test="${result.subscriptionIdList || result.memberIdList || result.providerIdList}">
 
         <div class="ui message success">
             <p>
-                ${result.subscriptionIdList.size()} Lizenzen,
-                ${result.memberIdList.size()} Teilnehmer und
-                ${result.providerIdList.size()} Anbieter
-                wurden anhand der Filtereinstellungen gefunden.
+                Mit diesen Filtereinstellungen wurden
+                <strong>${result.subscriptionIdList.size()} Lizenzen</strong>,
+                <strong>${result.memberIdList.size()} Teilnehmer</strong> und
+                <strong>${result.providerIdList.size()} Anbieter</strong> gefunden.
             </p>
-
-            <g:render template="/myInstitution/reporting/query/base.part1" />
         </div>
 
         <g:render template="/myInstitution/reporting/query/base.part2" />
@@ -27,13 +27,8 @@
 
     </g:if>
     <g:else>
-
         <div class="ui message negative">
-            <p>
-                Mit diesen Filtereinstellungen wurden keine Treffer gefunden.
-            </p>
-            <g:render template="/myInstitution/reporting/query/base.part1" />
+            <p><g:message code="reporting.filter.no.matches" /></p>
         </div>
-
     </g:else>
 </g:if>
