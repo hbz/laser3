@@ -1,9 +1,7 @@
 <%@ page import="de.laser.IssueEntitlement; de.laser.helper.RDStore; de.laser.TitleInstancePackagePlatform;" %>
 <laser:serviceInjection />
 
-<div class="ui message success">
-    <p>${label}</p>
-</div>
+<g:render template="/subscription/reporting/details/base.part1" />
 
 <g:set var="plusListNames" value="${plusList.collect{ it.name }}" />
 
@@ -60,7 +58,7 @@
             <tbody>
                 <g:each in="${minusList}" var="tipp" status="i">
                     <tr class="negative">
-                        <td style="text-align: center">${i + 1}.</td>
+                        <td style="text-align: center"><span class="ui label circular red">${i + 1}.</span></td>
                         <td>
                             <%
                                 Long ieId2 = IssueEntitlement.executeQuery(

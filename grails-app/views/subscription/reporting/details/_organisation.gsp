@@ -1,9 +1,7 @@
 <%@ page import="de.laser.helper.RDStore; de.laser.Org;" %>
 <laser:serviceInjection />
 
-<div class="ui message success">
-    <p>${label}</p>
-</div>
+<g:render template="/subscription/reporting/details/base.part1" />
 
 <div class="ui segment">
     <table class="ui table la-table compact">
@@ -47,7 +45,7 @@
             <tbody>
                 <g:each in="${minusList}" var="org" status="i">
                     <tr class="negative">
-                        <td style="text-align: center">${i + 1}.</td>
+                        <td style="text-align: center"><span class="ui label circular red">${i + 1}.</span></td>
                         <td>${org.sortname}</td>
                         <td>
                             <g:link controller="organisation" action="show" id="${org.id}" target="_blank">${org.name}</g:link>

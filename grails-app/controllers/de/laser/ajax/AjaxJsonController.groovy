@@ -744,7 +744,7 @@ class AjaxJsonController {
             GrailsParameterMap clone = params.clone() as GrailsParameterMap // TODO: simplify
 
             result = SubscriptionReporting.query(clone)
-            result.chartLabels = SubscriptionReporting.QUERY.getAt('Zeitleiste').getAt(clone.query).getAt('chartLabels')
+            result.chartLabels = SubscriptionReporting.QUERY.getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
 
             if (clone.query in ['cost-timeline']) {
                 render template: '/subscription/reporting/chart/' + clone.query, model: result

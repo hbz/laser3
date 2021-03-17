@@ -4,13 +4,13 @@
     <g:form action="reporting" method="POST" class="ui form">
 
         <div class="menu ui top attached tabular">
-            <a class="active item" data-tab="lic-filter-tab-1">Verträge</a>
+            <a class="active item" data-tab="lic-filter-tab-1">${message(code:'license.plural')}</a>
             %{--<a class="item" data-tab="lic-filter-tab-2">Teilnehmer</a>--}%
             <a class="item" data-tab="lic-filter-tab-3">Lizenzgeber</a>
         </div><!-- .menu -->
         <div class="ui bottom attached active tab segment" data-tab="lic-filter-tab-1">
             <div class="field">
-                <label for="filter:license_source">Auswahl</label>
+                <label for="filter:license_source">${message(code:'reporting.filter.selection')}</label>
                 <g:set var="config" value="${LicenseConfig.CONFIG.base}" />
                 <g:select name="filter:license_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:license_source')}" />
             </div>
