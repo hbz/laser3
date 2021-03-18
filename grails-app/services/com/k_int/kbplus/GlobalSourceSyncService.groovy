@@ -387,29 +387,30 @@ class GlobalSourceSyncService extends AbstractLockableService {
             log.debug("now processing entry #${idx}")
             try {
                 Map<String,Object> updatedTIPP = [
-                        titleType: tipp.titleType,
-                        name: tipp.name ?: tipp.tippTitleName,
-                        packageUUID: tipp.tippPackageUuid ?: null,
-                        platformUUID: tipp.hostPlatformUuid ?: null,
-                        titlePublishers: [],
-                        firstAuthor: tipp.titleFirstAuthor ?: null,
-                        firstEditor: tipp.titleFirstEditor ?: null,
-                        dateFirstInPrint: tipp.dateFirstInPrint ? DateUtils.parseDateGeneric(tipp.dateFirstInPrint) : null,
-                        dateFirstOnline: tipp.dateFirstOnline ? DateUtils.parseDateGeneric(tipp.dateFirstOnline) : null,
-                        imprint: tipp.titleImprint ?: null,
-                        status: tipp.status,
-                        seriesName: tipp.series ?: null,
-                        subjectReference: tipp.subjectArea ?: null,
-                        volume: tipp.titleVolumeNumber ?: null,
-                        coverages: [],
-                        priceItems: [],
-                        hostPlatformURL: tipp.url ?: null,
-                        identifiers: [],
-                        history: [],
-                        uuid: tipp.uuid,
-                        accessStartDate : tipp.accessStartDate ? DateUtils.parseDateGeneric(tipp.accessStartDate) : null,
-                        accessEndDate   : tipp.accessEndDate ? DateUtils.parseDateGeneric(tipp.accessEndDate) : null,
-                        medium: tipp.tippTitleMedium
+                    titleType: tipp.titleType,
+                    name: tipp.name ?: tipp.tippTitleName,
+                    packageUUID: tipp.tippPackageUuid ?: null,
+                    platformUUID: tipp.hostPlatformUuid ?: null,
+                    titlePublishers: [],
+                    publisherName: tipp.publisherName,
+                    firstAuthor: tipp.titleFirstAuthor ?: null,
+                    firstEditor: tipp.titleFirstEditor ?: null,
+                    dateFirstInPrint: tipp.dateFirstInPrint ? DateUtils.parseDateGeneric(tipp.dateFirstInPrint) : null,
+                    dateFirstOnline: tipp.dateFirstOnline ? DateUtils.parseDateGeneric(tipp.dateFirstOnline) : null,
+                    imprint: tipp.titleImprint ?: null,
+                    status: tipp.status,
+                    seriesName: tipp.series ?: null,
+                    subjectReference: tipp.subjectArea ?: null,
+                    volume: tipp.titleVolumeNumber ?: null,
+                    coverages: [],
+                    priceItems: [],
+                    hostPlatformURL: tipp.url ?: null,
+                    identifiers: [],
+                    history: [],
+                    uuid: tipp.uuid,
+                    accessStartDate : tipp.accessStartDate ? DateUtils.parseDateGeneric(tipp.accessStartDate) : null,
+                    accessEndDate   : tipp.accessEndDate ? DateUtils.parseDateGeneric(tipp.accessEndDate) : null,
+                    medium: tipp.tippTitleMedium
                 ]
                 if(tipp.titleType == 'Journal') {
                     tipp.coverage.each { cov ->
@@ -457,17 +458,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     packagesToNotify.put(updatedTIPP.packageUUID,diffsOfPackage)
                 }
                 else {
-                    //addNewTIPP(packagesOnPage.get(updatedTIPP.packageUUID), updatedTIPP, platformsOnPage,null)
-                    Map<String,Object> diffs = createOrUpdateTIPP(tippsInLaser.get(updatedTIPP.uuid), updatedTIPP, packagesOnPage, platformsOnPage)
-                    Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(updatedTIPP.packageUUID)
-                    if(!diffsOfPackage) {
-                        diffsOfPackage = []
-                    }
-                    diffsOfPackage << diffs
-                    if(pkgPropDiffsContainer.get(updatedTIPP.packageUUID)) {
-                        diffsOfPackage.addAll(pkgPropDiffsContainer.get(updatedTIPP.packageUUID))
-                    }//test with set, otherwise make check
-                    packagesToNotify.put(updatedTIPP.packageUUID,diffsOfPackage)
+                    addNewTIPP(packagesOnPage.get(updatedTIPP.packageUUID), updatedTIPP, platformsOnPage,null)
                 }
                 Date lastUpdatedTime = DateUtils.parseDateGeneric(tipp.lastUpdatedDisplay)
                 if(lastUpdatedTime.getTime() > maxTimestamp) {
@@ -1571,6 +1562,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.name = tippB.name //TODO include name, sortName in IssueEntitlements, then, this property may move to the controlled ones
             tippA.firstAuthor = tippB.firstAuthor
             tippA.firstEditor = tippB.firstEditor
+            tippA.publisherName = tippB.publisherName
             tippA.dateFirstInPrint = (Date) tippB.dateFirstInPrint
             tippA.dateFirstOnline = (Date) tippB.dateFirstOnline
             tippA.imprint = tippB.imprint
@@ -1580,10 +1572,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.medium = titleMedium.get(tippB.medium)
             if(!tippA.save())
                 throw new SyncException("Error on updating base title data: ${tippA.errors}")
+            if(tippB.titlePublishers) {
+                if(tippA.publishers) {
+                    OrgRole.executeUpdate('delete from OrgRole oo where oo.tipp = :tippA',[tippA:tippA])
+                }
+                tippB.titlePublishers.each { publisher ->
+                    lookupOrCreateTitlePublisher([name: publisher.name, gokbId: publisher.uuid])
+                }
+            }
             if(tippB.identifiers) {
                 //I hate this solution ... wrestlers of GOKb stating that Identifiers do not need UUIDs were stronger.
                 //Identifier.withTransaction { TransactionStatus ts ->
-                    if(tippA.ids){
+                    if(tippA.ids) {
                         Identifier.executeUpdate('delete from Identifier i where i.tipp = :tipp',[tipp:tippA]) //damn those wrestlers ...
                     }
                     tippB.identifiers.each { idData ->
@@ -1691,6 +1691,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 dateFirstInPrint: (Date) tippData.dateFirstInPrint,
                 dateFirstOnline: (Date) tippData.dateFirstOnline,
                 imprint: tippData.imprint,
+                publisherName: tippData.publisherName,
                 seriesName: tippData.seriesName,
                 subjectReference: tippData.subjectReference,
                 volume: tippData.volume,

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      18.03.2021  rc2.0   2.0.5       Andreas Bug         weitere Ausbesserungen an Performance, Übernahme von publisherName, neue Identifier-Namespaces ZDB-ID, DNB-ID für Lizenzen, Namenskorrektur EZB Kollektions_ID
+
 --      16.03.2021  rc2.0   2.0.4       Andreas Bug         Pending Change-Verhalten korrigiert, Bestand-Performance verbessert
 
 3226    16.03.2021  rc2.0   2.0.4       David   Feature     "Mail an"-Funktionalität für Org-Listen beim globalen Reporting

@@ -667,6 +667,8 @@ No Host Platform URL Content
                 [ns: "ISIL_Paketsigel"],
                 [ns: "uri"],
                 [ns: "zdb"],
+                [ns: "ZDB_ID",typ:IdentifierNamespace.NS_SUBSCRIPTION],
+                [ns: "DNB_ID",typ:IdentifierNamespace.NS_SUBSCRIPTION],
                 [ns: "zdb_ppn"],
                 [ns: "VIAF"],
                 [ns: "issn"],
