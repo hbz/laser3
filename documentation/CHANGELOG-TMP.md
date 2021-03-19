@@ -7,7 +7,15 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3239    19.03.2021  rc2.0   2.0.5       Andreas Bug         Filter erweitert und angepasst
+
+3238    19.03.2021  rc2.0   2.0.5       Andreas Bug         irrtümliche Selbstbenachrichtigung bei Kostenkopie-Änderung behoben
+
 --      18.03.2021  rc2.0   2.0.5       Andreas Bug         weitere Ausbesserungen an Performance, Übernahme von publisherName, neue Identifier-Namespaces ZDB-ID, DNB-ID für Lizenzen, Namenskorrektur EZB Kollektions_ID
+
+3159    17.03.2021  rc2.0   2.0.5       Andreas Bug         Filter in "Meine Titel" überarbeitet
+
+3224    17.03.2021  rc2.0   2.0.5       Andreas Bug         Bestände mit Titelgruppen konnten nicht geladen werden
 
 --      16.03.2021  rc2.0   2.0.4       Andreas Bug         Pending Change-Verhalten korrigiert, Bestand-Performance verbessert
 

@@ -540,11 +540,12 @@ class ControlledListService {
         return TitleInstancePackagePlatform.executeQuery('select distinct(tipp.titleType) from TitleInstancePackagePlatform tipp where tipp.titleType is not null')
     }
 
-    Set<String> getAllPossibleSeriesByPackage(Package pkg) {
+    Set<String> getAllPossibleSeriesByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
+        RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<String> seriesName = []
 
-        seriesName = TitleInstancePackagePlatform.executeQuery("select distinct(seriesName) from TitleInstancePackagePlatform where seriesName is not null and pkg = :pkg order by seriesName", [pkg: pkg])
+        seriesName = TitleInstancePackagePlatform.executeQuery("select distinct(seriesName) from TitleInstancePackagePlatform where seriesName is not null and pkg = :pkg and status = :status order by seriesName", [pkg: pkg, status: tippStatus])
 
         if(seriesName.size() == 0){
             seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, locale)
@@ -565,11 +566,12 @@ class ControlledListService {
         seriesName
     }
 
-    Set<String> getAllPossibleSubjectsByPackage(Package pkg) {
+    Set<String> getAllPossibleSubjectsByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
+        RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<String> subjects = []
 
-        subjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg = :pkg order by subjectReference", [pkg: pkg])
+        subjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg = :pkg and status = :status order by subjectReference", [pkg: pkg, status: tippStatus])
 
         if(subjects.size() == 0){
             subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, locale)
@@ -592,11 +594,12 @@ class ControlledListService {
         subjects
     }
 
-    Set<String> getAllPossibleDateFirstOnlineYearByPackage(Package pkg) {
+    Set<String> getAllPossibleDateFirstOnlineYearByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
+        RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<String> subjects = []
 
-        subjects = TitleInstancePackagePlatform.executeQuery("select distinct(Year(dateFirstOnline)) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg = :pkg order by YEAR(dateFirstOnline)", [pkg: pkg])
+        subjects = TitleInstancePackagePlatform.executeQuery("select distinct(Year(dateFirstOnline)) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg = :pkg and status = :status order by YEAR(dateFirstOnline)", [pkg: pkg, status: tippStatus])
 
         if(subjects.size() == 0){
             subjects << messageSource.getMessage('default.selectionNotPossible.label', null, locale)
@@ -607,23 +610,25 @@ class ControlledListService {
 
     Set<String> getAllPossibleDateFirstOnlineYearBySub(Subscription subscription) {
         Locale locale = LocaleContextHolder.getLocale()
-        Set<String> subjects = []
+        Set<String> yearsFirstOnline = []
 
         if(subscription.packages){
-            subjects = TitleInstancePackagePlatform.executeQuery("select distinct(YEAR(dateFirstOnline)) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg in (:pkg) order by YEAR(dateFirstOnline)", [pkg: subscription.packages.pkg])
+            yearsFirstOnline = TitleInstancePackagePlatform.executeQuery("select distinct(YEAR(dateFirstOnline)) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg in (:pkg) and status = :current order by YEAR(dateFirstOnline)", [pkg: subscription.packages.pkg,current: RDStore.TIPP_STATUS_CURRENT])
         }
-        if(subjects.size() == 0){
-            subjects << messageSource.getMessage('default.selectionNotPossible.label', null, locale)
+        if(yearsFirstOnline.size() == 0){
+            yearsFirstOnline << messageSource.getMessage('default.selectionNotPossible.label', null, locale)
         }
 
-        subjects
+        yearsFirstOnline
     }
 
-    Set<String> getAllPossiblePublisherByPackage(Package pkg) {
+    Set<String> getAllPossiblePublisherByPackage(Package pkg,String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
+        RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<String> publishers = []
 
-        publishers = TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg = :pkg order by orgRole.org.name", [pkg: pkg])
+        publishers = TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg = :pkg and tipp.status = :status order by orgRole.org.name", [pkg: pkg, status: tippStatus])
+        publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(publisherName) from TitleInstancePackagePlatform where publisherName is not null and pkg = :pkg and status = :status order by publisherName", [pkg: pkg, status: tippStatus]))
 
         if(publishers.size() == 0){
             publishers << messageSource.getMessage('default.selectionNotPossible.label', null, locale)
@@ -637,6 +642,7 @@ class ControlledListService {
 
         if(subscription.packages){
             publishers = TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg in (:pkg) order by orgRole.org.name", [pkg: subscription.packages.pkg])
+            publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(publisherName) from TitleInstancePackagePlatform where publisherName is not null and pkg in (:pkg) and status = :current order by publisherName", [pkg: subscription.packages.pkg,current: RDStore.TIPP_STATUS_CURRENT]))
         }
         if(publishers.size() == 0){
             publishers << messageSource.getMessage('default.selectionNotPossible.label', null, locale)
@@ -644,5 +650,16 @@ class ControlledListService {
 
 
         publishers
+    }
+
+    RefdataValue getTippStatusForRequest(String forTitles) {
+        switch(forTitles) {
+            case 'planned': RDStore.TIPP_STATUS_EXPECTED
+                break
+            case 'expired': RDStore.TIPP_STATUS_RETIRED
+                break
+            default: RDStore.TIPP_STATUS_CURRENT
+                break
+        }
     }
 }
