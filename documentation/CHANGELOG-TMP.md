@@ -7,6 +7,18 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3241    19.03.2021  rc2.0   2.0.5       Andreas Bug         korrekte Sortierung der Lizenzen zu einem Vertrag
+
+3223    19.03.2021  rc2.0   2.0.5       Andreas Bug         Region-Filter wird mit Werten befüllt
+
+3217    19.03.2021  rc2.0   2.0.5       Andreas Bug         Spalte "Optionen" für Vollnutzer eingeblendet
+
+3212    19.03.2021  rc2.0   2.0.5       Andreas Bug         Verknüpfungsanzeige wird richtig aufgelöst
+
+3200    19.03.2021  rc2.0   2.0.5       Andreas Bug         Icon bei Umfrage-Sicht korrigiert
+
+3186    19.03.2021  rc2.0   2.0.5       Andreas Bug         Lizenzkopie um Aufgaben und Verknüpfungen erweitert
+
 3239    19.03.2021  rc2.0   2.0.5       Andreas Bug         Filter erweitert und angepasst
 
 3238    19.03.2021  rc2.0   2.0.5       Andreas Bug         irrtümliche Selbstbenachrichtigung bei Kostenkopie-Änderung behoben

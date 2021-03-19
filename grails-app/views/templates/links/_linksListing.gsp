@@ -19,7 +19,11 @@
                     <g:each in="${linkTypes.getValue()}" var="link">
                         <tr>
                             <%
-                                int perspectiveIndex = (entry == link.sourceSubscription || link.sourceLicense) ? 0 : 1
+                                int perspectiveIndex
+                                if(entry in [link.sourceSubscription, link.sourceLicense])
+                                    perspectiveIndex = 0
+                                else if(entry in [link.destinationSubscription, link.destinationLicense])
+                                    perspectiveIndex = 1
                             %>
                             <g:set var="pair" value="${link.getOther(entry)}"/>
                             <g:if test="${subscriptionLicenseLink}">
