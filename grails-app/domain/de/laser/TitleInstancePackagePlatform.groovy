@@ -45,6 +45,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
 
     String firstAuthor
     String firstEditor
+    String publisherName
 
     Integer editionNumber
     String  editionStatement
@@ -101,7 +102,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
   static mapping = {
                 id column:'tipp_id'
          globalUID column:'tipp_guid'
-        // rectype column:'tipp_rectype'
            version column:'tipp_version'
                pkg column:'tipp_pkg_fk',    index: 'tipp_idx'
           platform column:'tipp_plat_fk',   index: 'tipp_idx'
@@ -111,6 +111,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
               name column:'tipp_name', type: 'text'
           sortName column:'tipp_sort_name', type: 'text'
           normName column:'tipp_norm_name', type: 'text'
+     publisherName column:'tipp_publisher_name', type: 'text'
         seriesName column:'tipp_series_name', type: 'text'
            imprint column:'tipp_imprint', type: 'text'
   subjectReference column:'tipp_subject_reference', type: 'text'
@@ -153,6 +154,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         normName    (nullable:true)
         seriesName  (nullable:true)
         imprint     (nullable:true)
+       publisherName(nullable:true)
     subjectReference(nullable:true)
         titleType   (nullable:true)
         medium      (nullable:true)

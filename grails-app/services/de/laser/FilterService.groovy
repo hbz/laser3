@@ -1140,7 +1140,7 @@ class FilterService {
         }
 
         if (params.publishers) {
-            base_qry += "and exists (select orgRole from OrgRole orgRole where orgRole.tipp = ie.tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) "
+            base_qry += "and (exists (select orgRole from OrgRole orgRole where orgRole.tipp = ie.tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) or lower(ie.tipp.publisherName) in (:publishers) ) "
             qry_params.publishers = params.list('publishers').collect {it }
             filterSet = true
         }
@@ -1160,7 +1160,7 @@ class FilterService {
             else
                 base_qry += "order by ie.${params.sort} ${params.order} "
         }
-        else {
+        else if(!params.forCount){
             base_qry += "order by lower(ie.tipp.name) asc"
         }
 
@@ -1283,8 +1283,8 @@ class FilterService {
         }
 
         if (params.publishers) {
-            base_qry += "and exists (select orgRole from OrgRole orgRole where orgRole.tipp = tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) "
-            qry_params.publishers = params.list('publishers').collect {it }
+            base_qry += "and (exists (select orgRole from OrgRole orgRole where orgRole.tipp = tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) or (lower(tipp.publisherName)) in (:publishers)) "
+            qry_params.publishers = params.list('publishers').collect { it }
             filterSet = true
         }
 

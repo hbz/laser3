@@ -2,13 +2,13 @@
 <laser:serviceInjection />
 <g:if test="${controllerName == 'package'}">
     <g:set var="seriesNames"
-           value="${packageInstance ? controlledListService.getAllPossibleSeriesByPackage(packageInstance) : []}"/>
+           value="${packageInstance ? controlledListService.getAllPossibleSeriesByPackage(packageInstance,actionName) : []}"/>
     <g:set var="subjects"
-           value="${packageInstance ? controlledListService.getAllPossibleSubjectsByPackage(packageInstance) : []}"/>
+           value="${packageInstance ? controlledListService.getAllPossibleSubjectsByPackage(packageInstance,actionName) : []}"/>
     <g:set var="yearsFirstOnline"
-           value="${packageInstance ? controlledListService.getAllPossibleDateFirstOnlineYearByPackage(packageInstance) : []}"/>
+           value="${packageInstance ? controlledListService.getAllPossibleDateFirstOnlineYearByPackage(packageInstance,actionName) : []}"/>
     <g:set var="publishers"
-           value="${packageInstance ? controlledListService.getAllPossiblePublisherByPackage(packageInstance) : []}"/>
+           value="${packageInstance ? controlledListService.getAllPossiblePublisherByPackage(packageInstance,actionName) : []}"/>
 </g:if>
 
 <g:if test="${controllerName == 'subscription'}">

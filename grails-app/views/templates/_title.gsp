@@ -213,14 +213,17 @@
     </g:if>
 
     <g:set var="publishers" value="${tipp.getPublishers()}"/>
-    <g:if test="${(publishers || showEmptyFields)}">
+    <g:if test="${(publishers || showEmptyFields || tipp.publisherName)}">
         <div class="item">
             <i class="grey university icon la-popup-tooltip la-delay"
                data-content="${message(code: 'tipp.publisher')}"></i>
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'tipp.publisher') + ':'}
-                <g:if test="${publishers}">
+                <g:if test="${tipp.publisherName}">
+                    ${tipp.publisherName}
+                </g:if>
+                <g:elseif test="${publishers}">
                     <div class="ui list">
                         <g:each in="${publishers}" var="publisher">
 
@@ -238,7 +241,7 @@
 
                         </g:each>
                     </div>
-                </g:if>
+                </g:elseif>
             </div>
         </div>
     </g:if>
