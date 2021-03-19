@@ -25,7 +25,6 @@ class GenericConfig {
     static String CUSTOM_KEY_ORG_TYPE           = 'orgType'
     static String CUSTOM_KEY_CUSTOMER_TYPE      = 'customerType'
     static String CUSTOM_KEY_LEGAL_INFO         = 'legalInfo'
-    // - XYZ - static String CUSTOM_KEY_PLATFORMS          = 'platforms'
 
     static Map<String, String> FILTER = [
 
@@ -83,12 +82,5 @@ class GenericConfig {
                         [id: 3, value_de: 'Organisiert durch (exklusive)']              // ui icon red question mark
             ]]
         }
-        /* - XYZ - else if (key == CUSTOM_KEY_PLATFORMS) {
-            List<Platform> platforms = Platform.executeQuery('select plt from Platform plt order by plt.normname ')
-            return [
-                    label: 'Plattform',
-                    from: platforms.collect{[ id: it.id, value_de: it.name ] }
-            ]
-        } */
     }
 }

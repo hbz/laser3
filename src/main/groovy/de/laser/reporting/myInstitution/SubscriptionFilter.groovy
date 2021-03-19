@@ -240,13 +240,6 @@ class SubscriptionFilter extends GenericFilter {
                         Map<String, Object> customRdv = GenericConfig.getCustomRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de
                     }
-                    /* - XYZ - else if (p == GenericConfig.CUSTOM_KEY_PLATFORMS) {
-                        queryBase = queryBase + ' join org.platforms plt'
-                        whereParts.add( 'plt.id = :p' + (++pCount))
-                        queryParams.put('p' + pCount, params.long(key))
-
-                        Map<String, Object> customRdv = GenericConfig.getCustomRefdata(p)
-                    } */
                 }
 
                 if (filterLabelValue) {

@@ -120,8 +120,7 @@ class SubscriptionConfig extends GenericConfig {
                     ],
                     fields : [
                             'country'   : GenericConfig.FIELD_TYPE_REFDATA,
-                            // - XYZ - 'platforms' : GenericConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'orgType'   : GenericConfig.FIELD_TYPE_REFDATA_RELTABLE,
+                            'orgType'   : GenericConfig.FIELD_TYPE_REFDATA_RELTABLE
                     ],
                     filter : [
                             default: [
