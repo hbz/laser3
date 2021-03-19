@@ -55,7 +55,7 @@ class SubscriptionConfig extends GenericConfig {
                                     ],
                                     'subscription-platform-assignment' : [
                                             label : 'Lizenz → Anbieter → Plattform',
-                                            chartLabels : []
+                                            chartLabels : [ 'Ermittelt durch Bestand', 'Zuordnung über Anbieter' ]
                                     ],
                                     'subscription-property-assignment' : [
                                             label : 'Lizenz → Merkmale (eigene/öffentliche)',

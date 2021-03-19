@@ -28,12 +28,12 @@ class GenericQuery {
         meta
     }
 
-    static List findDataDetailsIdListById(Long id, List<Map<String, Object>> idList) {
-        List result =[]
+    static Object getDataDetailsByIdAndKey(Long id, String key, List<Map<String, Object>> idList) {
+        def result
 
         idList.each{ it ->
             if (it.id == id) {
-                result = it.idList
+                result = it.get(key)
                 return
             }
         }
@@ -80,14 +80,17 @@ class GenericQuery {
                 [idList: idList]
         )
         result.data.each { d ->
+            List<Long> objIdList = Org.executeQuery(
+                    dataDetailsHqlPart + " and ns.id = :d and ident.value is not null and trim(ident.value) != ''",
+                    [idList: idList, d: d[0]]
+            )
             result.dataDetails.add([
                     query : query,
                     id    : d[0],
                     label : d[1],
-                    idList: Org.executeQuery(
-                            dataDetailsHqlPart + " and ns.id = :d and ident.value is not null and trim(ident.value) != ''",
-                            [idList: idList, d: d[0]]
-                    )
+                    idList: objIdList,
+                    value1: objIdList.size(),
+                    value2: objIdList.unique().size()
             ])
         }
     }
@@ -101,14 +104,17 @@ class GenericQuery {
         result.data.each { d ->
             d[1] = PropertyDefinition.get(d[0]).getI10n('name').replaceAll("'", '"')
 
+            List<Long> objIdList =  Org.executeQuery(
+                    dataDetailsHqlPart + ' and (prop.tenant = :ctxOrg or prop.isPublic = true) and pd.id = :d order by pd.name',
+                    [idList: idList, d: d[0], ctxOrg: ctxOrg]
+            )
             result.dataDetails.add([
                     query : query,
                     id    : d[0],
                     label : d[1],
-                    idList: Org.executeQuery(
-                            dataDetailsHqlPart + ' and (prop.tenant = :ctxOrg or prop.isPublic = true) and pd.id = :d order by pd.name',
-                            [idList: idList, d: d[0], ctxOrg: ctxOrg]
-                    )
+                    idList: objIdList,
+                    value1: objIdList.size(),
+                    value2: objIdList.unique().size()
             ])
         }
     }

@@ -7,8 +7,8 @@
     JSPC.app.reporting.current.chart.option = {
         dataset: {
             source: [
-                ['id', 'name', 'valueMatches', 'valueObjects' ],
-                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}, ${GenericQuery.findDataDetailsIdListById( it[0], dataDetails).unique().size()}]," } %>
+                ['id', 'name', 'value1', 'value2' ],
+                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1]}', ${GenericQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${GenericQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails)}]," } %>
             ]
         },
         tooltip: {
@@ -32,7 +32,7 @@
                 center: ['65%', '50%'],
                 encode: {
                     itemName: 'name',
-                    value: 'valueMatches',
+                    value: 'value2',
                     id: 'id'
                 },
                 emphasis: JSPC.app.reporting.helper.series.pie.emphasis
@@ -45,8 +45,8 @@
     JSPC.app.reporting.current.chart.option = {
         dataset: {
             source: [
-                ['id', 'name', 'valueMatches', 'valueObjects'],
-                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}, ${GenericQuery.findDataDetailsIdListById( it[0], dataDetails).unique().size() * -1}]," } %>
+                ['id', 'name', 'value1', 'value2'],
+                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1]}', ${GenericQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${GenericQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails) * -1}]," } %>
             ]
         },
         legend: {
@@ -101,7 +101,7 @@
                     }
                 },
                 encode: {
-                    x: 'valueObjects',
+                    x: 'value2',
                     y: 'name'
                 }
             },
@@ -111,10 +111,13 @@
                 stack: 'total',
                 label: {
                     show: true,
-                    position: 'right'
+                    position: 'right',
+                    formatter (params) {
+                        return Math.abs(params.value[2])
+                    }
                 },
                 encode: {
-                    x: 'valueMatches',
+                    x: 'value1',
                     y: 'name'
                 }
             }
