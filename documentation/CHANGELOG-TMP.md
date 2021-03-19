@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3246    19.03.2021  rc2.0   2.0.5       Andreas Bug         Meine Lizenzen lädt nur noch beidseitig belegte Verknüpfungen
+
 3239    19.03.2021  rc2.0   2.0.5       Andreas Bug         Filter erweitert und angepasst
 
 3238    19.03.2021  rc2.0   2.0.5       Andreas Bug         irrtümliche Selbstbenachrichtigung bei Kostenkopie-Änderung behoben
