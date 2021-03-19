@@ -94,13 +94,13 @@
         </laser:script>
 
         <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
-            <p>Unbekannter Fehler.</p>
+            <p>${message(code:'reporting.modal.error')}</p>
         </semui:modal>
         <semui:modal id="reporting-modal-nodata" text="REPORTING" hideSubmitButton="true">
-            <p>Diese Anfrage liefert keine Daten.</p>
+            <p>${message(code:'reporting.modal.nodata')}</p>
         </semui:modal>
         <semui:modal id="reporting-modal-nodetails" text="REPORTING" hideSubmitButton="true">
-            <p>Es sind leider keine Details verfügbar.</p>
+            <p>${message(code:'reporting.modal.nodetails')}</p>
         </semui:modal>
 
 </body>

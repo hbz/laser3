@@ -9,9 +9,9 @@
         <tr>
             <th></th>
             <th>${message(code:'org.sortname.label')}</th>
-            <th>${labels.first().trim()}</th>
+            %{-- TODO --}%<th>${(labels.first().trim() != 'Verteilung') ? labels.first().trim() : 'Name'}</th>%{-- TODO --}%
             <g:if test="${query == 'org-property-assignment'}">
-                <th>Merkmalswert</th>
+                <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
             <g:elseif test="${query == 'org-identifier-assignment'}">
                 <th>${message(code:'identifier.label')}</th>
