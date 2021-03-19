@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Subscription; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty; de.laser.reporting.myInstitution.OrganisationConfig;de.laser.reporting.myInstitution.SubscriptionConfig;" %>
+<%@ page import="de.laser.Org; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Subscription; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty; de.laser.reporting.myInstitution.OrganisationConfig;de.laser.reporting.myInstitution.SubscriptionConfig;" %>
 <laser:serviceInjection />
 
 <g:render template="/myInstitution/reporting/details/base.part1" />
@@ -10,13 +10,16 @@
             <th></th>
             <th>${message(code:'subscription.label')}</th>
             <g:if test="${query == 'subscription-property-assignment'}">
-                <th>Merkmalswert</th>
+                <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
+            <g:elseif test="${query == 'subscription-platform-assignment'}">
+                <th>${message(code:'default.provider.label')}</th>
+            </g:elseif>
             <g:elseif test="${query == 'subscription-identifier-assignment'}">
-                <th>Identifikator</th>
+                <th>${message(code:'identifier.label')}</th>
             </g:elseif>
             <g:else>
-                <th>Teilnehmer</th>
+                <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
             </g:else>
             <th>${message(code:'subscription.startDate.label')}</th>
             <th>${message(code:'subscription.endDate.label')}</th>
@@ -48,6 +51,18 @@
                             %>
                         </td>
                     </g:if>
+                    <g:elseif test="${query == 'subscription-platform-assignment'}">
+                    <td>
+                        <%
+                            List<Org> providerList =  Org.executeQuery('select ro.org from OrgRole ro where ro.sub.id = :id and ro.roleType in (:roleTypes)',
+                                    [id: sub.id, roleTypes: [RDStore.OR_PROVIDER]]
+                            )
+                            providerList.each{ p ->
+                                println g.link( p.name, controller: 'organisation', action: 'show', id: p.id, ) + '<br />'
+                            }
+                        %>
+                    </td>
+                    </g:elseif>
                     <g:elseif test="${query == 'subscription-identifier-assignment'}">
                         <td>
                             <%

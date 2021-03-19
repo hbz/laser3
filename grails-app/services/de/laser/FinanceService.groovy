@@ -139,7 +139,7 @@ class FinanceService {
                 if(params.costItemId && params.mode != 'copy') {
                     newCostItem = CostItem.get(Long.parseLong(params.costItemId))
                     //get copied cost items
-                    copiedCostItems = CostItem.findAllByCopyBaseAndCostItemStatusNotEqual(newCostItem, RDStore.COST_ITEM_DELETED)
+                    copiedCostItems = CostItem.findAllByCopyBaseAndCostItemStatusNotEqualAndOwnerNotEqual(newCostItem, RDStore.COST_ITEM_DELETED, result.institution)
                     if(params.newOrderNumber == null || params.newOrderNumber.length() < 1) {
                         CostItem costItemWithOrder = CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(newCostItem.order,newCostItem.id,RDStore.COST_ITEM_DELETED)
                         if(!costItemWithOrder)

@@ -437,17 +437,17 @@ class PackageController {
             result.processingpc = true
         }
 
-        result.pendingChanges = PendingChange.executeQuery(
+        /*result.pendingChanges = PendingChange.executeQuery(
                 "select pc from PendingChange as pc where pc.pkg = :pkg and ( pc.status is null or pc.status = :status ) order by ts, payload",
                 [pkg: packageInstance, status: RDStore.PENDING_CHANGE_PENDING]
-        )
+        )*/
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         Map<String, Object> query = filterService.getTippQuery(params, [packageInstance])
         result.filterSet = query.filterSet
 
-        List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.query, query.queryParams)
+        List<Long> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp.id " + query.query, query.queryParams)
 
         String filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
 
@@ -455,7 +455,7 @@ class PackageController {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = exportService.generateTitleExportKBART(titlesList)
+            Map<String, List> tableData = titlesList ? exportService.generateTitleExportKBART(TitleInstancePackagePlatform.findAllByIdInList(titlesList)) : []
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -464,7 +464,7 @@ class PackageController {
         } else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String, List> export = exportService.generateTitleExportXLS(titlesList)
+            Map<String, List> export = titlesList ? exportService.generateTitleExportXLS(TitleInstancePackagePlatform.findAllByIdInList(titlesList)) : []
             Map sheetData = [:]
             sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -476,7 +476,7 @@ class PackageController {
         withFormat {
             html {
 
-                result.titlesList = titlesList.drop(result.offset).take(result.max)
+                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max)) : []
                 result.num_tipp_rows = titlesList.size()
 
                 result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
@@ -487,7 +487,7 @@ class PackageController {
                 response.contentType = "text/csv"
 
                 ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = exportService.generateTitleExportCSV(titlesList)
+                Map<String, List> tableData = titlesList ? exportService.generateTitleExportCSV(TitleInstancePackagePlatform.findAllByIdInList(titlesList)) : []
                 out.withWriter { writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.rows, ';'))
                 }

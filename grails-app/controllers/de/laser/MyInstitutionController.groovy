@@ -1020,12 +1020,13 @@ join sub.orgRelations or_sub where
 		pu.setBenchmark('init')
 
         Set<RefdataValue> orgRoles = []
-
+        String instanceFilter = ""
         List<String> queryFilter = []
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
             orgRoles << RDStore.OR_SUBSCRIPTION_CONSORTIA
             queryFilter << " sub.instanceOf is null "
+            instanceFilter += "and sub.instanceOf is null"
         }
         else {
             orgRoles << RDStore.OR_SUBSCRIBER
@@ -1110,11 +1111,6 @@ join sub.orgRelations or_sub where
             queryFilter << "tipp.platform in (" + filterHostPlat.join(", ") + ")"
         }
 
-        if (filterPvd) {
-            qryParams.cprole = RDStore.OR_CONTENT_PROVIDER
-            queryFilter << "oo.roleType in :cpRole and oo.org IN (" + filterPvd.join(", ") + ")"
-        }
-
         //String havingClause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
 
         String orderByClause
@@ -1129,7 +1125,18 @@ join sub.orgRelations or_sub where
             qryString += ' and '+queryFilter.join(' and ')
 
         Set<Long> currentIssueEntitlements = IssueEntitlement.executeQuery(qryString+' group by tipp, ie.id',qryParams)
+        //second filter needed because double-join on same table does deliver me empty results
+        if (filterPvd) {
+            currentIssueEntitlements = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") and ie.id in (:currentIEs)",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER],currentIEs:currentIssueEntitlements])
+        }
         Set<TitleInstancePackagePlatform> allTitles = currentIssueEntitlements ? TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) '+orderByClause,[ids:currentIssueEntitlements],[max:result.max,offset:result.offset]) : []
+        result.subscriptions = Subscription.executeQuery('select sub from Subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and sub.status = :current '+instanceFilter+" order by sub.name asc",[
+                institution: result.institution,
+                current: RDStore.SUBSCRIPTION_CURRENT,
+                orgRoles: orgRoles])
+        Set<Long> allIssueEntitlements = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription in (:currentSubs)',[currentSubs:result.subscriptions])
+        result.providers = Org.executeQuery('select org.id,org.name from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo join oo.org org where ie.id in (:currentIEs) group by org.id order by org.name asc',[currentIEs:allIssueEntitlements])
+        result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.id in (:currentIEs) group by plat.id order by plat.name asc',[currentIEs:allIssueEntitlements])
         result.num_ti_rows = currentIssueEntitlements.size()
         result.titles = allTitles
 

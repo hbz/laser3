@@ -2,7 +2,9 @@ package de.laser.reporting.myInstitution
 
 import de.laser.ContextService
 import de.laser.Org
-import de.laser.reporting.myInstitution.GenericQuery
+import de.laser.Platform
+import de.laser.TitleInstancePackagePlatform
+import de.laser.helper.RDStore
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -57,6 +59,44 @@ class SubscriptionQuery extends GenericQuery {
                                 'select s.id from Subscription s join s.orgRelations orgRel join orgRel.org o where s.id in (:idList) and o.id = :d order by s.name',
                                 [idList: idList, d: d[0]]
                         )
+                ])
+            }
+        }
+        else if ( params.query in ['subscription-platform-assignment']) {
+
+            result.data = Platform.executeQuery(
+                    'select p.id, p.name, count(*) from Org o join o.platforms p join o.links orgLink where o.id in (:providerIdList) and orgLink.sub.id in (:idList) group by p.id order by p.name',
+                    [providerIdList: params.list('providerIdList').collect { it as Long }, idList: idList]
+            )
+
+            result.data.eachWithIndex { d, i ->
+                List<Long> subIdList = Platform.executeQuery(
+                        'select s.id from Subscription s join s.orgRelations orgRel join orgRel.org o join o.platforms p where s.id in (:idList) and p.id = :d order by s.name',
+                        [idList: idList, d: d[0]]
+                )
+                List<Long> positiveList = []
+
+                // Subscriptions with existing tipps -> platform
+                subIdList.each { subId ->
+                    List<Long> pltIdList = TitleInstancePackagePlatform.executeQuery(
+                            'select distinct tipp.platform.id from IssueEntitlement ie join ie.tipp tipp where ie.subscription.id = :subId and ie.status = :status and ie.acceptStatus = :acceptStatus',
+                            [subId: subId, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED]
+                    )
+                    if (pltIdList[0] == d[0]) {
+                        positiveList.add(subId)
+                    }
+                }
+
+                result.dataDetails.add([
+                        query : params.query,
+                        id    : d[0],
+                        label : d[1],
+                        idList: Platform.executeQuery(
+                                'select s.id from Subscription s join s.orgRelations orgRel join orgRel.org o join o.platforms p where s.id in (:idList) and p.id = :d order by s.name',
+                                [idList: idList, d: d[0]]
+                        ),
+                        value2: positiveList.size(),
+                        value1: (subIdList - positiveList).size()
                 ])
             }
         }

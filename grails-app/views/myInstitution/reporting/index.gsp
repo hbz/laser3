@@ -22,21 +22,16 @@
 
         <div class="ui message info">
             <p>
-                <strong>1. Suchanfrage</strong>
-                <br />
-                Erstellen Sie eine Suchanfrage anhand kombinierbarer Filter.
-                Verschiedene Einstiegspunkte ermöglichen eine individuelle Zusammenstellung Ihrer Daten.
+                <strong>${message(code:'reporting.macro.step1')}</strong> <br />
+                ${message(code:'reporting.macro.info1')}
             </p>
             <p>
-                <strong>2. Ergebnis</strong>
-                <br />
-                Die in Schritt 1 erzeugte Ergebnismenge kann durch vordefinierte Abfragen
-                untersucht und visualisiert werden.
+                <strong>${message(code:'reporting.macro.step2')}</strong> <br />
+                ${message(code:'reporting.macro.info2')}
             </p>
             <p>
-                <strong>3. Details</strong>
-                <br />
-                Die in Schritt 2 erzeugte Visualisierung ist interaktiv und bietet Zugriff auf weitere Informationen.
+                <strong>${message(code:'reporting.macro.step3')}</strong> <br />
+                ${message(code:'reporting.macro.info3')}
             </p>
         </div>
 
@@ -44,7 +39,7 @@
             ${filterHistory}
         </g:if> --}%
 
-        <h3 class="ui header">1. Suchanfrage</h3>
+        <h3 class="ui header">${message(code:'reporting.macro.step1')}</h3>
 
         <g:set var="hidden" value="hidden" />
 
@@ -52,7 +47,7 @@
             <div class="ui segment form">
                 <div class="fields two">
                     <div class="field">
-                        <label for="filter-chooser">Einstiegspunkt</label>
+                        <label for="filter-chooser">${message(code:'reporting.filter.base')}</label>
                         <g:select name="filter-chooser"
                                   from="${cfgFilterList}"
                                   optionKey="key"
@@ -88,7 +83,7 @@
         <g:render template="/templates/reporting/helper" />
 
         <g:if test="${result}">
-            <h3 class="ui header">2. Ergebnis</h3>
+            <h3 class="ui header">${message(code:'reporting.macro.step2')}</h3>
 
             <g:if test="${filter == LicenseConfig.KEY}">
                 <g:render template="/myInstitution/reporting/query/license" />
@@ -204,13 +199,13 @@
         </laser:script>
 
         <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
-            <p>Unbekannter Fehler.</p>
+            <p>${message(code:'reporting.modal.error')}</p>
         </semui:modal>
         <semui:modal id="reporting-modal-nodata" text="REPORTING" hideSubmitButton="true">
-            <p>Diese Anfrage liefert keine Daten.</p>
+            <p>${message(code:'reporting.modal.nodata')}</p>
         </semui:modal>
         <semui:modal id="reporting-modal-nodetails" text="REPORTING" hideSubmitButton="true">
-            <p>Es sind leider keine Details verfügbar.</p>
+            <p>${message(code:'reporting.modal.nodetails')}</p>
         </semui:modal>
 
     </body>

@@ -8,14 +8,17 @@
         <thead>
         <tr>
             <th></th>
-            <th>Sortiername</th>
-            <th>${labels.first().trim()}</th>
+            <th>${message(code:'org.sortname.label')}</th>
+            %{-- TODO --}%<th>${(labels.first().trim() != 'Verteilung') ? labels.first().trim() : 'Name'}</th>%{-- TODO --}%
             <g:if test="${query == 'org-property-assignment'}">
-                <th>Merkmalswert</th>
+                <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
             <g:elseif test="${query == 'org-identifier-assignment'}">
-                <th>Identifikator</th>
+                <th>${message(code:'identifier.label')}</th>
             </g:elseif>
+            <g:if test="${query.startsWith('provider-')}">
+                <th>${message(code:'org.platforms.label')}</th>
+            </g:if>
         </tr>
         </thead>
         <tbody>
@@ -52,6 +55,13 @@
                             %>
                         </td>
                     </g:elseif>
+                    <g:if test="${query.startsWith('provider-')}">
+                        <td>
+                            <g:each in="${org.platforms}" var="plt">
+                                <g:link controller="platform" action="show" id="${plt.id}" target="_blank">${plt.name}</g:link><br/>
+                            </g:each>
+                        </td>
+                    </g:if>
                 </tr>
             </g:each>
         </tbody>

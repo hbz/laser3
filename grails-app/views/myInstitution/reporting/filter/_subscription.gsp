@@ -5,8 +5,8 @@
 
         <div class="menu ui top attached tabular">
             <a class="active item" data-tab="sub-filter-tab-1">${message(code:'subscription.plural')}</a>
-            <a class="item" data-tab="sub-filter-tab-2">Teilnehmer</a>
-            <a class="item" data-tab="sub-filter-tab-3">Anbieter</a>
+            <a class="item" data-tab="sub-filter-tab-2">${message(code:'subscription.details.consortiaMembers.label')}</a>
+            <a class="item" data-tab="sub-filter-tab-3">${message(code:'default.provider.label')}</a>
         </div><!-- .menu -->
         <div class="ui bottom attached active tab segment" data-tab="sub-filter-tab-1">
             <div class="field">
@@ -32,7 +32,7 @@
 
         <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-2">
             <div class="field">
-                <label for="filter:member_source">Teilnehmerauswahl</label>
+                <label for="filter:member_source">${message(code:'reporting.filter.member.source')}</label>
                 <g:set var="config" value="${SubscriptionConfig.CONFIG.member}" />
                 <g:select name="filter:member_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:member_source')}" />
             </div>
@@ -49,7 +49,7 @@
 
         <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-3">
             <div class="field">
-                <label for="filter:provider_source">Anbieterauswahl</label>
+                <label for="filter:provider_source">${message(code:'reporting.filter.provider.source')}</label>
                 <g:set var="config" value="${SubscriptionConfig.CONFIG.provider}" />
                 <g:select name="filter:provider_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:provider_source')}" />
             </div>
