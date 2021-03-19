@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      18.03.2021  rc2.0   2.0.5       Andreas Bug         weitere Ausbesserungen an Performance, Übernahme von publisherName, neue Identifier-Namespaces ZDB-ID, DNB-ID für Lizenzen, Namenskorrektur EZB Kollektions_ID
+
 3159    17.03.2021  rc2.0   2.0.5       Andreas Bug         Filter in "Meine Titel" überarbeitet
 
 3224    17.03.2021  rc2.0   2.0.5       Andreas Bug         Bestände mit Titelgruppen konnten nicht geladen werden

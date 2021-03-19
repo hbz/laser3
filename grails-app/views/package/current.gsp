@@ -73,10 +73,10 @@
 <g:render template="nav"/>
 
 
-<sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">
+<%--<sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">
     <g:render template="/templates/pendingChanges"
               model="${['pendingChanges': pendingChanges, 'flash': flash, 'model': packageInstance]}"/>
-</sec:ifAnyGranted>
+</sec:ifAnyGranted>--%>
 
 
 <semui:messages data="${flash}"/>
