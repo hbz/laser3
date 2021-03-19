@@ -10,10 +10,10 @@
             <th></th>
             <th>${message(code:'subscription.label')}</th>
             <g:if test="${query == 'subscription-property-assignment'}">
-                <th>Merkmalswert</th>
+                <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
             <g:elseif test="${query == 'subscription-platform-assignment'}">
-                <th>Anbieter</th>
+                <th>${message(code:'default.provider.label')}</th>
             </g:elseif>
             <g:elseif test="${query == 'subscription-identifier-assignment'}">
                 <th>${message(code:'identifier.label')}</th>
