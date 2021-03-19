@@ -1,5 +1,6 @@
 package de.laser.reporting.myInstitution
 
+import de.laser.Platform
 import de.laser.RefdataCategory
 import de.laser.auth.Role
 import de.laser.helper.RDConstants
