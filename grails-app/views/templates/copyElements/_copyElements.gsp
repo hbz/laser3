@@ -603,6 +603,81 @@
                     </g:if>
                 </tr>
             </g:if>
+            <g:if test="${sourceLinks}">
+                <tr>
+                    <td name="copyObject.takeLink.source">
+                        <div>
+                            <strong><i class="exchange icon"></i>&nbsp
+                                <g:if test="${sourceObject instanceof Subscription}">${message(code: 'subscription.linkedObjects')}</g:if>
+                                <g:elseif test="${sourceObject instanceof License}">${message(code: 'license.linkedObjects')}</g:elseif>:
+                            </strong><br />
+                            <g:each in="${sourceLinks}" var="link">
+                                <%
+                                    int perspectiveIndex
+                                    if(sourceObject in [link.sourceSubscription, link.sourceLicense])
+                                        perspectiveIndex = 0
+                                    else if(sourceObject in [link.destinationSubscription, link.destinationLicense])
+                                        perspectiveIndex = 1
+                                %>
+                                <div data-oid="${genericOIDService.getOID(link)}">
+                                    <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp${link.getOther(sourceObject)}<br />
+                                </div>
+                            </g:each>
+                        </div>
+                    </td>
+                    <g:if test="${isConsortialObjects}">
+                        <td class="center aligned">
+                        </td>
+                    </g:if>
+
+                %{--COPY:--}%
+                    <td class="center aligned">
+                        <g:each in="${sourceLinks}" var="link">
+                            <div class="la-element">
+                                <div class="ui checkbox la-toggle-radio la-replace">
+                                    <g:checkBox name="copyObject.takeLinks" value="${genericOIDService.getOID(link)}"
+                                                data-action="copy"/>
+                                </div>
+                            </div>
+                            <br />
+                        </g:each>
+                    </td>
+                    <g:if test="${!copyObject}">
+                        <td name="copyObject.takeLink.target">
+                            <div>
+                                <strong><i class="exchange icon"></i>&nbsp
+                                    <g:if test="${sourceObject instanceof Subscription}">${message(code: 'subscription.linkedObjects')}</g:if>
+                                    <g:elseif test="${sourceObject instanceof License}">${message(code: 'license.linkedObjects')}</g:elseif>:
+                                </strong><br />
+                                <g:each in="${targetLinks}" var="link">
+                                    <%
+                                        //perspectiveIndex already defined for source links
+                                        if(targetObject in [link.sourceSubscription, link.sourceLicense])
+                                            perspectiveIndex = 0
+                                        else if(targetObject in [link.destinationSubscription, link.destinationLicense])
+                                            perspectiveIndex = 1
+                                    %>
+                                    <div data-oid="${genericOIDService.getOID(link)}">
+                                        <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp${link.getOther(targetObject)}<br />
+                                    </div>
+                                </g:each>
+                            </div>
+                        </td>
+                    %{--DELETE:--}%
+                        <td>
+                            <g:each in="${targetLinks}" var="link">
+                                <div class="la-element">
+                                    <div class="ui checkbox la-toggle-radio la-noChange">
+                                        <g:checkBox name="copyObject.deleteLinks" value="${genericOIDService.getOID(link)}"
+                                                    data-action="delete" checked="${false}"/>
+                                    </div>
+                                </div>
+                                <br />
+                            </g:each>
+                        </td>
+                    </g:if>
+                </tr>
+            </g:if>
             </tbody>
         </table>
         <g:set var="submitButtonText" value="${isRenewSub ?
@@ -655,7 +730,9 @@
                 $takeSpecificSubscriptionEditors: $('input:checkbox[name="subscription.takeSpecificSubscriptionEditors"]'),
                 $deleteSpecificSubscriptionEditors: $('input:checkbox[name="subscription.deleteSpecificSubscriptionEditors"]'),
                 $takeIdentifier: $('input:checkbox[name="copyObject.takeIdentifierIds"]'),
-                $deleteIdentifier: $('input:checkbox[name="copyObject.deleteIdentifierIds"]')
+                $deleteIdentifier: $('input:checkbox[name="copyObject.deleteIdentifierIds"]'),
+                takeLinks: $('input:checkbox[name="copyObject.takeLinks"]'),
+                deleteLinks: $('input:checkbox[name="copyObject.deleteLinks"]')
             },
 
             init: function () {
@@ -663,43 +740,51 @@
 
                 ref.$takeLicenses.change(function (event) {
                     JSPC.app.subCopyController.takeLicenses(this);
-                }).trigger('change')
+                }).trigger('change');
 
                 ref.$deleteLicenses.change(function (event) {
                     JSPC.app.subCopyController.deleteLicenses(this);
-                }).trigger('change')
+                }).trigger('change');
 
                 ref.$takeOrgRelations.change(function (event) {
                     JSPC.app.subCopyController.takeOrgRelations(this);
-                }).trigger('change')
+                }).trigger('change');
 
                 ref.$deleteOrgRelations.change(function (event) {
                     JSPC.app.subCopyController.deleteOrgRelations(this);
-                }).trigger('change')
+                }).trigger('change');
 
                 ref.$takeSpecificSubscriptionEditors.change(function (event) {
                     JSPC.app.subCopyController.takeSpecificSubscriptionEditors(this);
-                }).trigger('change')
+                }).trigger('change');
 
                 ref.$deleteSpecificSubscriptionEditors.change(function (event) {
                     JSPC.app.subCopyController.deleteSpecificSubscriptionEditors(this);
-                }).trigger('change')
+                }).trigger('change');
 
                 ref.$takeSpecificSubscriptionEditors.change(function (event) {
                     JSPC.app.subCopyController.takeSpecificSubscriptionEditors(this);
-                }).trigger('change')
+                }).trigger('change');
 
                 ref.$deleteSpecificSubscriptionEditors.change(function (event) {
                     JSPC.app.subCopyController.deleteSpecificSubscriptionEditors(this);
-                }).trigger('change')
+                }).trigger('change');
 
                 ref.$takeIdentifier.change(function (event) {
                     JSPC.app.subCopyController.takeIdentifier(this);
-                }).trigger('change')
+                }).trigger('change');
 
                 ref.$deleteIdentifier.change(function (event) {
                     JSPC.app.subCopyController.deleteIdentifier(this);
-                }).trigger('change')
+                }).trigger('change');
+
+                ref.$takeIdentifier.change(function (event) {
+                    JSPC.app.subCopyController.takeLinks(this);
+                }).trigger('change');
+
+                ref.$deleteIdentifier.change(function (event) {
+                    JSPC.app.subCopyController.deleteLinks(this);
+                }).trigger('change');
 
                 $("input:checkbox[name^='copyObject']").change(function () {
                     JSPC.app.subCopyController.checkCheckBoxesOfProperties(this);
@@ -785,6 +870,26 @@
                     $('.table tr td[name="copyObject.takeIdentifier.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
                 } else {
                     $('.table tr td[name="copyObject.takeIdentifier.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
+                }
+            },
+
+            takeLinks: function (elem) {
+                if (elem.checked) {
+                    $('.table tr td[name="copyObject.takeLink.source"] div div[data-oid="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr td[name="copyObject.takeLink.target"] div div').addClass('willStay');
+                } else {
+                    $('.table tr td[name="copyObject.takeLink.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
+                    if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeLinks') < 1) {
+                        $('.table tr td[name="copyObject.takeLink.target"] div div').removeClass('willStay');
+                    }
+                }
+            },
+
+            deleteLinks: function (elem) {
+                if (elem.checked) {
+                    $('.table tr td[name="copyObject.takeLink.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
+                } else {
+                    $('.table tr td[name="copyObject.takeLink.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
                 }
             },
 

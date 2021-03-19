@@ -93,6 +93,7 @@ class CopyElementsService {
             }
         }
 
+        Org contextOrg = contextService.getOrg()
         if (sourceObject instanceof Subscription) {
             result.sourceLicenses = License.executeQuery("select li.sourceLicense from Links li where li.destinationSubscription = :sub and li.linkType = :linkType order by li.sourceLicense.sortableReference asc", [sub: sourceObject, linkType: RDStore.LINKTYPE_LICENSE])
             if (targetObject) {
@@ -102,12 +103,22 @@ class CopyElementsService {
             // restrict visible for templates/links/orgLinksAsList
             result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(sourceObject)
             result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(targetObject)
+
+            result.sourceLinks = Links.executeQuery("select li from Links li where :sub in (li.sourceSubscription,li.destinationSubscription) and li.linkType != :linkType and owner = :context", [sub: sourceObject, linkType: RDStore.LINKTYPE_LICENSE, context: contextOrg])
+            if(targetObject) {
+                result.targetLinks = Links.executeQuery("select li from Links li where :sub in (li.sourceSubscription,li.destinationSubscription) and li.linkType != :linkType and owner = :context", [sub: targetObject, linkType: RDStore.LINKTYPE_LICENSE, context: contextOrg])
+            }
         }
 
         if (sourceObject instanceof License) {
             // restrict visible for templates/links/orgLinksAsList
             result.source_visibleOrgRelations = licenseService.getVisibleOrgRelations(sourceObject)
             result.target_visibleOrgRelations = licenseService.getVisibleOrgRelations(targetObject)
+
+            result.sourceLinks = Links.executeQuery("select li from Links li where :lic in (li.sourceLicense,li.destinationLicense) and li.linkType != :linkType and owner = :context", [lic: sourceObject, linkType: RDStore.LINKTYPE_LICENSE, context: contextOrg])
+            if(targetObject) {
+                result.targetLinks = Links.executeQuery("select li from Links li where :lic in (li.sourceLicense,li.destinationLicense) and li.linkType != :linkType and owner = :context", [lic: targetObject, linkType: RDStore.LINKTYPE_LICENSE, context: contextOrg])
+            }
         }
 
         result
@@ -123,8 +134,8 @@ class CopyElementsService {
 
         result.sourceObject = sourceObject
         result.targetObject = targetObject
-        result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.sourceObject)
-        result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.targetObject)
+        result.sourceTasks = taskService.getTasksByObject(result.sourceObject)
+        result.targetTasks = taskService.getTasksByObject(result.targetObject)
         result
     }
 
@@ -490,6 +501,18 @@ class CopyElementsService {
                 copyIdentifiers(sourceObject, toCopyIdentifiers, targetObject, flash)
                 //isTargetSubChanged = true
             }
+
+            if (params.list('copyObject.deleteLinks') && isBothObjectsSet(sourceObject, targetObject)) {
+                List<Links> toDeleteLinks = params.list('copyObject.deleteLinks').collect { genericOIDService.resolveOID(it) }
+                deleteLinks(toDeleteLinks, flash)
+                //isTargetSubChanged = true
+            }
+
+            if (params.list('copyObject.takeLinks') && isBothObjectsSet(sourceObject, targetObject)) {
+                List<Links> toCopyLinks = params.list('copyObject.takeLinks').collect { genericOIDService.resolveOID(it) }
+                copyLinks(sourceObject, toCopyLinks, targetObject, flash)
+                //isTargetSubChanged = true
+            }
         }
 
         /*if (isTargetSubChanged) {
@@ -846,6 +869,30 @@ class CopyElementsService {
         String attr = Identifier.getAttributeName(targetObject)
         int countDeleted = Identifier.executeUpdate('delete from Identifier i where i in (:toDeleteIdentifiers) and i.' + attr + ' = :reference',
                 [toDeleteIdentifiers: toDeleteIdentifiers, reference: targetObject])
+        Object[] args = [countDeleted]
+    }
+
+    void copyLinks(Object sourceObject, List<Links> toCopyLinks, Object targetObject, def flash) {
+        toCopyLinks.each { Links sourceLink ->
+            Map<String, Object> configMap = [owner: sourceLink.owner, linkType: sourceLink.linkType]
+            if(sourceObject == sourceLink.determineSource()) {
+                configMap.source = targetObject
+                configMap.destination = sourceLink.determineDestination()
+            }
+            if(sourceObject == sourceLink.determineDestination()) {
+                configMap.source = sourceLink.determineSource()
+                configMap.destination = targetObject
+            }
+
+            Links.construct(configMap)
+
+            //factoryResult.setFlashScopeByStatus(flash)
+        }
+    }
+
+    void deleteLinks(List<Links> toDeleteLinks, def flash) {
+        int countDeleted = Identifier.executeUpdate('delete from Links li where li in (:toDeleteLinks)',
+                [toDeleteLinks: toDeleteLinks])
         Object[] args = [countDeleted]
     }
 

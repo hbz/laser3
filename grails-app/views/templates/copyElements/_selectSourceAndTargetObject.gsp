@@ -159,7 +159,7 @@
         });
     }
 
-    JSPC.app.adjustDropdown()
+    JSPC.app.adjustDropdown();
 
     </laser:script>
 </g:if>

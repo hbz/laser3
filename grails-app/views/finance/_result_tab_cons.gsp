@@ -92,8 +92,7 @@
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <%-- editable must be checked here as well because of the consortia preview! --%>
-                <g:if test="${editable && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST","INST_EDITOR")}">
+                <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST","INST_EDITOR") && !params.orgBasicMemberView}">
                     <th class="la-action-info"><g:message code="default.actions.label"/></th>
                 </g:if>
             </g:else>
@@ -247,7 +246,7 @@
                     <td>
                         ${ci.costItemElement?.getI10n("value")}
                     </td>
-                    <g:if test="${editable}">
+                    <g:if test="${!params.orgBasicMemberView}">
                         <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_EDITOR")}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
