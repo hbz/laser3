@@ -1,4 +1,4 @@
-<h3 class="ui header">3. Details</h3>
+<h3 class="ui header">${message(code:'reporting.macro.step3')}</h3>
 
 <div class="ui right aligned">
     <button id="chart-export-button" class="ui icon button" disabled>

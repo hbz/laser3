@@ -33,7 +33,7 @@
         </g:each>
 
         <div class="field">
-            <label for="query-chooser">Visualisierung</label>
+            <label for="query-chooser">${message(code: 'reporting.query.chart')}</label>
             <g:select name="chart-chooser"
                       from="${cfgChartsList}"
                       optionKey="key"

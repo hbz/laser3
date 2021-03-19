@@ -10,7 +10,7 @@
                 <th></th>
                 <th>${message(code:'license.label')}</th>
                     <g:if test="${query == 'license-property-assignment'}">
-                        <th>Merkmalswert</th>
+                        <th>${message(code:'reporting.details.property.value')}</th>
                     </g:if>
                     <g:elseif test="${query == 'org-identifier-assignment'}">
                         <th>${message(code:'identifier.label')}</th>

@@ -130,7 +130,7 @@ class SubscriptionService {
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
         pu.setBenchmark('fetch licenses')
         if(subscriptions)
-            result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndLinkType(result.subscriptions,RDStore.LINKTYPE_LICENSE)
+            result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndSourceLicenseIsNotNullAndLinkType(result.subscriptions,RDStore.LINKTYPE_LICENSE)
         pu.setBenchmark('after licenses')
         List bm = pu.stopBenchmark()
         result.benchMark = bm
