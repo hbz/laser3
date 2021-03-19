@@ -30,6 +30,8 @@
                 type: 'pie',
                 radius: '70%',
                 center: ['65%', '50%'],
+                minAngle: 1,
+                minShowLabelAngle: 1,
                 encode: {
                     itemName: 'name',
                     value: 'value2',
