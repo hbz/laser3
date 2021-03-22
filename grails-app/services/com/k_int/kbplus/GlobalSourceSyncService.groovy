@@ -1009,7 +1009,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 result.name = packageRecord.name
                 result.packageStatus = packageStatus
                 result.listVerifiedDate = listVerifiedDate
-                result.packageListStatus = packageStatus
+                result.packageListStatus = packageListStatus
                 result.contentType = contentType
                 if(result.save()) {
                     if(packageRecord.nominalPlatformUuid) {
