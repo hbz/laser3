@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3217    22.03.2021  rc2.0   2.0.5       Andreas Bug         fehlende Tabellenüberschrift nachgetragen
+
 --      22.03.2021  rc2.0   2.0.5       Andreas Bug         Fehler behoben, der zu Speicherfehler der JDBC-Statements führte
 
 3248    22.03.2021  rc2.0   2.0.5       Andreas Bug         inkorrektes Laden von fälligen Terminen wegen falscher Benennung von Parameter
