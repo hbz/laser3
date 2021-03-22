@@ -7,6 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3217    22.03.2021  rc2.0   2.0.5       Andreas Bug         fehlende Tabellenüberschrift nachgetragen
+
+--      22.03.2021  rc2.0   2.0.5       Andreas Bug         Fehler behoben, der zu Speicherfehler der JDBC-Statements führte
+
+3248    22.03.2021  rc2.0   2.0.5       Andreas Bug         inkorrektes Laden von fälligen Terminen wegen falscher Benennung von Parameter
+
+3159    22.03.2021  rc2.0   2.0.5       Andreas Feature     Begrenzung der Lademenge von Lizenzen auf Lizenzen mit Titel
 
 3241    19.03.2021  rc2.0   2.0.5       Andreas Bug         korrekte Sortierung der Lizenzen zu einem Vertrag
 
