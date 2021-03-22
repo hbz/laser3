@@ -22,7 +22,7 @@
                 <g:sortableColumn property="ci.costItemStatus" title="${message(code:'default.status.label')}" params="[ownSort: true]"/>
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[ownSort: true]"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[ownSort: true]"/>
-                <th></th>
+                <th class="la-action-info"><g:message code="default.actions.label"/></th>
             </g:if>
             <g:else>
                 <th>${message(code:'sidewide.number')}</th>
