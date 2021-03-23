@@ -1211,7 +1211,8 @@ class CopyElementsService {
                     }
 
                     subscriptionPackage.getIssueEntitlementsofPackage().each { ie ->
-                        if (ie.status != RDStore.TIPP_STATUS_DELETED) {
+                        //deleted check on both levels here because there are issue entitlements pointing to TIPPs which have been removed from we:kb
+                        if (ie.status != RDStore.TIPP_STATUS_DELETED && ie.tipp.status != RDStore.TIPP_STATUS_DELETED) {
                             def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ie.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
                             if (list.size() > 0) {
                                 // mich gibts schon! Fehlermeldung ausgeben!
