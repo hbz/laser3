@@ -24,12 +24,12 @@ class FactService {
 
 
     // TODO make this configurable
-    static final Map preferedCostPerUseMetrics = [
+    Map preferedCostPerUseMetrics = [
         'Database' : ['result_click', 'record_view', 'search_reg'],
         'Journal' : ['ft_total']
     ]
 
-    static final Map costPerUseReportForDatatype = [
+    Map costPerUseReportForDatatype = [
         'Database' : 'DB1R4',
         'Journal' : 'JR1R4'
     ]
@@ -39,7 +39,7 @@ class FactService {
           'from Fact as f ' +
           'where f.factFrom >= :start and f.factTo <= :end and f.factType.value=:factType and f.factMetric.value=:metric and exists ' +
           '(select 1 from IssueEntitlement as ie INNER JOIN ie.tipp as tipp ' +
-          'where ie.subscription= :sub  and tipp.title = f.relatedTitle and ie.status.value!=:status) and f.inst = :inst'
+          'where ie.subscription= :sub  and tipp = f.relatedTitle and ie.status.value!=:status) and f.inst = :inst'
 
   static transactional = false
 
@@ -98,18 +98,18 @@ class FactService {
       result
     }
 
-  def getTotalCostPerUse(subscription, type, existingMetrics) {
+  def getTotalCostPerUse(Subscription subscription, String type, List existingMetrics) {
     if (!subscription.costItems){
       log.debug('No Costitems found for for this subscription')
       return null
     }
     // temp solution
-    if (type.value == 'EBook'){
+    if (type == 'EBook'){
       log.debug('CostPerUse not supported for EBooks')
       return null
     }
-    def preferedMetrics = preferedCostPerUseMetrics[type.value]
-    def report = costPerUseReportForDatatype[type.value]
+    def preferedMetrics = preferedCostPerUseMetrics[type]
+    def report = costPerUseReportForDatatype[type]
     def costPerUseMetric = preferedMetrics.findAll {
       existingMetrics.contains(it)
     }?.first()
@@ -344,7 +344,7 @@ class FactService {
           params['titleid'] = title_id
         } else {
           hql += ' and exists (select 1 from IssueEntitlement as ie INNER JOIN ie.tipp as tipp ' +
-              'where ie.subscription= :sub  and tipp.title = f.relatedTitle and ie.status.value!=:status)'
+              'where ie.subscription= :sub  and tipp = f.relatedTitle and ie.status.value!=:status)'
           params['sub'] = sub
         }
     hql += ' group by f.factType.value, f.reportingYear, f.reportingMonth, f.factMetric.value'

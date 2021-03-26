@@ -1124,10 +1124,10 @@ join sub.orgRelations or_sub where
         if(queryFilter)
             qryString += ' and '+queryFilter.join(' and ')
 
-        Set<Long> currentIssueEntitlements = IssueEntitlement.executeQuery(qryString+' group by tipp, ie.id',qryParams)
+        Set<Long> currentIssueEntitlements = IssueEntitlement.executeQuery(qryString+' group by tipp, ie.id order by ie.tipp.sortName asc',qryParams)
         //second filter needed because double-join on same table does deliver me empty results
         if (filterPvd) {
-            currentIssueEntitlements = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") and ie.id in (:currentIEs)",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER],currentIEs:currentIssueEntitlements])
+            currentIssueEntitlements = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") and ie.id in (:currentIEs) order by ie.tipp.sortName asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER],currentIEs:currentIssueEntitlements])
         }
         Set<TitleInstancePackagePlatform> allTitles = currentIssueEntitlements ? TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) '+orderByClause,[ids:currentIssueEntitlements],[max:result.max,offset:result.offset]) : []
         result.subscriptions = Subscription.executeQuery('select sub from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and sub.status = :current '+instanceFilter+" order by sub.name asc",[
@@ -1150,7 +1150,7 @@ join sub.orgRelations or_sub where
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String,List> tableData = exportService.generateTitleExportKBART(currentIssueEntitlements)
+            Map<String,List> tableData = exportService.generateTitleExportKBART(currentIssueEntitlements, IssueEntitlement.class.name)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
             }
@@ -1160,7 +1160,7 @@ join sub.orgRelations or_sub where
         else if(params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportXLS(currentIssueEntitlements)
+            Map<String,List> export = exportService.generateTitleExportXLS(currentIssueEntitlements, IssueEntitlement.class.name)
             Map sheetData = [:]
             sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -1179,7 +1179,7 @@ join sub.orgRelations or_sub where
                     response.contentType = "text/csv"
 
                     ServletOutputStream out = response.outputStream
-                    Map<String,List> tableData = exportService.generateTitleExportCSV(currentIssueEntitlements)
+                    Map<String,List> tableData = exportService.generateTitleExportCSV(currentIssueEntitlements, IssueEntitlement.class.name)
                     out.withWriter { writer ->
                         writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,';'))
                     }
