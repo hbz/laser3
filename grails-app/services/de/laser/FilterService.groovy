@@ -1029,7 +1029,7 @@ class FilterService {
             result.editable = false
         }
         if (params.filter) {
-            base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
+            base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription left join ie.coverages ic "
             if (date_filter) {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
                 // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
@@ -1045,7 +1045,7 @@ class FilterService {
             filterSet = true
         }
         else {
-            base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
+            base_qry = " from IssueEntitlement as ie left join ie.coverages ic where ie.subscription = :subscription "
             /*if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
 
@@ -1161,7 +1161,7 @@ class FilterService {
                 base_qry += "order by ie.${params.sort} ${params.order} "
         }
         else if(!params.forCount){
-            base_qry += "order by lower(ie.tipp.name) asc"
+            base_qry += "order by lower(ie.tipp.sortName) asc"
         }
 
 
@@ -1187,7 +1187,7 @@ class FilterService {
             result.editable = false
         }
         if (params.filter) {
-            base_qry = " from TitleInstancePackagePlatform as tipp where tipp.pkg in (:pkgs) "
+            base_qry = "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg in (:pkgs) "
             if (date_filter) {
                 base_qry += "and ( ( :startDate >= coalesce(tipp.accessStartDate,tipp.pkg.startDate,tipp.accessStartDate) or (tipp.accessStartDate is null and tipp.pkg.startDate is null and tipp.accessStartDate is null) ) and ( :endDate <= coalesce(tipp.accessEndDate,tipp.pkg.endDate,tipp.accessEndDate) or (tipp.accessEndDate is null and tipp.subscription.endDate is null and tipp.accessEndDate is null) ) ) "
                 qry_params.startDate = date_filter
@@ -1200,7 +1200,7 @@ class FilterService {
             filterSet = true
         }
         else {
-            base_qry = " from TitleInstancePackagePlatform as tipp where tipp.pkg in (:pkgs) "
+            base_qry = "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg in (:pkgs) "
         }
 
         if(params.addEntitlements && params.subscription && params.issueEntitlementStatus) {
@@ -1299,7 +1299,7 @@ class FilterService {
                 base_qry += "order by ${params.sort} ${params.order} "
         }
         else {
-            base_qry += "order by lower(tipp.name) asc"
+            base_qry += "order by lower(tipp.sortName) asc"
         }
 
 

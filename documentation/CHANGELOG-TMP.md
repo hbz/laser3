@@ -7,6 +7,18 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3265    26.03.2021  rc2.0   2.0.5       Andreas Bug         Reaktivierung der Statistikdaten ex Nationaler Statistikserver
+
+3261    26.03.2021  rc2.0   2.0.5       Andreas Bug         Ausgabe der Benachrichtigungen und Änderungen korrigiert
+
+3259    26.03.2021  rc2.0   2.0.5       Andreas Bug         Sync-Verhalten für hostPlatformURL umkonfiguriert
+
+3255    26.03.2021  rc2.0   2.0.5       Andreas Bug         Filterparameter bei Merkmalen werden durchgereicht
+
+3254    26.03.2021  rc2.0   2.0.5       Andreas Bug         Filter der Merkmale bei "Alle Anbieter und Lieferanten" entfernt
+
+3252    26.03.2021  rc2.0   2.0.5       Andreas Bug         Export reaktiviert und für große Datenmengen ertüchtigt
+
 3217    22.03.2021  rc2.0   2.0.5       Andreas Bug         fehlende Tabellenüberschrift nachgetragen
 
 --      22.03.2021  rc2.0   2.0.5       Andreas Bug         Fehler behoben, der zu Speicherfehler der JDBC-Statements führte

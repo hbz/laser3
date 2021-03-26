@@ -91,6 +91,18 @@
                                     value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                                 }
                             });
+                            <g:if test="${params.filterPropDef && params.filterProp && genericOIDService.resolveOID(params.filterPropDef).refdataCategory}">
+                                let propList = []
+                                <% List<String> propList
+                                    if(params.filterProp.contains(','))
+                                        propList = params.filterProp.split(',')
+                                    else propList = [params.filterProp]
+                                    propList.each { filterProp -> %>
+                                    propList.push("${filterProp}");
+                                <% } %>
+                                console.log(propList);
+                                $('.la-filterProp').dropdown("set selected",propList);
+                            </g:if>
                         }, async: false
 
                     });
@@ -128,7 +140,8 @@
                                 onChange: function (value, text, $selectedItem) {
                                     value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                                 }
-                            });
+                            })
+                            <g:if test="${params.filterProp}">.dropdown("set selected","${params.filterProp}")</g:if>;
                         }, async: false
 
                     });
@@ -163,8 +176,8 @@
                             }
 
                         }
-                    });
-                })
+                    })<g:if test="${params.filterPropDef}">.dropdown("set selected","${params.filterPropDef}")</g:if>;
+                });
                     // set filterPropDef by params
                     // iterates through all the items and set the item class on 'active selected' when value and URL Parameter for filterPropDef match
                     var item = $( ".la-filterPropDef .item" );

@@ -18,7 +18,8 @@ class Fact {
     @RefdataAnnotation(cat = RDConstants.FACT_METRIC)
     RefdataValue factMetric
 
-    TitleInstance relatedTitle
+    //TitleInstance relatedTitle
+    TitleInstancePackagePlatform relatedTitle
     Platform supplier
     Org inst
 

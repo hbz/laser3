@@ -6,6 +6,7 @@ import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.Platform
 import de.laser.RefdataValue
+import de.laser.TitleInstancePackagePlatform
 import de.laser.helper.RDConstants
 import de.laser.properties.PlatformProperty
 import de.laser.titles.TitleInstance
@@ -30,14 +31,14 @@ class StatsSyncServiceOptions {
     String mostRecentClosedPeriod
     String statsTitleIdentifier
     String statsIdentifierType
-    TitleInstance title_inst
+    TitleInstancePackagePlatform title_inst
     Platform supplier_inst
     Org org_inst
     Identifier identifier
 
     void setItemObjects(objectList)
     {
-        title_inst = (TitleInstance)objectList[0]
+        title_inst = (TitleInstancePackagePlatform)objectList[0]
         supplier_inst = (Platform)objectList[1]
         org_inst = (Org)objectList[2]
         identifier = (Identifier)objectList[3]

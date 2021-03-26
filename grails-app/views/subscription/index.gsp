@@ -214,7 +214,7 @@
                         <th rowspan="2" colspan="4"></th>
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
                                           title="${message(code: 'default.from')}"/>
-                        <g:sortableColumn class="la-smaller-table-head" params="${params}" property="accessStartDate"
+                        <g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessStartDate"
                                           title="${message(code: 'default.from')}"/>
 
                         <th rowspan="2" colspan="2"></th>
@@ -222,7 +222,7 @@
                     <tr>
                         <g:sortableColumn class="la-smaller-table-head" property="endDate"
                                           title="${message(code: 'default.to')}"/>
-                        <g:sortableColumn class="la-smaller-table-head" params="${params}" property="accessEndDate"
+                        <g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessEndDate"
                                           title="${message(code: 'default.to')}"/>
                     </tr>
                     <tr>

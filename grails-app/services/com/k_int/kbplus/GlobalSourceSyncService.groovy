@@ -1563,6 +1563,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.firstAuthor = tippB.firstAuthor
             tippA.firstEditor = tippB.firstEditor
             tippA.publisherName = tippB.publisherName
+            tippA.hostPlatformURL = tippB.hostPlatformURL
             tippA.dateFirstInPrint = (Date) tippB.dateFirstInPrint
             tippA.dateFirstOnline = (Date) tippB.dateFirstOnline
             tippA.imprint = tippB.imprint
@@ -1780,10 +1781,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
             log.info("processing diffs; the respective objects are: ${tippa.id} (TitleInstancePackagePlatform) pointing to ${tippb.id} (TIPP)")
         Set<Map<String, Object>> result = []
 
+        /*
+        IssueEntitlements do not have hostPlatformURLs
         if (tippa.hasProperty("hostPlatformURL") && tippa.hostPlatformURL != tippb.hostPlatformURL) {
-            if(!((tippa.hostPlatformURL == null && tippb.hostPlatformURL == "") || (tippa.hostPlatformURL == "" && tippb.hostPlatformUrl == null)))
+            if(!((tippa.hostPlatformURL == null && tippb.hostPlatformURL == "") || (tippa.hostPlatformURL == "" && tippb.hostPlatformURL == null)))
                 result.add([prop: 'hostPlatformURL', newValue: tippb.hostPlatformURL, oldValue: tippa.hostPlatformURL])
         }
+        */
 
         // This is the boss enemy when refactoring coverage statements ... works so far, is going to be kept
         // the question marks are necessary because only JournalInstance's TIPPs are supposed to have coverage statements

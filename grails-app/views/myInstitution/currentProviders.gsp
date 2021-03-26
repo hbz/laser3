@@ -62,7 +62,7 @@
                       model="[
                               propList: propList,
                               orgRoles: orgRoles,
-                              tmplConfigShow: [['name', 'role'], ['country', 'property&value']],
+                              tmplConfigShow: [['name', 'role', 'property&value']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
