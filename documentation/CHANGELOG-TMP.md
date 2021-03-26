@@ -19,6 +19,8 @@
 
 3252    26.03.2021  rc2.0   2.0.5       Andreas Bug         Export reaktiviert und für große Datenmengen ertüchtigt
 
+3253    23.03.2021  rc2.0   2.0.5       Andreas Bug         Markierung von Titel, deren Quellen als gelöscht markiert sind, in der Kopierfunktion
+
 3217    22.03.2021  rc2.0   2.0.5       Andreas Bug         fehlende Tabellenüberschrift nachgetragen
 
 --      22.03.2021  rc2.0   2.0.5       Andreas Bug         Fehler behoben, der zu Speicherfehler der JDBC-Statements führte
