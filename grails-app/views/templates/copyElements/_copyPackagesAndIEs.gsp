@@ -58,7 +58,7 @@
                                  PendingChangeConfiguration.PRICE_UPDATED,
                                  PendingChangeConfiguration.PRICE_DELETED]}"/>
                 <td name="subscription.takePackages.source">
-                    <strong>${message(code: 'subscription.packages.label')}: ${sourceObject.packages.size()}</strong>
+                    <strong>${message(code: 'subscription.packages.label')}: ${sourceObject.packages?.size()}</strong>
                     <g:each in="${sourceObject.packages?.sort { it.pkg.name.toLowerCase() }}" var="sp">
                         <div class="la-copyPack-container la-element">
                             <div data-pkgoid="${genericOIDService.getOID(sp)}" class="la-copyPack-item">
@@ -73,21 +73,28 @@
                                 <g:set var="ies" value="${sp.getIssueEntitlementsofPackage()}"/>
 
                                 <div class="ui accordion">
-                                    <div class="title"><i
-                                            class="dropdown icon"></i> ${message(code: 'issueEntitlement.countSubscription')} </strong>${ies.size()}
+                                    <div class="title">
+                                        <i class="dropdown icon"></i> ${message(code: 'issueEntitlement.countSubscription')} </strong>${ies.size()}
                                     </div>
 
                                     <div class="content">
                                         <div class="ui list">
                                             <g:if test="${ies}">
                                                 <g:each in="${ies}" var="ie">
-                                                    <div class="item">
-                                                        <semui:listIcon hideTooltip="true"
-                                                                        type="${ie.tipp.titleType}"/>
-                                                        <strong><g:link controller="tipp" action="show"
-                                                                        id="${ie.tipp.id}">${ie.tipp.name}</g:link></strong>
-                                                        <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
-                                                    </div>
+                                                    <g:if test="${ie.tipp.status == RDStore.TIPP_STATUS_DELETED}">
+                                                        <div class="item willBeReplaced willBeReplacedStrong">
+                                                            <semui:listIcon hideTooltip="true" type="${ie.tipp.titleType}"/>
+                                                            <strong><g:link controller="tipp" action="show" id="${ie.tipp.id}">${ie.tipp.name}</g:link></strong>
+                                                        </div>
+                                                        <i><g:message code="issueEntitlement.missingSource"/></i>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <div class="item">
+                                                            <semui:listIcon hideTooltip="true" type="${ie.tipp.titleType}"/>
+                                                            <strong><g:link controller="tipp" action="show" id="${ie.tipp.id}">${ie.tipp.name}</g:link></strong>
+                                                        </div>
+                                                    </g:else>
+                                                    <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
                                                 </g:each>
                                             </g:if>
                                         </div>
@@ -151,7 +158,7 @@
 
             <g:if test="${!copyObject}">
                 <td name="subscription.takePackages.target">
-                    <strong>${message(code: 'subscription.packages.label')}: ${targetObject?.packages.size()}</strong>
+                    <strong>${message(code: 'subscription.packages.label')}: ${targetObject?.packages?.size()}</strong>
 
                     <g:each in="${targetObject?.packages?.sort { it.pkg.name.toLowerCase() }}" var="sp">
                         <div class="la-copyPack-container la-element">
@@ -245,7 +252,7 @@
             </tr>
             <tr>
                 <td name="subscription.takeTitleGroups.source">
-                    <strong>${message(code: 'subscription.details.ieGroups')}: ${sourceObject.ieGroups.size()}</strong>
+                    <strong>${message(code: 'subscription.details.ieGroups')}: ${sourceObject.ieGroups?.size()}</strong>
                     <g:if test="${sourceObject.ieGroups}">
                         <g:each in="${sourceObject.ieGroups.sort { it.name }}" var="titleGroup">
                             <div class="la-copyPack-container la-element">
@@ -256,8 +263,7 @@
                                            data-content="${message(code: 'issueEntitlementGroup.label')}"></i> ${titleGroup.name}
                                     </g:link>
                                     <div class="ui accordion">
-                                        <div class="title"><i
-                                                class="dropdown icon"></i>
+                                        <div class="title"><i class="dropdown icon"></i>
                                             ${message(code: 'issueEntitlementGroup.items.label')}: ${titleGroup.items?.size()}
                                         </div>
 
@@ -266,10 +272,10 @@
                                                 <g:each in="${titleGroup.items?.sort { it.ie.tipp.sortName }}"
                                                         var="item">
                                                     <div class="item">
-                                                        <semui:listIcon hideTooltip="true"
-                                                                        type="${item.ie.tipp.titleType}"/>
-                                                        <strong><g:link controller="tipp" action="show"
-                                                                        id="${item.ie.tipp.id}">${item.ie.tipp.name}</g:link></strong>
+                                                        <semui:listIcon hideTooltip="true" type="${item.ie.tipp.titleType}"/>
+                                                        <strong>
+                                                            <g:link controller="tipp" action="show" id="${item.ie.tipp.id}">${item.ie.tipp.name}</g:link>
+                                                        </strong>
                                                     </div>
                                                 </g:each>
                                             </div>
@@ -291,9 +297,9 @@
                 </td>
                 <g:if test="${!copyObject}">
                 <td name="subscription.takeTitleGroups.target">
-                    <strong>${message(code: 'subscription.details.ieGroups')}: ${targetObject.ieGroups.size()}</strong>
+                    <strong>${message(code: 'subscription.details.ieGroups')}: ${targetObject?.ieGroups?.size()}</strong>
 
-                    <g:if test="${targetObject.ieGroups}">
+                    <g:if test="${targetObject?.ieGroups}">
                         <g:each in="${targetObject.ieGroups.sort { it.name }}" var="titleGroup">
                             <div class="la-copyPack-container la-element">
                                 <div data-oid="${genericOIDService.getOID(titleGroup)}" class="la-copyPack-item">
