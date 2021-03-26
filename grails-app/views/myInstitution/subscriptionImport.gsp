@@ -17,7 +17,7 @@
 
     <semui:messages data="${flash}" />
 
-          <g:message code="myinst.subscriptionImport.headline"/>
+          <semui:msg class="warning" header="${message(code:'message.information')}" message="myinst.subscriptionImport.headline"/>
           <a href="${resource(dir: 'files', file: 'bulk_load_subscription_records_template_01.csv')}" download="template_bulk_load_subscription_records.csv">
             <p><g:message code="myinst.subscriptionImport.template"/></p>
           </a>

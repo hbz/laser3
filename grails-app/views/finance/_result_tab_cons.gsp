@@ -183,7 +183,7 @@
                         <td>
                             <g:each in="${ci.sub.orgRelations}" var="or">
                                 <g:if test="${memberRoles.contains(or.roleType.id)}">
-                                    ${or.org.sortname}
+                                    <g:link controller="org" action="show" id="${or.org.id}"><span data-tooltip="${or.org.name}">${or.org.sortname}</span></g:link>
                                 </g:if>
                             </g:each>
                         </td>
@@ -206,7 +206,14 @@
                     </td>
                     <g:if test="${!fixedSubscription}">
                         <td>
-                            <g:if test="${ci.sub}">${ci.sub.name} (${formatDate(date:ci.sub.startDate,format:message(code: 'default.date.format.notime'))} - ${formatDate(date: ci.sub.endDate, format: message(code: 'default.date.format.notime'))})</g:if>
+                            <g:if test="${ci.sub}">
+                                <g:if test="${ci.sub.instanceOf && showView == "cons"}">
+                                    <g:link controller="subscription" action="show" id="${ci.sub.instanceOf.id}">${ci.sub.name}</g:link>
+                                </g:if>
+                                <g:else>
+                                    <g:link controller="subscription" action="show" id="${ci.sub.id}">${ci.sub.name}</g:link>
+                                </g:else>
+                                (${formatDate(date:ci.sub.startDate,format:message(code: 'default.date.format.notime'))} - ${formatDate(date: ci.sub.endDate, format: message(code: 'default.date.format.notime'))})</g:if>
                             <g:else>${message(code:'financials.clear')}</g:else>
                         </td>
                     </g:if>

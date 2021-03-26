@@ -967,12 +967,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
         Map<String,Object> packageJSON = fetchRecordJSON(false,[uuid: packageUUID])
         if(packageJSON.records) {
             Map packageRecord = (Map) packageJSON.records[0]
-            RefdataValue packageStatus = RefdataValue.getByValueAndCategory(packageRecord.status, RDConstants.PACKAGE_STATUS)
-            RefdataValue packageListStatus = RefdataValue.getByValueAndCategory(packageRecord.listStatus,RDConstants.PACKAGE_LIST_STATUS)
-            RefdataValue contentType = packageRecord.contentType ? RefdataValue.getByValueAndCategory(packageRecord.contentType,RDConstants.PACKAGE_CONTENT_TYPE) : null
-            //Package.withNewSession { Session sess ->
+            Package result = Package.findByGokbId(packageUUID)
+            Date lastUpdatedDisplay = DateUtils.parseDateGeneric(packageRecord.lastUpdatedDisplay)
+            if(!result || result?.lastUpdated < lastUpdatedDisplay) {
                 log.info("package record loaded, reconciling package record for UUID ${packageUUID}")
-                Package result = Package.findByGokbId(packageUUID)
+                RefdataValue packageStatus = RefdataValue.getByValueAndCategory(packageRecord.status, RDConstants.PACKAGE_STATUS)
+                RefdataValue packageListStatus = RefdataValue.getByValueAndCategory(packageRecord.listStatus,RDConstants.PACKAGE_LIST_STATUS)
+                RefdataValue contentType = packageRecord.contentType ? RefdataValue.getByValueAndCategory(packageRecord.contentType,RDConstants.PACKAGE_CONTENT_TYPE) : null
                 Date listVerifiedDate = packageRecord.listVerifiedDate ? DateUtils.parseDateGeneric(packageRecord.listVerifiedDate) : null
                 Map<String,Object> newPackageProps = [
                         uuid: packageUUID,
@@ -1029,12 +1030,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             Identifier.construct([namespace: id.namespace, value: id.value, reference: result, isUnique: false, nsType: Package.class.name])
                         }
                     }
-                    result
                 }
                 else {
                     throw new SyncException(result.errors)
                 }
-            //}
+            }
+            result
         }
         else {
             throw new SyncException("Package creation for ${packageUUID} called without record data! PANIC!")

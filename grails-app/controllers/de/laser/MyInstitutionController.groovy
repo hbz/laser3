@@ -379,7 +379,7 @@ class MyInstitutionController  {
                 subscrQueryFilter << "s.instanceOf is null"
             }
 
-            base_qry += " or exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" )"
+            base_qry += " and exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" )"
             qry_params.linkType = RDStore.LINKTYPE_LICENSE
         }
 
@@ -2567,12 +2567,12 @@ join sub.orgRelations or_sub where
                         //provider
                         log.debug("insert provider name")
                         cellnum++
-                        String providersString = " "
-                        providers.get(subCons).each { p ->
-                            log.debug("Getting provider ${p}")
-                            providersString += "${p.name} "
+                        List<String> providerNames = []
+                        subCons.orgRelations.findAll{ OrgRole oo -> oo.roleType in [RDStore.OR_PROVIDER,RDStore.OR_AGENCY] }.each { OrgRole p ->
+                            log.debug("Getting provider ${p.org}")
+                            providerNames << p.org.name
                         }
-                        row.add(providersString.replaceAll(',', ' '))
+                        row.add(providerNames.join( ' '))
                         //running time from / to
                         log.debug("insert running times")
                         cellnum++
