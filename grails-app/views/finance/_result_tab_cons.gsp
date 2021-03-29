@@ -100,12 +100,22 @@
         <tr>
             <g:if test="${!fixedSubscription}">
                 <g:if test="${showView == "cons"}">
-                    <th colspan="4"></th>
+                    <g:if test="${editable}">
+                        <th colspan="4"></th>
+                    </g:if>
+                    <g:else>
+                        <th colspan="3"></th>
+                    </g:else>
                     <g:sortableColumn property="sub.startDate" title="${message(code:'financials.subscriptionRunningTime')}" params="[consSort: true]"/>
                     <th colspan="6"></th>
                 </g:if>
                 <g:elseif test="${showView == "subscr"}">
-                    <th colspan="2"></th>
+                    <g:if test="${editable}">
+                        <th colspan="3"></th>
+                    </g:if>
+                    <g:else>
+                        <th colspan="2"></th>
+                    </g:else>
                     <g:sortableColumn property="sub.startDate" title="${message(code:'financials.subscriptionRunningTime')}" params="[consSort: true]"/>
                     <th colspan="6"></th>
                 </g:elseif>
