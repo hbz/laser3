@@ -2492,7 +2492,12 @@ class SubscriptionControllerService {
         result.consortialView = result.showConsortiaFunctions
         result.editable = result.sourceObject?.isEditableBy(result.user)
         if (!result.editable) {
-            null
+            //the explicit comparison against bool(true) should ensure that not only the existence of the parameter is checked but also its proper value
+            if(params.copyMyElements == true) {
+                if(accessService.checkPermAffiliation('ORG_INST','INST_EDITOR'))
+                    result
+            }
+            else null
         }
         else if(!result.sourceObject?.isVisibleBy(result.user))
             null
