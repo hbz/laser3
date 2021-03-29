@@ -1181,7 +1181,7 @@ join sub.orgRelations or_sub where
                     ServletOutputStream out = response.outputStream
                     Map<String,List> tableData = exportService.generateTitleExportCSV(currentIssueEntitlements, IssueEntitlement.class.name)
                     out.withWriter { writer ->
-                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,';'))
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.rows,'|'))
                     }
                     out.flush()
                     out.close()

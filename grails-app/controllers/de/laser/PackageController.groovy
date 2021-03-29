@@ -491,7 +491,7 @@ class PackageController {
                 ServletOutputStream out = response.outputStream
                 Map<String, List> tableData = titlesList ? exportService.generateTitleExportCSV(titlesList,TitleInstancePackagePlatform.class.name) : []
                 out.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.rows, ';'))
+                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.rows, '|'))
                 }
                 out.flush()
                 out.close()

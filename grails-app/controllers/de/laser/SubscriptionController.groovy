@@ -1361,7 +1361,7 @@ class SubscriptionController {
         ctx.accessService.checkPermAffiliationX("ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
     })
     def copyMyElements() {
-        Map<String, Object> result = subscriptionControllerService.setCopyResultGenerics(params)
+        Map<String, Object> result = subscriptionControllerService.setCopyResultGenerics(params+[copyMyElements: true])
         if (!result) {
             response.sendError(401)
         }
