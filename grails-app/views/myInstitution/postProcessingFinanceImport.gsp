@@ -55,7 +55,7 @@
                                     <li><g:message code="myinst.financeImport.financialYear"/>: ${ci.financialYear}</li>
                                     <li><g:message code="myinst.financeImport.title"/>: ${ci.costTitle}</li>
                                     <li><g:message code="myinst.financeImport.description"/>: ${ci.costDescription}</li>
-                                    <li><g:message code="myinst.financeImport.costItemStatus"/>: ${ci.costItemStatus.getI10n('value')}</li>
+                                    <li><g:message code="myinst.financeImport.costItemStatus"/>: ${ci.costItemStatus?.getI10n('value')}</li>
                                     <li><g:message code="myinst.financeImport.referenceCodes"/>: ${ci.reference}</li>
                                     <li><g:message code="myinst.financeImport.budgetCode"/>:
                                         <ul>

@@ -109,8 +109,11 @@ class SubscriptionControllerService {
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
             Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(result.contextOrg)
             result << preCon
+            Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
+            if(result.institution.getCustomerType() == "ORG_CONSORTIUM")
+                excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
             // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]) }
+            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
             //}
             pu.setBenchmark('properties')
             // TODO: experimental asynchronous task

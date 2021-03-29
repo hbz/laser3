@@ -280,7 +280,10 @@ class OrganisationController  {
             aVal.compareToIgnoreCase bVal
         }
         .collect{ it }
-        nsList = nsList - [IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID), IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR)]
+        if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID) })
+            nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID)
+        if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR) })
+            nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR)
         render template: '/templates/identifier/modal_create', model: [orgInstance: org, nsList: nsList]
     }
 
