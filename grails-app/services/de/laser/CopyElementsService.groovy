@@ -104,9 +104,12 @@ class CopyElementsService {
             result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(sourceObject)
             result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(targetObject)
 
-            result.sourceLinks = Links.executeQuery("select li from Links li where :sub in (li.sourceSubscription,li.destinationSubscription) and li.linkType != :linkType and owner = :context", [sub: sourceObject, linkType: RDStore.LINKTYPE_LICENSE, context: contextOrg])
+            Set<RefdataValue> excludes = [RDStore.LINKTYPE_LICENSE]
+            if(params.isRenewSub)
+                excludes << RDStore.LINKTYPE_FOLLOWS
+            result.sourceLinks = Links.executeQuery("select li from Links li where :sub in (li.sourceSubscription,li.destinationSubscription) and li.linkType not in (:linkTypes) and owner = :context", [sub: sourceObject, linkTypes: excludes, context: contextOrg])
             if(targetObject) {
-                result.targetLinks = Links.executeQuery("select li from Links li where :sub in (li.sourceSubscription,li.destinationSubscription) and li.linkType != :linkType and owner = :context", [sub: targetObject, linkType: RDStore.LINKTYPE_LICENSE, context: contextOrg])
+                result.targetLinks = Links.executeQuery("select li from Links li where :sub in (li.sourceSubscription,li.destinationSubscription) and li.linkType not in (:linkTypes) and owner = :context", [sub: targetObject, linkTypes: excludes, context: contextOrg])
             }
         }
 
@@ -115,9 +118,10 @@ class CopyElementsService {
             result.source_visibleOrgRelations = licenseService.getVisibleOrgRelations(sourceObject)
             result.target_visibleOrgRelations = licenseService.getVisibleOrgRelations(targetObject)
 
-            result.sourceLinks = Links.executeQuery("select li from Links li where :lic in (li.sourceLicense,li.destinationLicense) and li.linkType != :linkType and owner = :context", [lic: sourceObject, linkType: RDStore.LINKTYPE_LICENSE, context: contextOrg])
+            Set<RefdataValue> excludes = [RDStore.LINKTYPE_LICENSE]
+            result.sourceLinks = Links.executeQuery("select li from Links li where :lic in (li.sourceLicense,li.destinationLicense) and li.linkType not in (:linkTypes) and owner = :context", [lic: sourceObject, linkTypes: excludes, context: contextOrg])
             if(targetObject) {
-                result.targetLinks = Links.executeQuery("select li from Links li where :lic in (li.sourceLicense,li.destinationLicense) and li.linkType != :linkType and owner = :context", [lic: targetObject, linkType: RDStore.LINKTYPE_LICENSE, context: contextOrg])
+                result.targetLinks = Links.executeQuery("select li from Links li where :lic in (li.sourceLicense,li.destinationLicense) and li.linkType not in (:linkTypes) and owner = :context", [lic: targetObject, linkTypes: excludes, context: contextOrg])
             }
         }
 
@@ -468,7 +472,7 @@ class CopyElementsService {
                     genericOIDService.resolveOID(it)
                 }
 
-                targetObject = targetObject.refresh()
+                //targetObject = targetObject.refresh()
                 targetObject.orgRelations.each { newSubOrgRole ->
 
                     if (newSubOrgRole.org in toggleShareOrgRoles.org) {
@@ -1103,14 +1107,16 @@ class CopyElementsService {
 
     boolean copyOrgRelations(List<OrgRole> toCopyOrgRelations, Object sourceObject, Object targetObject, def flash) {
         Locale locale = LocaleContextHolder.getLocale()
+        if (!targetObject.orgRelations)
+            targetObject.orgRelations = []
+        //question mark may be necessary because of lazy loading (there were some NPEs here in the past)
         sourceObject.orgRelations?.each { or ->
             if (or in toCopyOrgRelations && !(or.org?.id == contextService.getOrg().id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE, RDStore.OR_LICENSING_CONSORTIUM])) {
-                if (targetObject.orgRelations?.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
+                if (targetObject.orgRelations.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
                     Object[] args = [or?.roleType?.getI10n("value") + " " + or?.org?.name]
                     flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
                 } else {
                     def newProperties = or.properties
-
                     OrgRole newOrgRole = new OrgRole()
                     InvokerHelper.setProperties(newOrgRole, newProperties)
                     //Vererbung ausschalten
@@ -1122,7 +1128,9 @@ class CopyElementsService {
                     if (sourceObject instanceof License) {
                         newOrgRole.lic = targetObject
                     }
-                    save(newOrgRole, flash)
+                    //this is a bit dangerous ...
+                    if (save(newOrgRole, flash))
+                        targetObject.orgRelations << newOrgRole
                 }
             }
         }

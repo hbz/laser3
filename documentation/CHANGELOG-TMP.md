@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3277    29.03.2021  rc2.0   2.0.5       Andreas Bug         falsche Weiterleitung bei Lizenzverlängerung behoben
+
+3264    29.03.2021  rc2.0   2.0.5       Andreas Bug         Lizenzparameter wurden nicht übertragen, wenn Anbieterverknüpfung vorlag
+
 3271    26.03.2021  rc2.0   2.0.5       Andreas Feature     Sprung- und Mailto-Link hinter Lizenzkontakt gefügt 
 
 3269    26.03.2021  rc2.0   2.0.5       Andreas Bug         Leitweg-ID und Leitweg-Kriterium intern anwählbar, wenn Identifier fehlen
