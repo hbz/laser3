@@ -3,6 +3,7 @@ package de.laser.reporting.myInstitution
 import de.laser.ContextService
 import de.laser.Org
 import de.laser.Platform
+import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.helper.RDStore
 import grails.util.Holders
@@ -55,10 +56,25 @@ class SubscriptionQuery extends GenericQuery {
                         query : params.query,
                         id    : d[0],
                         label : d[1],
-                        idList: Org.executeQuery(
+                        idList: Subscription.executeQuery(
                                 'select s.id from Subscription s join s.orgRelations orgRel join orgRel.org o where s.id in (:idList) and o.id = :d order by s.name',
                                 [idList: idList, d: d[0]]
                         )
+                ])
+            }
+
+            List<Long> nonMatchingIdList = idList.minus( result.dataDetails.collect { it.idList }.flatten() )
+            //nonMatchingIdList.addAll(result.dataDetails[0].idList) // TODO REMOVE TEST
+            List noDataList = nonMatchingIdList ? Subscription.executeQuery( 'select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList] ) : []
+
+            if (noDataList) {
+                result.data.add( [null, GenericQuery.NO_PROVIDER_LABEL, noDataList.size()] )
+
+                result.dataDetails.add( [
+                        query:  params.query,
+                        id:     null,
+                        label:  GenericQuery.NO_PROVIDER_LABEL,
+                        idList: noDataList
                 ])
             }
         }
@@ -99,6 +115,23 @@ class SubscriptionQuery extends GenericQuery {
                         value1: (subIdList - positiveList).size()
                 ])
             }
+
+            List<Long> nonMatchingIdList = idList.minus( result.dataDetails.collect { it.idList }.flatten() )
+            //nonMatchingIdList.addAll(result.dataDetails[0].idList) // TODO REMOVE TEST
+            List noDataList = nonMatchingIdList ? Subscription.executeQuery( 'select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList] ) : []
+
+            if (noDataList) {
+                result.data.add( [null, GenericQuery.NO_PLATFORM_LABEL, noDataList.size()] )
+
+                result.dataDetails.add( [
+                        query:  params.query,
+                        id:     null,
+                        label:  GenericQuery.NO_PLATFORM_LABEL,
+                        idList: noDataList,
+                        value1: 0,
+                        value2: noDataList.size()
+                ])
+            }
         }
         else if ( params.query in ['subscription-property-assignment']) {
 
@@ -117,6 +150,7 @@ class SubscriptionQuery extends GenericQuery {
                     params.query,
                     'select ns.id, ns.ns, count(*) from Subscription sub join sub.ids ident join ident.ns ns where sub.id in (:idList)',
                     'select sub.id from Subscription sub join sub.ids ident join ident.ns ns where sub.id in (:idList)',
+                    'select sub.id from Subscription sub where sub.id in (:idList)', // modified idList
                     idList,
                     result
             )

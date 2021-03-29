@@ -706,8 +706,10 @@ class AjaxJsonController {
                 result.tooltipLabel = getTooltipLabel(clone)
 
                 if (clone.query.endsWith('assignment')) {
-                    result.chartLabels = LicenseConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
-                    render template: '/myInstitution/reporting/chart/2axis2values', model: result
+                    Map<String, Object> cfg = LicenseConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
+
+                    result.chartLabels = cfg.getAt('chartLabels')
+                    render template: '/myInstitution/reporting/chart/' + cfg.getAt('template'), model: result
                 }
                 else {
                     render template: '/myInstitution/reporting/chart/generic', model: result
@@ -719,8 +721,10 @@ class AjaxJsonController {
                 result.tooltipLabel = getTooltipLabel(clone)
 
                 if (clone.query.endsWith('assignment')) {
-                    result.chartLabels = OrganisationConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
-                    render template: '/myInstitution/reporting/chart/2axis2values', model: result
+                    Map<String, Object> cfg = OrganisationConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
+
+                    result.chartLabels = cfg.getAt('chartLabels')
+                    render template: '/myInstitution/reporting/chart/' + cfg.getAt('template'), model: result
                 }
                 else {
                     render template: '/myInstitution/reporting/chart/generic', model: result
@@ -732,13 +736,14 @@ class AjaxJsonController {
                 result.tooltipLabel = getTooltipLabel(clone)
 
                 if (clone.query.endsWith('assignment')) {
-                    if (! (clone.query in ['subscription-provider-assignment'])) {
-                        result.chartLabels = SubscriptionConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
-                        render template: '/myInstitution/reporting/chart/2axis2values', model: result
-                        return
-                    }
+                    Map<String, Object> cfg = SubscriptionConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
+
+                    result.chartLabels = cfg.getAt('chartLabels')
+                    render template: '/myInstitution/reporting/chart/' + cfg.getAt('template'), model: result
                 }
-                render template: '/myInstitution/reporting/chart/generic', model: result
+                else {
+                    render template: '/myInstitution/reporting/chart/generic', model: result
+                }
                 return
             }
         }

@@ -109,6 +109,7 @@ class OrganisationQuery extends GenericQuery {
                     params.query,
                     'select ns.id, ns.ns, count(*) from Org o join o.ids ident join ident.ns ns where o.id in (:idList)',
                     'select o.id from Org o join o.ids ident join ident.ns ns where o.id in (:idList)',
+                    'select o.id from Org o where o.id in (:idList)', // modified idList
                     idList,
                     result
             )
