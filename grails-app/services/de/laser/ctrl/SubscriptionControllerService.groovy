@@ -2585,7 +2585,8 @@ class SubscriptionControllerService {
     Map<String,Object> reporting(GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
 
-        result.cfgQueryList = SubscriptionReporting.QUERY
+        result.cfgQueryList  = SubscriptionReporting.QUERY.base.query
+        result.cfgQueryList2 = SubscriptionReporting.QUERY.base.query2
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }

@@ -83,9 +83,7 @@
         xAxis: {
             type: 'value',
             axisLabel: {
-                formatter (value) {
-                    return Math.abs(value)
-                }
+                formatter (value) { return Math.abs(value) }
             }
         },
         yAxis: {
@@ -105,9 +103,7 @@
                 label: {
                     show: true,
                     position: 'left',
-                    formatter (params) {
-                        return Math.abs(params.value[3])
-                    }
+                    formatter (params) { return Math.abs(params.value[3]) }
                 }
             },
             {
@@ -121,9 +117,7 @@
                 label: {
                     show: true,
                     position: 'right',
-                    formatter (params) {
-                        return Math.abs(params.value[2])
-                    }
+                    formatter (params) { return Math.abs(params.value[2]) }
                 }
             }
         ]

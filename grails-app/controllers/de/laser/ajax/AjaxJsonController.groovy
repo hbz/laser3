@@ -749,11 +749,17 @@ class AjaxJsonController {
         }
         else if (params.context == SubscriptionConfig.KEY && params.query) {
             GrailsParameterMap clone = params.clone() as GrailsParameterMap // TODO: simplify
+            String prefix = clone.query.split('-')[0]
 
-            result = SubscriptionReporting.query(clone)
-            result.chartLabels = SubscriptionReporting.QUERY.getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
+            if (prefix in ['timeline']) {
+                result = SubscriptionReporting.query(clone)
+                result.chartLabels = SubscriptionReporting.QUERY.base.query2.getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
+            }
+            else {
+                result = SubscriptionReporting.query(clone)
+            }
 
-            if (clone.query in ['cost-timeline']) {
+            if (clone.query in ['timeline-costs']) {
                 render template: '/subscription/reporting/chart/' + clone.query, model: result
             }
             else {

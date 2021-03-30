@@ -21,21 +21,35 @@ class SubscriptionReporting {
 
     static Map<String, Object> QUERY = [
 
-            'Entwicklung' : [
-                    'member-timeline' : [
-                            label : 'Teilnehmer',
-                            chart : 'bar',
-                            chartLabels : [ 'Teilnehmer entfernt', 'Neue Teilnehmer', 'Aktuelle Teilnehmer' ]
+            base : [
+                    query: [
+                            'Bestand' : [
+                                    'tipp-seriesName'       : 'seriesName',
+                                    'tipp-titleType'        : 'titleType',
+                                    'tipp-publisherName'    : 'publisherName',
+                                    'tipp-medium'           : 'medium',
+                                    'tipp-payment'          : 'payment'
+                            ]
                     ],
-                    'entitlement-timeline' : [
-                            label : 'Bestand',
-                            chart : 'bar',
-                            chartLabels : [ 'Titel entfernt', 'Neue Titel', 'Aktuelle Titel' ]
-                    ],
-                    'cost-timeline' : [
-                            label : 'Kosten',
-                            chart : 'bar',
-                            chartLabels : [ 'Wert', 'Endpreis (nach Steuer)']
+
+                    query2: [
+                            'Entwicklung' : [
+                                    'timeline-members' : [
+                                            label : 'Teilnehmer',
+                                            chart : 'bar',
+                                            chartLabels : [ 'Teilnehmer entfernt', 'Neue Teilnehmer', 'Aktuelle Teilnehmer' ]
+                                    ],
+                                    'timeline-entitlements' : [
+                                            label : 'Bestand',
+                                            chart : 'bar',
+                                            chartLabels : [ 'Titel entfernt', 'Neue Titel', 'Aktuelle Titel' ]
+                                    ],
+                                    'timeline-costs' : [
+                                            label : 'Kosten',
+                                            chart : 'bar',
+                                            chartLabels : [ 'Wert', 'Endpreis (nach Steuer)']
+                                    ]
+                            ]
                     ]
             ]
     ]
@@ -46,7 +60,7 @@ class SubscriptionReporting {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Subscription sub = Subscription.get(params.id)
 
-        QUERY.each {it ->
+        QUERY.base.query2.each {it ->
             if (it.value.containsKey(params.query)) {
                 meta = [ it.key, it.value.get(params.query).label, "${sdf.format(sub.startDate)} - ${sdf.format(sub.endDate)}" ]
             }
@@ -72,7 +86,7 @@ class SubscriptionReporting {
             Subscription sub = Subscription.get(id)
             List<Subscription> timeline = getSubscriptionTimeline(sub)
 
-            if (params.query == 'member-timeline') {
+            if (params.query == 'timeline-members') {
                 List<List<Long>> subIdLists = []
 
                 timeline.eachWithIndex { s, i ->
@@ -126,7 +140,7 @@ class SubscriptionReporting {
                     }
                 }
             }
-            else if (params.query == 'entitlement-timeline') {
+            else if (params.query == 'timeline-entitlements') {
                 List<List<Long>> ieIdLists = []
 
                 timeline.eachWithIndex { s, i ->
@@ -179,7 +193,7 @@ class SubscriptionReporting {
                     }
                 }
             }
-            else if (params.query == 'cost-timeline') {
+            else if (params.query == 'timeline-costs') {
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
 
                 FinanceService financeService = (FinanceService) Holders.grailsApplication.mainContext.getBean('financeService')
@@ -205,6 +219,21 @@ class SubscriptionReporting {
                             idList: []
                     ])
                 }
+            }
+            else if (params.query == 'tipp-seriesName') {
+
+            }
+            else if (params.query == 'tipp-titleType') {
+
+            }
+            else if (params.query == 'tipp-publisherName') {
+
+            }
+            else if (params.query == 'tipp-medium') {
+
+            }
+            else if (params.query == 'tipp-payment') {
+
             }
         }
         result
