@@ -94,11 +94,13 @@
                                                     func,
                                                     RDStore.CCT_EMAIL
                                             )}" var="email">
-                                                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="Mail senden an ..">
-                                                    <a href="mailto:${email.content}" class="ui mini icon blue button">
-                                                        <i class="share square icon"></i>
-                                                    </a>
-                                                </span>
+                                                <g:render template="/templates/cpa/contact" model="${[
+                                                        contact             : email,
+                                                        tmplShowDeleteButton: false,
+                                                        overwriteEditable   : false
+                                                ]}">
+
+                                                </g:render>
                                             </g:each>
                                         </div>
                                     </div>
@@ -114,11 +116,13 @@
                                                     resp,
                                                     RDStore.CCT_EMAIL
                                             )}" var="email">
-                                                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="Mail senden an ..">
-                                                    <a href="mailto:${email.content}" class="ui mini icon blue button">
-                                                        <i class="share square icon"></i>
-                                                    </a>
-                                                </span>
+                                                <g:render template="/templates/cpa/contact" model="${[
+                                                        contact             : email,
+                                                        tmplShowDeleteButton: false,
+                                                        overwriteEditable   : false
+                                                ]}">
+
+                                                </g:render>
                                             </g:each>
 
                                             <g:if test="${editmode}">
@@ -152,11 +156,13 @@
                                                     func,
                                                     RDStore.CCT_EMAIL
                                             )}" var="email">
-                                                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="Mail senden an ..">
-                                                    <a href="mailto:${email.content}" class="ui mini icon blue button">
-                                                        <i class="share square icon"></i>
-                                                    </a>
-                                                </span>
+                                                <g:render template="/templates/cpa/contact" model="${[
+                                                        contact             : email,
+                                                        tmplShowDeleteButton: false,
+                                                        overwriteEditable   : false
+                                                ]}">
+
+                                                </g:render>
                                             </g:each>
                                         </div>
                                     </div>
@@ -172,11 +178,13 @@
                                                     resp,
                                                     RDStore.CCT_EMAIL
                                             )}" var="email">
-                                                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="Mail senden an ..">
-                                                    <a href="mailto:${email.content}" class="ui mini icon blue button">
-                                                        <i class="share square icon"></i>
-                                                    </a>
-                                                </span>
+                                                <g:render template="/templates/cpa/contact" model="${[
+                                                        contact             : email,
+                                                        tmplShowDeleteButton: false,
+                                                        overwriteEditable   : false
+                                                ]}">
+
+                                                </g:render>
                                             </g:each>
 
                                             <g:if test="${editmode}">
