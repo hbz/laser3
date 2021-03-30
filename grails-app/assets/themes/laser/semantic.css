@@ -936,10 +936,6 @@ aside.ui.accordion .title:not(.ui) {
   color: white!important;
 }
 
-.landingpage .ui.segment.footer {
-  padding: 3rem 0 0 0;
-}
-
 .landingpage .la-hero {
   padding-top: 7rem !important;
 }
