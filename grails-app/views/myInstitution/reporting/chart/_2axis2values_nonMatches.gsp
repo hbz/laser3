@@ -98,7 +98,11 @@
                 }
             }
         },
-        yAxis: { type: 'category' },
+        yAxis: {
+            type: 'category',
+            axisTick: { show: true },
+            axisLine: { onZero: true }
+        },
         series: [
             {
                 name: '${chartLabels[0]}',

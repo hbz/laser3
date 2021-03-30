@@ -64,7 +64,6 @@ class SubscriptionQuery extends GenericQuery {
             }
 
             List<Long> nonMatchingIdList = idList.minus( result.dataDetails.collect { it.idList }.flatten() )
-            //nonMatchingIdList.addAll(result.dataDetails[0].idList) // TODO REMOVE TEST
             List noDataList = nonMatchingIdList ? Subscription.executeQuery( 'select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList] ) : []
 
             if (noDataList) {
@@ -117,7 +116,6 @@ class SubscriptionQuery extends GenericQuery {
             }
 
             List<Long> nonMatchingIdList = idList.minus( result.dataDetails.collect { it.idList }.flatten() )
-            //nonMatchingIdList.addAll(result.dataDetails[0].idList) // TODO REMOVE TEST
             List noDataList = nonMatchingIdList ? Subscription.executeQuery( 'select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList] ) : []
 
             if (noDataList) {
