@@ -632,7 +632,7 @@ class SubscriptionController {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
                 ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.entitlements)
+                Map<String, List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.entitlementIDs,IssueEntitlement.class.name)
                 out.withWriter { writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                 }
@@ -642,7 +642,7 @@ class SubscriptionController {
             else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String,List> export = exportService.generateTitleExportXLS(ctrlResult.result.entitlements)
+                Map<String,List> export = exportService.generateTitleExportXLS(ctrlResult.result.entitlementIDs,IssueEntitlement.class.name)
                 Map sheetData = [:]
                 sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
                 SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -661,7 +661,7 @@ class SubscriptionController {
                         response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
                         response.contentType = "text/csv"
                         ServletOutputStream out = response.outputStream
-                        Map<String,List> tableData = exportService.generateTitleExportCSV(ctrlResult.result.entitlements)
+                        Map<String,List> tableData = exportService.generateTitleExportCSV(ctrlResult.result.entitlementIDs,IssueEntitlement.class.name)
                         out.withWriter { writer ->
                             writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.rows,';'))
                         }
@@ -701,7 +701,7 @@ class SubscriptionController {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
                 ServletOutputStream out = response.outputStream
-                Map<String,List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.tipps)
+                Map<String,List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.tipps,TitleInstancePackagePlatform.class.name)
                 out.withWriter { writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
                 }
@@ -711,7 +711,7 @@ class SubscriptionController {
             else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String,List> export = exportService.generateTitleExportXLS(ctrlResult.result.tipps)
+                Map<String,List> export = exportService.generateTitleExportXLS(ctrlResult.result.tipps,TitleInstancePackagePlatform.class.name)
                 Map sheetData = [:]
                 sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
                 SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -730,7 +730,7 @@ class SubscriptionController {
                     response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
-                    Map<String,List> tableData = exportService.generateTitleExportCSV(ctrlResult.result.tipps)
+                    Map<String,List> tableData = exportService.generateTitleExportCSV(ctrlResult.result.tipps,TitleInstancePackagePlatform.class.name)
                     out.withWriter { writer ->
                         writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.rows,';'))
                     }
@@ -979,13 +979,14 @@ class SubscriptionController {
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
         result.subscription =  result.surveyConfig.subscription
-        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.contextOrg))
+        result.ieIDs = subscriptionService.getIssueEntitlementIDsNotFixed(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.contextOrg))
+        result.ies = IssueEntitlement.findAllByIdInList(result.ieIDs)
         result.filename = "renewEntitlements_${escapeService.escapeString(result.subscription.dropdownNamingConvention())}"
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${result.filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = exportService.generateTitleExportKBART(result.ies)
+            Map<String, List> tableData = exportService.generateTitleExportKBART(result.ieIDs,IssueEntitlement.class.name)
             out.withWriter { Writer writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -995,7 +996,7 @@ class SubscriptionController {
         else if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=${result.filename}.xlsx")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportXLS(result.ies)
+            Map<String,List> export = exportService.generateTitleExportXLS(result.ieIDs,IssueEntitlement.class.name)
             Map sheetData = [:]
             sheetData[g.message(code:'subscription.details.renewEntitlements.label')] = [titleRow:export.titles,columnData:export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -1031,7 +1032,7 @@ class SubscriptionController {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
                 ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.sourceIEs)
+                Map<String, List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.sourceIEIDs,IssueEntitlement.class.name)
                 out.withWriter { Writer writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                 }
@@ -1040,7 +1041,7 @@ class SubscriptionController {
             } else if (params.exportXLS) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, List> export = exportService.generateTitleExportXLS(ctrlResult.result.sourceIEs)
+                Map<String, List> export = exportService.generateTitleExportXLS(ctrlResult.result.sourceIEIDs,IssueEntitlement.class.name)
                 Map sheetData = [:]
                 sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
                 SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -1342,8 +1343,7 @@ class SubscriptionController {
             if (params.isRenewSub) {
                 ctrlResult.result.isRenewSub = params.isRenewSub
             }
-            if((params.workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES && params.isRenewSub && ctrlResult.result.targetObject) ||
-               (params.workFlowPart == CopyElementsService.WORKFLOW_END && ctrlResult.result.targetObject)) {
+            if(params.workFlowPart == CopyElementsService.WORKFLOW_END && ctrlResult.result.targetObject) {
                 SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(ctrlResult.result.sourceObject, true)
                 if (surveyConfig && ctrlResult.result.fromSurvey) {
                     redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
@@ -1361,7 +1361,7 @@ class SubscriptionController {
         ctx.accessService.checkPermAffiliationX("ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
     })
     def copyMyElements() {
-        Map<String, Object> result = subscriptionControllerService.setCopyResultGenerics(params)
+        Map<String, Object> result = subscriptionControllerService.setCopyResultGenerics(params+[copyMyElements: true])
         if (!result) {
             response.sendError(401)
         }

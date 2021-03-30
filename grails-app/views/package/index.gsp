@@ -53,7 +53,7 @@
                     <th>${message(code: 'package.curatoryGroup.label')}</th>
                     <th>${message(code: 'package.source.label')}</th>
                     <g:sortableColumn property="lastUpdatedDisplay" title="${message(code: 'package.lastUpdated.label')}"
-                                      params="${params}"/>
+                                      params="${params}" defaultOrder="desc"/>
                     <sec:ifAllGranted roles="ROLE_YODA">
                         <th class="x"></th>
                     </sec:ifAllGranted>

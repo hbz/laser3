@@ -93,6 +93,7 @@ class CopyElementsService {
             }
         }
 
+        Org contextOrg = contextService.getOrg()
         if (sourceObject instanceof Subscription) {
             result.sourceLicenses = License.executeQuery("select li.sourceLicense from Links li where li.destinationSubscription = :sub and li.linkType = :linkType order by li.sourceLicense.sortableReference asc", [sub: sourceObject, linkType: RDStore.LINKTYPE_LICENSE])
             if (targetObject) {
@@ -102,12 +103,26 @@ class CopyElementsService {
             // restrict visible for templates/links/orgLinksAsList
             result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(sourceObject)
             result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(targetObject)
+
+            Set<RefdataValue> excludes = [RDStore.LINKTYPE_LICENSE]
+            if(params.isRenewSub)
+                excludes << RDStore.LINKTYPE_FOLLOWS
+            result.sourceLinks = Links.executeQuery("select li from Links li where :sub in (li.sourceSubscription,li.destinationSubscription) and li.linkType not in (:linkTypes) and owner = :context", [sub: sourceObject, linkTypes: excludes, context: contextOrg])
+            if(targetObject) {
+                result.targetLinks = Links.executeQuery("select li from Links li where :sub in (li.sourceSubscription,li.destinationSubscription) and li.linkType not in (:linkTypes) and owner = :context", [sub: targetObject, linkTypes: excludes, context: contextOrg])
+            }
         }
 
         if (sourceObject instanceof License) {
             // restrict visible for templates/links/orgLinksAsList
             result.source_visibleOrgRelations = licenseService.getVisibleOrgRelations(sourceObject)
             result.target_visibleOrgRelations = licenseService.getVisibleOrgRelations(targetObject)
+
+            Set<RefdataValue> excludes = [RDStore.LINKTYPE_LICENSE]
+            result.sourceLinks = Links.executeQuery("select li from Links li where :lic in (li.sourceLicense,li.destinationLicense) and li.linkType not in (:linkTypes) and owner = :context", [lic: sourceObject, linkTypes: excludes, context: contextOrg])
+            if(targetObject) {
+                result.targetLinks = Links.executeQuery("select li from Links li where :lic in (li.sourceLicense,li.destinationLicense) and li.linkType not in (:linkTypes) and owner = :context", [lic: targetObject, linkTypes: excludes, context: contextOrg])
+            }
         }
 
         result
@@ -123,8 +138,8 @@ class CopyElementsService {
 
         result.sourceObject = sourceObject
         result.targetObject = targetObject
-        result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.sourceObject)
-        result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.targetObject)
+        result.sourceTasks = taskService.getTasksByObject(result.sourceObject)
+        result.targetTasks = taskService.getTasksByObject(result.targetObject)
         result
     }
 
@@ -457,7 +472,7 @@ class CopyElementsService {
                     genericOIDService.resolveOID(it)
                 }
 
-                targetObject = targetObject.refresh()
+                //targetObject = targetObject.refresh()
                 targetObject.orgRelations.each { newSubOrgRole ->
 
                     if (newSubOrgRole.org in toggleShareOrgRoles.org) {
@@ -488,6 +503,18 @@ class CopyElementsService {
             if (params.list('copyObject.takeIdentifierIds') && isBothObjectsSet(sourceObject, targetObject)) {
                 List<Identifier> toCopyIdentifiers = params.list('copyObject.takeIdentifierIds').collect { genericOIDService.resolveOID(it) }
                 copyIdentifiers(sourceObject, toCopyIdentifiers, targetObject, flash)
+                //isTargetSubChanged = true
+            }
+
+            if (params.list('copyObject.deleteLinks') && isBothObjectsSet(sourceObject, targetObject)) {
+                List<Links> toDeleteLinks = params.list('copyObject.deleteLinks').collect { genericOIDService.resolveOID(it) }
+                deleteLinks(toDeleteLinks, flash)
+                //isTargetSubChanged = true
+            }
+
+            if (params.list('copyObject.takeLinks') && isBothObjectsSet(sourceObject, targetObject)) {
+                List<Links> toCopyLinks = params.list('copyObject.takeLinks').collect { genericOIDService.resolveOID(it) }
+                copyLinks(sourceObject, toCopyLinks, targetObject, flash)
                 //isTargetSubChanged = true
             }
         }
@@ -849,6 +876,30 @@ class CopyElementsService {
         Object[] args = [countDeleted]
     }
 
+    void copyLinks(Object sourceObject, List<Links> toCopyLinks, Object targetObject, def flash) {
+        toCopyLinks.each { Links sourceLink ->
+            Map<String, Object> configMap = [owner: sourceLink.owner, linkType: sourceLink.linkType]
+            if(sourceObject == sourceLink.determineSource()) {
+                configMap.source = targetObject
+                configMap.destination = sourceLink.determineDestination()
+            }
+            if(sourceObject == sourceLink.determineDestination()) {
+                configMap.source = sourceLink.determineSource()
+                configMap.destination = targetObject
+            }
+
+            Links.construct(configMap)
+
+            //factoryResult.setFlashScopeByStatus(flash)
+        }
+    }
+
+    void deleteLinks(List<Links> toDeleteLinks, def flash) {
+        int countDeleted = Identifier.executeUpdate('delete from Links li where li in (:toDeleteLinks)',
+                [toDeleteLinks: toDeleteLinks])
+        Object[] args = [countDeleted]
+    }
+
     def deleteDocs(List<Long> toDeleteDocs, Object targetObject, def flash) {
         log.debug("toDeleteDocCtxIds: " + toDeleteDocs)
         def updated = DocContext.executeUpdate("UPDATE DocContext set status = :del where id in (:ids)",
@@ -1056,14 +1107,16 @@ class CopyElementsService {
 
     boolean copyOrgRelations(List<OrgRole> toCopyOrgRelations, Object sourceObject, Object targetObject, def flash) {
         Locale locale = LocaleContextHolder.getLocale()
+        if (!targetObject.orgRelations)
+            targetObject.orgRelations = []
+        //question mark may be necessary because of lazy loading (there were some NPEs here in the past)
         sourceObject.orgRelations?.each { or ->
             if (or in toCopyOrgRelations && !(or.org?.id == contextService.getOrg().id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE, RDStore.OR_LICENSING_CONSORTIUM])) {
-                if (targetObject.orgRelations?.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
+                if (targetObject.orgRelations.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
                     Object[] args = [or?.roleType?.getI10n("value") + " " + or?.org?.name]
                     flash.error += messageSource.getMessage('subscription.err.alreadyExistsInTargetSub', args, locale)
                 } else {
                     def newProperties = or.properties
-
                     OrgRole newOrgRole = new OrgRole()
                     InvokerHelper.setProperties(newOrgRole, newProperties)
                     //Vererbung ausschalten
@@ -1075,7 +1128,9 @@ class CopyElementsService {
                     if (sourceObject instanceof License) {
                         newOrgRole.lic = targetObject
                     }
-                    save(newOrgRole, flash)
+                    //this is a bit dangerous ...
+                    if (save(newOrgRole, flash))
+                        targetObject.orgRelations << newOrgRole
                 }
             }
         }
@@ -1164,7 +1219,8 @@ class CopyElementsService {
                     }
 
                     subscriptionPackage.getIssueEntitlementsofPackage().each { ie ->
-                        if (ie.status != RDStore.TIPP_STATUS_DELETED) {
+                        //deleted check on both levels here because there are issue entitlements pointing to TIPPs which have been removed from we:kb
+                        if (ie.status != RDStore.TIPP_STATUS_DELETED && ie.tipp.status != RDStore.TIPP_STATUS_DELETED) {
                             def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ie.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
                             if (list.size() > 0) {
                                 // mich gibts schon! Fehlermeldung ausgeben!

@@ -967,12 +967,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
         Map<String,Object> packageJSON = fetchRecordJSON(false,[uuid: packageUUID])
         if(packageJSON.records) {
             Map packageRecord = (Map) packageJSON.records[0]
-            RefdataValue packageStatus = RefdataValue.getByValueAndCategory(packageRecord.status, RDConstants.PACKAGE_STATUS)
-            RefdataValue packageListStatus = RefdataValue.getByValueAndCategory(packageRecord.listStatus,RDConstants.PACKAGE_LIST_STATUS)
-            RefdataValue contentType = packageRecord.contentType ? RefdataValue.getByValueAndCategory(packageRecord.contentType,RDConstants.PACKAGE_CONTENT_TYPE) : null
-            //Package.withNewSession { Session sess ->
+            Package result = Package.findByGokbId(packageUUID)
+            Date lastUpdatedDisplay = DateUtils.parseDateGeneric(packageRecord.lastUpdatedDisplay)
+            if(!result || result?.lastUpdated < lastUpdatedDisplay) {
                 log.info("package record loaded, reconciling package record for UUID ${packageUUID}")
-                Package result = Package.findByGokbId(packageUUID)
+                RefdataValue packageStatus = RefdataValue.getByValueAndCategory(packageRecord.status, RDConstants.PACKAGE_STATUS)
+                RefdataValue packageListStatus = RefdataValue.getByValueAndCategory(packageRecord.listStatus,RDConstants.PACKAGE_LIST_STATUS)
+                RefdataValue contentType = packageRecord.contentType ? RefdataValue.getByValueAndCategory(packageRecord.contentType,RDConstants.PACKAGE_CONTENT_TYPE) : null
                 Date listVerifiedDate = packageRecord.listVerifiedDate ? DateUtils.parseDateGeneric(packageRecord.listVerifiedDate) : null
                 Map<String,Object> newPackageProps = [
                         uuid: packageUUID,
@@ -1009,7 +1010,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 result.name = packageRecord.name
                 result.packageStatus = packageStatus
                 result.listVerifiedDate = listVerifiedDate
-                result.packageListStatus = packageStatus
+                result.packageListStatus = packageListStatus
                 result.contentType = contentType
                 if(result.save()) {
                     if(packageRecord.nominalPlatformUuid) {
@@ -1029,12 +1030,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             Identifier.construct([namespace: id.namespace, value: id.value, reference: result, isUnique: false, nsType: Package.class.name])
                         }
                     }
-                    result
                 }
                 else {
                     throw new SyncException(result.errors)
                 }
-            //}
+            }
+            result
         }
         else {
             throw new SyncException("Package creation for ${packageUUID} called without record data! PANIC!")
@@ -1563,6 +1564,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.firstAuthor = tippB.firstAuthor
             tippA.firstEditor = tippB.firstEditor
             tippA.publisherName = tippB.publisherName
+            tippA.hostPlatformURL = tippB.hostPlatformURL
             tippA.dateFirstInPrint = (Date) tippB.dateFirstInPrint
             tippA.dateFirstOnline = (Date) tippB.dateFirstOnline
             tippA.imprint = tippB.imprint
@@ -1780,10 +1782,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
             log.info("processing diffs; the respective objects are: ${tippa.id} (TitleInstancePackagePlatform) pointing to ${tippb.id} (TIPP)")
         Set<Map<String, Object>> result = []
 
+        /*
+        IssueEntitlements do not have hostPlatformURLs
         if (tippa.hasProperty("hostPlatformURL") && tippa.hostPlatformURL != tippb.hostPlatformURL) {
-            if(!((tippa.hostPlatformURL == null && tippb.hostPlatformURL == "") || (tippa.hostPlatformURL == "" && tippb.hostPlatformUrl == null)))
+            if(!((tippa.hostPlatformURL == null && tippb.hostPlatformURL == "") || (tippa.hostPlatformURL == "" && tippb.hostPlatformURL == null)))
                 result.add([prop: 'hostPlatformURL', newValue: tippb.hostPlatformURL, oldValue: tippa.hostPlatformURL])
         }
+        */
 
         // This is the boss enemy when refactoring coverage statements ... works so far, is going to be kept
         // the question marks are necessary because only JournalInstance's TIPPs are supposed to have coverage statements

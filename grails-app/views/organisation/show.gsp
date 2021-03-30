@@ -293,9 +293,15 @@
                                 </span>
                             </dt>
                             <dd>
-                                <semui:xEditableRefData id="regions_${RDStore.COUNTRY_DE.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_DE}"/>
-                                <semui:xEditableRefData id="regions_${RDStore.COUNTRY_AT.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_AT}"/>
-                                <semui:xEditableRefData id="regions_${RDStore.COUNTRY_CH.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_CH}"/>
+                                <%-- for non-editable views, the region is displayed three times - not for editable views! --%>
+                                <g:if test="${editable}">
+                                    <semui:xEditableRefData id="regions_${RDStore.COUNTRY_DE.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_DE}"/>
+                                    <semui:xEditableRefData id="regions_${RDStore.COUNTRY_AT.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_AT}"/>
+                                    <semui:xEditableRefData id="regions_${RDStore.COUNTRY_CH.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_CH}"/>
+                                </g:if>
+                                <g:else>
+                                    ${orgInstance.region?.getI10n("value")}
+                                </g:else>
                             </dd>
                         </dl>
                     </div>

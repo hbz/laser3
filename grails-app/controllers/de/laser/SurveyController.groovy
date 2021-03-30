@@ -1438,7 +1438,8 @@ class SurveyController {
 
         result.subscriptionParticipant = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant)
 
-        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscriptionParticipant)
+        List<Long> ies = subscriptionService.getIssueEntitlementIDsNotFixed(result.subscriptionParticipant)
+        result.ies = IssueEntitlement.findAllByIdInList(ies)
 
         String filename = "renewEntitlements_${escapeService.escapeString(result.surveyConfig.subscription.dropdownNamingConvention(result.participant))}"
 
@@ -1446,7 +1447,7 @@ class SurveyController {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = exportService.generateTitleExportKBART(result.ies)
+            Map<String, List> tableData = exportService.generateTitleExportKBART(ies,IssueEntitlement.class.name)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -1455,7 +1456,7 @@ class SurveyController {
         }else if(params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportXLS(result.ies)
+            Map<String,List> export = exportService.generateTitleExportXLS(ies,IssueEntitlement.class.name)
             Map sheetData = [:]
             sheetData[g.message(code:'subscription.details.renewEntitlements.label')] = [titleRow:export.titles,columnData:export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)

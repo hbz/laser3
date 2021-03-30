@@ -1,13 +1,13 @@
-<%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.helper.RDConstants; de.laser.helper.RDStore" %>
 <laser:serviceInjection />
-<table class="ui three column table">
+<table class="ui four column table">
     <g:each in="${roleLinks}" var="role">
         <g:if test="${role.org}">
             <g:set var="cssId" value="prsLinksModal-${role.org.id}-${role.roleType.id}" />
 
             <tr>
                 <th scope="row" class="control-label la-js-dont-hide-this-card">${role.roleType.getI10n("value")}</th>
-                <td>
+                <td colspan="2">
                     <g:link controller="organisation" action="show" id="${role.org.id}">${role.org.name}</g:link>
                 </td>
 
@@ -78,19 +78,30 @@
                             Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg))}">
                 <tr>
                     <td></td>
-                    <td>
+                    <td colspan="2">
                         <%-- public --%>
                         <g:if test="${ Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
                                 Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)  }">
-                            <div class="ui list">
+                            <div class="ui divided middle list la-flex-list">
                                 <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'General contact person')}" var="func">
                                     <div class="item">
                                         <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
                                             <i class="address card icon"></i>
                                         </span>
                                         <div class="content">
-                                            ${func}
-                                            (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
+                                            <g:link controller="organisation" action="addressbook" id="${role.org}">${func}</g:link> (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
+                                            <g:each in="${Contact.findAllByPrsAndContentType(
+                                                    func,
+                                                    RDStore.CCT_EMAIL
+                                            )}" var="email">
+                                                <g:render template="/templates/cpa/contact" model="${[
+                                                        contact             : email,
+                                                        tmplShowDeleteButton: false,
+                                                        overwriteEditable   : false
+                                                ]}">
+
+                                                </g:render>
+                                            </g:each>
                                         </div>
                                     </div>
                                 </g:each>
@@ -100,8 +111,19 @@
                                             <i class="address card icon"></i>
                                         </span>
                                         <div class="content">
-                                            ${resp}
-                                            (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
+                                            <g:link controller="organisation" action="addressbook" id="${role.org.id}">${resp}</g:link> (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
+                                            <g:each in="${Contact.findAllByPrsAndContentType(
+                                                    resp,
+                                                    RDStore.CCT_EMAIL
+                                            )}" var="email">
+                                                <g:render template="/templates/cpa/contact" model="${[
+                                                        contact             : email,
+                                                        tmplShowDeleteButton: false,
+                                                        overwriteEditable   : false
+                                                ]}">
+
+                                                </g:render>
+                                            </g:each>
 
                                             <g:if test="${editmode}">
                                                 <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
@@ -122,15 +144,26 @@
                         <%-- private --%>
                         <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg) ||
                                 Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}">
-                            <div class="ui list">
+                            <div class="ui divided middle la-flex-list list">
                                 <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg)}" var="func">
                                     <div class="item">
                                         <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
                                             <i class="address card outline icon"></i>
                                         </span>
                                         <div class="content">
-                                            ${func}
-                                            (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
+                                            <g:link controller="organisation" action="addressbook" id="${role.org}">${func}</g:link> (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
+                                            <g:each in="${Contact.findAllByPrsAndContentType(
+                                                    func,
+                                                    RDStore.CCT_EMAIL
+                                            )}" var="email">
+                                                <g:render template="/templates/cpa/contact" model="${[
+                                                        contact             : email,
+                                                        tmplShowDeleteButton: false,
+                                                        overwriteEditable   : false
+                                                ]}">
+
+                                                </g:render>
+                                            </g:each>
                                         </div>
                                     </div>
                                 </g:each>
@@ -140,8 +173,19 @@
                                             <i class="address card outline icon"></i>
                                         </span>
                                         <div class="content">
-                                            ${resp}
-                                            (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
+                                            <g:link controller="organisation" action="addressbook" id="${role.org.id}">${resp}</g:link> (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
+                                            <g:each in="${Contact.findAllByPrsAndContentType(
+                                                    resp,
+                                                    RDStore.CCT_EMAIL
+                                            )}" var="email">
+                                                <g:render template="/templates/cpa/contact" model="${[
+                                                        contact             : email,
+                                                        tmplShowDeleteButton: false,
+                                                        overwriteEditable   : false
+                                                ]}">
+
+                                                </g:render>
+                                            </g:each>
 
                                             <g:if test="${editmode}">
                                                 <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />

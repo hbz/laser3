@@ -47,7 +47,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                 <br />
                 <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
                 <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
-
+                <i class="exchange icon"></i>${message(code: 'license.linkedObjects')}
             </div>
         </div>
     </div>

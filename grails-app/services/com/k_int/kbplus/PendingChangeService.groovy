@@ -436,7 +436,7 @@ class PendingChangeService extends AbstractLockableService {
         //package changes
         String subscribedPackagesQuery = 'select new map(sp as subPackage,pcc as config) from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp join sp.subscription sub join sub.orgRelations oo where oo.org = :context and oo.roleType in (:roleTypes) and ((pcc.settingValue = :prompt or pcc.withNotification = true) and pcc.settingKey not in (:excludes))'
         Map<String,Object> spQueryParams = [context:configMap.contextOrg,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER],prompt:RDStore.PENDING_CHANGE_CONFIG_PROMPT,excludes:[PendingChangeConfiguration.NEW_PRICE,PendingChangeConfiguration.PRICE_UPDATED,PendingChangeConfiguration.PRICE_DELETED]]
-        if(configMap.contextOrg.getCustomerType() == "ORG_CONSORTIUM") {
+        if(configMap.consortialView) {
             subscribedPackagesQuery += ' and sub.instanceOf = null'
         }
         List tokensWithNotifications = SubscriptionPackage.executeQuery(subscribedPackagesQuery,spQueryParams)
@@ -459,23 +459,28 @@ class PendingChangeService extends AbstractLockableService {
                 packageSettingMap.put(row.subPackage, setting)
             }
         }
-        List query1Clauses = [], query2Clauses = []
+        List query1Clauses = [], query2Clauses = [], query3Clauses = []
         String query1 = "select pc from PendingChange pc where pc.owner = :contextOrg and pc.status in (:status) and (pc.msgToken = :newSubscription or pc.costItem != null)",
         query2 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'pkg\' from PendingChange pc join pc.pkg pkg where pkg in (:packages) and pc.oid = null',
+        query5 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'pkg\' from PendingChange pc join pc.pkg pkg where pkg in (:packages) and pc.oid = null',
         query3 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'tipp.pkg\'  from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = null',
-        query4 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'tippCoverage.tipp.pkg\'  from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = null'
+        query6 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'tipp.pkg\'  from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = null',
+        query4 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'tippCoverage.tipp.pkg\'  from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = null',
+        query7 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'tippCoverage.tipp.pkg\'  from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = null'
         //query5 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'priceItem.tipp.pkg\' from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = null'
         Map<String,Object> query1Params = [contextOrg:configMap.contextOrg, status:[RDStore.PENDING_CHANGE_PENDING,RDStore.PENDING_CHANGE_ACCEPTED], newSubscription: "pendingChange.message_SU_NEW_01"],
-        query2Params = [packages:subscribedPackages]
+        query2Params = [packages:subscribedPackages],
+        query3Params = [packages:subscribedPackages]
         if(configMap.periodInDays) {
             query1Clauses << "pc.ts >= :time"
             query1Params.time = time
             if(withNotification && prompt)
             {
-                query2Clauses << "((pc.ts >= :time and pc.msgToken in (:withNotification)) or pc.msgToken in (:prompt))"
+                query2Clauses << "(pc.ts >= :time and pc.msgToken in (:withNotification))"
+                query3Clauses << "(pc.msgToken in (:prompt))"
                 query2Params.time = time
                 query2Params.withNotification = withNotification
-                query2Params.prompt = prompt
+                query3Params.prompt = prompt
             }
             else if (withNotification && !prompt){
                 query2Clauses << "(pc.ts >= :time and pc.msgToken in (:withNotification))"
@@ -483,8 +488,8 @@ class PendingChangeService extends AbstractLockableService {
                 query2Params.withNotification = withNotification
             }
             else if (!withNotification && prompt){
-                query2Clauses << "(pc.msgToken in (:prompt))"
-                query2Params.prompt = prompt
+                query3Clauses << "(pc.msgToken in (:prompt))"
+                query3Params.prompt = prompt
             }
 
         }
@@ -497,12 +502,20 @@ class PendingChangeService extends AbstractLockableService {
             query4 += ' and ' + query2Clauses.join(" and ")
             //query5 += ' and ' + query2Clauses.join(" and ")
         }
+        if(query3Clauses) {
+            query5 += ' and ' + query3Clauses.join(" and ")
+            query6 += ' and ' + query3Clauses.join(" and ")
+            query7 += ' and ' + query3Clauses.join(" and ")
+        }
         List<PendingChange> nonPackageChanges = PendingChange.executeQuery(query1,query1Params) //PendingChanges need to be refilled in maps
-        List tokensOnly = [], pending = [], notifications = []
+        List tokensNotifications = [], tokensPrompt = [], pending = [], notifications = []
         if (subscribedPackages) {
-            tokensOnly.addAll(PendingChange.executeQuery(query2 + ' group by pc.msgToken,pkg.id', query2Params))
-            tokensOnly.addAll(PendingChange.executeQuery(query3 + ' group by pc.msgToken,pkg.id', query2Params))
-            tokensOnly.addAll(PendingChange.executeQuery(query4 + ' group by pc.msgToken,pkg.id', query2Params))
+            tokensNotifications.addAll(PendingChange.executeQuery(query2 + ' group by pc.msgToken,pkg.id', query2Params))
+            tokensPrompt.addAll(PendingChange.executeQuery(query5 + ' group by pc.msgToken,pkg.id', query3Params))
+            tokensNotifications.addAll(PendingChange.executeQuery(query3 + ' group by pc.msgToken,pkg.id', query2Params))
+            tokensPrompt.addAll(PendingChange.executeQuery(query6 + ' group by pc.msgToken,pkg.id', query3Params))
+            tokensNotifications.addAll(PendingChange.executeQuery(query4 + ' group by pc.msgToken,pkg.id', query2Params))
+            tokensPrompt.addAll(PendingChange.executeQuery(query7 + ' group by pc.msgToken,pkg.id', query3Params))
             //tokensOnly.addAll(PendingChange.executeQuery(query5 + ' group by pc.msgToken,pkg.id', query2Params))
             /*
                I need to summarize here:
@@ -510,22 +523,28 @@ class PendingChangeService extends AbstractLockableService {
                - for package changes: the old and new value (there, I can just add the pc row as is)
                - for title and coverage changes: I just need to record that *something* happened and then, on the details page (method subscriptionControllerService.entitlementChanges()), to enumerate the actual changes
             */
-            tokensOnly.each { row ->
+            tokensNotifications.each { row ->
                 Set<SubscriptionPackage> spSet = tokensWithNotifications.findAll { tokenRow -> tokenRow.subPackage.pkg.id == row[1] }.subPackage
-                spSet.each {SubscriptionPackage sp ->
-                    String setting = packageSettingMap.get(sp)
-                    Object[] args = [row[2]]
-                    Map<String,Object> eventRow = [subPkg:sp,eventString:messageSource.getMessage(row[0],args,locale)]
-                    if(setting == "prompt") {
+                spSet.each { SubscriptionPackage sp ->
+                    //here, it may be redundant, is just to go for sure ...
+                    if(packageSettingMap.get(sp) == "notify") {
+                        Object[] args = [row[2]]
+                        Map<String,Object> eventRow = [subPkg:sp,eventString:messageSource.getMessage(row[0],args,locale)]
+                        notifications << eventRow
+                    }
+                }
+            }
+            tokensPrompt.each { row ->
+                Set<SubscriptionPackage> spSet = tokensWithNotifications.findAll { tokenRow -> tokenRow.subPackage.pkg.id == row[1] }.subPackage
+                spSet.each { SubscriptionPackage sp ->
+                    if(packageSettingMap.get(sp) == "prompt") {
                         //List<PendingChange> pendingChange1 = PendingChange.executeQuery('select pc.id from PendingChange pc where pc.'+row[3]+' = :package and pc.oid = :oid and pc.status != :accepted',[package:sp.pkg,oid:genericOIDService.getOID(sp.subscription),accepted:RDStore.PENDING_CHANGE_ACCEPTED])
-
                         if(!PendingChange.executeQuery('select pc.id from PendingChange pc where pc.'+row[3]+' = :package and pc.oid = :oid and pc.status in (:acceptedStatus)',[package:sp.pkg,oid:genericOIDService.getOID(sp.subscription),acceptedStatus:[RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED]])){
+                            Object[] args = [row[2]]
+                            Map<String,Object> eventRow = [subPkg:sp,eventString:messageSource.getMessage(row[0],args,locale)]
                             //eventRow.changeId = pendingChange1 ? pendingChange1[0] : null
                             pending << eventRow
                         }
-                    }
-                    else if(setting == "notify") {
-                        notifications << eventRow
                     }
                 }
             }

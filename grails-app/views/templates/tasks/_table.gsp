@@ -21,7 +21,7 @@
                 <th>
                     ${message(code: 'task.assignedTo.label')}
                 </th>
-                <g:sortableColumn property="lower(t.creator.username)" title="${message(code: 'task.creator.label')}"/>
+                <%--<g:sortableColumn property="lower(t.creator.username)" title="${message(code: 'task.creator.label')}"/>--%>
                 <g:sortableColumn property="t.createDate" title="${message(code: 'task.createDate.label')}"/>
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
@@ -58,7 +58,7 @@
                         <g:if test="${taskInstance.responsibleUser}">${taskInstance.responsibleUser}</g:if>
                     </td>
 
-                    <td>${fieldValue(bean: taskInstance, field: "creator")}</td>
+                    <%--<td>${fieldValue(bean: taskInstance, field: "creator")}</td>--%>
 
                     <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance?.createDate}"/></td>
 

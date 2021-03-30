@@ -130,7 +130,7 @@ class SubscriptionService {
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
         pu.setBenchmark('fetch licenses')
         if(subscriptions)
-            result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndLinkType(result.subscriptions,RDStore.LINKTYPE_LICENSE)
+            result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndSourceLicenseIsNotNullAndLinkType(result.subscriptions,RDStore.LINKTYPE_LICENSE)
         pu.setBenchmark('after licenses')
         List bm = pu.stopBenchmark()
         result.benchMark = bm
@@ -704,6 +704,14 @@ class SubscriptionService {
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
         ies.sort {it.tipp.sortName}
+        ies
+    }
+
+    List getIssueEntitlementIDsNotFixed(Subscription subscription) {
+        List<Long> ies = subscription?
+                IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus order by ie.tipp.sortName",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                : []
         ies
     }
 

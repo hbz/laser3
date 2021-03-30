@@ -345,7 +345,8 @@
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</semui:link>
                                     </div>
                                 </div>
-
+                                <div class="divider"></div>
+                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="statsSync">${message(code:'menu.admin.stats.sync')}</semui:link>
                                 <div class="divider"></div>
 
                                 <div class="item" role="menuitem" aria-haspopup="true">

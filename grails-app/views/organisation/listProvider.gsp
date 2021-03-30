@@ -59,7 +59,7 @@
             <g:form action="listProvider" method="get" class="ui form">
                 <g:render template="/templates/filter/orgFilter"
                           model="[
-                                  tmplConfigShow: [['name', 'identifier'], ['country', 'property&value']],
+                                  tmplConfigShow: [['name', 'identifier']],
                                   tmplConfigFormFilter: true
                           ]"/>
             </g:form>

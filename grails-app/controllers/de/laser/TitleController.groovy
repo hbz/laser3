@@ -33,7 +33,7 @@ class TitleController  {
         Map<String, Object> result = [:]
 
             params.rectype = "TitleInstancePackagePlatform" // Tells ESSearchService what to look for
-            params.showAllTitles = true
+            //params.showAllTitles = true
             result.user = contextService.getUser()
             params.max = params.max ?: result.user.getDefaultPageSize()
 
@@ -54,6 +54,7 @@ class TitleController  {
                 params.put(params.filter, params.q)
                 params.q = null
             }
+
 
             result =  ESSearchService.search(params)
             //Double-Quoted search strings wont display without this

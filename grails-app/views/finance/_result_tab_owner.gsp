@@ -22,7 +22,7 @@
                 <g:sortableColumn property="ci.costItemStatus" title="${message(code:'default.status.label')}" params="[ownSort: true]"/>
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[ownSort: true]"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[ownSort: true]"/>
-                <th></th>
+                <th class="la-action-info"><g:message code="default.actions.label"/></th>
             </g:if>
             <g:else>
                 <th>${message(code:'sidewide.number')}</th>
@@ -33,7 +33,7 @@
                 <g:sortableColumn property="ci.costItemStatus" title="${message(code:'default.status.label')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <th></th>
+                <th class="la-action-info"><g:message code="default.actions.label"/></th>
             </g:else>
         </tr>
         <tr>
@@ -106,7 +106,7 @@
                     </td>
                     <g:if test="${!fixedSubscription}">
                         <td>
-                            <g:if test="${ci.sub}">${ci.sub} (${formatDate(date:ci.sub.startDate,format:message(code: 'default.date.format.notime'))} - ${formatDate(date: ci.sub.endDate, format: message(code: 'default.date.format.notime'))})</g:if>
+                            <g:if test="${ci.sub}"><g:link controller="subscription" action="show" id="${ci.sub.id}">${ci.sub}</g:link> (${formatDate(date:ci.sub.startDate,format:message(code: 'default.date.format.notime'))} - ${formatDate(date: ci.sub.endDate, format: message(code: 'default.date.format.notime'))})</g:if>
                             <g:else>${message(code:'financials.clear')}</g:else>
                         </td>
                     </g:if>

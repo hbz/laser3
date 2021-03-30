@@ -380,26 +380,27 @@ class AjaxJsonController {
 
     @Secured(['ROLE_USER'])
     def getRegions() {
-        List<RefdataValue> result = []
+        Set<RefdataValue> result = []
         if (params.country) {
             List<Long> countryIds = params.country.split(',')
-            countryIds.each {
-                switch (RefdataValue.get(it).value) {
+            countryIds.each { Long c ->
+                switch (RefdataValue.get(c).value) {
                     case 'DE':
                         result.addAll( RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE]) )
-                        break;
+                        break
                     case 'AT':
                         result.addAll( RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_AT]) )
-                        break;
+                        break
                     case 'CH':
                         result.addAll( RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_CH]) )
-                        break;
+                        break
                 }
             }
         }
-        result = result.flatten()
-
-        render result as JSON // TODO -> check response; remove unnecessary information! only id and value_<x>?
+        else {
+            result.addAll(RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE,RDConstants.REGIONS_AT,RDConstants.REGIONS_CH]))
+        }
+        render result as JSON
     }
 
     @Secured(['ROLE_USER'])

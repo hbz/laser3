@@ -341,7 +341,7 @@ class MyInstitutionController  {
                     + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
                     + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
                     + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
-                    + " ) ) ) ) ")
+                    + " ) ) ) ) or ( exists ( select li from Links li join li.destinationSubscription s where li.sourceLicense = l and genfunc_filter_matcher(s.name, :name_filter) = true ) ) ")
             qry_params.name_filter = params['keyword-search']
             qry_params.licRoleTypes = [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]
             result.keyWord = params['keyword-search']
@@ -379,7 +379,7 @@ class MyInstitutionController  {
                 subscrQueryFilter << "s.instanceOf is null"
             }
 
-            base_qry += " or exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" )"
+            base_qry += " and ( exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" ) or ( not exists ( select li from Links li where li.sourceLicense = l and li.linkType = :linkType ) ) )"
             qry_params.linkType = RDStore.LINKTYPE_LICENSE
         }
 
@@ -399,7 +399,7 @@ class MyInstitutionController  {
 
         result.licenses = totalLicenses.drop((int) result.offset).take((int) result.max)
         if(result.licenses) {
-            Set<Links> allLinkedSubscriptions = Subscription.executeQuery("select li from Links li join li.destinationSubscription s join s.orgRelations oo where li.sourceLicense in (:licenses) and li.linkType = :linkType and s.status.id = :status and oo.org = :context", [licenses: result.licenses, linkType: RDStore.LINKTYPE_LICENSE, status: qry_params.subStatus,context:result.institution])
+            Set<Links> allLinkedSubscriptions = Subscription.executeQuery("select li from Links li join li.destinationSubscription s join s.orgRelations oo where li.sourceLicense in (:licenses) and li.linkType = :linkType and s.status.id = :status and oo.org = :context order by s.name", [licenses: result.licenses, linkType: RDStore.LINKTYPE_LICENSE, status: qry_params.subStatus,context:result.institution])
             Map<License,Set<Subscription>> subscriptionLicenseMap = [:]
             allLinkedSubscriptions.each { Links li ->
                 Set<Subscription> subscriptions = subscriptionLicenseMap.get(li.sourceLicense)
@@ -1124,16 +1124,16 @@ join sub.orgRelations or_sub where
         if(queryFilter)
             qryString += ' and '+queryFilter.join(' and ')
 
-        Set<Long> currentIssueEntitlements = IssueEntitlement.executeQuery(qryString+' group by tipp, ie.id',qryParams)
+        Set<Long> currentIssueEntitlements = IssueEntitlement.executeQuery(qryString+' group by tipp, ie.id order by ie.tipp.sortName asc',qryParams)
         //second filter needed because double-join on same table does deliver me empty results
         if (filterPvd) {
-            currentIssueEntitlements = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") and ie.id in (:currentIEs)",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER],currentIEs:currentIssueEntitlements])
+            currentIssueEntitlements = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") and ie.id in (:currentIEs) order by ie.tipp.sortName asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER],currentIEs:currentIssueEntitlements])
         }
         Set<TitleInstancePackagePlatform> allTitles = currentIssueEntitlements ? TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) '+orderByClause,[ids:currentIssueEntitlements],[max:result.max,offset:result.offset]) : []
-        result.subscriptions = Subscription.executeQuery('select sub from Subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and sub.status = :current '+instanceFilter+" order by sub.name asc",[
+        result.subscriptions = Subscription.executeQuery('select sub from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and sub.status = :current '+instanceFilter+" order by sub.name asc",[
                 institution: result.institution,
                 current: RDStore.SUBSCRIPTION_CURRENT,
-                orgRoles: orgRoles])
+                orgRoles: orgRoles]).toSet()
         Set<Long> allIssueEntitlements = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription in (:currentSubs)',[currentSubs:result.subscriptions])
         result.providers = Org.executeQuery('select org.id,org.name from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo join oo.org org where ie.id in (:currentIEs) group by org.id order by org.name asc',[currentIEs:allIssueEntitlements])
         result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.id in (:currentIEs) group by plat.id order by plat.name asc',[currentIEs:allIssueEntitlements])
@@ -1150,7 +1150,7 @@ join sub.orgRelations or_sub where
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String,List> tableData = exportService.generateTitleExportKBART(currentIssueEntitlements)
+            Map<String,List> tableData = exportService.generateTitleExportKBART(currentIssueEntitlements, IssueEntitlement.class.name)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
             }
@@ -1160,7 +1160,7 @@ join sub.orgRelations or_sub where
         else if(params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportXLS(currentIssueEntitlements)
+            Map<String,List> export = exportService.generateTitleExportXLS(currentIssueEntitlements, IssueEntitlement.class.name)
             Map sheetData = [:]
             sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -1179,9 +1179,9 @@ join sub.orgRelations or_sub where
                     response.contentType = "text/csv"
 
                     ServletOutputStream out = response.outputStream
-                    Map<String,List> tableData = exportService.generateTitleExportCSV(currentIssueEntitlements)
+                    Map<String,List> tableData = exportService.generateTitleExportCSV(currentIssueEntitlements, IssueEntitlement.class.name)
                     out.withWriter { writer ->
-                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,';'))
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.rows,'|'))
                     }
                     out.flush()
                     out.close()
@@ -2560,12 +2560,12 @@ join sub.orgRelations or_sub where
                         //provider
                         log.debug("insert provider name")
                         cellnum++
-                        String providersString = " "
-                        providers.get(subCons).each { p ->
-                            log.debug("Getting provider ${p}")
-                            providersString += "${p.name} "
+                        List<String> providerNames = []
+                        subCons.orgRelations.findAll{ OrgRole oo -> oo.roleType in [RDStore.OR_PROVIDER,RDStore.OR_AGENCY] }.each { OrgRole p ->
+                            log.debug("Getting provider ${p.org}")
+                            providerNames << p.org.name
                         }
-                        row.add(providersString.replaceAll(',', ' '))
+                        row.add(providerNames.join( ' '))
                         //running time from / to
                         log.debug("insert running times")
                         cellnum++

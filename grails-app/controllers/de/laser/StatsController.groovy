@@ -18,7 +18,6 @@ select distinct(o), count(u)
 from Org as o, User as u, UserOrg as uo 
 where uo.user = u 
 and uo.org = o
-and ( uo.status = 1 or uo.status = 3 )
 group by o
 ''');
 

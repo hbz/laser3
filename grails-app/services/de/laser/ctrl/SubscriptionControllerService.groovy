@@ -109,8 +109,11 @@ class SubscriptionControllerService {
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
             Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(result.contextOrg)
             result << preCon
+            Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
+            if(result.institution.getCustomerType() == "ORG_CONSORTIUM")
+                excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
             // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]) }
+            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
             //}
             pu.setBenchmark('properties')
             // TODO: experimental asynchronous task
@@ -157,7 +160,7 @@ class SubscriptionControllerService {
                 } else {
                     pu.setBenchmark('before loading platform')
                     Long supplier_id = suppliers[0]
-                    PlatformProperty platform = PlatformProperty.executeQuery('select pp from PlatformProperty pp join pp.type pd where pp.owner.id = :owner and pd.name = :name and pd.descr = :descr', [owner: supplier_id, name: 'NatStat Supplied ID', descr: PropertyDefinition.PLA_PROP])
+                    PlatformProperty platform = PlatformProperty.executeQuery('select pp from PlatformProperty pp join pp.type pd where pp.owner.id = :owner and pd.name = :name and pd.descr = :descr', [owner: supplier_id, name: 'NatStat Supplier ID', descr: PropertyDefinition.PLA_PROP])[0]
                     //        PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
                     pu.setBenchmark('before institutional usage identifier')
                     result.natStatSupplierId = platform?.stringValue ?: null
@@ -166,7 +169,7 @@ class SubscriptionControllerService {
                         def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscription)
                         pu.setBenchmark('before usage data sub period')
                         def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscription)
-                        Set<RefdataValue> holdingTypes = RefdataValue.executeQuery('select ti.medium from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :context', [context: result.subscription])
+                        Set<RefdataValue> holdingTypes = RefdataValue.executeQuery('select tipp.titleType from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :context', [context: result.subscription])
                         if (!holdingTypes) {
                             log.debug('No types found, maybe there are no issue entitlements linked to subscription')
                         } else if (holdingTypes.size() > 1) {
@@ -192,7 +195,8 @@ class SubscriptionControllerService {
                             result.lusage = fsLicenseResult?.usage
                             pu.setBenchmark('before last usage period for report type')
                             result.lastUsagePeriodForReportType = factService.getLastUsagePeriodForReportType(result.natStatSupplierId, result.statsWibid)
-                            result.l_x_axis_labels = fsLicenseResult?.x_axis_labelsresult.l_y_axis_labels = fsLicenseResult?.y_axis_labels
+                            result.l_x_axis_labels = fsLicenseResult?.x_axis_labels
+                            result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
                         }
                     } else
                         log.info('institutional usage identifier not available')
@@ -1169,15 +1173,15 @@ class SubscriptionControllerService {
             List<IssueEntitlement> sourceIEs
             if(params.tab == 'allIEs') {
                 Map query = filterService.getIssueEntitlementQuery(params, baseSub)
-                sourceIEs = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams+[max:5000,offset:0])
+                sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
             }
             if(params.tab == 'selectedIEs') {
                 Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
-                sourceIEs = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams)
+                sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
             }
 
             Map query = filterService.getIssueEntitlementQuery(params, newSub)
-            List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams+[max: 5000, offset: 0])
+            List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams+[max: 5000, offset: 0])
             List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
             List<IssueEntitlement> notFixedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub)
 
@@ -1186,8 +1190,9 @@ class SubscriptionControllerService {
             result.countAllSourceIEs = sourceIEs.size()
             result.num_ies_rows = sourceIEs.size()
             //subscriptionService.getIssueEntitlementsFixed(baseSub).size()
-            result.sourceIEs = sourceIEs.drop(result.offset).take(result.max)
-            result.targetIEs = targetIEs
+            result.sourceIEIDs = sourceIEs
+            result.sourceIEs = IssueEntitlement.findAllByIdInList(sourceIEs,[offset: result.offset, max: result.max])
+            result.targetIEs = IssueEntitlement.findAllByIdInList(targetIEs)
             result.newSub = newSub
             result.subscription = baseSub
             result.subscriber = result.newSub.getSubscriber()
@@ -1431,13 +1436,7 @@ class SubscriptionControllerService {
                 }
             }
             result.issueEntitlementEnrichment = params.issueEntitlementEnrichment
-            if(params.format || params.exportXLSX || params.exportKBart) {
-                result.max = 10000
-                result.offset = 0
-            }
-            else {
-                SwissKnife.setPaginationParams(result, params, (User) result.user)
-            }
+            SwissKnife.setPaginationParams(result, params, (User) result.user)
            /* List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription = :sub and ( pc.status is null or pc.status = :status ) order by ts desc",
                     [sub: result.subscription, status: RDStore.PENDING_CHANGE_PENDING])
             result.pendingChanges = pendingChanges*/
@@ -1446,6 +1445,7 @@ class SubscriptionControllerService {
             def query = filterService.getIssueEntitlementQuery(params, result.subscription)
             result.filterSet = query.filterSet
             Set<Long> entitlements = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
+            result.entitlementIDs = entitlements
             if(params.kbartPreselect) {
                 MultipartFile kbartFile = params.kbartPreselect
                 InputStream stream = kbartFile.getInputStream()
@@ -1459,11 +1459,21 @@ class SubscriptionControllerService {
             if(result.subscription.ieGroups.size() > 0) {
                 params.forCount = true
                 def query2 = filterService.getIssueEntitlementQuery(params, result.subscription)
-                result.num_ies = IssueEntitlement.executeQuery("select count(ie) " + query2.query, query2.queryParams+[max: 5000, offset: 0])[0]
+                result.num_ies = IssueEntitlement.executeQuery("select count(ie.id) " + query2.query, query2.queryParams)[0]
             }
             result.num_ies_rows = entitlements.size()
-            if(entitlements)
-                result.entitlements = IssueEntitlement.findAllByIdInList(entitlements,[offset:result.offset,max:result.max])
+            if(entitlements) {
+                String orderClause = 'order by tipp.sortName asc'
+                if(params.sort){
+                    if(params.sort == 'startDate')
+                        orderClause = "order by ic.startDate ${params.order}, lower(ie.tipp.sortName) asc "
+                    else if(params.sort == 'endDate')
+                        orderClause = "order by ic.endDate ${params.order}, lower(ie.tipp.sortName) asc "
+                    else
+                        orderClause = "order by ${params.sort} ${params.order} "
+                }
+                result.entitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp left join ie.coverages ic where ie.id in (:entIDs) '+orderClause,[entIDs:entitlements],[offset:result.offset,max:result.max])
+            }
             else result.entitlements = []
             Set<SubscriptionPackage> deletedSPs = result.subscription.packages.findAll { SubscriptionPackage sp -> sp.pkg.packageStatus == RDStore.PACKAGE_STATUS_DELETED}
             if(deletedSPs) {
@@ -1585,13 +1595,7 @@ class SubscriptionControllerService {
                     result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
                 }
             }
-            if(params.exportXLSX || params.exportKBart || params.format) {
-                result.max = 10000
-                result.offset = 0
-            }
-            else {
-                SwissKnife.setPaginationParams(result, params, (User) result.user)
-            }
+            SwissKnife.setPaginationParams(result, params, (User) result.user)
             RefdataValue tipp_current = RDStore.TIPP_STATUS_CURRENT
             RefdataValue ie_deleted = RDStore.TIPP_STATUS_DELETED
             RefdataValue ie_current = RDStore.TIPP_STATUS_CURRENT
@@ -2488,7 +2492,12 @@ class SubscriptionControllerService {
         result.consortialView = result.showConsortiaFunctions
         result.editable = result.sourceObject?.isEditableBy(result.user)
         if (!result.editable) {
-            null
+            //the explicit comparison against bool(true) should ensure that not only the existence of the parameter is checked but also its proper value
+            if(params.copyMyElements == true) {
+                if(accessService.checkPermAffiliation('ORG_INST','INST_EDITOR'))
+                    result
+            }
+            else null
         }
         else if(!result.sourceObject?.isVisibleBy(result.user))
             null

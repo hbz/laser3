@@ -7,6 +7,70 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3287    30.03.2021  rc2.0   2.0.5       Andreas Bug         NullPointerException bei ElasticSearch-Indexeingabe bei TIPPs behoben
+
+3197    30.03.2021  rc2.0   2.0.5       Andreas Bug         Validierung des Zuständigen verschärft, Ausgaben korrigiert
+
+--      30.03.2021  rc2.0   2.0.5       Andreas Bug         NullPointerException bei Alle Titel aufgefangen
+
+3286    29.03.2021  rc2.0   2.0.5       Andreas Bug         Filter in "Meine Verträge" korrigiert
+
+3283    29.03.2021  rc2.0   2.0.5       Andreas Bug         falsches Setzen der Berechtigung bei Übertrag eigener Merkmale für Vollnutzer
+
+3277    29.03.2021  rc2.0   2.0.5       Andreas Bug         falsche Weiterleitung bei Lizenzverlängerung behoben
+
+3264    29.03.2021  rc2.0   2.0.5       Andreas Bug         Lizenzparameter wurden nicht übertragen, wenn Anbieterverknüpfung vorlag
+
+3271    26.03.2021  rc2.0   2.0.5       Andreas Feature     Sprung- und Mailto-Link hinter Lizenzkontakt gefügt 
+
+3269    26.03.2021  rc2.0   2.0.5       Andreas Bug         Leitweg-ID und Leitweg-Kriterium intern anwählbar, wenn Identifier fehlen
+
+3267    26.03.2021  rc2.0   2.0.5       Andreas Bug         Hinweis zur Verwendung des korrekten Trennzeichens bei Massenuploads
+
+3266    26.03.2021  rc2.0   2.0.5       Andreas Bug         Export von "Meine Lizenzen pro Einrichtung" hakte an falschem Aufruf
+
+3265    26.03.2021  rc2.0   2.0.5       Andreas Bug         Reaktivierung der Statistikdaten ex Nationaler Statistikserver
+
+3263    26.03.2021  rc2.0   2.0.5       Andreas Bug         entfallene Angabe des Konsortiums wieder eingefügt
+
+3261    26.03.2021  rc2.0   2.0.5       Andreas Bug         Ausgabe der Benachrichtigungen und Änderungen korrigiert
+
+3259    26.03.2021  rc2.0   2.0.5       Andreas Bug         Sync-Verhalten für hostPlatformURL umkonfiguriert
+
+3256    26.03.2021  rc2.0   2.0.5       Andreas Bug         Klausel in Vertragsfilter von oder auf und gestellt
+
+3255    26.03.2021  rc2.0   2.0.5       Andreas Bug         Filterparameter bei Merkmalen werden durchgereicht
+
+3254    26.03.2021  rc2.0   2.0.5       Andreas Bug         Filter der Merkmale bei "Alle Anbieter und Lieferanten" entfernt
+
+3252    26.03.2021  rc2.0   2.0.5       Andreas Bug         Export reaktiviert und für große Datenmengen ertüchtigt
+
+3253    23.03.2021  rc2.0   2.0.5       Andreas Bug         Markierung von Titel, deren Quellen als gelöscht markiert sind, in der Kopierfunktion
+
+3121    26.03.2021  rc2.0   2.0.5       Andreas Feature     Links zu Lizenzen in Kostenübersicht gemäß Ticket eingefügt
+
+3217    22.03.2021  rc2.0   2.0.5       Andreas Bug         fehlende Tabellenüberschrift nachgetragen
+
+--      22.03.2021  rc2.0   2.0.5       Andreas Bug         Fehler behoben, der zu Speicherfehler der JDBC-Statements führte
+
+3248    22.03.2021  rc2.0   2.0.5       Andreas Bug         inkorrektes Laden von fälligen Terminen wegen falscher Benennung von Parameter
+
+3159    22.03.2021  rc2.0   2.0.5       Andreas Feature     Begrenzung der Lademenge von Lizenzen auf Lizenzen mit Titel
+
+3241    19.03.2021  rc2.0   2.0.5       Andreas Bug         korrekte Sortierung der Lizenzen zu einem Vertrag
+
+3223    19.03.2021  rc2.0   2.0.5       Andreas Bug         Region-Filter wird mit Werten befüllt
+
+3217    19.03.2021  rc2.0   2.0.5       Andreas Bug         Spalte "Optionen" für Vollnutzer eingeblendet
+
+3212    19.03.2021  rc2.0   2.0.5       Andreas Bug         Verknüpfungsanzeige wird richtig aufgelöst
+
+3200    19.03.2021  rc2.0   2.0.5       Andreas Bug         Icon bei Umfrage-Sicht korrigiert
+
+3186    19.03.2021  rc2.0   2.0.5       Andreas Bug         Lizenzkopie um Aufgaben und Verknüpfungen erweitert
+
+3246    19.03.2021  rc2.0   2.0.5       Andreas Bug         Meine Lizenzen lädt nur noch beidseitig belegte Verknüpfungen
+
 3239    19.03.2021  rc2.0   2.0.5       Andreas Bug         Filter erweitert und angepasst
 
 3238    19.03.2021  rc2.0   2.0.5       Andreas Bug         irrtümliche Selbstbenachrichtigung bei Kostenkopie-Änderung behoben

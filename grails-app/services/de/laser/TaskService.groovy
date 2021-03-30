@@ -21,6 +21,28 @@ class TaskService {
 
     private static final String select_with_join = 'select t from Task t LEFT JOIN t.responsibleUser ru '
 
+    List<Task> getTasksByObject(obj) {
+        List<Task> tasks = []
+        switch (obj.getClass().getSimpleName()) {
+            case 'License':
+                tasks.addAll(Task.findAllByLicense(obj,[order:"endDate"]))
+                break
+            case 'Org':
+                tasks.addAll(Task.findAllByOrg(obj,[order:"endDate"]))
+                break
+            case 'Package':
+                tasks.addAll(Task.findAllByPkg(obj,[order:"endDate"]))
+                break
+            case 'Subscription':
+                tasks.addAll(Task.findAllBySubscription(obj,[order:"endDate"]))
+                break
+            case 'SurveyConfig':
+                tasks.addAll(Task.findAllBySurveyConfig(obj,[order:"endDate"]))
+                break
+        }
+        tasks
+    }
+
     List<Task> getTasksByCreator(User user, Map queryMap, flag) {
         List<Task> tasks = []
         if (user) {
