@@ -180,7 +180,7 @@ class DataloadService {
 
             def result = [:]
 
-                if (tipp.name != null) {
+                if (tipp.name != null && tipp.titleType != null) {
                     if (!tipp.sortName) {
                         tipp.generateNormTitle()
                         tipp.generateSortTitle()

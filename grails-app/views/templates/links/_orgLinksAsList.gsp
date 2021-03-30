@@ -82,7 +82,7 @@
                         <%-- public --%>
                         <g:if test="${ Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
                                 Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)  }">
-                            <div class="ui list">
+                            <div class="ui divided middle list la-flex-list">
                                 <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'General contact person')}" var="func">
                                     <div class="item">
                                         <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
@@ -144,7 +144,7 @@
                         <%-- private --%>
                         <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg) ||
                                 Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}">
-                            <div class="ui list">
+                            <div class="ui divided middle la-flex-list list">
                                 <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg)}" var="func">
                                     <div class="item">
                                         <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
