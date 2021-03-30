@@ -106,7 +106,7 @@
                     </td>
                     <g:if test="${!fixedSubscription}">
                         <td>
-                            <g:if test="${ci.sub}">${ci.sub} (${formatDate(date:ci.sub.startDate,format:message(code: 'default.date.format.notime'))} - ${formatDate(date: ci.sub.endDate, format: message(code: 'default.date.format.notime'))})</g:if>
+                            <g:if test="${ci.sub}"><g:link controller="subscription" action="show" id="${ci.sub.id}">${ci.sub}</g:link> (${formatDate(date:ci.sub.startDate,format:message(code: 'default.date.format.notime'))} - ${formatDate(date: ci.sub.endDate, format: message(code: 'default.date.format.notime'))})</g:if>
                             <g:else>${message(code:'financials.clear')}</g:else>
                         </td>
                     </g:if>

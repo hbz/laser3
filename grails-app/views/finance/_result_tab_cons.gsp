@@ -100,12 +100,22 @@
         <tr>
             <g:if test="${!fixedSubscription}">
                 <g:if test="${showView == "cons"}">
-                    <th colspan="4"></th>
+                    <g:if test="${editable}">
+                        <th colspan="4"></th>
+                    </g:if>
+                    <g:else>
+                        <th colspan="3"></th>
+                    </g:else>
                     <g:sortableColumn property="sub.startDate" title="${message(code:'financials.subscriptionRunningTime')}" params="[consSort: true]"/>
                     <th colspan="6"></th>
                 </g:if>
                 <g:elseif test="${showView == "subscr"}">
-                    <th colspan="2"></th>
+                    <g:if test="${editable}">
+                        <th colspan="3"></th>
+                    </g:if>
+                    <g:else>
+                        <th colspan="2"></th>
+                    </g:else>
                     <g:sortableColumn property="sub.startDate" title="${message(code:'financials.subscriptionRunningTime')}" params="[consSort: true]"/>
                     <th colspan="6"></th>
                 </g:elseif>
@@ -183,7 +193,7 @@
                         <td>
                             <g:each in="${ci.sub.orgRelations}" var="or">
                                 <g:if test="${memberRoles.contains(or.roleType.id)}">
-                                    ${or.org.sortname}
+                                    <g:link controller="org" action="show" id="${or.org.id}"><span data-tooltip="${or.org.name}">${or.org.sortname}</span></g:link>
                                 </g:if>
                             </g:each>
                         </td>
@@ -206,7 +216,14 @@
                     </td>
                     <g:if test="${!fixedSubscription}">
                         <td>
-                            <g:if test="${ci.sub}">${ci.sub.name} (${formatDate(date:ci.sub.startDate,format:message(code: 'default.date.format.notime'))} - ${formatDate(date: ci.sub.endDate, format: message(code: 'default.date.format.notime'))})</g:if>
+                            <g:if test="${ci.sub}">
+                                <g:if test="${ci.sub.instanceOf && showView == "cons"}">
+                                    <g:link controller="subscription" action="show" id="${ci.sub.instanceOf.id}">${ci.sub.name}</g:link>
+                                </g:if>
+                                <g:else>
+                                    <g:link controller="subscription" action="show" id="${ci.sub.id}">${ci.sub.name}</g:link>
+                                </g:else>
+                                (${formatDate(date:ci.sub.startDate,format:message(code: 'default.date.format.notime'))} - ${formatDate(date: ci.sub.endDate, format: message(code: 'default.date.format.notime'))})</g:if>
                             <g:else>${message(code:'financials.clear')}</g:else>
                         </td>
                     </g:if>

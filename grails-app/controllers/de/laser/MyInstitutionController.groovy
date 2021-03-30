@@ -341,7 +341,7 @@ class MyInstitutionController  {
                     + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
                     + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
                     + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
-                    + " ) ) ) ) ")
+                    + " ) ) ) ) or ( exists ( select li from Links li join li.destinationSubscription s where li.sourceLicense = l and genfunc_filter_matcher(s.name, :name_filter) = true ) ) ")
             qry_params.name_filter = params['keyword-search']
             qry_params.licRoleTypes = [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]
             result.keyWord = params['keyword-search']
@@ -379,7 +379,7 @@ class MyInstitutionController  {
                 subscrQueryFilter << "s.instanceOf is null"
             }
 
-            base_qry += " or exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" )"
+            base_qry += " and ( exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" ) or ( not exists ( select li from Links li where li.sourceLicense = l and li.linkType = :linkType ) ) )"
             qry_params.linkType = RDStore.LINKTYPE_LICENSE
         }
 
@@ -1181,7 +1181,7 @@ join sub.orgRelations or_sub where
                     ServletOutputStream out = response.outputStream
                     Map<String,List> tableData = exportService.generateTitleExportCSV(currentIssueEntitlements, IssueEntitlement.class.name)
                     out.withWriter { writer ->
-                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,';'))
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.rows,'|'))
                     }
                     out.flush()
                     out.close()
@@ -2567,12 +2567,12 @@ join sub.orgRelations or_sub where
                         //provider
                         log.debug("insert provider name")
                         cellnum++
-                        String providersString = " "
-                        providers.get(subCons).each { p ->
-                            log.debug("Getting provider ${p}")
-                            providersString += "${p.name} "
+                        List<String> providerNames = []
+                        subCons.orgRelations.findAll{ OrgRole oo -> oo.roleType in [RDStore.OR_PROVIDER,RDStore.OR_AGENCY] }.each { OrgRole p ->
+                            log.debug("Getting provider ${p.org}")
+                            providerNames << p.org.name
                         }
-                        row.add(providersString.replaceAll(',', ' '))
+                        row.add(providerNames.join( ' '))
                         //running time from / to
                         log.debug("insert running times")
                         cellnum++

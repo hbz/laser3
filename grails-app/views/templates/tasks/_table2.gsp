@@ -18,7 +18,10 @@
                     <th>${message(code: 'task.object.label')}</th>
                 </g:if>
 
-                <g:sortableColumn property="lower(ru.username)" title="${message(code: 'task.responsibleEmployee.label')}"/>
+                <%--<g:sortableColumn property="lower(ru.username)" title="${message(code: 'task.responsibleEmployee.label')}"/>--%>
+                <th>
+                    ${message(code: 'task.assignedTo.label')}
+                </th>
 
                 <g:sortableColumn property="t.createDate" title="${message(code: 'task.createDate.label')}"/>
 
@@ -53,7 +56,13 @@
                         </td>
                     </g:if>
 
-                    <td>${fieldValue(bean: taskInstance, field: "responsibleUser")}
+                    <td>
+                        <g:if test="${taskInstance.responsibleUser}">
+                            ${fieldValue(bean: taskInstance, field: "responsibleUser")}
+                        </g:if>
+                        <g:elseif test="${taskInstance.responsibleOrg}">
+                            ${fieldValue(bean: taskInstance, field: "responsibleOrg")}
+                        </g:elseif>
                     </td>
 
                     <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance?.createDate}"/></td>

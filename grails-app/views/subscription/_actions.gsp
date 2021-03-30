@@ -61,13 +61,13 @@
 </g:if>
 <g:if test="${accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
     <semui:actionsDropdown>
-        <g:if test="${editable}">
+        <%--<g:if test="${editable}">--%>
             <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
             <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
-        </g:if>
+        <%--</g:if>--%>
         <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
+        <div class="divider"></div>
         <g:if test="${editable}">
-            <div class="divider"></div>
             <g:if test="${(contextCustomerType == 'ORG_INST' && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
                 <semui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
@@ -78,6 +78,7 @@
             <g:if test="${(contextCustomerType == 'ORG_INST' && !subscription.instanceOf) || contextCustomerType == 'ORG_CONSORTIUM'}">
                 <semui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyElementsIntoSubscription" />
             </g:if>
+        </g:if>
 
             <g:if test="${contextCustomerType == 'ORG_INST' && subscription.instanceOf}">
                 <semui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyMyElements" />
@@ -86,8 +87,8 @@
                 </g:if>
             </g:if>
 
-            <div class="divider"></div>
             <g:if test="${editable}">
+                <div class="divider"></div>
                 <semui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
                 <g:if test="${subscription.packages}">
                     <semui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
@@ -98,6 +99,7 @@
                     <semui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.label" tooltip="${message(code:'subscription.details.addEntitlements.noPackagesYetAdded')}"/>
                 </g:else>
             </g:if>
+        <g:if test="${editable}">
             <%-- TODO: once the hookup has been decided, the ifAnyGranted securing can be taken down --%>
             <sec:ifAnyGranted roles="ROLE_ADMIN">
                 <g:if test="${subscription.instanceOf}">
@@ -178,7 +180,6 @@
                     <a class="item disabled" href="#"><i class="trash alternate icon"></i> ${message(code:'deletion.subscription')}</a>
                 </g:else>
             </g:if>
-
         </g:if>
     </semui:actionsDropdown>
 </g:if>
