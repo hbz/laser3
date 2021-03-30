@@ -884,7 +884,7 @@ aside.ui.accordion .title:not(.ui) {
         Landingpage
 *******************************/
 
-.ladingpage {
+.landingpage {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -896,22 +896,22 @@ aside.ui.accordion .title:not(.ui) {
   background-color: #f1ebe5;
 }
 
-.ladingpage .hidden.menu {
+.landingpage .hidden.menu {
   display: none;
 }
 
-.ladingpage .ui.inverted.menu.la-top-menu {
+.landingpage .ui.inverted.menu.la-top-menu {
   border-radius: 0 !important;
   border: none !important;
 }
 
-.ladingpage .logo {
+.landingpage .logo {
   height: 50px;
   width: 144px;
   padding-right: 2rem;
 }
 
-.ladingpage .ui.segment {
+.landingpage .ui.segment {
   padding: 2em 1em;
   background: transparent;
   border: none;
@@ -921,7 +921,7 @@ aside.ui.accordion .title:not(.ui) {
   border-radius: 0;
 }
 
-.ladingpage .ui.segment.masthead {
+.landingpage .ui.segment.masthead {
   background-image: url('../../images/landingpage/hero.jpg') !important;
   background-repeat: no-repeat !important;
   background-position: top center !important;
@@ -932,41 +932,41 @@ aside.ui.accordion .title:not(.ui) {
   margin: 0 0 2rem 0;
 }
 
-.ladingpage .ui.segment.masthead h2 {
+.landingpage .ui.segment.masthead h2 {
   color: white!important;
 }
 
-.ladingpage .ui.segment.footer {
+.landingpage .ui.segment.footer {
   padding: 3rem 0 0 0;
 }
 
-.ladingpage .la-hero {
+.landingpage .la-hero {
   padding-top: 7rem !important;
 }
 
-.ladingpage .la-hero .button {
+.landingpage .la-hero .button {
   background-color: #f1ebe5;
 }
 
-.ladingpage .masthead h1.ui.header {
+.landingpage .masthead h1.ui.header {
   font-size: 28px;
   font-weight: 900;
   text-align: left;
 }
 
-.ladingpage .masthead h2 {
+.landingpage .masthead h2 {
   font-size: 1.3rem;
   font-weight: normal;
   text-align: left;
 }
 
-.ladingpage .la-lead {
+.landingpage .la-lead {
   font-size: 14px;
   font-weight: 900;
   display: block;
 }
 
-.ladingpage .la-feature {
+.landingpage .la-feature {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -975,25 +975,25 @@ aside.ui.accordion .title:not(.ui) {
   justify-content: center;
 }
 
-.ladingpage .la-feature svg {
+.landingpage .la-feature svg {
   height: 108px;
 }
 
 @media only screen and (max-width: 700px) {
-  .ladingpage .ui.fixed.menu {
+  .landingpage .ui.fixed.menu {
     display: none !important;
   }
 
-  .ladingpage .masthead.segment {
+  .landingpage .masthead.segment {
     min-height: 350px;
   }
 
-  .ladingpage .masthead h1.ui.header {
+  .landingpage .masthead h1.ui.header {
     font-size: 20px;
     margin-top: 0;
   }
 
-  .ladingpage .masthead h2 {
+  .landingpage .masthead h2 {
     margin-top: 0.5em;
     font-size: 14px;
   }
