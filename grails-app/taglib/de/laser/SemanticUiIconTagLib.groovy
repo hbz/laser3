@@ -101,7 +101,7 @@ class SemanticUiIconTagLib {
         boolean hideTooltip = attrs.hideTooltip ? false : true
 
         String dc = message(code: 'spotlight.title')
-        String icon = 'book'
+        String icon = 'question'
 
         switch (attrs.type) {
             case 'Journal':

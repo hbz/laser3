@@ -69,11 +69,12 @@
                         <tr>
                           <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                           <td>
-                            <semui:listIcon type="${hit.getSourceAsMap().type.value}"/>
+                            <%-- ? needed because there are TIPP residuals from TitleInstance era which have no type set --%>
+                            <semui:listIcon type="${hit.getSourceAsMap().type?.value}"/>
                             <strong><g:link controller="tipp" action="show" id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link></strong>
                           </td>
                           <td>
-                            ${hit.getSourceAsMap().type ? RefdataValue.getByValueAndCategory(hit.getSourceAsMap().type.value, RDConstants.TITLE_MEDIUM)?.getI10n('value') : hit.getSourceAsMap().type.value}
+                            ${hit.getSourceAsMap().type ? RefdataValue.getByValueAndCategory(hit.getSourceAsMap().type.value, RDConstants.TITLE_MEDIUM)?.getI10n('value') : message(code: 'spotlight.title')}
                           </td>
                           <td>
                             <g:if test="${hit.getSourceAsMap().publisher}">
