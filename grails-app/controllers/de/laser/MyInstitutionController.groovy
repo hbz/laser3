@@ -341,7 +341,7 @@ class MyInstitutionController  {
                     + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
                     + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
                     + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
-                    + " ) ) ) ) ")
+                    + " ) ) ) ) or ( exists ( select li from Links li join li.destinationSubscription s where li.sourceLicense = l and genfunc_filter_matcher(s.name, :name_filter) = true ) ) ")
             qry_params.name_filter = params['keyword-search']
             qry_params.licRoleTypes = [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]
             result.keyWord = params['keyword-search']
@@ -379,7 +379,7 @@ class MyInstitutionController  {
                 subscrQueryFilter << "s.instanceOf is null"
             }
 
-            base_qry += " and exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" )"
+            base_qry += " and ( exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" ) or ( not exists ( select li from Links li where li.sourceLicense = l and li.linkType = :linkType ) ) )"
             qry_params.linkType = RDStore.LINKTYPE_LICENSE
         }
 
