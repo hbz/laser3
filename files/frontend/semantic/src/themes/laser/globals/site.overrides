@@ -109,7 +109,10 @@ aside.ui.accordion .title:not(.ui) {
 /*******************************
         Landingpage
 *******************************/
-.landingpage {
+.dingpage {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
     background-color: #f1ebe5;
     .hidden.menu {
         display: none;
