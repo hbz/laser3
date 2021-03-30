@@ -154,7 +154,7 @@
                 <g:message code="task.responsible.label" />
             </label>
             <div class="two fields">
-                <div class="field wide eight ${hasErrors(bean: taskInstance, field: 'responsible', 'error')}">
+                <div class="field wide eight ${hasErrors(bean: taskInstance, field: 'responsible', 'error')} required">
                     <fieldset>
 
                         <div class="field">
@@ -279,6 +279,14 @@
                                     }
                                 ]
                             },
+                            responsible: {
+                                rules: [
+                                    {
+                                        type: 'checked',
+                                        prompt: '<g:message code="validation.needsToBeFilledOut" />'
+                                    }
+                                ]
+                            },
                             responsibleUser: {
                                 identifier: 'responsibleUserInput',
                                 rules: [
@@ -331,6 +339,24 @@
                                 {
                                     type: 'empty',
                                     prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                }
+                            ]
+                        },
+                        responsible: {
+                            identifier: 'radioGroup',
+                            rules: [
+                                {
+                                    type: 'empty',
+                                    prompt: '<g:message code="validation.needsToBeFilledOut" />'
+                                }
+                            ]
+                        },
+                        responsibleUser: {
+                            identifier: 'responsibleUserInput',
+                            rules: [
+                                {
+                                    type: 'responsibleUser',
+                                    prompt: '<g:message code="validation.responsibleMustBeChecked" />'
                                 }
                             ]
                         }

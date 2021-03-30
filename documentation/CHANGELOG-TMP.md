@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3287    30.03.2021  rc2.0   2.0.5       Andreas Bug         NullPointerException bei ElasticSearch-Indexeingabe bei TIPPs behoben
+
+3197    30.03.2021  rc2.0   2.0.5       Andreas Bug         Validierung des Zuständigen verschärft, Ausgaben korrigiert
+
 --      30.03.2021  rc2.0   2.0.5       Andreas Bug         NullPointerException bei Alle Titel aufgefangen
 
 3286    29.03.2021  rc2.0   2.0.5       Andreas Bug         Filter in "Meine Verträge" korrigiert

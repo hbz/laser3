@@ -142,7 +142,24 @@
                                     prompt: '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
                                 }
                             ]
-                        }
+                        },
+                            responsible: {
+                                rules: [
+                                    {
+                                        type: 'checked',
+                                        prompt: '<g:message code="validation.needsToBeFilledOut" />'
+                                    }
+                                ]
+                            },
+                            responsibleUser: {
+                                identifier: 'responsibleUserInput',
+                                rules: [
+                                    {
+                                        type: 'responsibleUser',
+                                        prompt: '<g:message code="validation.responsibleMustBeChecked" />'
+                                    }
+                                ]
+                            }
                     }
                 });
         }
