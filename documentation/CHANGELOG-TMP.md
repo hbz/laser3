@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      30.03.2021  rc2.0   2.0.5       Andreas Bug         NullPointerException bei Alle Titel aufgefangen
+
 3286    29.03.2021  rc2.0   2.0.5       Andreas Bug         Filter in "Meine Verträge" korrigiert
 
 3283    29.03.2021  rc2.0   2.0.5       Andreas Bug         falsches Setzen der Berechtigung bei Übertrag eigener Merkmale für Vollnutzer
