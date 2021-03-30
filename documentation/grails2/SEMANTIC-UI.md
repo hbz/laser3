@@ -1,8 +1,17 @@
 # Initial setup
 
-## install nodejs
+## install nodejs on Linux
 
     sudo apt-get install --yes nodejs
+
+## install nodejs on Windows with NVM
+
+-  go to https://github.com/coreybutler/nvm-windows
+-  there go to "Download Now" and download Windows-Exe and install it
+-  go to terminal and install node.js with nvm:
+
+
+    nvm install 10.0.0
 
 ## install gulp
 
