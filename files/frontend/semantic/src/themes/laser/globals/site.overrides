@@ -109,7 +109,7 @@ aside.ui.accordion .title:not(.ui) {
 /*******************************
         Landingpage
 *******************************/
-.dingpage {
+.ladingpage {
     display: flex;
     min-height: 100vh;
     flex-direction: column;
@@ -151,6 +151,9 @@ aside.ui.accordion .title:not(.ui) {
             min-height: 450px;
             padding: 0 0 3rem 0em;
             margin:0 0 2rem 0;
+        }
+        &.footer {
+            padding: 3rem 0 0 0;
         }
     }
     .la-hero {

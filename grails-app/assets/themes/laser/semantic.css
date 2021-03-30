@@ -884,7 +884,7 @@ aside.ui.accordion .title:not(.ui) {
         Landingpage
 *******************************/
 
-.dingpage {
+.ladingpage {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -896,22 +896,22 @@ aside.ui.accordion .title:not(.ui) {
   background-color: #f1ebe5;
 }
 
-.dingpage .hidden.menu {
+.ladingpage .hidden.menu {
   display: none;
 }
 
-.dingpage .ui.inverted.menu.la-top-menu {
+.ladingpage .ui.inverted.menu.la-top-menu {
   border-radius: 0 !important;
   border: none !important;
 }
 
-.dingpage .logo {
+.ladingpage .logo {
   height: 50px;
   width: 144px;
   padding-right: 2rem;
 }
 
-.dingpage .ui.segment {
+.ladingpage .ui.segment {
   padding: 2em 1em;
   background: transparent;
   border: none;
@@ -921,7 +921,7 @@ aside.ui.accordion .title:not(.ui) {
   border-radius: 0;
 }
 
-.dingpage .ui.segment.masthead {
+.ladingpage .ui.segment.masthead {
   background-image: url('../../images/landingpage/hero.jpg') !important;
   background-repeat: no-repeat !important;
   background-position: top center !important;
@@ -932,37 +932,41 @@ aside.ui.accordion .title:not(.ui) {
   margin: 0 0 2rem 0;
 }
 
-.dingpage .ui.segment.masthead h2 {
+.ladingpage .ui.segment.masthead h2 {
   color: white!important;
 }
 
-.dingpage .la-hero {
+.ladingpage .ui.segment.footer {
+  padding: 3rem 0 0 0;
+}
+
+.ladingpage .la-hero {
   padding-top: 7rem !important;
 }
 
-.dingpage .la-hero .button {
+.ladingpage .la-hero .button {
   background-color: #f1ebe5;
 }
 
-.dingpage .masthead h1.ui.header {
+.ladingpage .masthead h1.ui.header {
   font-size: 28px;
   font-weight: 900;
   text-align: left;
 }
 
-.dingpage .masthead h2 {
+.ladingpage .masthead h2 {
   font-size: 1.3rem;
   font-weight: normal;
   text-align: left;
 }
 
-.dingpage .la-lead {
+.ladingpage .la-lead {
   font-size: 14px;
   font-weight: 900;
   display: block;
 }
 
-.dingpage .la-feature {
+.ladingpage .la-feature {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -971,25 +975,25 @@ aside.ui.accordion .title:not(.ui) {
   justify-content: center;
 }
 
-.dingpage .la-feature svg {
+.ladingpage .la-feature svg {
   height: 108px;
 }
 
 @media only screen and (max-width: 700px) {
-  .dingpage .ui.fixed.menu {
+  .ladingpage .ui.fixed.menu {
     display: none !important;
   }
 
-  .dingpage .masthead.segment {
+  .ladingpage .masthead.segment {
     min-height: 350px;
   }
 
-  .dingpage .masthead h1.ui.header {
+  .ladingpage .masthead h1.ui.header {
     font-size: 20px;
     margin-top: 0;
   }
 
-  .dingpage .masthead h2 {
+  .ladingpage .masthead h2 {
     margin-top: 0.5em;
     font-size: 14px;
   }
