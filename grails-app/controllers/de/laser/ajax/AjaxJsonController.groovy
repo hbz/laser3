@@ -753,18 +753,22 @@ class AjaxJsonController {
 
             if (prefix in ['timeline']) {
                 result = SubscriptionReporting.query(clone)
-                result.chartLabels = SubscriptionReporting.QUERY.base.query2.getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
+                result.chartLabels = SubscriptionReporting.CONFIG.base.query2.getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
+
+                if (clone.query in ['timeline-costs']) {
+                    render template: '/subscription/reporting/chart/' + clone.query, model: result
+                }
+                else {
+                    render template: '/subscription/reporting/chart/generic-timeline', model: result
+                }
             }
             else {
                 result = SubscriptionReporting.query(clone)
+                result.tooltipLabel = GenericQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone).get(1)
+
+                render template: '/subscription/reporting/chart/generic', model: result
             }
 
-            if (clone.query in ['timeline-costs']) {
-                render template: '/subscription/reporting/chart/' + clone.query, model: result
-            }
-            else {
-                render template: '/subscription/reporting/chart/generic-timeline', model: result
-            }
             return
         }
 

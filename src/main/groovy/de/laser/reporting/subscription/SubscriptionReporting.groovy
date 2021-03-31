@@ -10,6 +10,7 @@ import de.laser.TitleInstancePackagePlatform
 import de.laser.ctrl.FinanceControllerService
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.reporting.myInstitution.GenericQuery
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -19,16 +20,16 @@ class SubscriptionReporting {
 
     static String KEY = 'subscription'
 
-    static Map<String, Object> QUERY = [
+    static Map<String, Object> CONFIG = [
 
             base : [
                     query: [
                             'Bestand' : [
-                                    'tipp-seriesName'       : 'seriesName',
-                                    'tipp-titleType'        : 'titleType',
-                                    'tipp-publisherName'    : 'publisherName',
-                                    'tipp-medium'           : 'medium',
-                                    'tipp-payment'          : 'payment'
+                                    'tipp-publisherName'    : 'Herausgeber',
+                                    'tipp-seriesName'       : 'Name der Reihe',
+                                    'tipp-subjectReference' : 'Fachbereich',
+                                    'tipp-titleType'        : 'Titel-Typ',
+                                    'tipp-medium'           : 'Medium'
                             ]
                     ],
 
@@ -54,13 +55,13 @@ class SubscriptionReporting {
             ]
     ]
 
-    static List<String> getQueryLabels(GrailsParameterMap params) {
+    static List<String> getTimelineQueryLabels(GrailsParameterMap params) {
         List<String> meta = []
 
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Subscription sub = Subscription.get(params.id)
 
-        QUERY.base.query2.each {it ->
+        CONFIG.base.query2.each { it ->
             if (it.value.containsKey(params.query)) {
                 meta = [ it.key, it.value.get(params.query).label, "${sdf.format(sub.startDate)} - ${sdf.format(sub.endDate)}" ]
             }
@@ -78,13 +79,14 @@ class SubscriptionReporting {
                 dataDetails: []
         ]
 
+        String prefix = params.query.split('-')[0]
         Long id = params.long('id')
 
-        if (!id) {
+        if (! id) {
         }
         else {
             Subscription sub = Subscription.get(id)
-            List<Subscription> timeline = getSubscriptionTimeline(sub)
+            List<Subscription> timeline = getTimeline(sub)
 
             if (params.query == 'timeline-members') {
                 List<List<Long>> subIdLists = []
@@ -220,26 +222,66 @@ class SubscriptionReporting {
                     ])
                 }
             }
-            else if (params.query == 'tipp-seriesName') {
+            else if (prefix == 'tipp') {
 
-            }
-            else if (params.query == 'tipp-titleType') {
+                List<TitleInstancePackagePlatform> idList = TitleInstancePackagePlatform.executeQuery(
+                        'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.subscription.id = :id and ie.status = :status and ie.acceptStatus = :acceptStatus',
+                        [id: id, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED]
+                )
 
-            }
-            else if (params.query == 'tipp-publisherName') {
+                if (params.query == 'tipp-seriesName') {
 
-            }
-            else if (params.query == 'tipp-medium') {
+                    processSimpleTippQuery(params.query, 'seriesName', idList, result)
+                }
+                else if (params.query == 'tipp-subjectReference') {
 
-            }
-            else if (params.query == 'tipp-payment') {
+                    processSimpleTippQuery(params.query, 'subjectReference', idList, result)
+                }
+                else if (params.query == 'tipp-titleType') {
 
+                    processSimpleTippQuery(params.query, 'titleType', idList, result)
+                }
+                else if (params.query == 'tipp-publisherName') {
+
+                    processSimpleTippQuery(params.query, 'publisherName', idList, result)
+                }
+                else if (params.query == 'tipp-medium') {
+
+                    String refdata = 'medium'
+                    List<String> PROPERTY_QUERY = ['select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de']
+
+                    GenericQuery.handleGenericRefdataQuery(
+                            params.query,
+                            PROPERTY_QUERY[0] + 'from TitleInstancePackagePlatform tipp join tipp.' + refdata + ' p where tipp.id in (:idList)' + PROPERTY_QUERY[1],
+                            'select tipp.id from TitleInstancePackagePlatform tipp join tipp.' + refdata + ' p where tipp.id in (:idList) and p.id = :d order by tipp.sortName',
+                            'select distinct tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.' + refdata + ' is null',
+                            idList,
+                            result
+                    )
+                }
             }
         }
         result
     }
 
-    static List<Subscription> getSubscriptionTimeline(Subscription sub) {
+    static void processSimpleTippQuery(String query, String property, List idList, Map<String, Object> result) {
+
+        List<String> PROPERTY_QUERY = [
+                'select tipp.' + property + ', tipp.' + property + ', count(*) ',
+                ' and tipp.' + property + ' is not null and tipp.' + property + ' != \'\' group by tipp.' + property + ' order by tipp.' + property
+        ]
+
+        GenericQuery.handleGenericQuery(
+                query,
+                PROPERTY_QUERY[0] + 'from TitleInstancePackagePlatform tipp where tipp.id in (:idList)' + PROPERTY_QUERY[1],
+                'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.' + property + ' = :d order by tipp.' + property,
+                'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.' + property + ' is null or tipp.' + property + ' = \'\'',
+                idList,
+                result
+        )
+    }
+
+    static List<Subscription> getTimeline(Subscription sub) {
         List<Subscription> result = [sub]
 
         Closure<Subscription> getPrev = { s ->
