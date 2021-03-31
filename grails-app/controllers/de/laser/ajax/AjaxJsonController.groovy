@@ -706,8 +706,10 @@ class AjaxJsonController {
                 result.tooltipLabel = getTooltipLabel(clone)
 
                 if (clone.query.endsWith('assignment')) {
-                    result.chartLabels = LicenseConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
-                    render template: '/myInstitution/reporting/chart/2axis2values', model: result
+                    Map<String, Object> cfg = LicenseConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
+
+                    result.chartLabels = cfg.getAt('chartLabels')
+                    render template: '/myInstitution/reporting/chart/' + cfg.getAt('template'), model: result
                 }
                 else {
                     render template: '/myInstitution/reporting/chart/generic', model: result
@@ -719,8 +721,10 @@ class AjaxJsonController {
                 result.tooltipLabel = getTooltipLabel(clone)
 
                 if (clone.query.endsWith('assignment')) {
-                    result.chartLabels = OrganisationConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
-                    render template: '/myInstitution/reporting/chart/2axis2values', model: result
+                    Map<String, Object> cfg = OrganisationConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
+
+                    result.chartLabels = cfg.getAt('chartLabels')
+                    render template: '/myInstitution/reporting/chart/' + cfg.getAt('template'), model: result
                 }
                 else {
                     render template: '/myInstitution/reporting/chart/generic', model: result
@@ -732,28 +736,39 @@ class AjaxJsonController {
                 result.tooltipLabel = getTooltipLabel(clone)
 
                 if (clone.query.endsWith('assignment')) {
-                    if (! (clone.query in ['subscription-provider-assignment'])) {
-                        result.chartLabels = SubscriptionConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query).getAt('chartLabels')
-                        render template: '/myInstitution/reporting/chart/2axis2values', model: result
-                        return
-                    }
+                    Map<String, Object> cfg = SubscriptionConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
+
+                    result.chartLabels = cfg.getAt('chartLabels')
+                    render template: '/myInstitution/reporting/chart/' + cfg.getAt('template'), model: result
                 }
-                render template: '/myInstitution/reporting/chart/generic', model: result
+                else {
+                    render template: '/myInstitution/reporting/chart/generic', model: result
+                }
                 return
             }
         }
         else if (params.context == SubscriptionConfig.KEY && params.query) {
             GrailsParameterMap clone = params.clone() as GrailsParameterMap // TODO: simplify
+            String prefix = clone.query.split('-')[0]
 
-            result = SubscriptionReporting.query(clone)
-            result.chartLabels = SubscriptionReporting.QUERY.getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
+            if (prefix in ['timeline']) {
+                result = SubscriptionReporting.query(clone)
+                result.chartLabels = SubscriptionReporting.CONFIG.base.query2.getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
 
-            if (clone.query in ['cost-timeline']) {
-                render template: '/subscription/reporting/chart/' + clone.query, model: result
+                if (clone.query in ['timeline-costs']) {
+                    render template: '/subscription/reporting/chart/' + clone.query, model: result
+                }
+                else {
+                    render template: '/subscription/reporting/chart/generic-timeline', model: result
+                }
             }
             else {
-                render template: '/subscription/reporting/chart/generic-timeline', model: result
+                result = SubscriptionReporting.query(clone)
+                result.tooltipLabel = GenericQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone).get(1)
+
+                render template: '/subscription/reporting/chart/generic', model: result
             }
+
             return
         }
 

@@ -53,7 +53,8 @@ class LicenseQuery extends GenericQuery {
             handleGenericIdentifierAssignmentQuery(
                     params.query,
                     'select ns.id, ns.ns, count(*) from License lic join lic.ids ident join ident.ns ns where lic.id in (:idList)',
-                    'select lic.id from License lic join lic.ids ident join ident.ns ns where lic.id in (:idList) ',
+                    'select lic.id from License lic join lic.ids ident join ident.ns ns where lic.id in (:idList)',
+                    'select lic.id from License lic where lic.id in (:idList)', // modified idList
                     idList,
                     result
             )

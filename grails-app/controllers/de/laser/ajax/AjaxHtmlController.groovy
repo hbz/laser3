@@ -376,7 +376,7 @@ class AjaxHtmlController {
     def chartDetails() {
         Map<String, Object> result = [
             query:  params.query,
-            id:     params.id ? params.id as Long : ''
+            id:     params.id ? params.id as Long : ''  // TODO : @ subscription
         ]
 
         if (params.context == GenericConfig.KEY && params.query) {
@@ -410,8 +410,8 @@ class AjaxHtmlController {
             }
         }
         else if (params.context == SubscriptionConfig.KEY && params.query) {
-            if (params.query == 'cost-timeline') {
-                result.labels = SubscriptionReporting.getQueryLabels(params)
+            if (params.query == 'timeline-costs') {
+                result.labels = SubscriptionReporting.getTimelineQueryLabels(params)
 
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty('id', params.id)
@@ -422,14 +422,14 @@ class AjaxHtmlController {
                 result.tmpl        = '/subscription/reporting/details/cost'
 
             }
-            else if (params.query in ['entitlement-timeline', 'member-timeline']) {
-                result.labels = SubscriptionReporting.getQueryLabels(params)
+            else if (params.query in ['timeline-entitlements', 'timeline-members']) {
+                result.labels = SubscriptionReporting.getTimelineQueryLabels(params)
 
                 List idList      = params.list('idList[]').collect { it as Long }
                 List plusIdList  = params.list('plusIdList[]').collect { it as Long }
                 List minusIdList = params.list('minusIdList[]').collect { it as Long }
 
-                if (params.query == 'entitlement-timeline') {
+                if (params.query == 'timeline-entitlements') {
                     String hql = 'select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name'
 
                     result.list      = idList      ? TitleInstancePackagePlatform.executeQuery (hql, [idList: idList] ) : []
