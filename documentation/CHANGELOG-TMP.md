@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3225    31.03.2021  rc2.0   2.0.5       David   Feature     Reporting: (Lizenz-)Bestandsauswertung
+
 3287    30.03.2021  rc2.0   2.0.5       Andreas Bug         NullPointerException bei ElasticSearch-Indexeingabe bei TIPPs behoben
 
 3197    30.03.2021  rc2.0   2.0.5       Andreas Bug         Validierung des Zuständigen verschärft, Ausgaben korrigiert

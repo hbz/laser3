@@ -755,8 +755,8 @@ class AjaxJsonController {
                 result = SubscriptionReporting.query(clone)
                 result.chartLabels = SubscriptionReporting.CONFIG.base.query2.getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
 
-                if (clone.query in ['timeline-costs']) {
-                    render template: '/subscription/reporting/chart/' + clone.query, model: result
+                if (clone.query in ['timeline-cost']) {
+                    render template: '/subscription/reporting/chart/timeline-cost', model: result
                 }
                 else {
                     render template: '/subscription/reporting/chart/generic-timeline', model: result
@@ -766,7 +766,7 @@ class AjaxJsonController {
                 result = SubscriptionReporting.query(clone)
                 result.tooltipLabel = GenericQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone).get(1)
 
-                render template: '/subscription/reporting/chart/generic', model: result
+                render template: '/subscription/reporting/chart/generic-bar', model: result
             }
 
             return

@@ -1,9 +1,7 @@
 <%@ page import="de.laser.IssueEntitlement; de.laser.helper.RDStore; de.laser.TitleInstancePackagePlatform;" %>
 <laser:serviceInjection />
 
-<g:render template="/subscription/reporting/details/base.part1" />
-
-<g:set var="plusListNames" value="${plusList.collect{ it.name }}" />
+<g:render template="/subscription/reporting/details/timeline/base.part1" />
 
 <div class="ui segment">
     <table class="ui table la-table compact">
@@ -11,18 +9,28 @@
         <tr>
             <th></th>
             <th>Name</th>
-            <th>Typ / Medium</th>
+
+            <g:if test="${query != 'tipp-publisherName'}">
+                <th>Herausgeber</th>
+            </g:if>
+            <g:if test="${query != 'tipp-seriesName'}">
+                <th>Name der Reihe</th>
+            </g:if>
+            <g:if test="${query != 'tipp-subjectReference'}">
+                <th>Fachbereich</th>
+            </g:if>
+            <g:if test="${query != 'tipp-titleType'}">
+                <th>Titel-Typ</th>
+            </g:if>
+            <g:if test="${query != 'tipp-medium'}">
+                <th>Medium</th>
+            </g:if>
         </tr>
         </thead>
         <tbody>
             <g:each in="${list}" var="tipp" status="i">
-                <g:if test="${plusListNames.contains(tipp.name)}">
-                    <tr>
-                        <td style="text-align: center"><span class="ui label circular green">${i + 1}.</span></td>
-                </g:if>
-                <g:else>
+                <tr>
                     <td style="text-align: center">${i + 1}.</td>
-                </g:else>
                     <td>
                         <%
                             Long ieId = IssueEntitlement.executeQuery(
@@ -32,52 +40,23 @@
                         %>
                         <g:link controller="issueEntitlement" action="show" id="${ieId}" target="_blank">${tipp.name}</g:link>
                     </td>
-                    <td>
-                        ${tipp.titleType}
-                        <g:if test="${tipp.medium}">
-                            <g:if test="${tipp.titleType}"> / </g:if>
-                            ${tipp.medium.getI10n('value')}
-                        </g:if>
-                    </td>
+                    <g:if test="${query != 'tipp-publisherName'}">
+                        <td>${tipp.publisherName}</td>
+                    </g:if>
+                    <g:if test="${query != 'tipp-seriesName'}">
+                        <td>${tipp.seriesName}</td>
+                    </g:if>
+                    <g:if test="${query != 'tipp-subjectReference'}">
+                        <td>${tipp.subjectReference}</td>
+                    </g:if>
+                    <g:if test="${query != 'tipp-titleType'}">
+                        <td>${tipp.titleType}</td>
+                    </g:if>
+                    <g:if test="${query != 'tipp-medium'}">
+                        <td>${tipp.medium?.getI10n('value')}</td>
+                    </g:if>
                 </tr>
             </g:each>
         </tbody>
     </table>
 </div>
-
-<g:if test="${minusList}">
-    <div class="ui segment">
-        <table class="ui table la-table compact">
-            <thead>
-            <tr>
-                <th></th>
-                <th>Name</th>
-                <th>Typ / Medium</th>
-            </tr>
-            </thead>
-            <tbody>
-                <g:each in="${minusList}" var="tipp" status="i">
-                    <tr class="negative">
-                        <td style="text-align: center"><span class="ui label circular red">${i + 1}.</span></td>
-                        <td>
-                            <%
-                                Long ieId2 = IssueEntitlement.executeQuery(
-                                        'select ie.id from IssueEntitlement ie where ie.subscription.id = :id and ie.tipp = :tipp',
-                                        [id: id, tipp: tipp]
-                                )[0]
-                            %>
-                            <g:link controller="issueEntitlement" action="show" id="${ieId2}" target="_blank">${tipp.name}</g:link>
-                        </td>
-                        <td>
-                            ${tipp.titleType}
-                            <g:if test="${tipp.medium}">
-                                <g:if test="${tipp.titleType}"> / </g:if>
-                                ${tipp.medium.getI10n('value')}
-                            </g:if>
-                        </td>
-                    </tr>
-                </g:each>
-            </tbody>
-        </table>
-    </div>
-</g:if>

@@ -184,15 +184,14 @@
                                 $("#reporting-modal-nodetails").modal('show');
                             }
                         });
-                        echart.on( 'legendselectchanged', function (params) {
-                            // console.log(params);
-                        });
+                        echart.on( 'legendselectchanged', function (params) { /* console.log(params); */ });
 
                         JSPC.app.reporting.current.chart.echart = echart;
                         //$('#chart-export').removeAttr('disabled');
                     })
                     .fail( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
+                        $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
                     })
                 }
             }

@@ -1,7 +1,7 @@
 <%@ page import="de.laser.helper.RDStore; de.laser.Org;" %>
 <laser:serviceInjection />
 
-<g:render template="/subscription/reporting/details/base.part1" />
+<g:render template="/subscription/reporting/details/timeline/base.part1" />
 
 <div class="ui segment">
     <g:if test="${billingSums.size() == 1}">
