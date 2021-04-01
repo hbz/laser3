@@ -9,7 +9,7 @@
         <tr>
             <th></th>
             <th>${message(code:'org.sortname.label')}</th>
-            <th>Name</th>
+            <th>${message(code:'default.name.label')}</th>
         </tr>
         </thead>
         <tbody>
@@ -38,8 +38,8 @@
             <thead>
             <tr>
                 <th></th>
-                <th>Sortiername</th>
-                <th>Name</th>
+                <th>${message(code:'org.sortname.label')}</th>
+                <th>${message(code:'default.name.label')}</th>
             </tr>
             </thead>
             <tbody>

@@ -26,7 +26,7 @@ class SubscriptionReporting {
             base : [
                     query: [
                             'Bestand' : [
-                                    'tipp-publisherName'    : 'Herausgeber',
+                                    'tipp-publisherName'    : 'Verlag',
                                     'tipp-seriesName'       : 'Name der Reihe',
                                     'tipp-subjectReference' : 'Fachbereich',
                                     'tipp-titleType'        : 'Titel-Typ',

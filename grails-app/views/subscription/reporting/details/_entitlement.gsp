@@ -8,22 +8,22 @@
         <thead>
         <tr>
             <th></th>
-            <th>Name</th>
+            <th>${message(code:'tipp.name')}</th>
 
             <g:if test="${query != 'tipp-publisherName'}">
-                <th>Herausgeber</th>
+                <th>${message(code:'tipp.publisher')}</th>
             </g:if>
             <g:if test="${query != 'tipp-seriesName'}">
-                <th>Name der Reihe</th>
+                <th>${message(code:'tipp.seriesName')}</th>
             </g:if>
             <g:if test="${query != 'tipp-subjectReference'}">
-                <th>Fachbereich</th>
+                <th>${message(code:'tipp.subjectReference')}</th>
             </g:if>
             <g:if test="${query != 'tipp-titleType'}">
-                <th>Titel-Typ</th>
+                <th>${message(code:'tipp.titleType')}</th>
             </g:if>
             <g:if test="${query != 'tipp-medium'}">
-                <th>Medium</th>
+                <th>${message(code:'tipp.medium')}</th>
             </g:if>
         </tr>
         </thead>

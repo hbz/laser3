@@ -10,8 +10,8 @@
             <tr>
                 <th style="width:25%"></th>
                 <th style="width:25%"></th>
-                <th style="width:25%">Wert</th>
-                <th style="width:25%">Endpreis (nach Steuern)</th>
+                <th style="width:25%">${message(code:'financials.sum.local')}</th>
+                <th style="width:25%">${message(code:'financials.sum.billingAfterTax')} (nach Steuern)</th>
             </tr>
             </thead>
             <tbody>
@@ -30,10 +30,10 @@
         <table class="ui table la-table compact">
             <thead>
             <tr>
-                <th style="width:25%">Rechnungssumme</th>
-                <th style="width:25%">Endpreis</th>
-                <th style="width:25%">Wert</th>
-                <th style="width:25%">Endpreis (nach Steuern)</th>
+                <th style="width:25%">${message(code:'financials.sum.billing')}</th>
+                <th style="width:25%">${message(code:'financials.sum.billingAfterTax')}</th>
+                <th style="width:25%">${message(code:'financials.sum.local')}</th>
+                <th style="width:25%">${message(code:'financials.sum.billingAfterTax')} (nach Steuern)</th>
             </tr>
             </thead>
             <tbody>

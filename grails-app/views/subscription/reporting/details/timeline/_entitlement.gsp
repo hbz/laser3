@@ -10,8 +10,8 @@
         <thead>
         <tr>
             <th></th>
-            <th>Name</th>
-            <th>Typ / Medium</th>
+            <th>${message(code:'tipp.name')}</th>
+            <th>${message(code:'tipp.titleType')} / ${message(code:'tipp.medium')}</th>
         </tr>
         </thead>
         <tbody>
@@ -51,8 +51,8 @@
             <thead>
             <tr>
                 <th></th>
-                <th>Name</th>
-                <th>Typ / Medium</th>
+                <th>${message(code:'tipp.name')}</th>
+                <th>${message(code:'tipp.titleType')} / ${message(code:'tipp.medium')}</th>
             </tr>
             </thead>
             <tbody>
