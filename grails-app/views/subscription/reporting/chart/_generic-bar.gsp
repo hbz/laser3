@@ -12,7 +12,14 @@
         dataset: {
             source: [
                 ['id', 'name', 'value'],
-                <% data.reverse().each{ it -> print "['${it[0]}', '${it[1]}', ${it[2]}]," } %>
+                <%
+                    if (objectReference) {
+                        data.reverse().each { it -> print "['${objectReference}:${it[0]}', '${it[1]}', ${it[2]}]," } // workaround : XYZ
+                    }
+                    else {
+                        data.reverse().each { it -> print "['${it[0]}', '${it[1]}', ${it[2]}]," }
+                    }
+                %>
             ]
         },
         tooltip: {
@@ -55,5 +62,12 @@
             }
         ]
     };
-    JSPC.app.reporting.current.chart.details = <%= dataDetails as grails.converters.JSON %>
+    JSPC.app.reporting.current.chart.details = <%
+        if (objectReference) {
+            print dataDetails.each { dd -> dd.id = objectReference + ':' + dd. id } as grails.converters.JSON // workaround : XYZ
+        }
+        else {
+            print dataDetails as grails.converters.JSON
+        }
+        %>
 </g:else>

@@ -376,7 +376,7 @@ class AjaxHtmlController {
     def chartDetails() {
         Map<String, Object> result = [
             query:  params.query,
-            id:     params.id ? params.id as Long : ''  // TODO : @ subscription
+            id:     params.id ? params.id as Long : ''
         ]
 
         if (params.context == GenericConfig.KEY && params.query) {
@@ -410,7 +410,7 @@ class AjaxHtmlController {
             }
         }
         else if (params.context == SubscriptionConfig.KEY && params.query) {
-            if (params.query == 'timeline-costs') {
+            if (params.query == 'timeline-cost') {
                 result.labels = SubscriptionReporting.getTimelineQueryLabels(params)
 
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
@@ -419,23 +419,22 @@ class AjaxHtmlController {
 
                 result.billingSums = finance.cons.sums.billingSums ?: []
                 result.localSums   = finance.cons.sums.localSums ?: []
-                result.tmpl        = '/subscription/reporting/details/cost'
-
+                result.tmpl        = '/subscription/reporting/details/timeline/cost'
             }
-            else if (params.query in ['timeline-entitlements', 'timeline-members']) {
+            else if (params.query in ['timeline-entitlement', 'timeline-member']) {
                 result.labels = SubscriptionReporting.getTimelineQueryLabels(params)
 
                 List idList      = params.list('idList[]').collect { it as Long }
                 List plusIdList  = params.list('plusIdList[]').collect { it as Long }
                 List minusIdList = params.list('minusIdList[]').collect { it as Long }
 
-                if (params.query == 'timeline-entitlements') {
+                if (params.query == 'timeline-entitlement') {
                     String hql = 'select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name'
 
-                    result.list      = idList      ? TitleInstancePackagePlatform.executeQuery (hql, [idList: idList] ) : []
-                    result.plusList  = plusIdList  ? TitleInstancePackagePlatform.executeQuery( hql,  [idList: plusIdList] ) : []
+                    result.list      = idList      ? TitleInstancePackagePlatform.executeQuery( hql, [idList: idList] ) : []
+                    result.plusList  = plusIdList  ? TitleInstancePackagePlatform.executeQuery( hql, [idList: plusIdList] ) : []
                     result.minusList = minusIdList ? TitleInstancePackagePlatform.executeQuery( hql, [idList: minusIdList] ) : []
-                    result.tmpl      = '/subscription/reporting/details/entitlement'
+                    result.tmpl      = '/subscription/reporting/details/timeline/entitlement'
                 }
                 else {
                     String hql = 'select o from Org o where o.id in (:idList) order by o.sortname, o.name'
@@ -443,8 +442,15 @@ class AjaxHtmlController {
                     result.list      = idList      ? Org.executeQuery( hql, [idList: idList] ) : []
                     result.plusList  = plusIdList  ? Org.executeQuery( hql, [idList: plusIdList] ) : []
                     result.minusList = minusIdList ? Org.executeQuery( hql, [idList: minusIdList] ) : []
-                    result.tmpl      = '/subscription/reporting/details/organisation'
+                    result.tmpl      = '/subscription/reporting/details/timeline/organisation'
                 }
+            }
+            else {
+                List idList = params.list('idList[]').collect { it as Long }
+
+                result.labels = GenericQuery.getQueryLabels(SubscriptionReporting.CONFIG, params)
+                result.list   = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name', [idList: idList])
+                result.tmpl   = '/subscription/reporting/details/entitlement'
             }
         }
 

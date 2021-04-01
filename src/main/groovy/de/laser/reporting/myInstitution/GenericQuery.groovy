@@ -45,7 +45,7 @@ class GenericQuery {
 
     static void handleGenericQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List idList, Map<String, Object> result) {
 
-        result.data = Org.executeQuery( dataHql, [idList: idList] )
+        result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
 
         result.data.each { d ->
             d[1] = d[0]
@@ -62,7 +62,7 @@ class GenericQuery {
 
     static void handleGenericRefdataQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List idList, Map<String, Object> result) {
 
-        result.data = Org.executeQuery( dataHql, [idList: idList] )
+        result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
 
         result.data.each { d ->
             d[1] = RefdataValue.get(d[0]).getI10n('value').replaceAll("'", '"')
@@ -79,7 +79,7 @@ class GenericQuery {
 
     static void handleGenericNonMatchingData(String query, String hql, List idList, Map<String, Object> result) {
 
-        List noDataList = Org.executeQuery( hql, [idList: idList] )
+        List noDataList = idList ? Org.executeQuery( hql, [idList: idList] ) : []
 
         if (noDataList) {
             result.data.add( [null, NO_DATA_LABEL, noDataList.size()] )
@@ -95,10 +95,11 @@ class GenericQuery {
 
     static void handleGenericIdentifierAssignmentQuery(String query, String dataHqlPart, String dataDetailsHqlPart, String nonMatchingHql, List idList, Map<String, Object> result) {
 
-        result.data = Org.executeQuery(
+        result.data = idList ? Org.executeQuery(
                 dataHqlPart + " and ident.value is not null and trim(ident.value) != '' group by ns.id order by ns.ns",
                 [idList: idList]
-        )
+        ) : []
+
         result.data.each { d ->
             List<Long> objIdList = Org.executeQuery(
                     dataDetailsHqlPart + " and ns.id = :d and ident.value is not null and trim(ident.value) != ''",
@@ -133,10 +134,11 @@ class GenericQuery {
 
     static void handleGenericPropertyAssignmentQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List idList, Org ctxOrg, Map<String, Object> result) {
 
-        result.data = Org.executeQuery(
+        result.data = idList ? Org.executeQuery(
                 dataHqlPart + " and (prop.tenant = :ctxOrg or prop.isPublic = true) and pd.descr like '%Property' group by pd.id order by pd.name",
                 [idList: idList, ctxOrg: ctxOrg]
-        )
+        ) : []
+
         result.data.each { d ->
             d[1] = PropertyDefinition.get(d[0]).getI10n('name').replaceAll("'", '"')
 

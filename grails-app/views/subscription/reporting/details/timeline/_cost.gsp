@@ -1,7 +1,7 @@
 <%@ page import="de.laser.helper.RDStore; de.laser.Org;" %>
 <laser:serviceInjection />
 
-<g:render template="/subscription/reporting/details/base.part1" />
+<g:render template="/subscription/reporting/details/timeline/base.part1" />
 
 <div class="ui segment">
     <g:if test="${billingSums.size() == 1}">
@@ -10,8 +10,8 @@
             <tr>
                 <th style="width:25%"></th>
                 <th style="width:25%"></th>
-                <th style="width:25%">Wert</th>
-                <th style="width:25%">Endpreis (nach Steuern)</th>
+                <th style="width:25%">${message(code:'financials.sum.local')}</th>
+                <th style="width:25%">${message(code:'financials.sum.billingAfterTax')} (nach Steuern)</th>
             </tr>
             </thead>
             <tbody>
@@ -30,10 +30,10 @@
         <table class="ui table la-table compact">
             <thead>
             <tr>
-                <th style="width:25%">Rechnungssumme</th>
-                <th style="width:25%">Endpreis</th>
-                <th style="width:25%">Wert</th>
-                <th style="width:25%">Endpreis (nach Steuern)</th>
+                <th style="width:25%">${message(code:'financials.sum.billing')}</th>
+                <th style="width:25%">${message(code:'financials.sum.billingAfterTax')}</th>
+                <th style="width:25%">${message(code:'financials.sum.local')}</th>
+                <th style="width:25%">${message(code:'financials.sum.billingAfterTax')} (nach Steuern)</th>
             </tr>
             </thead>
             <tbody>
