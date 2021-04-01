@@ -478,7 +478,7 @@ class PackageController {
         withFormat {
             html {
 
-                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max)) : []
+                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[offset:result.offset,max:result.max]) : []
                 result.num_tipp_rows = titlesList.size()
 
                 result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
@@ -582,7 +582,7 @@ class PackageController {
         result.filterSet = query.filterSet
         //println(query)
 
-        List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + query.query, query.queryParams)
+        List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
@@ -609,7 +609,7 @@ class PackageController {
         withFormat {
             html {
 
-                result.titlesList = titlesList.drop(result.offset).take(result.max)
+                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[offset:result.offset,max:result.max]) : []
                 result.num_tipp_rows = titlesList.size()
 
                 result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
@@ -622,7 +622,7 @@ class PackageController {
                 ServletOutputStream out = response.outputStream
                 Map<String, List> tableData = exportService.generateTitleExportCSV(titlesList,TitleInstancePackagePlatform.class.name)
                 out.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.rows, ';'))
+                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.rows, '|'))
                 }
                 out.flush()
                 out.close()
