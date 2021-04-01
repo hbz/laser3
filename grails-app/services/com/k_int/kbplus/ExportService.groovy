@@ -949,13 +949,13 @@ class ExportService {
 						if(!tipp.coverages && !tipp.priceItems) {
 							allRows << tipp
 						}
-						else if(tipp.coverages.size() == 1){
-							allRows << tipp
-						}
-						else {
+						else if(tipp.coverages.size() > 1){
 							tipp.coverages.each { AbstractCoverage covStmt ->
 								allRows << covStmt
 							}
+						}
+						else {
+							allRows << tipp
 						}
 					}
 				}
@@ -966,13 +966,13 @@ class ExportService {
 						if(!entitlement.coverages && !entitlement.priceItems) {
 							allRows << entitlement
 						}
-						else if(entitlement.coverages.size() == 1){
-							allRows << entitlement
-						}
-						else {
+						else if(entitlement.coverages.size() > 1){
 							entitlement.coverages.each { AbstractCoverage covStmt ->
 								allRows << covStmt
 							}
+						}
+						else {
+							allRows << entitlement
 						}
 					}
 				}
@@ -1241,13 +1241,13 @@ class ExportService {
 						if(!tipp.coverages && !tipp.priceItems) {
 							allRows << tipp
 						}
-						else if(tipp.coverages.size() == 1){
-							allRows << tipp
-						}
-						else {
+						else if(tipp.coverages.size() > 1){
 							tipp.coverages.each { AbstractCoverage covStmt ->
 								allRows << covStmt
 							}
+						}
+						else {
+							allRows << tipp
 						}
 					}
 				}
@@ -1258,13 +1258,13 @@ class ExportService {
 						if(!entitlement.coverages && !entitlement.priceItems) {
 							allRows << entitlement
 						}
-						else if(entitlement.coverages.size() == 1){
-							allRows << entitlement
-						}
-						else {
+						else if(entitlement.coverages.size() > 1){
 							entitlement.coverages.each { AbstractCoverage covStmt ->
 								allRows << covStmt
 							}
+						}
+						else {
+							allRows << entitlement
 						}
 					}
 				}
@@ -1559,13 +1559,13 @@ class ExportService {
 						if(!tipp.coverages && !tipp.priceItems) {
 							allRows << tipp
 						}
-						else if(tipp.coverages.size() == 1){
-							allRows << tipp
-						}
-						else {
+						else if(tipp.coverages.size() > 1){
 							tipp.coverages.each { AbstractCoverage covStmt ->
 								allRows << covStmt
 							}
+						}
+						else {
+							allRows << tipp
 						}
 					}
 				}
@@ -1576,13 +1576,13 @@ class ExportService {
 						if(!entitlement.coverages && !entitlement.priceItems) {
 							allRows << entitlement
 						}
-						else if(entitlement.coverages.size() == 1){
-							allRows << entitlement
-						}
-						else {
+						else if(entitlement.coverages.size() > 1){
 							entitlement.coverages.each { AbstractCoverage covStmt ->
 								allRows << covStmt
 							}
+						}
+						else {
+							allRows << entitlement
 						}
 					}
 				}
