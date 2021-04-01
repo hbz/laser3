@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      01.04.2021  rc2.0   2.0.6       Andreas Bug         Sync-Bugfix
+
 3302    01.04.2021  rc2.0   2.0.6       Andreas Bug         verschiedene Bugs im Pakettitelexport
 
 3287    30.03.2021  rc2.0   2.0.5       Andreas Bug         NullPointerException bei ElasticSearch-Indexeingabe bei TIPPs behoben

@@ -268,6 +268,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 boolean more = true
                                 while(more) {
                                     //actually, scrollId alone should do the trick but tests revealed that other parameters are necessary, too, because of current workaround solution
+                                    log.debug("using scrollId ${scrollId}")
                                     if(scrollId) {
                                         result = fetchRecordJSON(true, [component_type: componentType, changedSince: sdf.format(oldDate), scrollId: scrollId])
                                     }

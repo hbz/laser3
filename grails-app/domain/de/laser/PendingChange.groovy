@@ -222,8 +222,8 @@ class PendingChange {
                     pc.oldValue = (configMap.oldValue && configMap.oldValue instanceof BigDecimal) ? configMap.oldValue.toString() : (configMap.oldValue ?: null)
                 }
                 else if (pc.targetProperty in PendingChange.REFDATA_FIELDS) {
-                    pc.newValue = (configMap.newValue && configMap.newValue instanceof Long) ? configMap.newValue.toString() : (configMap.newValue ?: null)
-                    pc.oldValue = (configMap.oldValue && configMap.oldValue instanceof Long) ? configMap.oldValue.toString() : (configMap.oldValue ?: null)
+                    pc.newValue = (configMap.newValue && configMap.newValue instanceof Long) ? configMap.newValue.toString() : (configMap.newValue.id.toString() ?: null)
+                    pc.oldValue = (configMap.oldValue && configMap.oldValue instanceof Long) ? configMap.oldValue.toString() : (configMap.oldValue.id.toString() ?: null)
                 }
                 else {
                     pc.newValue = configMap.newValue
@@ -263,8 +263,8 @@ class PendingChange {
                 changeParams.oldValue = (configMap.oldValue && configMap.oldValue instanceof BigDecimal) ? configMap.oldValue.toString() : (configMap.oldValue ?: null)
             }
             else if (configMap.prop in PendingChange.REFDATA_FIELDS) {
-                changeParams.newValue = (configMap.newValue && configMap.newValue instanceof Long) ? configMap.newValue.toString() : (configMap.newValue ?: null)
-                changeParams.oldValue = (configMap.oldValue && configMap.oldValue instanceof Long) ? configMap.oldValue.toString() : (configMap.oldValue ?: null)
+                changeParams.newValue = (configMap.newValue && configMap.newValue instanceof Long) ? configMap.newValue.toString() : (configMap.newValue.id.toString() ?: null)
+                changeParams.oldValue = (configMap.oldValue && configMap.oldValue instanceof Long) ? configMap.oldValue.toString() : (configMap.oldValue.id.toString() ?: null)
             }
             else {
                 changeParams.newValue = configMap.newValue
