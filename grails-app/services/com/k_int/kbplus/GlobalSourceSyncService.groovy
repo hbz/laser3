@@ -2237,7 +2237,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
         titleStatus.put(RDStore.TITLE_STATUS_CURRENT.value,RDStore.TITLE_STATUS_CURRENT)
         titleStatus.put(RDStore.TITLE_STATUS_RETIRED.value,RDStore.TITLE_STATUS_RETIRED)
         titleStatus.put(RDStore.TITLE_STATUS_DELETED.value,RDStore.TITLE_STATUS_DELETED)
-        RefdataCategory.getAllRefdataValues(RDConstants.TITLE_MEDIUM).each { RefdataValue rdv ->
+        //this complicated way is necessary because of static in order to avoid a NonUniqueObjectException
+        List<RefdataValue> staticMediumTypes = [RDStore.TITLE_TYPE_DATABASE,RDStore.TITLE_TYPE_EBOOK,RDStore.TITLE_TYPE_JOURNAL]
+        RefdataValue.findAllByIdNotInListAndOwner(staticMediumTypes.collect { RefdataValue rdv -> rdv.id },RefdataCategory.findByDesc(RDConstants.TITLE_MEDIUM)).each { RefdataValue rdv ->
+            titleMedium.put(rdv.value,rdv)
+        }
+        staticMediumTypes.each { RefdataValue rdv ->
             titleMedium.put(rdv.value,rdv)
         }
         RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS).each { RefdataValue rdv ->
