@@ -71,6 +71,9 @@
                                 if (params.data[0] == v.id) {
                                     valid = true;
                                     var clone = Object.assign({}, v);
+                                    if (JSPC.helper.contains(clone.id, ':')) { // workaround XYZ
+                                        clone.id = clone.id.split(':')[0]
+                                    }
                                     clone.context = '${SubscriptionConfig.KEY}';
                                     JSPC.app.reporting.requestChartHtmlDetails(JSPC.app.reporting.current.request, clone);
                                 }
@@ -79,15 +82,14 @@
                                 $("#reporting-modal-nodetails").modal('show');
                             }
                         });
-                        echart.on( 'legendselectchanged', function (params) {
-                            // console.log(params);
-                        });
+                        echart.on( 'legendselectchanged', function (params) { /* console.log(params); */ });
 
                         JSPC.app.reporting.current.chart.echart = echart;
                         //$('#chart-export').removeAttr('disabled');
                     })
                     .fail( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
+                        $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
                     })
                 }
             }

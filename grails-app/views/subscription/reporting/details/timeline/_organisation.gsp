@@ -1,7 +1,7 @@
 <%@ page import="de.laser.helper.RDStore; de.laser.Org;" %>
 <laser:serviceInjection />
 
-<g:render template="/subscription/reporting/details/base.part1" />
+<g:render template="/subscription/reporting/details/timeline/base.part1" />
 
 <div class="ui segment">
     <table class="ui table la-table compact">
@@ -9,7 +9,7 @@
         <tr>
             <th></th>
             <th>${message(code:'org.sortname.label')}</th>
-            <th>Name</th>
+            <th>${message(code:'default.name.label')}</th>
         </tr>
         </thead>
         <tbody>
@@ -38,8 +38,8 @@
             <thead>
             <tr>
                 <th></th>
-                <th>Sortiername</th>
-                <th>Name</th>
+                <th>${message(code:'org.sortname.label')}</th>
+                <th>${message(code:'default.name.label')}</th>
             </tr>
             </thead>
             <tbody>

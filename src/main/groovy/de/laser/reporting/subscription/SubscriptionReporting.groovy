@@ -4,6 +4,7 @@ import de.laser.FinanceService
 import de.laser.IssueEntitlement
 import de.laser.Links
 import de.laser.Org
+import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
@@ -25,27 +26,29 @@ class SubscriptionReporting {
             base : [
                     query: [
                             'Bestand' : [
-                                    'tipp-publisherName'    : 'Herausgeber',
+                                    'tipp-publisherName'    : 'Verlag',
                                     'tipp-seriesName'       : 'Name der Reihe',
                                     'tipp-subjectReference' : 'Fachbereich',
                                     'tipp-titleType'        : 'Titel-Typ',
-                                    'tipp-medium'           : 'Medium'
+                                    'tipp-medium'           : 'Medium',
+                                    //'tipp-platform'         : 'Plattform',
+                                    //'tipp-package'          : 'Paket'
                             ]
                     ],
 
                     query2: [
                             'Entwicklung' : [
-                                    'timeline-members' : [
+                                    'timeline-member' : [
                                             label : 'Teilnehmer',
                                             chart : 'bar',
                                             chartLabels : [ 'Teilnehmer entfernt', 'Neue Teilnehmer', 'Aktuelle Teilnehmer' ]
                                     ],
-                                    'timeline-entitlements' : [
+                                    'timeline-entitlement' : [
                                             label : 'Bestand',
                                             chart : 'bar',
                                             chartLabels : [ 'Titel entfernt', 'Neue Titel', 'Aktuelle Titel' ]
                                     ],
-                                    'timeline-costs' : [
+                                    'timeline-cost' : [
                                             label : 'Kosten',
                                             chart : 'bar',
                                             chartLabels : [ 'Wert', 'Endpreis (nach Steuer)']
@@ -88,7 +91,7 @@ class SubscriptionReporting {
             Subscription sub = Subscription.get(id)
             List<Subscription> timeline = getTimeline(sub)
 
-            if (params.query == 'timeline-members') {
+            if (params.query == 'timeline-member') {
                 List<List<Long>> subIdLists = []
 
                 timeline.eachWithIndex { s, i ->
@@ -142,7 +145,7 @@ class SubscriptionReporting {
                     }
                 }
             }
-            else if (params.query == 'timeline-entitlements') {
+            else if (params.query == 'timeline-entitlement') {
                 List<List<Long>> ieIdLists = []
 
                 timeline.eachWithIndex { s, i ->
@@ -195,7 +198,7 @@ class SubscriptionReporting {
                     }
                 }
             }
-            else if (params.query == 'timeline-costs') {
+            else if (params.query == 'timeline-cost') {
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
 
                 FinanceService financeService = (FinanceService) Holders.grailsApplication.mainContext.getBean('financeService')
@@ -247,18 +250,45 @@ class SubscriptionReporting {
                 }
                 else if (params.query == 'tipp-medium') {
 
-                    String refdata = 'medium'
-                    List<String> PROPERTY_QUERY = ['select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de']
-
-                    GenericQuery.handleGenericRefdataQuery(
-                            params.query,
-                            PROPERTY_QUERY[0] + 'from TitleInstancePackagePlatform tipp join tipp.' + refdata + ' p where tipp.id in (:idList)' + PROPERTY_QUERY[1],
-                            'select tipp.id from TitleInstancePackagePlatform tipp join tipp.' + refdata + ' p where tipp.id in (:idList) and p.id = :d order by tipp.sortName',
-                            'select distinct tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.' + refdata + ' is null',
-                            idList,
-                            result
-                    )
+                    processSimpleTippRefdataQuery(params.query, 'medium', idList, result)
                 }
+                /* else if (params.query == 'tipp-platform') {
+
+                    result.data = Platform.executeQuery(
+                            'select p.id, p.name, count(*) from TitleInstancePackagePlatform tipp join tipp.platform p where tipp.id in (:idList) group by p.id order by p.name',
+                            [idList: idList]
+                    )
+                    result.data.each { d ->
+                        result.dataDetails.add([
+                                query : params.query,
+                                id    : d[0],
+                                label : d[1],
+                                idList: Subscription.executeQuery(
+                                        'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.platform.id = :d order by tipp.sortName',
+                                        [idList: idList, d: d[0]]
+                                )
+                        ])
+                    }
+                } */
+                /* else if (params.query == 'tipp-package') {
+                    result.data = Platform.executeQuery(
+                            'select p.id, p.name, count(*) from TitleInstancePackagePlatform tipp join tipp.pkg p where tipp.id in (:idList) group by p.id order by p.name',
+                            [idList: idList]
+                    )
+                    result.data.each { d ->
+                        result.dataDetails.add([
+                                query : params.query,
+                                id    : d[0],
+                                label : d[1],
+                                idList: Subscription.executeQuery(
+                                        'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.pkg.id = :d order by tipp.sortName',
+                                        [idList: idList, d: d[0]]
+                                )
+                        ])
+                    }
+                } */
+
+                result.put('objectReference', id) // workaround : XYZ
             }
         }
         result
@@ -276,6 +306,23 @@ class SubscriptionReporting {
                 PROPERTY_QUERY[0] + 'from TitleInstancePackagePlatform tipp where tipp.id in (:idList)' + PROPERTY_QUERY[1],
                 'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.' + property + ' = :d order by tipp.' + property,
                 'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.' + property + ' is null or tipp.' + property + ' = \'\'',
+                idList,
+                result
+        )
+    }
+
+    static void processSimpleTippRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
+
+        List<String> PROPERTY_QUERY = [
+                'select p.id, p.value_de, count(*) ',
+                ' group by p.id, p.value_de order by p.value_de'
+        ]
+
+        GenericQuery.handleGenericRefdataQuery(
+                query,
+                PROPERTY_QUERY[0] + 'from TitleInstancePackagePlatform tipp join tipp.' + refdata + ' p where tipp.id in (:idList)' + PROPERTY_QUERY[1],
+                'select tipp.id from TitleInstancePackagePlatform tipp join tipp.' + refdata + ' p where tipp.id in (:idList) and p.id = :d order by tipp.sortName',
+                'select distinct tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.' + refdata + ' is null',
                 idList,
                 result
         )
