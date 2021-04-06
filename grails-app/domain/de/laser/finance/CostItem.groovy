@@ -54,22 +54,22 @@ class CostItem extends AbstractBase
     @RefdataAnnotation(cat = RDConstants.COST_ITEM_TYPE)
     RefdataValue type
 
-    @RefdataAnnotation(cat = RDConstants.COST_ITEM_STATUS)
+    @RefdataAnnotation(cat = RDConstants.COST_ITEM_STATUS, i18n = 'default.status.label')
     RefdataValue costItemStatus
 
     @RefdataAnnotation(cat = RDConstants.COST_ITEM_CATEGORY)
     RefdataValue costItemCategory
 
-    @RefdataAnnotation(cat = RDConstants.COST_ITEM_ELEMENT)
+    @RefdataAnnotation(cat = RDConstants.COST_ITEM_ELEMENT, i18n = 'financials.costItemElement')
     RefdataValue costItemElement
 
-    @RefdataAnnotation(cat = RDConstants.COST_CONFIGURATION)
+    @RefdataAnnotation(cat = RDConstants.COST_CONFIGURATION, i18n = 'financials.costItemConfiguration')
     RefdataValue costItemElementConfiguration
 
     @RefdataAnnotation(cat = RDConstants.TAX_TYPE)
     RefdataValue taxCode          //to be deleted, will be replaced by TAX_TYPES
 
-    @RefdataAnnotation(cat = RDConstants.CURRENCY)
+    @RefdataAnnotation(cat = RDConstants.CURRENCY, i18n = 'financials.currency')
     RefdataValue billingCurrency
 
     //Boolean includeInSubscription include in sub details page - is in fact always true

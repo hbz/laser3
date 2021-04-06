@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.GenericConfig; de.laser.reporting.myInstitution.SubscriptionConfig;de.laser.reporting.myInstitution.OrganisationConfig;de.laser.reporting.myInstitution.LicenseConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.myInstitution.GenericConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -62,44 +62,25 @@
             <g:set var="hidden" value="" />
         </g:else>
 
-        <g:if test="${!filter || filter == LicenseConfig.KEY}">
-            <div id="filter-license" class="filter-form-wrapper ${hidden}">
-                <g:render template="/myInstitution/reporting/filter/license" />
-            </div>
-        </g:if>
+        <g:each in="${GenericConfig.FILTER}" var="filterItem">
 
-        <g:if test="${!filter || filter == OrganisationConfig.KEY}">
-            <div id="filter-organisation" class="filter-form-wrapper ${hidden}">
-                <g:render template="/myInstitution/reporting/filter/organisation" />
-            </div>
-        </g:if>
-
-        <g:if test="${!filter || filter == SubscriptionConfig.KEY}">
-            <div id="filter-subscription" class="filter-form-wrapper ${hidden}">
-                <g:render template="/myInstitution/reporting/filter/subscription" />
-            </div>
-        </g:if>
+            <g:if test="${!filter || filter == filterItem.key}">
+                <div id="filter-${filterItem.key}" class="filter-form-wrapper ${hidden}">
+                    <g:render template="/myInstitution/reporting/filter/${filterItem.key}" />
+                </div>
+            </g:if>
+        </g:each>
 
         <g:render template="/templates/reporting/helper" />
 
         <g:if test="${result}">
+
             <h3 class="ui header">${message(code:'reporting.macro.step2')}</h3>
 
-            <g:if test="${filter == LicenseConfig.KEY}">
-                <g:render template="/myInstitution/reporting/query/license" />
-            </g:if>
-
-            <g:if test="${filter == OrganisationConfig.KEY}">
-                <g:render template="/myInstitution/reporting/query/organisation" />
-            </g:if>
-
-            <g:if test="${filter == SubscriptionConfig.KEY}">
-                <g:render template="/myInstitution/reporting/query/subscription" />
-            </g:if>
+            <g:render template="/myInstitution/reporting/query/${filter}" />
 
             <div id="chart-wrapper"></div>
             <div id="chart-details"></div>
-
         </g:if>
 
         <style>

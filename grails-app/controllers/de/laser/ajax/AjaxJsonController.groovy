@@ -27,6 +27,7 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
+import de.laser.reporting.myInstitution.CostItemQuery
 import de.laser.reporting.myInstitution.GenericConfig
 import de.laser.reporting.myInstitution.GenericQuery
 import de.laser.reporting.myInstitution.LicenseConfig
@@ -744,6 +745,14 @@ class AjaxJsonController {
                 else {
                     render template: '/myInstitution/reporting/chart/generic', model: result
                 }
+                return
+            }
+            else if (prefix in ['costItem']) {
+                result = CostItemQuery.query(clone)
+                result.tooltipLabel = getTooltipLabel(clone)
+
+                render template: '/myInstitution/reporting/chart/generic', model: result
+
                 return
             }
         }

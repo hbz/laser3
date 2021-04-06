@@ -1,5 +1,7 @@
 package de.laser
 
+import de.laser.reporting.myInstitution.CostItemConfig
+import de.laser.reporting.myInstitution.CostItemFilter
 import de.laser.reporting.myInstitution.LicenseConfig
 import de.laser.reporting.myInstitution.LicenseFilter
 import de.laser.reporting.myInstitution.OrganisationConfig
@@ -25,7 +27,10 @@ class ReportingService {
         result.cfgQueryList = [:]
         result.cfgQuery2List = [:]
 
-        if (params.filter == LicenseConfig.KEY) {
+        if (params.filter == CostItemConfig.KEY) {
+            doFilterCostItem(result, params.clone() as GrailsParameterMap)
+        }
+        else if (params.filter == LicenseConfig.KEY) {
             doFilterLicense(result, params.clone() as GrailsParameterMap)
         }
         else if (params.filter == OrganisationConfig.KEY) {
@@ -34,6 +39,14 @@ class ReportingService {
         else if (params.filter == SubscriptionConfig.KEY) {
             doFilterSubscription(result, params.clone() as GrailsParameterMap)
         }
+    }
+
+    void doFilterCostItem(Map<String, Object> result, GrailsParameterMap params) {
+
+        CostItemFilter filter = new CostItemFilter()
+        result.result = filter.filter(params)
+
+        result.cfgQueryList.putAll( CostItemConfig.CONFIG.base.query )
     }
 
     void doFilterLicense(Map<String, Object> result, GrailsParameterMap params) {

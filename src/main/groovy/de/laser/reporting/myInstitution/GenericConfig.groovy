@@ -29,7 +29,8 @@ class GenericConfig {
 
             organisation : 'Organisationen',
             subscription : 'Lizenzen',
-            license      : 'Verträge'
+            license      : 'Verträge',
+            costItem     : 'Kosten (* experimentelle Funktion)'
     ]
 
     static Map<String, String> CHARTS = [

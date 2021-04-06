@@ -25,8 +25,10 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
+import de.laser.finance.CostItem
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.reporting.myInstitution.CostItemConfig
 import de.laser.reporting.myInstitution.GenericConfig
 import de.laser.reporting.myInstitution.GenericQuery
 import de.laser.reporting.myInstitution.LicenseConfig
@@ -407,6 +409,11 @@ class AjaxHtmlController {
                 result.labels = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params)
                 result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/organisation'
+            }
+            else if (prefix in ['costItem']) {
+                result.labels = GenericQuery.getQueryLabels(CostItemConfig.CONFIG, params)
+                result.list   = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList])
+                result.tmpl   = '/myInstitution/reporting/details/costItem'
             }
         }
         else if (params.context == SubscriptionConfig.KEY && params.query) {

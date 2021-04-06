@@ -43,15 +43,15 @@ class SubscriptionReporting {
                                             chart : 'bar',
                                             chartLabels : [ 'Teilnehmer entfernt', 'Neue Teilnehmer', 'Aktuelle Teilnehmer' ]
                                     ],
+                                    'timeline-cost' : [
+                                            label : 'Teilnehmerkosten',
+                                            chart : 'bar',
+                                            chartLabels : [ 'Wert', 'Endpreis (nach Steuer)']
+                                    ],
                                     'timeline-entitlement' : [
                                             label : 'Bestand',
                                             chart : 'bar',
                                             chartLabels : [ 'Titel entfernt', 'Neue Titel', 'Aktuelle Titel' ]
-                                    ],
-                                    'timeline-cost' : [
-                                            label : 'Kosten',
-                                            chart : 'bar',
-                                            chartLabels : [ 'Wert', 'Endpreis (nach Steuer)']
                                     ]
                             ]
                     ]
