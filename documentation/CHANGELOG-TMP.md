@@ -9,6 +9,10 @@
 
 3308    07.04.2021  dev     2.1         Andreas Feature     neue Referenzwerte für Simuser Zahl hinzugefügt
 
+3216    07.04.2021  dev     2.1         Andreas Feature     Sichtbarkeitsleck bei Vertragsmerkmalen behoben (muss u.U. für RC cherry-picked werden)
+
+3201    07.04.2021  dev     2.1         Andreas Bug         Kopie der Mailadressen bei Meine Lizenzen pro Einrichtung war unvollständig
+
 3177    07.04.2021  dev     2.1         Andreas Feature     neue Werte für Steuertypen (Steuer enthalten) eingefügt
 
 3287    30.03.2021  rc2.0   2.0.5       Andreas Bug         NullPointerException bei ElasticSearch-Indexeingabe bei TIPPs behoben
