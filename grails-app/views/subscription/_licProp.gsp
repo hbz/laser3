@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*;" %>
+<%@ page import="de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*; de.laser.AuditConfig" %>
 <laser:serviceInjection />
 <!-- _licProp -->
 
@@ -103,7 +103,9 @@
         <%-- custom properties --%>
 
             <g:if test="${derivedPropDefGroups.orphanedProperties}">
-
+                <g:set var="filteredOrphanedProperties" value="${derivedPropDefGroups.orphanedProperties.findAll { prop -> (prop.tenant?.id == contextOrg.id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}}"/>
+            </g:if>
+            <g:if test="${filteredOrphanedProperties}">
                 <div>
                     <h5 class="ui header">
                         <g:link controller="license" action="show" id="${license.id}"><i class="balance scale icon"></i>${license}</g:link>
