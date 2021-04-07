@@ -7,9 +7,6 @@ import de.laser.Subscription
 import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.myInstitution.GenericConfig
-import de.laser.reporting.myInstitution.GenericFilter
-import de.laser.reporting.myInstitution.OrganisationConfig
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.ApplicationContext
@@ -125,17 +122,10 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
 
                     filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                 }
-                // --> refdata relation tables
-                else if (pType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
+                // --> refdata join tables
+                else if (pType == GenericConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
 
-                    if (p == GenericConfig.CUSTOM_KEY_SUBJECT_GROUP) {
-                        queryParts.add('OrgSubjectGroup osg')
-                        whereParts.add('osg.org = org and osg.subjectGroup.id = :p' + (++pCount))
-                        queryParams.put('p' + pCount, params.long(key))
-
-                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
-                    }
-                    else if (p == GenericConfig.CUSTOM_KEY_ORG_TYPE) {
+                    if (p == GenericConfig.CUSTOM_KEY_ORG_TYPE) {
                         whereParts.add('exists (select ot from org.orgType ot where ot = :p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, RefdataValue.get(params.long(key)))
 
@@ -145,7 +135,14 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                 // --> custom filter implementation
                 else if (pType == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
-                    if (p == GenericConfig.CUSTOM_KEY_LEGAL_INFO) {
+                    if (p == GenericConfig.CUSTOM_KEY_SUBJECT_GROUP) {
+                        queryParts.add('OrgSubjectGroup osg')
+                        whereParts.add('osg.org = org and osg.subjectGroup.id = :p' + (++pCount))
+                        queryParams.put('p' + pCount, params.long(key))
+
+                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                    }
+                    else if (p == GenericConfig.CUSTOM_KEY_LEGAL_INFO) {
                         long li = params.long(key)
                         whereParts.add( getLegalInfoQueryWhereParts(li) )
 

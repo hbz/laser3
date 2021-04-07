@@ -7,9 +7,6 @@ import de.laser.Subscription
 import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.myInstitution.GenericConfig
-import de.laser.reporting.myInstitution.GenericFilter
-import de.laser.reporting.myInstitution.SubscriptionConfig
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.ApplicationContext
@@ -93,8 +90,8 @@ class SubscriptionFilter extends GenericFilter {
 
                     filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                 }
-                // --> refdata relation tables
-                else if (pType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
+                // --> refdata join tables
+                else if (pType == GenericConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
                     println ' ------------ not implemented ------------ '
                 }
                 // --> custom filter implementation
@@ -207,8 +204,15 @@ class SubscriptionFilter extends GenericFilter {
 
                     filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                 }
-                // --> refdata relation tables
-                else if (pType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
+                // --> refdata join tables
+                else if (pType == GenericConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
+                    println ' ------------ not implemented ------------ '
+                    // TODO
+                    // TODO
+                    // TODO
+                }
+                // --> custom filter implementation
+                else if (pType == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
                     if (p == GenericConfig.CUSTOM_KEY_SUBJECT_GROUP) {
                         queryBase = queryBase + ' join org.subjectGroup osg join osg.subjectGroup rdvsg'
@@ -217,11 +221,7 @@ class SubscriptionFilter extends GenericFilter {
 
                         filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                     }
-                }
-                // --> custom filter implementation
-                else if (pType == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {
-
-                    if (p == GenericConfig.CUSTOM_KEY_LEGAL_INFO) {
+                    else if (p == GenericConfig.CUSTOM_KEY_LEGAL_INFO) {
                         long li = params.long(key)
                         whereParts.add( getLegalInfoQueryWhereParts(li) )
 

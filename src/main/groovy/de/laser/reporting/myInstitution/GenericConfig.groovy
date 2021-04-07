@@ -17,7 +17,7 @@ class GenericConfig {
 
     static String FIELD_TYPE_PROPERTY           = 'property'
     static String FIELD_TYPE_REFDATA            = 'refdata'
-    static String FIELD_TYPE_REFDATA_RELTABLE   = 'refdataRelationTable'
+    static String FIELD_TYPE_REFDATA_JOINTABLE  = 'refdataJoinTable'
     static String FIELD_TYPE_CUSTOM_IMPL        = 'customImplementation'
 
     static String CUSTOM_KEY_SUBJECT_GROUP      = 'subjectGroup'
@@ -30,7 +30,7 @@ class GenericConfig {
             organisation : 'Organisationen',
             subscription : 'Lizenzen',
             license      : 'Verträge',
-            costItem     : 'Kosten (* experimentelle Funktion)'
+            // costItem     : 'Kosten (* experimentelle Funktion)'
     ]
 
     static Map<String, String> CHARTS = [

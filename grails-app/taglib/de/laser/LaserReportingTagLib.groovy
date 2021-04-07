@@ -53,7 +53,7 @@ class LaserReportingTagLib {
         if (fieldType == GenericConfig.FIELD_TYPE_REFDATA) {
             out << laser.reportFilterRefdata(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
-        if (fieldType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
+        if (fieldType == GenericConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
             out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
         if (fieldType == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {

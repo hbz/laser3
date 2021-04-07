@@ -2,10 +2,7 @@ package de.laser.reporting.myInstitution
 
 import de.laser.FinanceService
 import de.laser.Org
-import de.laser.OrgSetting
 import de.laser.RefdataValue
-import de.laser.Subscription
-import de.laser.auth.Role
 import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
@@ -98,11 +95,13 @@ class CostItemFilter extends GenericFilter {
 
                     filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                 }
-                // --> refdata relation tables
-                else if (pType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
+                // --> refdata join tables
+                else if (pType == GenericConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
+                    println ' ------------ not implemented ------------ '
                 }
                 // --> custom filter implementation
                 else if (pType == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {
+                    println ' ------------ not implemented ------------ '
                 }
 
                 if (filterLabelValue) {

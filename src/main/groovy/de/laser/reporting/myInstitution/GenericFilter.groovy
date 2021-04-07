@@ -1,7 +1,6 @@
 package de.laser.reporting.myInstitution
 
 import de.laser.annotations.RefdataAnnotation
-import de.laser.reporting.myInstitution.GenericConfig
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
@@ -46,7 +45,7 @@ class GenericFilter {
             label = rdI18n != 'n/a' ? messageSource.getMessage(rdI18n, null, locale) : messageSource.getMessage(rdCat + '.label', null, locale) // TODO -> @RefdataAnnotation
         }
 
-        if (type == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
+        if (type == GenericConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
             // LaserReportingTagLib:reportFilterRefdata
 
             Map<String, Object> customRdv = GenericConfig.getCustomRefdata(fieldName)

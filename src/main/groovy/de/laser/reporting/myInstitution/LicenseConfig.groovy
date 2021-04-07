@@ -2,7 +2,6 @@ package de.laser.reporting.myInstitution
 
 import de.laser.License
 import de.laser.Org
-import de.laser.reporting.myInstitution.GenericConfig
 
 class LicenseConfig extends GenericConfig {
 
@@ -72,9 +71,9 @@ class LicenseConfig extends GenericConfig {
                             'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                             'libraryNetwork'    : FIELD_TYPE_REFDATA,
                             'libraryType'       : FIELD_TYPE_REFDATA,
-                            'orgType'           : FIELD_TYPE_REFDATA_RELTABLE,
+                            'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                             //'region'            : FIELD_TYPE_REFDATA,
-                            'subjectGroup'      : FIELD_TYPE_REFDATA_RELTABLE
+                            'subjectGroup'      : FIELD_TYPE_REFDATA_JOINTABLE
                     ],
                     filter : [
                             default: [
@@ -107,7 +106,7 @@ class LicenseConfig extends GenericConfig {
                     ],
                     fields : [
                             'country'   : GenericConfig.FIELD_TYPE_REFDATA,
-                            'orgType'   : GenericConfig.FIELD_TYPE_REFDATA_RELTABLE,
+                            'orgType'   : GenericConfig.FIELD_TYPE_REFDATA_JOINTABLE,
                     ],
                     filter : [
                             default: [
