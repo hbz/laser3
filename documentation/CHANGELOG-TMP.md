@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3308    07.04.2021  dev     2.1         Andreas Feature     neue Referenzwerte für Simuser Zahl hinzugefügt
+
+3177    07.04.2021  dev     2.1         Andreas Feature     neue Werte für Steuertypen (Steuer enthalten) eingefügt
+
 3287    30.03.2021  rc2.0   2.0.5       Andreas Bug         NullPointerException bei ElasticSearch-Indexeingabe bei TIPPs behoben
 
 3197    30.03.2021  rc2.0   2.0.5       Andreas Bug         Validierung des Zuständigen verschärft, Ausgaben korrigiert
