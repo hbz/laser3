@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-33161   07.04.2021  rc2.0   2.0.6       Andreas Bug         Kindlizenzen konnten mit Elternverträgen verknüpft werden
+3316    07.04.2021  rc2.0   2.0.6       Andreas Bug         Kindlizenzen konnten mit Elternverträgen verknüpft werden
+
+3290    07.04.2021  rc2.0   2.0.6       Andreas Bug         Changeset zur Bereinigung falscher Lizenz-Vertrag-Verknüpfungen erstellt
 
 --      06.04.2021  rc2.0   2.0.6       Andreas Bug         Sync-Bugfix
 

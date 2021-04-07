@@ -11,4 +11,15 @@ databaseChangeLog = {
         }
     }
 
+    changeSet(author: "galffy (hand-coded)", id: "1617774040018-2") {
+        grailsChange {
+            change {
+                sql.execute("DELETE FROM links WHERE l_link_type_rv_fk = (select rdv_id from refdata_value join refdata_category on rdv_owner = rdc_id where rdv_value = 'license' and rdc_description = 'link.type') and l_source_lic_fk is null")
+            }
+            rollback {
+
+            }
+        }
+    }
+
 }
