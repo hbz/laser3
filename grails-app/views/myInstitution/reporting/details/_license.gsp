@@ -83,3 +83,5 @@
         </tbody>
     </table>
 </div>
+
+<g:render template="/templates/reporting/chartExport" model="[modalID: 'chartDetailsExportModal', query: query, licList: list]" />

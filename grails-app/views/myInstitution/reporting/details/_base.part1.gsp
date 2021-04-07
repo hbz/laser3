@@ -1,7 +1,7 @@
 <h3 class="ui header">${message(code:'reporting.macro.step3')}</h3>
 
 <div class="ui right aligned">
-    <button id="chart-export-button" class="ui icon button" disabled>
+    <button id="chart-export-button" class="ui icon button" href="#chartDetailsExportModal" data-semui="modal">
         <i class="ui icon download"></i>
     </button>
     <g:if test="${query.split('-')[0] in ['org', 'member', 'provider', 'licensor']}">

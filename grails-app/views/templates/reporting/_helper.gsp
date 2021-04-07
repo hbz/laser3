@@ -47,6 +47,7 @@ if (! JSPC.app.reporting) {
                 method: 'post',
                 data: data,
                 beforeSend: function(xhr) {
+                   $('#chartDetailsExportModal').remove()
                    $('#chartDetailsCopyEmailModal').remove()
                 }
             })
