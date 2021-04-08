@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3316    07.04.2021  rc2.0   2.0.6       Andreas Bug         Kindlizenzen konnten mit Elternverträgen verknüpft werden
+
+3290    07.04.2021  rc2.0   2.0.6       Andreas Bug         Changeset zur Bereinigung falscher Lizenz-Vertrag-Verknüpfungen erstellt
+
+--      06.04.2021  rc2.0   2.0.6       Andreas Bug         Sync-Bugfix
+
+3312    06.04.2021  rc2.0   2.0.6       Andreas Bug         Ladequelle wurde nicht durchgereicht
+
 3302    01.04.2021  rc2.0   2.0.6       Andreas Bug         verschiedene Bugs im Pakettitelexport
 
 3225    31.03.2021  rc2.0   2.0.5       David   Feature     Reporting: (Lizenz-)Bestandsauswertung
