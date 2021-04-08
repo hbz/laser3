@@ -27,8 +27,8 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.exporting.AbstractExport
 import de.laser.exporting.GenericExportManager
-import de.laser.exporting.OrgExport
 import de.laser.finance.CostItem
+import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.myInstitution.CostItemConfig
@@ -42,6 +42,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.servlet.ServletOutputStream
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxHtmlController {
@@ -481,11 +482,24 @@ class AjaxHtmlController {
 
         AbstractExport export = GenericExportManager.getCurrentExport( params.query, selectedFields )
 
+        // TODO
+        // TODO
         List<Long> idList = params.get('idList[]') ? params.get('idList[]').split(',').collect{ it as Long } : []
         //List<Long> idList = params.get('idList[]') ? params.get('idList[]').collect{ it.id as Long } : []
+        // TODO
+        // TODO
         List<String> rows = GenericExportManager.doExport( export, idList )
 
-        response.setHeader('Content-disposition', 'attachment; filename="Reporting.csv"')
+        SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
+        String filename
+        if (params.filename) {
+            filename = sdf.format(new Date()) + '_' + params.filename + '.csv'
+        }
+        else {
+            filename = sdf.format(new Date()) + '_reporting.csv'
+        }
+
+        response.setHeader('Content-disposition', 'attachment; filename="' + filename + '"')
         response.contentType = 'text/csv'
 
         ServletOutputStream out = response.outputStream

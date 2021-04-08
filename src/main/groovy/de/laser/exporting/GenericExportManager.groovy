@@ -39,13 +39,13 @@ class GenericExportManager {
         List<String> rows = []
         Map<String, Object> fields = export.getSelectedFields()
 
-        if (export.KEY == 'license') {
+        if (export.KEY == LicenseExport.KEY) {
             idList = License.executeQuery( 'select l.id from License l where l.id in (:idList) order by l.reference', [idList: idList] )
         }
-        else if (export.KEY == 'organisation') {
+        else if (export.KEY == OrgExport.KEY) {
             idList = Org.executeQuery( 'select o.id from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList] )
         }
-        else if (export.KEY == 'subscription') {
+        else if (export.KEY == SubscriptionExport.KEY) {
             idList = Subscription.executeQuery( 'select s.id from Subscription s where s.id in (:idList) order by s.name', [idList: idList] )
         }
 

@@ -3,6 +3,8 @@ package de.laser.exporting
 import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import grails.util.Holders
+import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
@@ -12,14 +14,14 @@ class SubscriptionExport extends AbstractExport {
 
     static Map<String, Object> FIELDS = [
 
+            'startDate'             : [type: FIELD_TYPE_PROPERTY, text: 'Laufzeit-Beginn' ],
             'endDate'               : [type: FIELD_TYPE_PROPERTY, text: 'Laufzeit-Ende' ],
-            'form'                  : [type: FIELD_TYPE_REFDATA, text: 'Lizenzform' ],
+            'status'                : [type: FIELD_TYPE_REFDATA,  text: 'Lizenzstatus' ],
+            'kind'                  : [type: FIELD_TYPE_REFDATA,  text: 'Lizenztyp' ],
+            'form'                  : [type: FIELD_TYPE_REFDATA,  text: 'Lizenzform' ],
+            'resource'              : [type: FIELD_TYPE_REFDATA,  text: 'Ressourcentyp' ],
             'hasPerpetualAccess'    : [type: FIELD_TYPE_PROPERTY, text: 'Dauerhafter Zugriff' ],
             'isPublicForApi'        : [type: FIELD_TYPE_PROPERTY, text: 'Freigabe Datenaustausch' ],
-            'kind'                  : [type: FIELD_TYPE_REFDATA, text: 'Lizenztyp' ],
-            'resource'              : [type: FIELD_TYPE_REFDATA, text: 'Ressourcentyp' ],
-            'startDate'             : [type: FIELD_TYPE_PROPERTY, text: 'Laufzeit-Beginn' ],
-            'status'                : [type: FIELD_TYPE_REFDATA, text: 'Lizenzstatus' ]
     ]
 
     SubscriptionExport (Map<String, Object> fields) {
@@ -29,8 +31,8 @@ class SubscriptionExport extends AbstractExport {
     @Override
     Map<String, Object> getAllFields() {
         Map<String, Object> fields = [
-                'name'              : [type: FIELD_TYPE_PROPERTY, text: 'Name' ],
-                'globalUID'         : [type: FIELD_TYPE_PROPERTY, text: 'globalUID' ]
+                'globalUID'         : [type: FIELD_TYPE_PROPERTY, text: 'Link' ],
+                'name'              : [type: FIELD_TYPE_PROPERTY, text: 'Name' ]
         ]
         return fields + FIELDS
     }
@@ -43,6 +45,8 @@ class SubscriptionExport extends AbstractExport {
     @Override
     List<String> getObject(Long id, Map<String, Object> fields) {
 
+        ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
+
         Subscription sub = Subscription.get(id)
         List<String> content = []
 
@@ -54,7 +58,7 @@ class SubscriptionExport extends AbstractExport {
             if (type == FIELD_TYPE_PROPERTY) {
 
                 if (key == 'globalUID') {
-                    content.add( sub.getProperty(key) as String )
+                    content.add( g.createLink( controller: 'subscription', action: 'show', absolute: true ) + '/' + sub.getProperty(key) as String )
                 }
                 else if (Subscription.getDeclaredField(key).getType() == Date) {
                     if (sub.getProperty(key)) {

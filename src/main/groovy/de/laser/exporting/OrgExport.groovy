@@ -5,6 +5,8 @@ import de.laser.OrgSetting
 import de.laser.OrgSubjectGroup
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import grails.util.Holders
+import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
@@ -14,16 +16,16 @@ class OrgExport extends AbstractExport {
 
     static Map<String, Object> FIELDS = [
 
-            'country'           : [type: FIELD_TYPE_REFDATA, text: 'Land' ],
-            'customerType'      : [type: FIELD_TYPE_CUSTOM_IMPL, text: 'Kundentyp' ],
-            'eInvoice'          : [type: FIELD_TYPE_PROPERTY, text: 'Elektronische Rechnungsstellung (XRechnung)' ],
-            'funderHskType'     : [type: FIELD_TYPE_REFDATA, text: 'Trägerschaft' ],
-            'funderType'        : [type: FIELD_TYPE_REFDATA, text: 'Unterhaltsträger' ],
-            'legalInfo'         : [type: FIELD_TYPE_CUSTOM_IMPL, text: '?/?' ],
-            'libraryNetwork'    : [type: FIELD_TYPE_REFDATA, text: 'Verbundzugehörigkeit' ],
-            'libraryType'       : [type: FIELD_TYPE_REFDATA, text:  'Bibliothekstyp' ],
+            'customerType'      : [type: FIELD_TYPE_CUSTOM_IMPL,    text: 'Kundentyp' ],
             'orgType'           : [type: FIELD_TYPE_REFDATA_JOINTABLE, text: 'Organisationstyp' ],
-            'subjectGroup'      : [type: FIELD_TYPE_CUSTOM_IMPL, text: 'Fächergruppen' ]
+            'libraryType'       : [type: FIELD_TYPE_REFDATA,        text:  'Bibliothekstyp' ],
+            'libraryNetwork'    : [type: FIELD_TYPE_REFDATA,        text: 'Verbundzugehörigkeit' ],
+            'funderHskType'     : [type: FIELD_TYPE_REFDATA,        text: 'Trägerschaft' ],
+            'funderType'        : [type: FIELD_TYPE_REFDATA,        text: 'Unterhaltsträger' ],
+            'country'           : [type: FIELD_TYPE_REFDATA,        text: 'Land' ],
+            'legalInfo'         : [type: FIELD_TYPE_CUSTOM_IMPL,    text: 'Erstellt/Organisiert' ],
+            'eInvoice'          : [type: FIELD_TYPE_PROPERTY,       text: 'Elektronische Rechnungsstellung (XRechnung)' ],
+            'subjectGroup'      : [type: FIELD_TYPE_CUSTOM_IMPL,    text: 'Fächergruppen' ]
     ]
 
     OrgExport (Map<String, Object> fields) {
@@ -33,9 +35,9 @@ class OrgExport extends AbstractExport {
     @Override
     Map<String, Object> getAllFields() {
         Map<String, Object> fields = [
+                'globalUID'     : [type: FIELD_TYPE_PROPERTY, text: 'Link' ],
                 'sortname'     : [type: FIELD_TYPE_PROPERTY, text: 'Sortiername' ],
-                'name'          : [type: FIELD_TYPE_PROPERTY, text: 'Name' ],
-                'globalUID'     : [type: FIELD_TYPE_PROPERTY, text: 'globalUID' ]
+                'name'          : [type: FIELD_TYPE_PROPERTY, text: 'Name' ]
         ]
         return fields + FIELDS
     }
@@ -48,6 +50,8 @@ class OrgExport extends AbstractExport {
     @Override
     List<String> getObject(Long id, Map<String, Object> fields) {
 
+        ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
+
         Org org = Org.get(id)
         List<String> content = []
 
@@ -59,7 +63,7 @@ class OrgExport extends AbstractExport {
             if (type == FIELD_TYPE_PROPERTY) {
 
                 if (key == 'globalUID') {
-                    content.add( org.getProperty(key) as String )
+                    content.add( g.createLink( controller: 'org', action: 'show', absolute: true ) + '/' + org.getProperty(key) as String )
                 }
                 else if (Org.getDeclaredField(key).getType() == Date) {
                     if (org.getProperty(key)) {

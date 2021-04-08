@@ -3,6 +3,8 @@ package de.laser.exporting
 import de.laser.License
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import grails.util.Holders
+import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
@@ -12,11 +14,11 @@ class LicenseExport extends AbstractExport {
 
     static Map<String, Object> FIELDS = [
 
-            'endDate'           : [type: FIELD_TYPE_PROPERTY, text: 'Enddatum' ],
-            'licenseCategory'   : [type: FIELD_TYPE_REFDATA, text: 'Vertragskategorie' ],
             'startDate'         : [type: FIELD_TYPE_PROPERTY, text: 'Anfangsdatum' ],
-            'status'            : [type: FIELD_TYPE_REFDATA, text: 'Vertragstatus' ],
-            'type'              : [type: FIELD_TYPE_REFDATA, text: 'Typ' ]
+            'endDate'           : [type: FIELD_TYPE_PROPERTY, text: 'Enddatum' ],
+            'status'            : [type: FIELD_TYPE_REFDATA,  text: 'Vertragstatus' ],
+            'licenseCategory'   : [type: FIELD_TYPE_REFDATA,  text: 'Vertragskategorie' ],
+            'type'              : [type: FIELD_TYPE_REFDATA,  text: 'Typ' ]
     ]
 
     LicenseExport (Map<String, Object> fields) {
@@ -26,8 +28,8 @@ class LicenseExport extends AbstractExport {
     @Override
     Map<String, Object> getAllFields() {
         Map<String, Object> fields = [
-                'reference'     : [type: FIELD_TYPE_PROPERTY, text: 'Name' ],
-                'globalUID'     : [type: FIELD_TYPE_PROPERTY, text: 'globalUID' ]
+                'globalUID'     : [type: FIELD_TYPE_PROPERTY, text: 'Link' ],
+                'reference'     : [type: FIELD_TYPE_PROPERTY, text: 'Name' ]
         ]
         return fields + FIELDS
     }
@@ -40,6 +42,8 @@ class LicenseExport extends AbstractExport {
     @Override
     List<String> getObject(Long id, Map<String, Object> fields) {
 
+        ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
+
         License lic = License.get(id)
         List<String> content = []
 
@@ -51,7 +55,7 @@ class LicenseExport extends AbstractExport {
             if (type == FIELD_TYPE_PROPERTY) {
 
                 if (key == 'globalUID') {
-                    content.add( lic.getProperty(key) as String )
+                    content.add( g.createLink( controller: 'license', action: 'show', absolute: true ) + '/' + lic.getProperty(key) as String )
                 }
                 else if (License.getDeclaredField(key).getType() == Date) {
                     if (lic.getProperty(key)) {

@@ -57,6 +57,10 @@ class DateUtils {
         return new SimpleDateFormat('dd.MM.yyyy')
     }
 
+    static SimpleDateFormat getSDF_forFilename(){
+        return new SimpleDateFormat('yyyyMMdd-HHmm')
+    }
+
     static Date toDate_NoTime(String value) {
         (Date) getSDF_NoTime()?.parseObject(value)
     }
