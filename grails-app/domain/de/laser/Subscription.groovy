@@ -30,7 +30,6 @@ import java.text.SimpleDateFormat
 class Subscription extends AbstractBaseWithCalculatedLastUpdated
         implements Auditable, CalculatedType, Permissions, ShareSupport {
 
-    def grailsApplication
     def contextService
     def messageSource
     def pendingChangeService
@@ -39,9 +38,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     def propertyService
     def deletionService
     def auditService
-    def genericOIDService
-
-    static Log static_logger = LogFactory.getLog(Subscription)
 
     @RefdataAnnotation(cat = RDConstants.SUBSCRIPTION_STATUS)
     RefdataValue status
@@ -61,7 +57,12 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
     boolean isSlaved = false
 	boolean isPublicForApi = false
+
+    //explicitely demanded as of ERMS-2503 - but demand has been revoked! Keep in u.f.n. until discussions on orderer side are terminated!
+    //@RefdataAnnotation(cat = RDConstants.Y_N)
+    //RefdataValue hasPerpetualAccess
     boolean hasPerpetualAccess = false
+    boolean hasPublishComponent = false
     boolean isMultiYear = false
 
   String name
@@ -76,7 +77,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
   String comment
 
   Subscription instanceOf
-  //Subscription previousSubscription //deleted as ERMS-800
   // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
   boolean administrative = false
 
@@ -145,9 +145,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         manualCancellationDate  column:'sub_manual_cancellation_date'
         instanceOf              column:'sub_parent_sub_fk', index:'sub_parent_idx'
         administrative          column:'sub_is_administrative'
-        //previousSubscription    column:'sub_previous_subscription_fk' //-> see Links, deleted as ERMS-800
         isSlaved        column:'sub_is_slaved'
         hasPerpetualAccess column: 'sub_has_perpetual_access', defaultValue: false
+        //hasPerpetualAccess column: 'sub_has_perpetual_access_rv_fk'
+        hasPublishComponent column: 'sub_has_publish_component', defaultValue: false
         isPublicForApi  column:'sub_is_public_for_api', defaultValue: false
         lastUpdatedCascading column: 'sub_last_updated_cascading'
 
@@ -163,7 +164,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         prsLinks            batchSize: 10
         derivedSubscriptions    batchSize: 10
         propertySet    batchSize: 10
-        //privateProperties   batchSize: 10
         costItems           batchSize: 10
     }
 
@@ -188,7 +188,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         manualCancellationDate  (nullable:true)
         instanceOf              (nullable:true)
         comment(nullable: true, blank: true)
-        //previousSubscription    (nullable:true) //-> see Links, deleted as ERMS-800
+        //hasPerpetualAccess(nullable: true) keep in case has perpetual access becomes nullable
         noticePeriod(nullable:true, blank:true)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true)
@@ -197,7 +197,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     @Override
     Collection<String> getLogIncluded() {
-        [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess' ]
+        [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent' ]
     }
     @Override
     Collection<String> getLogExcluded() {

@@ -3112,7 +3112,9 @@ class SurveyController {
                                  sub_resource : subscription.resource?.id.toString(),
                                  sub_kind     : subscription.kind?.id.toString(),
                                  sub_isPublicForApi : subscription.isPublicForApi ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
-                                 sub_hasPerpetualAccess : subscription.hasPerpetualAccess ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString()
+                                 //sub_hasPerpetualAccess : subscription.hasPerpetualAccess,
+                                 sub_hasPerpetualAccess : subscription.hasPerpetualAccess ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
+                                 sub_hasPublishComponent : subscription.hasPublishComponent ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString()
 
         ]
 
@@ -3145,6 +3147,8 @@ class SurveyController {
             def sub_form = params.subForm
             def sub_resource = params.subResource
             def sub_hasPerpetualAccess = params.subHasPerpetualAccess == '1'
+            //def sub_hasPerpetualAccess = params.subHasPerpetualAccess
+            def sub_hasPublishComponent = params.subHasPublishComponent == '1'
             def sub_isPublicForApi = params.subIsPublicForApi == '1'
             def old_subOID = params.subscription.old_subid
             def new_subname = params.subscription.name
@@ -3167,6 +3171,7 @@ class SurveyController {
                         resource: sub_resource,
                         form: sub_form,
                         hasPerpetualAccess: sub_hasPerpetualAccess,
+                        hasPublishComponent: sub_hasPublishComponent,
                         isPublicForApi: sub_isPublicForApi
                 )
 
@@ -4165,6 +4170,7 @@ class SurveyController {
                         form: newParentSub.form ?: null,
                         isPublicForApi: newParentSub.isPublicForApi,
                         hasPerpetualAccess: newParentSub.hasPerpetualAccess,
+                        hasPublishComponent: newParentSub.hasPublishComponent,
                         isMultiYear: multiYear ?: false
                 )
 
