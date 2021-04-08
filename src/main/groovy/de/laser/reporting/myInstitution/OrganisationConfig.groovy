@@ -61,10 +61,12 @@ class OrganisationConfig extends GenericConfig {
                             'Verteilung' : [
                                     'org-property-assignment' : [
                                             label: 'Organisation → Merkmale (eigene/öffentliche)',
+                                            template: '2axis2values',
                                             chartLabels: [ 'Organisationen', 'Vergebene Merkmale (eigene/öffentliche)' ]
                                             ],
                                     'org-identifier-assignment' : [
                                             label : 'Organisation → Identifikatoren',
+                                            template: '2axis2values_nonMatches',
                                             chartLabels: [ 'Organisationen', 'Vergebene Identifikatoren' ]
                                     ]
                                     //'org-serverAccess-assignment' : 'Organisation nach Datenweitergabe',

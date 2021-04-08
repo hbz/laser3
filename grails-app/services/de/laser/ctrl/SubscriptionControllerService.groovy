@@ -521,7 +521,7 @@ class SubscriptionControllerService {
             result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             result.members_disabled = Subscription.executeQuery("select oo.org.id from OrgRole oo join oo.sub s where s.instanceOf = :io",[io: result.subscription])
             result.validPackages = result.subscription.packages?.sort { it.pkg.name }
-            result.memberLicenses = License.executeQuery("select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType",[subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE])
+            result.memberLicenses = License.executeQuery("select l from Links li join li.sourceLicense l where li.destinationSubscription = :subscription and li.linkType = :linkType and exists (select l2 from License l2 where l2.instanceOf = l)",[subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE])
 
             [result:result,status:STATUS_OK]
         }
@@ -558,7 +558,7 @@ class SubscriptionControllerService {
                         }
                     }
                     if(params.generateSlavedLics == "all") {
-                        String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
+                        String query = "select l from License l where l.instanceOf in (select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType)"
                         licensesToProcess.addAll(License.executeQuery(query, [subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE]))
                     }
                     else if(params.generateSlavedLics == "partial") {
@@ -1339,8 +1339,8 @@ class SubscriptionControllerService {
                 String addType = params.addType
                 if(!Package.findByGokbId(pkgUUID)) {
                     ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-                    result.source = apiSource.baseUrl+apiSource.fixToken
-                    GlobalRecordSource source = GlobalRecordSource.findByUriLike(result.source)
+                    result.source = apiSource.baseUrl
+                    GlobalRecordSource source = GlobalRecordSource.findByUriLike(result.source+'%')
                     log.debug("linkPackage. Global Record Source URL: " +source.uri)
                     globalSourceSyncService.source = source
                     executorService.execute({
@@ -1349,7 +1349,7 @@ class SubscriptionControllerService {
                             globalSourceSyncService.defineMapFields()
                             Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID,max:5000])
 
-                            if(queryResult.records && queryResult.records.count > 0) {
+                            if(queryResult.records && queryResult.count > 0) {
                                 globalSourceSyncService.updateRecords(queryResult.records)
                             }else {
                                 globalSourceSyncService.createOrUpdatePackage(pkgUUID)
@@ -2602,7 +2602,8 @@ class SubscriptionControllerService {
     Map<String,Object> reporting(GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
 
-        result.cfgQueryList = SubscriptionReporting.QUERY
+        result.cfgQueryList  = SubscriptionReporting.CONFIG.base.query
+        result.cfgQueryList2 = SubscriptionReporting.CONFIG.base.query2
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }

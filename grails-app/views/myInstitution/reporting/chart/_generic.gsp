@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.myInstitution.GenericConfig" %>
+<%@ page import="de.laser.reporting.myInstitution.GenericConfig; de.laser.reporting.myInstitution.GenericQuery" %>
 <g:if test="${! data}">
     JSPC.app.reporting.current.chart.option = {}
     $("#reporting-modal-nodata").modal('show');
@@ -12,7 +12,7 @@
         dataset: {
             source: [
                 ['id', 'name', 'value'],
-                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}]," } %>
+                <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}]," } %>
             ]
         },
         tooltip: {
@@ -84,6 +84,15 @@
                 label: {
                     show: true,
                     position: 'right'
+                },
+                itemStyle: {
+                    color: function(params) {
+                        if (JSPC.helper.contains(['${GenericQuery.NO_DATA_LABEL}', '${GenericQuery.NO_PROVIDER_LABEL}'], params.name)) {
+                            return JSPC.app.reporting.helper.series.color.redInactive
+                        } else {
+                            return JSPC.app.reporting.helper.series.color.blue
+                        }
+                    }
                 }
             }
         ]

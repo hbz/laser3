@@ -51,18 +51,22 @@ class SubscriptionConfig extends GenericConfig {
                             'Verteilung' : [
                                     'subscription-provider-assignment' : [
                                             label : 'Lizenz → Anbieter',
+                                            template: 'generic',
                                             chartLabels : []
                                     ],
                                     'subscription-platform-assignment' : [
                                             label : 'Lizenz → Anbieter → Plattform',
+                                            template: '2axis2values_nonMatches',
                                             chartLabels : [ 'Ermittelt durch Bestand', 'Zuordnung über Anbieter' ]
                                     ],
                                     'subscription-property-assignment' : [
                                             label : 'Lizenz → Merkmale (eigene/öffentliche)',
+                                            template: '2axis2values',
                                             chartLabels : [ 'Lizenzen', 'Vergebene Merkmale (eigene/öffentliche)' ]
                                     ],
                                     'subscription-identifier-assignment' : [
                                             label : 'Lizenz → Identifikatoren',
+                                            template: '2axis2values_nonMatches',
                                             chartLabels : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
                                     ]
                             ]

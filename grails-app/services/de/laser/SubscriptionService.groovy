@@ -323,11 +323,14 @@ class SubscriptionService {
             )
             pu.setBenchmark('read off costs')
             result.totalCount = costs.size()
+            result.totalMembers = []
+            costs.each { row ->
+                result.totalMembers << row[2]
+            }
             if(params.exportXLS || params.format)
                 result.entries = costs
             else result.entries = costs.drop((int) result.offset).take((int) result.max)
 
-            result.totalMembers = []
             result.finances = {
                 Map entries = [:]
                 result.entries.each { obj ->
@@ -343,7 +346,7 @@ class SubscriptionService {
                         else if (ci.costItemElementConfiguration == RDStore.CIEC_NEGATIVE) {
                             entries."${ci.billingCurrency}" -= ci.costInBillingCurrencyAfterTax
                         }
-                        result.totalMembers << ci.sub.getSubscriber()
+                        //result.totalMembers << ci.sub.getSubscriber()
                     }
                     if (obj[1]) {
                         Subscription subCons = (Subscription) obj[1]

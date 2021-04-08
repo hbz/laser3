@@ -15,6 +15,11 @@
             trigger: 'item',
             formatter (params) {
                 var str = params.name
+
+                if (JSPC.helper.contains(['${GenericQuery.NO_IDENTIFIER_LABEL}', '${GenericQuery.NO_PLATFORM_LABEL}'], str)) {
+                    return str + JSPC.app.reporting.helper.tooltip.getEntry(params.marker, ' ', Math.abs(params.value[3]))
+                }
+
                 str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${chartLabels[0]}', params.value[3])
                 str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${chartLabels[1]}', params.value[2])
                 return str
@@ -59,6 +64,11 @@
             axisPointer: { type: 'shadow' },
             formatter (params) {
                 var str = params[0].name
+
+                if (JSPC.helper.contains(['${GenericQuery.NO_IDENTIFIER_LABEL}', '${GenericQuery.NO_PLATFORM_LABEL}'], str)) {
+                    return str + JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, ' ', Math.abs(params[0].value[3]))
+                }
+
                 if (params.length == 1) {
                     if (params[0].seriesName == '${chartLabels[0]}') {
                         str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, Math.abs(params[0].value[3]))
@@ -104,6 +114,15 @@
                     show: true,
                     position: 'left',
                     formatter (params) { return Math.abs(params.value[3]) }
+                },
+                itemStyle: {
+                    color: function(params) {
+                        if (JSPC.helper.contains(['${GenericQuery.NO_IDENTIFIER_LABEL}', '${GenericQuery.NO_PLATFORM_LABEL}'], params.name)) {
+                            return JSPC.app.reporting.helper.series.color.redInactive
+                        } else {
+                            return JSPC.app.reporting.helper.series.color.blue
+                        }
+                    }
                 }
             },
             {
