@@ -206,10 +206,13 @@ class SubscriptionFilter extends GenericFilter {
                 }
                 // --> refdata join tables
                 else if (pType == GenericConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-                    println ' ------------ not implemented ------------ '
-                    // TODO
-                    // TODO
-                    // TODO
+
+                    if (p == GenericConfig.CUSTOM_KEY_ORG_TYPE) {
+                        whereParts.add('exists (select ot from org.orgType ot where ot = :p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, RefdataValue.get(params.long(key)))
+
+                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                    }
                 }
                 // --> custom filter implementation
                 else if (pType == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {
