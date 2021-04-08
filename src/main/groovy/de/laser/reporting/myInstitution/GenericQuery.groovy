@@ -7,7 +7,10 @@ import grails.web.servlet.mvc.GrailsParameterMap
 
 class GenericQuery {
 
-    static String NO_DATA_LABEL = 'keine Angabe *'
+    static String NO_DATA_LABEL         = '* keine Angabe'
+    static String NO_IDENTIFIER_LABEL   = '* ohne Identifikator'
+    static String NO_PLATFORM_LABEL     = '* ohne Plattform'
+    static String NO_PROVIDER_LABEL     = '* ohne Anbieter'
 
     static List<String> getQueryLabels(Map<String, Object> config, GrailsParameterMap params) {
 
@@ -40,9 +43,26 @@ class GenericQuery {
         result
     }
 
+    static void handleGenericQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List idList, Map<String, Object> result) {
+
+        result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
+
+        result.data.each { d ->
+            d[1] = d[0]
+
+            result.dataDetails.add( [
+                    query:  query,
+                    id:     d[0],
+                    label:  d[1],
+                    idList: Org.executeQuery( dataDetailsHql, [idList: idList, d: d[0]] )
+            ])
+        }
+        handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
+    }
+
     static void handleGenericRefdataQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List idList, Map<String, Object> result) {
 
-        result.data = Org.executeQuery( dataHql, [idList: idList] )
+        result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
 
         result.data.each { d ->
             d[1] = RefdataValue.get(d[0]).getI10n('value').replaceAll("'", '"')
@@ -59,7 +79,7 @@ class GenericQuery {
 
     static void handleGenericNonMatchingData(String query, String hql, List idList, Map<String, Object> result) {
 
-        List noDataList = Org.executeQuery( hql, [idList: idList] )
+        List noDataList = idList ? Org.executeQuery( hql, [idList: idList] ) : []
 
         if (noDataList) {
             result.data.add( [null, NO_DATA_LABEL, noDataList.size()] )
@@ -73,12 +93,13 @@ class GenericQuery {
         }
     }
 
-    static void handleGenericIdentifierAssignmentQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List idList, Map<String, Object> result) {
+    static void handleGenericIdentifierAssignmentQuery(String query, String dataHqlPart, String dataDetailsHqlPart, String nonMatchingHql, List idList, Map<String, Object> result) {
 
-        result.data = Org.executeQuery(
+        result.data = idList ? Org.executeQuery(
                 dataHqlPart + " and ident.value is not null and trim(ident.value) != '' group by ns.id order by ns.ns",
                 [idList: idList]
-        )
+        ) : []
+
         result.data.each { d ->
             List<Long> objIdList = Org.executeQuery(
                     dataDetailsHqlPart + " and ns.id = :d and ident.value is not null and trim(ident.value) != ''",
@@ -93,14 +114,31 @@ class GenericQuery {
                     value2: objIdList.unique().size()
             ])
         }
+
+        List<Long> nonMatchingIdList = idList.minus( result.dataDetails.collect { it.idList }.flatten() )
+        List noDataList = nonMatchingIdList ? Org.executeQuery( nonMatchingHql, [idList: nonMatchingIdList] ) : []
+
+        if (noDataList) {
+            result.data.add( [null, NO_IDENTIFIER_LABEL, noDataList.size()] )
+
+            result.dataDetails.add( [
+                    query:  query,
+                    id:     null,
+                    label:  NO_IDENTIFIER_LABEL,
+                    idList: noDataList,
+                    value1: 0,
+                    value2: noDataList.size(),
+            ])
+        }
     }
 
     static void handleGenericPropertyAssignmentQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List idList, Org ctxOrg, Map<String, Object> result) {
 
-        result.data = Org.executeQuery(
+        result.data = idList ? Org.executeQuery(
                 dataHqlPart + " and (prop.tenant = :ctxOrg or prop.isPublic = true) and pd.descr like '%Property' group by pd.id order by pd.name",
                 [idList: idList, ctxOrg: ctxOrg]
-        )
+        ) : []
+
         result.data.each { d ->
             d[1] = PropertyDefinition.get(d[0]).getI10n('name').replaceAll("'", '"')
 

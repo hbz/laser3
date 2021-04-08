@@ -15,6 +15,18 @@
 
 3177    07.04.2021  dev     2.1         Andreas Feature     neue Werte für Steuertypen (Steuer enthalten) eingefügt
 
+3316    07.04.2021  rc2.0   2.0.6       Andreas Bug         Kindlizenzen konnten mit Elternverträgen verknüpft werden
+
+3290    07.04.2021  rc2.0   2.0.6       Andreas Bug         Changeset zur Bereinigung falscher Lizenz-Vertrag-Verknüpfungen erstellt
+
+--      06.04.2021  rc2.0   2.0.6       Andreas Bug         Sync-Bugfix
+
+3312    06.04.2021  rc2.0   2.0.6       Andreas Bug         Ladequelle wurde nicht durchgereicht
+
+3302    01.04.2021  rc2.0   2.0.6       Andreas Bug         verschiedene Bugs im Pakettitelexport
+
+3225    31.03.2021  rc2.0   2.0.5       David   Feature     Reporting: (Lizenz-)Bestandsauswertung
+
 3287    30.03.2021  rc2.0   2.0.5       Andreas Bug         NullPointerException bei ElasticSearch-Indexeingabe bei TIPPs behoben
 
 3197    30.03.2021  rc2.0   2.0.5       Andreas Bug         Validierung des Zuständigen verschärft, Ausgaben korrigiert
@@ -130,8 +142,6 @@
 3173    02.03.2021  rc2.0   2.0.1       Moe     Bug         Meine Lizenzen: Filterergebnis/-zählung nicht korrekt
 
 ----    02.03.2021  rc2.0   2.0.1       Moe     Bug         Status von geplanten Lizenzen bzw. Verträge auf Aktiv setzen wenn auch kein EndDatum vorhanden ist 
-
-3157    02.03.2021  dev     2.1         David   Feature     Passwort-Sicherheit überdenken
 
 3166    01.03.2021  rc2.0   2.0         David   Feature     Reporting: Einstiegspunkt: Verträge
 

@@ -44,10 +44,12 @@ class LicenseConfig extends GenericConfig {
                             'Verteilung' : [
                                     'license-property-assignment' : [
                                             label : 'Vertrag → Merkmale (eigene/öffentliche)',
+                                            template: '2axis2values',
                                             chartLabels : [ 'Verträge', 'Vergebene Merkmale (eigene/öffentliche)' ]
                                     ],
                                     'license-identifier-assignment' : [
                                             label : 'Vertrag → Identifikatoren',
+                                            template: '2axis2values_nonMatches',
                                             chartLabels: [ 'Verträge', 'Vergebene Identifikatoren' ]
                                     ],
                             ]
