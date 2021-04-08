@@ -113,13 +113,9 @@
 
             $('#chart-export').on( 'click', function(e) {
                 if ( JSPC.app.reporting.current.request.query ) {
-                    JSPC.app.reporting.requestExport();
+                    alert('[msg:1] - Nicht implementiert');
                 }
             })
-
-            JSPC.app.reporting.requestExport = function() {
-                alert('[msg:1] - Nicht implementiert');
-            }
 
             JSPC.app.reporting.requestChartJsonData = function() {
                 if ( JSPC.app.reporting.current.request.query && JSPC.app.reporting.current.request.chart ) {

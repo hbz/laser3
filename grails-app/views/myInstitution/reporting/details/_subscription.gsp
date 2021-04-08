@@ -94,5 +94,6 @@
     </table>
 </div>
 
-<g:render template="/templates/reporting/chartExport" model="[modalID: 'chartDetailsExportModal', query: query, subList: list]" />
+<g:render template="/myInstitution/reporting/export/chartDetailsModal" model="[modalID: 'chartDetailsExportModal', query: query, title: labels, objectList: list]" />
+
 

@@ -25,6 +25,9 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
+import de.laser.exporting.AbstractExport
+import de.laser.exporting.GenericExportManager
+import de.laser.exporting.OrgExport
 import de.laser.finance.CostItem
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -37,6 +40,8 @@ import de.laser.reporting.myInstitution.SubscriptionConfig
 import de.laser.reporting.subscription.SubscriptionReporting
 import grails.plugin.springsecurity.annotation.Secured
 import grails.web.servlet.mvc.GrailsParameterMap
+
+import javax.servlet.ServletOutputStream
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxHtmlController {
@@ -462,5 +467,33 @@ class AjaxHtmlController {
         }
 
         render template: result.tmpl, model: result
+    }
+
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
+    })
+    def chartDetailsExport() {
+
+        Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('cde:') }
+        Map<String, Object> selectedFields = [:]
+        selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('cde:', ''), it.value ) }
+
+        AbstractExport export = GenericExportManager.getCurrentExport( params.query, selectedFields )
+
+        List<Long> idList = params.get('idList[]') ? params.get('idList[]').split(',').collect{ it as Long } : []
+        //List<Long> idList = params.get('idList[]') ? params.get('idList[]').collect{ it.id as Long } : []
+        List<String> rows = GenericExportManager.doExport( export, idList )
+
+        response.setHeader('Content-disposition', 'attachment; filename="Reporting.csv"')
+        response.contentType = 'text/csv'
+
+        ServletOutputStream out = response.outputStream
+        out.withWriter { w ->
+            rows.each { r ->
+                w.write( r + '\n')
+            }
+        }
+        out.close()
     }
 }

@@ -6,46 +6,69 @@ import de.laser.OrgSubjectGroup
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 
-class OrgExport extends GenericExportConfig {
+import java.text.SimpleDateFormat
+
+class OrgExport extends AbstractExport {
 
     static String KEY = 'organisation'
 
     static Map<String, Object> FIELDS = [
 
-            'country'           : GenericExportConfig.FIELD_TYPE_REFDATA,
-            'customerType'      : GenericExportConfig.FIELD_TYPE_CUSTOM_IMPL,
-            'eInvoice'          : GenericExportConfig.FIELD_TYPE_PROPERTY,
-            'funderHskType'     : GenericExportConfig.FIELD_TYPE_REFDATA,
-            'funderType'        : GenericExportConfig.FIELD_TYPE_REFDATA,
-            'legalInfo'         : GenericExportConfig.FIELD_TYPE_CUSTOM_IMPL,
-            'libraryNetwork'    : GenericExportConfig.FIELD_TYPE_REFDATA,
-            'libraryType'       : GenericExportConfig.FIELD_TYPE_REFDATA,
-            'orgType'           : GenericExportConfig.FIELD_TYPE_REFDATA_JOINTABLE,
-            'subjectGroup'      : GenericExportConfig.FIELD_TYPE_CUSTOM_IMPL
+            'country'           : [type: FIELD_TYPE_REFDATA, text: 'Land' ],
+            'customerType'      : [type: FIELD_TYPE_CUSTOM_IMPL, text: 'Kundentyp' ],
+            'eInvoice'          : [type: FIELD_TYPE_PROPERTY, text: 'Elektronische Rechnungsstellung (XRechnung)' ],
+            'funderHskType'     : [type: FIELD_TYPE_REFDATA, text: 'Trägerschaft' ],
+            'funderType'        : [type: FIELD_TYPE_REFDATA, text: 'Unterhaltsträger' ],
+            'legalInfo'         : [type: FIELD_TYPE_CUSTOM_IMPL, text: '?/?' ],
+            'libraryNetwork'    : [type: FIELD_TYPE_REFDATA, text: 'Verbundzugehörigkeit' ],
+            'libraryType'       : [type: FIELD_TYPE_REFDATA, text:  'Bibliothekstyp' ],
+            'orgType'           : [type: FIELD_TYPE_REFDATA_JOINTABLE, text: 'Organisationstyp' ],
+            'subjectGroup'      : [type: FIELD_TYPE_CUSTOM_IMPL, text: 'Fächergruppen' ]
     ]
 
-    Map<String, Object> getCurrentConfig() {
+    OrgExport (Map<String, Object> fields) {
+        selectedExport = getAllFields().findAll{ it.key in fields.keySet() }
+    }
 
+    @Override
+    Map<String, Object> getAllFields() {
         Map<String, Object> fields = [
-                'name' : GenericExportConfig.FIELD_TYPE_PROPERTY
+                'sortname'     : [type: FIELD_TYPE_PROPERTY, text: 'Sortiername' ],
+                'name'          : [type: FIELD_TYPE_PROPERTY, text: 'Name' ],
+                'globalUID'     : [type: FIELD_TYPE_PROPERTY, text: 'globalUID' ]
         ]
         return fields + FIELDS
     }
 
-    List<String> exportOrganisation(Long id, Map<String, Object> fields) {
+    @Override
+    Map<String, Object> getSelectedFields() {
+        selectedExport
+    }
+
+    @Override
+    List<String> getObject(Long id, Map<String, Object> fields) {
 
         Org org = Org.get(id)
-        List<String> content = [org.id as String]
+        List<String> content = []
 
         fields.each{ f ->
             String key = f.key
-            String type = f.value
+            String type = f.value.type
 
             // --> generic properties
-            if (type == GenericExportConfig.FIELD_TYPE_PROPERTY) {
+            if (type == FIELD_TYPE_PROPERTY) {
 
-                if (Org.getDeclaredField(key).getType() == Date) {
-                    content.add( DateUtils.parseDateGeneric( org.getProperty(key) as String ) as String )
+                if (key == 'globalUID') {
+                    content.add( org.getProperty(key) as String )
+                }
+                else if (Org.getDeclaredField(key).getType() == Date) {
+                    if (org.getProperty(key)) {
+                        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                        content.add( sdf.format( org.getProperty(key) ) as String )
+                    }
+                    else {
+                        content.add( '' )
+                    }
                 }
                 else if (Org.getDeclaredField(key).getType() in [boolean, Boolean]) {
                     if (org.getProperty(key) == true) {
@@ -59,21 +82,21 @@ class OrgExport extends GenericExportConfig {
                     }
                 }
                 else {
-                    content.add( org.getProperty(key) )
+                    content.add( org.getProperty(key) as String )
                 }
             }
             // --> generic refdata
-            else if (type == GenericExportConfig.FIELD_TYPE_REFDATA) {
+            else if (type == FIELD_TYPE_REFDATA) {
                 String value = org.getProperty(key)?.getI10n('value')
                 content.add( value ?: '')
             }
             // --> refdata join tables
-            else if (type == GenericExportConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-                Set refdata = org.getProperty(key)
-                content.add( refdata.collect{ it.getI10n('value') }.join('; '))
+            else if (type == FIELD_TYPE_REFDATA_JOINTABLE) {
+                Set refdata = org.getProperty(key) as Set
+                content.add( refdata.collect{ it.getI10n('value') }.join( CSV_VALUE_SEPARATOR ))
             }
             // --> custom filter implementation
-            else if (type == GenericExportConfig.FIELD_TYPE_CUSTOM_IMPL) {
+            else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
                 if (key == 'customerType') {
                     def ct = OrgSetting.get(org, OrgSetting.KEYS.CUSTOMER_TYPE)
@@ -86,22 +109,21 @@ class OrgExport extends GenericExportConfig {
                 }
                 else if (key == 'legalInfo') {
                     content.add(
-                            ( org.createdBy != null ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value') )
-                            + '/' +
+                            ( org.createdBy != null ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value') ) + '/' +
                             ( org.legallyObligedBy != null? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value') )
                     )
                 }
                 else if (key == 'subjectGroup') {
                     List osg = OrgSubjectGroup.findAllByOrg(org)
                     if (osg) {
-                        content.add( osg.collect{it.subjectGroup.getI10n('value')}.join('; '))
+                        content.add( osg.collect{it.subjectGroup.getI10n('value')}.join( CSV_VALUE_SEPARATOR ))
                     }
                     else {
                         content.add( '' )
                     }
                 }
                 else {
-                    content.add( '* ' + GenericExportConfig.FIELD_TYPE_CUSTOM_IMPL )
+                    content.add( '* ' + FIELD_TYPE_CUSTOM_IMPL )
                 }
             }
             else {
