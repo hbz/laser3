@@ -1107,10 +1107,18 @@ class SubscriptionControllerService {
                     }
                     if(params.hasPerpetualAccess && !auditService.getAuditConfig(subChild.instanceOf, 'hasPerpetualAccess')) {
                         subChild.hasPerpetualAccess = RefdataValue.get(params.hasPerpetualAccess) == RDStore.YN_YES
+                        //subChild.hasPerpetualAccess = RefdataValue.get(params.hasPerpetualAccess)
                         change << messageSource.getMessage('subscription.hasPerpetualAccess.label',null,locale)
                     }
                     if(params.hasPerpetuaLAccess && auditService.getAuditConfig(subChild.instanceOf, 'hasPerpetualAccess')) {
                         noChange << messageSource.getMessage('subscription.hasPerpetualAccess.label',null,locale)
+                    }
+                    if(params.hasPublishComponent && !auditService.getAuditConfig(subChild.instanceOf, 'hasPublishComponent')) {
+                        subChild.hasPublishComponent = RefdataValue.get(params.hasPublishComponent) == RDStore.YN_YES
+                        change << messageSource.getMessage('subscription.hasPublishComponent.label',null,locale)
+                    }
+                    if(params.hasPublishComponent && auditService.getAuditConfig(subChild.instanceOf, 'hasPublishComponent')) {
+                        noChange << messageSource.getMessage('subscription.hasPublishComponent.label',null,locale)
                     }
                     if (subChild.isDirty()) {
                         subChild.save()
@@ -2289,6 +2297,7 @@ class SubscriptionControllerService {
                         form: result.subscription.form,
                         isPublicForApi: result.subscription.isPublicForApi,
                         hasPerpetualAccess: result.subscription.hasPerpetualAccess,
+                        hasPublishComponent: result.subscription.hasPublishComponent,
                         status: sub_status,
                         isMultiYear: sub_isMultiYear ?: false,
                         administrative: result.subscription.administrative,

@@ -187,6 +187,22 @@ ${surveyInfo.name}
                     </div>
                 </td>
             </tr>
+            <tr>
+                <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
+                <td>
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}" class="ui dropdown"
+                              optionKey="id"
+                              optionValue="${{ it.getI10n('value') }}"
+                              name="subHasPublishComponent"
+                              value="${permissionInfo?.sub_hasPublishComponent}"
+                    />
+                </td>
+                <td class="center aligned">
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="auditList" value="hasPublishComponent" ${AuditConfig.getConfig(subscription, 'hasPublishComponent') ? 'checked': ''} />
+                    </div>
+                </td>
+            </tr>
             </tbody>
         </table>
 

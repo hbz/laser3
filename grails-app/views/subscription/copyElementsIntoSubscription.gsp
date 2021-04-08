@@ -67,6 +67,7 @@
                             <br />
                             <i class="shipping fast icon"></i>${message(code:'subscription.isPublicForApi.label')}
                             <i class="flag outline icon"></i>${message(code:'subscription.hasPerpetualAccess.label')}
+                            <i class="comment icon"></i>${message(code:'subscription.hasPublishComponent.label')}
                             <br />
                             <i class="balance scale icon"></i>${message(code: 'license.label')}
                             <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
@@ -155,6 +156,7 @@
                         <br />
                         <i class="shipping fast icon"></i>${message(code:'subscription.isPublicForApi.label')}
                         <i class="flag outline icon"></i>${message(code:'subscription.hasPerpetualAccess.label')}
+                        <i class="comment icon"></i>${message(code:'subscription.hasPublishComponent.label')}
                         <br />
                         <i class="balance scale icon"></i>${message(code: 'license.label')}
                         <i class="university icon"></i>${message(code: 'subscription.organisations.label')}

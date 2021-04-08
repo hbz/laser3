@@ -107,23 +107,6 @@
                                 <dl>
                                     <dt class="control-label">alter Lizenztyp</dt>
                                     <dd>
-                                        %{--
-                                        <%
-                                            //does not work for some reason, proceed to IDs
-                                            Set<Long> subscriberIDs = []
-                                            subscription.getAllSubscribers().each { subscriber ->
-                                                subscriberIDs << subscriber.id
-                                            }
-                                        %>
-                                        <g:if test="${subscription.administrative || subscriberIDs.contains(contextOrg?.id)}">
-                                            ${subscription.type?.getI10n('value')}
-                                        </g:if>
-                                        <g:else>
-                                            <semui:xEditableRefData owner="${subscription}" field="type"
-                                                                    config="${RDConstants.SUBSCRIPTION_TYPE}"
-                                                                    constraint="removeValue_administrativeSubscription,removeValue_localSubscription"
-                                            />
-                                        </g:else>--}%
                                         <semui:xEditableRefData owner="${subscription}" field="type"
                                                                 config="${RDConstants.SUBSCRIPTION_TYPE}"
                                                                 constraint="removeValue_administrativeSubscription,removeValue_localSubscription"
@@ -183,9 +166,18 @@
 
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.hasPerpetualAccess.label')}</dt>
+                                <%--<dd><semui:xEditableRefData owner="${subscription}" field="hasPerpetualAccess" config="${RDConstants.Y_N}" /></dd>--%>
                                 <dd><semui:xEditableBoolean owner="${subscription}" field="hasPerpetualAccess" /></dd>
                                 <g:if test="${editable}">
                                     <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'hasPerpetualAccess']" auditConfigs="${auditConfigs}"/></dd>
+                                </g:if>
+                            </dl>
+
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.hasPublishComponent.label')}</dt>
+                                <dd><semui:xEditableBoolean owner="${subscription}" field="hasPublishComponent" /></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container"><semui:auditButton auditable="[subscription, 'hasPublishComponent']" auditConfigs="${auditConfigs}"/></dd>
                                 </g:if>
                             </dl>
 

@@ -102,6 +102,7 @@
                         <th>${message(code: 'subscription.resource.label')}</th>
                         <th>${message(code: 'subscription.isPublicForApi.label')}</th>
                         <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
+                        <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -139,7 +140,12 @@
                     </td>
                     <td>
                         ${subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                        <%--${subscription.hasPerpetualAccess?.getI10n('value')}--%>
                         <semui:auditButton auditable="[subscription, 'hasPerpetualAccess']"/>
+                    </td>
+                    <td>
+                        ${subscription.hasPublishComponent ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                        <semui:auditButton auditable="[subscription, 'hasPublishComponent']"/>
                     </td>
 
                     <td class="x">
@@ -222,6 +228,14 @@
                                           value="${['': '']}"/>
                         </div>
 
+                        <div class="field">
+                            <label>${message(code: 'subscription.hasPublishComponent.label')}</label>
+                            <laser:select name="hasPublishComponent"
+                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                          optionKey="id" optionValue="value" noSelection="${['': '']}"
+                                          value="${['': '']}"/>
+                        </div>
+
                     </div>
 
                     <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
@@ -248,6 +262,7 @@
                             <th>${message(code: 'subscription.resource.label')}</th>
                             <th>${message(code: 'subscription.isPublicForApi.label')}</th>
                             <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
+                            <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
                             <th class="la-no-uppercase">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
@@ -330,12 +345,20 @@
                                 <td>
                                     <semui:xEditableBoolean owner="${sub}" field="isPublicForApi"
                                                             overwriteEditable="${editableOld}"/>
-                                    <semui:auditButton auditable="[sub, 'form']"/>
+                                    <semui:auditButton auditable="[sub, 'isPublicForApi']"/>
                                 </td>
                                 <td>
                                     <semui:xEditableBoolean owner="${sub}" field="hasPerpetualAccess"
                                                             overwriteEditable="${editableOld}"/>
-                                    <semui:auditButton auditable="[sub, 'resource']"/>
+                                    <%--<semui:xEditableRefData owner="${sub}" field="hasPerpetualAccess"
+                                                            config="${RDConstants.Y_N}"
+                                                            overwriteEditable="${editableOld}"/>--%>
+                                    <semui:auditButton auditable="[sub, 'hasPerpetualAccess']"/>
+                                </td>
+                                <td>
+                                    <semui:xEditableBoolean owner="${sub}" field="hasPublishComponent"
+                                                            overwriteEditable="${editableOld}"/>
+                                    <semui:auditButton auditable="[sub, 'hasPublishComponent']"/>
                                 </td>
                                 <td>
                                     <g:if test="${sub.isMultiYear}">

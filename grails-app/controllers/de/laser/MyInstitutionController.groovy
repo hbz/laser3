@@ -335,13 +335,14 @@ class MyInstitutionController  {
 
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
-            base_qry += (" and ( genfunc_filter_matcher(l.reference, :name_filter) = true " // filter by license
+            // filter by license
+            base_qry += " and ( genfunc_filter_matcher(l.reference, :name_filter) = true "
                     + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
                     + "   orgR.roleType in (:licRoleTypes) and ( "
                     + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
                     + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
                     + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
-                    + " ) ) ) ) or ( exists ( select li from Links li join li.destinationSubscription s where li.sourceLicense = l and genfunc_filter_matcher(s.name, :name_filter) = true ) ) ")
+                    + " ) ) ) ) or ( exists ( select li from Links li join li.destinationSubscription s where li.sourceLicense = l and genfunc_filter_matcher(s.name, :name_filter) = true ) ) "
             qry_params.name_filter = params['keyword-search']
             qry_params.licRoleTypes = [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]
             result.keyWord = params['keyword-search']
@@ -732,7 +733,8 @@ join sub.orgRelations or_sub where
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label'),
                        g.message(code: 'subscription.isPublicForApi.label'),
-                       g.message(code: 'subscription.hasPerpetualAccess.label')]
+                       g.message(code: 'subscription.hasPerpetualAccess.label'),
+                       g.message(code: 'subscription.hasPublishComponent.label')]
         boolean asCons = false
         if(accessService.checkPerm('ORG_CONSORTIUM')) {
             asCons = true
@@ -833,6 +835,7 @@ join sub.orgRelations or_sub where
                     row.add([field: sub.resource?.getI10n("value") ?: '', style: null])
                     row.add([field: sub.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
                     row.add([field: sub.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+                    row.add([field: sub.hasPublishComponent ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
                     if(asCons) {
                         row.add([field: subscriptionMembers.get(sub.id) ?: 0, style: null])
                         row.add([field: costItemCounts.get(sub.id) ?: 0, style: null])
@@ -861,6 +864,7 @@ join sub.orgRelations or_sub where
                     row.add(sub.resource?.getI10n("value"))
                     row.add(sub.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                     row.add(sub.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
+                    row.add(sub.hasPublishComponent ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                     if(asCons) {
                         row.add(subscriptionMembers.get(sub.id) ? (int) subscriptionMembers.get(sub.id) : 0)
                         row.add(costItemCounts.get(sub.id) ? (int) costItemCounts.get(sub.id) : 0)
