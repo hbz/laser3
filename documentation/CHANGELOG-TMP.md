@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3326    09.04.2021  rc2.0   2.0.7       Andreas Bug         Proxy-Fehler bei Kostenimport behoben
+
 3323    09.04.2021  rc2.0   2.0.7       Andreas Bug         Bereinigungsskript zu Fehlverknüpfungen ergänzt
 
 3316    07.04.2021  rc2.0   2.0.6       Andreas Bug         Kindlizenzen konnten mit Elternverträgen verknüpft werden
