@@ -21,6 +21,8 @@ class SubscriptionExport extends AbstractExport {
                             class: Subscription
                     ],
                     fields : [
+                            'globalUID'             : FIELD_TYPE_PROPERTY,
+                            'name'                  : FIELD_TYPE_PROPERTY,
                             'startDate'             : FIELD_TYPE_PROPERTY,
                             'endDate'               : FIELD_TYPE_PROPERTY,
                             'status'                : FIELD_TYPE_REFDATA,
@@ -29,16 +31,6 @@ class SubscriptionExport extends AbstractExport {
                             'resource'              : FIELD_TYPE_REFDATA,
                             'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                             'isPublicForApi'        : FIELD_TYPE_PROPERTY
-                    ],
-                    fields2 : [
-                            'startDate'             : [type: FIELD_TYPE_PROPERTY, text: 'Laufzeit-Beginn' ],
-                            'endDate'               : [type: FIELD_TYPE_PROPERTY, text: 'Laufzeit-Ende' ],
-                            'status'                : [type: FIELD_TYPE_REFDATA,  text: 'Lizenzstatus' ],
-                            'kind'                  : [type: FIELD_TYPE_REFDATA,  text: 'Lizenztyp' ],
-                            'form'                  : [type: FIELD_TYPE_REFDATA,  text: 'Lizenzform' ],
-                            'resource'              : [type: FIELD_TYPE_REFDATA,  text: 'Ressourcentyp' ],
-                            'hasPerpetualAccess'    : [type: FIELD_TYPE_PROPERTY, text: 'Dauerhafter Zugriff' ],
-                            'isPublicForApi'        : [type: FIELD_TYPE_PROPERTY, text: 'Freigabe Datenaustausch' ],
                     ]
             ]
     ]
@@ -49,15 +41,7 @@ class SubscriptionExport extends AbstractExport {
 
     @Override
     Map<String, Object> getAllFields() {
-        Map<String, Object> fields = [
-                'globalUID'         : FIELD_TYPE_PROPERTY,
-                'name'              : FIELD_TYPE_PROPERTY
-        ]
-        Map<String, Object> fields2 = [
-                'globalUID'         : [type: FIELD_TYPE_PROPERTY, text: 'Link' ],
-                'name'              : [type: FIELD_TYPE_PROPERTY, text: 'Name' ]
-        ]
-        return fields + CONFIG.base.fields
+        CONFIG.base.fields
     }
 
     @Override

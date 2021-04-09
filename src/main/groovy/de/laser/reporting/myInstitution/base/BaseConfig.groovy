@@ -3,6 +3,9 @@ package de.laser.reporting.myInstitution.base
 import de.laser.RefdataCategory
 import de.laser.auth.Role
 import de.laser.helper.RDConstants
+import grails.util.Holders
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 class BaseConfig {
 
@@ -40,41 +43,33 @@ class BaseConfig {
             //radar : 'Netzdiagramm'
     ]
 
-    static Map<String, Object> CONFIG = [
-
-            object : [
-                    meta    : [],
-                    source  : [],
-                    filter  : [],
-                    query   : [],
-                    query2  : []
-            ]
-    ]
-
     static Map<String, Object> getCustomRefdata(String key) {
+
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
 
         if (key == CUSTOM_KEY_SUBJECT_GROUP) {
             return [
-                    label: 'Fächergruppe',
+                    label: messageSource.getMessage('org.subjectGroup.label', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
             ]
         }
         else if (key == CUSTOM_KEY_ORG_TYPE) {
             return [
-                    label: 'Organisationstyp',
+                    label: messageSource.getMessage('org.orgType.label', null, locale),
                     from: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)
             ]
         }
         else if (key == CUSTOM_KEY_CUSTOMER_TYPE) {
             List<Role> roles = Role.findAllByRoleType('org')
             return [
-                    label: 'Kundentyp',
+                    label: messageSource.getMessage('org.setting.CUSTOMER_TYPE', null, locale),
                     from: roles.collect{[ id: it.id, value_de: it.getI10n('authority') ] }
             ]
         }
         else if (key == CUSTOM_KEY_LEGAL_INFO) {
             return [
-                    label: 'Erstellt bzw. organisiert durch ..',
+                    label: 'Erstellt bzw. organisiert durch ..', // TODO
                     from: [
                         [id: 0, value_de: 'Keine Einträge'],
                         [id: 1, value_de: 'Erstellt von / Organisiert durch (beides)'], // ui icon green check circle

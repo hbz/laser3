@@ -1,6 +1,7 @@
 package de.laser.reporting.myInstitution
 
 import de.laser.annotations.RefdataAnnotation
+import de.laser.base.AbstractBase
 import de.laser.exporting.AbstractExport
 import de.laser.reporting.myInstitution.base.BaseConfig
 import grails.util.Holders
@@ -19,20 +20,20 @@ class GenericHelper {
         String label = '?'
         String type = getFieldType(objConfig, fieldName)
 
+        // println 'objConfig - ' + objConfig
+        // println 'fieldName - ' + fieldName
+        // println 'type - ' + type
+
         Object messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
 
-        //        println 'objConfig - ' + objConfig
-        //        println 'fieldName - ' + fieldName
-        //        println 'type - ' + type
-
         if (type in [BaseConfig.FIELD_TYPE_PROPERTY, AbstractExport.FIELD_TYPE_PROPERTY] ) {
-             // LaserReportingTagLib:reportFilterProperty
+            // LaserReportingTagLib:reportFilterProperty
 
-             Field prop = objConfig.meta.class.getDeclaredField(fieldName)
-             String csn = objConfig.meta.class.simpleName.uncapitalize() // TODO -> check
+            Field prop = (fieldName == 'globalUID') ? AbstractBase.getDeclaredField(fieldName) : objConfig.meta.class.getDeclaredField(fieldName)
+            String csn = objConfig.meta.class.simpleName.uncapitalize() // TODO -> check
 
-             label = messageSource.getMessage(csn + '.' + prop.getName() + '.label', null, locale)
+            label = messageSource.getMessage(csn + '.' + prop.getName() + '.label', null, locale)
         }
 
         if (type in [BaseConfig.FIELD_TYPE_REFDATA, AbstractExport.FIELD_TYPE_REFDATA] ) {
@@ -58,6 +59,7 @@ class GenericHelper {
             Map<String, Object> customRdv = BaseConfig.getCustomRefdata(fieldName)
             label = customRdv.get('label')
         }
+
         label
     }
 }

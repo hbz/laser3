@@ -40,7 +40,7 @@ class SubscriptionConfig extends BaseConfig {
                             ]
                     ],
                     query : [
-                            'Lizenz' : [
+                            'Lizenz' : [ // TODO ..
                                     'subscription-form'         : 'Lizenzform',
                                     'subscription-kind'         : 'Lizenztyp',
                                     'subscription-resource'     : 'Ressourcentyp',
@@ -48,7 +48,7 @@ class SubscriptionConfig extends BaseConfig {
                             ]
                     ],
                     query2 : [
-                            'Verteilung' : [
+                            'Verteilung' : [ // TODO ..
                                     'subscription-provider-assignment' : [
                                             label : 'Lizenz → Anbieter',
                                             template: 'generic',
@@ -102,7 +102,7 @@ class SubscriptionConfig extends BaseConfig {
                             ]
                     ],
                     query : [
-                            'Teilnehmer' : [
+                            'Teilnehmer' : [ // TODO ..
                                     'member-orgType'            : 'Organisationstyp',
                                     'member-customerType'       : 'Kundentyp',
                                     'member-libraryType'        : 'Bibliothekstyp',
@@ -132,7 +132,7 @@ class SubscriptionConfig extends BaseConfig {
                             ]
                     ],
                     query : [
-                            'Anbieter' : [
+                            'Anbieter' : [ // TODO ..
                                     'provider-orgType'      : 'Organisationstyp',
                                     'provider-country'      : 'Länder',
                                     'provider-region'       : 'Bundesländer'

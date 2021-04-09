@@ -1,6 +1,5 @@
 package de.laser.reporting.myInstitution.base
 
-
 import grails.web.servlet.mvc.GrailsParameterMap
 
 class BaseFilter {

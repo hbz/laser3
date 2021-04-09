@@ -46,7 +46,7 @@ class OrganisationConfig extends BaseConfig {
                             ]
                     ],
                     query : [
-                            'Organisation' : [
+                            'Organisation' : [ // TODO ..
                                     'org-orgType'           : 'Organisationstyp',
                                     'org-customerType'      : 'Kundentyp',
                                     'org-libraryType'       : 'Bibliothekstyp',
@@ -58,7 +58,7 @@ class OrganisationConfig extends BaseConfig {
                             ]
                     ],
                     query2 : [
-                            'Verteilung' : [
+                            'Verteilung' : [ // TODO ..
                                     'org-property-assignment' : [
                                             label: 'Organisation → Merkmale (eigene/öffentliche)',
                                             template: '2axis2values',

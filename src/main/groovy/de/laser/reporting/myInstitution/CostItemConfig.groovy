@@ -31,7 +31,7 @@ class CostItemConfig extends BaseConfig {
                             ]
                     ],
                     query : [
-                            'Kosten' : [
+                            'Kosten' : [ // TODO ..
                                     'costItem-type'                         : 'type',
                                     'costItem-costItemStatus'               : 'costItemStatus',
                                     'costItem-costItemCategory'             : 'costItemCategory',

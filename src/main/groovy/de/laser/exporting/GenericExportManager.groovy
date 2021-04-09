@@ -49,8 +49,8 @@ class GenericExportManager {
             idList = Subscription.executeQuery( 'select s.id from Subscription s where s.id in (:idList) order by s.name', [idList: idList] )
         }
 
-        idList.each { Long id ->
-            List<String> row = export.getObject( id, fields )
+        idList.each { id ->
+            List<String> row = export.getObject( id as Long, fields )
             if (row) {
                 rows.add( buildRow( row ) )
             }

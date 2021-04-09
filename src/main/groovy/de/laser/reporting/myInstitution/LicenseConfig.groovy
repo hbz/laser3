@@ -33,7 +33,7 @@ class LicenseConfig extends BaseConfig {
                             ]
                     ],
                     query : [
-                            'Vertrag' : [
+                            'Vertrag' : [ // TODO ..
                                     'license-licenseCategory'   : 'Lizenzkategorie',
                                     'license-type'              : 'Lizenztyp',
                                     //'license-openEnded'         : 'Unbefristet',
@@ -41,7 +41,7 @@ class LicenseConfig extends BaseConfig {
                             ]
                     ],
                     query2 : [
-                            'Verteilung' : [
+                            'Verteilung' : [ // TODO ..
                                     'license-property-assignment' : [
                                             label : 'Vertrag → Merkmale (eigene/öffentliche)',
                                             template: '2axis2values',
@@ -115,7 +115,7 @@ class LicenseConfig extends BaseConfig {
                             ]
                     ],
                     query : [
-                            'Lizenzgeber' : [
+                            'Lizenzgeber' : [ // TODO ..
                                     'licensor-orgType'      : 'Organisationstyp',
                                     'licensor-country'      : 'Länder',
                                     'licensor-region'       : 'Bundesländer'

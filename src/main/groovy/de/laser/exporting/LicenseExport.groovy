@@ -20,18 +20,13 @@ class LicenseExport extends AbstractExport {
                             class: License
                     ],
                     fields : [
+                            'globalUID'         : FIELD_TYPE_PROPERTY,
+                            'reference'         : FIELD_TYPE_PROPERTY,
                             'startDate'         : FIELD_TYPE_PROPERTY,
                             'endDate'           : FIELD_TYPE_PROPERTY,
                             'status'            : FIELD_TYPE_REFDATA,
                             'licenseCategory'   : FIELD_TYPE_REFDATA,
                             'type'              : FIELD_TYPE_REFDATA,
-                    ],
-                    fields2 : [
-                            'startDate'         : [type: FIELD_TYPE_PROPERTY, text: 'Anfangsdatum' ],
-                            'endDate'           : [type: FIELD_TYPE_PROPERTY, text: 'Enddatum' ],
-                            'status'            : [type: FIELD_TYPE_REFDATA,  text: 'Vertragstatus' ],
-                            'licenseCategory'   : [type: FIELD_TYPE_REFDATA,  text: 'Vertragskategorie' ],
-                            'type'              : [type: FIELD_TYPE_REFDATA,  text: 'Typ' ]
                     ]
             ]
     ]
@@ -42,15 +37,7 @@ class LicenseExport extends AbstractExport {
 
     @Override
     Map<String, Object> getAllFields() {
-        Map<String, Object> fields = [
-                'globalUID'     : FIELD_TYPE_PROPERTY,
-                'reference'     : FIELD_TYPE_PROPERTY
-        ]
-        Map<String, Object> fields2 = [
-                'globalUID'     : [type: FIELD_TYPE_PROPERTY, text: 'Link' ],
-                'reference'     : [type: FIELD_TYPE_PROPERTY, text: 'Name' ]
-        ]
-        return fields + CONFIG.base.fields
+        CONFIG.base.fields
     }
 
     @Override
