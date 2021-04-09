@@ -2,8 +2,9 @@ package de.laser.reporting.myInstitution
 
 import de.laser.Org
 import de.laser.Subscription
+import de.laser.reporting.myInstitution.base.BaseConfig
 
-class SubscriptionConfig extends GenericConfig {
+class SubscriptionConfig extends BaseConfig {
 
     static String KEY = 'subscription'
 
@@ -18,14 +19,14 @@ class SubscriptionConfig extends GenericConfig {
                             'consortia-sub' : 'Meine Lizenzen'
                     ],
                     fields: [
-                            'endDate'               : GenericConfig.FIELD_TYPE_PROPERTY,
-                            'form'                  : GenericConfig.FIELD_TYPE_REFDATA,
-                            'hasPerpetualAccess'    : GenericConfig.FIELD_TYPE_PROPERTY,
-                            'isPublicForApi'        : GenericConfig.FIELD_TYPE_PROPERTY,
-                            'kind'                  : GenericConfig.FIELD_TYPE_REFDATA,
-                            'resource'              : GenericConfig.FIELD_TYPE_REFDATA,
-                            'startDate'             : GenericConfig.FIELD_TYPE_PROPERTY,
-                            'status'                : GenericConfig.FIELD_TYPE_REFDATA,
+                            'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
+                            'hasPerpetualAccess'    : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'isPublicForApi'        : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'kind'                  : BaseConfig.FIELD_TYPE_REFDATA,
+                            'resource'              : BaseConfig.FIELD_TYPE_REFDATA,
+                            'startDate'             : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'status'                : BaseConfig.FIELD_TYPE_REFDATA,
                             //'type'                : FIELD_TYPE_REFDATA,
                             //'isMultiYear'         : FIELD_TYPE_PROPERTY,
                             //'manualRenewalDate'       : FIELD_TYPE_PROPERTY,
@@ -80,17 +81,17 @@ class SubscriptionConfig extends GenericConfig {
                             'depending-member' : 'Alle betroffenen Teilnehmer'
                     ],
                     fields : [
-                            'country'           : GenericConfig.FIELD_TYPE_REFDATA,
-                            'customerType'      : GenericConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'eInvoice'          : GenericConfig.FIELD_TYPE_PROPERTY,
-                            'funderHskType'     : GenericConfig.FIELD_TYPE_REFDATA,
-                            'funderType'        : GenericConfig.FIELD_TYPE_REFDATA,
-                            'legalInfo'         : GenericConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'libraryNetwork'    : GenericConfig.FIELD_TYPE_REFDATA,
-                            'libraryType'       : GenericConfig.FIELD_TYPE_REFDATA,
-                            'orgType'           : GenericConfig.FIELD_TYPE_REFDATA_JOINTABLE,
+                            'country'           : BaseConfig.FIELD_TYPE_REFDATA,
+                            'customerType'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
+                            'eInvoice'          : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'funderHskType'     : BaseConfig.FIELD_TYPE_REFDATA,
+                            'funderType'        : BaseConfig.FIELD_TYPE_REFDATA,
+                            'legalInfo'         : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
+                            'libraryNetwork'    : BaseConfig.FIELD_TYPE_REFDATA,
+                            'libraryType'       : BaseConfig.FIELD_TYPE_REFDATA,
+                            'orgType'           : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE,
                             //'region'            : FIELD_TYPE_REFDATA,
-                            'subjectGroup'      : GenericConfig.FIELD_TYPE_CUSTOM_IMPL
+                            'subjectGroup'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL
                     ],
                     filter : [
                             default: [
@@ -122,8 +123,8 @@ class SubscriptionConfig extends GenericConfig {
                             'depending-provider' : 'Alle betroffenen Anbieter'
                     ],
                     fields : [
-                            'country'   : GenericConfig.FIELD_TYPE_REFDATA,
-                            'orgType'   : GenericConfig.FIELD_TYPE_REFDATA_JOINTABLE
+                            'country'   : BaseConfig.FIELD_TYPE_REFDATA,
+                            'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
                     ],
                     filter : [
                             default: [

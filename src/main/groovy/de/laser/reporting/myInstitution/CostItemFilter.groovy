@@ -7,11 +7,13 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.myInstitution.base.BaseFilter
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.ApplicationContext
 
-class CostItemFilter extends GenericFilter {
+class CostItemFilter extends BaseFilter {
 
     def contextService
     def filterService
@@ -32,7 +34,7 @@ class CostItemFilter extends GenericFilter {
         List<String> whereParts         = [ 'where ci.id in (:costItemIdList)']
         Map<String, Object> queryParams = [ costItemIdList : [] ]
 
-        String filterSource = params.get(GenericConfig.FILTER_PREFIX + 'costItem' + GenericConfig.FILTER_SOURCE_POSTFIX)
+        String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'costItem' + BaseConfig.FILTER_SOURCE_POSTFIX)
         result.filterLabels.put('base', [source: getFilterSourceLabel(CostItemConfig.CONFIG.base, filterSource)])
 
         switch (filterSource) {
@@ -51,7 +53,7 @@ class CostItemFilter extends GenericFilter {
                 break
         }
 
-        String cmbKey = GenericConfig.FILTER_PREFIX + 'costItem_'
+        String cmbKey = BaseConfig.FILTER_PREFIX + 'costItem_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
@@ -59,12 +61,12 @@ class CostItemFilter extends GenericFilter {
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = getFieldType(CostItemConfig.CONFIG.base, p)
+                String pType = GenericHelper.getFieldType(CostItemConfig.CONFIG.base, p)
 
                 def filterLabelValue
 
                 // --> properties generic
-                if (pType == GenericConfig.FIELD_TYPE_PROPERTY) {
+                if (pType == BaseConfig.FIELD_TYPE_PROPERTY) {
                     if (Org.getDeclaredField(p).getType() == Date) {
 
                         String modifier = getDateModifier( params.get(key + '_modifier') )
@@ -89,23 +91,23 @@ class CostItemFilter extends GenericFilter {
                     }
                 }
                 // --> refdata generic
-                else if (pType == GenericConfig.FIELD_TYPE_REFDATA) {
+                else if (pType == BaseConfig.FIELD_TYPE_REFDATA) {
                     whereParts.add( 'ci.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
 
                     filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                 }
                 // --> refdata join tables
-                else if (pType == GenericConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
+                else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
                     println ' ------------ not implemented ------------ '
                 }
                 // --> custom filter implementation
-                else if (pType == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {
+                else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
                     println ' ------------ not implemented ------------ '
                 }
 
                 if (filterLabelValue) {
-                    result.filterLabels.get('base').put(p, [label: getFieldLabel(CostItemConfig.CONFIG.base, p), value: filterLabelValue])
+                    result.filterLabels.get('base').put(p, [label: GenericHelper.getFieldLabel(CostItemConfig.CONFIG.base, p), value: filterLabelValue])
                 }
             }
         }

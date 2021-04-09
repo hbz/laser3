@@ -32,8 +32,8 @@ import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.myInstitution.CostItemConfig
-import de.laser.reporting.myInstitution.GenericConfig
-import de.laser.reporting.myInstitution.GenericQuery
+import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.myInstitution.base.BaseQuery
 import de.laser.reporting.myInstitution.LicenseConfig
 import de.laser.reporting.myInstitution.OrganisationConfig
 import de.laser.reporting.myInstitution.SubscriptionConfig
@@ -387,37 +387,37 @@ class AjaxHtmlController {
             id:     params.id ? params.id as Long : ''
         ]
 
-        if (params.context == GenericConfig.KEY && params.query) {
+        if (params.context == BaseConfig.KEY && params.query) {
             String prefix = params.query.split('-')[0]
             List idList = params.list('idList[]').collect { it as Long }
 
             if (prefix in ['license']) {
-                result.labels = GenericQuery.getQueryLabels(LicenseConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(LicenseConfig.CONFIG, params)
                 result.list   = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/license'
             }
             else if (prefix in ['licensor']) {
-                result.labels = GenericQuery.getQueryLabels(LicenseConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(LicenseConfig.CONFIG, params)
                 result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
             else if (prefix in ['org']) {
-                result.labels = GenericQuery.getQueryLabels(OrganisationConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(OrganisationConfig.CONFIG, params)
                 result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
             else if (prefix in ['subscription']) {
-                result.labels = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(SubscriptionConfig.CONFIG, params)
                 result.list   = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/subscription'
             }
             else if (prefix in ['member', 'provider']) {
-                result.labels = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(SubscriptionConfig.CONFIG, params)
                 result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
             else if (prefix in ['costItem']) {
-                result.labels = GenericQuery.getQueryLabels(CostItemConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(CostItemConfig.CONFIG, params)
                 result.list   = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/costItem'
             }
@@ -461,7 +461,7 @@ class AjaxHtmlController {
             else {
                 List idList = params.list('idList[]').collect { it as Long }
 
-                result.labels = GenericQuery.getQueryLabels(SubscriptionReporting.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, params)
                 result.list   = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name', [idList: idList])
                 result.tmpl   = '/subscription/reporting/details/entitlement'
             }

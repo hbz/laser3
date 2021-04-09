@@ -1,8 +1,10 @@
 package de.laser.exporting
 
+
 import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.reporting.myInstitution.GenericHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -12,16 +14,33 @@ class SubscriptionExport extends AbstractExport {
 
     static String KEY = 'subscription'
 
-    static Map<String, Object> FIELDS = [
+    static Map<String, Object> CONFIG = [
 
-            'startDate'             : [type: FIELD_TYPE_PROPERTY, text: 'Laufzeit-Beginn' ],
-            'endDate'               : [type: FIELD_TYPE_PROPERTY, text: 'Laufzeit-Ende' ],
-            'status'                : [type: FIELD_TYPE_REFDATA,  text: 'Lizenzstatus' ],
-            'kind'                  : [type: FIELD_TYPE_REFDATA,  text: 'Lizenztyp' ],
-            'form'                  : [type: FIELD_TYPE_REFDATA,  text: 'Lizenzform' ],
-            'resource'              : [type: FIELD_TYPE_REFDATA,  text: 'Ressourcentyp' ],
-            'hasPerpetualAccess'    : [type: FIELD_TYPE_PROPERTY, text: 'Dauerhafter Zugriff' ],
-            'isPublicForApi'        : [type: FIELD_TYPE_PROPERTY, text: 'Freigabe Datenaustausch' ],
+            base : [
+                    meta : [
+                            class: Subscription
+                    ],
+                    fields : [
+                            'startDate'             : FIELD_TYPE_PROPERTY,
+                            'endDate'               : FIELD_TYPE_PROPERTY,
+                            'status'                : FIELD_TYPE_REFDATA,
+                            'kind'                  : FIELD_TYPE_REFDATA,
+                            'form'                  : FIELD_TYPE_REFDATA,
+                            'resource'              : FIELD_TYPE_REFDATA,
+                            'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
+                            'isPublicForApi'        : FIELD_TYPE_PROPERTY
+                    ],
+                    fields2 : [
+                            'startDate'             : [type: FIELD_TYPE_PROPERTY, text: 'Laufzeit-Beginn' ],
+                            'endDate'               : [type: FIELD_TYPE_PROPERTY, text: 'Laufzeit-Ende' ],
+                            'status'                : [type: FIELD_TYPE_REFDATA,  text: 'Lizenzstatus' ],
+                            'kind'                  : [type: FIELD_TYPE_REFDATA,  text: 'Lizenztyp' ],
+                            'form'                  : [type: FIELD_TYPE_REFDATA,  text: 'Lizenzform' ],
+                            'resource'              : [type: FIELD_TYPE_REFDATA,  text: 'Ressourcentyp' ],
+                            'hasPerpetualAccess'    : [type: FIELD_TYPE_PROPERTY, text: 'Dauerhafter Zugriff' ],
+                            'isPublicForApi'        : [type: FIELD_TYPE_PROPERTY, text: 'Freigabe Datenaustausch' ],
+                    ]
+            ]
     ]
 
     SubscriptionExport (Map<String, Object> fields) {
@@ -31,15 +50,24 @@ class SubscriptionExport extends AbstractExport {
     @Override
     Map<String, Object> getAllFields() {
         Map<String, Object> fields = [
+                'globalUID'         : FIELD_TYPE_PROPERTY,
+                'name'              : FIELD_TYPE_PROPERTY
+        ]
+        Map<String, Object> fields2 = [
                 'globalUID'         : [type: FIELD_TYPE_PROPERTY, text: 'Link' ],
                 'name'              : [type: FIELD_TYPE_PROPERTY, text: 'Name' ]
         ]
-        return fields + FIELDS
+        return fields + CONFIG.base.fields
     }
 
     @Override
     Map<String, Object> getSelectedFields() {
         selectedExport
+    }
+
+    @Override
+    String getFieldLabel(String fieldName) {
+        GenericHelper.getFieldLabel( CONFIG.base, fieldName )
     }
 
     @Override
@@ -52,7 +80,7 @@ class SubscriptionExport extends AbstractExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = f.value.type
+            String type = f.value
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {

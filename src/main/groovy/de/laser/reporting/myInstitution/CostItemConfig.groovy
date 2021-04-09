@@ -1,8 +1,9 @@
 package de.laser.reporting.myInstitution
 
 import de.laser.finance.CostItem
+import de.laser.reporting.myInstitution.base.BaseConfig
 
-class CostItemConfig extends GenericConfig {
+class CostItemConfig extends BaseConfig {
 
     static String KEY = 'costItem'
 
@@ -16,12 +17,12 @@ class CostItemConfig extends GenericConfig {
                             'consortia-cost' : 'Meine Teilnehmerkosten - aktive Lizenzen'
                     ],
                     fields: [
-                            'type'                          : GenericConfig.FIELD_TYPE_REFDATA,
-                            'costItemStatus'                : GenericConfig.FIELD_TYPE_REFDATA,
-                            'costItemCategory'              : GenericConfig.FIELD_TYPE_REFDATA,
-                            'costItemElement'               : GenericConfig.FIELD_TYPE_REFDATA,
-                            'costItemElementConfiguration'  : GenericConfig.FIELD_TYPE_REFDATA,
-                            'billingCurrency'               : GenericConfig.FIELD_TYPE_REFDATA,
+                            'type'                          : BaseConfig.FIELD_TYPE_REFDATA,
+                            'costItemStatus'                : BaseConfig.FIELD_TYPE_REFDATA,
+                            'costItemCategory'              : BaseConfig.FIELD_TYPE_REFDATA,
+                            'costItemElement'               : BaseConfig.FIELD_TYPE_REFDATA,
+                            'costItemElementConfiguration'  : BaseConfig.FIELD_TYPE_REFDATA,
+                            'billingCurrency'               : BaseConfig.FIELD_TYPE_REFDATA,
                     ],
                     filter : [
                             default: [

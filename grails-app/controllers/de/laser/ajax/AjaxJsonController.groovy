@@ -28,8 +28,8 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.myInstitution.CostItemQuery
-import de.laser.reporting.myInstitution.GenericConfig
-import de.laser.reporting.myInstitution.GenericQuery
+import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.myInstitution.base.BaseQuery
 import de.laser.reporting.myInstitution.LicenseConfig
 import de.laser.reporting.myInstitution.LicenseQuery
 import de.laser.reporting.myInstitution.OrganisationConfig
@@ -679,7 +679,7 @@ class AjaxJsonController {
     def chart() {
         Map<String, Object> result = [:]
 
-        if (params.context == GenericConfig.KEY && params.query) {
+        if (params.context == BaseConfig.KEY && params.query) {
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
             Map<String, Object> cached = sessionCache.get("MyInstitutionController/reporting/" + params.token)
 
@@ -690,13 +690,13 @@ class AjaxJsonController {
 
             Closure getTooltipLabel = { GrailsParameterMap pm ->
                 if (pm.filter == 'license') {
-                    GenericQuery.getQueryLabels(LicenseConfig.CONFIG, pm).get(1)
+                    BaseQuery.getQueryLabels(LicenseConfig.CONFIG, pm).get(1)
                 }
                 else if (pm.filter == 'organisation') {
-                    GenericQuery.getQueryLabels(OrganisationConfig.CONFIG, pm).get(1)
+                    BaseQuery.getQueryLabels(OrganisationConfig.CONFIG, pm).get(1)
                 }
                 else if (pm.filter == 'subscription') {
-                    GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, pm).get(1)
+                    BaseQuery.getQueryLabels(SubscriptionConfig.CONFIG, pm).get(1)
                 }
             }
 
@@ -773,7 +773,7 @@ class AjaxJsonController {
             }
             else {
                 result = SubscriptionReporting.query(clone)
-                result.tooltipLabel = GenericQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone).get(1)
+                result.tooltipLabel = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone).get(1)
 
                 render template: '/subscription/reporting/chart/generic-bar', model: result
             }

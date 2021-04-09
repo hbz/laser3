@@ -1,10 +1,12 @@
 package de.laser.exporting
 
+
 import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.OrgSubjectGroup
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.reporting.myInstitution.GenericHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -14,18 +16,37 @@ class OrgExport extends AbstractExport {
 
     static String KEY = 'organisation'
 
-    static Map<String, Object> FIELDS = [
+    static Map<String, Object> CONFIG = [
 
-            'customerType'      : [type: FIELD_TYPE_CUSTOM_IMPL,    text: 'Kundentyp' ],
-            'orgType'           : [type: FIELD_TYPE_REFDATA_JOINTABLE, text: 'Organisationstyp' ],
-            'libraryType'       : [type: FIELD_TYPE_REFDATA,        text:  'Bibliothekstyp' ],
-            'libraryNetwork'    : [type: FIELD_TYPE_REFDATA,        text: 'Verbundzugehörigkeit' ],
-            'funderHskType'     : [type: FIELD_TYPE_REFDATA,        text: 'Trägerschaft' ],
-            'funderType'        : [type: FIELD_TYPE_REFDATA,        text: 'Unterhaltsträger' ],
-            'country'           : [type: FIELD_TYPE_REFDATA,        text: 'Land' ],
-            'legalInfo'         : [type: FIELD_TYPE_CUSTOM_IMPL,    text: 'Erstellt/Organisiert' ],
-            'eInvoice'          : [type: FIELD_TYPE_PROPERTY,       text: 'Elektronische Rechnungsstellung (XRechnung)' ],
-            'subjectGroup'      : [type: FIELD_TYPE_CUSTOM_IMPL,    text: 'Fächergruppen' ]
+            base : [
+                    meta : [
+                            class: Org
+                    ],
+                    fields : [
+                            'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
+                            'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
+                            'libraryType'       : FIELD_TYPE_REFDATA,
+                            'libraryNetwork'    : FIELD_TYPE_REFDATA,
+                            'funderHskType'     : FIELD_TYPE_REFDATA,
+                            'funderType'        : FIELD_TYPE_REFDATA,
+                            'country'           : FIELD_TYPE_REFDATA,
+                            'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
+                            'eInvoice'          : FIELD_TYPE_PROPERTY,
+                            'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL
+                    ],
+                    fields2 : [
+                            'customerType'      : [type: FIELD_TYPE_CUSTOM_IMPL,    text: 'Kundentyp' ],
+                            'orgType'           : [type: FIELD_TYPE_REFDATA_JOINTABLE, text: 'Organisationstyp' ],
+                            'libraryType'       : [type: FIELD_TYPE_REFDATA,        text:  'Bibliothekstyp' ],
+                            'libraryNetwork'    : [type: FIELD_TYPE_REFDATA,        text: 'Verbundzugehörigkeit' ],
+                            'funderHskType'     : [type: FIELD_TYPE_REFDATA,        text: 'Trägerschaft' ],
+                            'funderType'        : [type: FIELD_TYPE_REFDATA,        text: 'Unterhaltsträger' ],
+                            'country'           : [type: FIELD_TYPE_REFDATA,        text: 'Land' ],
+                            'legalInfo'         : [type: FIELD_TYPE_CUSTOM_IMPL,    text: 'Erstellt/Organisiert' ],
+                            'eInvoice'          : [type: FIELD_TYPE_PROPERTY,       text: 'Elektronische Rechnungsstellung (XRechnung)' ],
+                            'subjectGroup'      : [type: FIELD_TYPE_CUSTOM_IMPL,    text: 'Fächergruppen' ]
+                    ]
+            ]
     ]
 
     OrgExport (Map<String, Object> fields) {
@@ -35,16 +56,26 @@ class OrgExport extends AbstractExport {
     @Override
     Map<String, Object> getAllFields() {
         Map<String, Object> fields = [
+                'globalUID'     : FIELD_TYPE_PROPERTY,
+                'sortname'      : FIELD_TYPE_PROPERTY,
+                'name'          : FIELD_TYPE_PROPERTY,
+        ]
+        Map<String, Object> fields2 = [
                 'globalUID'     : [type: FIELD_TYPE_PROPERTY, text: 'Link' ],
-                'sortname'     : [type: FIELD_TYPE_PROPERTY, text: 'Sortiername' ],
+                'sortname'      : [type: FIELD_TYPE_PROPERTY, text: 'Sortiername' ],
                 'name'          : [type: FIELD_TYPE_PROPERTY, text: 'Name' ]
         ]
-        return fields + FIELDS
+        return fields + CONFIG.base.fields
     }
 
     @Override
     Map<String, Object> getSelectedFields() {
         selectedExport
+    }
+
+    @Override
+    String getFieldLabel(String fieldName) {
+        GenericHelper.getFieldLabel( CONFIG.base, fieldName )
     }
 
     @Override
@@ -57,7 +88,7 @@ class OrgExport extends AbstractExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = f.value.type
+            String type = f.value
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {

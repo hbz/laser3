@@ -1,10 +1,10 @@
-package de.laser.reporting.myInstitution
+package de.laser.reporting.myInstitution.base
 
 import de.laser.RefdataCategory
 import de.laser.auth.Role
 import de.laser.helper.RDConstants
 
-class GenericConfig {
+class BaseConfig {
 
     static String KEY                           = 'myInstitution'
 

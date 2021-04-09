@@ -3,6 +3,7 @@ package de.laser.exporting
 import de.laser.License
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.reporting.myInstitution.GenericHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -12,13 +13,27 @@ class LicenseExport extends AbstractExport {
 
     static String KEY = 'license'
 
-    static Map<String, Object> FIELDS = [
+    static Map<String, Object> CONFIG = [
 
-            'startDate'         : [type: FIELD_TYPE_PROPERTY, text: 'Anfangsdatum' ],
-            'endDate'           : [type: FIELD_TYPE_PROPERTY, text: 'Enddatum' ],
-            'status'            : [type: FIELD_TYPE_REFDATA,  text: 'Vertragstatus' ],
-            'licenseCategory'   : [type: FIELD_TYPE_REFDATA,  text: 'Vertragskategorie' ],
-            'type'              : [type: FIELD_TYPE_REFDATA,  text: 'Typ' ]
+            base : [
+                    meta : [
+                            class: License
+                    ],
+                    fields : [
+                            'startDate'         : FIELD_TYPE_PROPERTY,
+                            'endDate'           : FIELD_TYPE_PROPERTY,
+                            'status'            : FIELD_TYPE_REFDATA,
+                            'licenseCategory'   : FIELD_TYPE_REFDATA,
+                            'type'              : FIELD_TYPE_REFDATA,
+                    ],
+                    fields2 : [
+                            'startDate'         : [type: FIELD_TYPE_PROPERTY, text: 'Anfangsdatum' ],
+                            'endDate'           : [type: FIELD_TYPE_PROPERTY, text: 'Enddatum' ],
+                            'status'            : [type: FIELD_TYPE_REFDATA,  text: 'Vertragstatus' ],
+                            'licenseCategory'   : [type: FIELD_TYPE_REFDATA,  text: 'Vertragskategorie' ],
+                            'type'              : [type: FIELD_TYPE_REFDATA,  text: 'Typ' ]
+                    ]
+            ]
     ]
 
     LicenseExport (Map<String, Object> fields) {
@@ -28,15 +43,24 @@ class LicenseExport extends AbstractExport {
     @Override
     Map<String, Object> getAllFields() {
         Map<String, Object> fields = [
+                'globalUID'     : FIELD_TYPE_PROPERTY,
+                'reference'     : FIELD_TYPE_PROPERTY
+        ]
+        Map<String, Object> fields2 = [
                 'globalUID'     : [type: FIELD_TYPE_PROPERTY, text: 'Link' ],
                 'reference'     : [type: FIELD_TYPE_PROPERTY, text: 'Name' ]
         ]
-        return fields + FIELDS
+        return fields + CONFIG.base.fields
     }
 
     @Override
     Map<String, Object> getSelectedFields() {
         selectedExport
+    }
+
+    @Override
+    String getFieldLabel(String fieldName) {
+        GenericHelper.getFieldLabel( CONFIG.base, fieldName )
     }
 
     @Override
@@ -49,7 +73,7 @@ class LicenseExport extends AbstractExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = f.value.type
+            String type = f.value
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {

@@ -28,7 +28,7 @@ class GenericExportManager {
     static List<String> doExport(AbstractExport export, List<Long> idList) {
 
         List<String> rows = []
-        rows.add( buildRow( export.getSelectedFields().collect{it -> it.value.text } ) )
+        rows.add( buildRow( export.getSelectedFields().collect{it -> export.getFieldLabel(it.key as String) } ) )
         rows.addAll( buildRows(export, idList) )
 
         rows

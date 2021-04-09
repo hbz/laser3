@@ -7,11 +7,13 @@ import de.laser.Subscription
 import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.myInstitution.base.BaseFilter
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.ApplicationContext
 
-class SubscriptionFilter extends GenericFilter {
+class SubscriptionFilter extends BaseFilter {
 
     def contextService
     def filterService
@@ -32,7 +34,7 @@ class SubscriptionFilter extends GenericFilter {
         List<String> whereParts         = [ 'where sub.id in (:subscriptionIdList)']
         Map<String, Object> queryParams = [ subscriptionIdList : [] ]
 
-        String filterSource = params.get(GenericConfig.FILTER_PREFIX + 'subscription' + GenericConfig.FILTER_SOURCE_POSTFIX)
+        String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'subscription' + BaseConfig.FILTER_SOURCE_POSTFIX)
         result.filterLabels.put('base', [source: getFilterSourceLabel(SubscriptionConfig.CONFIG.base, filterSource)])
 
         switch (filterSource) {
@@ -46,7 +48,7 @@ class SubscriptionFilter extends GenericFilter {
                 break
         }
 
-        String cmbKey = GenericConfig.FILTER_PREFIX + 'subscription_'
+        String cmbKey = BaseConfig.FILTER_PREFIX + 'subscription_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each{ key ->
@@ -54,12 +56,12 @@ class SubscriptionFilter extends GenericFilter {
                 //println key + " >> " + params.get(key)
 
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = getFieldType(SubscriptionConfig.CONFIG.base, p)
+                String pType = GenericHelper.getFieldType(SubscriptionConfig.CONFIG.base, p)
 
                 def filterLabelValue
 
                 // --> generic properties
-                if (pType == GenericConfig.FIELD_TYPE_PROPERTY) {
+                if (pType == BaseConfig.FIELD_TYPE_PROPERTY) {
                     if (Subscription.getDeclaredField(p).getType() == Date) {
 
                         String modifier = getDateModifier( params.get(key + '_modifier') )
@@ -84,23 +86,23 @@ class SubscriptionFilter extends GenericFilter {
                     }
                 }
                 // --> generic refdata
-                else if (pType == GenericConfig.FIELD_TYPE_REFDATA) {
+                else if (pType == BaseConfig.FIELD_TYPE_REFDATA) {
                     whereParts.add( 'sub.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
 
                     filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                 }
                 // --> refdata join tables
-                else if (pType == GenericConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
+                else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
                     println ' ------------ not implemented ------------ '
                 }
                 // --> custom filter implementation
-                else if (pType == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {
+                else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
                     println ' ------------ not implemented ------------ '
                 }
 
                 if (filterLabelValue) {
-                    result.filterLabels.get('base').put(p, [label: getFieldLabel(SubscriptionConfig.CONFIG.base, p), value: filterLabelValue])
+                    result.filterLabels.get('base').put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.CONFIG.base, p), value: filterLabelValue])
                 }
             }
         }
@@ -126,7 +128,7 @@ class SubscriptionFilter extends GenericFilter {
 
     private void handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> result) {
 
-        String filterSource = params.get(GenericConfig.FILTER_PREFIX + partKey + GenericConfig.FILTER_SOURCE_POSTFIX)
+        String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
         result.filterLabels.put(partKey, [source: getFilterSourceLabel(SubscriptionConfig.CONFIG.get(partKey), filterSource)])
 
         //println 'internalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
@@ -151,7 +153,7 @@ class SubscriptionFilter extends GenericFilter {
             queryParams.put( 'roleTypes', [RDStore.OR_PROVIDER] )
         }
 
-        String cmbKey = GenericConfig.FILTER_PREFIX + partKey + '_'
+        String cmbKey = BaseConfig.FILTER_PREFIX + partKey + '_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
@@ -161,16 +163,16 @@ class SubscriptionFilter extends GenericFilter {
                 String p = key.replaceFirst(cmbKey,'')
                 String pType
                 if (partKey == 'member') {
-                    pType = getFieldType(SubscriptionConfig.CONFIG.member, p)
+                    pType = GenericHelper.getFieldType(SubscriptionConfig.CONFIG.member, p)
                 }
                 else if (partKey == 'provider') {
-                    pType = getFieldType(SubscriptionConfig.CONFIG.provider, p)
+                    pType = GenericHelper.getFieldType(SubscriptionConfig.CONFIG.provider, p)
                 }
 
                 def filterLabelValue
 
                 // --> properties generic
-                if (pType == GenericConfig.FIELD_TYPE_PROPERTY) {
+                if (pType == BaseConfig.FIELD_TYPE_PROPERTY) {
 
                     if (Org.getDeclaredField(p).getType() == Date) {
 
@@ -198,16 +200,16 @@ class SubscriptionFilter extends GenericFilter {
                     }
                 }
                 // --> refdata generic
-                else if (pType == GenericConfig.FIELD_TYPE_REFDATA) {
+                else if (pType == BaseConfig.FIELD_TYPE_REFDATA) {
                     whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
 
                     filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                 }
                 // --> refdata join tables
-                else if (pType == GenericConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
+                else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
 
-                    if (p == GenericConfig.CUSTOM_KEY_ORG_TYPE) {
+                    if (p == BaseConfig.CUSTOM_KEY_ORG_TYPE) {
                         whereParts.add('exists (select ot from org.orgType ot where ot = :p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, RefdataValue.get(params.long(key)))
 
@@ -215,23 +217,23 @@ class SubscriptionFilter extends GenericFilter {
                     }
                 }
                 // --> custom filter implementation
-                else if (pType == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {
+                else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
-                    if (p == GenericConfig.CUSTOM_KEY_SUBJECT_GROUP) {
+                    if (p == BaseConfig.CUSTOM_KEY_SUBJECT_GROUP) {
                         queryBase = queryBase + ' join org.subjectGroup osg join osg.subjectGroup rdvsg'
                         whereParts.add('rdvsg.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))
 
                         filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                     }
-                    else if (p == GenericConfig.CUSTOM_KEY_LEGAL_INFO) {
+                    else if (p == BaseConfig.CUSTOM_KEY_LEGAL_INFO) {
                         long li = params.long(key)
                         whereParts.add( getLegalInfoQueryWhereParts(li) )
 
-                        Map<String, Object> customRdv = GenericConfig.getCustomRefdata(p)
+                        Map<String, Object> customRdv = BaseConfig.getCustomRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == li }.value_de
                     }
-                    else if (p == GenericConfig.CUSTOM_KEY_CUSTOMER_TYPE) {
+                    else if (p == BaseConfig.CUSTOM_KEY_CUSTOMER_TYPE) {
                         queryBase = queryBase + ' , OrgSetting oss'
 
                         whereParts.add('oss.org = org and oss.key = :p' + (++pCount))
@@ -240,17 +242,17 @@ class SubscriptionFilter extends GenericFilter {
                         whereParts.add('oss.roleValue = :p' + (++pCount))
                         queryParams.put('p' + pCount, Role.get(params.get(key)))
 
-                        Map<String, Object> customRdv = GenericConfig.getCustomRefdata(p)
+                        Map<String, Object> customRdv = BaseConfig.getCustomRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de
                     }
                 }
 
                 if (filterLabelValue) {
                     if (partKey == 'member') {
-                        result.filterLabels.get(partKey).put(p, [label: getFieldLabel(SubscriptionConfig.CONFIG.member, p), value: filterLabelValue])
+                        result.filterLabels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.CONFIG.member, p), value: filterLabelValue])
                     }
                     else if (partKey == 'provider') {
-                        result.filterLabels.get(partKey).put(p, [label: getFieldLabel(SubscriptionConfig.CONFIG.provider, p), value: filterLabelValue])
+                        result.filterLabels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.CONFIG.provider, p), value: filterLabelValue])
                     }
                 }
             }

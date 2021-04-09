@@ -17,5 +17,7 @@ abstract class AbstractExport {
 
     abstract Map<String, Object> getSelectedFields()
 
+    abstract String getFieldLabel(String fieldName)
+
     abstract List<String> getObject(Long id, Map<String, Object> fields)
 }
