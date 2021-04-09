@@ -28,7 +28,7 @@
                                     <g:else>
                                         <input type="checkbox" name="cde:${field.key}" id="cde:${field.key}" checked="checked">
                                     </g:else>
-                                    <label for="cde:${field.key}">${field.value.text}</label>
+                                    <label for="cde:${field.key}">${export.getFieldLabel(field.key as String)}</label>
                                 </div>
                             </div>
                         </g:each>

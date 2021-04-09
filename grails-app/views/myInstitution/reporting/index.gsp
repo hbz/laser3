@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.GenericConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -62,7 +62,7 @@
             <g:set var="hidden" value="" />
         </g:else>
 
-        <g:each in="${GenericConfig.FILTER}" var="filterItem">
+        <g:each in="${BaseConfig.FILTER}" var="filterItem">
 
             <g:if test="${!filter || filter == filterItem.key}">
                 <div id="filter-${filterItem.key}" class="filter-form-wrapper ${hidden}">
@@ -153,7 +153,7 @@
                                 if (params.data[0] == v.id) {
                                     valid = true;
                                     var clone = Object.assign({}, v);
-                                    clone.context = '${GenericConfig.KEY}';
+                                    clone.context = '${BaseConfig.KEY}';
                                     JSPC.app.reporting.requestChartHtmlDetails(JSPC.app.reporting.current.request, clone);
                                 }
                             })

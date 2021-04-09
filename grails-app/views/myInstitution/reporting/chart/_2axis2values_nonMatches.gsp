@@ -1,14 +1,14 @@
-<%@ page import="de.laser.reporting.myInstitution.GenericConfig;de.laser.reporting.myInstitution.GenericQuery" %>
+<%@ page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.reporting.myInstitution.base.BaseQuery" %>
 <g:if test="${! data}">
     JSPC.app.reporting.current.chart.option = {}
     $("#reporting-modal-nodata").modal('show');
 </g:if>
-<g:elseif test="${chart == GenericConfig.CHART_PIE}">
+<g:elseif test="${chart == BaseConfig.CHART_PIE}">
     JSPC.app.reporting.current.chart.option = {
         dataset: {
             source: [
                 ['id', 'name', 'value1', 'value2' ],
-                <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${GenericQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${GenericQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails)}]," } %>
+                <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails)}]," } %>
             ]
         },
         tooltip: {
@@ -16,7 +16,7 @@
             formatter (params) {
                 var str = params.name
 
-                if (JSPC.helper.contains(['${GenericQuery.NO_IDENTIFIER_LABEL}', '${GenericQuery.NO_PLATFORM_LABEL}'], str)) {
+                if (JSPC.helper.contains(['${BaseQuery.NO_IDENTIFIER_LABEL}', '${BaseQuery.NO_PLATFORM_LABEL}'], str)) {
                     return str + JSPC.app.reporting.helper.tooltip.getEntry(params.marker, ' ', Math.abs(params.value[3]))
                 }
 
@@ -48,12 +48,12 @@
     };
     JSPC.app.reporting.current.chart.details = <%= dataDetails as grails.converters.JSON %>
 </g:elseif>
-<g:elseif test="${chart == GenericConfig.CHART_BAR}">
+<g:elseif test="${chart == BaseConfig.CHART_BAR}">
     JSPC.app.reporting.current.chart.option = {
         dataset: {
             source: [
                 ['id', 'name', 'value1', 'value2'],
-                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1]}', ${GenericQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${GenericQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails) * -1}]," } %>
+                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1]}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails) * -1}]," } %>
             ]
         },
         legend: {
@@ -65,7 +65,7 @@
             formatter (params) {
                 var str = params[0].name
 
-                if (JSPC.helper.contains(['${GenericQuery.NO_IDENTIFIER_LABEL}', '${GenericQuery.NO_PLATFORM_LABEL}'], str)) {
+                if (JSPC.helper.contains(['${BaseQuery.NO_IDENTIFIER_LABEL}', '${BaseQuery.NO_PLATFORM_LABEL}'], str)) {
                     return str + JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, ' ', Math.abs(params[0].value[3]))
                 }
 
@@ -117,7 +117,7 @@
                 },
                 itemStyle: {
                     color: function(params) {
-                        if (JSPC.helper.contains(['${GenericQuery.NO_IDENTIFIER_LABEL}', '${GenericQuery.NO_PLATFORM_LABEL}'], params.name)) {
+                        if (JSPC.helper.contains(['${BaseQuery.NO_IDENTIFIER_LABEL}', '${BaseQuery.NO_PLATFORM_LABEL}'], params.name)) {
                             return JSPC.app.reporting.helper.series.color.redInactive
                         } else {
                             return JSPC.app.reporting.helper.series.color.blue

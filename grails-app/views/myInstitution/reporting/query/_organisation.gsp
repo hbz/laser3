@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.GenericConfig; de.laser.reporting.myInstitution.OrganisationConfig; de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.reporting.myInstitution.OrganisationConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:if test="${result}">
@@ -17,7 +17,7 @@
 
         <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.app.reporting.current.request = {
-                context: '${GenericConfig.KEY}',
+                context: '${BaseConfig.KEY}',
                 filter: '${OrganisationConfig.KEY}',
                 token: '${token}'
             }

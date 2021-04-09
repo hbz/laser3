@@ -1,9 +1,9 @@
-<%@ page import="de.laser.reporting.myInstitution.GenericConfig; de.laser.reporting.myInstitution.GenericQuery" %>
+<%@ page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.reporting.myInstitution.base.BaseQuery" %>
 <g:if test="${! data}">
     JSPC.app.reporting.current.chart.option = {}
     $("#reporting-modal-nodata").modal('show');
 </g:if>
-<g:elseif test="${chart == GenericConfig.CHART_PIE}">
+<g:elseif test="${chart == BaseConfig.CHART_PIE}">
     JSPC.app.reporting.current.chart.option = {
         title: {
             text: '${tooltipLabel}',
@@ -45,7 +45,7 @@
     };
     JSPC.app.reporting.current.chart.details = <%= dataDetails as grails.converters.JSON %>
 </g:elseif>
-<g:elseif test="${chart == GenericConfig.CHART_BAR}">
+<g:elseif test="${chart == BaseConfig.CHART_BAR}">
     JSPC.app.reporting.current.chart.option = {
         title: {
             text: '${tooltipLabel}',
@@ -87,7 +87,7 @@
                 },
                 itemStyle: {
                     color: function(params) {
-                        if (JSPC.helper.contains(['${GenericQuery.NO_DATA_LABEL}', '${GenericQuery.NO_PROVIDER_LABEL}'], params.name)) {
+                        if (JSPC.helper.contains(['${BaseQuery.NO_DATA_LABEL}', '${BaseQuery.NO_PROVIDER_LABEL}'], params.name)) {
                             return JSPC.app.reporting.helper.series.color.redInactive
                         } else {
                             return JSPC.app.reporting.helper.series.color.blue
