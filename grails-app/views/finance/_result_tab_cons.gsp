@@ -243,6 +243,9 @@
                         <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
                             ${RDStore.TAX_REVERSE_CHARGE.getI10n("value")}
                         </g:elseif>
+                        <g:elseif test="${ci.taxKey in [CostItem.TAX_TYPES.TAX_CONTAINED_7,CostItem.TAX_TYPES.TAX_CONTAINED_19]}">
+                            ${ci.taxKey.taxType.getI10n("value")}
+                        </g:elseif>
                         <g:elseif test="${!ci.taxKey}">
                             <g:message code="financials.taxRate.notSet"/>
                         </g:elseif>
