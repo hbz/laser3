@@ -203,12 +203,10 @@ class OrganisationService {
     void createOrgsFromScratch() {
         String currentServer = ServerUtils.getCurrentServer()
         Map<String,Role> customerTypes = [konsorte:Role.findByAuthority('ORG_BASIC_MEMBER'),
-                                          institut:Role.findByAuthority('ORG_BASIC_MEMBER'),
-                                          singlenutzer:Role.findByAuthority('ORG_INST'),
+                                          vollnutzer:Role.findByAuthority('ORG_INST'),
                                           konsortium:Role.findByAuthority('ORG_CONSORTIUM')]
         RefdataValue institution = RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)
         RefdataValue consortium = RefdataValue.getByValueAndCategory('Consortium', RDConstants.ORG_TYPE)
-        RefdataValue department = RefdataValue.getByValueAndCategory('Department', RDConstants.ORG_TYPE)
         //create home org
         Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
         if(!hbz) {
@@ -228,16 +226,13 @@ class OrganisationService {
         }
         if(currentServer == ServerUtils.SERVER_QA) { //include SERVER_LOCAL when testing in local environment
             Map<String,Map> modelOrgs = [konsorte: [name:'Musterkonsorte',shortname:'Muster', sortname:'Musterstadt, Muster', orgType: [institution]],
-                                         institut: [name:'Musterinstitut',orgType: [department]],
-                                         singlenutzer: [name:'Mustereinrichtung',sortname:'Musterstadt, Uni', orgType: [institution]],
+                                         vollnutzer: [name:'Mustereinrichtung',sortname:'Musterstadt, Uni', orgType: [institution]],
                                          konsortium: [name:'Musterkonsortium',shortname:'Musterkonsortium',orgType: [consortium]]]
             Map<String,Map> testOrgs = [konsorte: [name:'Testkonsorte',shortname:'Test', sortname:'Teststadt, Test',orgType: [institution]],
-                                        institut: [name:'Testinstitut',orgType: [department]],
-                                        singlenutzer: [name:'Testeinrichtung',sortname:'Teststadt, Uni',orgType: [institution]],
+                                        vollnutzer: [name:'Testeinrichtung',sortname:'Teststadt, Uni',orgType: [institution]],
                                         konsortium: [name:'Testkonsortium',shortname:'Testkonsortium',orgType: [consortium]]]
             Map<String,Map> QAOrgs = [konsorte: [name:'QA-Konsorte',shortname:'QA', sortname:'QA-Stadt, QA',orgType: [institution]],
-                                      institut: [name:'QA-Institut',orgType: [department]],
-                                      singlenutzer: [name:'QA-Einrichtung',sortname:'QA-Stadt, Uni',orgType: [institution]],
+                                      vollnutzer: [name:'QA-Einrichtung',sortname:'QA-Stadt, Uni',orgType: [institution]],
                                       konsortium: [name:'QA-Konsortium',shortname:'QA-Konsortium',orgType: [consortium]]]
             [modelOrgs,testOrgs,QAOrgs].each { Map<String,Map> orgs ->
                 Map<String,Org> orgMap = [:]
@@ -245,7 +240,7 @@ class OrganisationService {
                     Org org = createOrg(orgData)
                     if(!org.hasErrors()) {
                         //other ones are covered by Org.setDefaultCustomerType()
-                        if (customerType in ['singlenutzer', 'konsortium']) {
+                        if (customerType in ['vollnutzer', 'konsortium']) {
                             OrgSetting.add(org, OrgSetting.KEYS.CUSTOMER_TYPE, customerTypes[customerType])
                             if (customerType == 'konsortium') {
                                 Combo c = new Combo(fromOrg: Org.findByName(orgs.konsorte.name), toOrg: org, type: RDStore.COMBO_TYPE_CONSORTIUM)
