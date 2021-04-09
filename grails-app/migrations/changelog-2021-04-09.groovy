@@ -18,18 +18,4 @@ databaseChangeLog = {
         }
     }
 
-    /*
-    changeSet(author: "galffy (hand-coded)", id: "1617945512585-3") {
-
-    }
-
-    changeSet(author: "galffy (hand-coded)", id: "1617945512585-4") {
-
-    }
-
-    changeSet(author: "galffy (hand-coded)", id: "1617945512585-5") {
-
-    }
-    */
-
 }
