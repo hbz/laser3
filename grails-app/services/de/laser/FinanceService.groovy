@@ -308,6 +308,12 @@ class FinanceService {
                 case RefdataValue.getByValueAndCategory("reverse charge",RDConstants.TAX_TYPE).id:
                     tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
                     break
+                case RefdataValue.getByValueAndCategory("tax contained 7",RDConstants.TAX_TYPE).id:
+                    tax_key = CostItem.TAX_TYPES.TAX_CONTAINED_7
+                    break
+                case RefdataValue.getByValueAndCategory("tax contained 19",RDConstants.TAX_TYPE).id:
+                    tax_key = CostItem.TAX_TYPES.TAX_CONTAINED_19
+                    break
             }
         }
         tax_key

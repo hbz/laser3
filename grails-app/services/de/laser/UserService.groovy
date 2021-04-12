@@ -182,7 +182,7 @@ class UserService {
 
     void setupAdminAccounts(Map<String,Org> orgs) {
         List adminUsers = grailsApplication.config.adminUsers
-        List<String> customerTypes = ['konsorte','institut','singlenutzer','konsortium']
+        List<String> customerTypes = ['konsorte','vollnutzer','konsortium']
         //the Aninas, Rahels and Violas ... if my women get chased from online test environments, I feel permitted to keep them internally ... for more women in IT branch!!!
         Map<String,Role> userRights = ['benutzer':Role.findByAuthority('INST_USER'), //internal 'Anina'
                                        'redakteur':Role.findByAuthority('INST_EDITOR'), //internal 'Rahel'
