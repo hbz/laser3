@@ -55,7 +55,7 @@
 
                     <td>
                         <g:if test="${taskInstance.responsibleOrg}">${taskInstance.responsibleOrg?.name} <br /></g:if>
-                        <g:if test="${taskInstance.responsibleUser}">${taskInstance.responsibleUser}</g:if>
+                        <g:if test="${taskInstance.responsibleUser}">${taskInstance.responsibleUser?.display}</g:if>
                     </td>
 
                     <%--<td>${fieldValue(bean: taskInstance, field: "creator")}</td>--%>

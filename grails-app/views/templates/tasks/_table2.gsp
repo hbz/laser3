@@ -58,10 +58,10 @@
 
                     <td>
                         <g:if test="${taskInstance.responsibleUser}">
-                            ${fieldValue(bean: taskInstance, field: "responsibleUser")}
+                            ${taskInstance.responsibleUser.display}
                         </g:if>
                         <g:elseif test="${taskInstance.responsibleOrg}">
-                            ${fieldValue(bean: taskInstance, field: "responsibleOrg")}
+                            ${taskInstance.responsibleOrg.name}
                         </g:elseif>
                     </td>
 

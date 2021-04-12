@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3197    12.04.2021  dev     2.1         Andreas Bug         Anzeigefehler bei Aufgabentabelle behoben
+
 3244    09.04.2021  dev     2.1         Andreas Feature     Ersatz des Bezeichners für Kundentyp Singlenutzer durch Vollnutzer ersetzt
 
 3167    08.04.2021  dev     2.1         Andreas Feature     neues Lizenzattribut Publishing-Komponente eingefügt
