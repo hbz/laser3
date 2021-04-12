@@ -18,6 +18,7 @@ class DeletionService {
 
     def ESWrapperService
     def subscriptionService
+    ContextService contextService
 
     static boolean DRY_RUN                  = true
 
@@ -226,9 +227,9 @@ class DeletionService {
         List ies            = IssueEntitlement.where { subscription == sub }.findAll()
                             // = new ArrayList(sub.issueEntitlements)
 
-        //TODO is a temporary solution for ERMS-2535 and is subject of refactoring!
-        List nonDeletedCosts = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus != RDStore.COST_ITEM_DELETED })
-        List deletedCosts   = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus == RDStore.COST_ITEM_DELETED })
+        Org contextOrg = contextService.getOrg()
+        List nonDeletedCosts = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus != RDStore.COST_ITEM_DELETED && ci.owner == contextOrg })
+        List deletedCosts   = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus == RDStore.COST_ITEM_DELETED || ci.owner != contextOrg })
         List oapl           = new ArrayList(sub.packages?.oapls)
         List privateProps   = new ArrayList(sub.propertySet.findAll { it.type.tenant != null })
         List customProps    = new ArrayList(sub.propertySet.findAll { it.type.tenant == null })

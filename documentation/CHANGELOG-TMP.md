@@ -9,6 +9,8 @@
 
 3244    09.04.2021  dev     2.1         Andreas Feature     Ersatz des Bezeichners für Kundentyp Singlenutzer durch Vollnutzer ersetzt
 
+3017    09.04.2021  dev     2.1         Andreas Feature     Umstrukturierung der Teilnehmerpaket/-lizenz-Entknüpfung
+
 3167    08.04.2021  dev     2.1         Andreas Feature     neues Lizenzattribut Publishing-Komponente eingefügt
 
 3308    07.04.2021  dev     2.1         Andreas Feature     neue Referenzwerte für Simuser Zahl hinzugefügt

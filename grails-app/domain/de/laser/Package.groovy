@@ -319,11 +319,11 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
 
     @Transient
-    boolean unlinkFromSubscription(Subscription subscription, deleteEntitlements) {
+    boolean unlinkFromSubscription(Subscription subscription, Org contextOrg, deleteEntitlements) {
         SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(this, subscription)
 
         //Not Exist CostItem with Package
-        if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg',[pkg:this, sub:subscription])) {
+        if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted',[pkg:this, deleted: RDStore.COST_ITEM_DELETED, sub:subscription, context: contextOrg])) {
 
             if (deleteEntitlements) {
                 List<Long> subList = [subscription.id]
@@ -338,15 +338,9 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                         }
                     }
 
-                    SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription.id in (:subList)',[subList:subList,pkg:this]).each { delPkg ->
+                    SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription.id in (:subList)',[subList:subList,pkg:this]).each { SubscriptionPackage delPkg ->
                         OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg = :subPkg", [subPkg:delPkg])
-                        CostItem.findAllBySubPkg(delPkg).each { costItem ->
-                            costItem.subPkg = null
-                            if (!costItem.sub) {
-                                costItem.sub = delPkg.subscription
-                            }
-                            costItem.save()
-                        }
+                        CostItem.executeUpdate('update CostItem ci set ci.costItemStatus = :deleted, ci.subPkg = null, ci.sub = :sub where ci.subPkg = :delPkg',[delPkg: delPkg, sub:delPkg.subscription, deleted: RDStore.COST_ITEM_DELETED])
                         PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:delPkg])
                     }
 
@@ -361,6 +355,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg = :sp", [sp: subPkg])
                     CostItem.findAllBySubPkg(subPkg).each { costItem ->
                         costItem.subPkg = null
+                        costItem.costItemStatus = RDStore.COST_ITEM_DELETED
                         if (!costItem.sub) {
                             costItem.sub = subPkg.subscription
                         }
