@@ -328,8 +328,8 @@
                                         prop_desc       : PropertyDefinition.PRS_PROP,
                                         ownobj          : personInstance,
                                         propertyWrapper: "${propertyWrapper}",
-                                        tenant          : contextOrg,
-                                        withoutRender   : true]}"/>
+                                        tenant          : contextOrg]}"/>
+
                                 <laser:script file="${this.getGroovyPageFileName()}">
                                     c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
                                 </laser:script>
@@ -440,6 +440,12 @@
                     $(JSPC.app.addressContainer).empty().remove();
                     $('#addAddressElement').removeAttr('disabled').attr('class', 'ui icon button');
                 }
+            });
+
+            $('#cust_prop_add_value_private').submit(function(e) {
+                e.preventDefault();
+                console.log("redirect obstructed, continue implementing!");
+                bb8.ajax4remoteForm($(this));
             });
 
     </laser:script>

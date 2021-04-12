@@ -128,7 +128,7 @@
                 <g:else>
                     <td>
                 </g:else>
-                        <laser:remoteForm url="[controller: 'ajax', action: 'addPrivatePropertyValue']"
+                    <laser:remoteForm url="[controller: 'ajax', action: 'addPrivatePropertyValue']"
                                       name="cust_prop_add_value_private"
                                       class="ui properties form"
                                       data-update="${propertyWrapper}"
