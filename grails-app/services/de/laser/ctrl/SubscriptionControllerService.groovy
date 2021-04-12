@@ -774,7 +774,7 @@ class SubscriptionControllerService {
         else {
             result.validPackages = result.subscription.packages
             result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
-            result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubChildren)',[filteredSubChildren:result.filteredSubChilds.collect { row -> row.sub }])
+            result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubChildren) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution,deleted:RDStore.COST_ITEM_DELETED,filteredSubChildren:result.filteredSubChilds.collect { row -> row.sub }])
             [result:result,status:STATUS_OK]
         }
     }
@@ -805,9 +805,9 @@ class SubscriptionControllerService {
                         if (params.processOption == 'unlinkwithIE' || params.processOption == 'unlinkwithoutIE') {
                             if (pkg_to_link in subChild.packages.pkg) {
                                 if (params.processOption == 'unlinkwithIE') {
-                                    pkg_to_link.unlinkFromSubscription(subChild, true)
+                                    pkg_to_link.unlinkFromSubscription(subChild, result.institution, true)
                                 } else {
-                                    pkg_to_link.unlinkFromSubscription(subChild, false)
+                                    pkg_to_link.unlinkFromSubscription(subChild, result.institution, false)
                                 }
                             }
                         }
@@ -842,9 +842,9 @@ class SubscriptionControllerService {
             result.error = []
             List<SubscriptionPackage> validSubChildPackages = SubscriptionPackage.executeQuery("select sp from SubscriptionPackage sp join sp.subscription sub where sub.instanceOf = :parent",[parent:result.subscription])
             validSubChildPackages.each { SubscriptionPackage sp ->
-                if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp',[sp:sp])) {
+                if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context',[sp:sp,deleted:RDStore.COST_ITEM_DELETED,context:result.institution])) {
                     if (Boolean.valueOf(params.withIE)) {
-                        if(sp.pkg.unlinkFromSubscription(sp.subscription, true)){
+                        if(sp.pkg.unlinkFromSubscription(sp.subscription, result.institution, true)){
                             result.message << messageSource.getMessage('subscription.linkPackagesMembers.unlinkInfo.withIE.successful',null,locale)
                         }
                         else {
@@ -852,7 +852,7 @@ class SubscriptionControllerService {
                         }
                     }
                     else {
-                        if(sp.pkg.unlinkFromSubscription(sp.subscription, false)){
+                        if(sp.pkg.unlinkFromSubscription(sp.subscription, result.institution, false)){
                             result.message << messageSource.getMessage('subscription.linkPackagesMembers.unlinkInfo.onlyPackage.successful',null,locale)
                         }
                         else {
@@ -1607,6 +1607,7 @@ class SubscriptionControllerService {
             RefdataValue tipp_current = RDStore.TIPP_STATUS_CURRENT
             RefdataValue ie_deleted = RDStore.TIPP_STATUS_DELETED
             RefdataValue ie_current = RDStore.TIPP_STATUS_CURRENT
+            List<Long> tippIDs = []
             List<TitleInstancePackagePlatform> tipps = []
             List errorList = []
             boolean filterSet = false
@@ -1628,9 +1629,10 @@ class SubscriptionControllerService {
 
             if(result.subscription.packages?.pkg) {
 
-                tipps.addAll(TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams))
+                tippIDs.addAll(TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams))
                 result.num_tipp_rows = tipps.size()
-                result.tipps = tipps.drop(result.offset).take(result.max)
+                tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(tippIDs,[offset:result.offset,max:result.max,sort:'sortName']))
+                result.tipps = tipps
                 Map identifiers = [zdbIds: [], onlineIds: [], printIds: [], unidentified: []]
                 Map<String, Map> issueEntitlementOverwrite = [:]
                 result.issueEntitlementOverwrite = [:]
