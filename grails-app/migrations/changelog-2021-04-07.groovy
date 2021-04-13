@@ -22,4 +22,15 @@ databaseChangeLog = {
         }
     }
 
+    changeSet(author: "galffy (hand-coded)", id: "1617774040018-3") {
+        grailsChange {
+            change {
+                sql.execute("delete from org_role where or_id in (select or_id from org_role join license on or_lic_fk = lic_id where or_roletype_fk = (select rdv_id from refdata_value join refdata_category on rdv_owner = rdc_id where rdv_value = 'Licensee_Consortial' and rdc_description = 'organisational.role') and lic_parent_lic_fk is null)")
+            }
+            rollback {
+
+            }
+        }
+    }
+
 }

@@ -33,7 +33,7 @@
                         <i class="calculator icon"></i>
                     </div>
 
-                    <g:select class="ui dropdown dk-width-auto" name="newCostCurrency2"
+                    <g:select class="ui dropdown la-small-dropdown la-not-clearable" name="newCostCurrency2"
                               title="${g.message(code: 'financials.addNew.currencyType')}"
                               from="${financeService.orderedCurrency()}"
                               optionKey="id"
@@ -51,13 +51,6 @@
                                    minFractionDigits="2" maxFractionDigits="2"/>"/>
 
                 </div><!-- .field -->
-            <!-- TODO -->
-                <style>
-                .dk-width-auto {
-                    width: auto !important;
-                    min-width: auto !important;
-                }
-                </style>
             </div>
 
             <div class="two fields">
