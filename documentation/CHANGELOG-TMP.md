@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3335    13.04.2021  rc2.0   2.0.7       Andreas Bug         Regionsfilter wird korrekt befüllt und sortiert
+
+3265    13.04.2021  rc2.0   2.0.7       Andreas Bug         Abfrage der Anbieterdaten um Provider erweitert
+
 3326    09.04.2021  rc2.0   2.0.7       Andreas Bug         Proxy-Fehler bei Kostenimport behoben
 
 3323    09.04.2021  rc2.0   2.0.7       Andreas Bug         Bereinigungsskript zu Fehlverknüpfungen ergänzt
