@@ -140,7 +140,7 @@
                             <i class="calculator icon"></i>
                         </div>
 
-                        <g:select class="ui dropdown dk-width-auto la-not-clearable" name="newCostCurrency" title="${message(code: 'financials.addNew.currencyType')}"
+                        <g:select class="ui dropdown la-small-dropdown la-not-clearable" name="newCostCurrency" title="${message(code: 'financials.addNew.currencyType')}"
                                   from="${currency}"
                                   optionKey="id"
                                   optionValue="${{it.text.contains('-') ? it.text.split('-').first() : it.text}}"
@@ -153,13 +153,6 @@
                                value="<g:formatNumber number="${costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" />" />
 
                     </div><!-- .field -->
-                    <!-- TODO -->
-                    <style>
-                        .dk-width-auto {
-                            width: auto !important;
-                            min-width: auto !important;
-                        }
-                    </style>
                 </div>
 
                 <div class="two fields">
