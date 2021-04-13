@@ -60,3 +60,7 @@
 .ui.dropdown .menu > .disabled.item {
   pointer-events: auto!important;
 }
+.la-small-dropdown {
+    width: auto!important;
+    min-width: auto!important;
+}
