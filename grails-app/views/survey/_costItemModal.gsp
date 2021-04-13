@@ -99,7 +99,7 @@
                                        number="${costItem?.costInBillingCurrency}"
                                        minFractionDigits="2" maxFractionDigits="2"/>"/>
 
-                        <g:select class="ui dropdown la-small-dropdown la-not-clearabl" name="newCostCurrency" title="${message(code: 'financials.addNew.currencyType')}"
+                        <g:select class="ui dropdown la-small-dropdown la-not-clearable" name="newCostCurrency" title="${message(code: 'financials.addNew.currencyType')}"
                                   from="${currency}"
                                   optionKey="id"
                                   optionValue="${{it.text.contains('-') ? it.text.split('-').first() : it.text}}"
