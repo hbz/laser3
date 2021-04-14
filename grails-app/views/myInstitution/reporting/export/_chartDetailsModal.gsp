@@ -47,7 +47,7 @@
 
             <input type="hidden" name="query" value="${query}" />
             <input type="hidden" name="filename" value="${title.join('_').replaceAll(' ', '_')}" />
-            <input type="hidden" name="idList[]" value="${objectList.collect{it.id}.join(',')}" />
+            <input type="hidden" name="idList_cs" value="${objectList.collect{it.id}.join(',')}" />
         </g:form>
 
         <laser:script file="${this.getGroovyPageFileName()}">

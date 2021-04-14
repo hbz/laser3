@@ -31,6 +31,7 @@ import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.helper.SessionCacheWrapper
 import de.laser.reporting.myInstitution.CostItemConfig
 import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.reporting.myInstitution.base.BaseQuery
@@ -388,6 +389,15 @@ class AjaxHtmlController {
         ]
 
         if (params.context == BaseConfig.KEY && params.query) {
+//            SessionCacheWrapper sessionCache = contextService.getSessionCache()
+//            Map<String, Object> cached = sessionCache.get("MyInstitutionController/reporting/" + params.token)
+//
+//            println cached
+//            GrailsParameterMap clone = params.clone() as GrailsParameterMap// TODO: simplify
+//            if (cached) {
+//                clone.putAll(cached)
+//            }
+
             String prefix = params.query.split('-')[0]
             List idList = params.list('idList[]').collect { it as Long }
 
@@ -484,7 +494,7 @@ class AjaxHtmlController {
 
         // TODO
         // TODO
-        List<Long> idList = params.get('idList[]') ? params.get('idList[]').split(',').collect{ it as Long } : []
+        List<Long> idList = params.get('idList_cs') ? params.get('idList_cs').split(',').collect{ it as Long } : []
         //List<Long> idList = params.get('idList[]') ? params.get('idList[]').collect{ it.id as Long } : []
         // TODO
         // TODO

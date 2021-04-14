@@ -152,9 +152,11 @@
                             $.each( JSPC.app.reporting.current.chart.details, function(i, v) {
                                 if (params.data[0] == v.id) {
                                     valid = true;
-                                    var clone = Object.assign({}, v);
+                                    var clone = {}
+                                    Object.assign(clone, JSPC.app.reporting.current.request);
+                                    Object.assign(clone, v);
                                     clone.context = '${BaseConfig.KEY}';
-                                    JSPC.app.reporting.requestChartHtmlDetails(JSPC.app.reporting.current.request, clone);
+                                    JSPC.app.reporting.requestChartHtmlDetails(clone);
                                 }
                             })
                             if (! valid) {

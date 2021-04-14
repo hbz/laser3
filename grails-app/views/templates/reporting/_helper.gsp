@@ -41,7 +41,7 @@ if (! JSPC.app.reporting) {
                 }
             }
         },
-        requestChartHtmlDetails: function(request, data) {
+        requestChartHtmlDetails: function(data) {
             $.ajax({
                 url: "<g:createLink controller="ajaxHtml" action="chartDetails" />",
                 method: 'post',

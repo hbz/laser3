@@ -70,12 +70,12 @@
                             $.each( JSPC.app.reporting.current.chart.details, function(i, v) {
                                 if (params.data[0] == v.id) {
                                     valid = true;
-                                    var clone = Object.assign({}, v);
+                                    var clone = Object.assign({}, v); // ---- TODO !!!! ----
                                     if (JSPC.helper.contains(clone.id, ':')) { // workaround XYZ
                                         clone.id = clone.id.split(':')[0]
                                     }
                                     clone.context = '${SubscriptionConfig.KEY}';
-                                    JSPC.app.reporting.requestChartHtmlDetails(JSPC.app.reporting.current.request, clone);
+                                    JSPC.app.reporting.requestChartHtmlDetails(clone);
                                 }
                             })
                             if (! valid) {
