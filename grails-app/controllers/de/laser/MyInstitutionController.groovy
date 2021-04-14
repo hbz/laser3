@@ -114,8 +114,8 @@ class MyInstitutionController  {
                     //println ' -------------> ' + it.key + ' : ' + it.value
                 }
             }
-            cacheMap.filterCache.labels.putAll( result.result.labels )
-            cacheMap.filterCache.data.putAll( result.result.data )
+            cacheMap.filterCache.labels.putAll( result.filterResult.labels )
+            cacheMap.filterCache.data.putAll( result.filterResult.data )
 
             sessionCache.put("MyInstitutionController/reporting/" + result.token, cacheMap)
         }

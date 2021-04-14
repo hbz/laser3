@@ -73,7 +73,7 @@
 
         <g:render template="/templates/reporting/helper" />
 
-        <g:if test="${result}">
+        <g:if test="${filterResult}">
 
             <h3 class="ui header">${message(code:'reporting.macro.step2')}</h3>
 

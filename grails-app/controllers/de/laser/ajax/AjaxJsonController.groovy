@@ -677,18 +677,11 @@ class AjaxJsonController {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
     })
     def chart() {
-        Map<String, Object> result = [:]
+        Map<String, Object> queryResult = [:]
 
         if (params.context == BaseConfig.KEY && params.query) {
-            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String, Object> cached = sessionCache.get("MyInstitutionController/reporting/" + params.token)
 
-            GrailsParameterMap clone = params.clone() as GrailsParameterMap// TODO: simplify
-            if (cached) {
-                clone.putAll(cached)
-            }
-
-            Closure getTooltipLabel = { GrailsParameterMap pm ->
+            Closure getTooltipLabels = { GrailsParameterMap pm ->
                 if (pm.filter == 'license') {
                     BaseQuery.getQueryLabels(LicenseConfig.CONFIG, pm).get(1)
                 }
@@ -700,64 +693,61 @@ class AjaxJsonController {
                 }
             }
 
-            //println clone
-            //String prefix = ''
-            String prefix = clone.query.split('-')[0]
+            GrailsParameterMap clone = params.clone() as GrailsParameterMap// TODO: simplify
+
+            SessionCacheWrapper sessionCache = contextService.getSessionCache()
+            Map<String, Object> cacheMap = sessionCache.get("MyInstitutionController/reporting/" + params.token)
+            if (cacheMap) {
+                clone.put('filterCache', cacheMap.filterCache)
+            }
+
+            String prefix = params.query.split('-')[0]
 
             if (prefix in ['license']) {
-                result = LicenseQuery.query(clone)
-                result.tooltipLabel = getTooltipLabel(clone)
-                result.tmpl = '/myInstitution/reporting/chart/generic'
+                queryResult = LicenseQuery.query(clone)
+                queryResult.labels.tooltip = getTooltipLabels(clone)
+                queryResult.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (clone.query.endsWith('assignment')) {
                     Map<String, Object> cfg = LicenseConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
-                    result.chartLabels = cfg.getAt('chartLabels')
-                    result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
+                    queryResult.labels.chart = cfg.getAt('chartLabels')
+                    queryResult.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
                 }
             }
             else if (prefix in ['org', 'member', 'provider', 'licensor']) {
-                result = OrganisationQuery.query(clone)
-                result.tooltipLabel = getTooltipLabel(clone)
-                result.tmpl = '/myInstitution/reporting/chart/generic'
+                queryResult = OrganisationQuery.query(clone)
+                queryResult.labels.tooltip = getTooltipLabels(clone)
+                queryResult.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (clone.query.endsWith('assignment')) {
                     Map<String, Object> cfg = OrganisationConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
-                    result.chartLabels = cfg.getAt('chartLabels')
-                    result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
+                    queryResult.labels.chart = cfg.getAt('chartLabels')
+                    queryResult.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
                 }
             }
             else if (prefix in ['subscription']) {
-                result = SubscriptionQuery.query(clone)
-                result.tooltipLabel = getTooltipLabel(clone)
-                result.tmpl = '/myInstitution/reporting/chart/generic'
+                queryResult = SubscriptionQuery.query(clone)
+                queryResult.labels.tooltip = getTooltipLabels(clone)
+                queryResult.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (clone.query.endsWith('assignment')) {
                     Map<String, Object> cfg = SubscriptionConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
-                    result.chartLabels = cfg.getAt('chartLabels')
-                    result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
+                    queryResult.labels.chart = cfg.getAt('chartLabels')
+                    queryResult.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
                 }
             }
             else if (prefix in ['costItem']) {
-                result = CostItemQuery.query(clone)
-                result.tooltipLabel = getTooltipLabel(clone)
-                result.tmpl = '/myInstitution/reporting/chart/generic'
+                queryResult = CostItemQuery.query(clone)
+                queryResult.labels.tooltip = getTooltipLabels(clone)
+                queryResult.tmpl = '/myInstitution/reporting/chart/generic'
             }
+            // TODO
 
-            // --> TODO: MyInstitutionController.reporting()
-            // --> TODO: MyInstitutionController.reporting()
-            // --> TODO: MyInstitutionController.reporting()
-
-            Map<String, Object> cacheMap = cached
-            params.each{it ->
-                //if (it.key.startsWith(BaseConfig.FILTER_PREFIX) && it.value) {
-                    cacheMap.put(it.key, it.value)
-                    //println ' -------------> ' + it.key + ' : ' + it.value
-            }
             cacheMap.queryCache = [:]
-            cacheMap.queryCache.putAll(result)
+            cacheMap.queryCache.putAll(queryResult)
             sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)
         }
         else if (params.context == SubscriptionConfig.KEY && params.query) {
@@ -765,32 +755,32 @@ class AjaxJsonController {
             String prefix = clone.query.split('-')[0]
 
             if (prefix in ['timeline']) {
-                result = SubscriptionReporting.query(clone)
-                result.chartLabels = SubscriptionReporting.CONFIG.base.query2.getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
+                queryResult = SubscriptionReporting.query(clone)
+                queryResult.labels.chart = SubscriptionReporting.CONFIG.base.query2.getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
 
                 if (clone.query in ['timeline-cost']) {
-                    result.tmpl = '/subscription/reporting/chart/timeline-cost'
+                    queryResult.tmpl = '/subscription/reporting/chart/timeline-cost'
                 }
                 else {
-                    result.tmpl = '/subscription/reporting/chart/generic-timeline'
+                    queryResult.tmpl = '/subscription/reporting/chart/generic-timeline'
                 }
             }
             else {
-                result = SubscriptionReporting.query(clone)
-                result.tooltipLabel = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone).get(1)
+                queryResult = SubscriptionReporting.query(clone)
+                queryResult.labels.tooltip = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone).get(1)
 
-                result.tmpl = '/subscription/reporting/chart/generic-bar'
+                queryResult.tmpl = '/subscription/reporting/chart/generic-bar'
             }
         }
 
         //println 'AjaxJsonController.chart()'
         //println result
 
-        if (result.tmpl) {
-            render template: result.tmpl, model: result
+        if (queryResult.tmpl) {
+            render template: queryResult.tmpl, model: queryResult
         }
         else {
-            render result as JSON
+            render queryResult as JSON
         }
     }
 }

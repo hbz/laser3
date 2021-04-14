@@ -1,15 +1,15 @@
 <%@page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.reporting.myInstitution.CostItemConfig;" %>
 <laser:serviceInjection/>
 
-<g:if test="${result}">
+<g:if test="${filterResult}">
     <g:render template="/myInstitution/reporting/query/base.part1" />
 
-    <g:if test="${result.data.costItemIdList}">
+    <g:if test="${filterResult.data.costItemIdList}">
 
         <div class="ui message success">
             <p>
                 Mit diesen Filtereinstellungen wurden
-                <strong>${result.data.costItemIdList.size()} Kosten</strong> gefunden.
+                <strong>${filterResult.data.costItemIdList.size()} Kosten</strong> gefunden.
             </p>
         </div>
 

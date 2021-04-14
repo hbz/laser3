@@ -6,7 +6,7 @@
 <g:else>
     JSPC.app.reporting.current.chart.option = {
         title: {
-            text: '${tooltipLabel}',
+            text: '${labels.tooltip}',
             show: false
         },
         dataset: {

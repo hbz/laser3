@@ -28,14 +28,14 @@ class SubscriptionFilter extends BaseFilter {
 
     Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned
-        Map<String, Object> result      = [ labels: [:], data: [:] ]
+        Map<String, Object> filterResult = [ labels: [:], data: [:] ]
 
         List<String> queryParts         = [ 'select distinct (sub.id) from Subscription sub']
         List<String> whereParts         = [ 'where sub.id in (:subscriptionIdList)']
         Map<String, Object> queryParams = [ subscriptionIdList: [] ]
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'subscription' + BaseConfig.FILTER_SOURCE_POSTFIX)
-        result.labels.put('base', [source: getFilterSourceLabel(SubscriptionConfig.CONFIG.base, filterSource)])
+        filterResult.labels.put('base', [source: getFilterSourceLabel(SubscriptionConfig.CONFIG.base, filterSource)])
 
         switch (filterSource) {
             case 'all-sub':
@@ -104,7 +104,7 @@ class SubscriptionFilter extends BaseFilter {
                 }
 
                 if (filterLabelValue) {
-                    result.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.CONFIG.base, p), value: filterLabelValue])
+                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.CONFIG.base, p), value: filterLabelValue])
                 }
             }
         }
@@ -116,32 +116,32 @@ class SubscriptionFilter extends BaseFilter {
 //        println queryParams
 //        println whereParts
 
-        result.data.put('subscriptionIdList', Subscription.executeQuery( query, queryParams ))
+        filterResult.data.put('subscriptionIdList', Subscription.executeQuery( query, queryParams ))
 
-        handleInternalOrgFilter(params, 'member', result)
-        handleInternalOrgFilter(params, 'provider', result)
+        handleInternalOrgFilter(params, 'member', filterResult)
+        handleInternalOrgFilter(params, 'provider', filterResult)
 
 //        println 'subscriptions >> ' + result.subscriptionIdList.size()
 //        println 'member >> ' + result.memberIdList.size()
 //        println 'provider >> ' + result.providerIdList.size()
 
-        result
+        filterResult
     }
 
-    private void handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> result) {
+    private void handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
-        result.labels.put(partKey, [source: getFilterSourceLabel(SubscriptionConfig.CONFIG.get(partKey), filterSource)])
+        filterResult.labels.put(partKey, [source: getFilterSourceLabel(SubscriptionConfig.CONFIG.get(partKey), filterSource)])
 
         //println 'internalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
-        if (! result.data.get('subscriptionIdList')) {
-            result.data.put( partKey + 'IdList', [] )
+        if (! filterResult.data.get('subscriptionIdList')) {
+            filterResult.data.put( partKey + 'IdList', [] )
             return
         }
 
         String queryBase = 'select distinct (org.id) from Org org join org.links orgLink'
         List<String> whereParts = [ 'orgLink.roleType in (:roleTypes)', 'orgLink.sub.id in (:subscriptionIdList)' ]
-        Map<String, Object> queryParams = [ 'subscriptionIdList': result.data.subscriptionIdList ]
+        Map<String, Object> queryParams = [ 'subscriptionIdList': filterResult.data.subscriptionIdList ]
 
         if (partKey == 'member') {
             queryParams.put( 'roleTypes', [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN] ) // TODO <- RDStore.OR_SUBSCRIBER
@@ -251,10 +251,10 @@ class SubscriptionFilter extends BaseFilter {
 
                 if (filterLabelValue) {
                     if (partKey == 'member') {
-                        result.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.CONFIG.member, p), value: filterLabelValue])
+                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.CONFIG.member, p), value: filterLabelValue])
                     }
                     else if (partKey == 'provider') {
-                        result.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.CONFIG.provider, p), value: filterLabelValue])
+                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.CONFIG.provider, p), value: filterLabelValue])
                     }
                 }
             }
@@ -265,7 +265,7 @@ class SubscriptionFilter extends BaseFilter {
 //        println 'SubscriptionFilter.internalOrgFilter() -->'
 //        println query
 //        println queryParams
-        result.data.put( partKey + 'IdList', Org.executeQuery(query, queryParams) )
+        filterResult.data.put( partKey + 'IdList', Org.executeQuery(query, queryParams) )
     }
 
 }

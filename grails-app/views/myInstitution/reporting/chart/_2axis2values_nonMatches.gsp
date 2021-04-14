@@ -20,8 +20,8 @@
                     return str + JSPC.app.reporting.helper.tooltip.getEntry(params.marker, ' ', Math.abs(params.value[3]))
                 }
 
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${chartLabels[0]}', params.value[3])
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${chartLabels[1]}', params.value[2])
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${labels.chart[0]}', params.value[3])
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${labels.chart[1]}', params.value[2])
                 return str
            }
         },
@@ -31,7 +31,7 @@
         },
         series: [
             {
-                name: '${chartLabels[0]}',
+                name: '${labels.chart[0]}',
                 type: 'pie',
                 radius: '70%',
                 center: ['65%', '50%'],
@@ -57,7 +57,7 @@
             ]
         },
         legend: {
-            data: [ <% print chartLabels.collect{ "'${it}'" }.join(', ') %> ]
+            data: [ <% print labels.chart.collect{ "'${it}'" }.join(', ') %> ]
         },
         tooltip: {
             trigger: 'axis',
@@ -70,9 +70,9 @@
                 }
 
                 if (params.length == 1) {
-                    if (params[0].seriesName == '${chartLabels[0]}') {
+                    if (params[0].seriesName == '${labels.chart[0]}') {
                         str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, Math.abs(params[0].value[3]))
-                    } else if (params[0].seriesName == '${chartLabels[1]}') {
+                    } else if (params[0].seriesName == '${labels.chart[1]}') {
                         str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, params[0].value[2])
                     }
                 }
@@ -103,7 +103,7 @@
         },
         series: [
             {
-                name: '${chartLabels[0]}',
+                name: '${labels.chart[0]}',
                 type: 'bar',
                 stack: 'total',
                 encode: {
@@ -126,7 +126,7 @@
                 }
             },
             {
-                name: '${chartLabels[1]}',
+                name: '${labels.chart[1]}',
                 type: 'bar',
                 stack: 'total',
                  encode: {

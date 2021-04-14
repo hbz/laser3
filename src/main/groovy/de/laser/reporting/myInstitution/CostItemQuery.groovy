@@ -16,9 +16,10 @@ class CostItemQuery extends BaseQuery {
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
         Map<String, Object> result = [
-                chart    : params.chart,
-                query    : params.query,
-                data     : [],
+                chart       : params.chart,
+                query       : params.query,
+                labels      : [:],
+                data        : [],
                 dataDetails : []
         ]
 

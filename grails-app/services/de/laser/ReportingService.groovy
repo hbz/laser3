@@ -44,7 +44,7 @@ class ReportingService {
     void doFilterCostItem(Map<String, Object> result, GrailsParameterMap params) {
 
         CostItemFilter filter = new CostItemFilter()
-        result.result = filter.filter(params)
+        result.filterResult = filter.filter(params)
 
         result.cfgQueryList.putAll( CostItemConfig.CONFIG.base.query )
     }
@@ -52,7 +52,7 @@ class ReportingService {
     void doFilterLicense(Map<String, Object> result, GrailsParameterMap params) {
 
         LicenseFilter filter = new LicenseFilter()
-        result.result = filter.filter(params)
+        result.filterResult = filter.filter(params)
 
         result.cfgQueryList.putAll( LicenseConfig.CONFIG.base.query )
         result.cfgQueryList.putAll( LicenseConfig.CONFIG.licensor.query )
@@ -63,7 +63,7 @@ class ReportingService {
     void doFilterOrganisation(Map<String, Object> result, GrailsParameterMap params) {
 
         OrganisationFilter filter = new OrganisationFilter()
-        result.result = filter.filter(params)
+        result.filterResult = filter.filter(params)
 
         result.cfgQueryList.putAll( OrganisationConfig.CONFIG.base.query )
 
@@ -73,7 +73,7 @@ class ReportingService {
     void doFilterSubscription(Map<String, Object> result, GrailsParameterMap params) {
 
         SubscriptionFilter filter = new SubscriptionFilter()
-        result.result = filter.filter(params)
+        result.filterResult = filter.filter(params)
 
         result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.base.query )
         result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.member.query )

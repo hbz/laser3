@@ -6,7 +6,7 @@
 <g:elseif test="${chart == BaseConfig.CHART_PIE}">
     JSPC.app.reporting.current.chart.option = {
         title: {
-            text: '${tooltipLabel}',
+            text: '${labels.tooltip}',
             show: false
         },
         dataset: {
@@ -48,7 +48,7 @@
 <g:elseif test="${chart == BaseConfig.CHART_BAR}">
     JSPC.app.reporting.current.chart.option = {
         title: {
-            text: '${tooltipLabel}',
+            text: '${labels.tooltip}',
             show: false
         },
         dataset: {
