@@ -7,9 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
 3335    13.04.2021  rc2.0   2.0.7       Andreas Bug         Regionsfilter wird korrekt befüllt und sortiert
 
 3265    13.04.2021  rc2.0   2.0.7       Andreas Bug         Abfrage der Anbieterdaten um Provider erweitert
+
+3245    12.04.2021  dev     2.1         Andreas Feature     kein Neuladen der Seite bei Hinzufügen von Addresskontaktmerkmalen
 
 3197    12.04.2021  dev     2.1         Andreas Bug         Anzeigefehler bei Aufgabentabelle behoben
 
