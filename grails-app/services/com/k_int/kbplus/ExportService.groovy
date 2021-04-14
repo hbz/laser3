@@ -14,7 +14,6 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemGroup
-import de.laser.finance.PriceItem
 import de.laser.helper.RDConstants
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -23,10 +22,7 @@ import de.laser.IssueEntitlementCoverage
 import de.laser.TIPPCoverage
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.titles.BookInstance
-import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
-import groovy.time.TimeDuration
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
@@ -46,7 +42,6 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import java.awt.*
 import java.math.RoundingMode
-import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.List
 
@@ -594,9 +589,9 @@ class ExportService {
 						   messageSource.getMessage('financials.costInLocalCurrency',null,locale)])
 			if(["own","cons"].indexOf(viewMode) > -1)
 				titles.addAll([messageSource.getMessage('financials.taxRate',null,locale), messageSource.getMessage('financials.billingCurrency',null,locale),messageSource.getMessage('financials.costInBillingCurrencyAfterTax',null,locale),"EUR",messageSource.getMessage('financials.costInLocalCurrencyAfterTax',null,locale)])
-			titles.addAll([messageSource.getMessage('financials.costItemElement',null,locale),messageSource.getMessage('financials.newCosts.description',null,locale),
-						   messageSource.getMessage('financials.newCosts.constsReferenceOn',null,locale), messageSource.getMessage('financials.budgetCode',null,locale),
-						   messageSource.getMessage('financials.invoice_number',null,locale), messageSource.getMessage('financials.order_number',null,locale), messageSource.getMessage('globalUID.label',null,locale)])
+			titles.addAll([messageSource.getMessage('financials.costItemElement',null,locale), messageSource.getMessage('financials.newCosts.description',null,locale),
+                           messageSource.getMessage('financials.newCosts.costsReferenceOn',null,locale), messageSource.getMessage('financials.budgetCode',null,locale),
+                           messageSource.getMessage('financials.invoice_number',null,locale), messageSource.getMessage('financials.order_number',null,locale), messageSource.getMessage('globalUID.label',null,locale)])
 			titles.eachWithIndex { titleName, int i ->
 				Cell cell = headerRow.createCell(i)
 				cell.setCellValue(titleName)

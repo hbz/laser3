@@ -36,8 +36,7 @@ class FinanceControllerService {
                                              ownSort:'ci.costTitle', ownOrder:'asc'
                                      ],
                                      yn: RefdataCategory.getAllRefdataValues(RDConstants.Y_N),
-                                     institution:contextService.getOrg(),
-                                     editConf:[:]]
+                                     institution:contextService.getOrg()]
         List<Map<String,Object>> currenciesList = financeService.orderedCurrency()
         currenciesList.remove(currenciesList.find{Map<String,Object> entry -> entry.id == 0})
         result.currenciesList = currenciesList
@@ -105,12 +104,12 @@ class FinanceControllerService {
                         else {
                             dataToDisplay << 'consAtSubscr'
                             result.showView = 'cons'
-                            result.editConf.showVisibilitySettings = true
+                            result.showVisibilitySettings = true
                             result.showConsortiaFunctions = true
                             result.sortConfig.consSort = 'ci.costTitle'
                             result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null, LocaleContextHolder.getLocale())
                             result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
-                            result.editConf.showVisibilitySettings = true
+                            result.showVisibilitySettings = true
                             editable = true
                         }
                     }
@@ -121,7 +120,7 @@ class FinanceControllerService {
                         result.showConsortiaFunctions = true
                         result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
                         result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
-                        result.editConf.showVisibilitySettings = true
+                        result.showVisibilitySettings = true
                         editable = true
                     }
                 }
@@ -130,7 +129,7 @@ class FinanceControllerService {
                     dataToDisplay.addAll(['own','cons'])
                     result.showView = 'cons'
                     result.showConsortiaFunctions = true
-                    result.editConf.showVisibilitySettings = true
+                    result.showVisibilitySettings = true
                     result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
                     Set<Org> consMembers = Subscription.executeQuery(
                             'select oo.org, oo.org.sortname as sortname from Subscription s ' +
@@ -140,7 +139,7 @@ class FinanceControllerService {
                                     'join s.orgRelations oo ' +
                                     'where roleC.org = :contextOrg and roleMC.roleType = :consortialType and oo.roleType in :subscrRoles order by sortname asc',[contextOrg:result.institution,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                     result.consMembers = consMembers
-                    result.editConf.showVisibilitySettings = true
+                    result.showVisibilitySettings = true
                     editable = true
                 }
                 break
@@ -182,7 +181,7 @@ class FinanceControllerService {
             if (params.offset && !params.forExport)
                 result.offsets["${params.showView}Offset"] = Integer.parseInt(params.offset)
         }
-
+        result.putAll(getAdditionalGenericEditResults(result))
         result
     }
 
@@ -196,11 +195,6 @@ class FinanceControllerService {
             result.licenseeLabel = messageSource.getMessage( 'consortium.member',null,locale)
             result.licenseeTargetLabel = messageSource.getMessage('financials.newCosts.consortia.licenseeTargetLabel',null,locale)
         }
-        Map<Long,Object> orgConfigurations = [:]
-        result.costItemElements.each { oc ->
-            orgConfigurations.put(oc.costItemElement.id,oc.elementSign.id)
-        }
-        result.orgConfigurations = orgConfigurations as JSON
 
         if (configMap.dataToDisplay.contains("cons") && configMap.subMembers) {
             result.validSubChilds = [[id: 'forParent', label: messageSource.getMessage('financials.newCosts.forParentSubscription', null, locale)], [id: 'forAllSubscribers', label: result.licenseeTargetLabel]]

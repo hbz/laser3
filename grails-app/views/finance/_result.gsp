@@ -53,7 +53,7 @@
 
                             <g:form action="processCostItemsBulk" name="costItemsBulk" method="post" class="ui form">
                                 <div id="bulkCostItems" class="hidden">
-                                    <g:render template="bulkCostItems"/>
+                                    <g:render template="costItemInput" />
                                 </div>
 
                                 <g:render template="result_tab_cons" model="[tmplShowCheckbox: true, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
