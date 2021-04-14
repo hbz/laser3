@@ -81,4 +81,10 @@ class ReportingService {
 
         result.cfgQuery2List.putAll( SubscriptionConfig.CONFIG.base.query2 ) // Verteilung
     }
+
+    List getCachedFilterIdList(String prefix, GrailsParameterMap params) {
+
+        List<Long> idList = params?.filterCache?.data?.get(prefix + 'IdList')?.collect { it as Long }
+        return idList ?: []
+    }
 }

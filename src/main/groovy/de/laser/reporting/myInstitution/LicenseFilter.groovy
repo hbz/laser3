@@ -28,14 +28,14 @@ class LicenseFilter extends BaseFilter {
 
     Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned
-        Map<String, Object> result      = [ filterLabels : [:] ]
+        Map<String, Object> result      = [ labels: [:], data: [:] ]
 
         List<String> queryParts         = [ 'select distinct (lic.id) from License lic']
         List<String> whereParts         = [ 'where lic.id in (:licenseIdList)']
-        Map<String, Object> queryParams = [ licenseIdList : [] ]
+        Map<String, Object> queryParams = [ licenseIdList: [] ]
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'license' + BaseConfig.FILTER_SOURCE_POSTFIX)
-        result.filterLabels.put('base', [source: getFilterSourceLabel(LicenseConfig.CONFIG.base, filterSource)])
+        result.labels.put('base', [source: getFilterSourceLabel(LicenseConfig.CONFIG.base, filterSource)])
 
         switch (filterSource) {
             case 'all-lic':
@@ -108,7 +108,7 @@ class LicenseFilter extends BaseFilter {
                 }
 
                 if (filterLabelValue) {
-                    result.filterLabels.get('base').put(p, [label: GenericHelper.getFieldLabel(LicenseConfig.CONFIG.base, p), value: filterLabelValue])
+                    result.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(LicenseConfig.CONFIG.base, p), value: filterLabelValue])
                 }
             }
         }
@@ -120,7 +120,7 @@ class LicenseFilter extends BaseFilter {
 //        println queryParams
 //        println whereParts
 
-        result.licenseIdList = License.executeQuery( query, queryParams )
+        result.data.put('licenseIdList', License.executeQuery( query, queryParams ))
 
         //handleInternalOrgFilter(params, 'member', result)
         handleInternalOrgFilter(params, 'licensor', result)
@@ -135,17 +135,17 @@ class LicenseFilter extends BaseFilter {
     private void handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> result) {
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
-        result.filterLabels.put(partKey, [source: getFilterSourceLabel(LicenseConfig.CONFIG.get(partKey), filterSource)])
+        result.labels.put(partKey, [source: getFilterSourceLabel(LicenseConfig.CONFIG.get(partKey), filterSource)])
 
         //println 'internalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
-        if (! result.licenseIdList) {
-            result.put( partKey + 'IdList', [] )
+        if (! result.data.get('licenseIdList')) {
+            result.data.put( partKey + 'IdList', [] )
             return
         }
 
         String queryBase = 'select distinct (org.id) from Org org join org.links orgLink'
         List<String> whereParts = [ 'orgLink.roleType in (:roleTypes)', 'orgLink.lic.id in (:licenseIdList)' ]
-        Map<String, Object> queryParams = [ 'licenseIdList': result.licenseIdList ]
+        Map<String, Object> queryParams = [ 'licenseIdList': result.data.licenseIdList ]
 
         if (partKey == 'member') {
             queryParams.put( 'roleTypes', [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS] ) // TODO <- RDStore.OR_SUBSCRIBER
@@ -249,10 +249,10 @@ class LicenseFilter extends BaseFilter {
 
                 if (filterLabelValue) {
                     if (partKey == 'member') {
-                        result.filterLabels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(LicenseConfig.CONFIG.member, p), value: filterLabelValue])
+                        result.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(LicenseConfig.CONFIG.member, p), value: filterLabelValue])
                     }
                     else if (partKey == 'licensor') {
-                        result.filterLabels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(LicenseConfig.CONFIG.licensor, p), value: filterLabelValue])
+                        result.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(LicenseConfig.CONFIG.licensor, p), value: filterLabelValue])
                     }
                 }
             }
@@ -264,6 +264,6 @@ class LicenseFilter extends BaseFilter {
 //        println query
 //        println queryParams
 
-        result.put( partKey + 'IdList', Org.executeQuery(query, queryParams) )
+        result.data.put( partKey + 'IdList', Org.executeQuery(query, queryParams) )
     }
 }

@@ -3,9 +3,11 @@ package de.laser.reporting.myInstitution
 import de.laser.ContextService
 import de.laser.Org
 import de.laser.Platform
+import de.laser.ReportingService
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.helper.RDStore
+import de.laser.reporting.myInstitution.base.BaseFilter
 import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -26,7 +28,7 @@ class SubscriptionQuery extends BaseQuery {
         ]
 
         String prefix = params.query.split('-')[0]
-        List idList = params.list(prefix + 'IdList').collect { it as Long }
+        List idList   = BaseFilter.getCachedFilterIdList(prefix, params)
 
         if (! idList) {
         }
@@ -50,7 +52,7 @@ class SubscriptionQuery extends BaseQuery {
 
             result.data = Org.executeQuery(
                     'select o.id, o.name, count(*) from Org o join o.links orgLink where o.id in (:providerIdList) and orgLink.sub.id in (:idList) group by o.id order by o.name',
-                    [providerIdList: params.list('providerIdList').collect { it as Long }, idList: idList]
+                    [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
             )
             result.data.each { d ->
                 result.dataDetails.add([
@@ -82,7 +84,7 @@ class SubscriptionQuery extends BaseQuery {
 
             result.data = Platform.executeQuery(
                     'select p.id, p.name, count(*) from Org o join o.platforms p join o.links orgLink where o.id in (:providerIdList) and orgLink.sub.id in (:idList) group by p.id order by p.name',
-                    [providerIdList: params.list('providerIdList').collect { it as Long }, idList: idList]
+                    [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
             )
 
             result.data.eachWithIndex { d, i ->

@@ -4,12 +4,12 @@
 <g:if test="${result}">
     <g:render template="/myInstitution/reporting/query/base.part1" />
 
-    <g:if test="${result.orgIdList}">
+    <g:if test="${result.data.orgIdList}">
 
         <div class="ui message success">
             <p>
                 Mit diesen Filtereinstellungen wurden
-                <strong>${result.orgIdList.size()} Organisationen</strong> gefunden.
+                <strong>${result.data.orgIdList.size()} Organisationen</strong> gefunden.
             </p>
         </div>
 

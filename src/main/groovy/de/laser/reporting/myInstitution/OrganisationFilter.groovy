@@ -28,14 +28,14 @@ class OrganisationFilter extends BaseFilter {
 
     Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned
-        Map<String, Object> result      = [ filterLabels : [:] ]
+        Map<String, Object> result      = [ labels: [:], data: [:] ]
 
         List<String> queryParts         = [ 'select distinct (org.id) from Org org']
         List<String> whereParts         = [ 'where org.id in (:orgIdList)']
-        Map<String, Object> queryParams = [ orgIdList : [] ]
+        Map<String, Object> queryParams = [ orgIdList: [] ]
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'org' + BaseConfig.FILTER_SOURCE_POSTFIX)
-        result.filterLabels.put('base', [source: getFilterSourceLabel(OrganisationConfig.CONFIG.base, filterSource)])
+        result.labels.put('base', [source: getFilterSourceLabel(OrganisationConfig.CONFIG.base, filterSource)])
 
         switch (filterSource) {
             case 'all-org':
@@ -166,7 +166,7 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                 }
 
                 if (filterLabelValue) {
-                    result.filterLabels.get('base').put(p, [label: GenericHelper.getFieldLabel(OrganisationConfig.CONFIG.base, p), value: filterLabelValue])
+                    result.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(OrganisationConfig.CONFIG.base, p), value: filterLabelValue])
                 }
             }
         }
@@ -178,7 +178,7 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
 //        println queryParams
 //        println whereParts
 
-        result.orgIdList = Subscription.executeQuery( query, queryParams )
+        result.data.put('orgIdList', Subscription.executeQuery( query, queryParams ))
 
 //        println 'orgs >> ' + result.orgIdList.size()
 

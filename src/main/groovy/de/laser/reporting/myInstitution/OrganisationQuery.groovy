@@ -2,7 +2,9 @@ package de.laser.reporting.myInstitution
 
 import de.laser.ContextService
 import de.laser.Org
+import de.laser.ReportingService
 import de.laser.auth.Role
+import de.laser.reporting.myInstitution.base.BaseFilter
 import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -18,6 +20,9 @@ class OrganisationQuery extends BaseQuery {
         //def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         //Locale locale = LocaleContextHolder.getLocale()
 
+        //println 'OrganisationQuery.query()'
+        //println params
+
         Map<String, Object> result = [
                 chart    : params.chart,
                 query    : params.query,
@@ -26,7 +31,7 @@ class OrganisationQuery extends BaseQuery {
         ]
 
         String prefix = params.query.split('-')[0]
-        List idList = params.list(prefix + 'IdList').collect { it as Long }
+        List idList   = BaseFilter.getCachedFilterIdList(prefix, params)
 
         if (! idList) {
         }

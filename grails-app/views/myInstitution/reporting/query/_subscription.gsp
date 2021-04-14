@@ -4,14 +4,14 @@
 <g:if test="${result}">
     <g:render template="/myInstitution/reporting/query/base.part1" />
 
-    <g:if test="${result.subscriptionIdList || result.memberIdList || result.providerIdList}">
+    <g:if test="${result.data.subscriptionIdList || result.data.memberIdList || result.data.providerIdList}">
 
         <div class="ui message success">
             <p>
                 Mit diesen Filtereinstellungen wurden
-                <strong>${result.subscriptionIdList.size()} Lizenzen</strong>,
-                <strong>${result.memberIdList.size()} Teilnehmer</strong> und
-                <strong>${result.providerIdList.size()} Anbieter</strong> gefunden.
+                <strong>${result.data.subscriptionIdList.size()} Lizenzen</strong>,
+                <strong>${result.data.memberIdList.size()} Teilnehmer</strong> und
+                <strong>${result.data.providerIdList.size()} Anbieter</strong> gefunden.
             </p>
         </div>
 

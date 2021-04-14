@@ -28,14 +28,14 @@ class CostItemFilter extends BaseFilter {
 
     Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned
-        Map<String, Object> result      = [ filterLabels : [:] ]
+        Map<String, Object> result      = [ labels: [:], data: [:] ]
 
         List<String> queryParts         = [ 'select distinct (ci.id) from CostItem ci']
         List<String> whereParts         = [ 'where ci.id in (:costItemIdList)']
-        Map<String, Object> queryParams = [ costItemIdList : [] ]
+        Map<String, Object> queryParams = [ costItemIdList: [] ]
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'costItem' + BaseConfig.FILTER_SOURCE_POSTFIX)
-        result.filterLabels.put('base', [source: getFilterSourceLabel(CostItemConfig.CONFIG.base, filterSource)])
+        result.labels.put('base', [source: getFilterSourceLabel(CostItemConfig.CONFIG.base, filterSource)])
 
         switch (filterSource) {
             case 'consortia-cost':
@@ -107,7 +107,7 @@ class CostItemFilter extends BaseFilter {
                 }
 
                 if (filterLabelValue) {
-                    result.filterLabels.get('base').put(p, [label: GenericHelper.getFieldLabel(CostItemConfig.CONFIG.base, p), value: filterLabelValue])
+                    result.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(CostItemConfig.CONFIG.base, p), value: filterLabelValue])
                 }
             }
         }
@@ -120,10 +120,10 @@ class CostItemFilter extends BaseFilter {
 //        println queryParams
 //        println whereParts
 
-        result.costItemIdList = CostItem.executeQuery( query, queryParams )
+        result.data.put('costItemIdList', CostItem.executeQuery( query, queryParams ))
 
         println 'costItems (raw) >> ' + queryParams.costItemIdList.size()
-        println 'costItems (queried) >> ' + result.costItemIdList.size()
+        println 'costItems (queried) >> ' + result.data.costItemIdList.size()
 
         result
     }

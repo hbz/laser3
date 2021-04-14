@@ -1,6 +1,8 @@
 package de.laser.reporting.myInstitution
 
 import de.laser.ContextService
+import de.laser.ReportingService
+import de.laser.reporting.myInstitution.base.BaseFilter
 import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -21,7 +23,7 @@ class CostItemQuery extends BaseQuery {
         ]
 
         String prefix = params.query.split('-')[0]
-        List idList = params.list(prefix + 'IdList').collect { it as Long }
+        List idList   = BaseFilter.getCachedFilterIdList(prefix, params)
 
         if (! idList) {
         }

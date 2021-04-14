@@ -700,61 +700,65 @@ class AjaxJsonController {
                 }
             }
 
+            //println clone
+            //String prefix = ''
             String prefix = clone.query.split('-')[0]
 
             if (prefix in ['license']) {
                 result = LicenseQuery.query(clone)
                 result.tooltipLabel = getTooltipLabel(clone)
+                result.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (clone.query.endsWith('assignment')) {
                     Map<String, Object> cfg = LicenseConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
                     result.chartLabels = cfg.getAt('chartLabels')
-                    render template: '/myInstitution/reporting/chart/' + cfg.getAt('template'), model: result
+                    result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
                 }
-                else {
-                    render template: '/myInstitution/reporting/chart/generic', model: result
-                }
-                return
             }
             else if (prefix in ['org', 'member', 'provider', 'licensor']) {
                 result = OrganisationQuery.query(clone)
                 result.tooltipLabel = getTooltipLabel(clone)
+                result.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (clone.query.endsWith('assignment')) {
                     Map<String, Object> cfg = OrganisationConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
                     result.chartLabels = cfg.getAt('chartLabels')
-                    render template: '/myInstitution/reporting/chart/' + cfg.getAt('template'), model: result
+                    result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
                 }
-                else {
-                    render template: '/myInstitution/reporting/chart/generic', model: result
-                }
-                return
             }
             else if (prefix in ['subscription']) {
                 result = SubscriptionQuery.query(clone)
                 result.tooltipLabel = getTooltipLabel(clone)
+                result.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (clone.query.endsWith('assignment')) {
                     Map<String, Object> cfg = SubscriptionConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
                     result.chartLabels = cfg.getAt('chartLabels')
-                    render template: '/myInstitution/reporting/chart/' + cfg.getAt('template'), model: result
+                    result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
                 }
-                else {
-                    render template: '/myInstitution/reporting/chart/generic', model: result
-                }
-                return
             }
             else if (prefix in ['costItem']) {
                 result = CostItemQuery.query(clone)
                 result.tooltipLabel = getTooltipLabel(clone)
-
-                render template: '/myInstitution/reporting/chart/generic', model: result
-
-                return
+                result.tmpl = '/myInstitution/reporting/chart/generic'
             }
+
+            // --> TODO: MyInstitutionController.reporting()
+            // --> TODO: MyInstitutionController.reporting()
+            // --> TODO: MyInstitutionController.reporting()
+
+            Map<String, Object> cacheMap = cached
+            params.each{it ->
+                //if (it.key.startsWith(BaseConfig.FILTER_PREFIX) && it.value) {
+                    cacheMap.put(it.key, it.value)
+                    //println ' -------------> ' + it.key + ' : ' + it.value
+            }
+            cacheMap.queryCache = [:]
+            cacheMap.queryCache.putAll(result)
+            sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)
         }
         else if (params.context == SubscriptionConfig.KEY && params.query) {
             GrailsParameterMap clone = params.clone() as GrailsParameterMap // TODO: simplify
@@ -765,22 +769,28 @@ class AjaxJsonController {
                 result.chartLabels = SubscriptionReporting.CONFIG.base.query2.getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
 
                 if (clone.query in ['timeline-cost']) {
-                    render template: '/subscription/reporting/chart/timeline-cost', model: result
+                    result.tmpl = '/subscription/reporting/chart/timeline-cost'
                 }
                 else {
-                    render template: '/subscription/reporting/chart/generic-timeline', model: result
+                    result.tmpl = '/subscription/reporting/chart/generic-timeline'
                 }
             }
             else {
                 result = SubscriptionReporting.query(clone)
                 result.tooltipLabel = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone).get(1)
 
-                render template: '/subscription/reporting/chart/generic-bar', model: result
+                result.tmpl = '/subscription/reporting/chart/generic-bar'
             }
-
-            return
         }
 
-        render result as JSON
+        //println 'AjaxJsonController.chart()'
+        //println result
+
+        if (result.tmpl) {
+            render template: result.tmpl, model: result
+        }
+        else {
+            render result as JSON
+        }
     }
 }

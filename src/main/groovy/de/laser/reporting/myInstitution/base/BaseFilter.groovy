@@ -47,4 +47,10 @@ class BaseFilter {
             return 'org.createdBy is null and org.legallyObligedBy is not null'
         }
     }
+
+    static List<Long> getCachedFilterIdList(prefix, params) {
+
+        List<Long> idList = params?.filterCache?.data?.get(prefix + 'IdList')?.collect { it as Long }
+        return idList ?: []
+    }
 }

@@ -4,12 +4,12 @@
 <g:if test="${result}">
     <g:render template="/myInstitution/reporting/query/base.part1" />
 
-    <g:if test="${result.costItemIdList}">
+    <g:if test="${result.data.costItemIdList}">
 
         <div class="ui message success">
             <p>
                 Mit diesen Filtereinstellungen wurden
-                <strong>${result.costItemIdList.size()} Kosten</strong> gefunden.
+                <strong>${result.data.costItemIdList.size()} Kosten</strong> gefunden.
             </p>
         </div>
 
