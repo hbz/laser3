@@ -71,6 +71,7 @@ class StatsSyncService {
 
     private String getTitleInstancesForUsageQuery() {
         // Distinct list of titles ids, the platform, subscribing organisation and the zdbid
+        //TODO change from string comparison to ID comparison
         String hql =  "select distinct ie.tipp.id, pf.id, orgrel.org.id, titleIdentifier.id from IssueEntitlement as ie " +
             "join ie.tipp.platform as pf " +
             "join ie.tipp.pkg.orgs as po " +
@@ -78,7 +79,7 @@ class StatsSyncService {
             "join ie.tipp.ids as titleIdentifier "+
             "where titleIdentifier.ns.ns in ('zdb','doi') "+
             "and ie.status.value <> '${RDStore.TIPP_STATUS_DELETED}' " +
-            "and po.roleType.value='Content Provider' "+
+            "and po.roleType.value in ('Provider','Content Provider') "+
             "and exists (select cp from pf.propertySet as cp where cp.type.name = 'NatStat Supplier ID')" +
             "and (orgrel.roleType.value = 'Subscriber_Consortial' or orgrel.roleType.value = 'Subscriber') " +
             "and exists (select 1 from OrgSetting as os where os.org=orgrel.org and os.key='${OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID}' and os.strValue<>'') "

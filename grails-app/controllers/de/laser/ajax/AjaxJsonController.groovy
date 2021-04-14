@@ -381,11 +381,11 @@ class AjaxJsonController {
 
     @Secured(['ROLE_USER'])
     def getRegions() {
-        Set<RefdataValue> result = []
+        SortedSet<RefdataValue> result = new TreeSet<RefdataValue>()
         if (params.country) {
-            List<Long> countryIds = params.country.split(',')
-            countryIds.each { Long c ->
-                switch (RefdataValue.get(c).value) {
+            List<String> countryIds = params.country.split(',')
+            countryIds.each { String c ->
+                switch (RefdataValue.get(Long.parseLong(c)).value) {
                     case 'DE':
                         result.addAll( RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE]) )
                         break
