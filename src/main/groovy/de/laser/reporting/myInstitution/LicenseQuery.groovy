@@ -1,11 +1,13 @@
 package de.laser.reporting.myInstitution
 
 import de.laser.ContextService
-import de.laser.reporting.myInstitution.GenericQuery
+import de.laser.ReportingService
+import de.laser.reporting.myInstitution.base.BaseFilter
+import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 
-class LicenseQuery extends GenericQuery {
+class LicenseQuery extends BaseQuery {
 
     static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
 
@@ -14,14 +16,15 @@ class LicenseQuery extends GenericQuery {
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
         Map<String, Object> result = [
-                chart    : params.chart,
-                query    : params.query,
-                data     : [],
+                chart       : params.chart,
+                query       : params.query,
+                labels      : [:],
+                data        : [],
                 dataDetails : []
         ]
 
         String prefix = params.query.split('-')[0]
-        List idList = params.list(prefix + 'IdList').collect { it as Long }
+        List idList   = BaseFilter.getCachedFilterIdList(prefix, params)
 
         if (! idList) {
         }

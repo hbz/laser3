@@ -7,14 +7,13 @@ import de.laser.Subscription
 import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.myInstitution.GenericConfig
-import de.laser.reporting.myInstitution.GenericFilter
-import de.laser.reporting.myInstitution.OrganisationConfig
+import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.myInstitution.base.BaseFilter
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.ApplicationContext
 
-class OrganisationFilter extends GenericFilter {
+class OrganisationFilter extends BaseFilter {
 
     def contextService
     def filterService
@@ -29,14 +28,14 @@ class OrganisationFilter extends GenericFilter {
 
     Map<String, Object> filter(GrailsParameterMap params) {
         // notice: params is cloned
-        Map<String, Object> result      = [ filterLabels : [:] ]
+        Map<String, Object> filterResult = [ labels: [:], data: [:] ]
 
         List<String> queryParts         = [ 'select distinct (org.id) from Org org']
         List<String> whereParts         = [ 'where org.id in (:orgIdList)']
-        Map<String, Object> queryParams = [ orgIdList : [] ]
+        Map<String, Object> queryParams = [ orgIdList: [] ]
 
-        String filterSource = params.get(GenericConfig.FILTER_PREFIX + 'org' + GenericConfig.FILTER_SOURCE_POSTFIX)
-        result.filterLabels.put('base', [source: getFilterSourceLabel(OrganisationConfig.CONFIG.base, filterSource)])
+        String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'org' + BaseConfig.FILTER_SOURCE_POSTFIX)
+        filterResult.labels.put('base', [source: getFilterSourceLabel(OrganisationConfig.CONFIG.base, filterSource)])
 
         switch (filterSource) {
             case 'all-org':
@@ -81,7 +80,7 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                 break
         }
 
-        String cmbKey = GenericConfig.FILTER_PREFIX + 'org_'
+        String cmbKey = BaseConfig.FILTER_PREFIX + 'org_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
@@ -89,12 +88,12 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = getFieldType(OrganisationConfig.CONFIG.base, p)
+                String pType = GenericHelper.getFieldType(OrganisationConfig.CONFIG.base, p)
 
                 def filterLabelValue
 
                 // --> properties generic
-                if (pType == GenericConfig.FIELD_TYPE_PROPERTY) {
+                if (pType == BaseConfig.FIELD_TYPE_PROPERTY) {
                     if (Org.getDeclaredField(p).getType() == Date) {
 
                         String modifier = getDateModifier( params.get(key + '_modifier') )
@@ -119,23 +118,16 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                     }
                 }
                 // --> refdata generic
-                else if (pType == GenericConfig.FIELD_TYPE_REFDATA) {
+                else if (pType == BaseConfig.FIELD_TYPE_REFDATA) {
                     whereParts.add( 'org.' + p + '.id = :p' + (++pCount) )
                     queryParams.put( 'p' + pCount, params.long(key) )
 
                     filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
                 }
-                // --> refdata relation tables
-                else if (pType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
+                // --> refdata join tables
+                else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
 
-                    if (p == GenericConfig.CUSTOM_KEY_SUBJECT_GROUP) {
-                        queryParts.add('OrgSubjectGroup osg')
-                        whereParts.add('osg.org = org and osg.subjectGroup.id = :p' + (++pCount))
-                        queryParams.put('p' + pCount, params.long(key))
-
-                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
-                    }
-                    else if (p == GenericConfig.CUSTOM_KEY_ORG_TYPE) {
+                    if (p == BaseConfig.CUSTOM_KEY_ORG_TYPE) {
                         whereParts.add('exists (select ot from org.orgType ot where ot = :p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, RefdataValue.get(params.long(key)))
 
@@ -143,16 +135,23 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                     }
                 }
                 // --> custom filter implementation
-                else if (pType == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {
+                else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
-                    if (p == GenericConfig.CUSTOM_KEY_LEGAL_INFO) {
+                    if (p == BaseConfig.CUSTOM_KEY_SUBJECT_GROUP) {
+                        queryParts.add('OrgSubjectGroup osg')
+                        whereParts.add('osg.org = org and osg.subjectGroup.id = :p' + (++pCount))
+                        queryParams.put('p' + pCount, params.long(key))
+
+                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                    }
+                    else if (p == BaseConfig.CUSTOM_KEY_LEGAL_INFO) {
                         long li = params.long(key)
                         whereParts.add( getLegalInfoQueryWhereParts(li) )
 
-                        Map<String, Object> customRdv = GenericConfig.getCustomRefdata(p)
+                        Map<String, Object> customRdv = BaseConfig.getCustomRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == li }.value_de
                     }
-                    else if (p == GenericConfig.CUSTOM_KEY_CUSTOMER_TYPE) {
+                    else if (p == BaseConfig.CUSTOM_KEY_CUSTOMER_TYPE) {
                         queryParts.add('OrgSetting oss')
 
                         whereParts.add('oss.org = org and oss.key = :p' + (++pCount))
@@ -161,13 +160,13 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                         whereParts.add('oss.roleValue = :p' + (++pCount))
                         queryParams.put('p' + pCount, Role.get(params.get(key)))
 
-                        Map<String, Object> customRdv = GenericConfig.getCustomRefdata(p)
+                        Map<String, Object> customRdv = BaseConfig.getCustomRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de
                     }
                 }
 
                 if (filterLabelValue) {
-                    result.filterLabels.get('base').put(p, [label: getFieldLabel(OrganisationConfig.CONFIG.base, p), value: filterLabelValue])
+                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(OrganisationConfig.CONFIG.base, p), value: filterLabelValue])
                 }
             }
         }
@@ -179,10 +178,10 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
 //        println queryParams
 //        println whereParts
 
-        result.orgIdList = Subscription.executeQuery( query, queryParams )
+        filterResult.data.put('orgIdList', Subscription.executeQuery( query, queryParams ))
 
 //        println 'orgs >> ' + result.orgIdList.size()
 
-        result
+        filterResult
     }
 }

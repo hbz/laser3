@@ -140,7 +140,16 @@ class YodaController {
 
         result.ehcacheManager = cacheService.getCacheManager()
 
-        if (params.cmd?.equals('clearCache')) {
+        if (params.key) {
+            JSON entry = contextService.getSessionCache().get(params.key) as JSON
+
+            entry.prettyPrint = true
+            response.setContentType("application/json")
+            response.outputStream << entry
+
+            return
+        }
+        else if (params.cmd?.equals('clearCache')) {
             def cache
             if (params.type?.equals('session')) {
                 cache = contextService.getSessionCache()

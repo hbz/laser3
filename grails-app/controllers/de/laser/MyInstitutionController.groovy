@@ -13,7 +13,7 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.properties.PersonProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
-import de.laser.reporting.myInstitution.GenericConfig
+import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
@@ -95,21 +95,29 @@ class MyInstitutionController  {
 
         SessionCacheWrapper sessionCache = contextService.getSessionCache()
 
-        result.cfgFilterList = GenericConfig.FILTER
-        result.cfgChartsList = GenericConfig.CHARTS
+        result.cfgFilterList = BaseConfig.FILTER
+        result.cfgChartsList = BaseConfig.CHARTS
 
         if (params.filter) {
             reportingService.doFilter(result, params) // manipulates result, clones params
 
-            Map<String, Object> filterMap = [ filterMap: [:] ]
+            Map<String, Object> cacheMap = [
+                filterCache: [
+                    map:    [:],
+                    labels: [:],
+                    data:   [:]
+                ]
+            ]
             params.each{it ->
-                if (it.key.startsWith(GenericConfig.FILTER_PREFIX) && it.value) {
-                    filterMap.filterMap.put(it.key, it.value)
+                if (it.key.startsWith(BaseConfig.FILTER_PREFIX) && it.value) {
+                    cacheMap.filterCache.map.put(it.key, it.value)
                     //println ' -------------> ' + it.key + ' : ' + it.value
                 }
             }
-            filterMap.putAll(result.result)
-            sessionCache.put("MyInstitutionController/reporting/" + result.token, filterMap)
+            cacheMap.filterCache.labels.putAll( result.filterResult.labels )
+            cacheMap.filterCache.data.putAll( result.filterResult.data )
+
+            sessionCache.put("MyInstitutionController/reporting/" + result.token, cacheMap)
         }
         //result.filterHistory = sessionCache.list().keySet().findAll{it.startsWith("MyInstitutionController/reporting/")}
 

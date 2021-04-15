@@ -27,8 +27,9 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
-import de.laser.reporting.myInstitution.GenericConfig
-import de.laser.reporting.myInstitution.GenericQuery
+import de.laser.reporting.myInstitution.CostItemQuery
+import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.myInstitution.base.BaseQuery
 import de.laser.reporting.myInstitution.LicenseConfig
 import de.laser.reporting.myInstitution.LicenseQuery
 import de.laser.reporting.myInstitution.OrganisationConfig
@@ -676,102 +677,110 @@ class AjaxJsonController {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
     })
     def chart() {
-        Map<String, Object> result = [:]
+        Map<String, Object> queryResult = [:]
 
-        if (params.context == GenericConfig.KEY && params.query) {
-            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String, Object> cached = sessionCache.get("MyInstitutionController/reporting/" + params.token)
+        if (params.context == BaseConfig.KEY && params.query) {
 
-            GrailsParameterMap clone = params.clone() as GrailsParameterMap// TODO: simplify
-            if (cached) {
-                clone.putAll(cached)
-            }
-
-            Closure getTooltipLabel = { GrailsParameterMap pm ->
+            Closure getTooltipLabels = { GrailsParameterMap pm ->
                 if (pm.filter == 'license') {
-                    GenericQuery.getQueryLabels(LicenseConfig.CONFIG, pm).get(1)
+                    BaseQuery.getQueryLabels(LicenseConfig.CONFIG, pm).get(1)
                 }
                 else if (pm.filter == 'organisation') {
-                    GenericQuery.getQueryLabels(OrganisationConfig.CONFIG, pm).get(1)
+                    BaseQuery.getQueryLabels(OrganisationConfig.CONFIG, pm).get(1)
                 }
                 else if (pm.filter == 'subscription') {
-                    GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, pm).get(1)
+                    BaseQuery.getQueryLabels(SubscriptionConfig.CONFIG, pm).get(1)
                 }
             }
 
-            String prefix = clone.query.split('-')[0]
+            GrailsParameterMap clone = params.clone() as GrailsParameterMap
+
+            SessionCacheWrapper sessionCache = contextService.getSessionCache()
+            Map<String, Object> cacheMap = sessionCache.get("MyInstitutionController/reporting/" + params.token)
+            if (cacheMap) {
+                clone.put('filterCache', cacheMap.filterCache)
+            }
+
+            String prefix = params.query.split('-')[0]
 
             if (prefix in ['license']) {
-                result = LicenseQuery.query(clone)
-                result.tooltipLabel = getTooltipLabel(clone)
+                queryResult = LicenseQuery.query(clone)
+                queryResult.labels.tooltip = getTooltipLabels(clone)
+                queryResult.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (clone.query.endsWith('assignment')) {
                     Map<String, Object> cfg = LicenseConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
-                    result.chartLabels = cfg.getAt('chartLabels')
-                    render template: '/myInstitution/reporting/chart/' + cfg.getAt('template'), model: result
+                    queryResult.labels.chart = cfg.getAt('chartLabels')
+                    queryResult.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
                 }
-                else {
-                    render template: '/myInstitution/reporting/chart/generic', model: result
-                }
-                return
             }
             else if (prefix in ['org', 'member', 'provider', 'licensor']) {
-                result = OrganisationQuery.query(clone)
-                result.tooltipLabel = getTooltipLabel(clone)
+                queryResult = OrganisationQuery.query(clone)
+                queryResult.labels.tooltip = getTooltipLabels(clone)
+                queryResult.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (clone.query.endsWith('assignment')) {
                     Map<String, Object> cfg = OrganisationConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
-                    result.chartLabels = cfg.getAt('chartLabels')
-                    render template: '/myInstitution/reporting/chart/' + cfg.getAt('template'), model: result
+                    queryResult.labels.chart = cfg.getAt('chartLabels')
+                    queryResult.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
                 }
-                else {
-                    render template: '/myInstitution/reporting/chart/generic', model: result
-                }
-                return
             }
             else if (prefix in ['subscription']) {
-                result = SubscriptionQuery.query(clone)
-                result.tooltipLabel = getTooltipLabel(clone)
+                queryResult = SubscriptionQuery.query(clone)
+                queryResult.labels.tooltip = getTooltipLabels(clone)
+                queryResult.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (clone.query.endsWith('assignment')) {
                     Map<String, Object> cfg = SubscriptionConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
-                    result.chartLabels = cfg.getAt('chartLabels')
-                    render template: '/myInstitution/reporting/chart/' + cfg.getAt('template'), model: result
+                    queryResult.labels.chart = cfg.getAt('chartLabels')
+                    queryResult.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
                 }
-                else {
-                    render template: '/myInstitution/reporting/chart/generic', model: result
-                }
-                return
             }
+            else if (prefix in ['costItem']) {
+                queryResult = CostItemQuery.query(clone)
+                queryResult.labels.tooltip = getTooltipLabels(clone)
+                queryResult.tmpl = '/myInstitution/reporting/chart/generic'
+            }
+            // TODO
+
+            cacheMap.queryCache = [:]
+            cacheMap.queryCache.putAll(queryResult)
+            sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)
         }
         else if (params.context == SubscriptionConfig.KEY && params.query) {
             GrailsParameterMap clone = params.clone() as GrailsParameterMap // TODO: simplify
             String prefix = clone.query.split('-')[0]
 
             if (prefix in ['timeline']) {
-                result = SubscriptionReporting.query(clone)
-                result.chartLabels = SubscriptionReporting.CONFIG.base.query2.getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
+                queryResult = SubscriptionReporting.query(clone)
+                queryResult.labels.chart = SubscriptionReporting.CONFIG.base.query2.getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
 
                 if (clone.query in ['timeline-cost']) {
-                    render template: '/subscription/reporting/chart/timeline-cost', model: result
+                    queryResult.tmpl = '/subscription/reporting/chart/timeline-cost'
                 }
                 else {
-                    render template: '/subscription/reporting/chart/generic-timeline', model: result
+                    queryResult.tmpl = '/subscription/reporting/chart/generic-timeline'
                 }
             }
             else {
-                result = SubscriptionReporting.query(clone)
-                result.tooltipLabel = GenericQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone).get(1)
+                queryResult = SubscriptionReporting.query(clone)
+                queryResult.labels.tooltip = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone).get(1)
 
-                render template: '/subscription/reporting/chart/generic-bar', model: result
+                queryResult.tmpl = '/subscription/reporting/chart/generic-bar'
             }
-
-            return
         }
 
-        render result as JSON
+        //println 'AjaxJsonController.chart()'
+        //println queryResult
+
+        if (queryResult.tmpl) {
+            render template: queryResult.tmpl, model: queryResult
+        }
+        else {
+            render queryResult as JSON
+        }
     }
 }
