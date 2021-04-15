@@ -8,6 +8,8 @@
 
     <semui:modal id="${modalID}" text="CSV-Export (Basisvariante)" hideSubmitButton="true">
 
+        <p><span class="ui label red">DEMO : in Entwicklung</span></p>
+
         <div class="ui info message">
             <p>${title.join(' > ')}</p>
         </div>

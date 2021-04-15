@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3313    15.04.2021  rc2.0   2.0.7       David   Feature     Prototyp: Export-Modul
+
 3327    15.04.2021  rc2.0   2.0.7       David   Feature     Reporting: Caching für Queries erweitern
 
 3335    13.04.2021  rc2.0   2.0.7       Andreas Bug         Regionsfilter wird korrekt befüllt und sortiert
