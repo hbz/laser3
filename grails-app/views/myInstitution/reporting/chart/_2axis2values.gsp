@@ -1,22 +1,22 @@
-<%@ page import="de.laser.reporting.myInstitution.GenericConfig;de.laser.reporting.myInstitution.GenericQuery" %>
+<%@ page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.reporting.myInstitution.base.BaseQuery" %>
 <g:if test="${! data}">
     JSPC.app.reporting.current.chart.option = {}
     $("#reporting-modal-nodata").modal('show');
 </g:if>
-<g:elseif test="${chart == GenericConfig.CHART_PIE}">
+<g:elseif test="${chart == BaseConfig.CHART_PIE}">
     JSPC.app.reporting.current.chart.option = {
         dataset: {
             source: [
                 ['id', 'name', 'value1', 'value2' ],
-                <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${GenericQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${GenericQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails)}]," } %>
+                <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails)}]," } %>
             ]
         },
         tooltip: {
             trigger: 'item',
             formatter (params) {
                 var str = params.name
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${chartLabels[0]}', params.value[3])
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${chartLabels[1]}', params.value[2])
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${labels.chart[0]}', params.value[3])
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${labels.chart[1]}', params.value[2])
                 return str
            }
         },
@@ -26,7 +26,7 @@
         },
         series: [
             {
-                name: '${chartLabels[0]}',
+                name: '${labels.chart[0]}',
                 type: 'pie',
                 radius: '70%',
                 center: ['65%', '50%'],
@@ -41,18 +41,17 @@
             },
         ]
     };
-    JSPC.app.reporting.current.chart.details = <%= dataDetails as grails.converters.JSON %>
 </g:elseif>
-<g:elseif test="${chart == GenericConfig.CHART_BAR}">
+<g:elseif test="${chart == BaseConfig.CHART_BAR}">
     JSPC.app.reporting.current.chart.option = {
         dataset: {
             source: [
                 ['id', 'name', 'value1', 'value2'],
-                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1]}', ${GenericQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${GenericQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails) * -1}]," } %>
+                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1]}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails) * -1}]," } %>
             ]
         },
         legend: {
-            data: [ <% print chartLabels.collect{ "'${it}'" }.join(', ') %> ]
+            data: [ <% print labels.chart.collect{ "'${it}'" }.join(', ') %> ]
         },
         tooltip: {
             trigger: 'axis',
@@ -60,9 +59,9 @@
             formatter (params) {
                 var str = params[0].name
                 if (params.length == 1) {
-                    if (params[0].seriesName == '${chartLabels[0]}') {
+                    if (params[0].seriesName == '${labels.chart[0]}') {
                         str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, Math.abs(params[0].value[3]))
-                    } else if (params[0].seriesName == '${chartLabels[1]}') {
+                    } else if (params[0].seriesName == '${labels.chart[1]}') {
                         str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, params[0].value[2])
                     }
                 }
@@ -93,7 +92,7 @@
         },
         series: [
             {
-                name: '${chartLabels[0]}',
+                name: '${labels.chart[0]}',
                 type: 'bar',
                 stack: 'total',
                 encode: {
@@ -107,7 +106,7 @@
                 }
             },
             {
-                name: '${chartLabels[1]}',
+                name: '${labels.chart[1]}',
                 type: 'bar',
                 stack: 'total',
                  encode: {
@@ -122,5 +121,4 @@
             }
         ]
     };
-    JSPC.app.reporting.current.chart.details = <%= dataDetails as grails.converters.JSON %>
 </g:elseif>

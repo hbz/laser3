@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.GenericConfig; de.laser.reporting.myInstitution.SubscriptionConfig;de.laser.reporting.myInstitution.OrganisationConfig;de.laser.reporting.myInstitution.LicenseConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -62,44 +62,25 @@
             <g:set var="hidden" value="" />
         </g:else>
 
-        <g:if test="${!filter || filter == LicenseConfig.KEY}">
-            <div id="filter-license" class="filter-form-wrapper ${hidden}">
-                <g:render template="/myInstitution/reporting/filter/license" />
-            </div>
-        </g:if>
+        <g:each in="${BaseConfig.FILTER}" var="filterItem">
 
-        <g:if test="${!filter || filter == OrganisationConfig.KEY}">
-            <div id="filter-organisation" class="filter-form-wrapper ${hidden}">
-                <g:render template="/myInstitution/reporting/filter/organisation" />
-            </div>
-        </g:if>
-
-        <g:if test="${!filter || filter == SubscriptionConfig.KEY}">
-            <div id="filter-subscription" class="filter-form-wrapper ${hidden}">
-                <g:render template="/myInstitution/reporting/filter/subscription" />
-            </div>
-        </g:if>
+            <g:if test="${!filter || filter == filterItem.key}">
+                <div id="filter-${filterItem.key}" class="filter-form-wrapper ${hidden}">
+                    <g:render template="/myInstitution/reporting/filter/${filterItem.key}" />
+                </div>
+            </g:if>
+        </g:each>
 
         <g:render template="/templates/reporting/helper" />
 
-        <g:if test="${result}">
+        <g:if test="${filterResult}">
+
             <h3 class="ui header">${message(code:'reporting.macro.step2')}</h3>
 
-            <g:if test="${filter == LicenseConfig.KEY}">
-                <g:render template="/myInstitution/reporting/query/license" />
-            </g:if>
-
-            <g:if test="${filter == OrganisationConfig.KEY}">
-                <g:render template="/myInstitution/reporting/query/organisation" />
-            </g:if>
-
-            <g:if test="${filter == SubscriptionConfig.KEY}">
-                <g:render template="/myInstitution/reporting/query/subscription" />
-            </g:if>
+            <g:render template="/myInstitution/reporting/query/${filter}" />
 
             <div id="chart-wrapper"></div>
             <div id="chart-details"></div>
-
         </g:if>
 
         <style>
@@ -132,13 +113,9 @@
 
             $('#chart-export').on( 'click', function(e) {
                 if ( JSPC.app.reporting.current.request.query ) {
-                    JSPC.app.reporting.requestExport();
+                    alert('[msg:1] - Nicht implementiert');
                 }
             })
-
-            JSPC.app.reporting.requestExport = function() {
-                alert('[msg:1] - Nicht implementiert');
-            }
 
             JSPC.app.reporting.requestChartJsonData = function() {
                 if ( JSPC.app.reporting.current.request.query && JSPC.app.reporting.current.request.chart ) {
@@ -158,31 +135,24 @@
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
 
                         if (JSPC.app.reporting.current.request.chart == 'bar') {
-                            $('#chart-wrapper').css('height', 150 + (18 * JSPC.app.reporting.current.chart.details.length) + 'px');
+                            $('#chart-wrapper').css('height', 150 + (18 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                         }
                         else if (JSPC.app.reporting.current.request.chart == 'pie') {
-                            $('#chart-wrapper').css('height', 350 + (12 * JSPC.app.reporting.current.chart.details.length) + 'px');
+                            $('#chart-wrapper').css('height', 350 + (12 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                         }
                         else if (JSPC.app.reporting.current.request.chart == 'radar') {
-                            $('#chart-wrapper').css('height', 400 + (8 * JSPC.app.reporting.current.chart.details.length) + 'px');
+                            $('#chart-wrapper').css('height', 400 + (8 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                         }
 
                         var echart = echarts.init($('#chart-wrapper')[0]);
                         echart.setOption( JSPC.app.reporting.current.chart.option );
                         echart.on( 'click', function (params) {
-                            var valid = false;
-
-                            $.each( JSPC.app.reporting.current.chart.details, function(i, v) {
-                                if (params.data[0] == v.id) {
-                                    valid = true;
-                                    var clone = Object.assign({}, v);
-                                    clone.context = '${GenericConfig.KEY}';
-                                    JSPC.app.reporting.requestChartHtmlDetails(JSPC.app.reporting.current.request, clone);
-                                }
-                            })
-                            if (! valid) {
-                                $("#reporting-modal-nodetails").modal('show');
-                            }
+                            var clone = {}
+                            Object.assign(clone, JSPC.app.reporting.current.request);
+                            clone.id = params.data[0];
+                            clone.label = params.data[1];
+                            clone.context = '${BaseConfig.KEY}';
+                            JSPC.app.reporting.requestChartHtmlDetails(clone);
                         });
                         echart.on( 'legendselectchanged', function (params) { /* console.log(params); */ });
 
@@ -202,9 +172,6 @@
         </semui:modal>
         <semui:modal id="reporting-modal-nodata" text="REPORTING" hideSubmitButton="true">
             <p>${message(code:'reporting.modal.nodata')}</p>
-        </semui:modal>
-        <semui:modal id="reporting-modal-nodetails" text="REPORTING" hideSubmitButton="true">
-            <p>${message(code:'reporting.modal.nodetails')}</p>
         </semui:modal>
 
     </body>

@@ -2,9 +2,9 @@ package de.laser.reporting.myInstitution
 
 import de.laser.License
 import de.laser.Org
-import de.laser.reporting.myInstitution.GenericConfig
+import de.laser.reporting.myInstitution.base.BaseConfig
 
-class LicenseConfig extends GenericConfig {
+class LicenseConfig extends BaseConfig {
 
     static String KEY = 'license'
 
@@ -19,12 +19,12 @@ class LicenseConfig extends GenericConfig {
                             'consortia-lic' : 'Meine Verträge'
                     ],
                     fields: [
-                            'endDate'               : GenericConfig.FIELD_TYPE_PROPERTY,
-                            'licenseCategory'       : GenericConfig.FIELD_TYPE_REFDATA,
+                            'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'licenseCategory'       : BaseConfig.FIELD_TYPE_REFDATA,
                             //'openEnded'             : FIELD_TYPE_REFDATA,
-                            'startDate'             : GenericConfig.FIELD_TYPE_PROPERTY,
-                            'status'                : GenericConfig.FIELD_TYPE_REFDATA,
-                            'type'                  : GenericConfig.FIELD_TYPE_REFDATA
+                            'startDate'             : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'status'                : BaseConfig.FIELD_TYPE_REFDATA,
+                            'type'                  : BaseConfig.FIELD_TYPE_REFDATA
                     ],
                     filter : [
                             default: [
@@ -33,7 +33,7 @@ class LicenseConfig extends GenericConfig {
                             ]
                     ],
                     query : [
-                            'Vertrag' : [
+                            'Vertrag' : [ // TODO ..
                                     'license-licenseCategory'   : 'Lizenzkategorie',
                                     'license-type'              : 'Lizenztyp',
                                     //'license-openEnded'         : 'Unbefristet',
@@ -41,7 +41,7 @@ class LicenseConfig extends GenericConfig {
                             ]
                     ],
                     query2 : [
-                            'Verteilung' : [
+                            'Verteilung' : [ // TODO ..
                                     'license-property-assignment' : [
                                             label : 'Vertrag → Merkmale (eigene/öffentliche)',
                                             template: '2axis2values',
@@ -72,9 +72,9 @@ class LicenseConfig extends GenericConfig {
                             'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                             'libraryNetwork'    : FIELD_TYPE_REFDATA,
                             'libraryType'       : FIELD_TYPE_REFDATA,
-                            'orgType'           : FIELD_TYPE_REFDATA_RELTABLE,
+                            'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                             //'region'            : FIELD_TYPE_REFDATA,
-                            'subjectGroup'      : FIELD_TYPE_REFDATA_RELTABLE
+                            'subjectGroup'      : FIELD_TYPE_REFDATA_JOINTABLE
                     ],
                     filter : [
                             default: [
@@ -106,8 +106,8 @@ class LicenseConfig extends GenericConfig {
                             'depending-licensor' : 'Alle betroffenen Lizenzgeber'
                     ],
                     fields : [
-                            'country'   : GenericConfig.FIELD_TYPE_REFDATA,
-                            'orgType'   : GenericConfig.FIELD_TYPE_REFDATA_RELTABLE,
+                            'country'   : BaseConfig.FIELD_TYPE_REFDATA,
+                            'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE,
                     ],
                     filter : [
                             default: [
@@ -115,7 +115,7 @@ class LicenseConfig extends GenericConfig {
                             ]
                     ],
                     query : [
-                            'Lizenzgeber' : [
+                            'Lizenzgeber' : [ // TODO ..
                                     'licensor-orgType'      : 'Organisationstyp',
                                     'licensor-country'      : 'Länder',
                                     'licensor-region'       : 'Bundesländer'

@@ -2,8 +2,8 @@ package de.laser
 
 import de.laser.annotations.RefdataAnnotation
 import de.laser.helper.RDConstants
-import de.laser.reporting.myInstitution.GenericConfig
-import de.laser.reporting.myInstitution.GenericFilter
+import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.myInstitution.GenericHelper
 import org.apache.commons.lang3.RandomStringUtils
 
 import java.lang.reflect.Field
@@ -45,18 +45,18 @@ class LaserReportingTagLib {
 
     def reportFilterField = { attrs, body ->
 
-        String fieldType = GenericFilter.getFieldType(attrs.config, attrs.field) // [ property, refdata ]
+        String fieldType = GenericHelper.getFieldType(attrs.config, attrs.field) // [ property, refdata ]
 
-        if (fieldType == GenericConfig.FIELD_TYPE_PROPERTY) {
+        if (fieldType == BaseConfig.FIELD_TYPE_PROPERTY) {
             out << laser.reportFilterProperty(config: attrs.config, property: attrs.field, key: attrs.key)
         }
-        if (fieldType == GenericConfig.FIELD_TYPE_REFDATA) {
+        if (fieldType == BaseConfig.FIELD_TYPE_REFDATA) {
             out << laser.reportFilterRefdata(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
-        if (fieldType == GenericConfig.FIELD_TYPE_REFDATA_RELTABLE) {
+        if (fieldType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
             out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
-        if (fieldType == GenericConfig.FIELD_TYPE_CUSTOM_IMPL) {
+        if (fieldType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
             out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
     }
@@ -131,7 +131,7 @@ class LaserReportingTagLib {
 
     def reportFilterRefdataRelTable = { attrs, body ->
 
-        Map<String, Object> customRdv = GenericConfig.getCustomRefdata(attrs.refdata)
+        Map<String, Object> customRdv = BaseConfig.getCustomRefdata(attrs.refdata)
 
         String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
 

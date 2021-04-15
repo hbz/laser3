@@ -1,5 +1,5 @@
 <div class="ui small steps">
-    <g:each in="${result.filterLabels}" var="lblGroup">
+    <g:each in="${filterResult.labels}" var="lblGroup">
         <div class="step">
             <div class="content">
                 <div class="title">${lblGroup.value.source}</div>
@@ -19,7 +19,7 @@
         </div>
     </g:each>
 </div>
-%{-- <g:each in="${result.filterLabels}" var="labelGroup">
+%{-- <g:each in="${filterResult.labels}" var="labelGroup">
     <p>
         <strong>${labelGroup.value.source}</strong>
         <br />

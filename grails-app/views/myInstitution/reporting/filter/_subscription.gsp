@@ -12,7 +12,7 @@
             <div class="field">
                 <label for="filter:subscription_source">${message(code:'reporting.filter.selection')}</label>
                 <g:set var="config" value="${SubscriptionConfig.CONFIG.base}" />
-                <g:select name="filter:subscription_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:sub_source')}" />
+                <g:select name="filter:subscription_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:subscription_source')}" />
             </div>
 
             <g:each in="${config.filter.default}" var="cfgFilter">

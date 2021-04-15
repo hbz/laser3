@@ -25,16 +25,25 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
+import de.laser.exporting.AbstractExport
+import de.laser.exporting.GenericExportManager
+import de.laser.finance.CostItem
+import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.reporting.myInstitution.GenericConfig
-import de.laser.reporting.myInstitution.GenericQuery
+import de.laser.helper.SessionCacheWrapper
+import de.laser.reporting.myInstitution.CostItemConfig
+import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.myInstitution.base.BaseQuery
 import de.laser.reporting.myInstitution.LicenseConfig
 import de.laser.reporting.myInstitution.OrganisationConfig
 import de.laser.reporting.myInstitution.SubscriptionConfig
 import de.laser.reporting.subscription.SubscriptionReporting
 import grails.plugin.springsecurity.annotation.Secured
 import grails.web.servlet.mvc.GrailsParameterMap
+
+import javax.servlet.ServletOutputStream
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxHtmlController {
@@ -379,34 +388,50 @@ class AjaxHtmlController {
             id:     params.id ? params.id as Long : ''
         ]
 
-        if (params.context == GenericConfig.KEY && params.query) {
+        if (params.context == BaseConfig.KEY && params.query) {
             String prefix = params.query.split('-')[0]
-            List idList = params.list('idList[]').collect { it as Long }
+            List idList = []
+
+            SessionCacheWrapper sessionCache = contextService.getSessionCache()
+            Map<String, Object> cacheMap = sessionCache.get("MyInstitutionController/reporting/" + params.token)
+
+            //println 'AjaxHtmlController.chartDetails()'
+            cacheMap.queryCache.dataDetails.each{ it ->
+                if (it.get('id') == params.long('id')) {
+                    idList = it.get('idList')
+                    return
+                }
+            }
 
             if (prefix in ['license']) {
-                result.labels = GenericQuery.getQueryLabels(LicenseConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(LicenseConfig.CONFIG, params)
                 result.list   = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/license'
             }
             else if (prefix in ['licensor']) {
-                result.labels = GenericQuery.getQueryLabels(LicenseConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(LicenseConfig.CONFIG, params)
                 result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
             else if (prefix in ['org']) {
-                result.labels = GenericQuery.getQueryLabels(OrganisationConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(OrganisationConfig.CONFIG, params)
                 result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
             else if (prefix in ['subscription']) {
-                result.labels = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(SubscriptionConfig.CONFIG, params)
                 result.list   = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/subscription'
             }
             else if (prefix in ['member', 'provider']) {
-                result.labels = GenericQuery.getQueryLabels(SubscriptionConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(SubscriptionConfig.CONFIG, params)
                 result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/organisation'
+            }
+            else if (prefix in ['costItem']) {
+                result.labels = BaseQuery.getQueryLabels(CostItemConfig.CONFIG, params)
+                result.list   = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList])
+                result.tmpl   = '/myInstitution/reporting/details/costItem'
             }
         }
         else if (params.context == SubscriptionConfig.KEY && params.query) {
@@ -448,12 +473,53 @@ class AjaxHtmlController {
             else {
                 List idList = params.list('idList[]').collect { it as Long }
 
-                result.labels = GenericQuery.getQueryLabels(SubscriptionReporting.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, params)
                 result.list   = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name', [idList: idList])
                 result.tmpl   = '/subscription/reporting/details/entitlement'
             }
         }
 
         render template: result.tmpl, model: result
+    }
+
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
+    })
+    def chartDetailsExport() {
+
+        Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('cde:') }
+        Map<String, Object> selectedFields = [:]
+        selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('cde:', ''), it.value ) }
+
+        AbstractExport export = GenericExportManager.getCurrentExport( params.query, selectedFields )
+
+        // TODO
+        // TODO
+        List<Long> idList = params.get('idList_cs') ? params.get('idList_cs').split(',').collect{ it as Long } : []
+        //List<Long> idList = params.get('idList[]') ? params.get('idList[]').collect{ it.id as Long } : []
+        // TODO
+        // TODO
+        List<String> rows = GenericExportManager.doExport( export, idList )
+
+        SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
+        String filename
+        if (params.filename) {
+            filename = sdf.format(new Date()) + '_' + params.filename + '.csv'
+        }
+        else {
+            filename = sdf.format(new Date()) + '_reporting.csv'
+        }
+
+        response.setHeader('Content-disposition', 'attachment; filename="' + filename + '"')
+        response.contentType = 'text/csv'
+
+        ServletOutputStream out = response.outputStream
+        out.withWriter { w ->
+            rows.each { r ->
+                w.write( r + '\n')
+            }
+        }
+        out.close()
     }
 }

@@ -1,9 +1,18 @@
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <h3 class="ui header">${message(code:'reporting.macro.step3')}</h3>
 
 <div class="ui right aligned">
-    <button id="chart-export-button" class="ui icon button" disabled>
-        <i class="ui icon download"></i>
-    </button>
+
+    <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+        <button id="chart-export-button" class="ui icon button" href="#chartDetailsExportModal" data-semui="modal">
+            <i class="ui icon download"></i>
+        </button>
+    </g:if>
+    <g:else>
+        <button class="ui icon button" href="#chartDetailsExportModal" disabled="disabled">
+            <i class="ui icon download"></i>
+        </button>
+    </g:else>
     <g:if test="${query.split('-')[0] in ['org', 'member', 'provider', 'licensor']}">
         <button id="chart-email-button" class="ui icon button" href="#chartDetailsCopyEmailModal" data-semui="modal">
             <i class="icon envelope"></i>
