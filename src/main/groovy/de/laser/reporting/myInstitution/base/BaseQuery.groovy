@@ -12,6 +12,16 @@ class BaseQuery {
     static String NO_PLATFORM_LABEL     = '* ohne Plattform'
     static String NO_PROVIDER_LABEL     = '* ohne Anbieter'
 
+    static Map<String, Object> getEmptyResult(String query, String chart) {
+        return [
+                chart       : chart,
+                query       : query,
+                labels      : [:],
+                data        : [],
+                dataDetails : []
+        ]
+    }
+
     static List<String> getQueryLabels(Map<String, Object> config, GrailsParameterMap params) {
 
         List<String> meta = []

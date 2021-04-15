@@ -25,8 +25,8 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
-import de.laser.exporting.AbstractExport
-import de.laser.exporting.GenericExportManager
+import de.laser.reporting.export.AbstractExport
+import de.laser.reporting.export.GenericExportManager
 import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
@@ -500,7 +500,7 @@ class AjaxHtmlController {
         //List<Long> idList = params.get('idList[]') ? params.get('idList[]').collect{ it.id as Long } : []
         // TODO
         // TODO
-        List<String> rows = GenericExportManager.doExport( export, idList )
+        List<String> rows = GenericExportManager.export( export, idList )
 
         SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
         String filename

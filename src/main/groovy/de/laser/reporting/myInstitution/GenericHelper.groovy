@@ -2,7 +2,7 @@ package de.laser.reporting.myInstitution
 
 import de.laser.annotations.RefdataAnnotation
 import de.laser.base.AbstractBase
-import de.laser.exporting.AbstractExport
+import de.laser.reporting.export.AbstractExport
 import de.laser.reporting.myInstitution.base.BaseConfig
 import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder

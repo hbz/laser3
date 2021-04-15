@@ -1,4 +1,4 @@
-<%@ page import="de.laser.exporting.AbstractExport;de.laser.exporting.GenericExportManager" %>
+<%@ page import="de.laser.reporting.export.GenericExportManager" %>
 <laser:serviceInjection />
 <!-- _chartDetails.gsp -->
 <g:set var="export" value="${GenericExportManager.getCurrentExport( query )}" />

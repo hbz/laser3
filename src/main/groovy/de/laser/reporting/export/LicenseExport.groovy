@@ -1,4 +1,4 @@
-package de.laser.exporting
+package de.laser.reporting.export
 
 import de.laser.License
 import de.laser.helper.DateUtils

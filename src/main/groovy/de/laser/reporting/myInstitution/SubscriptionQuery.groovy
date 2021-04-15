@@ -3,7 +3,6 @@ package de.laser.reporting.myInstitution
 import de.laser.ContextService
 import de.laser.Org
 import de.laser.Platform
-import de.laser.ReportingService
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.helper.RDStore
@@ -20,13 +19,7 @@ class SubscriptionQuery extends BaseQuery {
 
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
-        Map<String, Object> result = [
-                chart       : params.chart,
-                query       : params.query,
-                labels      : [:],
-                data        : [],
-                dataDetails : []
-        ]
+        Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
         String prefix = params.query.split('-')[0]
         List idList   = BaseFilter.getCachedFilterIdList(prefix, params)

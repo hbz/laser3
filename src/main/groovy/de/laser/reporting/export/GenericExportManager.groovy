@@ -1,4 +1,4 @@
-package de.laser.exporting
+package de.laser.reporting.export
 
 import de.laser.License
 import de.laser.Org
@@ -25,7 +25,7 @@ class GenericExportManager {
         }
     }
 
-    static List<String> doExport(AbstractExport export, List<Long> idList) {
+    static List<String> export(AbstractExport export, List<Long> idList) {
 
         List<String> rows = []
         rows.add( buildRow( export.getSelectedFields().collect{it -> export.getFieldLabel(it.key as String) } ) )
