@@ -41,17 +41,19 @@ if (! JSPC.app.reporting) {
                 }
             }
         },
-        requestChartHtmlDetails: function(request, data) {
+        requestChartHtmlDetails: function(data) {
             $.ajax({
                 url: "<g:createLink controller="ajaxHtml" action="chartDetails" />",
                 method: 'post',
                 data: data,
                 beforeSend: function(xhr) {
+                   $('#chartDetailsExportModal').remove()
                    $('#chartDetailsCopyEmailModal').remove()
                 }
             })
             .done( function (data) {
                 $('#chart-details').empty().html(data)
+                r2d2.initDynamicSemuiStuff('#chart-details')
             })
             .fail( function (data) {
                 $("#reporting-modal-error").modal('show')

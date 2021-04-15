@@ -1,11 +1,11 @@
-package de.laser.reporting.myInstitution
+package de.laser.reporting.myInstitution.base
 
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.properties.PropertyDefinition
 import grails.web.servlet.mvc.GrailsParameterMap
 
-class GenericQuery {
+class BaseQuery {
 
     static String NO_DATA_LABEL         = '* keine Angabe'
     static String NO_IDENTIFIER_LABEL   = '* ohne Identifikator'
