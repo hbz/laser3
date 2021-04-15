@@ -7,6 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3349    14.04.2021  dev     2.1         Andreas Feature     Mailtexte für neue Umfrage angepasst
+
+3341    14.04.2021  dev     2.1         Andreas Bug         Redirect für nachträgliche Lizenzverknüpfung funktionierte nicht
 
 3335    13.04.2021  rc2.0   2.0.7       Andreas Bug         Regionsfilter wird korrekt befüllt und sortiert
 

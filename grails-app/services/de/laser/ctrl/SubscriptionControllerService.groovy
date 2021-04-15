@@ -673,12 +673,13 @@ class SubscriptionControllerService {
                 Links link
                 if(params.prev && prevMemberSub) {
                     link = Links.construct([source: memberSub, destination: prevMemberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
+                    result.redirect = prevMemberSub.id
                 }
                 if(params.next && nextMemberSub) {
                     link = Links.construct([source: nextMemberSub, destination: memberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
+                    result.redirect = nextMemberSub.id
                 }
                 if(link) {
-                    result.redirect = link.id
                     [result:result,status:STATUS_OK]
                 }
                 else [result:result,status:STATUS_ERROR]
