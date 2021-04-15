@@ -389,17 +389,19 @@ class AjaxHtmlController {
         ]
 
         if (params.context == BaseConfig.KEY && params.query) {
-//            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-//            Map<String, Object> cached = sessionCache.get("MyInstitutionController/reporting/" + params.token)
-//
-//            println cached
-//            GrailsParameterMap clone = params.clone() as GrailsParameterMap// TODO: simplify
-//            if (cached) {
-//                clone.putAll(cached)
-//            }
-
             String prefix = params.query.split('-')[0]
-            List idList = params.list('idList[]').collect { it as Long }
+            List idList = []
+
+            SessionCacheWrapper sessionCache = contextService.getSessionCache()
+            Map<String, Object> cacheMap = sessionCache.get("MyInstitutionController/reporting/" + params.token)
+
+            //println 'AjaxHtmlController.chartDetails()'
+            cacheMap.queryCache.dataDetails.each{ it ->
+                if (it.get('id') == params.long('id')) {
+                    idList = it.get('idList')
+                    return
+                }
+            }
 
             if (prefix in ['license']) {
                 result.labels = BaseQuery.getQueryLabels(LicenseConfig.CONFIG, params)

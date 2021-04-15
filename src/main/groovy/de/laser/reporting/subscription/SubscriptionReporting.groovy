@@ -75,10 +75,11 @@ class SubscriptionReporting {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
         Map<String, Object> result = [
-                chart      : params.chart,
-                query      : params.query,
-                data       : [],
-                dataDetails: []
+                chart       : params.chart,
+                query       : params.query,
+                labels      : [:],
+                data        : [],
+                dataDetails : []
         ]
 
         String prefix = params.query.split('-')[0]

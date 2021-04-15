@@ -135,33 +135,24 @@
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
 
                         if (JSPC.app.reporting.current.request.chart == 'bar') {
-                            $('#chart-wrapper').css('height', 150 + (18 * JSPC.app.reporting.current.chart.details.length) + 'px');
+                            $('#chart-wrapper').css('height', 150 + (18 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                         }
                         else if (JSPC.app.reporting.current.request.chart == 'pie') {
-                            $('#chart-wrapper').css('height', 350 + (12 * JSPC.app.reporting.current.chart.details.length) + 'px');
+                            $('#chart-wrapper').css('height', 350 + (12 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                         }
                         else if (JSPC.app.reporting.current.request.chart == 'radar') {
-                            $('#chart-wrapper').css('height', 400 + (8 * JSPC.app.reporting.current.chart.details.length) + 'px');
+                            $('#chart-wrapper').css('height', 400 + (8 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                         }
 
                         var echart = echarts.init($('#chart-wrapper')[0]);
                         echart.setOption( JSPC.app.reporting.current.chart.option );
                         echart.on( 'click', function (params) {
-                            var valid = false;
-
-                            $.each( JSPC.app.reporting.current.chart.details, function(i, v) {
-                                if (params.data[0] == v.id) {
-                                    valid = true;
-                                    var clone = {}
-                                    Object.assign(clone, JSPC.app.reporting.current.request);
-                                    Object.assign(clone, v);
-                                    clone.context = '${BaseConfig.KEY}';
-                                    JSPC.app.reporting.requestChartHtmlDetails(clone);
-                                }
-                            })
-                            if (! valid) {
-                                $("#reporting-modal-nodetails").modal('show');
-                            }
+                            var clone = {}
+                            Object.assign(clone, JSPC.app.reporting.current.request);
+                            clone.id = params.data[0];
+                            clone.label = params.data[1];
+                            clone.context = '${BaseConfig.KEY}';
+                            JSPC.app.reporting.requestChartHtmlDetails(clone);
                         });
                         echart.on( 'legendselectchanged', function (params) { /* console.log(params); */ });
 
@@ -181,9 +172,6 @@
         </semui:modal>
         <semui:modal id="reporting-modal-nodata" text="REPORTING" hideSubmitButton="true">
             <p>${message(code:'reporting.modal.nodata')}</p>
-        </semui:modal>
-        <semui:modal id="reporting-modal-nodetails" text="REPORTING" hideSubmitButton="true">
-            <p>${message(code:'reporting.modal.nodetails')}</p>
         </semui:modal>
 
     </body>

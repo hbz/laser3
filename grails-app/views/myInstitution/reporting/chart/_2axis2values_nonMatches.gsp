@@ -46,7 +46,6 @@
             },
         ]
     };
-    JSPC.app.reporting.current.chart.details = <%= dataDetails as grails.converters.JSON %>
 </g:elseif>
 <g:elseif test="${chart == BaseConfig.CHART_BAR}">
     JSPC.app.reporting.current.chart.option = {
@@ -141,5 +140,4 @@
             }
         ]
     };
-    JSPC.app.reporting.current.chart.details = <%= dataDetails as grails.converters.JSON %>
 </g:elseif>

@@ -693,7 +693,7 @@ class AjaxJsonController {
                 }
             }
 
-            GrailsParameterMap clone = params.clone() as GrailsParameterMap// TODO: simplify
+            GrailsParameterMap clone = params.clone() as GrailsParameterMap
 
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
             Map<String, Object> cacheMap = sessionCache.get("MyInstitutionController/reporting/" + params.token)
@@ -774,7 +774,7 @@ class AjaxJsonController {
         }
 
         //println 'AjaxJsonController.chart()'
-        //println result
+        //println queryResult
 
         if (queryResult.tmpl) {
             render template: queryResult.tmpl, model: queryResult
