@@ -460,12 +460,16 @@ class SubscriptionControllerService {
 
     Map<String,Object> members(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        ProfilerUtils pu = new ProfilerUtils()
+        pu.setBenchmark('init')
         if(!result)
             [result:null,status:STATUS_ERROR]
+        pu.setBenchmark('before org props')
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
-        Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
         //result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscription,subscriberRoleTypes:subscriberRoleTypes])
+        pu.setBenchmark('getting filtered subscribers')
         result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
+        pu.setBenchmark('after sub schildren')
         result.filterSet = params.filterSet ? true : false
         Set<Map<String,Object>> orgs = []
         if (params.exportXLS || params.format) {
@@ -503,7 +507,8 @@ class SubscriptionControllerService {
             }
             result.orgs = orgs
         }
-
+        List bm = pu.stopBenchmark()
+        result.benchMark = bm
         [result:result,status:STATUS_OK]
     }
 

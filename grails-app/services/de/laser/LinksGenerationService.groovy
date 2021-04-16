@@ -21,15 +21,16 @@ class LinksGenerationService {
     MessageSource messageSource
     ContextService contextService
 
-    LinkedHashMap<String,List> generateNavigation(context) {
+    LinkedHashMap<String,List> generateNavigation(context, boolean fullObject = true) {
         List prevLink = [], nextLink = []
+        String id = !fullObject ? ".id" : ""
         if(context instanceof Subscription) {
-            prevLink.addAll(Links.executeQuery('select li.destinationSubscription from Links li where li.sourceSubscription = :context and li.linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS]))
-            nextLink.addAll(Links.executeQuery('select li.sourceSubscription from Links li where li.destinationSubscription = :context and li.linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS]))
+            prevLink.addAll(Links.executeQuery('select li.destinationSubscription'+id+' from Links li where li.sourceSubscription = :context and li.linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS]))
+            nextLink.addAll(Links.executeQuery('select li.sourceSubscription'+id+' from Links li where li.destinationSubscription = :context and li.linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS]))
         }
         else if(context instanceof License) {
-            prevLink.addAll(Links.executeQuery('select li.destinationLicense from Links li where li.sourceLicense = :context and li.linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS]))
-            nextLink.addAll(Links.executeQuery('select li.sourceLicense from Links li where li.destinationLicense = :context and li.linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS]))
+            prevLink.addAll(Links.executeQuery('select li.destinationLicense'+id+' from Links li where li.sourceLicense = :context and li.linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS]))
+            nextLink.addAll(Links.executeQuery('select li.sourceLicense'+id+' from Links li where li.destinationLicense = :context and li.linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS]))
         }
         return [prevLink:prevLink,nextLink:nextLink]
     }
