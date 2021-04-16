@@ -1252,7 +1252,7 @@ class ExportService {
 					}
 				}
 				else if(entitlementInstance == IssueEntitlement.class.name) {
-					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs.drop(offset).max(max),[sort:'tipp.sortName'])
+					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'tipp.sortName'])
 					issueEntitlements.each { IssueEntitlement entitlement ->
 						titleInstances << entitlement.tipp
 						if(!entitlement.coverages && !entitlement.priceItems) {
