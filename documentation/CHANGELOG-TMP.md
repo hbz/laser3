@@ -11,6 +11,10 @@
 
 3327    15.04.2021  rc2.0   2.0.7       David   Feature     Reporting: Caching für Queries erweitern
 
+3349    14.04.2021  dev     2.1         Andreas Feature     Mailtexte für neue Umfrage angepasst
+
+3341    14.04.2021  dev     2.1         Andreas Bug         Redirect für nachträgliche Lizenzverknüpfung funktionierte nicht
+
 3335    13.04.2021  rc2.0   2.0.7       Andreas Bug         Regionsfilter wird korrekt befüllt und sortiert
 
 3265    13.04.2021  rc2.0   2.0.7       Andreas Bug         Abfrage der Anbieterdaten um Provider erweitert
