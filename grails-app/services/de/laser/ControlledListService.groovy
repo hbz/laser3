@@ -565,12 +565,17 @@ class ControlledListService {
     Set<String> getAllPossibleSubjectsByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
-        Set<String> subjects = []
+        SortedSet<String> subjects = new TreeSet<String>()
 
-        subjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg = :pkg and status = :status order by subjectReference", [pkg: pkg, status: tippStatus])
+        List<String> rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg = :pkg and status = :status order by subjectReference", [pkg: pkg, status: tippStatus])
 
-        if(subjects.size() == 0){
+        if(rawSubjects.size() == 0){
             subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, locale)
+        }
+        else {
+            rawSubjects.each { String rawSubject ->
+                subjects.addAll(rawSubject.tokenize(',;|'))
+            }
         }
 
         subjects
@@ -578,13 +583,19 @@ class ControlledListService {
 
     Set<String> getAllPossibleSubjectsBySub(Subscription subscription) {
         Locale locale = LocaleContextHolder.getLocale()
-        Set<String> subjects = []
+        SortedSet<String> subjects = new TreeSet<String>()
+        List<String> rawSubjects = []
 
         if(subscription.packages){
-            subjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg in (:pkg) order by subjectReference", [pkg: subscription.packages.pkg])
+            rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg in (:pkg) order by subjectReference", [pkg: subscription.packages.pkg])
         }
-        if(subjects.size() == 0){
+        if(rawSubjects.size() == 0){
             subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, locale)
+        }
+        else {
+            rawSubjects.each { String rawSubject ->
+                subjects.addAll(rawSubject.tokenize(',;|'))
+            }
         }
 
         subjects

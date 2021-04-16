@@ -1241,8 +1241,15 @@ class FilterService {
         }*/
 
         if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
-            base_qry += " and lower(tipp.subjectReference) in (:subject_references)"
-            qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
+            base_qry += ' and ( '
+            params.list('subject_references').eachWithIndex { String subRef, int i ->
+                base_qry += " lower(tipp.subjectReference) like '%"+subRef.trim().toLowerCase()+"%' "
+                if(i < params.list('subject_references').size()-1)
+                    base_qry += 'or'
+            }
+            base_qry += ' ) '
+            /*base_qry += " and lower(tipp.subjectReference) in (select * from value (:subject_references))"
+            qry_params.subject_references = params.list('subject_references').collect { "%"+it.toLowerCase()+"%" }*/
             filterSet = true
         }
         if (params.series_names && params.series_names != "" && params.list('series_names')) {
@@ -1283,7 +1290,7 @@ class FilterService {
         }
 
         if (params.publishers) {
-            base_qry += "and (exists (select orgRole from OrgRole orgRole where orgRole.tipp = tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) or (lower(tipp.publisherName)) in (:publishers)) "
+            base_qry += "and (exists (select orgRole from OrgRole orgRole where orgRole.tipp = tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) or (tipp.publisherName in (:publishers))) "
             qry_params.publishers = params.list('publishers').collect { it }
             filterSet = true
         }
