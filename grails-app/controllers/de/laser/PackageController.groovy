@@ -429,10 +429,7 @@ class PackageController {
         }
         result.packageInstance = packageInstance
 
-        result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
-        result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
-        result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
-        result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
+
         if (executorWrapperService.hasRunningProcess(packageInstance)) {
             result.processingpc = true
         }
@@ -452,7 +449,7 @@ class PackageController {
         String filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
 
         if (params.exportKBart) {
-            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
+            response.setHeader( "Content-Disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
             Map<String, List> tableData = titlesList ? exportService.generateTitleExportKBART(titlesList, TitleInstancePackagePlatform.class.name) : []
@@ -475,15 +472,19 @@ class PackageController {
         }
         withFormat {
             html {
-
-                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[offset:result.offset,max:result.max]) : []
+                result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
+                result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
+                result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
+                result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
+                //we can be sure that no one will request more than 32768 entries ...
+                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max)) : []
                 result.num_tipp_rows = titlesList.size()
 
                 result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
                 result
             }
             csv {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+                response.setHeader( "Content-Disposition", "attachment; filename=${filename}.csv")
                 response.contentType = "text/csv"
 
                 ServletOutputStream out = response.outputStream
@@ -607,7 +608,7 @@ class PackageController {
         withFormat {
             html {
 
-                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[offset:result.offset,max:result.max]) : []
+                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max)) : []
                 result.num_tipp_rows = titlesList.size()
 
                 result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
@@ -666,7 +667,7 @@ class PackageController {
         params.max = result.max
         params.offset = result.offset
 
-        List changes = packageHistory ? PendingChange.findAllByIdInList(packageHistory, params) : []
+        List changes = packageHistory ? PendingChange.findAllByIdInList(packageHistory.drop(result.max).take(result.max), params) : []
         result.countPendingChanges = packageHistory ? PendingChange.countByIdInList(packageHistory) : 0
 
         result.num_change_rows = result.countPendingChanges

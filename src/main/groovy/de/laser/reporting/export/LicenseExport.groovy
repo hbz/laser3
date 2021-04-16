@@ -1,9 +1,9 @@
-package de.laser.exporting
+package de.laser.reporting.export
 
+import de.laser.Identifier
 import de.laser.License
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.myInstitution.GenericHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -27,6 +27,8 @@ class LicenseExport extends AbstractExport {
                             'status'            : FIELD_TYPE_REFDATA,
                             'licenseCategory'   : FIELD_TYPE_REFDATA,
                             'type'              : FIELD_TYPE_REFDATA,
+                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL, // <- no BaseConfig.getCustomRefdata(fieldName)
+                            //'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL, // <- no BaseConfig.getCustomRefdata(fieldName)
                     ]
             ]
     ]
@@ -47,7 +49,7 @@ class LicenseExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        GenericHelper.getFieldLabel( CONFIG.base, fieldName )
+        ExportHelper.getFieldLabel( CONFIG.base, fieldName )
     }
 
     @Override
@@ -105,7 +107,17 @@ class LicenseExport extends AbstractExport {
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
-                content.add( '* ' + FIELD_TYPE_CUSTOM_IMPL )
+                if (key == 'identifier-assignment') {
+                    List<Identifier> ids = Identifier.executeQuery(
+                            "select i from Identifier i where i.value != null and i.value != '' and i.lic = :lic", [lic: lic]
+                    )
+                    content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
+                }
+                else if (key == 'property-assignment') {
+                }
+                else {
+                    content.add('* ' + FIELD_TYPE_CUSTOM_IMPL)
+                }
             }
             else {
                 content.add( '- not implemented -' )

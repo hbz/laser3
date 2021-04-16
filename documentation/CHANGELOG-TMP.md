@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3370    16.04.2021  rc2.0   2.0.7       David   Bug         Merkmalsverwaltung: Merkmale nicht (mehr) alphabetisch sortiert
+
+3368    16.04.2021  rc2.0   2.0.7       Andreas Bug         Aufruf von Paketen über 32768 Titel funktionierte nicht
+
 3358    16.04.2021  dev     2.1         Andreas Bug         Verlagsfilterklausel korrigiert
 
 3343    16.04.2021  dev     2.1         Andreas Feature     Aufspalten der Fachbereiche in Titelfilter

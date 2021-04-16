@@ -1205,7 +1205,7 @@ class SubscriptionControllerService {
             result.num_ies_rows = sourceIEs.size()
             //subscriptionService.getIssueEntitlementsFixed(baseSub).size()
             result.sourceIEIDs = sourceIEs
-            result.sourceIEs = IssueEntitlement.findAllByIdInList(sourceIEs,[offset: result.offset, max: result.max])
+            result.sourceIEs = IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max))
             result.targetIEs = IssueEntitlement.findAllByIdInList(targetIEs)
             result.newSub = newSub
             result.subscription = baseSub

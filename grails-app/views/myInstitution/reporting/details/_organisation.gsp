@@ -70,4 +70,4 @@
 
 <g:render template="/templates/copyEmailaddresses" model="[modalID: 'chartDetailsCopyEmailModal', orgList: list]" />
 
-<g:render template="/myInstitution/reporting/export/chartDetailsModal" model="[modalID: 'chartDetailsExportModal', query: query, title: labels, objectList: list]" />
+<g:render template="/myInstitution/reporting/export/chartDetailsModal" model="[modalID: 'chartDetailsExportModal', token: token, query: query, objectList: list]" />
