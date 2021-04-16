@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3358    16.04.2021  dev     2.1         Andreas Bug         Verlagsfilterklausel korrigiert
+
+3343    16.04.2021  dev     2.1         Andreas Feature     Aufspalten der Fachbereiche in Titelfilter
+
 3342    15.04.2021  dev     2.1         Andreas Bug         Performanz auf Teilnehmerübersicht leicht verbessert
 
 3313    15.04.2021  rc2.0   2.0.7       David   Feature     Prototyp: Export-Modul
