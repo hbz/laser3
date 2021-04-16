@@ -90,7 +90,7 @@
 
         <div class="title">
             <i class="dropdown icon"></i>
-            ${fieldValue(bean: rdc, field: "desc_de")}
+            ${rdc.getI10n('desc')}
         </div>
         <div class="content">
 
