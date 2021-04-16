@@ -1,12 +1,12 @@
 <%@ page import="de.laser.reporting.export.ExportHelper; de.laser.reporting.export.GenericExportManager" %>
 <laser:serviceInjection />
 <!-- _chartDetailsModal.gsp -->
-<g:set var="export" value="${GenericExportManager.getCurrentExport( query )}" />
+<g:set var="export" value="${GenericExportManager.createExport( token )}" />
 
 <g:if test="${export}">
     <g:set var="formFields" value="${export.getAllFields()}" />
-    <g:set var="filterLabels" value="${ExportHelper.getFilterLabels(params)}" />
-    <g:set var="queryLabels" value="${ExportHelper.getQueryLabels(params)}" />
+    <g:set var="filterLabels" value="${ExportHelper.getFilterLabels( token )}" />
+    <g:set var="queryLabels" value="${ExportHelper.getQueryLabels( token )}" />
 
     <semui:modal id="${modalID}" text="CSV-Export" hideSubmitButton="true">
 
@@ -51,8 +51,6 @@
             </div><!-- .form -->
 
             <input type="hidden" name="token" value="${token}" />
-            <input type="hidden" name="query" value="${query}" />
-            <input type="hidden" name="idList_cs" value="${objectList.collect{it.id}.join(',')}" />
         </g:form>
 
     </semui:modal>

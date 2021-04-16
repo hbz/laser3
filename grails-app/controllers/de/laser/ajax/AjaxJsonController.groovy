@@ -744,10 +744,12 @@ class AjaxJsonController {
                 queryResult.labels.tooltip = getTooltipLabels(clone)
                 queryResult.tmpl = '/myInstitution/reporting/chart/generic'
             }
-            // TODO
 
+            // TODO
+            cacheMap.remove('detailsCache')
             cacheMap.queryCache = [:]
             cacheMap.queryCache.putAll(queryResult)
+
             sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)
         }
         else if (params.context == SubscriptionConfig.KEY && params.query) {

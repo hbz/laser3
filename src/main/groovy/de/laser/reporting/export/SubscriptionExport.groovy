@@ -4,7 +4,6 @@ import de.laser.Identifier
 import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.myInstitution.GenericHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
