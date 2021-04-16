@@ -62,12 +62,14 @@
                         <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
                             <table class="ui table compact hidden scrollContent" data-propDefTable="${pdDescr}">
                                 <tbody>
-                                <%
+                                <g:each in="${PropertyDefinition.where{ tenant == null && descr == pdDescr }.sort( 'name_' + I10nTranslation.decodeLocale(LocaleContextHolder.getLocale()) )}" var="pd">
+
+                                %{-- <%
                                     List<PropertyDefinition> matches = PropertyDefinition.executeQuery(
                                             'select pd from PropertyDefinition pd where pd.tenant is null and pd.descr = :pdDescr order by :order',
                                             [pdDescr: pdDescr, order: 'name_' + I10nTranslation.decodeLocale(LocaleContextHolder.getLocale()) ])
                                 %>
-                                <g:each in="${matches}" var="pd">
+                                <g:each in="${matches}" var="pd"> --}%
                                     <tr>
                                         <td>
                                             ${pd.getI10n('name')}
