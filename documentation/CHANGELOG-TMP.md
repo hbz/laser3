@@ -9,6 +9,8 @@
 
 3370    16.04.2021  rc2.0   2.0.7       David   Bug         Merkmalsverwaltung: Merkmale nicht (mehr) alphabetisch sortiert
 
+3368    16.04.2021  rc2.0   2.0.7       Andreas Bug         Aufruf von Paketen über 32768 Titel funktionierte nicht
+
 3313    15.04.2021  rc2.0   2.0.7       David   Feature     Prototyp: Export-Modul
 
 3327    15.04.2021  rc2.0   2.0.7       David   Feature     Reporting: Caching für Queries erweitern
