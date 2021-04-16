@@ -13,6 +13,7 @@ import de.laser.system.SystemTicket
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import org.springframework.context.i18n.LocaleContextHolder
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
@@ -22,6 +23,7 @@ class ProfileController {
     def passwordEncoder
     def instAdmService
     def deletionService
+    def messageSource
     FormService formService
     CacheService cacheService
     RefdataService refdataService
@@ -72,47 +74,30 @@ class ProfileController {
 
     @Secured(['ROLE_USER'])
     def properties() {
-        EhcacheWrapper cache = cacheService.getTTL300Cache('ProfileController/properties')
+        Map<String, Object> propDefs = [:]
 
-        def propDefs = [:]
+        Locale locale = LocaleContextHolder.getLocale()
 
-        if (cache.get('propDefs')) {
-            propDefs = cache.get('propDefs')
-            log.debug('propDefs from cache')
-        }
-        else {
-            PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
-                def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
-                propDefs << ["${it}": itResult]
-            }
-            cache.put('propDefs', propDefs)
+        String[] custPropDefs = PropertyDefinition.AVAILABLE_CUSTOM_DESCR.sort {a, b ->
+            messageSource.getMessage("propertyDefinition.${a}.label", null, locale) <=> messageSource.getMessage("propertyDefinition.${b}.label", null, locale)
         }
 
-        List usedRdvList, usedPdList
+        String i10nAttr = locale.getLanguage() == Locale.GERMAN.getLanguage() ? 'name_de' : 'name_en'
 
-        if (cache.get('usedRdvList')) {
-            usedRdvList = cache.get('usedRdvList')
-            log.debug('usedRdvList from cache')
-        }
-        else {
-            usedRdvList = refdataService.getUsageDetails()
-            cache.put('usedRdvList', usedRdvList)
+        custPropDefs.each { it ->
+            List<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: i10nAttr]) // NO private properties!
+            propDefs << ["${it}": itResult]
         }
 
-        if (cache.get('usedPdList')) {
-            usedPdList = cache.get('usedPdList')
-            log.debug('usedPdList from cache')
-        }
-        else {
-            usedPdList = propertyService.getUsageDetails()
-            cache.put('usedPdList', usedPdList)
-        }
+        List usedRdvList = refdataService.getUsageDetails()
+        List usedPdList = propertyService.getUsageDetails()
+
+        i10nAttr = locale.getLanguage() == Locale.GERMAN.getLanguage() ? 'desc_de' : 'desc_en'
 
         render view: 'properties', model: [
                 editable    : false,
-                cachedContent : cache.getCache().name,
                 propertyDefinitions: propDefs,
-                rdCategories: RefdataCategory.where{}.sort('desc'),
+                rdCategories: RefdataCategory.where{}.sort( i10nAttr ),
                 usedRdvList : usedRdvList,
                 usedPdList  : usedPdList
         ]

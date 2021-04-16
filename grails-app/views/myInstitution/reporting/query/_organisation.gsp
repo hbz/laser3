@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 
 <g:if test="${filterResult}">
-    <g:render template="/myInstitution/reporting/query/base.part1" />
+    <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />
 
     <g:if test="${filterResult.data.orgIdList}">
 
@@ -13,7 +13,7 @@
             </p>
         </div>
 
-        <g:render template="/myInstitution/reporting/query/base.part2" />
+        <g:render template="/myInstitution/reporting/query/base.part1" />
 
         <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.app.reporting.current.request = {

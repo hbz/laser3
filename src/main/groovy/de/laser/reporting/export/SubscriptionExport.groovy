@@ -1,6 +1,6 @@
-package de.laser.exporting
+package de.laser.reporting.export
 
-
+import de.laser.Identifier
 import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
@@ -30,7 +30,9 @@ class SubscriptionExport extends AbstractExport {
                             'form'                  : FIELD_TYPE_REFDATA,
                             'resource'              : FIELD_TYPE_REFDATA,
                             'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
-                            'isPublicForApi'        : FIELD_TYPE_PROPERTY
+                            'isPublicForApi'        : FIELD_TYPE_PROPERTY,
+                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL, // <- no BaseConfig.getCustomRefdata(fieldName)
+                            //'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL, // <- no BaseConfig.getCustomRefdata(fieldName)
                     ]
             ]
     ]
@@ -51,7 +53,7 @@ class SubscriptionExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        GenericHelper.getFieldLabel( CONFIG.base, fieldName )
+        ExportHelper.getFieldLabel( CONFIG.base, fieldName )
     }
 
     @Override
@@ -109,7 +111,17 @@ class SubscriptionExport extends AbstractExport {
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
-                content.add( '* ' + FIELD_TYPE_CUSTOM_IMPL )
+                if (key == 'identifier-assignment') {
+                    List<Identifier> ids = Identifier.executeQuery(
+                            "select i from Identifier i where i.value != null and i.value != '' and i.sub = :sub", [sub: sub]
+                    )
+                    content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
+                }
+                else if (key == 'property-assignment') {
+                }
+                else {
+                    content.add('* ' + FIELD_TYPE_CUSTOM_IMPL)
+                }
             }
             else {
                 content.add( '- not implemented -' )

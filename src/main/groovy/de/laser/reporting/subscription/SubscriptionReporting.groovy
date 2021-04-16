@@ -74,13 +74,7 @@ class SubscriptionReporting {
     static Map<String, Object> query(GrailsParameterMap params) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
-        Map<String, Object> result = [
-                chart       : params.chart,
-                query       : params.query,
-                labels      : [:],
-                data        : [],
-                dataDetails : []
-        ]
+        Map<String, Object> result = BaseQuery.getEmptyResult( params.query, params.chart )
 
         String prefix = params.query.split('-')[0]
         Long id = params.long('id')
