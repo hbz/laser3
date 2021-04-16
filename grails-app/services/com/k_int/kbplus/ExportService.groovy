@@ -933,7 +933,7 @@ class ExportService {
 	 */
 	Map<String,List> generateTitleExportKBART(Collection<Long> entitlementIDs, String entitlementInstance) {
 		log.debug("Begin generateTitleExportKBART")
-		List<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
+		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
 		List<String> titleHeaders = getBaseTitleHeaders()
 		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect { IdentifierNamespace ns -> "${ns.ns}_identifer"})
 		Map<String,List> export = [titleRow:titleHeaders,columnData:[]]
@@ -944,7 +944,7 @@ class ExportService {
 				Set<TitleInstancePackagePlatform> titleInstances = []
 				//this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
 				if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
-					titleInstances.addAll(TitleInstancePackagePlatform.findAllByIdInList(entitlementIDs,[offset:offset,max:max,sort:'sortName']))
+					titleInstances.addAll(TitleInstancePackagePlatform.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'sortName']))
 					titleInstances.each { TitleInstancePackagePlatform tipp ->
 						if(!tipp.coverages && !tipp.priceItems) {
 							allRows << tipp
@@ -960,7 +960,7 @@ class ExportService {
 					}
 				}
 				else if(entitlementInstance == IssueEntitlement.class.name) {
-					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs,[offset:offset,max:max,sort:'tipp.sortName'])
+					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'tipp.sortName'])
 					issueEntitlements.each { IssueEntitlement entitlement ->
 						titleInstances << entitlement.tipp
 						if(!entitlement.coverages && !entitlement.priceItems) {
@@ -1225,7 +1225,7 @@ class ExportService {
 
 	Map<String,List> generateTitleExportCSV(Collection entitlementIDs, String entitlementInstance) {
 		log.debug("Begin generateTitleExportCSV")
-		List<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
+		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
 		List<String> titleHeaders = getBaseTitleHeaders()
 		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect { IdentifierNamespace ns -> "${ns.ns}_identifer"})
 		Map<String,List> export = [titleRow:titleHeaders,rows:[]]
@@ -1236,7 +1236,7 @@ class ExportService {
 				Set<TitleInstancePackagePlatform> titleInstances = []
 				//this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
 				if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
-					titleInstances.addAll(TitleInstancePackagePlatform.findAllByIdInList(entitlementIDs,[offset:offset,max:max,sort:'sortName']))
+					titleInstances.addAll(TitleInstancePackagePlatform.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'sortName']))
 					titleInstances.each { TitleInstancePackagePlatform tipp ->
 						if(!tipp.coverages && !tipp.priceItems) {
 							allRows << tipp
@@ -1252,7 +1252,7 @@ class ExportService {
 					}
 				}
 				else if(entitlementInstance == IssueEntitlement.class.name) {
-					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs,[offset:offset,max:max,sort:'tipp.sortName'])
+					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs.drop(offset).max(max),[sort:'tipp.sortName'])
 					issueEntitlements.each { IssueEntitlement entitlement ->
 						titleInstances << entitlement.tipp
 						if(!entitlement.coverages && !entitlement.priceItems) {
@@ -1505,8 +1505,8 @@ class ExportService {
 	Map<String, List> generateTitleExportXLS(Collection entitlementIDs, String entitlementInstance) {
 		log.debug("Begin generateTitleExportXLS")
 		Locale locale = LocaleContextHolder.getLocale()
-		List<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
-		List<IdentifierNamespace> coreTitleIdentifierNamespaces = getCoreIdentifierNamespaces(entitlementIDs,entitlementInstance)
+		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
+		Set<IdentifierNamespace> coreTitleIdentifierNamespaces = getCoreIdentifierNamespaces(entitlementIDs,entitlementInstance)
 		List<String> titleHeaders = [
 				messageSource.getMessage('tipp.name',null,locale),
 				'Print Identifier',
@@ -1554,7 +1554,7 @@ class ExportService {
 				Set<TitleInstancePackagePlatform> titleInstances = []
 				//this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
 				if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
-					titleInstances.addAll(TitleInstancePackagePlatform.findAllByIdInList(entitlementIDs,[offset:offset,max:max,sort:'sortName']))
+					titleInstances.addAll(TitleInstancePackagePlatform.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'sortName']))
 					titleInstances.each { TitleInstancePackagePlatform tipp ->
 						if(!tipp.coverages && !tipp.priceItems) {
 							allRows << tipp
@@ -1570,7 +1570,7 @@ class ExportService {
 					}
 				}
 				else if(entitlementInstance == IssueEntitlement.class.name) {
-					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs,[offset:offset,max:max,sort:'tipp.sortName'])
+					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'tipp.sortName'])
 					issueEntitlements.each { IssueEntitlement entitlement ->
 						titleInstances << entitlement.tipp
 						if(!entitlement.coverages && !entitlement.priceItems) {
@@ -1823,29 +1823,35 @@ class ExportService {
 		null
 	}
 
-	List<IdentifierNamespace> getOtherIdentifierNamespaces(Collection<Long> entitlements,String entitlementInstance) {
-		Map<String,Object> params = [titleInstances:entitlements,coreTitleNS:IdentifierNamespace.CORE_TITLE_NS]
-		String whereTo
-		if(entitlementInstance == TitleInstancePackagePlatform.class.name)
-			whereTo = 'id.tipp.id in (:titleInstances)'
-		else if(entitlementInstance == IssueEntitlement.class.name)
-			whereTo = 'id.tipp.id in (select ie.tipp from IssueEntitlement ie where ie.tipp.id in (:titleInstances))'
-		if(whereTo)
-			IdentifierNamespace.executeQuery('select distinct(id.ns) from Identifier id where '+whereTo+' and id.ns.ns not in (:coreTitleNS)',params)
-		else null
+	Set<IdentifierNamespace> getOtherIdentifierNamespaces(Collection<Long> entitlements,String entitlementInstance) {
+		Set<IdentifierNamespace> result = []
+		//32768 is the maximum number of placeholders Postgres supports. Some placeholders must be reserved for coreTitleNS.
+		List entitlementChunks = entitlements.collate(32767-IdentifierNamespace.CORE_TITLE_NS.size())
+		entitlementChunks.each { Collection<Long> entitlementChunk ->
+			//println('('+entitlementChunk.join(',')+')')
+			String whereTo
+			if(entitlementInstance == TitleInstancePackagePlatform.class.name)
+				whereTo = 'id.tipp.id in (:titleInstances)'
+			else if(entitlementInstance == IssueEntitlement.class.name)
+				whereTo = 'id.tipp.id in (select ie.tipp from IssueEntitlement ie where ie.tipp.id in (:titleInstances))'
+			if(whereTo)
+				result.addAll(IdentifierNamespace.executeQuery('select distinct(ns) from Identifier id join id.ns ns where '+whereTo+' and ns.ns not in (:coreTitleNS)',[titleInstances:entitlementChunk,coreTitleNS:IdentifierNamespace.CORE_TITLE_NS]))
+		}
+		result
 	}
 
-	List<IdentifierNamespace> getCoreIdentifierNamespaces(Collection<Long> entitlements,String entitlementInstance) {
-		Map<String,Object> params = [titleInstances:entitlements,coreTitleNS:IdentifierNamespace.CORE_TITLE_NS]
-		String whereTo
-		if(entitlementInstance == TitleInstancePackagePlatform.class.name)
-			whereTo = 'id.tipp.id in (:titleInstances)'
-		else if(entitlementInstance == IssueEntitlement.class.name)
-			whereTo = 'id.tipp.id in (select ie.tipp from IssueEntitlement ie where ie.tipp.id in (:titleInstances))'
-		if(whereTo)
-			IdentifierNamespace.executeQuery('select distinct(id.ns) from Identifier id where '+whereTo+' and id.ns.ns in (:coreTitleNS)',[titleInstances:entitlements,coreTitleNS:IdentifierNamespace.CORE_TITLE_NS])
-		else null
+	Set<IdentifierNamespace> getCoreIdentifierNamespaces(Collection<Long> entitlements,String entitlementInstance) {
+		Set<IdentifierNamespace> result = []
+		entitlements.collate(32767-IdentifierNamespace.CORE_TITLE_NS.size()).each { Collection<Long> entitlementChunk ->
+			String whereTo
+			if(entitlementInstance == TitleInstancePackagePlatform.class.name)
+				whereTo = 'id.tipp.id in (:titleInstances)'
+			else if(entitlementInstance == IssueEntitlement.class.name)
+				whereTo = 'id.tipp.id in (select ie.tipp from IssueEntitlement ie where ie.tipp.id in (:titleInstances))'
+			if(whereTo)
+				result.addAll(IdentifierNamespace.executeQuery('select distinct(ns) from Identifier id join id.ns ns where '+whereTo+' and ns.ns in (:coreTitleNS)',[titleInstances:entitlementChunk,coreTitleNS:IdentifierNamespace.CORE_TITLE_NS]))
+		}
+		result
 	}
-
 
 }
