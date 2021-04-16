@@ -384,6 +384,7 @@ class AjaxHtmlController {
     })
     def chartDetails() {
         Map<String, Object> result = [
+            token:  params.token,
             query:  params.query,
             id:     params.id ? params.id as Long : ''
         ]
@@ -433,6 +434,9 @@ class AjaxHtmlController {
                 result.list   = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/costItem'
             }
+
+            cacheMap.queryCache.labels.put('labels', result.labels)
+            sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)
         }
         else if (params.context == SubscriptionConfig.KEY && params.query) {
             if (params.query == 'timeline-cost') {
@@ -492,13 +496,11 @@ class AjaxHtmlController {
         Map<String, Object> selectedFields = [:]
         selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('cde:', ''), it.value ) }
 
-        AbstractExport export = GenericExportManager.getCurrentExport( params.query, selectedFields )
+        AbstractExport export = GenericExportManager.getCurrentExport( params.query, selectedFields ) // TODO @token
 
-        // TODO
         // TODO
         List<Long> idList = params.get('idList_cs') ? params.get('idList_cs').split(',').collect{ it as Long } : []
         //List<Long> idList = params.get('idList[]') ? params.get('idList[]').collect{ it.id as Long } : []
-        // TODO
         // TODO
         List<String> rows = GenericExportManager.export( export, idList )
 

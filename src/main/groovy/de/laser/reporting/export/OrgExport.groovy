@@ -1,12 +1,12 @@
 package de.laser.reporting.export
 
-
+import de.laser.ContextService
+import de.laser.Identifier
 import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.OrgSubjectGroup
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.myInstitution.GenericHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -35,6 +35,8 @@ class OrgExport extends AbstractExport {
                             'country'           : FIELD_TYPE_REFDATA,
                             'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                             'eInvoice'          : FIELD_TYPE_PROPERTY,
+                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL, // <- no BaseConfig.getCustomRefdata(fieldName)
+                            //'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL, // <- no BaseConfig.getCustomRefdata(fieldName)
                             'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL
                     ]
             ]
@@ -56,12 +58,13 @@ class OrgExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        GenericHelper.getFieldLabel( CONFIG.base, fieldName )
+        ExportHelper.getFieldLabel( CONFIG.base, fieldName )
     }
 
     @Override
     List<String> getObject(Long id, Map<String, Object> fields) {
 
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
 
         Org org = Org.get(id)
@@ -137,6 +140,14 @@ class OrgExport extends AbstractExport {
                     else {
                         content.add( '' )
                     }
+                }
+                else if (key == 'identifier-assignment') {
+                    List<Identifier> ids = Identifier.executeQuery(
+                            "select i from Identifier i where i.value != null and i.value != '' and i.org = :org", [org: org]
+                    )
+                    content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
+                }
+                else if (key == 'property-assignment') {
                 }
                 else {
                     content.add( '* ' + FIELD_TYPE_CUSTOM_IMPL )
