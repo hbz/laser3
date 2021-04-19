@@ -3,6 +3,7 @@ package de.laser.reporting.myInstitution
 import de.laser.ContextService
 import de.laser.Org
 import de.laser.Platform
+import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.helper.RDStore
@@ -149,6 +150,25 @@ class SubscriptionQuery extends BaseQuery {
                     idList,
                     result
             )
+        }
+        else if ( params.query in ['subscription-subscription-assignment']) {
+
+            result.data = idList ? Subscription.executeQuery(
+                    'select sub.id, sub.name, count(mbr.id) from Subscription mbr join mbr.instanceOf sub where sub.id in (:idList) group by sub.id order by sub.name',
+                    [idList: idList] ) : []
+
+            result.data.each { d ->
+
+                result.dataDetails.add( [
+                        query:  params.query,
+                        id:     d[0],
+                        label:  d[1],
+                        idList: Subscription.executeQuery( 'select sub.id from Subscription sub where sub.instanceOf.id = :d order by sub.name', [d: d[0]] )
+                ])
+            }
+            handleGenericNonMatchingData( params.query,
+                    'select sub.id from Subscription sub where not exists (select mbr from Subscription mbr where mbr.instanceOf = sub) and sub.id in (:idList) order by sub.name',
+                    idList, result )
         }
 
         result

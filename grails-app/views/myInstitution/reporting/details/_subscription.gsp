@@ -18,6 +18,9 @@
             <g:elseif test="${query == 'subscription-identifier-assignment'}">
                 <th>${message(code:'identifier.label')}</th>
             </g:elseif>
+            <g:if test="${query == 'subscription-subscription-assignment'}">
+                <th> ${message(code:'subscription.details.consortiaMembers.label')}</th>
+            </g:if>
             <g:else>
                 <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
             </g:else>
@@ -69,6 +72,18 @@
                                 List<Identifier> identList = Identifier.findAllBySubAndNs(sub, IdentifierNamespace.get(id))
                                 println identList.collect{ it.value ?: null }.findAll().join(' ,<br/>') // removing empty and null values
                             %>
+                        </td>
+                    </g:elseif>
+                    <g:elseif test="${query == 'subscription-subscription-assignment'}">
+                        <td>
+                        <%
+                            List<Org> orgs = Org.executeQuery('select oo.org from Subscription s join s.orgRelations oo where s = :sub and oo.roleType in :subscriberRoleTypes',
+                                    [sub: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
+                            )
+                            orgs.each { o ->
+                                println g.link( o.name, controller: 'organisation', action: 'show', id: o.id, ) + '<br />'
+                            }
+                        %>
                         </td>
                     </g:elseif>
                     <g:else>
