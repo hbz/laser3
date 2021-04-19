@@ -59,16 +59,14 @@
                     <g:else>
                         <td>
                             <%
-                                int subs = License.executeQuery('select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
+                                println License.executeQuery('select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
                                         [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
                                 )[0]
-                                println subs
                             %>
                         </td>
                         <td>
                             <%
-                                int instanceOf = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
-                                println instanceOf
+                                println License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
                             %>
                         </td>
                     </g:else>
