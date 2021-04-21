@@ -52,7 +52,7 @@
 									<td><ul>
 											<li><g:message code="globalUID.label" />: <g:fieldValue bean="${providerInstance}" field="globalUID"/></li>
 											<g:if test="${providerInstance.gokbId}">
-												<li><g:message code="org.gokbId.label" />: <g:fieldValue bean="${providerInstance}" field="gokbId"/></li>
+												<li><g:message code="org.wekbId.label" />: <g:fieldValue bean="${providerInstance}" field="gokbId"/></li>
 											</g:if>
 											<g:each in="${providerInstance.ids?.sort{it?.ns?.ns}}" var="id"><li>${id.ns.ns}: ${id.value}</li></g:each>
 									</ul></td>

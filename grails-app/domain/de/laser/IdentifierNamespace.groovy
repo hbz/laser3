@@ -88,6 +88,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     Boolean isHidden    = false
     Boolean isUnique    = false
     Boolean isFromLaser = false
+    Boolean isHardData  = false
 
     Date dateCreated
     Date lastUpdated
@@ -112,6 +113,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
         isHidden        column:'idns_is_hidden'
         isUnique        column:'idns_is_unique'
         isFromLaser     column:'idns_is_from_laser'
+        isHardData      column:'idns_is_hard_data'
 
         dateCreated column: 'idns_date_created'
         lastUpdated column: 'idns_last_updated'
@@ -151,6 +153,30 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
 
     Date _getCalculatedLastUpdated() {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
+    }
+
+    static IdentifierNamespace construct(Map<String, Object> configMap) {
+        withTransaction {
+            IdentifierNamespace idns
+            if(configMap.nsType)
+                idns = IdentifierNamespace.findByNsAndNsType(configMap.ns, configMap.nsType)
+            else
+                idns = IdentifierNamespace.findByNs(configMap.ns)
+            if(!idns) {
+                idns = new IdentifierNamespace([ns: configMap.ns, nsType: configMap.nsType, isFromLaser: configMap.isFromLaser] )
+            }
+            idns.name_de = configMap.name_de
+            idns.description_de = configMap.description_de
+            idns.name_en = configMap.name_en
+            idns.description_en = configMap.description_en
+            idns.isUnique = configMap.isUnique
+            idns.isHidden = configMap.isHidden
+            idns.isHardData = configMap.isHardData
+            idns.validationRegex = configMap.validationRegex
+            if(!idns.save())
+                log.error(idns.getErrors().getAllErrors().toListString())
+            idns
+        }
     }
 
     boolean isCoreOrgNamespace(){

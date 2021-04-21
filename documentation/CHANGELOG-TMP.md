@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      20.04.2021  dev     2.1         Andreas Feature     Umstrukturierung der Identifier in den eingehängten Domänen auf sortierte Listen
+
+3383    20.04.2021  dev     2.1         Andreas Feature     visuelle Umstrukturierung des Identifier-Panels
+
+3374    20.04.2021  dev     2.1         Andreas Feature     Umfragemerkmal "Interessiert" hart kodiert
+
+3356    20.04.2021  dev     2.1         Andreas Feature     Identifier-Namensräume hart kodierbar, erster Basissatz hart kodiert
+
 3370    16.04.2021  rc2.0   2.0.7       David   Bug         Merkmalsverwaltung: Merkmale nicht (mehr) alphabetisch sortiert
 
 3368    16.04.2021  rc2.0   2.0.7       Andreas Bug         Aufruf von Paketen über 32768 Titel funktionierte nicht

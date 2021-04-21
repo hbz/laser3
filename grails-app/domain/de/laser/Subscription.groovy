@@ -88,6 +88,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
   SortedSet issueEntitlements
   SortedSet packages
+  SortedSet ids
 
   static hasMany = [
           ids                 : Identifier,
@@ -156,7 +157,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         isMultiYear column: 'sub_is_multi_year'
         pendingChanges  sort: 'ts', order: 'asc', batchSize: 10
 
-        ids                 batchSize: 10
+        ids             sort: 'ns', batchSize: 10
         packages            batchSize: 10
         issueEntitlements   batchSize: 10
         documents           batchSize: 10
