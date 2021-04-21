@@ -37,31 +37,8 @@ databaseChangeLog = {
         }
     }
 
-    /*changeSet(author: "galffy (hand-coded)", id: "1618826469327-6") {
-        grailsChange {
-            change {
-                sql.execute("update identifier_namespace set idns_ns = 'EZB anchor', idns_name_de = 'EZB Anker', idns_is_from_laser = true where idns_ns = 'EZB_anchor';")
-            }
-            rollback {}
-        }
+    changeSet(author: "galffy (generated)", id: "1618826469327-6") {
+        dropColumn(columnName: "pkg_license_fk", tableName: "package")
     }
-
-    changeSet(author: "galffy (hand-coded)", id: "1618826469327-7") {
-        grailsChange {
-            change {
-                sql.execute("")
-            }
-            rollback {}
-        }
-    }
-
-    changeSet(author: "galffy (hand-coded)", id: "1618826469327-8") {
-        grailsChange {
-            change {
-                sql.execute("")
-            }
-            rollback {}
-        }
-    }*/
 
 }
