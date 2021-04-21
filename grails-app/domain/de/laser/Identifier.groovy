@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import grails.web.servlet.mvc.GrailsParameterMap
 
-class Identifier implements CalculatedLastUpdated {
+class Identifier implements CalculatedLastUpdated, Comparable {
 
     def cascadingUpdateService
 
@@ -63,11 +63,27 @@ class Identifier implements CalculatedLastUpdated {
        org  column:'id_org_fk'
        pkg  column:'id_pkg_fk'
        sub  column:'id_sub_fk'
-       tipp column:'id_tipp_fk',    index:'id_tipp_idx'
+       tipp column:'id_tipp_fk'
 
         dateCreated column: 'id_date_created'
         lastUpdated column: 'id_last_updated'
         lastUpdatedCascading column: 'id_last_updated_cascading'
+    }
+
+    @Override
+    int compareTo(Object o) {
+        String aVal = ns.name_de ?: ns.ns
+        String bVal = o.ns.name_de ?: o.ns.ns
+        int result = aVal.compareToIgnoreCase(bVal)
+        if(result == 0) {
+            if(ns.nsType) {
+                result = ns.nsType.compareTo(o.ns.nsType)
+            }
+            if(result == 0 || !ns.nsType) {
+                result = value.compareTo(o.value)
+            }
+        }
+        result
     }
 
     static Identifier construct(Map<String, Object> map) {

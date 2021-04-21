@@ -68,8 +68,6 @@
     </table>
 </div>
 
-<g:render template="/templates/copyEmailaddresses" model="[orgList: list, modalID: 'chartDetailsCopyEmailModal']"/>
+<g:render template="/templates/copyEmailaddresses" model="[modalID: 'chartDetailsCopyEmailModal', orgList: list]" />
 
-<laser:script file="${this.getGroovyPageFileName()}">
-    r2d2.initDynamicSemuiStuff('#chart-details')
-</laser:script>
+<g:render template="/myInstitution/reporting/export/chartDetailsModal" model="[modalID: 'chartDetailsExportModal', token: token, query: query, objectList: list]" />

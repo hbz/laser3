@@ -96,7 +96,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     @RefdataAnnotation(cat = RDConstants.E_INVOICE_PORTAL)
     RefdataValue eInvoicePortal
 
-    Set ids = []
+    SortedSet ids
 
     static transients = [
             'deleted', 'customerType', 'customerTypeI10n', 'designation',
@@ -185,7 +185,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
                 column: 'refdata_value_id', type:   'BIGINT'
         ], lazy: false
 
-        ids                 batchSize: 10
+        ids                 sort: 'ns', batchSize: 10
         outgoingCombos      batchSize: 10
         incomingCombos      batchSize: 10
         links               batchSize: 10

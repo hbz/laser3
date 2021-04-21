@@ -114,6 +114,10 @@
 
     <semui:messages data="${flash}" />
 
+    <semui:debugInfo>
+        <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+    </semui:debugInfo>
+
     <g:if test="${filteredSubChilds}">
         <table class="ui celled la-table table">
             <thead>
@@ -156,14 +160,12 @@
             </tr>
             </thead>
             <tbody>
-            <g:each in="${filteredSubChilds}" status="i" var="zeile">
-                <g:set var="sub" value="${zeile.sub}"/>
+            <g:each in="${filteredSubChilds}" status="i" var="row">
+                <g:set var="sub" value="${row.sub}"/>
                 <tr>
                     <td>${i + 1}</td>
-                    <g:set var="filteredSubscribers" value="${zeile.orgs}" />
-                    <g:set var="org" value="${null}" />
-                    <g:each in="${filteredSubscribers}" var="subscr">
-                        <g:set var="org" value="${subscr}" />
+                    <g:set var="subscr" value="${row.orgs}" />
+                    <%--<g:each in="${filteredSubscribers}" var="subscr">--%>
                         <td>
                             ${subscr.sortname}</td>
                         <td>
@@ -209,47 +211,47 @@
                                 </g:each>
                             </div>
                         </td>
-                    </g:each>
+                    <%--</g:each>--%>
                     <g:if test="${! sub.getAllSubscribers()}">
                         <td></td>
                         <td></td>
                     </g:if>
                     <%
-                        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(sub)
-                        Subscription navPrevSubMember = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
-                        Subscription navNextSubMember = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
+                        LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(sub,false)
+                        Long navPrevSubMember = (links?.prevLink && links?.prevLink?.size() > 0) ? links?.prevLink[0] : null
+                        Long navNextSubMember = (links?.nextLink && links?.nextLink?.size() > 0) ? links?.nextLink[0] : null
                     %>
                     <td class="center aligned">
                         <g:if test="${navPrevSubMember}">
-                            <g:link controller="subscription" action="show" id="${navPrevSubMember.id}"><i class="arrow left icon"></i></g:link>
+                            <g:link controller="subscription" action="show" id="${navPrevSubMember}"><i class="arrow left icon"></i></g:link>
                         </g:if>
-                        <g:elseif test="${(navPrevSubscription?.size() > 0) && navPrevSubscription[0].getDerivedSubscriptionBySubscribers(org)}">
+                        <g:elseif test="${(navPrevSubscription?.size() > 0) && Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.org = :subscriber',[parent:navPrevSubscription[0],subscriber:subscr])}">
                             <g:link controller="subscription" class="ui icon js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.linkPrevMemberSub")}"
                                     data-confirm-term-how="ok"
                                     action="linkNextPrevMemberSub"
                                     id="${subscription.id}"
-                                    params="[prev: true, memberOrg: org.id, memberSubID: sub.id]"><i class="arrow left icon grey"></i></g:link>
+                                    params="[prev: true, memberOrg: subscr.id, memberSubID: sub.id]"><i class="arrow left icon grey"></i></g:link>
                         </g:elseif>
                     </td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                     <td class="center aligned">
                         <g:if test="${navNextSubMember}">
-                            <g:link controller="subscription" action="show" id="${navNextSubMember.id}"><i class="arrow right icon"></i></g:link>
+                            <g:link controller="subscription" action="show" id="${navNextSubMember}"><i class="arrow right icon"></i></g:link>
                         </g:if>
-                        <g:elseif test="${(navNextSubscription?.size() > 0) && navNextSubscription[0].getDerivedSubscriptionBySubscribers(org)}">
+                        <g:elseif test="${(navNextSubscription?.size() > 0) && Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.org = :subscriber',[parent:navNextSubscription[0],subscriber:subscr])}">
                             <g:link controller="subscription" class="ui icon js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.linkNextMemberSub")}"
                                     data-confirm-term-how="ok"
                                     action="linkNextPrevMemberSub"
                                     id="${subscription.id}"
-                                    params="[next: true, memberOrg: org.id, memberSubID: sub.id]"><i class="arrow right icon grey"></i></g:link>
+                                    params="[next: true, memberOrg: subscr.id, memberSubID: sub.id]"><i class="arrow right icon grey"></i></g:link>
                         </g:elseif>
                     </td>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
-                            <g:set var="license" value="${Links.findByDestinationSubscriptionAndLinkType(sub,RDStore.LINKTYPE_LICENSE)}"/>
+                            <g:set var="license" value="${Links.executeQuery('select li.id from Links li where li.destinationSubscription = :destination and li.linkType = :linktype',[destination:sub,linktype:RDStore.LINKTYPE_LICENSE])}"/>
                             <g:if test="${!license}">
                                 <g:link controller="subscription" action="linkLicenseMembers" id="${subscription.id}" class="ui icon ">
                                     <i class="circular la-light-grey inverted minus icon"></i>
@@ -292,7 +294,6 @@
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="write icon"></i>
                         </g:link>
-                        <g:if test="${sub.isEditableBy(contextService.getUser())}"> <%-- needs to be checked for child subscription because of collective subscriptions! --%>
                             <g:if test="${sub._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION] && sub.instanceOf._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE}">
                                 <g:if test="${sub.orgRelations.find{it.roleType == RDStore.OR_SUBSCRIBER_CONS_HIDDEN}}">
                                         <g:link class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}" controller="ajax" action="toggleOrgRole" params="${[id:sub.id]}">
@@ -322,8 +323,6 @@
                                     </button>
                                 </span>
                             </g:else>
-                        </g:if>
-
                         <semui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea"/>
                     </td>
                 </tr>

@@ -1026,6 +1026,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             throw e
                         }
                     }
+                    if(result.ids) {
+                        Identifier.executeUpdate('delete from Identifier i where i.pkg = :pkg',[pkg:result]) //damn those wrestlers ...
+                    }
                     packageRecord.identifiers.each { id ->
                         if(id.namespace.toLowerCase() != 'originediturl') {
                             Identifier.construct([namespace: id.namespace, value: id.value, reference: result, isUnique: false, nsType: Package.class.name])

@@ -92,7 +92,6 @@
         });
 
         $("#newUser").submit(function(e){
-            console.log("eee");
             e.preventDefault();
             $(".validateNotEmpty").each(function(k) {
                 if($(this).val().length === 0) {

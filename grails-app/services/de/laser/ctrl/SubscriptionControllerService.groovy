@@ -460,12 +460,16 @@ class SubscriptionControllerService {
 
     Map<String,Object> members(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        ProfilerUtils pu = new ProfilerUtils()
+        pu.setBenchmark('init')
         if(!result)
             [result:null,status:STATUS_ERROR]
+        pu.setBenchmark('before org props')
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
-        Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
         //result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscription,subscriberRoleTypes:subscriberRoleTypes])
+        pu.setBenchmark('getting filtered subscribers')
         result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
+        pu.setBenchmark('after sub schildren')
         result.filterSet = params.filterSet ? true : false
         Set<Map<String,Object>> orgs = []
         if (params.exportXLS || params.format) {
@@ -503,7 +507,8 @@ class SubscriptionControllerService {
             }
             result.orgs = orgs
         }
-
+        List bm = pu.stopBenchmark()
+        result.benchMark = bm
         [result:result,status:STATUS_OK]
     }
 
@@ -673,12 +678,13 @@ class SubscriptionControllerService {
                 Links link
                 if(params.prev && prevMemberSub) {
                     link = Links.construct([source: memberSub, destination: prevMemberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
+                    result.redirect = prevMemberSub.id
                 }
                 if(params.next && nextMemberSub) {
                     link = Links.construct([source: nextMemberSub, destination: memberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
+                    result.redirect = nextMemberSub.id
                 }
                 if(link) {
-                    result.redirect = link.id
                     [result:result,status:STATUS_OK]
                 }
                 else [result:result,status:STATUS_ERROR]
@@ -1199,7 +1205,7 @@ class SubscriptionControllerService {
             result.num_ies_rows = sourceIEs.size()
             //subscriptionService.getIssueEntitlementsFixed(baseSub).size()
             result.sourceIEIDs = sourceIEs
-            result.sourceIEs = IssueEntitlement.findAllByIdInList(sourceIEs,[offset: result.offset, max: result.max])
+            result.sourceIEs = IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max))
             result.targetIEs = IssueEntitlement.findAllByIdInList(targetIEs)
             result.newSub = newSub
             result.subscription = baseSub

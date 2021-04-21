@@ -1,23 +1,23 @@
-<%@page import="de.laser.reporting.myInstitution.GenericConfig; de.laser.reporting.myInstitution.OrganisationConfig; de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.reporting.myInstitution.OrganisationConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 
-<g:if test="${result}">
-    <g:render template="/myInstitution/reporting/query/base.part1" />
+<g:if test="${filterResult}">
+    <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />
 
-    <g:if test="${result.orgIdList}">
+    <g:if test="${filterResult.data.orgIdList}">
 
         <div class="ui message success">
             <p>
                 Mit diesen Filtereinstellungen wurden
-                <strong>${result.orgIdList.size()} Organisationen</strong> gefunden.
+                <strong>${filterResult.data.orgIdList.size()} Organisationen</strong> gefunden.
             </p>
         </div>
 
-        <g:render template="/myInstitution/reporting/query/base.part2" />
+        <g:render template="/myInstitution/reporting/query/base.part1" />
 
         <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.app.reporting.current.request = {
-                context: '${GenericConfig.KEY}',
+                context: '${BaseConfig.KEY}',
                 filter: '${OrganisationConfig.KEY}',
                 token: '${token}'
             }

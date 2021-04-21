@@ -7,6 +7,33 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3348    21.04.2021  dev     2.1         Andreas Bug         falsche Identifier entfernt, Paket-Identifier werden bei Sync ausgetauscht
+
+--      20.04.2021  dev     2.1         Andreas Feature     Umstrukturierung der Identifier in den eingehängten Domänen auf sortierte Listen
+
+3383    20.04.2021  dev     2.1         Andreas Feature     visuelle Umstrukturierung des Identifier-Panels
+
+3374    20.04.2021  dev     2.1         Andreas Feature     Umfragemerkmal "Interessiert" hart kodiert
+
+3356    20.04.2021  dev     2.1         Andreas Feature     Identifier-Namensräume hart kodierbar, erster Basissatz hart kodiert
+
+3370    16.04.2021  rc2.0   2.0.7       David   Bug         Merkmalsverwaltung: Merkmale nicht (mehr) alphabetisch sortiert
+
+3368    16.04.2021  rc2.0   2.0.7       Andreas Bug         Aufruf von Paketen über 32768 Titel funktionierte nicht
+
+3358    16.04.2021  dev     2.1         Andreas Bug         Verlagsfilterklausel korrigiert
+
+3343    16.04.2021  dev     2.1         Andreas Feature     Aufspalten der Fachbereiche in Titelfilter
+
+3342    15.04.2021  dev     2.1         Andreas Bug         Performanz auf Teilnehmerübersicht leicht verbessert
+
+3313    15.04.2021  rc2.0   2.0.7       David   Feature     Prototyp: Export-Modul
+
+3327    15.04.2021  rc2.0   2.0.7       David   Feature     Reporting: Caching für Queries erweitern
+
+3349    14.04.2021  dev     2.1         Andreas Feature     Mailtexte für neue Umfrage angepasst
+
+3341    14.04.2021  dev     2.1         Andreas Bug         Redirect für nachträgliche Lizenzverknüpfung funktionierte nicht
 
 3335    13.04.2021  rc2.0   2.0.7       Andreas Bug         Regionsfilter wird korrekt befüllt und sortiert
 

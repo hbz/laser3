@@ -1421,6 +1421,7 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
+        SwissKnife.setPaginationParams(result,params,result.user)
         result.participant = params.participant ? Org.get(params.participant) : null
 
         result.surveyConfig = SurveyConfig.get(params.id)
@@ -1439,7 +1440,7 @@ class SurveyController {
         result.subscriptionParticipant = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant)
 
         List<Long> ies = subscriptionService.getIssueEntitlementIDsNotFixed(result.subscriptionParticipant)
-        result.ies = IssueEntitlement.findAllByIdInList(ies)
+        result.ies = IssueEntitlement.findAllByIdInList(ies.take(32767)) //TODO
 
         String filename = "renewEntitlements_${escapeService.escapeString(result.surveyConfig.subscription.dropdownNamingConvention(result.participant))}"
 

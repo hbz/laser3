@@ -3,11 +3,12 @@ package de.laser.reporting.myInstitution
 import de.laser.ContextService
 import de.laser.Org
 import de.laser.auth.Role
-import de.laser.reporting.myInstitution.GenericQuery
+import de.laser.reporting.myInstitution.base.BaseFilter
+import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 
-class OrganisationQuery extends GenericQuery {
+class OrganisationQuery extends BaseQuery {
 
     static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
 
@@ -18,15 +19,13 @@ class OrganisationQuery extends GenericQuery {
         //def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         //Locale locale = LocaleContextHolder.getLocale()
 
-        Map<String, Object> result = [
-                chart    : params.chart,
-                query    : params.query,
-                data     : [],
-                dataDetails : []
-        ]
+        //println 'OrganisationQuery.query()'
+        //println params
+
+        Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
         String prefix = params.query.split('-')[0]
-        List idList = params.list(prefix + 'IdList').collect { it as Long }
+        List idList   = BaseFilter.getCachedFilterIdList(prefix, params)
 
         if (! idList) {
         }

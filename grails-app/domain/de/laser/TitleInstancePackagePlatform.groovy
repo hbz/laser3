@@ -76,6 +76,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
 
     Date dateCreated
     Date lastUpdated
+    SortedSet ids
 
   static mappedBy = [ids: 'tipp',
                      orgs: 'tipp',
@@ -139,7 +140,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
       dateCreated column: 'tipp_date_created'
       lastUpdated column: 'tipp_last_updated'
 
-      ids                   batchSize: 10
+      ids                   batchSize: 10, sort: 'ns'
     //additionalPlatforms   batchSize: 10
       coverages             batchSize: 10, sort: 'startDate', order: 'asc'
       priceItems            batchSize: 10, sort: 'startDate', order: 'asc'

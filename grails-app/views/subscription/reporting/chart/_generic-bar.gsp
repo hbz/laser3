@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.myInstitution.GenericConfig; de.laser.reporting.myInstitution.GenericQuery" %>
+<%@ page import="de.laser.reporting.myInstitution.base.BaseQuery" %>
 <g:if test="${! data}">
     JSPC.app.reporting.current.chart.option = {}
     $("#reporting-modal-nodata").modal('show');
@@ -6,7 +6,7 @@
 <g:else>
     JSPC.app.reporting.current.chart.option = {
         title: {
-            text: '${tooltipLabel}',
+            text: '${labels.tooltip}',
             show: false
         },
         dataset: {
@@ -52,7 +52,7 @@
                 },
                 itemStyle: {
                     color: function(params) {
-                        if (JSPC.helper.contains(['${GenericQuery.NO_DATA_LABEL}'], params.name)) {
+                        if (JSPC.helper.contains(['${BaseQuery.NO_DATA_LABEL}'], params.name)) {
                             return JSPC.app.reporting.helper.series.color.redInactive
                         } else {
                             return JSPC.app.reporting.helper.series.color.blue

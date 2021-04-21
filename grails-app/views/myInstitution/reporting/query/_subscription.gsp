@@ -1,25 +1,25 @@
-<%@page import="de.laser.reporting.myInstitution.GenericConfig; de.laser.reporting.myInstitution.SubscriptionConfig; de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.reporting.myInstitution.SubscriptionConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 
-<g:if test="${result}">
-    <g:render template="/myInstitution/reporting/query/base.part1" />
+<g:if test="${filterResult}">
+    <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />
 
-    <g:if test="${result.subscriptionIdList || result.memberIdList || result.providerIdList}">
+    <g:if test="${filterResult.data.subscriptionIdList || filterResult.data.memberIdList || filterResult.data.providerIdList}">
 
         <div class="ui message success">
             <p>
                 Mit diesen Filtereinstellungen wurden
-                <strong>${result.subscriptionIdList.size()} Lizenzen</strong>,
-                <strong>${result.memberIdList.size()} Teilnehmer</strong> und
-                <strong>${result.providerIdList.size()} Anbieter</strong> gefunden.
+                <strong>${filterResult.data.subscriptionIdList.size()} Lizenzen</strong>,
+                <strong>${filterResult.data.memberIdList.size()} Teilnehmer</strong> und
+                <strong>${filterResult.data.providerIdList.size()} Anbieter</strong> gefunden.
             </p>
         </div>
 
-        <g:render template="/myInstitution/reporting/query/base.part2" />
+        <g:render template="/myInstitution/reporting/query/base.part1" />
 
         <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.app.reporting.current.request = {
-                context: '${GenericConfig.KEY}',
+                context: '${BaseConfig.KEY}',
                 filter: '${SubscriptionConfig.KEY}',
                 token: '${token}'
             }

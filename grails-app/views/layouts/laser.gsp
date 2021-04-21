@@ -308,7 +308,6 @@
                             <div class="menu" role="menu">
 
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="index">Dashboard</semui:link>
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="myInstitution" action="dashboard" onclick="return confirm('TEST')">TEST JS CONFIRM</semui:link>
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     <i class="ui icon keyboard outline"></i>${message(code:'menu.yoda.engine')}

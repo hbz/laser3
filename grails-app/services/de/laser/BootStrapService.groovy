@@ -659,24 +659,29 @@ No Host Platform URL Content
 
     void setIdentifierNamespace() {
 
-        List namespaces = [
-                [ns: "ISIL"],
-                [ns: "ISIL_Paketsigel"],
-                [ns: "uri"],
-                [ns: "zdb"],
-                [ns: "ZDB_ID",typ:IdentifierNamespace.NS_SUBSCRIPTION],
-                [ns: "DNB_ID",typ:IdentifierNamespace.NS_SUBSCRIPTION],
-                [ns: "zdb_ppn"],
-                [ns: "VIAF"],
-                [ns: "issn"],
-                [ns: "eissn"]
+        //TODO isUnique/isHidden flags are set provisorically to "false", adaptations may be necessary
+        List<Map<String,Object>> namespaces = [
+                [ns: "Anbieter_Produkt_ID", name_de: "Anbieter-Produkt-ID", desc_de: "", name_en: "Provider-product-ID", desc_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
+                [ns: "Anbieter_Produkt_ID", name_de: "Anbieter-Produkt-ID", desc_de: "", name_en: "Provider-product-ID", desc_en: "",  nsType: IdentifierNamespace.NS_PACKAGE, isUnique: false, isHidden: false],
+                [ns: "DBIS Anker", name_de: "DBIS-Anker", desc_de: "", name_en: "DBIS anchor", desc_en: "",  nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
+                [ns: "DNB_ID", name_de: "DNB-ID", desc_de: "", name_en: "DNB-ID", desc_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
+                [ns: "EZB anchor", name_de: "EZB-Anker", desc_de: "", name_en: "EZB anchor", desc_en: "", nsType:null, isUnique: false, isHidden: false],
+                [ns: "ezb_collection_id", name_de: "EZB-Kollektions-ID", desc_de: "", name_en: "EZB collection id", desc_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
+                [ns: "ISIL", name_de: "ISIL", desc_de: "", name_en: "ISIL", desc_en: "", nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
+                [ns: "ISIL_Paketsigel", name_de: "ISIL-Paketsigel", desc_de: "", name_en: "ISIL package identifier", desc_en: "", nsType: null, isUnique: false, isHidden: false],
+                [ns: "SFX-Anker", name_de: "SFX-Anker", desc_de: "", name_en: "SFX anchor", desc_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
+                [ns: "ZDB_ID", name_de: "ZDB-ID", desc_de: "", name_en: "ZDB-ID", desc_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
+                [ns: "ZDB_Paketsigel", name_de: "ZDB Paketsigel", desc_de: "", name_en: "ZDB package identifier", desc_en: "", nsType:IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false]
+                //[ns: "uri", name_de: "", desc_de: "", name_en: "", desc_en: "", nsType:null, isUnique: false, isHidden: false],
+                //[ns: "VIAF", name_de: "", desc_de: "", name_en: "", desc_en: "", nsType:null, isUnique: false, isHidden: false],
+                //[ns: "issn", name_de: "", desc_de: "", name_en: "", desc_en: "", nsType:null, isUnique: false, isHidden: false],
+                //[ns: "eissn", name_de: "", desc_de: "", name_en: "", desc_en: "", nsType:null, isUnique: false, isHidden: false]
         ]
 
-        namespaces.each { Map<String, String> namespaceProperties ->
-            String namespace = namespaceProperties["ns"]
-            String typ = namespaceProperties["typ"] ?: null
-            //TODO isUnique/isHidden flags are set provisorically to "false", adaptations may be necessary
-            IdentifierNamespace.findByNsIlike(namespace) ?: new IdentifierNamespace(ns: namespace, nsType: typ, isUnique: false, isHidden: false, isFromLaser: true).save()
+        namespaces.each { Map<String, Object> namespaceProperties ->
+            namespaceProperties.isFromLaser = true
+            namespaceProperties.isHardData = true
+            IdentifierNamespace.construct(namespaceProperties)
         }
     }
 }

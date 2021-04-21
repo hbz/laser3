@@ -25,20 +25,20 @@ import java.text.SimpleDateFormat
 class Package extends AbstractBaseWithCalculatedLastUpdated {
         //implements ShareSupport {
 
-    def grailsApplication
-    def deletionService
+  //def grailsApplication
+  //def deletionService
     def accessService
 
     static auditable = [ ignore:['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
     static Log static_logger = LogFactory.getLog(Package)
 
-  String name
-  String sortName
-  String gokbId
-  String vendorURL
-  String cancellationAllowances
+    String name
+    String sortName
+    String gokbId
+    String vendorURL
+    String cancellationAllowances
 
-  Date listVerifiedDate
+    Date listVerifiedDate
 
     @RefdataAnnotation(cat = RDConstants.PACKAGE_CONTENT_TYPE)
     RefdataValue contentType
@@ -66,9 +66,10 @@ class Package extends AbstractBaseWithCalculatedLastUpdated {
     Platform nominalPlatform
     Date startDate
     Date endDate
-    License license
+    //License license
     String forumId
     Set pendingChanges
+    SortedSet ids
     Boolean autoAccept = false
 
     Date dateCreated
@@ -110,7 +111,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
          nominalPlatform column:'pkg_nominal_platform_fk'
                startDate column:'pkg_start_date',   index:'pkg_dates_idx'
                  endDate column:'pkg_end_date',     index:'pkg_dates_idx'
-                 license column:'pkg_license_fk'
+               //license column:'pkg_license_fk'
                 isPublic column:'pkg_is_public'
             packageScope column:'pkg_scope_rv_fk'
                vendorURL column:'pkg_vendor_url'
@@ -126,7 +127,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
             prsLinks        batchSize: 10
             documents       batchSize: 10
             subscriptions   batchSize: 10
-            ids             batchSize: 10
+            ids             sort: 'ns', batchSize: 10
   }
 
   static constraints = {
@@ -140,7 +141,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                      fixed (nullable:true)
                  startDate (nullable:true)
                    endDate (nullable:true)
-                   license (nullable:true)
+                 //license (nullable:true)
               packageScope (nullable:true)
                    forumId(nullable:true, blank:false)
                     gokbId(blank:false, unique: true, maxSize: 511)

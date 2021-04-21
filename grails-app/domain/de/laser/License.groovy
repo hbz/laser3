@@ -29,15 +29,13 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     def contextService
     def accessService
-    def genericOIDService
+    //def genericOIDService
     def messageSource
     def pendingChangeService
     def changeNotificationService
     def propertyService
     def deletionService
     def auditService
-
-    static Log static_logger = LogFactory.getLog(License)
 
     License instanceOf
 
@@ -70,6 +68,8 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     Date lastUpdated
     Date lastUpdatedCascading
 
+    SortedSet ids
+
     static transients = [
             'referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee',
             'calculatedPropDefGroups', 'genericLabel', 'nonDeletedDerivedLicenses'
@@ -77,7 +77,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
   static hasMany = [
           ids            : Identifier,
-          pkgs           :         Package,
+          //pkgs           :         Package,
           //subscriptions:Subscription,
           documents      :    DocContext,
           orgRelations       :     OrgRole,
@@ -90,7 +90,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
   static mappedBy = [
           ids:           'lic',
-          pkgs:          'license',
+          //pkgs:          'license',
           //subscriptions: 'owner',
           documents:     'license',
           orgRelations:      'lic',
@@ -126,10 +126,10 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     //privateProperties sort:'type', order:'desc', batchSize: 10
          pendingChanges sort: 'ts', order: 'asc', batchSize: 10
 
-              ids               batchSize: 10
-              pkgs              batchSize: 10
-              //subscriptions     sort:'name',order:'asc', batchSize: 10
-              orgRelations          batchSize: 10
+              ids               sort: 'ns', batchSize: 10
+              //pkgs            batchSize: 10
+              //subscriptions   sort:'name',order:'asc', batchSize: 10
+              orgRelations      batchSize: 10
               prsLinks          batchSize: 10
               derivedLicenses   batchSize: 10
   }

@@ -4,14 +4,13 @@ import de.laser.FinanceService
 import de.laser.IssueEntitlement
 import de.laser.Links
 import de.laser.Org
-import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.ctrl.FinanceControllerService
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.myInstitution.GenericQuery
+import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -43,15 +42,15 @@ class SubscriptionReporting {
                                             chart : 'bar',
                                             chartLabels : [ 'Teilnehmer entfernt', 'Neue Teilnehmer', 'Aktuelle Teilnehmer' ]
                                     ],
+                                    'timeline-cost' : [
+                                            label : 'Teilnehmerkosten',
+                                            chart : 'bar',
+                                            chartLabels : [ 'Wert', 'Endpreis (nach Steuer)']
+                                    ],
                                     'timeline-entitlement' : [
                                             label : 'Bestand',
                                             chart : 'bar',
                                             chartLabels : [ 'Titel entfernt', 'Neue Titel', 'Aktuelle Titel' ]
-                                    ],
-                                    'timeline-cost' : [
-                                            label : 'Kosten',
-                                            chart : 'bar',
-                                            chartLabels : [ 'Wert', 'Endpreis (nach Steuer)']
                                     ]
                             ]
                     ]
@@ -75,12 +74,7 @@ class SubscriptionReporting {
     static Map<String, Object> query(GrailsParameterMap params) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
-        Map<String, Object> result = [
-                chart      : params.chart,
-                query      : params.query,
-                data       : [],
-                dataDetails: []
-        ]
+        Map<String, Object> result = BaseQuery.getEmptyResult( params.query, params.chart )
 
         String prefix = params.query.split('-')[0]
         Long id = params.long('id')
@@ -301,7 +295,7 @@ class SubscriptionReporting {
                 ' and tipp.' + property + ' is not null and tipp.' + property + ' != \'\' group by tipp.' + property + ' order by tipp.' + property
         ]
 
-        GenericQuery.handleGenericQuery(
+        BaseQuery.handleGenericQuery(
                 query,
                 PROPERTY_QUERY[0] + 'from TitleInstancePackagePlatform tipp where tipp.id in (:idList)' + PROPERTY_QUERY[1],
                 'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.' + property + ' = :d order by tipp.' + property,
@@ -318,7 +312,7 @@ class SubscriptionReporting {
                 ' group by p.id, p.value_de order by p.value_de'
         ]
 
-        GenericQuery.handleGenericRefdataQuery(
+        BaseQuery.handleGenericRefdataQuery(
                 query,
                 PROPERTY_QUERY[0] + 'from TitleInstancePackagePlatform tipp join tipp.' + refdata + ' p where tipp.id in (:idList)' + PROPERTY_QUERY[1],
                 'select tipp.id from TitleInstancePackagePlatform tipp join tipp.' + refdata + ' p where tipp.id in (:idList) and p.id = :d order by tipp.sortName',

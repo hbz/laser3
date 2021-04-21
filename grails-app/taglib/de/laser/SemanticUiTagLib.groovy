@@ -454,13 +454,19 @@ class SemanticUiTagLib {
         String title        = (text && message) ? text + " - " + message : text + message
         String isEditModal  = attrs.isEditModal
 
-        String msgClose    = attrs.msgClose ?: "${g.message(code:'default.button.close.label')}"
-        String msgSave     = attrs.msgSave ?: (isEditModal ? "${g.message(code:'default.button.save_changes')}" : "${g.message(code:'default.button.create.label')}")
+        String msgClose    = attrs.msgClose  ?: "${g.message(code:'default.button.close.label')}"
+        String msgSave     = attrs.msgSave   ?: (isEditModal ? "${g.message(code:'default.button.save_changes')}" : "${g.message(code:'default.button.create.label')}")
         String msgDelete   = attrs.msgDelete ?: "${g.message(code:'default.button.delete.label')}"
 
         out << '<div role="dialog" class="ui modal ' + modalSize + '"' + id + ' aria-label="Modal">'
         out << '<div class="header">' + title + '</div>'
-        out << '<div class="content ' + attrs.contentClass + '">'
+
+        if (attrs.contentClass) {
+            out << '<div class="content ' + attrs.contentClass + '">'
+        } else {
+            out << '<div class="content">'
+        }
+
         out << body()
         out << '</div>'
         out << '<div class="actions">'
