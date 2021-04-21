@@ -671,7 +671,7 @@ No Host Platform URL Content
                 [ns: "ISIL_Paketsigel", name_de: "ISIL-Paketsigel", desc_de: "", name_en: "ISIL package identifier", desc_en: "", nsType: null, isUnique: false, isHidden: false],
                 [ns: "SFX-Anker", name_de: "SFX-Anker", desc_de: "", name_en: "SFX anchor", desc_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
                 [ns: "ZDB_ID", name_de: "ZDB-ID", desc_de: "", name_en: "ZDB-ID", desc_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
-                [ns: "ZDB_Paketsigel", name_de: "ZDB Paketsigel", desc_de: "", name_en: "ZDB package identifier", desc_en: "", nsType:IdentifierNamespace.NS_PACKAGE, isUnique: false, isHidden: false]
+                [ns: "ZDB_Paketsigel", name_de: "ZDB Paketsigel", desc_de: "", name_en: "ZDB package identifier", desc_en: "", nsType:IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false]
                 //[ns: "uri", name_de: "", desc_de: "", name_en: "", desc_en: "", nsType:null, isUnique: false, isHidden: false],
                 //[ns: "VIAF", name_de: "", desc_de: "", name_en: "", desc_en: "", nsType:null, isUnique: false, isHidden: false],
                 //[ns: "issn", name_de: "", desc_de: "", name_en: "", desc_en: "", nsType:null, isUnique: false, isHidden: false],
