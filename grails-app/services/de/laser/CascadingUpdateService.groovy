@@ -4,7 +4,7 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 
-@Transactional
+//@Transactional needed to be deactivated, cf. https://stackoverflow.com/a/57656283 - two transactional annotated methods may enter in conflict
 class CascadingUpdateService {
 
     void update(IdentifierNamespace obj, Date luc) {

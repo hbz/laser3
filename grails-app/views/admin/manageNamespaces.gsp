@@ -142,20 +142,40 @@
 							<tr>
                                 <g:if test="${Identifier.countByNs(idNs) == 0}">
                                     <td>
-                                        <semui:xEditable owner="${idNs}" field="ns"/>
+                                        ${idNs.ns}
+                                        <g:if test="${idNs.isHardData}">
+                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
+                                                <i class="check circle icon green"></i>
+                                            </span>
+                                        </g:if>
                                     </td>
                                     <td></td>
                                     <td>
-                                        <semui:xEditable owner="${idNs}" field="name_${currentLang}"/>
+                                        <g:if test="${!idNs.isHardData}">
+                                            <semui:xEditable owner="${idNs}" field="name_${currentLang}"/>
+                                        </g:if>
+                                        <g:else>
+                                            ${idNs."name_${currentLang}"}
+                                        </g:else>
                                     </td>
                                     <td>
-                                        <semui:xEditable owner="${idNs}" field="description_${currentLang}"/>
+                                        <g:if test="${!idNs.isHardData}">
+                                            <semui:xEditable owner="${idNs}" field="description_${currentLang}"/>
+                                        </g:if>
+                                        <g:else>
+                                            ${idNs."description_${currentLang}"}
+                                        </g:else>
                                     </td>
                                     <td>
                                         <semui:xEditable owner="${idNs}" field="family"/>
                                     </td>
                                     <td>
-                                        <semui:xEditable owner="${idNs}" field="nsType"/>
+                                        <g:if test="${!idNs.isHardData}">
+                                            <semui:xEditable owner="${idNs}" field="nsType"/>
+                                        </g:if>
+                                        <g:else>
+                                            ${idNs.nsType}
+                                        </g:else>
                                     </td>
                                     <td>
                                         <semui:xEditable owner="${idNs}" field="validationRegex"/>
@@ -167,7 +187,12 @@
                                         ${idNs.isFromLaser}
                                     </td>
                                     <td>
-                                        <semui:xEditableBoolean owner="${idNs}" field="isUnique"/>
+                                        <g:if test="${!idNs.isHardData}">
+                                            <semui:xEditableBoolean owner="${idNs}" field="isUnique"/>
+                                        </g:if>
+                                        <g:else>
+                                            ${idNs.isUnique}
+                                        </g:else>
                                     </td>
                                     <td>
                                         <g:link controller="admin" action="manageNamespaces"
@@ -180,25 +205,40 @@
                                 </g:if>
                                 <g:else>
                                     <td>
-                                        ${fieldValue(bean: idNs, field: "ns")}
+                                        ${idNs.ns}
+                                        <g:if test="${idNs.isHardData}">
+                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
+                                                <i class="check circle icon green"></i>
+                                            </span>
+                                        </g:if>
                                     </td>
                                     <td>
                                         ${Identifier.countByNs(idNs)}
                                     </td>
                                     <td>
-                                        <semui:xEditable owner="${idNs}" field="name_${currentLang}"/>
+                                        <g:if test="${!idNs.isHardData}">
+                                            <semui:xEditable owner="${idNs}" field="name_${currentLang}"/>
+                                        </g:if>
+                                        <g:else>
+                                            ${idNs."name_${currentLang}"}
+                                        </g:else>
                                     </td>
                                     <td>
-                                        <semui:xEditable owner="${idNs}" field="description_${currentLang}"/>
+                                        <g:if test="${!idNs.isHardData}">
+                                            <semui:xEditable owner="${idNs}" field="description_${currentLang}"/>
+                                        </g:if>
+                                        <g:else>
+                                            ${idNs."description_${currentLang}"}
+                                        </g:else>
                                     </td>
                                     <td>
                                         <semui:xEditable owner="${idNs}" field="family"/>
                                     </td>
                                     <td>
-                                        ${fieldValue(bean: idNs, field: "nsType")}
+                                        ${idNs.nsType}
                                     </td>
                                     <td>
-                                        ${fieldValue(bean: idNs, field: "validationRegex")}
+                                        ${idNs.validationRegex}
                                     </td>
                                     <td>
                                         <semui:xEditable owner="${idNs}" field="urlPrefix" validation="url"/>
