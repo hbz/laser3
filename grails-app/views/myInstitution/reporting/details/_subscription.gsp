@@ -18,6 +18,9 @@
             <g:elseif test="${query == 'subscription-identifier-assignment'}">
                 <th>${message(code:'identifier.label')}</th>
             </g:elseif>
+            <g:elseif test="${query == 'subscription-subscription-assignment'}">
+                <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
+            </g:elseif>
             <g:else>
                 <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
             </g:else>
@@ -54,10 +57,9 @@
                     <g:elseif test="${query == 'subscription-platform-assignment'}">
                     <td>
                         <%
-                            List<Org> providerList =  Org.executeQuery('select ro.org from OrgRole ro where ro.sub.id = :id and ro.roleType in (:roleTypes)',
+                            Org.executeQuery('select ro.org from OrgRole ro where ro.sub.id = :id and ro.roleType in (:roleTypes)',
                                     [id: sub.id, roleTypes: [RDStore.OR_PROVIDER]]
-                            )
-                            providerList.each{ p ->
+                            ).each { p ->
                                 println g.link( p.name, controller: 'organisation', action: 'show', id: p.id, ) + '<br />'
                             }
                         %>
@@ -71,13 +73,23 @@
                             %>
                         </td>
                     </g:elseif>
+                    <g:elseif test="${query == 'subscription-subscription-assignment'}">
+                        <td>
+                        <%
+                            Org.executeQuery('select oo.org from Subscription s join s.orgRelations oo where s = :sub and oo.roleType in :subscriberRoleTypes',
+                                    [sub: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
+                            ).each { o ->
+                                println g.link( o.name, controller: 'organisation', action: 'show', id: o.id, ) + '<br />'
+                            }
+                        %>
+                        </td>
+                    </g:elseif>
                     <g:else>
                         <td>
                             <%
-                                int members = Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
+                                println Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
                                         [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
                                 )[0]
-                                println members
                             %>
                         </td>
                     </g:else>
@@ -94,6 +106,6 @@
     </table>
 </div>
 
-<g:render template="/myInstitution/reporting/export/chartDetailsModal" model="[modalID: 'chartDetailsExportModal', token: token, query: query, objectList: list]" />
+<g:render template="/myInstitution/reporting/export/chartDetailsModal" model="[modalID: 'chartDetailsExportModal', token: token]" />
 
 

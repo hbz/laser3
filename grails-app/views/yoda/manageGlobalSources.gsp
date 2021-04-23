@@ -106,14 +106,14 @@
                 </div>
                 <div class="field">
                     <label>Global Source Name</label>
-                    <input type="text" name="name" placeholder="eg GOKb Live Server"/>
+                    <input type="text" name="name" placeholder="eg we:kb Live Server"/>
                 </div>
             </div>
 
             <div class="fields two">
                 <div class="field">
                     <label>Global Source Type</label>
-                    <select name="type"><option value="OAI">GOKb OAI Source</option></select>
+                    <select name="type"><option value="OAI">we:kb OAI Source</option></select>
                 </div>
                 <div class="field">
                     <label>Record Type</label>

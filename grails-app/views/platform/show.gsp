@@ -42,14 +42,14 @@
                   <dd><semui:xEditable owner="${platformInstance}" field="name"/></dd>
                 </dl>
                 <dl>
-                  <dt>GOKb ID</dt>
+                  <dt>we:kb ID</dt>
                   <dd>
                     ${platformInstance?.gokbId}
                     <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                             var="gokbAPI">
                       <g:if test="${platformInstance?.gokbId}">
                         <a target="_blank"
-                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/?id=' + platformInstance?.gokbId : '#'}"><i
+                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/platformContent/?id=' + platformInstance?.gokbId : '#'}"><i
                             title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
                       </g:if>
                     </g:each>

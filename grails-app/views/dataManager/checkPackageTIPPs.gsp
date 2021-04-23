@@ -3,16 +3,16 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Package Tipps LAS:eR and GOKB</title>
+    <title>${message(code:'laser')} : Package Tipps LAS:eR and we:kb</title>
 </head>
 
 <body>
 <semui:breadcrumbs>
     <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
-    <semui:crumb text="Package Tipps LAS:eR and GOKB" class="active"/>
+    <semui:crumb text="Package Tipps LAS:eR and we:kb" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header la-noMargin-top"> Package Tipps LAS:eR and GOKB</h1>
+<h1 class="ui header la-noMargin-top"> Package Tipps LAS:eR and we:kb</h1>
 
 %{--<g:link action="checkPackageTIPPs" params="${params+[onlyNotEqual: true]}" class="ui button">Show only where Tipps Not Equal</g:link>--}%
 
@@ -24,10 +24,10 @@
                 <table class="ui celled la-selectable la-table table">
                     <thead>
                     <tr>
-                        <th>${message(code:'package.show.pkg_name')} in GOKB</th>
+                        <th>${message(code:'package.show.pkg_name')} in we:kb</th>
                         <th>${message(code:'package.show.pkg_name')} in LAS:eR</th>
                         <%--<th>${message(code:'consortium.label')}</th>--%>
-                        <th>${message(code:'tipp.plural')} in GOKB</th>
+                        <th>${message(code:'tipp.plural')} in we:kb</th>
                         <th>${message(code:'tipp.plural')} in LAS:eR</th>
                     </thead>
                     <tbody>
@@ -35,7 +35,7 @@
                     <g:each in="${records}" var="hit" >
                         <tr>
                             <td>
-                                ${hit.name} <a target="_blank" href="${hit.url ? hit.url+'/gokb/public/packageContent/?id='+hit.id : '#'}" ><i title="GOKB Link" class="external alternate icon"></i></a>
+                                ${hit.name} <a target="_blank" href="${hit.url ? hit.url+'/public/packageContent/?id='+hit.id : '#'}" ><i title="we:kb Link" class="external alternate icon"></i></a>
                             </td>
 
                             <g:if test="${Package.findByGokbId(hit.uuid)}">

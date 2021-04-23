@@ -19,6 +19,9 @@ import java.text.SimpleDateFormat
 class SubscriptionReporting {
 
     static String KEY = 'subscription'
+    static String NO_DATE = 'Keine Angabe'
+    static String NO_STARTDATE = 'Ohne Laufzeit-Beginn'
+    static String NO_ENDDATE = 'Ohne Laufzeit-Ende'
 
     static Map<String, Object> CONFIG = [
 
@@ -96,8 +99,8 @@ class SubscriptionReporting {
                             s.id,
                             s.name,
                             sub == s,
-                            sdf.format(s.startDate),
-                            sdf.format(s.endDate),
+                            s.startDate ? sdf.format(s.startDate) : NO_STARTDATE,
+                            s.endDate ? sdf.format(s.endDate) : NO_ENDDATE,
                             subIdLists.get(i).size()
                     ])
                     result.dataDetails.add([
@@ -151,8 +154,8 @@ class SubscriptionReporting {
                             s.id,
                             s.name,
                             sub == s,
-                            sdf.format(s.startDate),
-                            sdf.format(s.endDate),
+                            s.startDate ? sdf.format(s.startDate) : NO_STARTDATE,
+                            s.endDate ? sdf.format(s.endDate) : NO_ENDDATE,
                             ieIdLists.get(i).size()
                     ])
                     result.dataDetails.add([
@@ -206,8 +209,8 @@ class SubscriptionReporting {
                             s.id,
                             s.name,
                             sub == s,
-                            sdf.format(s.startDate),
-                            sdf.format(s.endDate),
+                            s.startDate ? sdf.format(s.startDate) : NO_STARTDATE,
+                            s.endDate ? sdf.format(s.endDate) : NO_ENDDATE,
                             finance.cons?.sums?.localSums?.localSum ?: 0,
                             finance.cons?.sums?.localSums?.localSumAfterTax ?: 0
                     ])

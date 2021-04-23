@@ -3,16 +3,18 @@ package de.laser.reporting.export
 import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
+import de.laser.reporting.myInstitution.base.BaseQuery
 
 class GenericExportManager {
 
-    static AbstractExport getCurrentExport(String query) {
-        GenericExportManager.getCurrentExport( query, [:] )
+    static AbstractExport createExport(String token) {
+        GenericExportManager.createExport( token, [:] )
     }
 
-    static AbstractExport getCurrentExport(String query, Map<String, Object> selectedFields) {
+    static AbstractExport createExport(String token, Map<String, Object> selectedFields) {
 
-        String prefix = query.split('-')[0]
+        Map<String, Object> queryCache = BaseQuery.getQueryCache(token)
+        String prefix = queryCache.query.split('-')[0]
 
         if (prefix == 'license') {
             return new LicenseExport( selectedFields )
@@ -29,12 +31,12 @@ class GenericExportManager {
 
         List<String> rows = []
         rows.add( buildRow( export.getSelectedFields().collect{it -> export.getFieldLabel(it.key as String) } ) )
-        rows.addAll( buildRows(export, idList) )
+        rows.addAll( buildAllRows(export, idList) )
 
         rows
     }
 
-    static List<String> buildRows(AbstractExport export, List<Long> idList) {
+    static List<String> buildAllRows(AbstractExport export, List<Long> idList) {
 
         List<String> rows = []
         Map<String, Object> fields = export.getSelectedFields()
