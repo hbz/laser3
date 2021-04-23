@@ -1,4 +1,4 @@
-<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.TitleInstancePackagePlatform; de.laser.Platform; " %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.TitleInstancePackagePlatform; de.laser.Platform " %>
 <laser:serviceInjection />
 <!-- template: meta/identifier : editable: ${editable} -->
 
