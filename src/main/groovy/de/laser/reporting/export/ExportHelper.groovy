@@ -1,10 +1,8 @@
 package de.laser.reporting.export
 
-import de.laser.ContextService
-import de.laser.helper.SessionCacheWrapper
 import de.laser.reporting.myInstitution.GenericHelper
-import grails.util.Holders
-import grails.web.servlet.mvc.GrailsParameterMap
+import de.laser.reporting.myInstitution.base.BaseFilter
+import de.laser.reporting.myInstitution.base.BaseQuery
 
 class ExportHelper {
 
@@ -26,23 +24,15 @@ class ExportHelper {
         labels.collect{ it.replaceAll('→', '').replaceAll(' ', '') }.join('_')
     }
 
-    static Map<String, Object> getFilterLabels(GrailsParameterMap params) {
+    static Map<String, Object> getFilterLabels(String token) {
 
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
-        Map<String, Object> cacheMap = sessionCache.get("MyInstitutionController/reporting/" + params.token)
-
-        cacheMap.filterCache.labels
+        Map<String, Object> filterCache = BaseFilter.getFilterCache(token)
+        filterCache.labels as Map<String, Object>
     }
 
-    static List<String> getQueryLabels(GrailsParameterMap params) {
+    static List<String> getQueryLabels(String token) {
 
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
-        Map<String, Object> cacheMap = sessionCache.get("MyInstitutionController/reporting/" + params.token)
-
-        cacheMap.queryCache.labels.labels
+        Map<String, Object> queryCache = BaseQuery.getQueryCache(token)
+        queryCache.labels.labels as List<String>
     }
 }

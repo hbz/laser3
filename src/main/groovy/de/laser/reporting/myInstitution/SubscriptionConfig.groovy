@@ -68,7 +68,12 @@ class SubscriptionConfig extends BaseConfig {
                                             label : 'Lizenz → Identifikatoren',
                                             template: '2axis2values_nonMatches',
                                             chartLabels : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
-                                    ]
+                                    ],
+                                     'subscription-subscription-assignment' : [
+                                             label : 'Teilnehmerlizenz → Lizenz',
+                                             template: 'generic',
+                                             chartLabels : []
+                                     ],
                             ]
                     ]
             ],

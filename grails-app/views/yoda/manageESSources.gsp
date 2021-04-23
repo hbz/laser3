@@ -25,7 +25,7 @@
             <th>Index</th>
             <th>Cluster</th>
             <th>Laser ES</th>
-            <th>GOKB ES</th>
+            <th>we:kb ES</th>
           </tr>
         </thead>
         <tbody>
@@ -102,7 +102,7 @@
                     </select>
                 </div>
                 <div class="field">
-                    <label>GOKB ES</label>
+                    <label>we:kb ES</label>
                     <select name="gokb_es">
                         <option value="0">No</option>
                         <option value="1">Yes</option>
