@@ -159,7 +159,7 @@
                         <a role="button"
                            class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                            data-content="${message(code: 'gokb')}"
-                           href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/public/packageContent/?id=' + tipp.pkg.gokbId : '#'}"
+                           href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/packageContent/?id=' + tipp.pkg.gokbId : '#'}"
                            target="_blank"><i class="la-gokb  icon"></i>
                         </a>
                     </g:if>
@@ -217,7 +217,7 @@
                     <a role="button"
                        class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                        data-content="${message(code: 'gokb')}"
-                       href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/?id=' + tipp.platform.gokbId : '#'}"
+                       href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/platformContent/?id=' + tipp.platform.gokbId : '#'}"
                        target="_blank"><i class="la-gokb  icon"></i>
                     </a>
                 </g:if>

@@ -1,4 +1,4 @@
-<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.IssueEntitlement; de.laser.I10nTranslation" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.TitleInstancePackagePlatform; de.laser.Platform; " %>
 <laser:serviceInjection />
 <!-- template: meta/identifier : editable: ${editable} -->
 
@@ -40,14 +40,19 @@
                             <g:if test="${object.gokbId}">
                                 <g:if test="${object instanceof Package}">
                                     <a target="_blank"
-                                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/public/packageContent/?id=' + object?.gokbId : '#'}"><i
+                                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/packageContent/?id=' + object?.gokbId : '#'}"><i
                                             title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
                                 </g:if>
-                                <g:else>
+                                <g:elseif test="${object instanceof TitleInstancePackagePlatform}">
                                     <a target="_blank"
-                                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/?id=' + object?.gokbId : '#'}"><i
+                                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + object?.gokbId : '#'}"><i
                                             title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
-                                </g:else>
+                                </g:elseif>
+                                <g:elseif test="${object instanceof Platform}">
+                                    <a target="_blank"
+                                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/platformContent/?id=' + object?.gokbId : '#'}"><i
+                                            title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
+                                </g:elseif>
                             </g:if>
                         </g:each>
                     </dd>

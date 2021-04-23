@@ -35,7 +35,7 @@
                     <g:each in="${records}" var="hit" >
                         <tr>
                             <td>
-                                ${hit.name} <a target="_blank" href="${hit.url ? hit.url+'/gokb/public/packageContent/?id='+hit.id : '#'}" ><i title="GOKB Link" class="external alternate icon"></i></a>
+                                ${hit.name} <a target="_blank" href="${hit.url ? hit.url+'/public/packageContent/?id='+hit.id : '#'}" ><i title="GOKB Link" class="external alternate icon"></i></a>
                             </td>
 
                             <g:if test="${Package.findByGokbId(hit.uuid)}">

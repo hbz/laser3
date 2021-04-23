@@ -2193,7 +2193,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     Map<String,Object> fetchRecordJSON(boolean useScroll, Map<String,Object> queryParams) throws SyncException {
         //I need to address a bulk output endpoint like https://github.com/hbz/lobid-resources/blob/f93201bec043cc732b27814a6ab4aea390d1aa9e/web/app/controllers/resources/Application.java, method bulkResult().
-        //By then, I should query the "normal" endpoint /gokb/api/find?
+        //By then, I should query the "normal" endpoint /wekb/api/find?
         HTTPBuilder http
         if(useScroll) {
             http = new HTTPBuilder(source.uri + '/scroll')
