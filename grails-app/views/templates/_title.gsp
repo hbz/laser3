@@ -232,7 +232,7 @@
                                 <g:each in="${apisources}" var="gokbAPI">
                                     <g:if test="${publisher.gokbId}">
                                         <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                                           data-content="${message(code: 'gokb')}"
+                                           data-content="${message(code: 'wekb')}"
                                            href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/orgContent/?id=' + publisher.gokbId : '#'}"
                                            target="_blank"><i class="la-gokb  icon"></i>
                                         </a>
@@ -308,7 +308,7 @@
     <g:each in="${apisources}" var="gokbAPI">
         <g:if test="${tipp.gokbId}">
             <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-               data-content="${message(code: 'gokb')}"
+               data-content="${message(code: 'wekb')}"
                href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
                target="_blank"><i class="la-gokb  icon"></i>
             </a>
