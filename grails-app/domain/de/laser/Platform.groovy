@@ -134,7 +134,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     if ( !platform && params.name && (params.name.trim().length() > 0)  ) {
 
       String norm_name = params.name.trim().toLowerCase();
-        //TODO: Dieser Zweig passieert nicht bei GOKB Sync
+        //TODO: Dieser Zweig passieert nicht bei we:kb Sync
       if( params.primaryUrl && (params.primaryUrl.length() > 0) ){
 
         platform_candidates = Platform.executeQuery("from Platform where normname = :nname or primaryUrl = :url", [nname: norm_name, url: params.primaryUrl])

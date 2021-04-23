@@ -30,8 +30,8 @@
                     </tr>
                 </g:each>--%>
                 <tr>
-                    <th>Deleted TIPPs without GOKb record</th>
-                    <th>Deleted TIPPs with GOKb record</th>
+                    <th>Deleted TIPPs without we:kb record</th>
+                    <th>Deleted TIPPs with we:kb record</th>
                 </tr>
                 <tr>
                     <td>

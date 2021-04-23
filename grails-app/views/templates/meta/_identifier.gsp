@@ -19,7 +19,7 @@
 
                     <g:if test="${!(object instanceof License) && !(object instanceof Subscription) && !(object instanceof IssueEntitlement)}">
 
-                    <dt><g:message code="org.gokbId.label" default="GOKB UUID"/></dt>
+                    <dt><g:message code="org.gokbId.label" default="we:kb UUID"/></dt>
                     <dd>
                         <g:set var="editableGOKBID" value=""/>
                         <g:if test="${accessService.checkConstraint_ORG_COM_EDITOR()}">

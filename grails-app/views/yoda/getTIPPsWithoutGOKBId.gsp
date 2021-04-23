@@ -4,7 +4,7 @@
 <html>
     <head>
         <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : Datenbereinigung: TIPPs ohne GOKb ID</title>
+        <title>${message(code:'laser')} : Datenbereinigung: TIPPs ohne we:kb ID</title>
     </head>
 
     <body>
@@ -14,7 +14,7 @@
                 <tr>
                     <th>TIPP ID</th>
                     <th>Titel</th>
-                    <th>alternatives TIPP mit GOKb ID</th>
+                    <th>alternatives TIPP mit we:kb ID</th>
                     <th>betroffener Lizenzbestand</th>
                 </tr>
             </thead>
@@ -25,7 +25,7 @@
                         <td>${entry.tipp.name}</td>
                         <td>
                             <g:if test="${entry.tipp.altTIPP}">
-                                alternatives TIPP im gleichen Paket: ${entry.altTIPP.id}, verfügt über GOKb ID ${entry.altTIPP.gokbId}
+                                alternatives TIPP im gleichen Paket: ${entry.altTIPP.id}, verfügt über we:kb ID ${entry.altTIPP.gokbId}
                             </g:if>
                             <g:else>
                                 kein alternatives TIPP vorhanden!

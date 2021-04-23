@@ -30,7 +30,7 @@
                             </tr>
                         </g:each>
                         <tr>
-                            <th>Platforms without GOKb ID</th>
+                            <th>Platforms without we:kb ID</th>
                         </tr>
                         <g:each in="${platformsWithoutGOKb}" var="withoutGOKbID">
                             <tr>
@@ -38,7 +38,7 @@
                             </tr>
                         </g:each>
                         <tr>
-                            <th>Platforms removed from GOKb --> delete</th>
+                            <th>Platforms removed from we:kb --> delete</th>
                         </tr>
                         <g:each in="${inexistentPlatforms}" var="inexistent">
                             <tr>

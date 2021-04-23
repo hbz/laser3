@@ -43,7 +43,7 @@
                 <table class="ui table">
                     <tbody>
                         <tr>
-                            <th>Duplicate titles with UUID entirely missing in GOKb</th>
+                            <th>Duplicate titles with UUID entirely missing in we:kb</th>
                         </tr>
                         <g:each in="${missingTitles}" var="missing">
                             <tr>
@@ -94,7 +94,7 @@
                                         </p>
                                     </g:if>
                                     <g:else>
-                                        <p><a href="${merging.gokbLink}">GOKb entry</a></p>
+                                        <p><a href="${merging.gokbLink}">we:kb entry</a></p>
                                         <p>${merging.tippSetA}</p>
                                         <p>${merging.tippSetB}</p>
                                     </g:else>

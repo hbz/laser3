@@ -42,7 +42,7 @@
                   <dd><semui:xEditable owner="${platformInstance}" field="name"/></dd>
                 </dl>
                 <dl>
-                  <dt>GOKb ID</dt>
+                  <dt>we:kb ID</dt>
                   <dd>
                     ${platformInstance?.gokbId}
                     <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"

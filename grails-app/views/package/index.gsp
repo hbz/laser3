@@ -76,7 +76,7 @@
                             <g:else>
                                 ${record.name} <a target="_blank"
                                                   href="${editUrl ? editUrl + '/public/packageContent/?id=' + record.uuid : '#'}"><i
-                                        title="GOKB Link" class="external alternate icon"></i></a>
+                                        title="we:kb Link" class="external alternate icon"></i></a>
                             </g:else>
                         </td>
                         <td>
