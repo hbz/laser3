@@ -1,4 +1,4 @@
-<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform" %>
 <laser:serviceInjection />
 <!-- template: meta/identifier : editable: ${editable} -->
 <%
@@ -76,6 +76,11 @@
                                     <g:elseif test="${object instanceof TitleInstancePackagePlatform}">
                                         <a target="_blank"
                                            href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/' + ident : '#'}"><i
+                                                title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
+                                    </g:elseif>
+                                    <g:elseif test="${object instanceof Platform}">
+                                        <a target="_blank"
+                                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/platformContent/' + ident : '#'}"><i
                                                 title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
                                     </g:elseif>
                                 </g:if>
