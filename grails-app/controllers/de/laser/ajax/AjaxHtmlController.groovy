@@ -34,6 +34,7 @@ import de.laser.helper.RDStore
 import de.laser.helper.SessionCacheWrapper
 import de.laser.reporting.myInstitution.CostItemConfig
 import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.reporting.myInstitution.base.BaseDetails
 import de.laser.reporting.myInstitution.base.BaseQuery
 import de.laser.reporting.myInstitution.LicenseConfig
 import de.laser.reporting.myInstitution.OrganisationConfig
@@ -436,6 +437,12 @@ class AjaxHtmlController {
             }
 
             cacheMap.queryCache.labels.put('labels', result.labels)
+
+            cacheMap.detailsCache = [
+                    prefix : prefix,
+                    idList : result.list.collect{ it.id } // only existing ids
+            ]
+
             sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)
         }
         else if (params.context == SubscriptionConfig.KEY && params.query) {
@@ -496,12 +503,11 @@ class AjaxHtmlController {
         Map<String, Object> selectedFields = [:]
         selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('cde:', ''), it.value ) }
 
-        AbstractExport export = GenericExportManager.getCurrentExport( params.query, selectedFields ) // TODO @token
+        AbstractExport export = GenericExportManager.createExport( params.token, selectedFields )
 
-        // TODO
-        List<Long> idList = params.get('idList_cs') ? params.get('idList_cs').split(',').collect{ it as Long } : []
-        //List<Long> idList = params.get('idList[]') ? params.get('idList[]').collect{ it.id as Long } : []
-        // TODO
+        Map<String, Object> detailsCache = BaseDetails.getDetailsCache( params.token )
+        List<Long> idList = detailsCache.idList
+
         List<String> rows = GenericExportManager.export( export, idList )
 
         SimpleDateFormat sdf = DateUtils.getSDF_forFilename()

@@ -121,7 +121,7 @@
             </table>
             <g:if test="${ti.getIdentifierValue('originediturl') != null}">
               <span class="la-float-right">
-                ${message(code: 'title.show.gokb')} <a href="${ti.getIdentifierValue('originediturl')}">GOKb</a>.
+                ${message(code: 'title.show.gokb')} <a href="${ti.getIdentifierValue('originediturl')}">we:kb</a>.
               </span>
             </g:if>
 
@@ -224,8 +224,8 @@
                               var="gokbAPI">
                           <g:if test="${t?.gokbId}">
                               <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                                 data-content="${message(code: 'gokb')}"
-                                 href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/resource/show/?id=' + t?.gokbId : '#'}"
+                                 data-content="${message(code: 'wekb')}"
+                                 href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + t?.gokbId : '#'}"
                                  target="_blank"><i class="la-gokb  icon"></i>
                               </a>
                           </g:if>

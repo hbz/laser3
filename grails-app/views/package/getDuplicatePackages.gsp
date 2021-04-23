@@ -8,13 +8,13 @@
     <body>
         <g:set var="toDelete" value="${[]}"/>
 
-        <h1 class="ui header la-clear-before la-noMargin-top">Pakete mit gleicher GOKb-ID</h1>
+        <h1 class="ui header la-clear-before la-noMargin-top">Pakete mit gleicher we:kb-ID</h1>
         <semui:messages data="${flash}" />
 
             <div class="ui grid">
                 <div class="row">
                     <div class="sixteen wide column">
-                        <h2 class="ui header">Pakete mit gleicher GOKb ID</h2>
+                        <h2 class="ui header">Pakete mit gleicher we:kb ID</h2>
                     </div>
                 </div>
                 <div class="row">
@@ -22,7 +22,7 @@
                         LAS:eR ID
                     </div>
                     <div class="four wide column">
-                        GOKb ID
+                        we:kb ID
                     </div>
                     <div class="eight wide column">
                         Name
@@ -53,7 +53,7 @@
                         LAS:eR ID
                     </div>
                     <div class="four wide column">
-                        GOKb ID
+                        we:kb ID
                     </div>
                     <div class="eight wide column">
                         Name
@@ -87,7 +87,7 @@
                         LAS:eR ID
                     </div>
                     <div class="three wide column">
-                        GOKb ID
+                        we:kb ID
                     </div>
                     <div class="two wide column">
                         Name

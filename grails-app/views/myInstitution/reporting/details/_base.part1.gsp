@@ -20,4 +20,4 @@
     </g:if>
 </div>
 
-<g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: labels, tmplShowActive: true]}" />
+<g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: labels]}" />

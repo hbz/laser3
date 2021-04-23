@@ -54,7 +54,7 @@
         <ul class="list">
             <g:each in="${deletedSPs}" var="sp">
                 <li><g:message code="subscription.details.packagesDeleted.header"
-                               args="${[sp.name]}"/> ${message(code: "subscription.details.packagesDeleted.entry", args: [raw(link(url: sp.link) { 'GOKb' })])}</li>
+                               args="${[sp.name]}"/> ${message(code: "subscription.details.packagesDeleted.entry", args: [raw(link(url: sp.link) { 'we:kb' })])}</li>
             </g:each>
         </ul>
     </div>

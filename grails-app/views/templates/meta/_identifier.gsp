@@ -70,12 +70,12 @@
                                 <g:if test="${!objIsOrgAndInst && object.hasProperty("gokbId") && ident == object.gokbId}">
                                     <g:if test="${object instanceof Package}">
                                         <a target="_blank"
-                                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/public/packageContent/' + ident : '#'}"><i
+                                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/packageContent/' + ident : '#'}"><i
                                                 title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
                                     </g:if>
                                     <g:elseif test="${object instanceof TitleInstancePackagePlatform}">
                                         <a target="_blank"
-                                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/gokb/public/tippContent/' + ident : '#'}"><i
+                                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/' + ident : '#'}"><i
                                                 title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
                                     </g:elseif>
                                 </g:if>
