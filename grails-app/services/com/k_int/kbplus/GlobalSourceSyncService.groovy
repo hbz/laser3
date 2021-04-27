@@ -389,20 +389,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
             try {
                 Map<String,Object> updatedTIPP = [
                     titleType: tipp.titleType,
-                    name: tipp.name ?: tipp.tippTitleName,
+                    name: tipp.name,
                     packageUUID: tipp.tippPackageUuid ?: null,
                     platformUUID: tipp.hostPlatformUuid ?: null,
                     titlePublishers: [],
                     publisherName: tipp.publisherName,
-                    firstAuthor: tipp.titleFirstAuthor ?: null,
-                    firstEditor: tipp.titleFirstEditor ?: null,
+                    firstAuthor: tipp.firstAuthor ?: null,
+                    firstEditor: tipp.firstEditor ?: null,
                     dateFirstInPrint: tipp.dateFirstInPrint ? DateUtils.parseDateGeneric(tipp.dateFirstInPrint) : null,
                     dateFirstOnline: tipp.dateFirstOnline ? DateUtils.parseDateGeneric(tipp.dateFirstOnline) : null,
                     imprint: tipp.titleImprint ?: null,
                     status: tipp.status,
                     seriesName: tipp.series ?: null,
                     subjectReference: tipp.subjectArea ?: null,
-                    volume: tipp.titleVolumeNumber ?: null,
+                    volume: tipp.volumeNumber ?: null,
                     coverages: [],
                     priceItems: [],
                     hostPlatformURL: tipp.url ?: null,
@@ -411,7 +411,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     uuid: tipp.uuid,
                     accessStartDate : tipp.accessStartDate ? DateUtils.parseDateGeneric(tipp.accessStartDate) : null,
                     accessEndDate   : tipp.accessEndDate ? DateUtils.parseDateGeneric(tipp.accessEndDate) : null,
-                    medium: tipp.tippTitleMedium
+                    medium: tipp.medium
                 ]
                 if(tipp.titleType == 'Journal') {
                     tipp.coverage.each { cov ->

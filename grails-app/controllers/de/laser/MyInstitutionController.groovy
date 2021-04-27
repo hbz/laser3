@@ -86,9 +86,9 @@ class MyInstitutionController  {
         redirect(action:'dashboard')
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -122,16 +122,6 @@ class MyInstitutionController  {
         //result.filterHistory = sessionCache.list().keySet().findAll{it.startsWith("MyInstitutionController/reporting/")}
 
         render view: 'reporting/index', model: result
-    }
-
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
-    })
-    def reportingExport() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-
-        render params as JSON
     }
 
     @Secured(['ROLE_USER'])

@@ -42,14 +42,15 @@ class LicenseFilter extends BaseFilter {
                 queryParams.licenseIdList = License.executeQuery( 'select l.id from License l' )
                 break
             case 'consortia-lic':
-                List tmp1 = licenseService.getLicensesConsortiaQuery( [:] )                 // roleType:Licensing Consortium
-                //List tmp2 = licenseService.getLicensesConsortialLicenseQuery( [:] )       // roleType:Licensee_Consortial
-                //List tmp3 = licenseService.getLicensesLocalLicenseQuery( [:] )            // roleType:Licensee
-
+                List tmp1 = licenseService.getLicensesConsortiaQuery( [:] )         // roleType:Licensing Consortium
                 queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp1[0], tmp1[1]) )
-                //queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp2[0], tmp2[1]) )
-                //queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp3[0], tmp3[1]) )
-
+                queryParams.licenseIdList.unique()
+                break
+            case 'my-lic':
+                List tmp2 = licenseService.getLicensesConsortialLicenseQuery( [:] ) // roleType:Licensee_Consortial
+                List tmp3 = licenseService.getLicensesLocalLicenseQuery( [:] )      // roleType:Licensee
+                queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp2[0], tmp2[1]) )
+                queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp3[0], tmp3[1]) )
                 queryParams.licenseIdList.unique()
                 break
         }
@@ -120,7 +121,7 @@ class LicenseFilter extends BaseFilter {
 //        println queryParams
 //        println whereParts
 
-        filterResult.data.put('licenseIdList', License.executeQuery( query, queryParams ))
+        filterResult.data.put( 'licenseIdList', queryParams.licenseIdList ? License.executeQuery( query, queryParams ) : [] )
 
         //handleInternalOrgFilter(params, 'member', result)
         handleInternalOrgFilter(params, 'licensor', filterResult)
@@ -264,6 +265,6 @@ class LicenseFilter extends BaseFilter {
 //        println query
 //        println queryParams
 
-        filterResult.data.put( partKey + 'IdList', Org.executeQuery(query, queryParams) )
+        filterResult.data.put( partKey + 'IdList', queryParams.licenseIdList ? Org.executeQuery(query, queryParams) : [] )
     }
 }

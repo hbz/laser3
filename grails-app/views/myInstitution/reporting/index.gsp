@@ -106,10 +106,11 @@
                 }
             })
 
+
             $('#chart-chooser').on( 'change', function(e) {
                 JSPC.app.reporting.current.request.chart = $(e.target).dropdown('get value');
                 JSPC.app.reporting.requestChartJsonData();
-            })
+            }).dropdown('set selected', 'bar');
 
             $('#chart-export').on( 'click', function(e) {
                 if ( JSPC.app.reporting.current.request.query ) {
