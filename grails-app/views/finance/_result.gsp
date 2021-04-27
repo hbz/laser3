@@ -143,9 +143,9 @@
                                 onVisible: function () {
                                     r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
                                     r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
-                                    JSPC['finance'+idSuffix].updateTitleDropdowns();
+                                    JSPC.app['finance'+idSuffix].updateTitleDropdowns();
                                     //JSPC.app.setupCalendar();
-                                    JSPC['finance'+idSuffix].preselectMembers();
+                                    JSPC.app['finance'+idSuffix].preselectMembers();
                                 },
                                 detachable: true,
                                 closable: false,
@@ -176,7 +176,7 @@
                                 r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
-                                JSPC['finance'+idSuffix].updateTitleDropdowns();
+                                JSPC.app['finance'+idSuffix].updateTitleDropdowns();
                                 //JSPC.app.setupCalendar();
                             },
                             detachable: true,

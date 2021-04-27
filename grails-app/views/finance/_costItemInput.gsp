@@ -1,5 +1,5 @@
 <!-- _costItemInput.gsp -->
-<%@ page import="de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*; de.laser.*; org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*; de.laser.*; org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.CalculatedType; de.laser.finance.CostItemElementConfiguration" %>
 <laser:serviceInjection />
 
         <g:if test="${costItem}">
@@ -7,6 +7,9 @@
         </g:if>
         <g:if test="${copyCostsFromConsortia}">
             <g:hiddenField id="copyBase_${idSuffix}" name="copyBase" value="${genericOIDService.getOID(costItem)}" />
+        </g:if>
+        <g:if test="${subscription}">
+            <g:hiddenField id="sub_${idSuffix}" name="sub" value="${subscription.id}"/>
         </g:if>
         <div class="fields">
             <div class="nine wide field">
@@ -328,12 +331,341 @@
 
         </div><!-- three fields -->
 
-<script data-type="fix">
-    <g:render template="/templates/javascript/jspc.finance.js" />
-</script>
-
 <laser:script file="${this.getGroovyPageFileName()}">
-    //for some reason, this does not work in jspc.finance
+    JSPC.app.finance${idSuffix} = {
+        userLang: "${contextService.getUser().getSettingsValue(UserSetting.KEYS.LANGUAGE,null)}",
+        currentForm: $("#editCost_${idSuffix}"),
+        newSubscription: $("#newSubscription_${idSuffix}"),
+        newPackage: $("#newPackage_${idSuffix}"),
+        newIE: $("#newIE_${idSuffix}"),
+        newTitleGroup: $("#newTitleGroup_${idSuffix}"),
+        toggleLicenseeTarget: $("#toggleLicenseeTarget_${idSuffix}"),
+        newLicenseeTarget: $("#newLicenseeTarget_${idSuffix}"),
+        newLicenseeDiv: $("#newLicenseeTarget_${idSuffix}").parent('div'),
+        costBillingCurrency: $("#newCostInBillingCurrency_${idSuffix}"),
+        costBillingCurrencyAfterTax: $("#newCostInBillingCurrencyAfterTax_${idSuffix}"),
+        calculateBillingCurrency: $("#calculateBillingCurrency_${idSuffix}"),
+        costCurrencyRate: $("#newCostCurrencyRate_${idSuffix}"),
+        calculateCurrencyRate: $("#calculateExchangeRate_${idSuffix}"),
+        costLocalCurrency: $("#newCostInLocalCurrency_${idSuffix}"),
+        costLocalCurrencyAfterTax: $("#newCostInLocalCurrencyAfterTax_${idSuffix}"),
+        calculateLocalCurrency: $("#calculateLocalCurrency_${idSuffix}"),
+        costCurrency: $("#newCostCurrency_${idSuffix}"),
+        costItemElement: $("#newCostItemElement_${idSuffix}"),
+        billingSumRounding: $("#newBillingSumRounding_${idSuffix}"),
+        finalCostRounding: $("#newFinalCostRounding_${idSuffix}"),
+        taxRate: $("#newTaxRate_${idSuffix}"),
+        ciec: $("#ciec_${idSuffix}"),
+        costElems: $("#newCostInLocalCurrency_${idSuffix}, #newCostCurrencyRate_${idSuffix}, #newCostInBillingCurrency_${idSuffix}"),
+        calc: $(".calc"),
+        newSubscription: $("#newSubscription_${idSuffix}"),
+        selectedMembers: $("[name='newLicenseeTarget']~a"),
+        costItemElementConfigurations: {
+        <%
+            costItemElements.eachWithIndex { CostItemElementConfiguration ciec, int i ->
+                String tmp = "${ciec.costItemElement.id}: ${ciec.elementSign.id}"
+                if(i < costItemElements.size() - 1)
+                    tmp += ','
+                println tmp
+            }
+        %>
+        },
+        selLinks: {
+            newSubscription: "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?query={query}",
+        <g:if test="${costItem?.sub || subscription}">
+            <%
+                String contextSub = ""
+                if(costItem && costItem.sub)
+                    contextSub = genericOIDService.getOID(costItem.sub)
+                else if(subscription)
+                    contextSub = genericOIDService.getOID(subscription)
+            %>
+            newPackage_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}&sub=${contextSub}",
+                newIE_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub=${contextSub}",
+                newTitleGroup_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}&sub=${contextSub}"
+        </g:if>
+        <g:else>
+            newPackage_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}",
+                newIE_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}",
+                newTitleGroup_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}"
+        </g:else>
+        },
+        eurVal: "${RDStore.CURRENCY_EUR.id}",
+        isError: function(elem)  {
+            if (elem.val().length <= 0 || elem.val() < 0) {
+                $(".la-account-currency").children(".field").removeClass("error");
+                elem.parent(".field").addClass("error");
+                return true
+            }
+            return false
+        },
+        updateTitleDropdowns: function() {
+            $(".newCISelect").each(function(k,v){
+                console.log(JSPC.app.finance${idSuffix}.selLinks[$(this).attr("id")]);
+                $(this).dropdown({
+                    apiSettings: {
+                        url: JSPC.app.finance${idSuffix}.selLinks[$(this).attr("id")],
+                        cache: false
+                    },
+                    clearable: true,
+                    minCharacters: 0
+                });
+            });
+        <% if(costItem?.issueEntitlement) {
+            String ieTitleName = costItem.issueEntitlement.tipp.name
+            String ieTitleTypeString = costItem.issueEntitlement.tipp.titleType %>
+        JSPC.app.finance${idSuffix}.newIE.dropdown('set text',"${ieTitleName} (${ieTitleTypeString}) (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})");
+        <%  }
+        if(costItem?.issueEntitlementGroup) {
+            String issueEntitlementGroupName = costItem.issueEntitlementGroup.name %>
+        JSPC.app.finance${idSuffix}.newTitleGroup.dropdown('set text',"${issueEntitlementGroupName} (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})");
+        <%  }  %>
+        },
+        collect: function (fields) {
+            let values = [];
+            for(let i = 0;i < fields.length;i++) {
+                let value = fields[i];
+                if(!value.getAttribute("data-value").match(/:null|:for/))
+                            values.push(value.getAttribute("data-value"));
+            }
+            //console.log(values);
+            return values;
+        },
+        preselectMembers: function () {
+        <g:if test="${pickedSubscriptions}">
+            JSPC.app.finance${idSuffix}.newLicenseeTarget.dropdown("set selected",[${raw(pickedSubscriptions.join(','))}]);
+            <g:if test="${pickedSubscriptions.size() > 9}">
+                JSPC.app.finance${idSuffix}.newLicenseeTarget.parent('div').toggle();
+            </g:if>
+        </g:if>
+        },
+        onSubscriptionUpdate: function () {
+            let context;
+            if(JSPC.app.finance${idSuffix}.selectedMembers.length === 1){
+                let values = JSPC.app.finance${idSuffix}.collect(JSPC.app.finance${idSuffix}.selectedMembers);
+                    if(!values[0].match(/:null|:for/)) {
+                    context = values[0];
+                }
+            }
+            else if(JSPC.app.finance${idSuffix}.newLicenseeTarget.length === 0)
+                context = JSPC.app.finance${idSuffix}.val();
+            JSPC.app.finance${idSuffix}.selLinks.newIE_${idSuffix} = "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub="+context;
+            JSPC.app.finance${idSuffix}.selLinks.newTitleGroup_${idSuffix} = "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}&sub="+context;
+            JSPC.app.finance${idSuffix}.selLinks.newPackage_${idSuffix} = "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}&ctx="+context;
+            JSPC.app.finance${idSuffix}.newIE.dropdown('clear');
+            JSPC.app.finance${idSuffix}.newTitleGroup.dropdown('clear');
+            JSPC.app.finance${idSuffix}.newPackage.dropdown('clear');
+            JSPC.app.finance${idSuffix}.updateTitleDropdowns();
+        },
+        checkPackageBelongings: function () {
+            var subscription = $("#newSubscription_${idSuffix}, #pickedSubscription_${idSuffix}").val();
+            let values = JSPC.app.finance${idSuffix}.collect(JSPC.app.finance${idSuffix}.selectedMembers);
+            if(values.length === 1) {
+                subscription = values[0];
+                $.ajax({
+                    url: "<g:createLink controller="ajaxJson" action="checkCascade"/>?subscription="+subscription+"&package="+JSPC.app.finance${idSuffix}.newPackage.val()+"&issueEntitlement="+JSPC.app.finance${idSuffix}.newIE.val(),
+                }).done(function (response) {
+                    //console.log("function ran through w/o errors, please continue implementing! Response from server is: "+JSON.stringify(response))
+                    if(!response.sub)
+                        JSPC.app.finance${idSuffix}.newSubscription.addClass("error");
+                    else
+                        JSPC.app.finance${idSuffix}.newSubscription.removeClass("error");
+                    if(!response.subPkg)
+                        JSPC.app.finance${idSuffix}.newPackage.addClass("error");
+                    else
+                        JSPC.app.finance${idSuffix}.newPackage.removeClass("error");
+                    if(!response.ie)
+                        JSPC.app.finance${idSuffix}.newIE.addClass("error");
+                    else
+                        JSPC.app.finance${idSuffix}.newIE.removeClass("error");
+                }).fail(function () {
+                    console.log("AJAX error! Please check logs!");
+                });
+            }
+        },
+        checkValues: function () {
+            if ( (JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.costCurrencyRate.val()).toFixed(2) !== JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2) ) {
+                console.log("inserted values are: "+JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val())+" * "+JSPC.app.finance${idSuffix}.costCurrencyRate.val()+" = "+JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2)+", correct would be: "+(JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.costCurrencyRate.val()).toFixed(2));
+                JSPC.app.finance${idSuffix}.costElems.parent('.field').addClass('error');
+                return false;
+            }
+            else {
+                JSPC.app.finance${idSuffix}.costElems.parent('.field').removeClass('error');
+                return true;
+            }
+        },
+        calcTaxResults: function () {
+            let roundB = JSPC.app.finance${idSuffix}.billingSumRounding.prop('checked');
+            let roundF = JSPC.app.finance${idSuffix}.finalCostRounding.prop('checked');
+            //console.log(taxRate.val());
+            let taxF = 1.0 + (0.01 * JSPC.app.finance${idSuffix}.taxRate.val().split("§")[1]);
+            let parsedBillingCurrency = JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val().trim());
+            let parsedLocalCurrency = JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
+            let billingCurrencyAfterRounding = roundB ? Math.round(parsedBillingCurrency) : JSPC.app.finance${idSuffix}.convertDouble(parsedBillingCurrency)
+            let localCurrencyAfterRounding = roundB ? Math.round(parsedLocalCurrency) : JSPC.app.finance${idSuffix}.convertDouble(parsedLocalCurrency)
+            JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.outputValue(billingCurrencyAfterRounding));
+            JSPC.app.finance${idSuffix}.costLocalCurrency.val(JSPC.app.finance${idSuffix}.outputValue(localCurrencyAfterRounding));
+            let billingAfterTax = roundF ? Math.round(billingCurrencyAfterRounding * taxF) : JSPC.app.finance${idSuffix}.convertDouble(billingCurrencyAfterRounding * taxF)
+            let localAfterTax = roundF ? Math.round(localCurrencyAfterRounding * taxF ) : JSPC.app.finance${idSuffix}.convertDouble(localCurrencyAfterRounding * taxF)
+            JSPC.app.finance${idSuffix}.costBillingCurrencyAfterTax.val(
+                 JSPC.app.finance${idSuffix}.outputValue(billingAfterTax)
+            );
+            JSPC.app.finance${idSuffix}.costLocalCurrencyAfterTax.val(
+                 JSPC.app.finance${idSuffix}.outputValue(localAfterTax)
+            );
+        },
+        convertDouble: function (input) {
+            let output;
+            //determine locale from server
+            if(typeof(input) === 'number') {
+                output = input.toFixed(2);
+                console.log("input: "+input+", typeof: "+typeof(input));
+            }
+            else if(typeof(input) === 'string') {
+                output = 0.0;
+                if(JSPC.app.finance${idSuffix}userLang === 'en') {
+                    output = parseFloat(input);
+                }
+                else {
+                    if(input.match(/(\d+\.?)*\d+(,\d{2})?/g))
+                        output = parseFloat(input.replace(/\./g,"").replace(/,/g,"."));
+                    else if(input.match(/(\d+,?)*\d+(\.\d{2})?/g))
+                        output = parseFloat(input.replace(/,/g, ""));
+                    else console.log("Please check over regex!");
+                }
+                //console.log("string input parsed, output is: "+output);
+            }
+            return output;
+        },
+        outputValue: function(input) {
+            //console.log(userLang);
+            let output;
+            if(JSPC.app.finance${idSuffix}.userLang !== 'en')
+                output = input.toString().replace(".",",");
+            else output = input.toString();
+            //console.log("output: "+output+", typeof: "+typeof(output));
+            return output;
+        },
+        init: function(elem) {
+            //console.log(this);
+            this.newSubscription.change(function(){
+                JSPC.app.finance${idSuffix}.onSubscriptionUpdate();
+            });
+            this.newLicenseeTarget.change(function(){
+                JSPC.app.finance${idSuffix}.onSubscriptionUpdate();
+            });
+            this.toggleLicenseeTarget.click( function() {
+                JSPC.app.finance${idSuffix}.newLicenseeTarget.parent('div').toggle();
+            });
+            this.newPackage.change(function(){
+                let context;
+                if(JSPC.app.finance${idSuffix}.selectedMembers.length === 1) {
+                    let values = JSPC.app.finance${idSuffix}.collect(JSPC.app.finance${idSuffix}.selectedMembers);
+                    if(!values[0].match(/:null|:for/)) {
+                        context = values[0];
+                    }
+                }
+                else if(JSPC.app.finance${idSuffix}.selectedMembers.length === 0)
+                    context = JSPC.app.finance${idSuffix}.newSubscription.val();
+                JSPC.app.finance${idSuffix}.selLinks.newIE = "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub="+context+"&pkg="+JSPC.app.finance${idSuffix}.newPackage.val();
+                JSPC.app.finance${idSuffix}.newIE.dropdown('clear');
+                JSPC.app.finance${idSuffix}.updateTitleDropdowns();
+            });
+            this.newIE.change(function(){
+                JSPC.app.finance${idSuffix}.checkPackageBelongings();
+            });
+            this.newTitleGroup.change(function(){
+                JSPC.app.finance${idSuffix}.updateTitleDropdowns();
+            });
+            this.calculateBillingCurrency.click( function() {
+                if (! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costLocalCurrency) && ! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costCurrencyRate)) {
+                    let parsedLocalCurrency = JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
+                    JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.outputValue(JSPC.app.finance${idSuffix}.parsedLocalCurrency / JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim()));
+                    $(".la-account-currency").find(".field").removeClass("error");
+                    JSPC.app.finance${idSuffix}.calcTaxResults();
+                }
+            });
+            this.calculateCurrencyRate.click( function() {
+                if (! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costLocalCurrency) && ! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costBillingCurrency)) {
+                    let parsedLocalCurrency = JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
+                    let parsedBillingCurrency = JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val().trim());
+                    JSPC.app.finance${idSuffix}.costCurrencyRate.val((parsedLocalCurrency / parsedBillingCurrency));
+                    $(".la-account-currency").find(".field").removeClass("error");
+                    JSPC.app.finance${idSuffix}.calcTaxResults();
+                }
+            });
+            this.calculateLocalCurrency.click( function() {
+                if (! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costBillingCurrency) && ! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costCurrencyRate)) {
+                    let parsedBillingCurrency = JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val().trim());
+                    JSPC.app.finance${idSuffix}.costLocalCurrency.val(JSPC.app.finance${idSuffix}.outputValue(parsedBillingCurrency * JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim()));
+                    $(".la-account-currency").find(".field").removeClass("error");
+                    JSPC.app.finance${idSuffix}.calcTaxResults();
+                }
+            });
+            this.costBillingCurrency.change( function(){
+                if(JSPC.app.finance${idSuffix}.costCurrency.val() == JSPC.app.finance${idSuffix}.eurVal) {
+                    JSPC.app.finance${idSuffix}.calculateLocalCurrency.click();
+                }
+            });
+            this.costItemElement.change(function() {
+                console.log(JSPC.app.finance${idSuffix}.ciec);
+                if(typeof(JSPC.app.finance${idSuffix}.costItemElementConfigurations[JSPC.app.finance${idSuffix}.costItemElement.val()]) !== 'undefined')
+                    JSPC.app.finance${idSuffix}.ciec.dropdown('set selected', JSPC.app.finance${idSuffix}.costItemElementConfigurations[JSPC.app.finance${idSuffix}.costItemElement.val()]);
+                else
+                    JSPC.app.finance${idSuffix}.ciec.dropdown('set selected','null');
+            });
+            this.calc.change( function() {
+                JSPC.app.finance${idSuffix}.calcTaxResults();
+            });
+            this.costElems.change(function(){
+                JSPC.app.finance${idSuffix}.checkValues();
+                if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
+                    JSPC.app.finance${idSuffix}.costCurrency.parent(".field").removeClass("error");
+                }
+                else {
+                    JSPC.app.finance${idSuffix}.costCurrency.parent(".field").addClass("error");
+                }
+            });
+            this.costCurrency.change(function(){
+                //console.log("event listener succeeded, picked value is: "+$(this).val());
+                if($(this).val() === JSPC.app.finance${idSuffix}.eurVal)
+                    JSPC.app.finance${idSuffix}.costCurrencyRate.val(1.0);
+                else JSPC.app.finance${idSuffix}.costCurrencyRate.val(0.0);
+                JSPC.app.finance${idSuffix}.calculateLocalCurrency.click();
+            });
+            this.currentForm.submit(function(e){
+                e.preventDefault();
+                if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
+                    let valuesCorrect = JSPC.app.finance${idSuffix}.checkValues();
+                    if(valuesCorrect) {
+                        JSPC.app.finance${idSuffix}.costCurrency.parent(".field").removeClass("error");
+                        if(JSPC.app.finance${idSuffix}.newSubscription.hasClass('error') || JSPC.app.finance${idSuffix}.newPackage.hasClass('error') || JSPC.app.finance${idSuffix}.newIE.hasClass('error'))
+                            alert("${message(code:'financials.newCosts.entitlementError')}");
+                        else {
+                            if(JSPC.app.finance${idSuffix}.newLicenseeTarget.length === 1 && JSPC.app.finance${idSuffix}.newLicenseeTarget.val().length === 0) {
+                                alert("${message(code:'financials.newCosts.noSubscriptionError')}")
+                            }
+                            else {
+                                //console.log(JSPC.app.finance${idSuffix}.newLicenseeTarget.val());
+                                if(JSPC.app.finance${idSuffix}.newLicenseeTarget.val() && JSPC.app.finance${idSuffix}.newLicenseeTarget.val().join(";").indexOf('forParent') > -1) {
+                                    if(confirm("${message(code:'financials.newCosts.confirmForParent')}")) JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                                }
+                                else JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                            }
+                        }
+                    }
+                    else {
+                         alert("${message(code:'financials.newCosts.calculationError')}");
+                    }
+                }
+                else {
+                    alert("${message(code:'financials.newCosts.noCurrencyPicked')}");
+                    JSPC.app.finance${idSuffix}.costCurrency.parent(".field").addClass("error");
+               }
+            });
+        }
+    }
+    JSPC.app.finance${idSuffix}.init();
     JSPC.app.setupCalendar = function () {
         $("[name='newFinancialYear']").parents(".datepicker").calendar({
             type: 'year',
