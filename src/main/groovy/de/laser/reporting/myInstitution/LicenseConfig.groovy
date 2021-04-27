@@ -16,7 +16,8 @@ class LicenseConfig extends BaseConfig {
                     ],
                     source : [
                             //'all-lic' : 'Alle Verträge',
-                            'consortia-lic' : 'Meine Verträge'
+                            'consortia-lic' : 'Meine Verträge (Konsortium)',
+                            'my-lic'        : 'Meine Verträge (Vollnutzer)'
                     ],
                     fields: [
                             'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
@@ -43,9 +44,9 @@ class LicenseConfig extends BaseConfig {
                     query2 : [
                             'Verteilung' : [ // TODO ..
                                     'license-property-assignment' : [
-                                            label : 'Vertrag → Merkmale (eigene/öffentliche)',
+                                            label : 'Vertrag → Merkmale (eigene/allgemeine)',
                                             template: '2axis2values',
-                                            chartLabels : [ 'Verträge', 'Vergebene Merkmale (eigene/öffentliche)' ]
+                                            chartLabels : [ 'Verträge', 'Vergebene Merkmale (eigene/allgemeine)' ]
                                     ],
                                     'license-identifier-assignment' : [
                                             label : 'Vertrag → Identifikatoren',

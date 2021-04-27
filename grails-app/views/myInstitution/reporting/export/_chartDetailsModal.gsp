@@ -5,8 +5,8 @@
 
 <g:if test="${export}">
     <g:set var="formFields" value="${export.getAllFields()}" />
-    <g:set var="filterLabels" value="${ExportHelper.getFilterLabels( token )}" />
-    <g:set var="queryLabels" value="${ExportHelper.getQueryLabels( token )}" />
+    <g:set var="filterLabels" value="${ExportHelper.getCachedFilterLabels( token )}" />
+    <g:set var="queryLabels" value="${ExportHelper.getCachedQueryLabels( token )}" />
 
     <semui:modal id="${modalID}" text="CSV-Export" hideSubmitButton="true">
 
