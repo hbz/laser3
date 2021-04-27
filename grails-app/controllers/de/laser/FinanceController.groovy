@@ -40,6 +40,7 @@ class FinanceController  {
             result.filterSet = result.financialData.filterSet
             result.benchMark = result.financialData.benchMark
             result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
+            result.idSuffix = 'bulk'
             result
         }
         catch(FinancialDataException e) {
@@ -58,7 +59,7 @@ class FinanceController  {
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
             result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
-
+            result.idSuffix = 'bulk'
             result
         }
         catch (FinancialDataException e) {
@@ -124,8 +125,8 @@ class FinanceController  {
                            message(code: 'financials.costInLocalCurrency')])
             if(["own","cons"].indexOf(viewMode) > -1)
                 titles.addAll(message(code: 'financials.taxRate'), [message(code:'financials.billingCurrency'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax')])
-            titles.addAll([message(code: 'financials.costItemElement'),message(code: 'financials.newCosts.description'),
-                           message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode'),
+            titles.addAll([message(code: 'financials.costItemElement'), message(code: 'financials.newCosts.description'),
+                           message(code: 'financials.newCosts.costsReferenceOn'), message(code: 'financials.budgetCode'),
                            message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
             SimpleDateFormat dateFormat = DateUtils.getSDF_NoTime()
             //LinkedHashMap<Subscription,List<Org>> subscribers = [:]
@@ -262,7 +263,7 @@ class FinanceController  {
                                     if(ci.taxKey && ci.taxKey.display) {
                                         taxString = "${ci.taxKey.taxType.getI10n('value')} (${ci.taxKey.taxRate} %)"
                                     }
-                                    else if(ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE) {
+                                    else if(ci.taxKey in [CostItem.TAX_TYPES.TAX_CONTAINED_7, CostItem.TAX_TYPES.TAX_CONTAINED_19, CostItem.TAX_TYPES.TAX_REVERSE_CHARGE]) {
                                         taxString = "${ci.taxKey.taxType.getI10n('value')}"
                                     }
                                     else taxString = message(code:'financials.taxRate.notSet')
@@ -363,7 +364,6 @@ class FinanceController  {
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     Object newCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
-        result.putAll(financeControllerService.getAdditionalGenericEditResults(result))
         result.modalText = message(code:'financials.addNewCost')
         result.submitButtonLabel = message(code:'default.button.create_new.label')
         result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView])
@@ -373,6 +373,7 @@ class FinanceController  {
             pickedSubscriptions << "'${genericOIDService.getOID(ci.sub)}'"
         }
         result.pickedSubscriptions = pickedSubscriptions
+        result.idSuffix = "new"
         render(template: "/finance/ajaxModal", model: result)
     }
 
@@ -381,12 +382,12 @@ class FinanceController  {
     Object editCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
         result.costItem = CostItem.get(params.id)
-        result.putAll(financeControllerService.getAdditionalGenericEditResults(result))
         if(result.costItem.taxKey)
             result.taxKey = result.costItem.taxKey
         result.modalText = message(code: 'financials.editCost')
         result.submitButtonLabel = message(code:'default.button.save.label')
         result.formUrl = g.createLink(controller:'finance', action:'createOrUpdateCostItem', params:[showView: params.showView])
+        result.idSuffix = "edit_${params.id}"
         render(template: "/finance/ajaxModal", model: result)
     }
 
@@ -395,13 +396,13 @@ class FinanceController  {
     Object copyCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
         result.costItem = CostItem.get(params.id)
-        result.putAll(financeControllerService.getAdditionalGenericEditResults(result))
         result.modalText = message(code: 'financials.costItem.copy.tooltip')
         result.submitButtonLabel = message(code:'default.button.copy.label')
         result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortia() && result.institution.id != result.costItem.sub?.getConsortia().id
         result.taxKey = result.costItem.taxKey
         result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[showView:params.showView, mode:"copy"])
         result.mode = "copy"
+        result.idSuffix = "copy_${params.id}"
         render template: "/finance/ajaxModal", model: result
     }
 

@@ -174,8 +174,8 @@
                     <label for="filterCIElement">${message(code:'financials.costItemElement')}</label>
                     <select name="filterCIElement" id="filterCIElement" multiple="" class="ui dropdown search selection">
                         <option value=""><g:message code="default.select.all.label"/></option>
-                        <g:set var="costItemElements" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.COST_ITEM_ELEMENT])}" scope="request"/>
-                        <g:each in="${costItemElements}" var="rdv">
+                        <g:set var="costItemElementsForFilter" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.COST_ITEM_ELEMENT])}" scope="request"/>
+                        <g:each in="${costItemElementsForFilter}" var="rdv">
                             <option value="${"${rdv.class.getName()}:${rdv.id}"}" <%=(filterPresets?.filterCIElement?.contains(rdv)) ? 'selected="selected"' : '' %>>
                                 ${rdv.getI10n("value")}
                             </option>
@@ -187,8 +187,8 @@
                     <label for="filterCIStatus">${message(code:'default.status.label')}</label>
                     <select name="filterCIStatus" id="filterCIStatus" multiple="" class="ui dropdown search selection">
                         <option value=""><g:message code="default.select.all.label"/></option>
-                        <g:set var="costItemStatus" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.COST_ITEM_STATUS])}" scope="request"/>
-                        <g:each in="${costItemStatus-RDStore.COST_ITEM_DELETED+RDStore.GENERIC_NULL_VALUE}" var="rdv">
+                        <g:set var="costItemStatusForFilter" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.COST_ITEM_STATUS])}" scope="request"/>
+                        <g:each in="${costItemStatusForFilter-RDStore.COST_ITEM_DELETED+RDStore.GENERIC_NULL_VALUE}" var="rdv">
                             <option value="${"${rdv.class.getName()}:${rdv.id}"}" <%=(filterPresets?.filterCIStatus?.contains(rdv)) ? 'selected="selected"' : '' %>>
                                 ${rdv.getI10n("value")}
                             </option>

@@ -2,9 +2,9 @@
 <%@ page import="de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*; de.laser.*; org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 
-<semui:modal id="costItem_ajaxModal" text="${modalText}" msgSave="${submitButtonLabel}">
+<semui:modal id="costItem_ajaxModal" formID="editCost_${idSuffix}" text="${modalText}" msgSave="${submitButtonLabel}">
     <g:if test="${costItem}">
-        <g:if test="${editConf.showVisibilitySettings && costItem.isVisibleForSubscriber}">
+        <g:if test="${showVisibilitySettings && costItem.isVisibleForSubscriber}">
             <div class="content la-twoSided-ribbon">
                 <div class="ui orange ribbon label">
                     <strong>${costItem.sub.getSubscriber()}</strong>
@@ -31,6 +31,10 @@
             </div>
         </div>
     </g:if>
+    <g:form class="ui small form" name="editCost_${idSuffix}" url="${formUrl}">
+        <g:render template="costItemInput" />
+    </g:form>
+    <%--
     <g:form class="ui small form" id="editCost" url="${formUrl}">
         <g:if test="${costItem}">
             <g:hiddenField id="costItem_id_${costItem.id}" name="costItemId" value="${costItem.id}"/>
@@ -181,7 +185,7 @@
 
                 <div class="two fields">
                     <div class="field">
-                        <label><g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/></label><%-- TODO once we may configure local currency as OrgSetting, this arg has to be replaced! --%>
+                        <label><g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/></label><-- TODO once we may configure local currency as OrgSetting, this arg has to be replaced! -->
                         <input title="<g:message code="financials.newCosts.valueInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/>" type="text" class="calc"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
                                placeholder="${message(code:'financials.newCosts.value')}"
@@ -192,7 +196,7 @@
                         </div>
                     </div><!-- .field -->
                     <div class="field">
-                        <label><g:message code="financials.newCosts.finalSumInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/></label><%-- TODO once we may configure local currency as OrgSetting, this arg has to be replaced! --%>
+                        <label><g:message code="financials.newCosts.finalSumInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/></label><-- TODO once we may configure local currency as OrgSetting, this arg has to be replaced! -->
                         <input title="<g:message code="financials.newCosts.finalSumInLocalCurrency" args="${[RDStore.CURRENCY_EUR.value]}"/>" type="text" readonly="readonly"
                                name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
                                value="<g:formatNumber number="${costItem?.costInLocalCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2"/>"/>
@@ -210,7 +214,7 @@
             </fieldset> <!-- 1/2 field |  .la-account-currency -->
 
             <fieldset class="seven wide field la-modal-fieldset-no-margin">
-                <label>${message(code:'financials.newCosts.constsReferenceOn')}</label>
+                <label>${message(code:'financials.newCosts.costsReferenceOn')}</label>
 
                 <div class="field">
                     <label>${message(code:'default.subscription.label')}</label>
@@ -276,7 +280,7 @@
                                       value="${SubscriptionPackage.class.name + ':' + costItem?.subPkg?.id}" />
                         </g:if>
                         <g:else>
-                            <%--<input name="newPackage" id="newPackage" class="ui" disabled="disabled" data-subFilter="" data-disableReset="true" />--%>
+                            <--<input name="newPackage" id="newPackage" class="ui" disabled="disabled" data-subFilter="" data-disableReset="true" />-->
                             <div class="ui search selection dropdown newCISelect" id="newPackage">
                                 <input type="hidden" name="newPackage" value="${costItem?.subPkg ? "${SubscriptionPackage.class.name}:${costItem.subPkg.id}" : params.newPackage}">
                                 <i class="dropdown icon"></i>
@@ -286,7 +290,7 @@
                         </g:else>
                     </div>
                     <div class="field">
-                        <%-- the distinction between subMode (= sub) and general view is done already in the controller! --%>
+                        <-- the distinction between subMode (= sub) and general view is done already in the controller! -->
                         <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
                         <div class="ui search selection dropdown newCISelect" id="newIE">
                             <input type="hidden" name="newIE" value="${costItem?.issueEntitlement ? "${IssueEntitlement.class.name}:${costItem.issueEntitlement.id}" : params.newIE}">
@@ -316,7 +320,7 @@
                 <div class="two fields">
                     <semui:datepicker label="financials.datePaid" id="newDatePaid" name="newDatePaid" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
 
-                    <%-- to restrict upon year: https://jsbin.com/ruqakehefa/1/edit?html,js,output , cf. example 8! --%>
+                    <-- to restrict upon year: https://jsbin.com/ruqakehefa/1/edit?html,js,output , cf. example 8! -->
                     <semui:datepicker label="financials.financialYear" id="newFinancialYear" name="newFinancialYear" placeholder="financials.financialYear" value="${costItem?.financialYear}" />
                 </div>
                 <div class="two fields">
@@ -673,6 +677,6 @@
             }
 
     </laser:script>
-
+    --%>
 </semui:modal>
 <!-- _ajaxModal.gsp -->
