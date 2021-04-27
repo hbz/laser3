@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      27.04.2021  rc2.0   2.0.8       Andreas Bug         Mapping im LAS:eR-Sync korrigiert
+
 3408    26.04.2021  rc2.0   2.0.8       David   Feature     Icons für Visualisierung?
 
 3370    16.04.2021  rc2.0   2.0.7       David   Bug         Merkmalsverwaltung: Merkmale nicht (mehr) alphabetisch sortiert
