@@ -136,7 +136,7 @@
 
                 <div class="field">
                     <div class="ui checkbox">
-                        <label><g:message code="financials.newCosts.finalSumRounded"/></label>
+                        <label><g:message code="financials.newCosts.roundFinalSum"/></label>
                         <input name="newFinalCostRounding" class="hidden calc" type="checkbox"
                                <g:if test="${costItem?.finalCostRounding}">checked="checked"</g:if>/>
                     </div>

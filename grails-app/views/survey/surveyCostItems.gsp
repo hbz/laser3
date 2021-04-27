@@ -163,7 +163,7 @@
                                                    minFractionDigits="2" maxFractionDigits="2"/>"/>
 
 
-                                    <g:select class="ui dropdown floating la-not-clearable" name="newCostCurrency2"
+                                    <g:select class="ui dropdown floating la-small-dropdown la-not-clearable" name="newCostCurrency2"
                                               title="${g.message(code: 'financials.addNew.currencyType')}"
                                               from="${currency}"
                                               optionKey="id"
@@ -207,7 +207,7 @@
 
                             <div class="field">
                                 <div class="ui checkbox">
-                                    <label><g:message code="financials.newCosts.finalSumRounded"/></label>
+                                    <label><g:message code="financials.newCosts.roundFinalSum"/></label>
                                     <input name="newFinalCostRounding2" class="hidden calc" type="checkbox"
                                            <g:if test="${costItem?.finalCostRounding}">checked="checked"</g:if>/>
                                 </div>

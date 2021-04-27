@@ -2,7 +2,6 @@
 <%@ page import="de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*; de.laser.*; org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 
-    <g:form class="ui small form" name="editCost_${idSuffix}" url="${formUrl}">
         <g:if test="${costItem}">
             <g:hiddenField id="costItemId_${idSuffix}" name="costItemId" value="${costItem.id}"/>
         </g:if>
@@ -167,14 +166,24 @@
                     </div><!-- .field -->
                 </div>
 
-                <div class="field">
-                    <div class="ui checkbox">
-                        <label><g:message code="financials.newCosts.finalSumRounded"/></label>
-                        <input name="newFinalCostRounding" id="newFinalCostRounding_${idSuffix}" class="hidden calc" type="checkbox"
-                               <g:if test="${costItem?.finalCostRounding}"> checked="checked" </g:if>
-                        />
-                    </div>
-                </div><!-- .field -->
+                <div class="two fields">
+                    <div class="field">
+                        <div class="ui checkbox">
+                            <label><g:message code="financials.newCosts.roundBillingSum"/></label>
+                            <input name="newBillingSumRounding" id="newBillingSumRounding_${idSuffix}" class="hidden calc" type="checkbox"
+                                <g:if test="${costItem?.billingSumRounding}"> checked="checked" </g:if>
+                            />
+                        </div>
+                    </div><!-- .field -->
+                    <div class="field">
+                        <div class="ui checkbox">
+                            <label><g:message code="financials.newCosts.roundFinalSum"/></label>
+                            <input name="newFinalCostRounding" id="newFinalCostRounding_${idSuffix}" class="hidden calc" type="checkbox"
+                                <g:if test="${costItem?.finalCostRounding}"> checked="checked" </g:if>
+                            />
+                        </div>
+                    </div><!-- .field -->
+                </div>
             </fieldset> <!-- 1/2 field |  .la-account-currency -->
 
             <g:if test="${idSuffix != 'bulk'}">
@@ -202,8 +211,8 @@
                                        value="${Subscription.class.name + ':' + subscription.id}" />
                             </g:if>
                             <g:else>
-                                <div class="ui search selection dropdown newCISelect">
-                                    <input type="hidden" name="newSubscription" id="newSubscription_${idSuffix}">
+                                <div class="ui search selection dropdown newCISelect" id="newSubscription_${idSuffix}">
+                                    <input type="hidden" name="newSubscription">
                                     <i class="dropdown icon"></i>
                                     <input type="text" class="search">
                                     <div class="default text">${message(code:'financials.newCosts.newLicence')}</div>
@@ -221,12 +230,11 @@
                             <g:else>
                                 <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="ui button la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
                                 <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown multiple search"
-                                          from="${validSubChilds}"
+                                          from="${validSubChilds}" multiple="multiple"
                                           optionValue="${{it.name ? it.getSubscriber().dropdownNamingConvention(institution) : it.label}}"
                                           optionKey="${{Subscription.class.name + ':' + it.id}}"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                                           value="${Subscription.class.name + ':' + costItem?.sub?.id}"
-                                          onchange="JSPC.app.onSubscriptionUpdate()"
                                 />
                             </g:else>
                         </g:if>
@@ -246,8 +254,8 @@
                             </g:if>
                             <g:else>
                             <%--<input name="newPackage" class="ui" disabled="disabled" data-subFilter="" data-disableReset="true" />--%>
-                                <div class="ui search selection dropdown newCISelect">
-                                    <input type="hidden" name="newPackage" id="newPackage_${idSuffix}" value="${costItem?.subPkg ? "${SubscriptionPackage.class.name}:${costItem.subPkg.id}" : params.newPackage}">
+                                <div class="ui search selection dropdown newCISelect" id="newPackage_${idSuffix}">
+                                    <input type="hidden" name="newPackage" value="${costItem?.subPkg ? "${SubscriptionPackage.class.name}:${costItem.subPkg.id}" : params.newPackage}">
                                     <i class="dropdown icon"></i>
                                     <input type="text" class="search">
                                     <div class="default text"></div>
@@ -257,8 +265,8 @@
                         <div class="field">
                             <%-- the distinction between subMode (= sub) and general view is done already in the controller! --%>
                             <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
-                            <div class="ui search selection dropdown newCISelect">
-                                <input type="hidden" name="newIE" id="newIE_${idSuffix}" value="${costItem?.issueEntitlement ? "${IssueEntitlement.class.name}:${costItem.issueEntitlement.id}" : params.newIE}">
+                            <div class="ui search selection dropdown newCISelect" id="newIE_${idSuffix}">
+                                <input type="hidden" name="newIE" value="${costItem?.issueEntitlement ? "${IssueEntitlement.class.name}:${costItem.issueEntitlement.id}" : params.newIE}">
                                 <i class="dropdown icon"></i>
                                 <input type="text" class="search">
                                 <div class="default text"></div>
@@ -267,8 +275,8 @@
 
                         <div class="field">
                             <label>${message(code:'financials.newCosts.titleGroup')}</label>
-                            <div class="ui search selection dropdown newCISelect">
-                                <input type="hidden" name="newTitleGroup" id="newTitleGroup_${idSuffix}" value="${costItem?.issueEntitlementGroup ? "${IssueEntitlementGroup.class.name}:${costItem.issueEntitlementGroup.id}" : params.newTitleGroup}">
+                            <div class="ui search selection dropdown newCISelect" id="newTitleGroup_${idSuffix}" >
+                                <input type="hidden" name="newTitleGroup"value="${costItem?.issueEntitlementGroup ? "${IssueEntitlementGroup.class.name}:${costItem.issueEntitlementGroup.id}" : params.newTitleGroup}">
                                 <i class="dropdown icon"></i>
                                 <input type="text" class="search">
                                 <div class="default text"></div>
@@ -320,8 +328,19 @@
 
         </div><!-- three fields -->
 
-    </g:form>
-
-<script>
+<script data-type="fix">
     <g:render template="/templates/javascript/jspc.finance.js" />
 </script>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    //for some reason, this does not work in jspc.finance
+    JSPC.app.setupCalendar = function () {
+        $("[name='newFinancialYear']").parents(".datepicker").calendar({
+            type: 'year',
+            minDate: new Date('1582-10-15'),
+            maxDate: new Date('2099-12-31')
+        });
+    }
+
+    JSPC.app.setupCalendar();
+</laser:script>

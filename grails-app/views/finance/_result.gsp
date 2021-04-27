@@ -54,8 +54,35 @@
                             <g:form action="processCostItemsBulk" name="costItemsBulk" method="post" class="ui form">
                                 <div id="bulkCostItems" class="hidden">
                                     <g:render template="costItemInput" />
+                                    <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
+                                    <div class="fields">
+                                        <fieldset class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
+                                            <div class="field center aligned">
+
+                                                <label>${message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}</label>
+                                                <div class="ui right labeled input">
+                                                    <input type="number"
+                                                           name="percentOnOldPrice"
+                                                           placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}"
+                                                           value="" step="0.01"/>
+                                                    <div class="ui basic label">%</div>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <div class="two fields">
+                                        <div class="eight wide field" style="text-align: left;">
+                                            <button class="ui button" type="submit">${message(code: 'financials.bulkCostItems.submit')}</button>
+                                        </div>
+
+                                        <div class="eight wide field" style="text-align: right;">
+                                        </div>
+                                    </div>
                                 </div>
 
+                                <div class="field la-field-right-aligned">
+                                    <input name="delete" class="ui negative button" value="${message(code: 'financials.bulkCostItems.delete')}" type="submit"/>
+                                </div>
                                 <g:render template="result_tab_cons" model="[tmplShowCheckbox: true, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
                             </g:form>
                         </g:if>
@@ -102,30 +129,31 @@
                         for(let i = 0;i < $("[name='selectedCostItems']:checked").length;i++) {
                             preselectedSubscriptions.push($("[name='selectedCostItems']:checked").get(i).value);
                         }
+                        let idSuffix = "new";
                         $.ajax({
-                               url: "<g:createLink controller='finance' action='newCostItem'/>",
-                               data: {
-                                   sub: "${fixedSubscription?.id}",
-                                   showView: "${showView}",
-                                   preselectedSubscriptions: JSON.stringify(preselectedSubscriptions)
-                               }
+                            url: "<g:createLink controller='finance' action='newCostItem'/>",
+                            data: {
+                                sub: "${fixedSubscription?.id}",
+                                showView: "${showView}",
+                                preselectedSubscriptions: JSON.stringify(preselectedSubscriptions)
+                            }
                         }).done(function (data) {
                             $('#dynamicModalContainer').html(data);
                             $('#dynamicModalContainer .ui.modal').modal({
-                                   onVisible: function () {
-                                       r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
-                                       r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
-                                       JSPC.callbacks.dynPostFunc();
-                                       JSPC.app.setupCalendar();
-                                       JSPC.app.preselectMembers();
-                                       },
-                                   detachable: true,
-                                   closable: false,
-                                   transition: 'scale',
-                                   onApprove: function () {
-                                       $(this).find('.ui.form').submit();
-                                       return false;
-                                   }
+                                onVisible: function () {
+                                    r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                                    r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
+                                    JSPC['finance'+idSuffix].updateTitleDropdowns();
+                                    //JSPC.app.setupCalendar();
+                                    JSPC['finance'+idSuffix].preselectMembers();
+                                },
+                                detachable: true,
+                                closable: false,
+                                transition: 'scale',
+                                onApprove: function () {
+                                    $(this).find('.ui.form').submit();
+                                    return false;
+                                }
                             }).modal('show');
                         });
                         setTimeout(function () {
@@ -136,7 +164,7 @@
 
                 $('table[id^=costTable] .x .trigger-modal').on('click', function(e) {
                     e.preventDefault();
-
+                    let idSuffix = $(this).attr("data-id_suffix");
                     $.ajax({
                         url: $(this).attr('href')
                     }).done( function(data) {
@@ -148,8 +176,8 @@
                                 r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
-                                JSPC.callbacks.dynPostFunc();
-                                JSPC.app.setupCalendar();
+                                JSPC['finance'+idSuffix].updateTitleDropdowns();
+                                //JSPC.app.setupCalendar();
                             },
                             detachable: true,
                             closable: false,

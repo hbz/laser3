@@ -86,6 +86,7 @@ class CostItem extends AbstractBase
     //... this construct:
     TAX_TYPES taxKey
 
+    Boolean billingSumRounding = false
     Boolean finalCostRounding = false
 
     @Transient
@@ -139,6 +140,7 @@ class CostItem extends AbstractBase
         costInLocalCurrency             column: 'ci_cost_in_local_currency'
         currencyRate    column: 'ci_currency_rate'
         finalCostRounding               column:'ci_final_cost_rounding'
+        billingSumRounding              column:'ci_billing_sum_rounding'
         taxCode         column: 'ci_tax_code'
         taxRate                         column: 'ci_tax_rate'
         taxKey          column: 'ci_tax_enum'

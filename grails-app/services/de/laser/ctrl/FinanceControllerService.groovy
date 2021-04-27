@@ -211,7 +211,6 @@ class FinanceControllerService {
         String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
         [
             costItemStatus:     RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS) - RDStore.COST_ITEM_DELETED,
-            costItemCategory:   RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_CATEGORY),
             costItemSigns:      RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION),
             costItemElements:   CostItemElementConfiguration.executeQuery('select ciec from CostItemElementConfiguration ciec join ciec.costItemElement cie where ciec.forOrganisation = :org order by cie.value_'+locale+' asc',[org:org]),
             taxType:            RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE),

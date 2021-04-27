@@ -3316,9 +3316,6 @@ class SurveyController {
             //moved to TAX_TYPES
             //RefdataValue cost_tax_type         = params.newCostTaxType ?          (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
 
-            RefdataValue cost_item_category = params.newCostItemCategory ? (RefdataValue.get(params.long('newCostItemCategory'))) : null
-            //price, bank charge, etc
-
             NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
             def cost_billing_currency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
             //def cost_currency_rate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.00
@@ -3413,7 +3410,6 @@ class SurveyController {
                         newCostItem.owner = result.institution
                         newCostItem.surveyOrg = newCostItem.surveyOrg ?: surveyOrg
                         newCostItem.isVisibleForSubscriber = cost_item_isVisibleForSubscriber
-                        newCostItem.costItemCategory = cost_item_category
                         newCostItem.costItemElement = cost_item_element
                         newCostItem.costItemStatus = cost_item_status
                         newCostItem.billingCurrency = billing_currency //Not specified default to GDP

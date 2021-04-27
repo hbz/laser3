@@ -2,7 +2,7 @@
 <%@ page import="de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.helper.RDStore; de.laser.helper.RDConstants; com.k_int.kbplus.*; de.laser.*; org.springframework.context.i18n.LocaleContextHolder; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 
-<semui:modal id="costItem_ajaxModal" text="${modalText}" msgSave="${submitButtonLabel}">
+<semui:modal id="costItem_ajaxModal" formID="editCost_${idSuffix}" text="${modalText}" msgSave="${submitButtonLabel}">
     <g:if test="${costItem}">
         <g:if test="${showVisibilitySettings && costItem.isVisibleForSubscriber}">
             <div class="content la-twoSided-ribbon">
@@ -31,7 +31,9 @@
             </div>
         </div>
     </g:if>
-    <g:render template="costItemInput" />
+    <g:form class="ui small form" name="editCost_${idSuffix}" url="${formUrl}">
+        <g:render template="costItemInput" />
+    </g:form>
     <%--
     <g:form class="ui small form" id="editCost" url="${formUrl}">
         <g:if test="${costItem}">

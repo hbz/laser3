@@ -738,7 +738,7 @@ class ExportService {
 						if(ci.taxKey && ci.taxKey.display) {
 							taxString = "${ci.taxKey.taxType.getI10n('value')} (${ci.taxKey.taxRate} %)"
 						}
-						else if(ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE) {
+						else if(ci.taxKey in [CostItem.TAX_TYPES.TAX_CONTAINED_7, CostItem.TAX_TYPES.TAX_CONTAINED_19, CostItem.TAX_TYPES.TAX_REVERSE_CHARGE]) {
 							taxString = "${ci.taxKey.taxType.getI10n('value')}"
 						}
 						else taxString = messageSource.getMessage('financials.taxRate.notSet',null,locale)
