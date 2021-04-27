@@ -38,11 +38,14 @@
                                         [org: org, pdId: id as Long, ctxOrg: contextService.getOrg()]
                                 )
                                 println properties.collect { op ->
+                                    String result = (op.type.tenant?.id == contextService.getOrg().id) ? '<i class="icon shield alternate"></i>' : ''
+
                                     if (op.getType().isRefdataValueType()) {
-                                        op.getRefValue()?.getI10n('value')
+                                        result += op.getRefValue()?.getI10n('value')
                                     } else {
-                                        op.getValue()
+                                        result += op.getValue()
                                     }
+                                    result
                                 }.findAll().join(' ,<br/>') // removing empty and null values
                             %>
                         </td>

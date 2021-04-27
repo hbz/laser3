@@ -46,6 +46,11 @@ class SubscriptionFilter extends BaseFilter {
                         [validOn: null, orgRole: 'Subscription Consortia'], contextService.getOrg() )
                 queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
                 break
+            case 'my-sub':
+                List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(    // roleType:Subscriber
+                        [validOn: null, orgRole: 'Subscriber'], contextService.getOrg() )
+                queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
+                break
         }
 
         //println queryParams
@@ -116,7 +121,7 @@ class SubscriptionFilter extends BaseFilter {
 //        println queryParams
 //        println whereParts
 
-        filterResult.data.put('subscriptionIdList', Subscription.executeQuery( query, queryParams ))
+        filterResult.data.put('subscriptionIdList', queryParams.subscriptionIdList ? Subscription.executeQuery( query, queryParams ) : [])
 
         handleInternalOrgFilter(params, 'member', filterResult)
         handleInternalOrgFilter(params, 'provider', filterResult)
@@ -265,7 +270,7 @@ class SubscriptionFilter extends BaseFilter {
 //        println 'SubscriptionFilter.internalOrgFilter() -->'
 //        println query
 //        println queryParams
-        filterResult.data.put( partKey + 'IdList', Org.executeQuery(query, queryParams) )
+        filterResult.data.put( partKey + 'IdList', queryParams.subscriptionIdList ? Org.executeQuery(query, queryParams) : [] )
     }
 
 }

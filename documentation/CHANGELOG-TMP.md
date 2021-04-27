@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      27.04.2021  rc2.0   2.0.8       Andreas Bug         Mapping im LAS:eR-Sync korrigiert
+
+3408    26.04.2021  rc2.0   2.0.8       David   Feature     Icons für Visualisierung?
+
 3348    21.04.2021  dev     2.1         Andreas Bug         falsche Identifier entfernt, Paket-Identifier werden bei Sync ausgetauscht
 
 --      20.04.2021  dev     2.1         Andreas Feature     Umstrukturierung der Identifier in den eingehängten Domänen auf sortierte Listen

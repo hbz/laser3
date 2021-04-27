@@ -16,7 +16,8 @@ class SubscriptionConfig extends BaseConfig {
                     ],
                     source : [
                             //'all-sub' : 'Alle Lizenzen',
-                            'consortia-sub' : 'Meine Lizenzen'
+                            'consortia-sub' : 'Meine Lizenzen (Konsortium)',
+                            'my-sub'        : 'Meine Lizenzen (Vollnutzer)',
                     ],
                     fields: [
                             'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
@@ -60,9 +61,9 @@ class SubscriptionConfig extends BaseConfig {
                                             chartLabels : [ 'Ermittelt durch Bestand', 'Zuordnung über Anbieter' ]
                                     ],
                                     'subscription-property-assignment' : [
-                                            label : 'Lizenz → Merkmale (eigene/öffentliche)',
+                                            label : 'Lizenz → Merkmale (eigene/allgemeine)',
                                             template: '2axis2values',
-                                            chartLabels : [ 'Lizenzen', 'Vergebene Merkmale (eigene/öffentliche)' ]
+                                            chartLabels : [ 'Lizenzen', 'Vergebene Merkmale (eigene/allgemeine)' ]
                                     ],
                                     'subscription-identifier-assignment' : [
                                             label : 'Lizenz → Identifikatoren',

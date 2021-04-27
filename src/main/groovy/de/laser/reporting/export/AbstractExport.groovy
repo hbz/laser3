@@ -7,11 +7,24 @@ abstract class AbstractExport {
     static String FIELD_TYPE_REFDATA_JOINTABLE  = 'refdataJoinTable'
     static String FIELD_TYPE_CUSTOM_IMPL        = 'customImplementation'
 
+    static String FIELD_TYPE_CUSTOM_IMPL_QDP    = 'customImplementationQDP' // query depending
+
     static String CSV_VALUE_SEPARATOR   = ';'
     static String CSV_FIELD_SEPARATOR   = ','
     static String CSV_FIELD_QUOTATION   = '"'
 
-    Map<String, Object> selectedExport = [:]
+    static Map<String, String> CUSTOM_LABEL = [
+
+            'globalUID'                 : 'Link (Global UID)',
+            'identifier-assignment'     : 'Identifikatoren',
+            'provider-assignment'       : 'Anbieter',
+            'property-assignment'       : 'impl @ ExportHelper.getFieldLabel()',
+            '___members'                : 'Teilnehmerzahl'      // virtual
+    ]
+
+    String token
+
+    Map<String, Object> selectedExportFields = [:]
 
     abstract Map<String, Object> getAllFields()
 

@@ -45,11 +45,14 @@
                                         [sub: sub, pdId: id as Long, ctxOrg: contextService.getOrg()]
                                 )
                                 println properties.collect { sp ->
+                                    String result = (sp.type.tenant?.id == contextService.getOrg().id) ? '<i class="icon shield alternate"></i>' : ''
+
                                     if (sp.getType().isRefdataValueType()) {
-                                        sp.getRefValue()?.getI10n('value')
+                                        result += sp.getRefValue()?.getI10n('value')
                                     } else {
-                                        sp.getValue()
+                                        result += sp.getValue()
                                     }
+                                    result
                                 }.findAll().join(' ,<br/>') // removing empty and null values
                             %>
                         </td>
