@@ -379,9 +379,9 @@ class AjaxHtmlController {
 
     // ----- reporting -----
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def chartDetails() {
         Map<String, Object> result = [
@@ -440,6 +440,7 @@ class AjaxHtmlController {
 
             cacheMap.detailsCache = [
                     prefix : prefix,
+                    id :     params.long('id'),
                     idList : result.list.collect{ it.id } // only existing ids
             ]
 
@@ -493,9 +494,9 @@ class AjaxHtmlController {
         render template: result.tmpl, model: result
     }
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def chartDetailsExport() {
 

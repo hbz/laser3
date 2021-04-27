@@ -3,7 +3,6 @@ package de.laser.reporting.export
 import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
-import de.laser.reporting.myInstitution.base.BaseQuery
 
 class GenericExportManager {
 
@@ -13,30 +12,31 @@ class GenericExportManager {
 
     static AbstractExport createExport(String token, Map<String, Object> selectedFields) {
 
-        Map<String, Object> queryCache = BaseQuery.getQueryCache(token)
-        String prefix = queryCache.query.split('-')[0]
+        String prefix = ExportHelper.getCachedQueryPrefix( token )
 
         if (prefix == 'license') {
-            return new LicenseExport( selectedFields )
+            return new LicenseExport( token, selectedFields )
         }
         if (prefix in ['org', 'member', 'licensor', 'provider']) {
-            return new OrgExport( selectedFields )
+            return new OrgExport( token, selectedFields )
         }
         if (prefix == 'subscription') {
-            return new SubscriptionExport( selectedFields )
+            return new SubscriptionExport( token, selectedFields )
         }
     }
 
     static List<String> export(AbstractExport export, List<Long> idList) {
 
         List<String> rows = []
-        rows.add( buildRow( export.getSelectedFields().collect{it -> export.getFieldLabel(it.key as String) } ) )
-        rows.addAll( buildAllRows(export, idList) )
+        rows.add( buildCSVRow(
+                export.getSelectedFields().collect{it -> export.getFieldLabel(it.key as String) }
+        ) )
+        rows.addAll( buildCSV(export, idList) )
 
         rows
     }
 
-    static List<String> buildAllRows(AbstractExport export, List<Long> idList) {
+    static List<String> buildCSV(AbstractExport export, List<Long> idList) {
 
         List<String> rows = []
         Map<String, Object> fields = export.getSelectedFields()
@@ -54,14 +54,14 @@ class GenericExportManager {
         idList.each { id ->
             List<String> row = export.getObject( id as Long, fields )
             if (row) {
-                rows.add( buildRow( row ) )
+                rows.add( buildCSVRow( row ) )
             }
         }
 
         rows
     }
 
-    static String buildRow(List<String> content) {
+    static String buildCSVRow(List<String> content) {
 
         content.collect{it ->
             if (it == null) {
