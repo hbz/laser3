@@ -178,7 +178,7 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
 //        println queryParams
 //        println whereParts
 
-        filterResult.data.put('orgIdList', Subscription.executeQuery( query, queryParams ))
+        filterResult.data.put('orgIdList', queryParams.orgIdList ? Org.executeQuery( query, queryParams ) : [])
 
 //        println 'orgs >> ' + result.orgIdList.size()
 

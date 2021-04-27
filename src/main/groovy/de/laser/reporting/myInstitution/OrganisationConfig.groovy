@@ -60,9 +60,9 @@ class OrganisationConfig extends BaseConfig {
                     query2 : [
                             'Verteilung' : [ // TODO ..
                                     'org-property-assignment' : [
-                                            label: 'Organisation → Merkmale (eigene/öffentliche)',
+                                            label: 'Organisation → Merkmale (eigene/allgemeine)',
                                             template: '2axis2values',
-                                            chartLabels: [ 'Organisationen', 'Vergebene Merkmale (eigene/öffentliche)' ]
+                                            chartLabels: [ 'Organisationen', 'Vergebene Merkmale (eigene/allgemeine)' ]
                                             ],
                                     'org-identifier-assignment' : [
                                             label : 'Organisation → Identifikatoren',

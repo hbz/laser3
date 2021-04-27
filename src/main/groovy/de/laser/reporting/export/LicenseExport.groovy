@@ -1,9 +1,12 @@
 package de.laser.reporting.export
 
+import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.License
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.properties.LicenseProperty
+import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -27,35 +30,41 @@ class LicenseExport extends AbstractExport {
                             'status'            : FIELD_TYPE_REFDATA,
                             'licenseCategory'   : FIELD_TYPE_REFDATA,
                             'type'              : FIELD_TYPE_REFDATA,
-                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL, // <- no BaseConfig.getCustomRefdata(fieldName)
-                            //'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL, // <- no BaseConfig.getCustomRefdata(fieldName)
+                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // <- no BaseConfig.getCustomRefdata(fieldName)
+                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                     ]
             ]
     ]
 
-    LicenseExport (Map<String, Object> fields) {
-        selectedExport = getAllFields().findAll{ it.key in fields.keySet() }
+    LicenseExport (String token, Map<String, Object> fields) {
+        this.token = token
+        selectedExportFields = getAllFields().findAll{ it.key in fields.keySet() }
     }
 
     @Override
     Map<String, Object> getAllFields() {
-        CONFIG.base.fields
+        String suffix = ExportHelper.getCachedQuerySuffix(token)
+
+        CONFIG.base.fields.findAll {
+            (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == suffix)
+        }
     }
 
     @Override
     Map<String, Object> getSelectedFields() {
-        selectedExport
+        selectedExportFields
     }
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportHelper.getFieldLabel( CONFIG.base, fieldName )
+        ExportHelper.getFieldLabel( token, CONFIG.base, fieldName )
     }
 
     @Override
     List<String> getObject(Long id, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
         License lic = License.get(id)
         List<String> content = []
@@ -113,10 +122,27 @@ class LicenseExport extends AbstractExport {
                     )
                     content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == 'property-assignment') {
-                }
-                else {
-                    content.add('* ' + FIELD_TYPE_CUSTOM_IMPL)
+            }
+            // --> custom query depending filter implementation
+            else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
+
+                if (key == 'property-assignment') {
+                    Long pdId = BaseDetails.getDetailsCache(token).id as Long
+
+                    List<LicenseProperty> properties = LicenseProperty.executeQuery(
+                            "select lp from LicenseProperty lp join lp.type pd where lp.owner = :lic and pd.id = :pdId " +
+                                    "and (lp.isPublic = true or lp.tenant = :ctxOrg) and pd.descr like '%Property' ",
+                            [lic: lic, pdId: pdId, ctxOrg: contextService.getOrg()]
+                    )
+                    content.add(
+                            properties.collect { lp ->
+                                if (lp.getType().isRefdataValueType()) {
+                                    lp.getRefValue()?.getI10n('value')
+                                } else {
+                                    lp.getValue()
+                                }
+                            }.findAll().join( CSV_VALUE_SEPARATOR ) // removing empty and null values
+                    )
                 }
             }
             else {
