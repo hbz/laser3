@@ -64,6 +64,7 @@
                         <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">
                             <td>
                                 <%
+                                    // TODO: query
                                     println License.executeQuery('select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
                                             [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
                                     )[0]

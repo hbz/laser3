@@ -3,6 +3,7 @@ package de.laser.reporting.export
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.License
+import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.reporting.myInstitution.base.BaseDetails
@@ -15,7 +16,29 @@ class LicenseExport extends AbstractExport {
 
     static String KEY = 'license'
 
-    static Map<String, Object> CONFIG_X = [
+    static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
+
+            base : [
+                    meta : [
+                            class: License
+                    ],
+                    fields : [
+                            'globalUID'         : FIELD_TYPE_PROPERTY,
+                            'reference'         : FIELD_TYPE_PROPERTY,
+                            'startDate'         : FIELD_TYPE_PROPERTY,
+                            'endDate'           : FIELD_TYPE_PROPERTY,
+                            'status'            : FIELD_TYPE_REFDATA,
+                            'licenseCategory'   : FIELD_TYPE_REFDATA,
+                            'type'              : FIELD_TYPE_REFDATA,
+                            '___license_subscriptions'  : FIELD_TYPE_CUSTOM_IMPL,   // virtual
+                            '___license_members'        : FIELD_TYPE_CUSTOM_IMPL,   // virtual
+                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // <- no BaseConfig.getCustomRefdata(fieldName)
+                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                    ]
+            ]
+    ]
+
+    static Map<String, Object> CONFIG_ORG_INST = [
 
             base : [
                     meta : [
@@ -41,7 +64,14 @@ class LicenseExport extends AbstractExport {
     }
 
     Map<String, Object> getCurrentConfig() {
-        LicenseExport.CONFIG_X
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+
+        if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+            LicenseExport.CONFIG_ORG_CONSORTIUM
+        }
+        else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+            LicenseExport.CONFIG_ORG_INST
+        }
     }
 
     @Override
@@ -124,6 +154,17 @@ class LicenseExport extends AbstractExport {
                             "select i from Identifier i where i.value != null and i.value != '' and i.lic = :lic", [lic: lic]
                     )
                     content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
+                }
+                else if (key == '___license_subscriptions') { // TODO: query
+                    Long count = License.executeQuery(
+                            'select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
+                            [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
+                    )[0]
+                    content.add( count as String )
+                }
+                else if (key == '___license_members') {
+                    Long count = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
+                    content.add( count as String )
                 }
             }
             // --> custom query depending filter implementation

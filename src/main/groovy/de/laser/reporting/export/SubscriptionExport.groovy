@@ -31,7 +31,7 @@ class SubscriptionExport extends AbstractExport {
                             'kind'                  : FIELD_TYPE_REFDATA,
                             'form'                  : FIELD_TYPE_REFDATA,
                             'resource'              : FIELD_TYPE_REFDATA,
-                            '___members'            : FIELD_TYPE_CUSTOM_IMPL,   // virtual
+                            '___subscription_members'   : FIELD_TYPE_CUSTOM_IMPL,   // virtual
                             'provider-assignment'   : FIELD_TYPE_CUSTOM_IMPL,   // <- no BaseConfig.getCustomRefdata(fieldName)
                             'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                             'isPublicForApi'        : FIELD_TYPE_PROPERTY,
@@ -168,7 +168,7 @@ class SubscriptionExport extends AbstractExport {
                     )
                     content.add( plts.collect{ it.name }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '___members') {
+                else if (key == '___subscription_members') {
                     int members = Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
                             [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
                     )[0]
