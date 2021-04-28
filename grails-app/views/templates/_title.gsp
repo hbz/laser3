@@ -212,28 +212,36 @@
         </div>
     </g:if>
 
-    <g:set var="publishers" value="${tipp.getPublishers()}"/>
-    <g:if test="${(publishers || showEmptyFields || tipp.publisherName)}">
+    <g:if test="${(tipp.publisherName || showEmptyFields)}">
         <div class="item">
-            <i class="grey university icon la-popup-tooltip la-delay"
+            <i class="grey building icon la-popup-tooltip la-delay"
                data-content="${message(code: 'tipp.publisher')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'tipp.publisher') + ':'}
-                <g:if test="${tipp.publisherName}">
-                    ${tipp.publisherName}
-                </g:if>
-                <g:elseif test="${publishers}">
-                    <div class="ui list">
-                        <g:each in="${publishers}" var="publisher">
+                ${showCompact ? '' : message(code: 'tipp.publisher') + ':'} ${tipp.publisherName}
+            </div>
+        </div>
+    </g:if>
 
-                                <g:link controller="organisation" action="show" id="${publisher.id}">${publisher.name}</g:link>
+    <g:set var="providers" value="${tipp.getPublishers()}"/>
+    <g:if test="${(providers || showEmptyFields)}">
+        <div class="item">
+            <i class="grey university icon la-popup-tooltip la-delay"
+               data-content="${message(code: 'tipp.provider')}"></i>
+
+            <div class="content">
+                ${showCompact ? '' : message(code: 'tipp.provider') + ':'}
+                <g:if test="${providers}">
+                    <div class="ui list">
+                        <g:each in="${providers}" var="provider">
+
+                                <g:link controller="organisation" action="show" id="${provider.id}">${provider.name}</g:link>
 
                                 <g:each in="${apisources}" var="gokbAPI">
-                                    <g:if test="${publisher.gokbId}">
+                                    <g:if test="${provider.gokbId}">
                                         <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                            data-content="${message(code: 'wekb')}"
-                                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/orgContent/?id=' + publisher.gokbId : '#'}"
+                                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/orgContent/?id=' + provider.gokbId : '#'}"
                                            target="_blank"><i class="la-gokb  icon"></i>
                                         </a>
                                     </g:if>
@@ -241,7 +249,7 @@
 
                         </g:each>
                     </div>
-                </g:elseif>
+                </g:if>
             </div>
         </div>
     </g:if>
