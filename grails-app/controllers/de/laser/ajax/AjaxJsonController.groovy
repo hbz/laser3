@@ -683,13 +683,13 @@ class AjaxJsonController {
 
             Closure getTooltipLabels = { GrailsParameterMap pm ->
                 if (pm.filter == 'license') {
-                    BaseQuery.getQueryLabels(LicenseConfig.CONFIG, pm).get(1)
+                    BaseQuery.getQueryLabels(LicenseConfig.getCurrentConfig(), pm).get(1)
                 }
                 else if (pm.filter == 'organisation') {
                     BaseQuery.getQueryLabels(OrganisationConfig.CONFIG, pm).get(1)
                 }
                 else if (pm.filter == 'subscription') {
-                    BaseQuery.getQueryLabels(SubscriptionConfig.CONFIG, pm).get(1)
+                    BaseQuery.getQueryLabels(SubscriptionConfig.getCurrentConfig(), pm).get(1)
                 }
             }
 
@@ -709,7 +709,7 @@ class AjaxJsonController {
                 queryResult.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (clone.query.endsWith('assignment')) {
-                    Map<String, Object> cfg = LicenseConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
+                    Map<String, Object> cfg = LicenseConfig.getCurrentConfig().base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
                     queryResult.labels.chart = cfg.getAt('chartLabels')
                     queryResult.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
@@ -733,7 +733,7 @@ class AjaxJsonController {
                 queryResult.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (clone.query.endsWith('assignment')) {
-                    Map<String, Object> cfg = SubscriptionConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
+                    Map<String, Object> cfg = SubscriptionConfig.getCurrentConfig().base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
                     queryResult.labels.chart = cfg.getAt('chartLabels')
                     queryResult.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')

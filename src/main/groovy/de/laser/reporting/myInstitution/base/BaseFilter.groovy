@@ -16,6 +16,8 @@ class BaseFilter {
         cacheMap.filterCache as Map<String, Object>
     }
 
+    // ----- ----- -----
+
     static String getFilterSourceLabel(Map<String, Object> objConfig, String key) {
         objConfig.source.get(key)
     }

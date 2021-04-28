@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.LicenseProperty; de.laser.reporting.myInstitution.OrganisationConfig;de.laser.reporting.myInstitution.LicenseConfig;" %>
+<%@ page import="de.laser.reporting.myInstitution.base.BaseDetails; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.LicenseProperty; de.laser.reporting.myInstitution.OrganisationConfig;de.laser.reporting.myInstitution.LicenseConfig;" %>
 <laser:serviceInjection />
 
 <g:render template="/myInstitution/reporting/details/base.part1" />
@@ -16,8 +16,12 @@
                         <th>${message(code:'identifier.label')}</th>
                     </g:elseif>
                     <g:else>
-                        <th>${message(code:'subscription.plural')}</th>
-                        <th>${message(code:'license.member.plural')}</th>
+                        <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">
+                            <th>${message(code:'subscription.plural')}</th>
+                            <th>${message(code:'license.member.plural')}</th>
+                        </g:if>
+                        <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST'}">
+                        </g:elseif>
                     </g:else>
                 <th>${message(code:'default.startDate.label')}</th>
                 <th>${message(code:'default.endDate.label')}</th>
@@ -33,16 +37,13 @@
                     <g:if test="${query == 'license-property-assignment'}">
                         <td>
                             <%
-                                List<LicenseProperty> properties = LicenseProperty.executeQuery(
-                                        "select lp from LicenseProperty lp join lp.type pd where lp.owner = :lic and pd.id = :pdId " +
-                                        "and (lp.isPublic = true or lp.tenant = :ctxOrg) and pd.descr like '%Property' ",
-                                        [lic: lic, pdId: id as Long, ctxOrg: contextService.getOrg()]
-                                        )
+                                List<LicenseProperty> properties = BaseDetails.getPropertiesGeneric(lic, id as Long, contextService.getOrg()) as List<LicenseProperty>
+
                                 println properties.collect { lp ->
                                     String result = (lp.type.tenant?.id == contextService.getOrg().id) ? '<i class="icon shield alternate"></i>' : ''
 
                                     if (lp.getType().isRefdataValueType()) {
-                                        result += lp.getRefValue()?.getI10n('value')
+                                        result += (lp.getRefValue() ? lp.getRefValue().getI10n('value') : '')
                                     } else {
                                         result += lp.getValue()
                                     }
@@ -60,18 +61,20 @@
                         </td>
                     </g:elseif>
                     <g:else>
-                        <td>
-                            <%
-                                println License.executeQuery('select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
-                                        [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
-                                )[0]
-                            %>
-                        </td>
-                        <td>
-                            <%
-                                println License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
-                            %>
-                        </td>
+                        <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">
+                            <td>
+                                <%
+                                    println License.executeQuery('select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
+                                            [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
+                                    )[0]
+                                %>
+                            </td>
+                            <td>
+                                <% println License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0] %>
+                            </td>
+                        </g:if>
+                        <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST'}">
+                        </g:elseif>
                     </g:else>
                     <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${lic.startDate}" />

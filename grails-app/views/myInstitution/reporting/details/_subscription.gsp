@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Subscription; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty; de.laser.reporting.myInstitution.OrganisationConfig;de.laser.reporting.myInstitution.SubscriptionConfig;" %>
+<%@ page import="de.laser.reporting.myInstitution.base.BaseDetails; de.laser.Org; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Subscription; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty; de.laser.reporting.myInstitution.OrganisationConfig;de.laser.reporting.myInstitution.SubscriptionConfig;" %>
 <laser:serviceInjection />
 
 <g:render template="/myInstitution/reporting/details/base.part1" />
@@ -22,7 +22,11 @@
                 <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
             </g:elseif>
             <g:else>
-                <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
+                <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">
+                    <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
+                </g:if>
+                <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST'}">
+                </g:elseif>
             </g:else>
             <th>${message(code:'subscription.startDate.label')}</th>
             <th>${message(code:'subscription.endDate.label')}</th>
@@ -39,16 +43,13 @@
                     <g:if test="${query == 'subscription-property-assignment'}">
                         <td>
                             <%
-                                List<SubscriptionProperty> properties = SubscriptionProperty.executeQuery(
-                                        "select sp from SubscriptionProperty sp join sp.type pd where sp.owner = :sub and pd.id = :pdId " +
-                                                "and (sp.isPublic = true or sp.tenant = :ctxOrg) and pd.descr like '%Property' ",
-                                        [sub: sub, pdId: id as Long, ctxOrg: contextService.getOrg()]
-                                )
+                                List<SubscriptionProperty> properties = BaseDetails.getPropertiesGeneric(sub, id as Long, contextService.getOrg()) as List<SubscriptionProperty>
+
                                 println properties.collect { sp ->
                                     String result = (sp.type.tenant?.id == contextService.getOrg().id) ? '<i class="icon shield alternate"></i>' : ''
 
                                     if (sp.getType().isRefdataValueType()) {
-                                        result += sp.getRefValue()?.getI10n('value')
+                                        result += (sp.getRefValue() ? sp.getRefValue().getI10n('value') : '')
                                     } else {
                                         result += sp.getValue()
                                     }
@@ -88,13 +89,17 @@
                         </td>
                     </g:elseif>
                     <g:else>
-                        <td>
-                            <%
-                                println Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
-                                        [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
-                                )[0]
-                            %>
-                        </td>
+                        <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">
+                            <td>
+                                <%
+                                    println Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
+                                            [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
+                                    )[0]
+                                %>
+                            </td>
+                        </g:if>
+                        <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST'}">
+                        </g:elseif>
                     </g:else>
 
                     <td>

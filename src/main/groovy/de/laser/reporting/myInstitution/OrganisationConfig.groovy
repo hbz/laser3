@@ -7,7 +7,7 @@ class OrganisationConfig extends BaseConfig {
 
     static String KEY = 'organisation'
 
-    static Map<String, Object> CONFIG = [
+    static Map<String, Object> CONFIG_X = [
 
             base : [
                     meta : [
@@ -74,4 +74,8 @@ class OrganisationConfig extends BaseConfig {
                     ]
             ]
     ]
+
+    static Map<String, Object> getCurrentConfig() {
+        OrganisationConfig.CONFIG_X
+    }
 }

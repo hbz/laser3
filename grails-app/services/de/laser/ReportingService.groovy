@@ -46,7 +46,7 @@ class ReportingService {
         CostItemFilter filter = new CostItemFilter()
         result.filterResult = filter.filter(params)
 
-        result.cfgQueryList.putAll( CostItemConfig.CONFIG.base.query )
+        result.cfgQueryList.putAll( CostItemConfig.getCurrentConfig().base.query )
     }
 
     void doFilterLicense(Map<String, Object> result, GrailsParameterMap params) {
@@ -54,10 +54,13 @@ class ReportingService {
         LicenseFilter filter = new LicenseFilter()
         result.filterResult = filter.filter(params)
 
-        result.cfgQueryList.putAll( LicenseConfig.CONFIG.base.query )
-        result.cfgQueryList.putAll( LicenseConfig.CONFIG.licensor.query )
+        result.cfgQueryList.putAll( LicenseConfig.getCurrentConfig().base.query )
 
-        result.cfgQuery2List.putAll( LicenseConfig.CONFIG.base.query2 ) // Verteilung
+        if (LicenseConfig.getCurrentConfig().licensor) {
+            result.cfgQueryList.putAll(LicenseConfig.getCurrentConfig().licensor.query)
+        }
+
+        result.cfgQuery2List.putAll( LicenseConfig.getCurrentConfig().base.query2 ) // Verteilung
     }
 
     void doFilterOrganisation(Map<String, Object> result, GrailsParameterMap params) {
@@ -75,11 +78,17 @@ class ReportingService {
         SubscriptionFilter filter = new SubscriptionFilter()
         result.filterResult = filter.filter(params)
 
-        result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.base.query )
-        result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.member.query )
-        result.cfgQueryList.putAll( SubscriptionConfig.CONFIG.provider.query )
 
-        result.cfgQuery2List.putAll( SubscriptionConfig.CONFIG.base.query2 ) // Verteilung
+        result.cfgQueryList.putAll( SubscriptionConfig.getCurrentConfig().base.query )
+
+        if (SubscriptionConfig.getCurrentConfig().member) {
+            result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().member.query)
+        }
+        if (SubscriptionConfig.getCurrentConfig().provider) {
+            result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().provider.query)
+        }
+
+        result.cfgQuery2List.putAll( SubscriptionConfig.getCurrentConfig().base.query2 ) // Verteilung
     }
 
     List getCachedFilterIdList(String prefix, GrailsParameterMap params) {

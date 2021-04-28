@@ -35,7 +35,7 @@ class OrganisationFilter extends BaseFilter {
         Map<String, Object> queryParams = [ orgIdList: [] ]
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'org' + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put('base', [source: getFilterSourceLabel(OrganisationConfig.CONFIG.base, filterSource)])
+        filterResult.labels.put('base', [source: getFilterSourceLabel(OrganisationConfig.getCurrentConfig().base, filterSource)])
 
         switch (filterSource) {
             case 'all-org':
@@ -88,7 +88,7 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = GenericHelper.getFieldType(OrganisationConfig.CONFIG.base, p)
+                String pType = GenericHelper.getFieldType(OrganisationConfig.getCurrentConfig().base, p)
 
                 def filterLabelValue
 
@@ -166,7 +166,7 @@ where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :
                 }
 
                 if (filterLabelValue) {
-                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(OrganisationConfig.CONFIG.base, p), value: filterLabelValue])
+                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(OrganisationConfig.getCurrentConfig().base, p), value: filterLabelValue])
                 }
             }
         }
