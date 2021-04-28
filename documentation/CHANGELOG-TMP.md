@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3407    28.04.2021  dev     2.1         Andreas Bug         Verwaltung der Kundennummer und Identifikatoren umgestrickt
+
+3356    28.04.2021  dev     2.1         Andreas Bug         doppelter Namensraum entfernt
+
 3178    27.04.2021  dev     2.1         Andreas Feature     Kostenausschüttungsfunktion erweitert und Templates vereinheitlicht
 
 --      27.04.2021  rc2.0   2.0.8       Andreas Bug         Mapping im LAS:eR-Sync korrigiert

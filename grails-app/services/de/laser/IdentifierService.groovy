@@ -45,13 +45,19 @@ class IdentifierService {
         }
     }
 
-    void deleteIdentifier(String ownerKey,String targetKey) {
+    void deleteIdentifier(String ownerKey, String targetKey) {
         def owner = genericOIDService.resolveOID(ownerKey)
         def target = genericOIDService.resolveOID(targetKey)
         if (owner && target) {
-            if (target."${Identifier.getAttributeName(owner)}"?.id == owner.id) {
-                log.debug("Identifier deleted: ${owner}, ${target}")
-                target.delete()
+            if (target.ns.ns in IdentifierNamespace.CORE_ORG_NS) {
+                target.value = ''
+                target.save()
+            }
+            else {
+                if (target."${Identifier.getAttributeName(owner)}"?.id == owner.id) {
+                    log.debug("Identifier deleted: ${owner}, ${target}")
+                    target.delete()
+                }
             }
         }
     }

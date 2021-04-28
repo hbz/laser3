@@ -364,7 +364,8 @@ class OrganisationController  {
                     isPublic: true,
                     type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
             )
-            ci.save()
+            if(!ci.save())
+                log.error("error on inserting customer identifier: ${ci.getErrors().getAllErrors().toListString()}")
         }
 
         redirect(url: request.getHeader('referer'))
@@ -750,10 +751,10 @@ class OrganisationController  {
                     SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
             // adding default settings
-            organisationService.initMandatorySettings(result.institution)
+            organisationService.initMandatorySettings(result.orgInstance)
 
             // collecting visible settings by customer type, role and/or combo
-            List<OrgSetting> allSettings = OrgSetting.findAllByOrg(result.institution)
+            List<OrgSetting> allSettings = OrgSetting.findAllByOrg(result.orgInstance)
 
             List<OrgSetting.KEYS> ownerSet = [
                     OrgSetting.KEYS.API_LEVEL,
@@ -777,7 +778,7 @@ class OrganisationController  {
                 result.settings.addAll(allSettings.findAll { it.key in ownerSet })
                 result.settings.addAll(allSettings.findAll { it.key in accessSet })
                 result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
-                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.institution, [sort: 'platform'])
+                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
             } else if (inContextOrg) {
                 log.debug('settings for own org')
                 result.settings.addAll(allSettings.findAll { it.key in ownerSet })
@@ -785,16 +786,16 @@ class OrganisationController  {
                 if (result.institution.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
                     result.settings.addAll(allSettings.findAll { it.key in accessSet })
                     result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
-                    result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.institution, [sort: 'platform'])
+                    result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
                 } else if (['ORG_BASIC_MEMBER'].contains(result.institution.getCustomerType())) {
                     result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
-                    result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.institution, [sort: 'platform'])
+                    result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
                 } else if (['FAKE'].contains(result.institution.getCustomerType())) {
                     result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
                 }
             } else if (isComboRelated) {
                 log.debug('settings for combo related org: consortia')
-                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.institution, [sort: 'platform'])
+                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
             }
         }
         List bm = pu.stopBenchmark()
