@@ -574,7 +574,9 @@ class ControlledListService {
         }
         else {
             rawSubjects.each { String rawSubject ->
-                subjects.addAll(rawSubject.tokenize(',;|'))
+                rawSubject.tokenize(',;|').each { String rs ->
+                    subjects.add(rs.trim())
+                }
             }
         }
 
@@ -594,7 +596,9 @@ class ControlledListService {
         }
         else {
             rawSubjects.each { String rawSubject ->
-                subjects.addAll(rawSubject.tokenize(',;|'))
+                rawSubject.tokenize(',;|').each { String rs ->
+                    subjects.addAll(rs.trim())
+                }
             }
         }
 
