@@ -195,12 +195,14 @@
                                         </g:else>
                                     </td>
                                     <td>
-                                        <g:link controller="admin" action="manageNamespaces"
-                                                params="${[cmd: 'deleteNamespace', oid: IdentifierNamespace.class.name + ':' + idNs.id]}" class="ui icon negative button"
-                                                role="button"
-                                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="trash alternate icon"></i>
-                                        </g:link>
+                                        <g:if test="${!idNs.isHardData}">
+                                            <g:link controller="admin" action="manageNamespaces"
+                                                    params="${[cmd: 'deleteNamespace', oid: IdentifierNamespace.class.name + ':' + idNs.id]}" class="ui icon negative button"
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                                <i class="trash alternate icon"></i>
+                                            </g:link>
+                                        </g:if>
                                     </td>
                                 </g:if>
                                 <g:else>
