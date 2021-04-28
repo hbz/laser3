@@ -11,6 +11,8 @@
 
 3356    28.04.2021  dev     2.1         Andreas Bug         doppelter Namensraum entfernt
 
+3414    28.04.2021  rc2.0   2.0.8       Andreas Bug         Titelfilter korrigiert, Anbieter von Verlag in Sicht getrennt
+
 3122    28.04.2021  rc2.0   2.0.8       David   Feature     CSV-Export für Diagrammdaten
 
 3412    28.04.2021  rc2.0   2.0.8       David   Feature     Macro-Reporting für Vollnutzer

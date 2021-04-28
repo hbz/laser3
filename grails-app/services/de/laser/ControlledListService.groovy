@@ -634,12 +634,12 @@ class ControlledListService {
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<String> publishers = []
 
-        publishers = TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg = :pkg and tipp.status = :status order by orgRole.org.name", [pkg: pkg, status: tippStatus])
+        //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg = :pkg and tipp.status = :status order by orgRole.org.name", [pkg: pkg, status: tippStatus]))
         publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(publisherName) from TitleInstancePackagePlatform where publisherName is not null and pkg = :pkg and status = :status order by publisherName", [pkg: pkg, status: tippStatus]))
 
-        if(publishers.size() == 0){
+        /*if(publishers.size() == 0){
             publishers << messageSource.getMessage('default.selectionNotPossible.label', null, locale)
-        }
+        }*/
         publishers
     }
 
@@ -648,12 +648,12 @@ class ControlledListService {
         Set<String> publishers = []
 
         if(subscription.packages){
-            publishers = TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg in (:pkg) order by orgRole.org.name", [pkg: subscription.packages.pkg])
+            //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg in (:pkg) order by orgRole.org.name", [pkg: subscription.packages.pkg]))
             publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(publisherName) from TitleInstancePackagePlatform where publisherName is not null and pkg in (:pkg) and status = :current order by publisherName", [pkg: subscription.packages.pkg,current: RDStore.TIPP_STATUS_CURRENT]))
         }
-        if(publishers.size() == 0){
+        /*if(publishers.size() == 0){
             publishers << messageSource.getMessage('default.selectionNotPossible.label', null, locale)
-        }
+        }*/
 
 
         publishers
