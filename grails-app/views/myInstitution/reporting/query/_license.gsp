@@ -9,8 +9,11 @@
         <div class="ui message success">
             <p>
                 Mit diesen Filtereinstellungen wurden
-                <strong>${filterResult.data.licenseIdList.size()} Verträge</strong> und
-                <strong>${filterResult.data.licensorIdList.size()} Lizenzgeber</strong> gefunden.
+                <strong>${filterResult.data.licenseIdList.size()} Verträge</strong>
+                <g:if test="${filterResult.data.licensorIdList.size()}">
+                    und <strong>${filterResult.data.licensorIdList.size()} Lizenzgeber</strong>
+                </g:if>
+                gefunden.
             </p>
         </div>
 

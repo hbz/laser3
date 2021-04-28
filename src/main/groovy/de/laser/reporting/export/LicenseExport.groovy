@@ -3,9 +3,9 @@ package de.laser.reporting.export
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.License
+import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.properties.LicenseProperty
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
@@ -16,7 +16,29 @@ class LicenseExport extends AbstractExport {
 
     static String KEY = 'license'
 
-    static Map<String, Object> CONFIG = [
+    static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
+
+            base : [
+                    meta : [
+                            class: License
+                    ],
+                    fields : [
+                            'globalUID'         : FIELD_TYPE_PROPERTY,
+                            'reference'         : FIELD_TYPE_PROPERTY,
+                            'startDate'         : FIELD_TYPE_PROPERTY,
+                            'endDate'           : FIELD_TYPE_PROPERTY,
+                            'status'            : FIELD_TYPE_REFDATA,
+                            'licenseCategory'   : FIELD_TYPE_REFDATA,
+                            'type'              : FIELD_TYPE_REFDATA,
+                            '___license_subscriptions'  : FIELD_TYPE_CUSTOM_IMPL,   // virtual
+                            '___license_members'        : FIELD_TYPE_CUSTOM_IMPL,   // virtual
+                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // <- no BaseConfig.getCustomRefdata(fieldName)
+                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                    ]
+            ]
+    ]
+
+    static Map<String, Object> CONFIG_ORG_INST = [
 
             base : [
                     meta : [
@@ -41,11 +63,22 @@ class LicenseExport extends AbstractExport {
         selectedExportFields = getAllFields().findAll{ it.key in fields.keySet() }
     }
 
+    Map<String, Object> getCurrentConfig() {
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+
+        if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+            LicenseExport.CONFIG_ORG_CONSORTIUM
+        }
+        else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+            LicenseExport.CONFIG_ORG_INST
+        }
+    }
+
     @Override
     Map<String, Object> getAllFields() {
         String suffix = ExportHelper.getCachedQuerySuffix(token)
 
-        CONFIG.base.fields.findAll {
+        getCurrentConfig().base.fields.findAll {
             (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == suffix)
         }
     }
@@ -57,7 +90,7 @@ class LicenseExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportHelper.getFieldLabel( token, CONFIG.base, fieldName )
+        ExportHelper.getFieldLabel( token, getCurrentConfig().base as Map<String, Object>, fieldName )
     }
 
     @Override
@@ -122,6 +155,17 @@ class LicenseExport extends AbstractExport {
                     )
                     content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
+                else if (key == '___license_subscriptions') { // TODO: query
+                    Long count = License.executeQuery(
+                            'select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
+                            [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
+                    )[0]
+                    content.add( count as String )
+                }
+                else if (key == '___license_members') {
+                    Long count = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
+                    content.add( count as String )
+                }
             }
             // --> custom query depending filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
@@ -129,20 +173,8 @@ class LicenseExport extends AbstractExport {
                 if (key == 'property-assignment') {
                     Long pdId = BaseDetails.getDetailsCache(token).id as Long
 
-                    List<LicenseProperty> properties = LicenseProperty.executeQuery(
-                            "select lp from LicenseProperty lp join lp.type pd where lp.owner = :lic and pd.id = :pdId " +
-                                    "and (lp.isPublic = true or lp.tenant = :ctxOrg) and pd.descr like '%Property' ",
-                            [lic: lic, pdId: pdId, ctxOrg: contextService.getOrg()]
-                    )
-                    content.add(
-                            properties.collect { lp ->
-                                if (lp.getType().isRefdataValueType()) {
-                                    lp.getRefValue()?.getI10n('value')
-                                } else {
-                                    lp.getValue()
-                                }
-                            }.findAll().join( CSV_VALUE_SEPARATOR ) // removing empty and null values
-                    )
+                    List<String> properties = BaseDetails.resolvePropertiesGeneric(lic, pdId, contextService.getOrg())
+                    content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
                 }
             }
             else {

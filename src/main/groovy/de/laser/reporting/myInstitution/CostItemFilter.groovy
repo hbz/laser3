@@ -35,7 +35,7 @@ class CostItemFilter extends BaseFilter {
         Map<String, Object> queryParams = [ costItemIdList: [] ]
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'costItem' + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put('base', [source: getFilterSourceLabel(CostItemConfig.CONFIG.base, filterSource)])
+        filterResult.labels.put('base', [source: getFilterSourceLabel(CostItemConfig.getCurrentConfig().base, filterSource)])
 
         switch (filterSource) {
             case 'consortia-cost':
@@ -61,7 +61,7 @@ class CostItemFilter extends BaseFilter {
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = GenericHelper.getFieldType(CostItemConfig.CONFIG.base, p)
+                String pType = GenericHelper.getFieldType(CostItemConfig.getCurrentConfig().base, p)
 
                 def filterLabelValue
 
@@ -107,7 +107,7 @@ class CostItemFilter extends BaseFilter {
                 }
 
                 if (filterLabelValue) {
-                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(CostItemConfig.CONFIG.base, p), value: filterLabelValue])
+                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(CostItemConfig.getCurrentConfig().base, p), value: filterLabelValue])
                 }
             }
         }

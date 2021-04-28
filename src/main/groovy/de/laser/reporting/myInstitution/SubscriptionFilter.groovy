@@ -35,7 +35,7 @@ class SubscriptionFilter extends BaseFilter {
         Map<String, Object> queryParams = [ subscriptionIdList: [] ]
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'subscription' + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put('base', [source: getFilterSourceLabel(SubscriptionConfig.CONFIG.base, filterSource)])
+        filterResult.labels.put('base', [source: getFilterSourceLabel(SubscriptionConfig.getCurrentConfig().base, filterSource)])
 
         switch (filterSource) {
             case 'all-sub':
@@ -63,7 +63,7 @@ class SubscriptionFilter extends BaseFilter {
                 //println key + " >> " + params.get(key)
 
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = GenericHelper.getFieldType(SubscriptionConfig.CONFIG.base, p)
+                String pType = GenericHelper.getFieldType(SubscriptionConfig.getCurrentConfig().base, p)
 
                 def filterLabelValue
 
@@ -109,7 +109,7 @@ class SubscriptionFilter extends BaseFilter {
                 }
 
                 if (filterLabelValue) {
-                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.CONFIG.base, p), value: filterLabelValue])
+                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.getCurrentConfig().base, p), value: filterLabelValue])
                 }
             }
         }
@@ -123,8 +123,12 @@ class SubscriptionFilter extends BaseFilter {
 
         filterResult.data.put('subscriptionIdList', queryParams.subscriptionIdList ? Subscription.executeQuery( query, queryParams ) : [])
 
-        handleInternalOrgFilter(params, 'member', filterResult)
-        handleInternalOrgFilter(params, 'provider', filterResult)
+        if (SubscriptionConfig.getCurrentConfig().member) {
+            handleInternalOrgFilter(params, 'member', filterResult)
+        }
+        if (SubscriptionConfig.getCurrentConfig().provider) {
+            handleInternalOrgFilter(params, 'provider', filterResult)
+        }
 
 //        println 'subscriptions >> ' + result.subscriptionIdList.size()
 //        println 'member >> ' + result.memberIdList.size()
@@ -136,7 +140,7 @@ class SubscriptionFilter extends BaseFilter {
     private void handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put(partKey, [source: getFilterSourceLabel(SubscriptionConfig.CONFIG.get(partKey), filterSource)])
+        filterResult.labels.put(partKey, [source: getFilterSourceLabel(SubscriptionConfig.getCurrentConfig().get(partKey), filterSource)])
 
         //println 'internalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
         if (! filterResult.data.get('subscriptionIdList')) {
@@ -170,10 +174,10 @@ class SubscriptionFilter extends BaseFilter {
                 String p = key.replaceFirst(cmbKey,'')
                 String pType
                 if (partKey == 'member') {
-                    pType = GenericHelper.getFieldType(SubscriptionConfig.CONFIG.member, p)
+                    pType = GenericHelper.getFieldType(SubscriptionConfig.getCurrentConfig().member, p)
                 }
                 else if (partKey == 'provider') {
-                    pType = GenericHelper.getFieldType(SubscriptionConfig.CONFIG.provider, p)
+                    pType = GenericHelper.getFieldType(SubscriptionConfig.getCurrentConfig().provider, p)
                 }
 
                 def filterLabelValue
@@ -256,10 +260,10 @@ class SubscriptionFilter extends BaseFilter {
 
                 if (filterLabelValue) {
                     if (partKey == 'member') {
-                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.CONFIG.member, p), value: filterLabelValue])
+                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.getCurrentConfig().member, p), value: filterLabelValue])
                     }
                     else if (partKey == 'provider') {
-                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.CONFIG.provider, p), value: filterLabelValue])
+                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.getCurrentConfig().provider, p), value: filterLabelValue])
                     }
                 }
             }

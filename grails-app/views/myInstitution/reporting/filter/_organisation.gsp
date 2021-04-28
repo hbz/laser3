@@ -10,7 +10,7 @@
         <div class="ui bottom attached active tab segment" data-tab="org-filter-tab-1">
             <div class="field">
                 <label for="filter:org_source">${message(code:'reporting.filter.selection')}</label>
-                <g:set var="config" value="${OrganisationConfig.CONFIG.base}" />
+                <g:set var="config" value="${OrganisationConfig.getCurrentConfig().base}" />
                 <g:select name="filter:org_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:org_source')}" />
             </div>
 
