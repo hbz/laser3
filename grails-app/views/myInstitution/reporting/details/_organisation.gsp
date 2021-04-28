@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.reporting.myInstitution.OrganisationConfig;" %>
+<%@ page import="de.laser.reporting.myInstitution.base.BaseDetails; de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.reporting.myInstitution.OrganisationConfig;" %>
 <laser:serviceInjection />
 
 <g:render template="/myInstitution/reporting/details/base.part1" />
@@ -32,16 +32,13 @@
                     <g:if test="${query == 'org-property-assignment'}">
                         <td>
                             <%
-                                List<OrgProperty> properties = OrgProperty.executeQuery(
-                                        "select op from OrgProperty op join op.type pd where op.owner = :org and pd.id = :pdId " +
-                                                "and (op.isPublic = true or op.tenant = :ctxOrg) and pd.descr like '%Property' ",
-                                        [org: org, pdId: id as Long, ctxOrg: contextService.getOrg()]
-                                )
+                                List<OrgProperty> properties = BaseDetails.getPropertiesGeneric(org, id as Long, contextService.getOrg()) as List<OrgProperty>
+
                                 println properties.collect { op ->
                                     String result = (op.type.tenant?.id == contextService.getOrg().id) ? '<i class="icon shield alternate"></i>' : ''
 
                                     if (op.getType().isRefdataValueType()) {
-                                        result += op.getRefValue()?.getI10n('value')
+                                        result += (op.getRefValue() ? op.getRefValue().getI10n('value') : '')
                                     } else {
                                         result += op.getValue()
                                     }

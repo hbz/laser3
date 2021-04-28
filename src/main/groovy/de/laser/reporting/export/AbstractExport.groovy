@@ -19,7 +19,9 @@ abstract class AbstractExport {
             'identifier-assignment'     : 'Identifikatoren',
             'provider-assignment'       : 'Anbieter',
             'property-assignment'       : 'impl @ ExportHelper.getFieldLabel()',
-            '___members'                : 'Teilnehmerzahl'      // virtual
+            '___subscription_members'   : 'Anzahl Teilnehmer',          // virtual
+            '___license_subscriptions'  : 'Anzahl Lizenzen',            // virtual
+            '___license_members'        : 'Anzahl Teilnehmerverträge',  // virtual
     ]
 
     String token

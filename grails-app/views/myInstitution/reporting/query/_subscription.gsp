@@ -9,9 +9,14 @@
         <div class="ui message success">
             <p>
                 Mit diesen Filtereinstellungen wurden
-                <strong>${filterResult.data.subscriptionIdList.size()} Lizenzen</strong>,
-                <strong>${filterResult.data.memberIdList.size()} Teilnehmer</strong> und
-                <strong>${filterResult.data.providerIdList.size()} Anbieter</strong> gefunden.
+                <strong>${filterResult.data.subscriptionIdList.size()} Lizenzen</strong>
+                <g:if test="${filterResult.data.memberIdList}">
+                    und <strong>${filterResult.data.memberIdList.size()} Teilnehmer</strong>
+                </g:if>
+                <g:if test="${filterResult.data.providerIdList}">
+                    und <strong>${filterResult.data.providerIdList.size()} Anbieter</strong>
+                </g:if>
+                gefunden.
             </p>
         </div>
 

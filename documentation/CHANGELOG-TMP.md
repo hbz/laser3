@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3122    28.04.2021  rc2.0   2.0.8       David   Feature     CSV-Export für Diagrammdaten
+
+3412    28.04.2021  rc2.0   2.0.8       David   Feature     Macro-Reporting für Vollnutzer
+
 3178    27.04.2021  dev     2.1         Andreas Feature     Kostenausschüttungsfunktion erweitert und Templates vereinheitlicht
 
 --      27.04.2021  rc2.0   2.0.8       Andreas Bug         Mapping im LAS:eR-Sync korrigiert

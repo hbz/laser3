@@ -6,7 +6,6 @@ import de.laser.Org
 import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.properties.SubscriptionProperty
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
@@ -17,7 +16,7 @@ class SubscriptionExport extends AbstractExport {
 
     static String KEY = 'subscription'
 
-    static Map<String, Object> CONFIG = [
+    static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
 
             base : [
                     meta : [
@@ -32,7 +31,31 @@ class SubscriptionExport extends AbstractExport {
                             'kind'                  : FIELD_TYPE_REFDATA,
                             'form'                  : FIELD_TYPE_REFDATA,
                             'resource'              : FIELD_TYPE_REFDATA,
-                            '___members'            : FIELD_TYPE_CUSTOM_IMPL,   // virtual
+                            '___subscription_members'   : FIELD_TYPE_CUSTOM_IMPL,   // virtual
+                            'provider-assignment'   : FIELD_TYPE_CUSTOM_IMPL,   // <- no BaseConfig.getCustomRefdata(fieldName)
+                            'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
+                            'isPublicForApi'        : FIELD_TYPE_PROPERTY,
+                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // <- no BaseConfig.getCustomRefdata(fieldName)
+                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                    ]
+            ]
+    ]
+
+    static Map<String, Object> CONFIG_ORG_INST = [
+
+            base : [
+                    meta : [
+                            class: Subscription
+                    ],
+                    fields : [
+                            'globalUID'             : FIELD_TYPE_PROPERTY,
+                            'name'                  : FIELD_TYPE_PROPERTY,
+                            'startDate'             : FIELD_TYPE_PROPERTY,
+                            'endDate'               : FIELD_TYPE_PROPERTY,
+                            'status'                : FIELD_TYPE_REFDATA,
+                            'kind'                  : FIELD_TYPE_REFDATA,
+                            'form'                  : FIELD_TYPE_REFDATA,
+                            'resource'              : FIELD_TYPE_REFDATA,
                             'provider-assignment'   : FIELD_TYPE_CUSTOM_IMPL,   // <- no BaseConfig.getCustomRefdata(fieldName)
                             'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                             'isPublicForApi'        : FIELD_TYPE_PROPERTY,
@@ -47,11 +70,22 @@ class SubscriptionExport extends AbstractExport {
         selectedExportFields = getAllFields().findAll{ it.key in fields.keySet() }
     }
 
+    Map<String, Object> getCurrentConfig() {
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+
+        if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+            SubscriptionExport.CONFIG_ORG_CONSORTIUM
+        }
+        else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+            SubscriptionExport.CONFIG_ORG_INST
+        }
+    }
+
     @Override
     Map<String, Object> getAllFields() {
         String suffix = ExportHelper.getCachedQuerySuffix(token)
 
-        CONFIG.base.fields.findAll {
+        getCurrentConfig().base.fields.findAll {
             (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == suffix)
         }
     }
@@ -63,7 +97,7 @@ class SubscriptionExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportHelper.getFieldLabel( token, CONFIG.base, fieldName )
+        ExportHelper.getFieldLabel( token, getCurrentConfig().base as Map<String, Object>, fieldName )
     }
 
     @Override
@@ -134,7 +168,7 @@ class SubscriptionExport extends AbstractExport {
                     )
                     content.add( plts.collect{ it.name }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '___members') {
+                else if (key == '___subscription_members') {
                     int members = Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
                             [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
                     )[0]
@@ -147,20 +181,8 @@ class SubscriptionExport extends AbstractExport {
                 if (key == 'property-assignment') {
                     Long pdId = BaseDetails.getDetailsCache(token).id as Long
 
-                    List<SubscriptionProperty> properties = SubscriptionProperty.executeQuery(
-                            "select sp from SubscriptionProperty sp join sp.type pd where sp.owner = :sub and pd.id = :pdId " +
-                                    "and (sp.isPublic = true or sp.tenant = :ctxOrg) and pd.descr like '%Property' ",
-                            [sub: sub, pdId: pdId, ctxOrg: contextService.getOrg()]
-                    )
-                    content.add(
-                            properties.collect { sp ->
-                                if (sp.getType().isRefdataValueType()) {
-                                    sp.getRefValue()?.getI10n('value')
-                                } else {
-                                    sp.getValue()
-                                }
-                            }.findAll().join( CSV_VALUE_SEPARATOR ) // removing empty and null values
-                    )
+                    List<String> properties = BaseDetails.resolvePropertiesGeneric(sub, pdId, contextService.getOrg())
+                    content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
                 }
             }
             else {
