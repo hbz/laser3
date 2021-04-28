@@ -1284,8 +1284,9 @@ class FilterService {
         }
 
         if (params.publishers) {
-            base_qry += "and (exists (select orgRole from OrgRole orgRole where orgRole.tipp = tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) or (lower(tipp.publisherName)) in (:publishers)) "
-            qry_params.publishers = params.list('publishers').collect { it }
+            //(exists (select orgRole from OrgRole orgRole where orgRole.tipp = tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers))
+            base_qry += "and (lower(tipp.publisherName)) in (:publishers) "
+            qry_params.publishers = params.list('publishers').collect { it.toLowerCase() }
             filterSet = true
         }
 
