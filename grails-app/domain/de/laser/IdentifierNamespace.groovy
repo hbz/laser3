@@ -143,8 +143,8 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
         cascadingUpdateService.update(this, dateCreated)
     }
     def afterUpdate() {
-        //static_logger.debug("afterUpdate")
-        //cascadingUpdateService.update(this, lastUpdated)
+        static_logger.debug("afterUpdate")
+        cascadingUpdateService.update(this, lastUpdated)
     }
     def afterDelete() {
         static_logger.debug("afterDelete")

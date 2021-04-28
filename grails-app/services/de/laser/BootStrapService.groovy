@@ -659,31 +659,50 @@ No Host Platform URL Content
 
     void setIdentifierNamespace() {
 
-        //reset hard data flag
-        IdentifierNamespace.executeUpdate('update IdentifierNamespace idns set idns.isHardData = false')
-
         //TODO isUnique/isHidden flags are set provisorically to "false", adaptations may be necessary
         List<Map<String,Object>> namespaces = [
-            [ns: "Anbieter_Produkt_ID", name_de: "Anbieter-Produkt-ID", desc_de: "", name_en: "Provider-product-ID", desc_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
-            [ns: "Anbieter_Produkt_ID", name_de: "Anbieter-Produkt-ID", desc_de: "", name_en: "Provider-product-ID", desc_en: "",  nsType: IdentifierNamespace.NS_PACKAGE, isUnique: false, isHidden: false],
-            [ns: "DBIS Anker", name_de: "DBIS-Anker", desc_de: "", name_en: "DBIS anchor", desc_en: "",  nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
-            [ns: "DNB_ID", name_de: "DNB-ID", desc_de: "", name_en: "DNB-ID", desc_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
-            [ns: "EZB anchor", name_de: "EZB-Anker", desc_de: "", name_en: "EZB anchor", desc_en: "", nsType:null, isUnique: false, isHidden: false],
-            [ns: "ezb_collection_id", name_de: "EZB-Kollektions-ID", desc_de: "", name_en: "EZB collection id", desc_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
-            [ns: "ezb_org_id", name_de: "EZB-ID", desc_de: "Identifkator der Elektronischen Zeitschriftendatenbank (EZB). Mehrfachangabe möglich. https://rzblx1.uni-regensburg.de/ezeit/", name_en: "EZB-ID", desc_en: "Identifier of Electronic Journals Library (EZB). Multiple insertion possible. https://rzblx1.uni-regensburg.de/ezeit/", nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
-            [ns: "gnd_org_nr", name_de: "GND-NR", desc_de: "Eindeutiger und stabiler Bezeichner für jede einzelne Entität in der GND (Gemeinsame Normdatei). https://www.dnb.de/DE/Professionell/Standardisierung/GND/gnd_node.html", name_en: "GND-NR", desc_en: "Unique and stable identifier for every entity in the GND (Integrated Authority File). https://www.dnb.de/EN/Professionell/Standardisierung/GND/gnd_node.html", nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
-            [ns: "GRID ID", name_de: "GRID-ID", desc_de: "Identifikator einer Forschungsinstitution in der Datenbank Global-Research-Identifier-Database. https://www.grid.ac/", name_en: "GRID-ID", desc_en: "Identifier of a research institution in the Global-Research-Identifier-Database. https://www.grid.ac/", nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
-            [ns: "ISIL", name_de: "ISIL", desc_de: "", name_en: "ISIL", desc_en: "", nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
-            [ns: "ISIL_Paketsigel", name_de: "ZDB-Paketsigel", desc_de: "", name_en: "ISIL package identifier", desc_en: "", nsType: null, isUnique: false, isHidden: false],
-            [ns: "SFX-Anker", name_de: "SFX-Anker", desc_de: "", name_en: "SFX anchor", desc_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
-            [ns: "wibid", name_de: "WIB-ID", desc_de: "Identifikator, den Sie bei der Registrierung auf nationallizenzen.de erhalten.", name_en: "WIB-ID", desc_en: "The identifier you received upon registration on nationallizenzen.de", nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
-            [ns: "ZDB_ID", name_de: "ZDB-ID", desc_de: "", name_en: "ZDB-ID", desc_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false]
+            [ns: "Anbieter_Produkt_ID", name_de: "Anbieter-Produkt-ID", description_de: "", name_en: "Provider-product-ID", description_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
+            [ns: "Anbieter_Produkt_ID", name_de: "Anbieter-Produkt-ID", description_de: "", name_en: "Provider-product-ID", description_en: "", nsType: IdentifierNamespace.NS_PACKAGE, isUnique: false, isHidden: false],
+            [ns: "DBIS Anker", name_de: "DBIS-Anker", description_de: "", name_en: "DBIS anchor", description_en: "",  nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
+            [ns: "DNB_ID", name_de: "DNB-ID", description_de: "", name_en: "DNB-ID", description_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
+            [ns: "EZB anchor", name_de: "EZB-Anker", description_de: "", name_en: "EZB anchor", description_en: "", nsType:null, isUnique: false, isHidden: false],
+            [ns: "ezb_collection_id", name_de: "EZB-Kollektions-ID", description_de: "", name_en: "EZB collection id", description_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
+            [ns: "ezb_org_id", name_de: "EZB-ID", description_de: "Identifkator der Elektronischen Zeitschriftendatenbank (EZB). Mehrfachangabe möglich. https://rzblx1.uni-regensburg.de/ezeit/", name_en: "EZB-ID", description_en: "Identifier of Electronic Journals Library (EZB). Multiple insertion possible. https://rzblx1.uni-regensburg.de/ezeit/", nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
+            [ns: "gnd_org_nr", name_de: "GND-NR", description_de: "Eindeutiger und stabiler Bezeichner für jede einzelne Entität in der GND (Gemeinsame Normdatei). https://www.dnb.de/DE/Professionell/Standardisierung/GND/gnd_node.html", name_en: "GND-NR", description_en: "Unique and stable identifier for every entity in the GND (Integrated Authority File). https://www.dnb.de/EN/Professionell/Standardisierung/GND/gnd_node.html", nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
+            [ns: "GRID ID", name_de: "GRID-ID", description_de: "Identifikator einer Forschungsinstitution in der Datenbank Global-Research-Identifier-Database. https://www.grid.ac/", name_en: "GRID-ID", description_en: "Identifier of a research institution in the Global-Research-Identifier-Database. https://www.grid.ac/", nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
+            [ns: "ISIL", name_de: "ISIL", description_de: "", name_en: "ISIL", description_en: "", nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
+            [ns: "ISIL_Paketsigel", name_de: "ZDB-Paketsigel", description_de: "", name_en: "ISIL package identifier", description_en: "", nsType: null, isUnique: false, isHidden: false],
+            [ns: "SFX-Anker", name_de: "SFX-Anker", description_de: "", name_en: "SFX anchor", description_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false],
+            [ns: "wibid", name_de: "WIB-ID", description_de: "Identifikator, den Sie bei der Registrierung auf nationallizenzen.de erhalten.", name_en: "WIB-ID", description_en: "The identifier you received upon registration on nationallizenzen.de", nsType: IdentifierNamespace.NS_ORGANISATION, isUnique: false, isHidden: false],
+            [ns: "ZDB_ID", name_de: "ZDB-ID", description_de: "", name_en: "ZDB-ID", description_en: "", nsType: IdentifierNamespace.NS_SUBSCRIPTION, isUnique: false, isHidden: false]
         ]
 
+        List<IdentifierNamespace> hardCodedIDNS = IdentifierNamespace.findAllByIsHardData(true)
+
+        hardCodedIDNS.each { IdentifierNamespace current ->
+            Map<String, Object> hardCodedNamespaceProps = namespaces.find { Map<String, Object> hardCoded -> hardCoded.ns == current.ns && hardCoded.nsType == current.nsType }
+            boolean updated = false
+            if(hardCodedNamespaceProps) {
+                hardCodedNamespaceProps.each { String prop, Object value ->
+                    if(current[prop] != value) {
+                        current[prop] = value
+                        updated = true
+                    }
+                }
+            }
+            else {
+                current.isHardData = false
+                updated = true
+            }
+            if(updated)
+                current.save()
+        }
         namespaces.each { Map<String, Object> namespaceProperties ->
-            namespaceProperties.isFromLaser = true
-            namespaceProperties.isHardData = true
-            IdentifierNamespace.construct(namespaceProperties)
+            if(!hardCodedIDNS.find { IdentifierNamespace existing -> existing.ns == namespaceProperties.ns && existing.nsType == namespaceProperties.nsType }) {
+                namespaceProperties.isFromLaser = true
+                namespaceProperties.isHardData = true
+                IdentifierNamespace.construct(namespaceProperties)
+            }
         }
     }
 }
