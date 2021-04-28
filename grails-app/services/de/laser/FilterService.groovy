@@ -1029,7 +1029,7 @@ class FilterService {
             result.editable = false
         }
         if (params.filter) {
-            base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription left join ie.coverages ic "
+            base_qry = " from IssueEntitlement as ie left join ie.coverages ic where ie.subscription = :subscription "
             if (date_filter) {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
                 // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
@@ -1140,8 +1140,9 @@ class FilterService {
         }
 
         if (params.publishers) {
-            base_qry += "and (exists (select orgRole from OrgRole orgRole where orgRole.tipp = ie.tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) or lower(ie.tipp.publisherName) in (:publishers) ) "
-            qry_params.publishers = params.list('publishers').collect {it }
+            //(exists (select orgRole from OrgRole orgRole where orgRole.tipp = ie.tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) )
+            base_qry += "and lower(ie.tipp.publisherName) in (:publishers) "
+            qry_params.publishers = params.list('publishers').collect { it.toLowerCase() }
             filterSet = true
         }
 
