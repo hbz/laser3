@@ -7,7 +7,7 @@ class CostItemConfig extends BaseConfig {
 
     static String KEY = 'costItem'
 
-    static Map<String, Object> CONFIG = [
+    static Map<String, Object> CONFIG_X = [
 
             base : [
                     meta : [
@@ -42,4 +42,8 @@ class CostItemConfig extends BaseConfig {
                     ]
             ]
     ]
+
+    static Map<String, Object> getCurrentConfig() {
+        CostItemConfig.CONFIG_X
+    }
 }

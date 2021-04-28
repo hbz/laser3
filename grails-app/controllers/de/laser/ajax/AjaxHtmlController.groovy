@@ -406,12 +406,12 @@ class AjaxHtmlController {
             }
 
             if (prefix in ['license']) {
-                result.labels = BaseQuery.getQueryLabels(LicenseConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(LicenseConfig.getCurrentConfig(), params)
                 result.list   = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/license'
             }
             else if (prefix in ['licensor']) {
-                result.labels = BaseQuery.getQueryLabels(LicenseConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(LicenseConfig.getCurrentConfig(), params)
                 result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
@@ -421,17 +421,17 @@ class AjaxHtmlController {
                 result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
             else if (prefix in ['subscription']) {
-                result.labels = BaseQuery.getQueryLabels(SubscriptionConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(SubscriptionConfig.getCurrentConfig(), params)
                 result.list   = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/subscription'
             }
             else if (prefix in ['member', 'provider']) {
-                result.labels = BaseQuery.getQueryLabels(SubscriptionConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(SubscriptionConfig.getCurrentConfig(), params)
                 result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
             else if (prefix in ['costItem']) {
-                result.labels = BaseQuery.getQueryLabels(CostItemConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(CostItemConfig.getCurrentConfig(), params)
                 result.list   = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/costItem'
             }

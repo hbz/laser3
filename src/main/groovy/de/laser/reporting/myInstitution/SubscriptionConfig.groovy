@@ -1,23 +1,23 @@
 package de.laser.reporting.myInstitution
 
+import de.laser.ContextService
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.reporting.myInstitution.base.BaseConfig
+import grails.util.Holders
 
 class SubscriptionConfig extends BaseConfig {
 
     static String KEY = 'subscription'
 
-    static Map<String, Object> CONFIG = [
+    static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
 
             base : [
                     meta : [
                             class: Subscription
                     ],
                     source : [
-                            //'all-sub' : 'Alle Lizenzen',
-                            'consortia-sub' : 'Meine Lizenzen (Konsortium)',
-                            'my-sub'        : 'Meine Lizenzen (Vollnutzer)',
+                            'consortia-sub' : 'Meine Lizenzen'
                     ],
                     fields: [
                             'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
@@ -146,4 +146,110 @@ class SubscriptionConfig extends BaseConfig {
                     ]
             ],
     ]
+
+    static Map<String, Object> CONFIG_ORG_INST = [
+
+            base : [
+                    meta : [
+                            class: Subscription
+                    ],
+                    source : [
+                            'my-sub' : 'Meine Lizenzen'
+                    ],
+                    fields: [
+                            'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
+                            'hasPerpetualAccess'    : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'isPublicForApi'        : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'kind'                  : BaseConfig.FIELD_TYPE_REFDATA,
+                            'resource'              : BaseConfig.FIELD_TYPE_REFDATA,
+                            'startDate'             : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'status'                : BaseConfig.FIELD_TYPE_REFDATA,
+                            //'type'                : FIELD_TYPE_REFDATA,
+                            //'isMultiYear'         : FIELD_TYPE_PROPERTY,
+                            //'manualRenewalDate'       : FIELD_TYPE_PROPERTY,
+                            //'manualCancellationDate'  : FIELD_TYPE_PROPERTY
+                    ],
+                    filter : [
+                            default: [
+                                    [ 'form', 'kind', 'status' ],
+                                    [ 'resource', 'hasPerpetualAccess', 'isPublicForApi' ],
+                                    [ 'startDate', 'endDate' ]
+                            ]
+                    ],
+                    query : [
+                            'Lizenz' : [ // TODO ..
+                                         'subscription-form'         : 'Lizenzform',
+                                         'subscription-kind'         : 'Lizenztyp',
+                                         'subscription-resource'     : 'Ressourcentyp',
+                                         'subscription-status'       : 'Lizenzstatus'
+                            ]
+                    ],
+                    query2 : [
+                            'Verteilung' : [ // TODO ..
+                                             'subscription-provider-assignment' : [
+                                                     label : 'Lizenz → Anbieter',
+                                                     template: 'generic',
+                                                     chartLabels : []
+                                             ],
+                                             'subscription-platform-assignment' : [
+                                                     label : 'Lizenz → Anbieter → Plattform',
+                                                     template: '2axis2values_nonMatches',
+                                                     chartLabels : [ 'Ermittelt durch Bestand', 'Zuordnung über Anbieter' ]
+                                             ],
+                                             'subscription-property-assignment' : [
+                                                     label : 'Lizenz → Merkmale (eigene/allgemeine)',
+                                                     template: '2axis2values',
+                                                     chartLabels : [ 'Lizenzen', 'Vergebene Merkmale (eigene/allgemeine)' ]
+                                             ],
+                                             'subscription-identifier-assignment' : [
+                                                     label : 'Lizenz → Identifikatoren',
+                                                     template: '2axis2values_nonMatches',
+                                                     chartLabels : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
+                                             ],
+                                             'subscription-subscription-assignment' : [
+                                                     label : 'Teilnehmerlizenz → Lizenz',
+                                                     template: 'generic',
+                                                     chartLabels : []
+                                             ],
+                            ]
+                    ]
+            ],
+
+            provider : [
+                    meta : [
+                            class: Org
+                    ],
+                    source : [
+                            'depending-provider' : 'Alle betroffenen Anbieter'
+                    ],
+                    fields : [
+                            'country'   : BaseConfig.FIELD_TYPE_REFDATA,
+                            'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
+                    ],
+                    filter : [
+                            default: [
+                                    [ 'country' ]
+                            ]
+                    ],
+                    query : [
+                            'Anbieter' : [ // TODO ..
+                                           'provider-orgType'      : 'Organisationstyp',
+                                           'provider-country'      : 'Länder',
+                                           'provider-region'       : 'Bundesländer'
+                            ]
+                    ]
+            ],
+    ]
+
+    static Map<String, Object> getCurrentConfig() {
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+
+        if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+            SubscriptionConfig.CONFIG_ORG_CONSORTIUM
+        }
+        else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+            SubscriptionConfig.CONFIG_ORG_INST
+        }
+    }
 }

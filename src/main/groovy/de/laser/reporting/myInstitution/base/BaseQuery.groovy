@@ -24,6 +24,8 @@ class BaseQuery {
         cacheMap.queryCache as Map<String, Object>
     }
 
+    // ----- ----- -----
+
     static Map<String, Object> getEmptyResult(String query, String chart) {
         return [
                 chart       : chart,

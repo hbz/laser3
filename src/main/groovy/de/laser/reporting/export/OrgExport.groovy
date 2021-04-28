@@ -7,7 +7,6 @@ import de.laser.OrgSetting
 import de.laser.OrgSubjectGroup
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.properties.OrgProperty
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
@@ -18,7 +17,7 @@ class OrgExport extends AbstractExport {
 
     static String KEY = 'organisation'
 
-    static Map<String, Object> CONFIG = [
+    static Map<String, Object> CONFIG_X = [
 
             base : [
                     meta : [
@@ -49,11 +48,15 @@ class OrgExport extends AbstractExport {
         selectedExportFields = getAllFields().findAll{ it.key in fields.keySet() }
     }
 
+    Map<String, Object> getCurrentConfig() {
+        OrgExport.CONFIG_X
+    }
+
     @Override
     Map<String, Object> getAllFields() {
         String suffix = ExportHelper.getCachedQuerySuffix(token)
 
-        CONFIG.base.fields.findAll {
+        getCurrentConfig().base.fields.findAll {
             (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == suffix)
         }
     }
@@ -65,7 +68,7 @@ class OrgExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportHelper.getFieldLabel( token, CONFIG.base, fieldName )
+        ExportHelper.getFieldLabel( token, getCurrentConfig().base as Map<String, Object>, fieldName )
     }
 
     @Override
@@ -161,20 +164,8 @@ class OrgExport extends AbstractExport {
                 if (key == 'property-assignment') {
                     Long pdId = BaseDetails.getDetailsCache(token).id as Long
 
-                    List<OrgProperty> properties = OrgProperty.executeQuery(
-                            "select op from OrgProperty op join op.type pd where op.owner = :org and pd.id = :pdId " +
-                                    "and (op.isPublic = true or op.tenant = :ctxOrg) and pd.descr like '%Property' ",
-                            [org: org, pdId: pdId, ctxOrg: contextService.getOrg()]
-                    )
-                    content.add(
-                            properties.collect { op ->
-                                if (op.getType().isRefdataValueType()) {
-                                    op.getRefValue()?.getI10n('value')
-                                } else {
-                                    op.getValue()
-                                }
-                            }.findAll().join( CSV_VALUE_SEPARATOR ) // removing empty and null values
-                    )
+                    List<String> properties = BaseDetails.resolvePropertiesGeneric(org, pdId, contextService.getOrg())
+                    content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
                 }
             }
             else {
