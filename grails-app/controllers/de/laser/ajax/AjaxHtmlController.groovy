@@ -416,7 +416,7 @@ class AjaxHtmlController {
                 result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
             else if (prefix in ['org']) {
-                result.labels = BaseQuery.getQueryLabels(OrganisationConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(OrganisationConfig.getCurrentConfig(), params)
                 result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
