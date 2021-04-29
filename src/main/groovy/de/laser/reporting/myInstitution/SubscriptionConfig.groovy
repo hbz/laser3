@@ -24,19 +24,19 @@ class SubscriptionConfig extends BaseConfig {
                             'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'hasPerpetualAccess'    : BaseConfig.FIELD_TYPE_PROPERTY,
                             'isPublicForApi'        : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'isMultiYear'           : BaseConfig.FIELD_TYPE_PROPERTY,
                             'kind'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'resource'              : BaseConfig.FIELD_TYPE_REFDATA,
                             'startDate'             : BaseConfig.FIELD_TYPE_PROPERTY,
                             'status'                : BaseConfig.FIELD_TYPE_REFDATA,
                             //'type'                : FIELD_TYPE_REFDATA,
-                            //'isMultiYear'         : FIELD_TYPE_PROPERTY,
                             //'manualRenewalDate'       : FIELD_TYPE_PROPERTY,
                             //'manualCancellationDate'  : FIELD_TYPE_PROPERTY
                     ],
                     filter : [
                             default: [
                                     [ 'form', 'kind', 'status' ],
-                                    [ 'resource', 'hasPerpetualAccess', 'isPublicForApi' ],
+                                    [ 'hasPerpetualAccess', 'isMultiYear', 'isPublicForApi', 'resource' ],
                                     [ 'startDate', 'endDate' ]
                             ]
                     ],
@@ -45,7 +45,8 @@ class SubscriptionConfig extends BaseConfig {
                                     'subscription-form'         : 'Lizenzform',
                                     'subscription-kind'         : 'Lizenztyp',
                                     'subscription-resource'     : 'Ressourcentyp',
-                                    'subscription-status'       : 'Lizenzstatus'
+                                    'subscription-status'       : 'Lizenzstatus',
+                                    'subscription-isMultiYear'  : 'Mehrjahreslaufzeit',
                             ]
                     ],
                     query2 : [
@@ -161,19 +162,19 @@ class SubscriptionConfig extends BaseConfig {
                             'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'hasPerpetualAccess'    : BaseConfig.FIELD_TYPE_PROPERTY,
                             'isPublicForApi'        : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'isMultiYear'           : BaseConfig.FIELD_TYPE_PROPERTY,
                             'kind'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'resource'              : BaseConfig.FIELD_TYPE_REFDATA,
                             'startDate'             : BaseConfig.FIELD_TYPE_PROPERTY,
                             'status'                : BaseConfig.FIELD_TYPE_REFDATA,
                             //'type'                : FIELD_TYPE_REFDATA,
-                            //'isMultiYear'         : FIELD_TYPE_PROPERTY,
                             //'manualRenewalDate'       : FIELD_TYPE_PROPERTY,
                             //'manualCancellationDate'  : FIELD_TYPE_PROPERTY
                     ],
                     filter : [
                             default: [
                                     [ 'form', 'kind', 'status' ],
-                                    [ 'resource', 'hasPerpetualAccess', 'isPublicForApi' ],
+                                    [ 'hasPerpetualAccess', 'isMultiYear', 'isPublicForApi', 'resource' ],
                                     [ 'startDate', 'endDate' ]
                             ]
                     ],
@@ -182,7 +183,8 @@ class SubscriptionConfig extends BaseConfig {
                                          'subscription-form'         : 'Lizenzform',
                                          'subscription-kind'         : 'Lizenztyp',
                                          'subscription-resource'     : 'Ressourcentyp',
-                                         'subscription-status'       : 'Lizenzstatus'
+                                         'subscription-status'       : 'Lizenzstatus',
+                                         'subscription-isMultiYear'  : 'Mehrjahreslaufzeit'
                             ]
                     ],
                     query2 : [

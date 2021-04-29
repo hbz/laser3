@@ -4,6 +4,7 @@ import de.laser.ContextService
 import de.laser.I10nTranslation
 import de.laser.Org
 import de.laser.RefdataValue
+import de.laser.Subscription
 import de.laser.helper.SessionCacheWrapper
 import de.laser.properties.PropertyDefinition
 import grails.util.Holders
@@ -116,6 +117,23 @@ class BaseQuery {
                     id:     null,
                     label:  NO_DATA_LABEL,
                     idList: noDataList
+            ])
+        }
+    }
+
+    static void handleGenericBooleanQuery(String query, String dataHql, String dataDetailsHql, List idList, Map<String, Object> result) {
+
+        result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
+
+        result.data.each { d ->
+            d[0] = (d[0] == true ? 1 : 0)
+            d[1] = (d[1] == true ? 'Ja' : 'Nein')
+
+            result.dataDetails.add([
+                    query : query,
+                    id    : d[0],
+                    label : d[1],
+                    idList: Org.executeQuery( dataDetailsHql, [idList: idList, d: (d[0] == 1)] )
             ])
         }
     }
