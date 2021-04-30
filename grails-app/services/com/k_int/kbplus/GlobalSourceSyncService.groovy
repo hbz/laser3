@@ -310,7 +310,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         log.debug("old ${sdf.format(source.haveUpTo)}")
                         source.haveUpTo = new Date(maxTimestamp+1000)
                         log.debug("new ${sdf.format(source.haveUpTo)}")
-                        source.save()
+                        if(!source.save())
+                            log.error(source.getErrors().getAllErrors().toListString())
                     }
                     if(packagesToNotify.keySet().size() > 0) {
                         log.info("notifying subscriptions ...")
@@ -334,7 +335,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         log.info("no diffs recorded ...")
                     }
                     log.info("sync job finished")
-                    SystemEvent.createEvent('GSSS_JSON_COMPLETE',['jobId',source.id])
+                    SystemEvent.createEvent('GSSS_JSON_COMPLETE',['jobId':source.id])
                 }
                 catch (Exception e) {
                     SystemEvent.createEvent('GSSS_JSON_ERROR',['jobId':source.id])
@@ -346,15 +347,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     //Used for Sync with Json
-    void updateRecords(List<Map> records) {
+    void updateRecords(List<Map> rawRecords) {
+        //necessary filter for DEV database
+        List<Map> records = rawRecords.findAll { Map tipp -> tipp.containsKey("hostPlatformUuid") && tipp.containsKey("tippPackageUuid") }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         Set<String> platformUUIDs = records.collect { Map tipp -> tipp.hostPlatformUuid } as Set<String>
+        log.debug("found platform UUIDs: ${platformUUIDs.toListString()}")
         Set<String> packageUUIDs = records.collect { Map tipp -> tipp.tippPackageUuid } as Set<String>
+        log.debug("found package UUIDs: ${packageUUIDs.toListString()}")
         Set<String> tippUUIDs = records.collect { Map tipp -> tipp.uuid } as Set<String>
         Map<String,Package> packagesOnPage = [:]
         Map<String,Platform> platformsOnPage = [:]
 
-        //packageUUIDs is null if package have no tipps
+        //packageUUIDs is null if package has no tipps
         Set<String> existingPackageUUIDs = packageUUIDs ? Platform.executeQuery('select pkg.gokbId from Package pkg where pkg.gokbId in (:pkgUUIDs)',[pkgUUIDs:packageUUIDs]) : []
         Map<String,TitleInstancePackagePlatform> tippsInLaser = [:]
         //collect existing TIPPs
@@ -385,7 +390,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
 
         records.eachWithIndex { Map tipp, int idx ->
-            log.debug("now processing entry #${idx}")
+            log.debug("now processing entry #${idx} with uuid ${tipp.uuid}")
             try {
                 Map<String,Object> updatedTIPP = [
                     titleType: tipp.titleType,
@@ -972,8 +977,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             Date lastUpdatedDisplay = DateUtils.parseDateGeneric(packageRecord.lastUpdatedDisplay)
             if(!result || result?.lastUpdated < lastUpdatedDisplay) {
                 log.info("package record loaded, reconciling package record for UUID ${packageUUID}")
-                RefdataValue packageStatus = RefdataValue.getByValueAndCategory(packageRecord.status, RDConstants.PACKAGE_STATUS)
-                RefdataValue packageListStatus = RefdataValue.getByValueAndCategory(packageRecord.listStatus,RDConstants.PACKAGE_LIST_STATUS)
+                RefdataValue packageStatus = packageRecord.status ? RefdataValue.getByValueAndCategory(packageRecord.status, RDConstants.PACKAGE_STATUS) : null
+                RefdataValue packageListStatus = packageRecord.listStatus ? RefdataValue.getByValueAndCategory(packageRecord.listStatus,RDConstants.PACKAGE_LIST_STATUS) : null
                 RefdataValue contentType = packageRecord.contentType ? RefdataValue.getByValueAndCategory(packageRecord.contentType,RDConstants.PACKAGE_CONTENT_TYPE) : null
                 Date listVerifiedDate = packageRecord.listVerifiedDate ? DateUtils.parseDateGeneric(packageRecord.listVerifiedDate) : null
                 Map<String,Object> newPackageProps = [
