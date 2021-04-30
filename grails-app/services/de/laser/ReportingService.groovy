@@ -68,9 +68,9 @@ class ReportingService {
         OrganisationFilter filter = new OrganisationFilter()
         result.filterResult = filter.filter(params)
 
-        result.cfgQueryList.putAll( OrganisationConfig.CONFIG.base.query )
+        result.cfgQueryList.putAll( OrganisationConfig.getCurrentConfig().base.query )
 
-        result.cfgQuery2List.putAll( OrganisationConfig.CONFIG.base.query2 ) // Verteilung
+        result.cfgQuery2List.putAll( OrganisationConfig.getCurrentConfig().base.query2 ) // Verteilung
     }
 
     void doFilterSubscription(Map<String, Object> result, GrailsParameterMap params) {

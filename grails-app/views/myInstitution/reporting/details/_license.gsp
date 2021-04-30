@@ -45,10 +45,10 @@
                                     if (lp.getType().isRefdataValueType()) {
                                         result += (lp.getRefValue() ? lp.getRefValue().getI10n('value') : '')
                                     } else {
-                                        result += lp.getValue()
+                                        result += (lp.getValue() ?: '')
                                     }
                                     result
-                                }.findAll().join(' ,<br/>') // removing empty and null values
+                                }.sort().findAll().join(' ,<br/>') // removing empty and null values
                             %>
                         </td>
                     </g:if>

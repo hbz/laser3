@@ -1,12 +1,16 @@
 package de.laser.reporting.myInstitution.base
 
 import de.laser.ContextService
+import de.laser.I10nTranslation
 import de.laser.Org
 import de.laser.RefdataValue
+import de.laser.Subscription
 import de.laser.helper.SessionCacheWrapper
 import de.laser.properties.PropertyDefinition
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 class BaseQuery {
 
@@ -117,6 +121,23 @@ class BaseQuery {
         }
     }
 
+    static void handleGenericBooleanQuery(String query, String dataHql, String dataDetailsHql, List idList, Map<String, Object> result) {
+
+        result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
+
+        result.data.each { d ->
+            d[0] = (d[0] == true ? 1 : 0)
+            d[1] = (d[1] == true ? 'Ja' : 'Nein')
+
+            result.dataDetails.add([
+                    query : query,
+                    id    : d[0],
+                    label : d[1],
+                    idList: Org.executeQuery( dataDetailsHql, [idList: idList, d: (d[0] == 1)] )
+            ])
+        }
+    }
+
     static void handleGenericIdentifierAssignmentQuery(String query, String dataHqlPart, String dataDetailsHqlPart, String nonMatchingHql, List idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery(
@@ -158,8 +179,10 @@ class BaseQuery {
 
     static void handleGenericPropertyAssignmentQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List idList, Org ctxOrg, Map<String, Object> result) {
 
+        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
+
         result.data = idList ? Org.executeQuery(
-                dataHqlPart + " and (prop.tenant = :ctxOrg or prop.isPublic = true) and pd.descr like '%Property' group by pd.id order by pd.name",
+                dataHqlPart + " and (prop.tenant = :ctxOrg or prop.isPublic = true) and pd.descr like '%Property' group by pd.id order by pd.name_" + locale,
                 [idList: idList, ctxOrg: ctxOrg]
         ) : []
 
@@ -167,7 +190,7 @@ class BaseQuery {
             d[1] = PropertyDefinition.get(d[0]).getI10n('name').replaceAll("'", '"')
 
             List<Long> objIdList =  Org.executeQuery(
-                    dataDetailsHqlPart + ' and (prop.tenant = :ctxOrg or prop.isPublic = true) and pd.id = :d order by pd.name',
+                    dataDetailsHqlPart + ' and (prop.tenant = :ctxOrg or prop.isPublic = true) and pd.id = :d order by pd.name_' + locale,
                     [idList: idList, d: d[0], ctxOrg: ctxOrg]
             )
             result.dataDetails.add([
