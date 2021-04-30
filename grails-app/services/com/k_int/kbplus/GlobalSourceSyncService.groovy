@@ -347,15 +347,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     //Used for Sync with Json
-    void updateRecords(List<Map> records) {
+    void updateRecords(List<Map> rawRecords) {
+        //necessary filter for DEV database
+        List<Map> records = rawRecords.findAll { Map tipp -> tipp.containsKey("hostPlatformUuid") && tipp.containsKey("tippPackageUuid") }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         Set<String> platformUUIDs = records.collect { Map tipp -> tipp.hostPlatformUuid } as Set<String>
+        log.debug("found platform UUIDs: ${platformUUIDs.toListString()}")
         Set<String> packageUUIDs = records.collect { Map tipp -> tipp.tippPackageUuid } as Set<String>
+        log.debug("found package UUIDs: ${packageUUIDs.toListString()}")
         Set<String> tippUUIDs = records.collect { Map tipp -> tipp.uuid } as Set<String>
         Map<String,Package> packagesOnPage = [:]
         Map<String,Platform> platformsOnPage = [:]
 
-        //packageUUIDs is null if package have no tipps
+        //packageUUIDs is null if package has no tipps
         Set<String> existingPackageUUIDs = packageUUIDs ? Platform.executeQuery('select pkg.gokbId from Package pkg where pkg.gokbId in (:pkgUUIDs)',[pkgUUIDs:packageUUIDs]) : []
         Map<String,TitleInstancePackagePlatform> tippsInLaser = [:]
         //collect existing TIPPs
