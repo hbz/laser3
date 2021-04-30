@@ -4,13 +4,14 @@ import de.laser.ContextService
 import de.laser.I10nTranslation
 import de.laser.Org
 import de.laser.RefdataValue
-import de.laser.Subscription
+import de.laser.helper.DateUtils
 import de.laser.helper.SessionCacheWrapper
 import de.laser.properties.PropertyDefinition
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
+
+import java.sql.Timestamp
 
 class BaseQuery {
 
@@ -136,6 +137,27 @@ class BaseQuery {
                     idList: Org.executeQuery( dataDetailsHql, [idList: idList, d: (d[0] == 1)] )
             ])
         }
+    }
+
+    static void handleGenericDateQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List idList, Map<String, Object> result) {
+
+        result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
+
+        result.data.each { d ->
+            Timestamp ts = d[0]
+            Long d0Id = ts.toInstant().getEpochSecond()
+            d[1] = DateUtils.getSDF_NoTime().format(d[1])
+
+            result.dataDetails.add( [
+                    query:  query,
+                    id:     d0Id,
+                    label:  d[1],
+                    idList: Org.executeQuery( dataDetailsHql, [idList: idList, d: d[0]] )
+            ])
+
+            d[0] = d0Id
+        }
+        handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
     }
 
     static void handleGenericIdentifierAssignmentQuery(String query, String dataHqlPart, String dataDetailsHqlPart, String nonMatchingHql, List idList, Map<String, Object> result) {

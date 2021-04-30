@@ -47,6 +47,7 @@ class SubscriptionConfig extends BaseConfig {
                                     'subscription-resource'     : 'Ressourcentyp',
                                     'subscription-status'       : 'Lizenzstatus',
                                     'subscription-isMultiYear'  : 'Mehrjahreslaufzeit',
+                                    'subscription-manualCancellationDate'  : 'Kündigungsdatum'
                             ]
                     ],
                     query2 : [
@@ -141,8 +142,8 @@ class SubscriptionConfig extends BaseConfig {
                     query : [
                             'Anbieter' : [ // TODO ..
                                     'provider-orgType'      : 'Organisationstyp',
-                                    'provider-country'      : 'Länder',
-                                    'provider-region'       : 'Bundesländer'
+                                    //'provider-country'      : 'Länder',
+                                    //'provider-region'       : 'Bundesländer'
                             ]
                     ]
             ],
@@ -184,7 +185,8 @@ class SubscriptionConfig extends BaseConfig {
                                          'subscription-kind'         : 'Lizenztyp',
                                          'subscription-resource'     : 'Ressourcentyp',
                                          'subscription-status'       : 'Lizenzstatus',
-                                         'subscription-isMultiYear'  : 'Mehrjahreslaufzeit'
+                                         'subscription-isMultiYear'  : 'Mehrjahreslaufzeit',
+                                         'subscription-manualCancellationDate'  : 'Kündigungsdatum'
                             ]
                     ],
                     query2 : [
@@ -237,8 +239,8 @@ class SubscriptionConfig extends BaseConfig {
                     query : [
                             'Anbieter' : [ // TODO ..
                                            'provider-orgType'      : 'Organisationstyp',
-                                           'provider-country'      : 'Länder',
-                                           'provider-region'       : 'Bundesländer'
+                                          // 'provider-country'      : 'Länder',
+                                          // 'provider-region'       : 'Bundesländer'
                             ]
                     ]
             ],
