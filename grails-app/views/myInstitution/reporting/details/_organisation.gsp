@@ -40,10 +40,10 @@
                                     if (op.getType().isRefdataValueType()) {
                                         result += (op.getRefValue() ? op.getRefValue().getI10n('value') : '')
                                     } else {
-                                        result += op.getValue()
+                                        result += (op.getValue() ?: '')
                                     }
                                     result
-                                }.findAll().join(' ,<br/>') // removing empty and null values
+                                }.sort().findAll().join(' ,<br/>') // removing empty and null values
                             %>
                         </td>
                     </g:if>

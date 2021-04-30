@@ -51,10 +51,10 @@
                                     if (sp.getType().isRefdataValueType()) {
                                         result += (sp.getRefValue() ? sp.getRefValue().getI10n('value') : '')
                                     } else {
-                                        result += sp.getValue()
+                                        result += (sp.getValue() ?: '')
                                     }
                                     result
-                                }.findAll().join(' ,<br/>') // removing empty and null values
+                                }.sort().findAll().join(' ,<br/>') // removing empty and null values
                             %>
                         </td>
                     </g:if>
