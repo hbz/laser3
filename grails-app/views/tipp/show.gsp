@@ -1,4 +1,4 @@
-<%@ page import="de.laser.titles.BookInstance; de.laser.helper.RDStore; de.laser.ApiSource" %>
+<%@ page import="de.laser.titles.BookInstance; de.laser.helper.RDStore; de.laser.ApiSource; de.laser.titles.TitleHistoryEventParticipant" %>
 <!doctype html>
 <html>
 <head>
@@ -282,18 +282,28 @@
                                 <tr>
                                     <td><g:formatDate date="${tiH.eventDate}" formatName="default.date.format.notime"/></td>
                                     <td>
-                                        <g:each in="${tiH.participants}" var="p">
-                                            <g:if test="${p.participantRole=='from'}">
-                                                <g:link controller="title" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == tiH.id}">font-weight:bold</g:if>">${p.participant.title}</span></g:link><br>
-                                            </g:if>
-                                        </g:each>
+                                        <g:if test="${tiH.from}">
+                                            ${tiH.from}
+                                        </g:if>
+                                        <g:else>
+                                            <g:each in="${TitleHistoryEventParticipant.findAllByParticipantNotEqualAndEvent(tipp,tiH)}" var="p">
+                                                <g:if test="${p.participantRole=='to'}">
+                                                    <g:link controller="tipp" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == tiH.id}">font-weight:bold</g:if>">${p.participant.name} (${p.participant.pkg.name} / ${p.participant.platform.name})</span></g:link><br>
+                                                </g:if>
+                                            </g:each>
+                                        </g:else>
                                     </td>
                                     <td>
-                                        <g:each in="${tiH.participants}" var="p">
-                                            <g:if test="${p.participantRole=='to'}">
-                                                <g:link controller="title" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == tiH.id}">font-weight:bold</g:if>">${p.participant.title}</span></g:link><br>
-                                            </g:if>
-                                        </g:each>
+                                        <g:if test="${tiH.to}">
+                                            ${tiH.to}
+                                        </g:if>
+                                        <g:else>
+                                            <g:each in="${TitleHistoryEventParticipant.findAllByParticipantNotEqualAndEvent(tipp,tiH)}" var="p">
+                                                <g:if test="${p.participantRole=='from'}">
+                                                    <g:link controller="tipp" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == tiH.id}">font-weight:bold</g:if>">${p.participant.name} (${p.participant.pkg.name} / ${p.participant.platform.name})</span></g:link><br>
+                                                </g:if>
+                                            </g:each>
+                                        </g:else>
                                     </td>
                                 </tr>
                             </g:each>
