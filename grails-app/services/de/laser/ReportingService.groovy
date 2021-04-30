@@ -84,6 +84,9 @@ class ReportingService {
         if (SubscriptionConfig.getCurrentConfig().member) {
             result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().member.query)
         }
+        if (SubscriptionConfig.getCurrentConfig().consortium) {
+            result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().consortium.query)
+        }
         if (SubscriptionConfig.getCurrentConfig().provider) {
             result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().provider.query)
         }

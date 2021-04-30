@@ -23,27 +23,28 @@ class SubscriptionQuery extends BaseQuery {
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
         String prefix = params.query.split('-')[0]
+        String suffix = params.query.split('-')[1]
         List idList   = BaseFilter.getCachedFilterIdList(prefix, params)
 
         if (! idList) {
         }
-        else if ( params.query in ['subscription-form']) {
+        else if ( suffix in ['form']) {
 
             processSimpleRefdataQuery(params.query,'form', idList, result)
         }
-        else if ( params.query in ['subscription-kind']) {
+        else if ( suffix in ['kind']) {
 
             processSimpleRefdataQuery(params.query,'kind', idList, result)
         }
-        else if ( params.query in ['subscription-resource']) {
+        else if ( suffix in ['resource']) {
 
             processSimpleRefdataQuery(params.query,'resource', idList, result)
         }
-        else if ( params.query in ['subscription-status']) {
+        else if ( suffix in ['status']) {
 
             processSimpleRefdataQuery(params.query,'status', idList, result)
         }
-        else if ( params.query in ['subscription-manualCancellationDate']) {
+        else if ( suffix in ['manualCancellationDate']) {
 
             handleGenericDateQuery(
                     params.query,
@@ -54,7 +55,7 @@ class SubscriptionQuery extends BaseQuery {
                     result
             )
         }
-        else if ( params.query in ['subscription-isMultiYear']) {
+        else if ( suffix in ['isMultiYear']) {
 
             handleGenericBooleanQuery(
                     params.query,

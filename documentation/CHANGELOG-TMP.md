@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3436    30.04.2021  rc2.0   2.0.8       David   Feature     Makro-Reporting: Anpassung für Vollnutzer
+
 3430    30.04.2021  rc2.0   2.0.8       David   Feature     Reporting: Einstiegspunkt Organisationen überarbeiten
 
 3429    30.04.2021  rc2.0   2.0.8       David   Feature     Reporting: Einstiegspunkt Lizenzen überarbeiten
