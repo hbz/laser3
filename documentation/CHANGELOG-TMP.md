@@ -7,6 +7,17 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
+3436    30.04.2021  rc2.0   2.0.8       David   Feature     Makro-Reporting: Anpassung für Vollnutzer
+
+3430    30.04.2021  rc2.0   2.0.8       David   Feature     Reporting: Einstiegspunkt Organisationen überarbeiten
+
+3429    30.04.2021  rc2.0   2.0.8       David   Feature     Reporting: Einstiegspunkt Lizenzen überarbeiten
+
+--      30.04.2021  rc2.0   2.0.8       Andreas Bug         Domänenfehler behoben und Auffangroutinen für Sync implementiert 
+
+--      29.04.2021  rc2.0   2.0.8       Andreas Bug         rückwärtskompatible Ausgabe der Titelhistorie
+
 3407    28.04.2021  dev     2.1         Andreas Bug         Verwaltung der Kundennummer und Identifikatoren umgestrickt
 
 3356    28.04.2021  dev     2.1         Andreas Bug         doppelter Namensraum entfernt

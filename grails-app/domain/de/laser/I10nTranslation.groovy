@@ -2,8 +2,6 @@ package de.laser
 
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-import javax.persistence.Transient
-
 class I10nTranslation {
 
     def grailsApplication

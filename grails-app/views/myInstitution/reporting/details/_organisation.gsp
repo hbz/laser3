@@ -19,6 +19,7 @@
             <g:if test="${query.startsWith('provider-')}">
                 <th>${message(code:'org.platforms.label')}</th>
             </g:if>
+            %{--<th></th>--}%
         </tr>
         </thead>
         <tbody>
@@ -40,10 +41,10 @@
                                     if (op.getType().isRefdataValueType()) {
                                         result += (op.getRefValue() ? op.getRefValue().getI10n('value') : '')
                                     } else {
-                                        result += op.getValue()
+                                        result += (op.getValue() ?: '')
                                     }
                                     result
-                                }.findAll().join(' ,<br/>') // removing empty and null values
+                                }.sort().findAll().join(' ,<br/>') // removing empty and null values
                             %>
                         </td>
                     </g:if>
@@ -62,6 +63,48 @@
                             </g:each>
                         </td>
                     </g:if>
+                    %{--
+                    <td>
+                        <g:each in="${[RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT]}" var="ft">
+                            <g:each in="${org.getContactPersonsByFunctionType(true, ft)}" var="person">
+                                <span>
+                                    ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}:
+                                    ${person.title}
+                                    ${person.first_name}
+                                    ${person.middle_name}
+                                    ${person.last_name}
+
+                                    <g:if test="${person.contacts}">
+                                        <br/>
+                                        ${person.contacts.toSorted().collect{ it.contentType.getI10n('value')  + ': ' + it.content }.join('; ')}
+                                    </g:if>
+                                    <g:if test="${person.contacts}">
+                                        <br/>
+                                        ${person.addresses.collect{ it.type.collect{
+                                            it.getI10n('value') }.join(', ') + ': ' + [
+                                                ( it.name ?: '' ),
+                                                ( it.additionFirst ?: '' ),
+                                                ( it.additionSecond ?: '' ),
+                                                '-',
+                                                ( it.street_1 ?: '' ),
+                                                ( it.street_2 ?: '' ),
+                                                ',',
+                                                ( it.zipcode ?: '' ),
+                                                ( it.city ?: '' ),
+                                                '-',
+                                                ( it.region ? it.region.getI10n('value')  : '' ),
+                                                ( it.country ? it.country.getI10n('value')  : '' ),
+                                                '-',
+                                                ( it.pobZipcode ?: '' ),
+                                                ( it.pobCity ?: '' )
+                                                ].join(' ')
+                                        }.join('; ')}
+                                    </g:if>
+                                </span>
+                            </g:each>
+                        </g:each>
+                    </td>
+                    --}%
                 </tr>
             </g:each>
         </tbody>

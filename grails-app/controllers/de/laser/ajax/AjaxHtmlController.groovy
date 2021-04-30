@@ -416,7 +416,7 @@ class AjaxHtmlController {
                 result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
             else if (prefix in ['org']) {
-                result.labels = BaseQuery.getQueryLabels(OrganisationConfig.CONFIG, params)
+                result.labels = BaseQuery.getQueryLabels(OrganisationConfig.getCurrentConfig(), params)
                 result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/organisation'
             }
@@ -425,7 +425,7 @@ class AjaxHtmlController {
                 result.list   = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/subscription'
             }
-            else if (prefix in ['member', 'provider']) {
+            else if (prefix in ['member', 'consortium', 'provider']) {
                 result.labels = BaseQuery.getQueryLabels(SubscriptionConfig.getCurrentConfig(), params)
                 result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
                 result.tmpl   = '/myInstitution/reporting/details/organisation'

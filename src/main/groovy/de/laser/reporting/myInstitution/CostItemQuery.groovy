@@ -15,31 +15,32 @@ class CostItemQuery extends BaseQuery {
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
         String prefix = params.query.split('-')[0]
+        String suffix = params.query.split('-')[1]
         List idList   = BaseFilter.getCachedFilterIdList(prefix, params)
 
         if (! idList) {
         }
-        else if ( params.query in ['costItem-type']) {
+        else if ( suffix in ['type']) {
 
             processSimpleRefdataQuery(params.query,'type', idList, result)
         }
-        else if ( params.query in ['costItem-costItemStatus']) {
+        else if ( suffix in ['costItemStatus']) {
 
             processSimpleRefdataQuery(params.query,'costItemStatus', idList, result)
         }
-        else if ( params.query in ['costItem-costItemCategory']) {
+        else if ( suffix in ['costItemCategory']) {
 
             processSimpleRefdataQuery(params.query,'costItemCategory', idList, result)
         }
-        else if ( params.query in ['costItem-costItemElement']) {
+        else if ( suffix in ['costItemElement']) {
 
             processSimpleRefdataQuery(params.query,'costItemElement', idList, result)
         }
-        else if ( params.query in ['costItem-costItemElementConfiguration']) {
+        else if ( suffix in ['costItemElementConfiguration']) {
 
             processSimpleRefdataQuery(params.query,'costItemElementConfiguration', idList, result)
         }
-        else if ( params.query in ['costItem-billingCurrency']) {
+        else if ( suffix in ['billingCurrency']) {
 
             processSimpleRefdataQuery(params.query,'billingCurrency', idList, result)
         }

@@ -14,7 +14,7 @@
 
         <g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: queryLabels, tmplSize: 'tiny', tmplShowLabel: true]}" />
 
-        <p><span class="ui label red">DEMO : (Basisvariante) in Entwicklung</span></p>
+        <p><span class="ui label red">DEMO : in Entwicklung</span></p>
 
         <g:form controller="ajaxHtml" action="chartDetailsExport" method="POST" target="_blank">
             <div class="ui form">

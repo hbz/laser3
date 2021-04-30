@@ -686,7 +686,7 @@ class AjaxJsonController {
                     BaseQuery.getQueryLabels(LicenseConfig.getCurrentConfig(), pm).get(1)
                 }
                 else if (pm.filter == 'organisation') {
-                    BaseQuery.getQueryLabels(OrganisationConfig.CONFIG, pm).get(1)
+                    BaseQuery.getQueryLabels(OrganisationConfig.getCurrentConfig(), pm).get(1)
                 }
                 else if (pm.filter == 'subscription') {
                     BaseQuery.getQueryLabels(SubscriptionConfig.getCurrentConfig(), pm).get(1)
@@ -715,13 +715,13 @@ class AjaxJsonController {
                     queryResult.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
                 }
             }
-            else if (prefix in ['org', 'member', 'provider', 'licensor']) {
+            else if (prefix in ['org', 'member', 'consortium', 'provider', 'licensor']) {
                 queryResult = OrganisationQuery.query(clone)
                 queryResult.labels.tooltip = getTooltipLabels(clone)
                 queryResult.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (clone.query.endsWith('assignment')) {
-                    Map<String, Object> cfg = OrganisationConfig.CONFIG.base.query2.getAt('Verteilung').getAt(clone.query) as Map
+                    Map<String, Object> cfg = OrganisationConfig.getCurrentConfig().base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
                     queryResult.labels.chart = cfg.getAt('chartLabels')
                     queryResult.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')

@@ -25,35 +25,36 @@ class OrganisationQuery extends BaseQuery {
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
         String prefix = params.query.split('-')[0]
+        String suffix = params.query.split('-')[1]
         List idList   = BaseFilter.getCachedFilterIdList(prefix, params)
 
         if (! idList) {
         }
-        else if ( params.query in ['org-libraryType', 'member-libraryType']) {
+        else if ( suffix in ['libraryType']) {
 
             processSimpleRefdataQuery(params.query, 'libraryType', idList, result)
         }
-        else if ( params.query in ['org-region', 'member-region', 'provider-region', 'licensor-region']) {
+        else if ( suffix in ['region']) {
 
             processSimpleRefdataQuery(params.query,'region', idList, result)
         }
-        else if ( params.query in ['provider-country', 'licensor-country']) {
+        else if ( suffix in ['country']) {
 
             processSimpleRefdataQuery(params.query,'country', idList, result)
         }
-        else if ( params.query in ['org-libraryNetwork', 'member-libraryNetwork']) {
+        else if ( suffix in ['libraryNetwork']) {
 
             processSimpleRefdataQuery(params.query, 'libraryNetwork', idList, result)
         }
-        else if ( params.query in ['org-funderType', 'member-funderType']) {
+        else if ( suffix in ['funderType']) {
 
             processSimpleRefdataQuery(params.query, 'funderType', idList, result)
         }
-        else if ( params.query in ['org-funderHskType', 'member-funderHskType']) {
+        else if ( suffix in ['funderHskType']) {
 
             processSimpleRefdataQuery(params.query, 'funderHskType', idList, result)
         }
-        else if ( params.query in ['org-orgType', 'member-orgType', 'provider-orgType', 'licensor-orgType']) {
+        else if ( suffix in ['orgType']) {
 
             handleGenericRefdataQuery(
                     params.query,
@@ -64,7 +65,7 @@ class OrganisationQuery extends BaseQuery {
                     result
             )
         }
-        else if ( params.query in ['org-customerType', 'member-customerType']) {
+        else if ( suffix in ['customerType']) {
 
             result.data = Org.executeQuery(
                     'select r.id, r.authority, count(*) from Org o, OrgSetting oss, Role r where oss.org = o and oss.key = \'CUSTOMER_TYPE\' and o.id in (:idList) and oss.roleValue = r group by r.id',
@@ -91,7 +92,7 @@ class OrganisationQuery extends BaseQuery {
                     result
             )
         }
-        else if ( params.query in ['org-subjectGroup', 'member-subjectGroup']) {
+        else if ( suffix in ['subjectGroup']) {
 
             handleGenericRefdataQuery(
                     params.query,

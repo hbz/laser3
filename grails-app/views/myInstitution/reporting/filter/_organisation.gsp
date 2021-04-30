@@ -51,7 +51,7 @@
         var $fwDefault = $('#filter-wrapper-default')
         var $fwProvider = $('#filter-wrapper-provider')
 
-        if (JSPC.helper.contains( ['all-provider', 'my-provider'], $(e.target).dropdown('get value') )) {
+        if (JSPC.helper.contains( ['all-provider', 'all-agency', 'all-providerAndAgency', 'my-provider', 'my-agency', 'my-providerAndAgency'], $(e.target).dropdown('get value') )) {
             $fwDefault.find('*').attr('disabled', 'disabled');
             $fwDefault.hide();
 

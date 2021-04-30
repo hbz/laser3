@@ -22,6 +22,7 @@ abstract class AbstractExport {
             '___subscription_members'   : 'Anzahl Teilnehmer',          // virtual
             '___license_subscriptions'  : 'Anzahl Lizenzen',            // virtual
             '___license_members'        : 'Anzahl Teilnehmerverträge',  // virtual
+            '___org_contact'            : 'Kontaktdaten',               // virtual
     ]
 
     String token

@@ -24,19 +24,19 @@ class SubscriptionConfig extends BaseConfig {
                             'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'hasPerpetualAccess'    : BaseConfig.FIELD_TYPE_PROPERTY,
                             'isPublicForApi'        : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'isMultiYear'           : BaseConfig.FIELD_TYPE_PROPERTY,
                             'kind'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'resource'              : BaseConfig.FIELD_TYPE_REFDATA,
                             'startDate'             : BaseConfig.FIELD_TYPE_PROPERTY,
                             'status'                : BaseConfig.FIELD_TYPE_REFDATA,
                             //'type'                : FIELD_TYPE_REFDATA,
-                            //'isMultiYear'         : FIELD_TYPE_PROPERTY,
                             //'manualRenewalDate'       : FIELD_TYPE_PROPERTY,
                             //'manualCancellationDate'  : FIELD_TYPE_PROPERTY
                     ],
                     filter : [
                             default: [
                                     [ 'form', 'kind', 'status' ],
-                                    [ 'resource', 'hasPerpetualAccess', 'isPublicForApi' ],
+                                    [ 'hasPerpetualAccess', 'isMultiYear', 'isPublicForApi', 'resource' ],
                                     [ 'startDate', 'endDate' ]
                             ]
                     ],
@@ -45,7 +45,9 @@ class SubscriptionConfig extends BaseConfig {
                                     'subscription-form'         : 'Lizenzform',
                                     'subscription-kind'         : 'Lizenztyp',
                                     'subscription-resource'     : 'Ressourcentyp',
-                                    'subscription-status'       : 'Lizenzstatus'
+                                    'subscription-status'       : 'Lizenzstatus',
+                                    'subscription-isMultiYear'  : 'Mehrjahreslaufzeit',
+                                    'subscription-manualCancellationDate'  : 'Kündigungsdatum'
                             ]
                     ],
                     query2 : [
@@ -140,8 +142,8 @@ class SubscriptionConfig extends BaseConfig {
                     query : [
                             'Anbieter' : [ // TODO ..
                                     'provider-orgType'      : 'Organisationstyp',
-                                    'provider-country'      : 'Länder',
-                                    'provider-region'       : 'Bundesländer'
+                                    //'provider-country'      : 'Länder',
+                                    //'provider-region'       : 'Bundesländer'
                             ]
                     ]
             ],
@@ -161,19 +163,19 @@ class SubscriptionConfig extends BaseConfig {
                             'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'hasPerpetualAccess'    : BaseConfig.FIELD_TYPE_PROPERTY,
                             'isPublicForApi'        : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'isMultiYear'           : BaseConfig.FIELD_TYPE_PROPERTY,
                             'kind'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'resource'              : BaseConfig.FIELD_TYPE_REFDATA,
                             'startDate'             : BaseConfig.FIELD_TYPE_PROPERTY,
                             'status'                : BaseConfig.FIELD_TYPE_REFDATA,
                             //'type'                : FIELD_TYPE_REFDATA,
-                            //'isMultiYear'         : FIELD_TYPE_PROPERTY,
                             //'manualRenewalDate'       : FIELD_TYPE_PROPERTY,
                             //'manualCancellationDate'  : FIELD_TYPE_PROPERTY
                     ],
                     filter : [
                             default: [
                                     [ 'form', 'kind', 'status' ],
-                                    [ 'resource', 'hasPerpetualAccess', 'isPublicForApi' ],
+                                    [ 'hasPerpetualAccess', 'isMultiYear', 'isPublicForApi', 'resource' ],
                                     [ 'startDate', 'endDate' ]
                             ]
                     ],
@@ -182,7 +184,9 @@ class SubscriptionConfig extends BaseConfig {
                                          'subscription-form'         : 'Lizenzform',
                                          'subscription-kind'         : 'Lizenztyp',
                                          'subscription-resource'     : 'Ressourcentyp',
-                                         'subscription-status'       : 'Lizenzstatus'
+                                         'subscription-status'       : 'Lizenzstatus',
+                                         'subscription-isMultiYear'  : 'Mehrjahreslaufzeit',
+                                         'subscription-manualCancellationDate'  : 'Kündigungsdatum'
                             ]
                     ],
                     query2 : [
@@ -216,6 +220,47 @@ class SubscriptionConfig extends BaseConfig {
                     ]
             ],
 
+            consortium : [
+                    meta : [
+                            class: Org
+                    ],
+                    source : [
+                            'depending-consortium' : 'Alle betroffenen Konsortialstellen'
+                    ],
+                    fields : [
+                            'country'           : BaseConfig.FIELD_TYPE_REFDATA,
+                            //'customerType'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
+                            'eInvoice'          : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'funderHskType'     : BaseConfig.FIELD_TYPE_REFDATA,
+                            'funderType'        : BaseConfig.FIELD_TYPE_REFDATA,
+                            'legalInfo'         : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
+                            'libraryNetwork'    : BaseConfig.FIELD_TYPE_REFDATA,
+                            'libraryType'       : BaseConfig.FIELD_TYPE_REFDATA,
+                            //'orgType'           : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE,
+                            //'region'            : FIELD_TYPE_REFDATA,
+                            'subjectGroup'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL
+                    ],
+                    filter : [
+                            default: [
+                                    [ 'country', 'subjectGroup', 'libraryType' ],
+                                    [ 'libraryNetwork', 'funderType', 'funderHskType' ],
+                                    [ 'eInvoice' ]
+                            ]
+                    ],
+                    query : [
+                            'Konsortialstelle' : [ // TODO ..
+                                             //'consortium-orgType'            : 'Organisationstyp',
+                                             //'consortium-customerType'       : 'Kundentyp',
+                                             'consortium-libraryType'        : 'Bibliothekstyp',
+                                             'consortium-region'             : 'Bundesländer',
+                                             'consortium-subjectGroup'       : 'Fächergruppen',
+                                             'consortium-libraryNetwork'     : 'Verbundzugehörigkeit',
+                                             'consortium-funderType'         : 'Unterhaltsträger',
+                                             'consortium-funderHskType'      : 'Trägerschaft'
+                            ]
+                    ]
+            ],
+
             provider : [
                     meta : [
                             class: Org
@@ -235,8 +280,8 @@ class SubscriptionConfig extends BaseConfig {
                     query : [
                             'Anbieter' : [ // TODO ..
                                            'provider-orgType'      : 'Organisationstyp',
-                                           'provider-country'      : 'Länder',
-                                           'provider-region'       : 'Bundesländer'
+                                          // 'provider-country'      : 'Länder',
+                                          // 'provider-region'       : 'Bundesländer'
                             ]
                     ]
             ],

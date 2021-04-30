@@ -3,6 +3,7 @@ package de.laser.reporting.myInstitution.base
 import de.laser.ContextService
 import de.laser.License
 import de.laser.Org
+import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.SessionCacheWrapper
@@ -34,7 +35,7 @@ class BaseDetails {
             } else {
                 prop.getValue()
             }
-        }
+        }.sort()
     }
 
     static List<AbstractPropertyWithCalculatedLastUpdated> getPropertiesGeneric(Object obj, Long pdId, Org ctxOrg) {
