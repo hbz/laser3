@@ -32,7 +32,7 @@ class SubscriptionExport extends AbstractExport {
                             'form'                  : FIELD_TYPE_REFDATA,
                             'resource'              : FIELD_TYPE_REFDATA,
                             '___subscription_members'   : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                            'provider-assignment'   : FIELD_TYPE_CUSTOM_IMPL,   // <- no BaseConfig.getCustomRefdata(fieldName)
+                            'provider-assignment'   : FIELD_TYPE_CUSTOM_IMPL,       // <- no BaseConfig.getCustomRefdata(fieldName)
                             'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                             'isPublicForApi'        : FIELD_TYPE_PROPERTY,
                             'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // <- no BaseConfig.getCustomRefdata(fieldName)
@@ -56,7 +56,7 @@ class SubscriptionExport extends AbstractExport {
                             'kind'                  : FIELD_TYPE_REFDATA,
                             'form'                  : FIELD_TYPE_REFDATA,
                             'resource'              : FIELD_TYPE_REFDATA,
-                            'provider-assignment'   : FIELD_TYPE_CUSTOM_IMPL,   // <- no BaseConfig.getCustomRefdata(fieldName)
+                            'provider-assignment'   : FIELD_TYPE_CUSTOM_IMPL,       // <- no BaseConfig.getCustomRefdata(fieldName)
                             'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                             'isPublicForApi'        : FIELD_TYPE_PROPERTY,
                             'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // <- no BaseConfig.getCustomRefdata(fieldName)

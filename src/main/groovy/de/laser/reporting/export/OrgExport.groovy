@@ -5,6 +5,8 @@ import de.laser.Identifier
 import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.OrgSubjectGroup
+import de.laser.Person
+import de.laser.RefdataValue
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.reporting.myInstitution.base.BaseDetails
@@ -36,6 +38,7 @@ class OrgExport extends AbstractExport {
                             'country'           : FIELD_TYPE_REFDATA,
                             'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                             'eInvoice'          : FIELD_TYPE_PROPERTY,
+                            '___org_contact'        : FIELD_TYPE_CUSTOM_IMPL,    // virtual
                             'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // <- no BaseConfig.getCustomRefdata(fieldName)
                             'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                             'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL
@@ -156,6 +159,32 @@ class OrgExport extends AbstractExport {
                             "select i from Identifier i where i.value != null and i.value != '' and i.org = :org", [org: org]
                     )
                     content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
+                }
+                else if (key == '___org_contact') {
+
+                    List personList = []
+                    List<RefdataValue> funcTypes = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT]
+
+                    funcTypes.each{ ft ->
+                        List<Person> persons = org.getContactPersonsByFunctionType(true, ft)
+                        persons.each {p ->
+                            String p1 = [
+                                    ft.getI10n('value') + ':',
+                                    p.title,
+                                    p.first_name,
+                                    p.middle_name,
+                                    p.last_name
+                            ].findAll().join(' ')
+
+                            String p2 = p.contacts.toSorted().collect{
+                                it.contentType.getI10n('value')  + ': ' + it.content
+                            }.join(', ')
+
+                            personList.add( p1 + (p2 ? ', ' + p2 : ''))
+                        }
+                    }
+
+                    content.add( personList.join( CSV_VALUE_SEPARATOR ) )
                 }
             }
             // --> custom query depending filter implementation
