@@ -715,7 +715,7 @@ class AjaxJsonController {
                     queryResult.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
                 }
             }
-            else if (prefix in ['org', 'member', 'provider', 'licensor']) {
+            else if (prefix in ['org', 'member', 'consortium', 'provider', 'licensor']) {
                 queryResult = OrganisationQuery.query(clone)
                 queryResult.labels.tooltip = getTooltipLabels(clone)
                 queryResult.tmpl = '/myInstitution/reporting/chart/generic'

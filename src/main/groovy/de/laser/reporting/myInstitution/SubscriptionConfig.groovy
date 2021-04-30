@@ -220,6 +220,47 @@ class SubscriptionConfig extends BaseConfig {
                     ]
             ],
 
+            consortium : [
+                    meta : [
+                            class: Org
+                    ],
+                    source : [
+                            'depending-consortium' : 'Alle betroffenen Konsortialstellen'
+                    ],
+                    fields : [
+                            'country'           : BaseConfig.FIELD_TYPE_REFDATA,
+                            //'customerType'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
+                            'eInvoice'          : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'funderHskType'     : BaseConfig.FIELD_TYPE_REFDATA,
+                            'funderType'        : BaseConfig.FIELD_TYPE_REFDATA,
+                            'legalInfo'         : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
+                            'libraryNetwork'    : BaseConfig.FIELD_TYPE_REFDATA,
+                            'libraryType'       : BaseConfig.FIELD_TYPE_REFDATA,
+                            //'orgType'           : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE,
+                            //'region'            : FIELD_TYPE_REFDATA,
+                            'subjectGroup'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL
+                    ],
+                    filter : [
+                            default: [
+                                    [ 'country', 'subjectGroup', 'libraryType' ],
+                                    [ 'libraryNetwork', 'funderType', 'funderHskType' ],
+                                    [ 'eInvoice' ]
+                            ]
+                    ],
+                    query : [
+                            'Konsortialstelle' : [ // TODO ..
+                                             //'consortium-orgType'            : 'Organisationstyp',
+                                             //'consortium-customerType'       : 'Kundentyp',
+                                             'consortium-libraryType'        : 'Bibliothekstyp',
+                                             'consortium-region'             : 'Bundesländer',
+                                             'consortium-subjectGroup'       : 'Fächergruppen',
+                                             'consortium-libraryNetwork'     : 'Verbundzugehörigkeit',
+                                             'consortium-funderType'         : 'Unterhaltsträger',
+                                             'consortium-funderHskType'      : 'Trägerschaft'
+                            ]
+                    ]
+            ],
+
             provider : [
                     meta : [
                             class: Org

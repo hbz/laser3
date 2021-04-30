@@ -6,7 +6,7 @@
         <i class="ui icon download"></i>
     </button>
 
-    <g:if test="${query.split('-')[0] in ['org', 'member', 'provider', 'licensor']}">
+    <g:if test="${query.split('-')[0] in ['org', 'member', 'consortium', 'provider', 'licensor']}">
         <button id="chart-email-button" class="ui icon button" href="#chartDetailsCopyEmailModal" data-semui="modal">
             <i class="icon envelope"></i>
         </button>
