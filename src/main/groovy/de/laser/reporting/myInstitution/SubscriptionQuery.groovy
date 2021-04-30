@@ -43,6 +43,17 @@ class SubscriptionQuery extends BaseQuery {
 
             processSimpleRefdataQuery(params.query,'status', idList, result)
         }
+        else if ( params.query in ['subscription-manualCancellationDate']) {
+
+            handleGenericDateQuery(
+                    params.query,
+                    'select s.manualCancellationDate, s.manualCancellationDate, count(*) from Subscription s where s.id in (:idList) and s.manualCancellationDate != null group by s.manualCancellationDate order by s.manualCancellationDate',
+                    'select s.id from Subscription s where s.id in (:idList) and s.manualCancellationDate = :d order by s.name',
+                    'select s.id from Subscription s where s.id in (:idList) and s.manualCancellationDate is null order by s.name',
+                    idList,
+                    result
+            )
+        }
         else if ( params.query in ['subscription-isMultiYear']) {
 
             handleGenericBooleanQuery(

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3429    30.04.2021  rc2.0   2.0.8       David   Feature     Reporting: Einstiegspunkt Lizenzen
+
 3414    28.04.2021  rc2.0   2.0.8       Andreas Bug         Titelfilter korrigiert, Anbieter von Verlag in Sicht getrennt
 
 3122    28.04.2021  rc2.0   2.0.8       David   Feature     CSV-Export für Diagrammdaten
