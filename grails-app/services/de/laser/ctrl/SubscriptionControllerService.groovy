@@ -1399,7 +1399,7 @@ class SubscriptionControllerService {
         result.package = Package.get(params.package)
         Locale locale = LocaleContextHolder.getLocale()
         if(params.confirmed) {
-            if(result.package.unlinkFromSubscription(result.subscription, true)){
+            if(result.package.unlinkFromSubscription(result.subscription, result.institution, true)){
                 result.message = messageSource.getMessage('subscription.details.unlink.successfully',null,locale)
                 [result:result,status:STATUS_OK]
             }else {
@@ -1618,10 +1618,10 @@ class SubscriptionControllerService {
             List errorList = []
             boolean filterSet = false
             EhcacheWrapper checkedCache = contextService.getCache("/subscription/addEntitlements/${params.id}", contextService.USER_SCOPE)
-            Map<TitleInstancePackagePlatform,IssueEntitlement> addedTipps = [:]
+            Map<TitleInstancePackagePlatform,String> addedTipps = [:]
             result.subscription.issueEntitlements.each { ie ->
                 if(ie instanceof IssueEntitlement && ie.status != ie_deleted)
-                    addedTipps[ie.tipp] = ie
+                    addedTipps[ie.tipp] = ie.tipp.gokbId
             }
             // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
             String basequery
@@ -1634,12 +1634,16 @@ class SubscriptionControllerService {
             result.filterSet = query.filterSet
 
             if(result.subscription.packages?.pkg) {
-
-                tippIDs.addAll(TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams))
-                result.num_tipp_rows = tipps.size()
-                tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(tippIDs,[offset:result.offset,max:result.max,sort:'sortName']))
+                Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+                if(tippIds)
+                    tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(tippIds.drop(result.offset).take(result.max),[sort:'sortName']))
+                //now, assemble the identifiers available to highlight - findAll is subject for TODO
+                Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findAllByNs('zdb'),
+                                                               eissn: IdentifierNamespace.findAllByNs('eissn'), isbn: IdentifierNamespace.findAllByNs('isbn'),
+                                                               issn : IdentifierNamespace.findAllByNs('issn'), pisbn: IdentifierNamespace.findAllByNs('pisbn')]
+                result.num_tipp_rows = tippIds.size()
                 result.tipps = tipps
-                Map identifiers = [zdbIds: [], onlineIds: [], printIds: [], unidentified: []]
+                Map<String, Object> identifiers = [zdbIds: [], onlineIds: [], printIds: [], unidentified: []]
                 Map<String, Map> issueEntitlementOverwrite = [:]
                 result.issueEntitlementOverwrite = [:]
                 if (params.kbartPreselect && !params.pagination) {
@@ -1715,26 +1719,23 @@ class SubscriptionControllerService {
                     } else isUniqueListpriceColumn = true
                     //after having read off the header row, pop the first row
                     rows.remove(0)
-                    //now, assemble the identifiers available to highlight
-                    Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNs('zdb'),
-                                                                   eissn: IdentifierNamespace.findByNs('eissn'), isbn: IdentifierNamespace.findByNs('isbn'),
-                                                                   issn : IdentifierNamespace.findByNs('issn'), pisbn: IdentifierNamespace.findByNs('pisbn')]
                     rows.eachWithIndex { row, int i ->
-                        log.debug("now processing entitlement ${i}")
                         Map<String, Object> ieCandidate = [:]
                         ArrayList<String> cols = row.split('\t')
                         Map<String, Object> idCandidate
                         String ieCandIdentifier
                         if (colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
                             identifiers.zdbIds.add(cols[colMap.zdbCol])
-                            idCandidate = [namespaces: [namespaces.zdb], value: cols[colMap.zdbCol]]
+                            idCandidate = [namespaces: namespaces.zdb, value: cols[colMap.zdbCol]]
                             if (issueEntitlementOverwrite[cols[colMap.zdbCol]])
                                 ieCandidate = issueEntitlementOverwrite[cols[colMap.zdbCol]]
                             else ieCandIdentifier = cols[colMap.zdbCol]
                         }
                         if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
                             identifiers.onlineIds.add(cols[colMap.onlineIdentifierCol])
-                            idCandidate = [namespaces: [namespaces.eissn, namespaces.isbn], value: cols[colMap.onlineIdentifierCol]]
+                            idCandidate = [namespaces: [], value: cols[colMap.onlineIdentifierCol]]
+                            idCandidate.namespaces.addAll(namespaces.eissn)
+                            idCandidate.namespaces.addAll(namespaces.isbn)
                             if (ieCandIdentifier == null && !issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]])
                                 ieCandIdentifier = cols[colMap.onlineIdentifierCol]
                             else if (issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]])
@@ -1742,7 +1743,9 @@ class SubscriptionControllerService {
                         }
                         if (colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
                             identifiers.printIds.add(cols[colMap.printIdentifierCol])
-                            idCandidate = [namespaces: [namespaces.issn, namespaces.pisbn], value: cols[colMap.printIdentifierCol]]
+                            idCandidate = [namespaces: [], value: cols[colMap.printIdentifierCol]]
+                            idCandidate.namespaces.addAll(namespaces.issn)
+                            idCandidate.namespaces.addAll(namespaces.pisbn)
                             if (ieCandIdentifier == null && !issueEntitlementOverwrite[cols[colMap.printIdentifierCol]])
                                 ieCandIdentifier = cols[colMap.printIdentifierCol]
                             else if (issueEntitlementOverwrite[cols[colMap.printIdentifierCol]])
@@ -1755,14 +1758,19 @@ class SubscriptionControllerService {
                         } else {
                             //make checks ...
                             //is title in LAS:eR?
-                            Identifier id = Identifier.findByValueAndNsInList(idCandidate.value, idCandidate.namespaces)
-                            if (id && id.ti) {
+                            List<Identifier> ids = Identifier.executeQuery("select id from Identifier id where id.value = :value and id.ns in (:ns) and id.tipp != null",[value: idCandidate.value, ns: idCandidate.namespaces])
+                            Identifier id = ids.find { Identifier check -> check.tipp.pkg in result.subscription.packages.pkg } //it is *always* possible to have multiple packages linked to a subscription!
+                            if (id) {
                                 //is title already added?
-                                if (addedTipps.get(id.ti)) {
+                                if (addedTipps.get(id.tipp)) {
                                     errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleAlreadyAdded', null, locale)}")
                                 }
-                            } else if (!id) {
-                                errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInERMS', null, locale)}")
+                            }
+                            else {
+                                if(ids)
+                                    errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInPackage', null, locale)}")
+                                else
+                                    errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInERMS', null, locale)}")
                             }
                         }
                         List<Map> ieCoverages
@@ -1839,34 +1847,23 @@ class SubscriptionControllerService {
                             issueEntitlementOverwrite[ieCandIdentifier] = ieCandidate
                         }
                     }
-                    result.identifiers = identifiers
-                    params.remove("kbartPreselect")
-                }
-                if (!params.pagination) {
                     result.checked = [:]
-                    tipps.each { tipp ->
-                        String serial
-                        String electronicSerial
-                        String checked = ""
-                        if (tipp.titleType == 'Book') {
-                            serial = tipp.getIdentifierValue('pISBN')
-                            electronicSerial = tipp.getIdentifierValue('ISBN')
-                        } else if (tipp.titleType == "Journal") {
-                            serial = tipp.getIdentifierValue('ISSN')
-                            electronicSerial = tipp.getIdentifierValue('eISSN')
-                        }
-                        if (result.identifiers?.zdbIds?.indexOf(tipp.getIdentifierValue('zdb')) > -1) {
-                            checked = "checked"
-                            result.issueEntitlementOverwrite[tipp.gokbId] = issueEntitlementOverwrite[tipp.getIdentifierValue('zdb')]
-                        } else if (result.identifiers?.onlineIds?.indexOf(electronicSerial) > -1) {
-                            checked = "checked"
-                            result.issueEntitlementOverwrite[tipp.gokbId] = issueEntitlementOverwrite[electronicSerial]
-                        } else if (result.identifiers?.printIds?.indexOf(serial) > -1) {
-                            checked = "checked"
-                            result.issueEntitlementOverwrite[tipp.gokbId] = issueEntitlementOverwrite[serial]
-                        }
-                        result.checked[tipp.gokbId] = checked
+                    Map<String, Object> unfilteredParams = [pkg:result.subscription.packages.pkg, deleted:RDStore.TIPP_STATUS_DELETED]
+                    Set<String> selectedTippIds = [], identifierValues = []
+                    identifiers.values().each { subList ->
+                        if(subList instanceof List)
+                            identifierValues.addAll(subList)
                     }
+                    identifierValues.collate(32700).each { List<String> chunk ->
+                        unfilteredParams.idList = chunk
+                        selectedTippIds.addAll(TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp join tipp.ids id where tipp.pkg = :pkg and tipp.status != :deleted and id.value in (:idList)',unfilteredParams))
+                        selectedTippIds.removeAll(addedTipps.values())
+                    }
+                    selectedTippIds.each { String wekbId ->
+                        println("located tipp: ${wekbId}")
+                        result.checked[wekbId] = "checked"
+                    }
+                    result.identifiers = identifiers
                     if (result.identifiers && result.identifiers.unidentified.size() > 0) {
                         String unidentifiedTitles = result.identifiers.unidentified.join(", ")
                         String escapedFileName
@@ -1877,11 +1874,53 @@ class SubscriptionControllerService {
                             log.error(e.printStackTrace())
                             escapedFileName = result.identifiers.filename
                         }
-                        errorList.add(messageSource.getMessage('subscription.details.addEntitlements.unidentified', [escapedFileName, unidentifiedTitles], locale))
+                        Object[] args = [escapedFileName, unidentifiedTitles]
+                        errorList.add(messageSource.getMessage('subscription.details.addEntitlements.unidentified', args, locale))
                     }
                     checkedCache.put('checked', result.checked)
                     checkedCache.put('issueEntitlementCandidates', result.issueEntitlementOverwrite)
-                } else {
+                    params.remove("kbartPreselect")
+                }
+                /*
+                if (!params.pagination) {
+                List<Map> allTippsFiltered = TitleInstancePackagePlatform.executeQuery("select new map(tipp.titleType as titleType, tipp.gokbId as gokbId) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :deleted",unfilteredParams)
+                    List<Map> identifierRows = Identifier.executeQuery("select new map(tipp.gokbId as gokbId, id.value as value, ns.ns as namespace) from Identifier id join id.ns ns join id.tipp tipp where tipp.pkg = :pkg and tipp.status != :deleted",unfilteredParams)
+                    Map<String, Set> allIdentifiers = [:]
+                    identifierRows.each { Map row ->
+                        Set<Map> ids = allIdentifiers.get(row.gokbId)
+                        if(!ids)
+                            ids = []
+                        ids << [value: row.value, namespace: row.namespace]
+                        allIdentifiers.put(row.gokbId, ids)
+                    }
+                    allTippsFiltered.eachWithIndex { tipp, int i ->
+                        log.debug("now processing tipp ${i}")
+                        String serial
+                        String electronicSerial
+                        String checked = ""
+                        if (tipp.titleType == 'Book') {
+                            serial = allIdentifiers.get(tipp.gokbId).find { Map data -> data.namespace == namespaces.pisbn.ns}?.value
+                            electronicSerial = allIdentifiers.get(tipp.gokbId).find { Map data -> data.namespace == namespaces.isbn.ns }?.value
+                        } else if (tipp.titleType == "Journal") {
+                            serial = allIdentifiers.get(tipp.gokbId).find { Map data -> data.namespace == namespaces.issn.ns }?.value
+                            electronicSerial = allIdentifiers.get(tipp.gokbId).find { Map data -> data.namespace == namespaces.eissn.ns }?.value
+                        }
+                        if (result.identifiers?.zdbIds?.find { allIdentifiers.get(tipp.gokbId).find { Map data -> data.namespace == namespaces.zdb.ns } }) {
+                            checked = "checked"
+                            result.issueEntitlementOverwrite[tipp.gokbId] = issueEntitlementOverwrite[allIdentifiers.get(tipp.gokbId).find { Map data -> data.namespace == namespaces.zdb.ns }.value]
+                        } else if (result.identifiers?.onlineIds?.find { String onlineId -> onlineId == electronicSerial }) {
+                            checked = "checked"
+                            result.issueEntitlementOverwrite[tipp.gokbId] = issueEntitlementOverwrite[electronicSerial]
+                        } else if (result.identifiers?.printIds?.find{ String printId -> printId == serial }) {
+                            checked = "checked"
+                            result.issueEntitlementOverwrite[tipp.gokbId] = issueEntitlementOverwrite[serial]
+                        }
+                        if(checked)
+                            result.checked[tipp.gokbId] = checked
+                    }
+                    }
+                        */
+                if(params.pagination) {
                     result.checked = checkedCache.get('checked')
                     result.issueEntitlementOverwrite = checkedCache.get('issueEntitlementCandidates')
                 }
