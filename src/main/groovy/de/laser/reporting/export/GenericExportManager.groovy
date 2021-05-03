@@ -17,7 +17,7 @@ class GenericExportManager {
         if (prefix == 'license') {
             return new LicenseExport( token, selectedFields )
         }
-        if (prefix in ['org', 'member', 'licensor', 'provider']) {
+        if (prefix in ['org', 'member', 'consortium', 'licensor', 'provider']) {
             return new OrgExport( token, selectedFields )
         }
         if (prefix == 'subscription') {

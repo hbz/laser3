@@ -49,7 +49,7 @@
 
         <div class="ui bottom attached tab segment" data-tab="lic-filter-tab-3">
             <div class="field">
-                <label for="filter:licensor_source">${message(code:'reporting.filter.licensor.source')}</label>
+                <label for="filter:licensor_source">${message(code:'reporting.filter.selection')}</label>
                 <g:set var="config" value="${LicenseConfig.getCurrentConfig().licensor}" />
                 <g:select name="filter:licensor_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:licensor_source')}" />
             </div>

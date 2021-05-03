@@ -16,9 +16,13 @@ class OrganisationConfig extends BaseConfig {
                     source : [
                             'all-org'       : 'Alle Organisationen',
                             'all-inst'      : 'Alle Einrichtungen',
-                            'all-provider'  : 'Alle Anbieter und Lieferanten',
+                            'all-provider'          : 'Alle Anbieter',
+                            'all-agency'            : 'Alle Lieferanten',
+                            'all-providerAndAgency' : 'Alle Anbieter und Lieferanten',
                             'my-inst'       : 'Meine Einrichtungen',
-                            'my-provider'   : 'Meine Anbieter und Lieferanten'
+                            'my-provider'           : 'Meine Anbieter',
+                            'my-agency'             : 'Meine Lieferanten',
+                            'my-providerAndAgency'  : 'Meine Anbieter und Lieferanten'
                     ],
                     fields: [
                             'country'           : BaseConfig.FIELD_TYPE_REFDATA,
@@ -41,8 +45,7 @@ class OrganisationConfig extends BaseConfig {
                                     [ 'customerType', 'legalInfo' ]
                             ],
                             provider: [
-                                    [ 'country', 'orgType'],
-                                    [ 'customerType', 'legalInfo' ]
+                                    // all disabled
                             ]
                     ],
                     query : [

@@ -126,6 +126,9 @@ class SubscriptionFilter extends BaseFilter {
         if (SubscriptionConfig.getCurrentConfig().member) {
             handleInternalOrgFilter(params, 'member', filterResult)
         }
+        if (SubscriptionConfig.getCurrentConfig().consortium) {
+            handleInternalOrgFilter(params, 'consortium', filterResult)
+        }
         if (SubscriptionConfig.getCurrentConfig().provider) {
             handleInternalOrgFilter(params, 'provider', filterResult)
         }
@@ -160,6 +163,9 @@ class SubscriptionFilter extends BaseFilter {
                     [ subscriptionIdList: queryParams.subscriptionIdList ]
             )
         }
+        if (partKey == 'consortium') {
+            queryParams.put( 'roleTypes', [RDStore.OR_SUBSCRIPTION_CONSORTIA] )
+        }
         if (partKey == 'provider') {
             queryParams.put( 'roleTypes', [RDStore.OR_PROVIDER] )
         }
@@ -175,6 +181,9 @@ class SubscriptionFilter extends BaseFilter {
                 String pType
                 if (partKey == 'member') {
                     pType = GenericHelper.getFieldType(SubscriptionConfig.getCurrentConfig().member, p)
+                }
+                else if (partKey == 'consortium') {
+                    pType = GenericHelper.getFieldType(SubscriptionConfig.getCurrentConfig().consortium, p)
                 }
                 else if (partKey == 'provider') {
                     pType = GenericHelper.getFieldType(SubscriptionConfig.getCurrentConfig().provider, p)
@@ -261,6 +270,9 @@ class SubscriptionFilter extends BaseFilter {
                 if (filterLabelValue) {
                     if (partKey == 'member') {
                         filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.getCurrentConfig().member, p), value: filterLabelValue])
+                    }
+                    else if (partKey == 'consortium') {
+                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.getCurrentConfig().consortium, p), value: filterLabelValue])
                     }
                     else if (partKey == 'provider') {
                         filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.getCurrentConfig().provider, p), value: filterLabelValue])
