@@ -6,6 +6,7 @@ import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
+import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.reporting.myInstitution.base.BaseFilter
 import de.laser.reporting.myInstitution.base.BaseQuery
@@ -64,6 +65,10 @@ class SubscriptionQuery extends BaseQuery {
                     idList,
                     result
             )
+        }
+        else if ( params.query in ['subscription-annual-assignment']) {
+
+            handleGenericAnnualAssignmentQuery(params.query, 'Subscription', idList, result)
         }
         else if ( params.query in ['subscription-provider-assignment']) {
 

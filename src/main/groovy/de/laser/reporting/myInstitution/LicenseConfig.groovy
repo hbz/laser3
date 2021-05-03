@@ -20,6 +20,7 @@ class LicenseConfig extends BaseConfig {
                             'consortia-lic' : 'Meine Verträge'
                     ],
                     fields: [
+                            'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
                             'licenseCategory'       : BaseConfig.FIELD_TYPE_REFDATA,
                             //'openEnded'             : FIELD_TYPE_REFDATA,
@@ -29,7 +30,7 @@ class LicenseConfig extends BaseConfig {
                     ],
                     filter : [
                             default: [
-                                    [ 'licenseCategory', 'type', 'status' ],
+                                    [ 'licenseCategory', 'type', 'status', 'annual' ],
                                     [ 'startDate', 'endDate' /*, 'openEnded' */ ]
                             ]
                     ],
@@ -52,6 +53,11 @@ class LicenseConfig extends BaseConfig {
                                             label : 'Vertrag → Identifikatoren',
                                             template: '2axis2values_nonMatches',
                                             chartLabels: [ 'Verträge', 'Vergebene Identifikatoren' ]
+                                    ],
+                                    'license-annual-assignment' : [
+                                            label : 'Vertrag → Jahresring',
+                                            template: 'generic',
+                                            chartLabels : []
                                     ],
                             ]
                     ]
@@ -135,6 +141,7 @@ class LicenseConfig extends BaseConfig {
                             'my-lic' : 'Meine Verträge'
                     ],
                     fields: [
+                            'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
                             'licenseCategory'       : BaseConfig.FIELD_TYPE_REFDATA,
                             //'openEnded'             : FIELD_TYPE_REFDATA,
@@ -144,7 +151,7 @@ class LicenseConfig extends BaseConfig {
                     ],
                     filter : [
                             default: [
-                                    [ 'licenseCategory', 'type', 'status' ],
+                                    [ 'licenseCategory', 'type', 'status', 'annual' ],
                                     [ 'startDate', 'endDate' /*, 'openEnded' */ ]
                             ]
                     ],
@@ -167,6 +174,11 @@ class LicenseConfig extends BaseConfig {
                                                      label : 'Vertrag → Identifikatoren',
                                                      template: '2axis2values_nonMatches',
                                                      chartLabels: [ 'Verträge', 'Vergebene Identifikatoren' ]
+                                             ],
+                                             'license-annual-assignment' : [
+                                                     label : 'Vertrag → Jahresring',
+                                                     template: 'generic',
+                                                     chartLabels : []
                                              ],
                             ]
                     ]

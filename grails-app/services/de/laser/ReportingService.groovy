@@ -41,6 +41,8 @@ class ReportingService {
         }
     }
 
+    // -----
+
     void doFilterCostItem(Map<String, Object> result, GrailsParameterMap params) {
 
         CostItemFilter filter = new CostItemFilter()
@@ -77,7 +79,6 @@ class ReportingService {
 
         SubscriptionFilter filter = new SubscriptionFilter()
         result.filterResult = filter.filter(params)
-
 
         result.cfgQueryList.putAll( SubscriptionConfig.getCurrentConfig().base.query )
 

@@ -1,6 +1,8 @@
 package de.laser.reporting.myInstitution
 
 import de.laser.ContextService
+import de.laser.License
+import de.laser.Subscription
 import de.laser.reporting.myInstitution.base.BaseFilter
 import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.util.Holders
@@ -33,6 +35,10 @@ class LicenseQuery extends BaseQuery {
         else if ( suffix in ['status']) {
 
             processSimpleRefdataQuery(params.query,'status', idList, result)
+        }
+        else if ( params.query in ['license-annual-assignment']) {
+
+            handleGenericAnnualAssignmentQuery(params.query, 'License', idList, result)
         }
         else if ( params.query in ['license-property-assignment']) {
 

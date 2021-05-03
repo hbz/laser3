@@ -4,6 +4,7 @@ import de.laser.ContextService
 import de.laser.I10nTranslation
 import de.laser.Org
 import de.laser.RefdataValue
+import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.SessionCacheWrapper
 import de.laser.properties.PropertyDefinition
@@ -226,4 +227,42 @@ class BaseQuery {
         }
     }
 
+    static void handleGenericAnnualAssignmentQuery(String query, String domainClass, List idList, Map<String, Object> result) {
+
+        List years = Org.executeQuery( 'select distinct YEAR(dc.startDate) from ' + domainClass + ' dc' )
+        years.addAll( Org.executeQuery( 'select distinct YEAR(dc.endDate) from ' + domainClass + ' dc' ) )
+
+        years = years.findAll().unique().sort() // TODO hardcoded
+
+        years.each { y ->
+            String hql = 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and ' +
+                    '( (YEAR(dc.startDate) <= ' + y + ' or dc.startDate is null) and (YEAR(dc.endDate) >= ' + y + ' or dc.endDate is null) ) and ' +
+                    'not (dc.startDate is null and dc.endDate is null)'
+
+            List<Long> annualList = Org.executeQuery( hql, [idList: idList] )
+
+            if (annualList) {
+                result.data.add( [y, y, annualList.size()] )
+                result.dataDetails.add( [
+                        query: query,
+                        id: y,
+                        label: y,
+                        idList: annualList
+                ] )
+            }
+        }
+
+        List<Long> noDataList = Org.executeQuery(
+                'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate is null',
+                [idList: idList]
+        )
+        result.data.add( [null, BaseQuery.NO_DATA_LABEL, noDataList.size()] )
+
+        result.dataDetails.add( [
+                query:  query,
+                id:     null,
+                label:  BaseQuery.NO_DATA_LABEL,
+                idList: noDataList
+        ])
+    }
 }
