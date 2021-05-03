@@ -27,6 +27,7 @@ class BaseConfig {
     static String CUSTOM_KEY_ORG_TYPE           = 'orgType'
     static String CUSTOM_KEY_CUSTOMER_TYPE      = 'customerType'
     static String CUSTOM_KEY_LEGAL_INFO         = 'legalInfo'
+    static String CUSTOM_KEY_ANNUAL             = 'annual'
 
     static Map<String, String> FILTER = [
 
@@ -76,6 +77,12 @@ class BaseConfig {
                         [id: 2, value_de: 'Erstellt von (exklusive)'],                  // ui icon grey outline circle
                         [id: 3, value_de: 'Organisiert durch (exklusive)']              // ui icon red question mark
             ]]
+        }
+        else if (key == CUSTOM_KEY_ANNUAL) {
+            return [
+                    label: 'Jahresring',
+                    from: (2023..2017).collect{[ id: it, value_de: it] }  // TODO hardcoded
+            ]
         }
     }
 }

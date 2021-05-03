@@ -13,6 +13,8 @@ import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.ApplicationContext
 
+import java.time.YearMonth
+
 class SubscriptionFilter extends BaseFilter {
 
     def contextService
@@ -105,7 +107,17 @@ class SubscriptionFilter extends BaseFilter {
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    println ' ------------ not implemented ------------ '
+
+                    if (p == BaseConfig.CUSTOM_KEY_ANNUAL) {
+
+                        whereParts.add( '(YEAR(sub.startDate) <= :p' + (++pCount) + ' or sub.startDate is null)' )
+                        queryParams.put( 'p' + pCount, params.get(key) as Integer )
+
+                        whereParts.add( '(YEAR(sub.endDate) >= :p' + (++pCount) + ' or sub.endDate is null)' )
+                        queryParams.put( 'p' + pCount, params.get(key) as Integer )
+
+                        filterLabelValue = params.get(key)
+                    }
                 }
 
                 if (filterLabelValue) {

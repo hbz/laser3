@@ -6,6 +6,8 @@ import de.laser.reporting.myInstitution.base.BaseQuery
 
 class ExportHelper {
 
+    // ----- Cache -----
+
     static String getCachedQueryPrefix(String token) {
 
         Map<String, Object> queryCache = BaseQuery.getQueryCache(token)
@@ -19,6 +21,8 @@ class ExportHelper {
         String suffix = queryCache.query.replaceFirst( queryCache.query.split('-')[0] + '-', '' )
         suffix
     }
+
+    // -----
 
     static Map<String, Object> getCachedFilterLabels(String token) {
 
