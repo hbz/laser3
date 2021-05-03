@@ -1399,7 +1399,7 @@ class SubscriptionControllerService {
         result.package = Package.get(params.package)
         Locale locale = LocaleContextHolder.getLocale()
         if(params.confirmed) {
-            if(result.package.unlinkFromSubscription(result.subscription, true)){
+            if(result.package.unlinkFromSubscription(result.subscription, result.institution, true)){
                 result.message = messageSource.getMessage('subscription.details.unlink.successfully',null,locale)
                 [result:result,status:STATUS_OK]
             }else {
@@ -1636,7 +1636,7 @@ class SubscriptionControllerService {
             if(result.subscription.packages?.pkg) {
                 Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
                 if(tippIds)
-                    tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(tippIds.drop(result.offset).take(result.max)))
+                    tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(tippIds.drop(result.offset).take(result.max),[sort:'sortName']))
                 //now, assemble the identifiers available to highlight - findAll is subject for TODO
                 Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findAllByNs('zdb'),
                                                                eissn: IdentifierNamespace.findAllByNs('eissn'), isbn: IdentifierNamespace.findAllByNs('isbn'),
@@ -1758,14 +1758,19 @@ class SubscriptionControllerService {
                         } else {
                             //make checks ...
                             //is title in LAS:eR?
-                            Identifier id = Identifier.findByValueAndNsInListAndTippIsNotNull(idCandidate.value, idCandidate.namespaces)
+                            List<Identifier> ids = Identifier.executeQuery("select id from Identifier id where id.value = :value and id.ns in (:ns) and id.tipp != null",[value: idCandidate.value, ns: idCandidate.namespaces])
+                            Identifier id = ids.find { Identifier check -> check.tipp.pkg in result.subscription.packages.pkg } //it is *always* possible to have multiple packages linked to a subscription!
                             if (id) {
                                 //is title already added?
                                 if (addedTipps.get(id.tipp)) {
                                     errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleAlreadyAdded', null, locale)}")
                                 }
-                            } else {
-                                errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInERMS', null, locale)}")
+                            }
+                            else {
+                                if(ids)
+                                    errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInPackage', null, locale)}")
+                                else
+                                    errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInERMS', null, locale)}")
                             }
                         }
                         List<Map> ieCoverages
@@ -1869,7 +1874,8 @@ class SubscriptionControllerService {
                             log.error(e.printStackTrace())
                             escapedFileName = result.identifiers.filename
                         }
-                        errorList.add(messageSource.getMessage('subscription.details.addEntitlements.unidentified', [escapedFileName, unidentifiedTitles], locale))
+                        Object[] args = [escapedFileName, unidentifiedTitles]
+                        errorList.add(messageSource.getMessage('subscription.details.addEntitlements.unidentified', args, locale))
                     }
                     checkedCache.put('checked', result.checked)
                     checkedCache.put('issueEntitlementCandidates', result.issueEntitlementOverwrite)
