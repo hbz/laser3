@@ -20,6 +20,7 @@ class SubscriptionConfig extends BaseConfig {
                             'consortia-sub' : 'Meine Lizenzen'
                     ],
                     fields: [
+                            'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
                             'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'hasPerpetualAccess'    : BaseConfig.FIELD_TYPE_PROPERTY,
@@ -35,7 +36,7 @@ class SubscriptionConfig extends BaseConfig {
                     ],
                     filter : [
                             default: [
-                                    [ 'form', 'kind', 'status' ],
+                                    [ 'form', 'kind', 'status', 'annual' ],
                                     [ 'hasPerpetualAccess', 'isMultiYear', 'isPublicForApi', 'resource' ],
                                     [ 'startDate', 'endDate' ]
                             ]
@@ -72,6 +73,11 @@ class SubscriptionConfig extends BaseConfig {
                                             template: '2axis2values_nonMatches',
                                             chartLabels : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
                                     ],
+                                     'subscription-annual-assignment' : [
+                                             label : 'Lizenz → Jahresring',
+                                             template: 'generic',
+                                             chartLabels : []
+                                     ],
                                      'subscription-subscription-assignment' : [
                                              label : 'Teilnehmerlizenz → Lizenz',
                                              template: 'generic',
@@ -159,6 +165,7 @@ class SubscriptionConfig extends BaseConfig {
                             'my-sub' : 'Meine Lizenzen'
                     ],
                     fields: [
+                            'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
                             'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'hasPerpetualAccess'    : BaseConfig.FIELD_TYPE_PROPERTY,
@@ -174,18 +181,18 @@ class SubscriptionConfig extends BaseConfig {
                     ],
                     filter : [
                             default: [
-                                    [ 'form', 'kind', 'status' ],
+                                    [ 'form', 'kind', 'status', 'annual' ],
                                     [ 'hasPerpetualAccess', 'isMultiYear', 'isPublicForApi', 'resource' ],
                                     [ 'startDate', 'endDate' ]
                             ]
                     ],
                     query : [
                             'Lizenz' : [ // TODO ..
-                                         'subscription-form'         : 'Lizenzform',
-                                         'subscription-kind'         : 'Lizenztyp',
-                                         'subscription-resource'     : 'Ressourcentyp',
-                                         'subscription-status'       : 'Lizenzstatus',
-                                         'subscription-isMultiYear'  : 'Mehrjahreslaufzeit',
+                                         'subscription-form'        : 'Lizenzform',
+                                         'subscription-kind'        : 'Lizenztyp',
+                                         'subscription-resource'    : 'Ressourcentyp',
+                                         'subscription-status'      : 'Lizenzstatus',
+                                         'subscription-isMultiYear' : 'Mehrjahreslaufzeit',
                                          'subscription-manualCancellationDate'  : 'Kündigungsdatum'
                             ]
                     ],
@@ -211,11 +218,16 @@ class SubscriptionConfig extends BaseConfig {
                                                      template: '2axis2values_nonMatches',
                                                      chartLabels : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
                                              ],
+                                             'subscription-annual-assignment' : [
+                                                     label : 'Lizenz → Jahresring',
+                                                     template: 'generic',
+                                                     chartLabels : []
+                                             ],
                                              'subscription-subscription-assignment' : [
                                                      label : 'Teilnehmerlizenz → Lizenz',
                                                      template: 'generic',
                                                      chartLabels : []
-                                             ],
+                                             ]
                             ]
                     ]
             ],
