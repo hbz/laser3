@@ -30,10 +30,10 @@ class LicenseExport extends AbstractExport {
                             'status'            : FIELD_TYPE_REFDATA,
                             'licenseCategory'   : FIELD_TYPE_REFDATA,
                             'type'              : FIELD_TYPE_REFDATA,
-                            '___license_subscriptions'  : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                            '___license_members'        : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // <- no BaseConfig.getCustomRefdata(fieldName)
-                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                            '___license_subscriptions'  : FIELD_TYPE_CUSTOM_IMPL,   // AbstractExport.CUSTOM_LABEL - virtual
+                            '___license_members'        : FIELD_TYPE_CUSTOM_IMPL,   // AbstractExport.CUSTOM_LABEL - virtual
+                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
                     ]
             ]
     ]
@@ -52,8 +52,8 @@ class LicenseExport extends AbstractExport {
                             'status'            : FIELD_TYPE_REFDATA,
                             'licenseCategory'   : FIELD_TYPE_REFDATA,
                             'type'              : FIELD_TYPE_REFDATA,
-                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // <- no BaseConfig.getCustomRefdata(fieldName)
-                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
                     ]
             ]
     ]
