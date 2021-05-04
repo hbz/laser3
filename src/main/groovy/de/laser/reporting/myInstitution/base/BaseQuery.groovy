@@ -46,8 +46,8 @@ class BaseQuery {
 
         List<String> meta = []
 
-        println 'BaseQuery.getQueryLabels()'
-        println params
+        //println 'BaseQuery.getQueryLabels()'
+        //println params
 
         config.each {it ->
             it.value.get('query')?.default.each { it2 ->  // TODO ???
