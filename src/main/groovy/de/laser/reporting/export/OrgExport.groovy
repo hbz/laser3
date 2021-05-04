@@ -38,9 +38,9 @@ class OrgExport extends AbstractExport {
                             'country'           : FIELD_TYPE_REFDATA,
                             'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                             'eInvoice'          : FIELD_TYPE_PROPERTY,
-                            '___org_contact'        : FIELD_TYPE_CUSTOM_IMPL,    // virtual
-                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // <- no BaseConfig.getCustomRefdata(fieldName)
-                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                            '___org_contact'        : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL- virtual
+                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
                             'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL
                     ]
             ]

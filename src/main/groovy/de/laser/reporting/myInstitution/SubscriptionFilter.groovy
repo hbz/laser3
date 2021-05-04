@@ -144,6 +144,9 @@ class SubscriptionFilter extends BaseFilter {
         if (SubscriptionConfig.getCurrentConfig().provider) {
             handleInternalOrgFilter(params, 'provider', filterResult)
         }
+        if (SubscriptionConfig.getCurrentConfig().agency) {
+            handleInternalOrgFilter(params, 'agency', filterResult)
+        }
 
 //        println 'subscriptions >> ' + result.subscriptionIdList.size()
 //        println 'member >> ' + result.memberIdList.size()
@@ -181,6 +184,9 @@ class SubscriptionFilter extends BaseFilter {
         if (partKey == 'provider') {
             queryParams.put( 'roleTypes', [RDStore.OR_PROVIDER] )
         }
+        if (partKey == 'agency') {
+            queryParams.put( 'roleTypes', [RDStore.OR_AGENCY] )
+        }
 
         String cmbKey = BaseConfig.FILTER_PREFIX + partKey + '_'
         int pCount = 0
@@ -199,6 +205,9 @@ class SubscriptionFilter extends BaseFilter {
                 }
                 else if (partKey == 'provider') {
                     pType = GenericHelper.getFieldType(SubscriptionConfig.getCurrentConfig().provider, p)
+                }
+                else if (partKey == 'agency') {
+                    pType = GenericHelper.getFieldType(SubscriptionConfig.getCurrentConfig().agency, p)
                 }
 
                 def filterLabelValue
@@ -288,6 +297,9 @@ class SubscriptionFilter extends BaseFilter {
                     }
                     else if (partKey == 'provider') {
                         filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.getCurrentConfig().provider, p), value: filterLabelValue])
+                    }
+                    else if (partKey == 'agency') {
+                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.getCurrentConfig().agency, p), value: filterLabelValue])
                     }
                 }
             }

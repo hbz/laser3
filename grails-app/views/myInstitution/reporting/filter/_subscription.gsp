@@ -9,10 +9,13 @@
                 <a class="item" data-tab="sub-filter-tab-2">${message(code:'subscription.details.consortiaMembers.label')}</a>
             </g:if>
             <g:if test="${SubscriptionConfig.getCurrentConfig().consortium}">
-                <a class="item" data-tab="sub-filter-tab-2">${message(code:'subscription.details.consortia.label')}</a>
+                <a class="item" data-tab="sub-filter-tab-3">${message(code:'subscription.details.consortia.label')}</a>
             </g:if>
             <g:if test="${SubscriptionConfig.getCurrentConfig().provider}">
-                <a class="item" data-tab="sub-filter-tab-3">${message(code:'default.provider.label')}</a>
+                <a class="item" data-tab="sub-filter-tab-4">${message(code:'default.provider.label')}</a>
+            </g:if>
+            <g:if test="${SubscriptionConfig.getCurrentConfig().agency}">
+                <a class="item" data-tab="sub-filter-tab-5">${message(code:'default.agency.plural.label')}</a>
             </g:if>
         </div><!-- .menu -->
 
@@ -62,12 +65,13 @@
         <g:set var="config" value="${SubscriptionConfig.getCurrentConfig().consortium}" />
         <g:if test="${config}">
 
-            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-2">
+            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-3">
                 <div class="field">
                     <label for="filter:consortium_source">${message(code:'reporting.filter.selection')}</label>
                     <g:select name="filter:consortium_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:consortium_source')}" />
                 </div>
 
+                %{--
                 <g:each in="${config.filter.default}" var="cfgFilter">
                     <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
                         <g:each in="${cfgFilter}" var="field">
@@ -75,6 +79,8 @@
                         </g:each>
                     </div>
                 </g:each>
+
+                --}%
             </div><!-- .second -->
 
         </g:if>
@@ -82,7 +88,7 @@
         <g:set var="config" value="${SubscriptionConfig.getCurrentConfig().provider}" />
         <g:if test="${config}">
 
-            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-3">
+            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-4">
                 <div class="field">
                     <label for="filter:provider_source">${message(code:'reporting.filter.selection')}</label>
 
@@ -93,6 +99,27 @@
                     <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
                         <g:each in="${cfgFilter}" var="field">
                             <laser:reportFilterField config="${config}" field="${field}" key="provider" />
+                        </g:each>
+                    </div>
+                </g:each>
+            </div><!-- .second -->
+
+        </g:if>
+
+        <g:set var="config" value="${SubscriptionConfig.getCurrentConfig().agency}" />
+        <g:if test="${config}">
+
+            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-5">
+                <div class="field">
+                    <label for="filter:agency_source">${message(code:'reporting.filter.selection')}</label>
+
+                    <g:select name="filter:agency_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:agency_source')}" />
+                </div>
+
+                <g:each in="${config.filter.default}" var="cfgFilter">
+                    <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
+                        <g:each in="${cfgFilter}" var="field">
+                            <laser:reportFilterField config="${config}" field="${field}" key="agency" />
                         </g:each>
                     </div>
                 </g:each>

@@ -44,6 +44,12 @@ class OrganisationFilter extends BaseFilter {
                         [orgStatus: RDStore.ORG_STATUS_DELETED]
                 )
                 break
+            case 'all-consortium':
+                queryParams.orgIdList = Org.executeQuery(
+                        'select o.id from Org o where exists (select ot from o.orgType ot where ot = :orgType) and (o.status is null or o.status != :orgStatus)',
+                        [orgType: RDStore.OT_CONSORTIUM, orgStatus: RDStore.ORG_STATUS_DELETED]
+                )
+                break
             case 'all-inst':
                 queryParams.orgIdList = Org.executeQuery(
                         'select o.id from Org o where (o.status is null or o.status != :orgStatus) and exists (select ot from o.orgType ot where ot = :orgType)',
@@ -64,6 +70,34 @@ class OrganisationFilter extends BaseFilter {
                         'select o.id from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :org and c.type = :comboType and (o.status is null or o.status != :orgStatus)',
                         [org: contextService.getOrg(), orgStatus: RDStore.ORG_STATUS_DELETED, comboType: RDStore.COMBO_TYPE_CONSORTIUM]
                 )
+                break
+            case 'my-consortium':
+                queryParams.orgIdList = Org.executeQuery( '''
+select distinct(consOr.org.id) from OrgRole consOr 
+    join consOr.sub sub join sub.orgRelations subOr 
+where (consOr.roleType = :consRoleType) 
+    and (sub = subOr.sub and subOr.org = :org and subOr.roleType in (:subRoleTypes))
+    and (consOr.org.status is null or consOr.org.status != :orgStatus)  ''',
+                        [
+                                org: contextService.getOrg(), orgStatus: RDStore.ORG_STATUS_DELETED,
+                                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
+                                consRoleType: RDStore.OR_SUBSCRIPTION_CONSORTIA
+                        ]
+                )
+
+                queryParams.orgIdList.addAll( Org.executeQuery( '''
+select distinct(consOr.org.id) from OrgRole consOr 
+    join consOr.lic lic join lic.orgRelations licOr 
+where (consOr.roleType = :consRoleType) 
+    and (lic = licOr.lic and licOr.org = :org and licOr.roleType in (:licRoleTypes))
+    and (consOr.org.status is null or consOr.org.status != :orgStatus)  ''',
+                        [
+                                org: contextService.getOrg(), orgStatus: RDStore.ORG_STATUS_DELETED,
+                                licRoleTypes: [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS],
+                                consRoleType: RDStore.OR_LICENSING_CONSORTIUM
+                        ]
+                ) )
+                queryParams.orgIdList = queryParams.orgIdList.unique()
                 break
             case 'my-provider':
                 queryParams.orgIdList = getMyProviderAndAgencyIdList( [RDStore.OR_PROVIDER] )
