@@ -51,15 +51,32 @@ class OrganisationConfig extends BaseConfig {
                             ]
                     ],
                     query : [
-                            'Organisation' : [ // TODO ..
-                                    'org-orgType'           : 'Organisationstyp',
-                                    'org-customerType'      : 'Kundentyp',
-                                    'org-libraryType'       : 'Bibliothekstyp',
-                                    'org-region'            : 'Bundesländer',
-                                    'org-subjectGroup'      : 'Fächergruppen',
-                                    'org-libraryNetwork'    : 'Verbundzugehörigkeit',
-                                    'org-funderType'        : 'Unterhaltsträger',
-                                    'org-funderHskType'     : 'Trägerschaft'
+                            default : [
+                                    'Organisation' : [ // TODO ..
+                                            'org-orgType'           : 'Organisationstyp',
+                                            'org-customerType'      : 'Kundentyp',
+                                            'org-libraryType'       : 'Bibliothekstyp',
+                                            'org-region'            : 'Bundesländer',
+                                            'org-subjectGroup'      : 'Fächergruppen',
+                                            'org-libraryNetwork'    : 'Verbundzugehörigkeit',
+                                            'org-funderType'        : 'Unterhaltsträger',
+                                            'org-funderHskType'     : 'Trägerschaft'
+                                    ]
+                            ],
+                            providerAndAgency: [
+                                    'Organisation' : [
+                                            'org-orgType' : 'Organisationstyp'
+                                    ]
+                            ],
+                            provider: [
+                                    'Organisation' : [
+                                            'org-orgType' : 'Organisationstyp'
+                                    ]
+                            ],
+                            agency: [
+                                    'Organisation' : [
+                                            'org-orgType' : 'Organisationstyp'
+                                    ]
                             ]
                     ],
                     query2 : [
@@ -121,15 +138,32 @@ class OrganisationConfig extends BaseConfig {
                             ]
                     ],
                     query : [
-                            'Organisation' : [ // TODO ..
-                                               'org-orgType'           : 'Organisationstyp',
-                                               'org-customerType'      : 'Kundentyp',
-                                               'org-libraryType'       : 'Bibliothekstyp',
-                                               'org-region'            : 'Bundesländer',
-                                               'org-subjectGroup'      : 'Fächergruppen',
-                                               'org-libraryNetwork'    : 'Verbundzugehörigkeit',
-                                               'org-funderType'        : 'Unterhaltsträger',
-                                               'org-funderHskType'     : 'Trägerschaft'
+                            default: [
+                                    'Organisation' : [ // TODO ..
+                                           'org-orgType'           : 'Organisationstyp',
+                                           'org-customerType'      : 'Kundentyp',
+                                           'org-libraryType'       : 'Bibliothekstyp',
+                                           'org-region'            : 'Bundesländer',
+                                           'org-subjectGroup'      : 'Fächergruppen',
+                                           'org-libraryNetwork'    : 'Verbundzugehörigkeit',
+                                           'org-funderType'        : 'Unterhaltsträger',
+                                           'org-funderHskType'     : 'Trägerschaft'
+                                    ]
+                            ],
+                            providerAndAgency: [
+                                    'Organisation' : [
+                                            'org-orgType' : 'Organisationstyp'
+                                    ]
+                            ],
+                            provider: [
+                                    'Organisation' : [
+                                            'org-orgType' : 'Organisationstyp'
+                                    ]
+                            ],
+                            agency: [
+                                    'Organisation' : [
+                                            'org-orgType' : 'Organisationstyp'
+                                    ]
                             ]
                     ],
                     query2 : [

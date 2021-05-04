@@ -48,7 +48,7 @@ class ReportingService {
         CostItemFilter filter = new CostItemFilter()
         result.filterResult = filter.filter(params)
 
-        result.cfgQueryList.putAll( CostItemConfig.getCurrentConfig().base.query )
+        result.cfgQueryList.putAll( CostItemConfig.getCurrentConfig().base.query.default )
     }
 
     void doFilterLicense(Map<String, Object> result, GrailsParameterMap params) {
@@ -56,10 +56,10 @@ class ReportingService {
         LicenseFilter filter = new LicenseFilter()
         result.filterResult = filter.filter(params)
 
-        result.cfgQueryList.putAll( LicenseConfig.getCurrentConfig().base.query )
+        result.cfgQueryList.putAll( LicenseConfig.getCurrentConfig().base.query.default )
 
         if (LicenseConfig.getCurrentConfig().licensor) {
-            result.cfgQueryList.putAll(LicenseConfig.getCurrentConfig().licensor.query)
+            result.cfgQueryList.putAll(LicenseConfig.getCurrentConfig().licensor.query.default )
         }
 
         result.cfgQuery2List.putAll( LicenseConfig.getCurrentConfig().base.query2 ) // Verteilung
@@ -70,7 +70,18 @@ class ReportingService {
         OrganisationFilter filter = new OrganisationFilter()
         result.filterResult = filter.filter(params)
 
-        result.cfgQueryList.putAll( OrganisationConfig.getCurrentConfig().base.query )
+        if (params.get('filter:org_source').contains('providerAndAgency')) {
+            result.cfgQueryList.putAll( OrganisationConfig.getCurrentConfig().base.query.providerAndAgency )
+        }
+        else if (params.get('filter:org_source').contains('provider')) {
+            result.cfgQueryList.putAll( OrganisationConfig.getCurrentConfig().base.query.provider )
+        }
+        else if (params.get('filter:org_source').contains('agency')) {
+            result.cfgQueryList.putAll( OrganisationConfig.getCurrentConfig().base.query.agency )
+        }
+        else {
+            result.cfgQueryList.putAll( OrganisationConfig.getCurrentConfig().base.query.default )
+        }
 
         result.cfgQuery2List.putAll( OrganisationConfig.getCurrentConfig().base.query2 ) // Verteilung
     }
@@ -80,19 +91,19 @@ class ReportingService {
         SubscriptionFilter filter = new SubscriptionFilter()
         result.filterResult = filter.filter(params)
 
-        result.cfgQueryList.putAll( SubscriptionConfig.getCurrentConfig().base.query )
+        result.cfgQueryList.putAll( SubscriptionConfig.getCurrentConfig().base.query.default )
 
         if (SubscriptionConfig.getCurrentConfig().member) {
-            result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().member.query)
+            result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().member.query.default )
         }
         if (SubscriptionConfig.getCurrentConfig().consortium) {
-            result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().consortium.query)
+            result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().consortium.query.default )
         }
         if (SubscriptionConfig.getCurrentConfig().provider) {
-            result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().provider.query)
+            result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().provider.query.default )
         }
         if (SubscriptionConfig.getCurrentConfig().agency) {
-            result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().agency.query)
+            result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().agency.query.default )
         }
 
         result.cfgQuery2List.putAll( SubscriptionConfig.getCurrentConfig().base.query2 ) // Verteilung

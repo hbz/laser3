@@ -31,13 +31,15 @@ class CostItemConfig extends BaseConfig {
                             ]
                     ],
                     query : [
-                            'Kosten' : [ // TODO ..
-                                    'costItem-type'                         : 'type',
-                                    'costItem-costItemStatus'               : 'costItemStatus',
-                                    'costItem-costItemCategory'             : 'costItemCategory',
-                                    'costItem-costItemElement'              : 'costItemElement',
-                                    'costItem-costItemElementConfiguration' : 'costItemElementConfiguration',
-                                    'costItem-billingCurrency'              : 'billingCurrency',
+                            default: [
+                                    'Kosten' : [ // TODO ..
+                                            'costItem-type'                         : 'type',
+                                            'costItem-costItemStatus'               : 'costItemStatus',
+                                            'costItem-costItemCategory'             : 'costItemCategory',
+                                            'costItem-costItemElement'              : 'costItemElement',
+                                            'costItem-costItemElementConfiguration' : 'costItemElementConfiguration',
+                                            'costItem-billingCurrency'              : 'billingCurrency',
+                                    ]
                             ]
                     ]
             ]
