@@ -64,17 +64,17 @@ class OrganisationConfig extends BaseConfig {
                                     ]
                             ],
                             providerAndAgency: [
-                                    'Anbieter / Lieferant' : [
+                                    'Organisation' : [
                                             'org-orgType' : 'Organisationstyp'
                                     ]
                             ],
                             provider: [
-                                    'Anbieter' : [
+                                    'Organisation' : [
                                             'org-orgType' : 'Organisationstyp'
                                     ]
                             ],
                             agency: [
-                                    'Lieferant' : [
+                                    'Organisation' : [
                                             'org-orgType' : 'Organisationstyp'
                                     ]
                             ]
