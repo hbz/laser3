@@ -75,9 +75,7 @@ class LicenseConfig extends BaseConfig {
                             'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE,
                     ],
                     filter : [
-                            default: [
-                                    [ 'country' ]
-                            ]
+                            default: []
                     ],
                     query : [
                             'Lizenzgeber' : [ // TODO ..
@@ -154,9 +152,7 @@ class LicenseConfig extends BaseConfig {
                             'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE,
                     ],
                     filter : [
-                            default: [
-                                    [ 'country' ]
-                            ]
+                            default: []
                     ],
                     query : [
                             'Lizenzgeber' : [ // TODO ..

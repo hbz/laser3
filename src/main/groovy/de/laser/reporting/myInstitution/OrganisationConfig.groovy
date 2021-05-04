@@ -46,7 +46,7 @@ class OrganisationConfig extends BaseConfig {
                                     [ 'libraryType', 'eInvoice' ],
                                     [ 'customerType', 'legalInfo' ]
                             ],
-                            provider: [
+                            provider: [ // TODO : provider != agency
                                     // all disabled
                             ]
                     ],
@@ -116,7 +116,7 @@ class OrganisationConfig extends BaseConfig {
                                     [ 'libraryType', 'eInvoice' ],
                                     [ 'customerType', 'legalInfo' ]
                             ],
-                            provider: [
+                            provider: [ // TODO : provider != agency
                                     // all disabled
                             ]
                     ],

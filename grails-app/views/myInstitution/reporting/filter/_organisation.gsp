@@ -33,7 +33,6 @@
                     </div>
                 </g:each>
             </div>
-
         </div><!-- .first -->
 
         <div class="field">
