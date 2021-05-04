@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3452    04.05.2021  rc2.0   2.0.8       David   Feature     Filterspez. Query-Formulare ermöglichen
+
+3450    04.05.2021  rc2.0   2.0.8       Andreas Bug         Private Merkmale sind in Merkmalsgruppen aufgetaucht
+
 3424    03.05.2021  dev     2.0.8       Andreas Bug         Abfragefehler bei Paketentknüpfung behoben
 
 3423    03.05.2021  rc2.0   2.0.8       Andreas Bug         KBART-Vorauswahl wieder instandgesetzt

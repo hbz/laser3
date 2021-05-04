@@ -27,14 +27,16 @@ class SubscriptionReporting {
 
             base : [
                     query: [
-                            'Bestand' : [
-                                    'tipp-publisherName'    : 'Verlag',
-                                    'tipp-seriesName'       : 'Name der Reihe',
-                                    'tipp-subjectReference' : 'Fachbereich',
-                                    'tipp-titleType'        : 'Titel-Typ',
-                                    'tipp-medium'           : 'Medium',
-                                    //'tipp-platform'         : 'Plattform',
-                                    //'tipp-package'          : 'Paket'
+                            default: [
+                                    'Bestand' : [
+                                            'tipp-publisherName'    : 'Verlag',
+                                            'tipp-seriesName'       : 'Name der Reihe',
+                                            'tipp-subjectReference' : 'Fachbereich',
+                                            'tipp-titleType'        : 'Titel-Typ',
+                                            'tipp-medium'           : 'Medium',
+                                            //'tipp-platform'         : 'Plattform',
+                                            //'tipp-package'          : 'Paket'
+                                    ]
                             ]
                     ],
 
