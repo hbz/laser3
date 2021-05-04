@@ -9,6 +9,8 @@
 
 3452    04.05.2021  rc2.0   2.0.8       David   Feature     Filterspez. Query-Formulare ermöglichen
 
+3450    04.05.2021  rc2.0   2.0.8       Andreas Bug         Private Merkmale sind in Merkmalsgruppen aufgetaucht
+
 3423    03.05.2021  rc2.0   2.0.8       Andreas Bug         KBART-Vorauswahl wieder instandgesetzt
 
 3436    30.04.2021  rc2.0   2.0.8       David   Feature     Makro-Reporting: Anpassung für Vollnutzer
