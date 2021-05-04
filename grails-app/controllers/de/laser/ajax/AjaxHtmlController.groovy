@@ -446,7 +446,7 @@ class AjaxHtmlController {
 
             sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)
         }
-        else if (params.context == SubscriptionConfig.KEY && params.query) {
+        else if (params.context == BaseConfig.KEY_SUBSCRIPTION && params.query) {
             if (params.query == 'timeline-cost') {
                 result.labels = SubscriptionReporting.getTimelineQueryLabels(params)
 

@@ -31,7 +31,7 @@
         <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.app.reporting.current.request = {
                 context: '${BaseConfig.KEY}',
-                filter: '${SubscriptionConfig.KEY}',
+                filter: '${BaseConfig.KEY_SUBSCRIPTION}',
                 token: '${token}'
             }
         </laser:script>

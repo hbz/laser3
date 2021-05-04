@@ -13,6 +13,8 @@
 
 3423    03.05.2021  rc2.0   2.0.8       Andreas Bug         KBART-Vorauswahl wieder instandgesetzt
 
+3441    03.05.2021  rc2.0   2.0.8       David   Feature     Reporting: Jahresringe
+
 3436    30.04.2021  rc2.0   2.0.8       David   Feature     Makro-Reporting: Anpassung für Vollnutzer
 
 3430    30.04.2021  rc2.0   2.0.8       David   Feature     Reporting: Einstiegspunkt Organisationen überarbeiten

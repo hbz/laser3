@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.SubscriptionConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.myInstitution.SubscriptionConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription;de.laser.reporting.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
     <g:form action="reporting" method="POST" class="ui form">
@@ -130,7 +130,7 @@
         <div class="field">
             <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
             <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
-            <input type="hidden" name="filter" value="${SubscriptionConfig.KEY}" />
+            <input type="hidden" name="filter" value="${BaseConfig.KEY_SUBSCRIPTION}" />
             <input type="hidden" name="token" value="${token}" />
         </div>
 

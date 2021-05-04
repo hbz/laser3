@@ -8,6 +8,7 @@ import de.laser.reporting.myInstitution.OrganisationConfig
 import de.laser.reporting.myInstitution.OrganisationFilter
 import de.laser.reporting.myInstitution.SubscriptionConfig
 import de.laser.reporting.myInstitution.SubscriptionFilter
+import de.laser.reporting.myInstitution.base.BaseConfig
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.commons.lang3.RandomStringUtils
@@ -27,16 +28,16 @@ class ReportingService {
         result.cfgQueryList = [:]
         result.cfgQuery2List = [:]
 
-        if (params.filter == CostItemConfig.KEY) {
+        if (params.filter == BaseConfig.KEY_COSTITEM) {
             doFilterCostItem(result, params.clone() as GrailsParameterMap)
         }
-        else if (params.filter == LicenseConfig.KEY) {
+        else if (params.filter == BaseConfig.KEY_LICENSE) {
             doFilterLicense(result, params.clone() as GrailsParameterMap)
         }
-        else if (params.filter == OrganisationConfig.KEY) {
+        else if (params.filter == BaseConfig.KEY_ORGANISATION) {
             doFilterOrganisation(result, params.clone() as GrailsParameterMap)
         }
-        else if (params.filter == SubscriptionConfig.KEY) {
+        else if (params.filter == BaseConfig.KEY_SUBSCRIPTION) {
             doFilterSubscription(result, params.clone() as GrailsParameterMap)
         }
     }

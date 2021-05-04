@@ -752,7 +752,7 @@ class AjaxJsonController {
 
             sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)
         }
-        else if (params.context == SubscriptionConfig.KEY && params.query) {
+        else if (params.context == BaseConfig.KEY_SUBSCRIPTION && params.query) {
             GrailsParameterMap clone = params.clone() as GrailsParameterMap // TODO: simplify
             String prefix = clone.query.split('-')[0]
 

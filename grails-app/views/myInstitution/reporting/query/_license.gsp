@@ -22,7 +22,7 @@
         <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.app.reporting.current.request = {
                 context: '${BaseConfig.KEY}',
-                filter: '${LicenseConfig.KEY}',
+                filter: '${BaseConfig.KEY_LICENSE}',
                 token: '${token}'
             }
         </laser:script>

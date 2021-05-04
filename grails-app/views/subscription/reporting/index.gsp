@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.myInstitution.SubscriptionConfig" %>
+<%@ page import="de.laser.reporting.myInstitution.SubscriptionConfig;de.laser.reporting.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -38,7 +38,7 @@
                     JSPC.app.reporting.current.request = {
                         id: ${subscription.id},
                         query: value,
-                        context: '${SubscriptionConfig.KEY}',
+                        context: '${BaseConfig.KEY_SUBSCRIPTION}',
                         chart: 'default'
                     }
                     JSPC.app.reporting.requestChartJsonData();
@@ -74,7 +74,7 @@
                                     if (JSPC.helper.contains(clone.id, ':')) { // workaround XYZ
                                         clone.id = clone.id.split(':')[0]
                                     }
-                                    clone.context = '${SubscriptionConfig.KEY}';
+                                    clone.context = '${BaseConfig.KEY_SUBSCRIPTION}';
                                     JSPC.app.reporting.requestChartHtmlDetails(clone);
                                 }
                             })
