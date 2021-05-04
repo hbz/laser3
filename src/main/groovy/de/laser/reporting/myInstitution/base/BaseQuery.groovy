@@ -46,8 +46,11 @@ class BaseQuery {
 
         List<String> meta = []
 
+        println 'BaseQuery.getQueryLabels()'
+        println params
+
         config.each {it ->
-            it.value.get('query')?.each { it2 ->
+            it.value.get('query')?.default.each { it2 ->  // TODO ???
                 if (it2.value.containsKey(params.query)) {
                     meta = [ it2.key, it2.value.get(params.query), params.label ]
                 }

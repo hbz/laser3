@@ -42,13 +42,15 @@ class SubscriptionConfig extends BaseConfig {
                             ]
                     ],
                     query : [
-                            'Lizenz' : [ // TODO ..
-                                    'subscription-form'         : 'Lizenzform',
-                                    'subscription-kind'         : 'Lizenztyp',
-                                    'subscription-resource'     : 'Ressourcentyp',
-                                    'subscription-status'       : 'Lizenzstatus',
-                                    'subscription-isMultiYear'  : 'Mehrjahreslaufzeit',
-                                    'subscription-manualCancellationDate'  : 'Kündigungsdatum'
+                            default: [
+                                    'Lizenz' : [ // TODO ..
+                                            'subscription-form'         : 'Lizenzform',
+                                            'subscription-kind'         : 'Lizenztyp',
+                                            'subscription-resource'     : 'Ressourcentyp',
+                                            'subscription-status'       : 'Lizenzstatus',
+                                            'subscription-isMultiYear'  : 'Mehrjahreslaufzeit',
+                                            'subscription-manualCancellationDate'  : 'Kündigungsdatum'
+                                    ]
                             ]
                     ],
                     query2 : [
@@ -116,15 +118,17 @@ class SubscriptionConfig extends BaseConfig {
                             ]
                     ],
                     query : [
-                            'Teilnehmer' : [ // TODO ..
-                                    'member-orgType'            : 'Organisationstyp',
-                                    'member-customerType'       : 'Kundentyp',
-                                    'member-libraryType'        : 'Bibliothekstyp',
-                                    'member-region'             : 'Bundesländer',
-                                    'member-subjectGroup'       : 'Fächergruppen',
-                                    'member-libraryNetwork'     : 'Verbundzugehörigkeit',
-                                    'member-funderType'         : 'Unterhaltsträger',
-                                    'member-funderHskType'      : 'Trägerschaft'
+                            default: [
+                                    'Teilnehmer' : [ // TODO ..
+                                            'member-orgType'            : 'Organisationstyp',
+                                            'member-customerType'       : 'Kundentyp',
+                                            'member-libraryType'        : 'Bibliothekstyp',
+                                            'member-region'             : 'Bundesländer',
+                                            'member-subjectGroup'       : 'Fächergruppen',
+                                            'member-libraryNetwork'     : 'Verbundzugehörigkeit',
+                                            'member-funderType'         : 'Unterhaltsträger',
+                                            'member-funderHskType'      : 'Trägerschaft'
+                                    ]
                             ]
                     ]
             ],
@@ -144,10 +148,12 @@ class SubscriptionConfig extends BaseConfig {
                             default: []
                     ],
                     query : [
-                            'Anbieter' : [ // TODO ..
-                                    'provider-orgType'      : 'Organisationstyp',
-                                    //'provider-country'      : 'Länder',
-                                    //'provider-region'       : 'Bundesländer'
+                            default: [
+                                    'Anbieter' : [ // TODO ..
+                                            'provider-orgType'      : 'Organisationstyp',
+                                            //'provider-country'      : 'Länder',
+                                            //'provider-region'       : 'Bundesländer'
+                                    ]
                             ]
                     ]
             ],
@@ -167,10 +173,12 @@ class SubscriptionConfig extends BaseConfig {
                             default: []
                     ],
                     query : [
-                            'Lieferant' : [ // TODO ..
+                            default: [
+                                    'Lieferant' : [ // TODO ..
                                             'agency-orgType'      : 'Organisationstyp',
                                             // 'provider-country'      : 'Länder',
                                             // 'provider-region'       : 'Bundesländer'
+                                    ]
                             ]
                     ]
             ]
@@ -208,13 +216,15 @@ class SubscriptionConfig extends BaseConfig {
                             ]
                     ],
                     query : [
-                            'Lizenz' : [ // TODO ..
-                                         'subscription-form'        : 'Lizenzform',
-                                         'subscription-kind'        : 'Lizenztyp',
-                                         'subscription-resource'    : 'Ressourcentyp',
-                                         'subscription-status'      : 'Lizenzstatus',
-                                         'subscription-isMultiYear' : 'Mehrjahreslaufzeit',
-                                         'subscription-manualCancellationDate'  : 'Kündigungsdatum'
+                            default: [
+                                    'Lizenz' : [ // TODO ..
+                                             'subscription-form'        : 'Lizenzform',
+                                             'subscription-kind'        : 'Lizenztyp',
+                                             'subscription-resource'    : 'Ressourcentyp',
+                                             'subscription-status'      : 'Lizenzstatus',
+                                             'subscription-isMultiYear' : 'Mehrjahreslaufzeit',
+                                             'subscription-manualCancellationDate'  : 'Kündigungsdatum'
+                                    ]
                             ]
                     ],
                     query2 : [
@@ -281,7 +291,8 @@ class SubscriptionConfig extends BaseConfig {
                             ]
                     ],
                     query : [
-                            'Konsortialstelle' : [ // TODO ..
+                            default: [
+                                    'Konsortialstelle' : [ // TODO ..
                                              //'consortium-orgType'            : 'Organisationstyp',
                                              //'consortium-customerType'       : 'Kundentyp',
                                              'consortium-libraryType'        : 'Bibliothekstyp',
@@ -290,6 +301,7 @@ class SubscriptionConfig extends BaseConfig {
                                              'consortium-libraryNetwork'     : 'Verbundzugehörigkeit',
                                              'consortium-funderType'         : 'Unterhaltsträger',
                                              'consortium-funderHskType'      : 'Trägerschaft'
+                                    ]
                             ]
                     ]
             ],
@@ -309,10 +321,12 @@ class SubscriptionConfig extends BaseConfig {
                             default: []
                     ],
                     query : [
-                            'Anbieter' : [ // TODO ..
-                                           'provider-orgType'      : 'Organisationstyp',
-                                          // 'provider-country'      : 'Länder',
-                                          // 'provider-region'       : 'Bundesländer'
+                            default: [
+                                    'Anbieter' : [ // TODO ..
+                                               'provider-orgType'      : 'Organisationstyp',
+                                              // 'provider-country'      : 'Länder',
+                                              // 'provider-region'       : 'Bundesländer'
+                                    ]
                             ]
                     ]
             ],
@@ -332,10 +346,12 @@ class SubscriptionConfig extends BaseConfig {
                             default: []
                     ],
                     query : [
-                            'Lieferant' : [ // TODO ..
+                            default: [
+                                    'Lieferant' : [ // TODO ..
                                            'agency-orgType'      : 'Organisationstyp',
                                            // 'provider-country'      : 'Länder',
                                            // 'provider-region'       : 'Bundesländer'
+                                    ]
                             ]
                     ]
             ]
