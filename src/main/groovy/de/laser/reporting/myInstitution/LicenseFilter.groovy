@@ -35,7 +35,7 @@ class LicenseFilter extends BaseFilter {
         Map<String, Object> queryParams = [ licenseIdList: [] ]
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'license' + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put('base', [source: getFilterSourceLabel(LicenseConfig.getCurrentConfig().base, filterSource)])
+        filterResult.labels.put('base', [source: getFilterSourceLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base, filterSource)])
 
         switch (filterSource) {
             case 'all-lic':
@@ -63,7 +63,7 @@ class LicenseFilter extends BaseFilter {
                 //println key + " >> " + params.get(key)
 
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = GenericHelper.getFieldType(LicenseConfig.getCurrentConfig().base, p)
+                String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base, p)
 
                 def filterLabelValue
 
@@ -119,7 +119,7 @@ class LicenseFilter extends BaseFilter {
                 }
 
                 if (filterLabelValue) {
-                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(LicenseConfig.getCurrentConfig().base, p), value: filterLabelValue])
+                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base, p), value: filterLabelValue])
                 }
             }
         }
@@ -133,10 +133,10 @@ class LicenseFilter extends BaseFilter {
 
         filterResult.data.put( 'licenseIdList', queryParams.licenseIdList ? License.executeQuery( query, queryParams ) : [] )
 
-        //if (LicenseConfig.getCurrentConfig().member) {
+        //if (BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).member) {
             //handleInternalOrgFilter(params, 'member', result)
         //}
-        if (LicenseConfig.getCurrentConfig().licensor) {
+        if (BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).licensor) {
             handleInternalOrgFilter(params, 'licensor', filterResult)
         }
 
@@ -150,7 +150,7 @@ class LicenseFilter extends BaseFilter {
     private void handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put(partKey, [source: getFilterSourceLabel(LicenseConfig.getCurrentConfig().get(partKey), filterSource)])
+        filterResult.labels.put(partKey, [source: getFilterSourceLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).get(partKey), filterSource)])
 
         //println 'internalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
         if (! filterResult.data.get('licenseIdList')) {
@@ -184,10 +184,10 @@ class LicenseFilter extends BaseFilter {
                 String p = key.replaceFirst(cmbKey,'')
                 String pType
                 if (partKey == 'member') {
-                    pType = GenericHelper.getFieldType(LicenseConfig.getCurrentConfig().member, p)
+                    pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).member, p)
                 }
                 else if (partKey == 'licensor') {
-                    pType = GenericHelper.getFieldType(LicenseConfig.getCurrentConfig().licensor, p)
+                    pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).licensor, p)
                 }
 
                 def filterLabelValue
@@ -264,10 +264,10 @@ class LicenseFilter extends BaseFilter {
 
                 if (filterLabelValue) {
                     if (partKey == 'member') {
-                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(LicenseConfig.getCurrentConfig().member, p), value: filterLabelValue])
+                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).member, p), value: filterLabelValue])
                     }
                     else if (partKey == 'licensor') {
-                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(LicenseConfig.getCurrentConfig().licensor, p), value: filterLabelValue])
+                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).licensor, p), value: filterLabelValue])
                     }
                 }
             }

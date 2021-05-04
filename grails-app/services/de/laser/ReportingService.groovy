@@ -1,12 +1,8 @@
 package de.laser
 
-import de.laser.reporting.myInstitution.CostItemConfig
 import de.laser.reporting.myInstitution.CostItemFilter
-import de.laser.reporting.myInstitution.LicenseConfig
 import de.laser.reporting.myInstitution.LicenseFilter
-import de.laser.reporting.myInstitution.OrganisationConfig
 import de.laser.reporting.myInstitution.OrganisationFilter
-import de.laser.reporting.myInstitution.SubscriptionConfig
 import de.laser.reporting.myInstitution.SubscriptionFilter
 import de.laser.reporting.myInstitution.base.BaseConfig
 import grails.gorm.transactions.Transactional
@@ -49,7 +45,7 @@ class ReportingService {
         CostItemFilter filter = new CostItemFilter()
         result.filterResult = filter.filter(params)
 
-        result.cfgQueryList.putAll( CostItemConfig.getCurrentConfig().base.query.default )
+        result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_COSTITEM ).base.query.default )
     }
 
     void doFilterLicense(Map<String, Object> result, GrailsParameterMap params) {
@@ -57,13 +53,13 @@ class ReportingService {
         LicenseFilter filter = new LicenseFilter()
         result.filterResult = filter.filter(params)
 
-        result.cfgQueryList.putAll( LicenseConfig.getCurrentConfig().base.query.default )
+        result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.query.default )
 
-        if (LicenseConfig.getCurrentConfig().licensor) {
-            result.cfgQueryList.putAll(LicenseConfig.getCurrentConfig().licensor.query.default )
+        if (BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).licensor) {
+            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).licensor.query.default )
         }
 
-        result.cfgQuery2List.putAll( LicenseConfig.getCurrentConfig().base.query2 ) // Verteilung
+        result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.query2 ) // Verteilung
     }
 
     void doFilterOrganisation(Map<String, Object> result, GrailsParameterMap params) {
@@ -72,19 +68,19 @@ class ReportingService {
         result.filterResult = filter.filter(params)
 
         if (params.get('filter:org_source').contains('providerAndAgency')) {
-            result.cfgQueryList.putAll( OrganisationConfig.getCurrentConfig().base.query.providerAndAgency )
+            result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.providerAndAgency )
         }
         else if (params.get('filter:org_source').contains('provider')) {
-            result.cfgQueryList.putAll( OrganisationConfig.getCurrentConfig().base.query.provider )
+            result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.provider )
         }
         else if (params.get('filter:org_source').contains('agency')) {
-            result.cfgQueryList.putAll( OrganisationConfig.getCurrentConfig().base.query.agency )
+            result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.agency )
         }
         else {
-            result.cfgQueryList.putAll( OrganisationConfig.getCurrentConfig().base.query.default )
+            result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query.default )
         }
 
-        result.cfgQuery2List.putAll( OrganisationConfig.getCurrentConfig().base.query2 ) // Verteilung
+        result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query2 ) // Verteilung
     }
 
     void doFilterSubscription(Map<String, Object> result, GrailsParameterMap params) {
@@ -92,22 +88,22 @@ class ReportingService {
         SubscriptionFilter filter = new SubscriptionFilter()
         result.filterResult = filter.filter(params)
 
-        result.cfgQueryList.putAll( SubscriptionConfig.getCurrentConfig().base.query.default )
+        result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base.query.default )
 
-        if (SubscriptionConfig.getCurrentConfig().member) {
-            result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().member.query.default )
+        if (BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).member) {
+            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).member.query.default )
         }
-        if (SubscriptionConfig.getCurrentConfig().consortium) {
-            result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().consortium.query.default )
+        if (BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).consortium) {
+            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).consortium.query.default )
         }
-        if (SubscriptionConfig.getCurrentConfig().provider) {
-            result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().provider.query.default )
+        if (BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).provider) {
+            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).provider.query.default )
         }
-        if (SubscriptionConfig.getCurrentConfig().agency) {
-            result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().agency.query.default )
+        if (BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency) {
+            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency.query.default )
         }
 
-        result.cfgQuery2List.putAll( SubscriptionConfig.getCurrentConfig().base.query2 ) // Verteilung
+        result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base.query2 ) // Verteilung
     }
 
     List getCachedFilterIdList(String prefix, GrailsParameterMap params) {

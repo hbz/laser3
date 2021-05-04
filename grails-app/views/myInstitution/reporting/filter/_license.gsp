@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.LicenseConfig;de.laser.ReportingService;de.laser.Org;de.laser.License;de.laser.reporting.myInstitution.base.BaseConfig" %>
+<%@page import="de.laser.ReportingService;de.laser.Org;de.laser.License;de.laser.reporting.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
     <g:form action="reporting" method="POST" class="ui form">
@@ -11,7 +11,7 @@
         <div class="ui bottom attached active tab segment" data-tab="lic-filter-tab-1">
             <div class="field">
                 <label for="filter:license_source">${message(code:'reporting.filter.selection')}</label>
-                <g:set var="config" value="${LicenseConfig.getCurrentConfig().base}" />
+                <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base}" />
                 <g:select name="filter:license_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:license_source')}" />
             </div>
 
@@ -33,7 +33,7 @@
         %{--<div class="ui bottom attached tab segment" data-tab="lic-filter-tab-2">
             <div class="field">
                 <label for="filter:member_source">Teilnehmerauswahl</label>
-                <g:set var="config" value="${LicenseConfig.getCurrentConfig().member}" />
+                <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).member}" />
                 <g:select name="filter:member_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:member_source')}" />
             </div>
 
@@ -50,7 +50,7 @@
         <div class="ui bottom attached tab segment" data-tab="lic-filter-tab-3">
             <div class="field">
                 <label for="filter:licensor_source">${message(code:'reporting.filter.selection')}</label>
-                <g:set var="config" value="${LicenseConfig.getCurrentConfig().licensor}" />
+                <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).licensor}" />
                 <g:select name="filter:licensor_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:licensor_source')}" />
             </div>
 

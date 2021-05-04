@@ -30,11 +30,8 @@ import de.laser.properties.PropertyDefinition
 import de.laser.reporting.myInstitution.CostItemQuery
 import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.reporting.myInstitution.base.BaseQuery
-import de.laser.reporting.myInstitution.LicenseConfig
 import de.laser.reporting.myInstitution.LicenseQuery
-import de.laser.reporting.myInstitution.OrganisationConfig
 import de.laser.reporting.myInstitution.OrganisationQuery
-import de.laser.reporting.myInstitution.SubscriptionConfig
 import de.laser.reporting.myInstitution.SubscriptionQuery
 import de.laser.reporting.subscription.SubscriptionReporting
 import de.laser.traits.I10nTrait
@@ -683,13 +680,13 @@ class AjaxJsonController {
 
             Closure getTooltipLabels = { GrailsParameterMap pm ->
                 if (pm.filter == 'license') {
-                    BaseQuery.getQueryLabels(LicenseConfig.getCurrentConfig(), pm).get(1)
+                    BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ), pm).get(1)
                 }
                 else if (pm.filter == 'organisation') {
-                    BaseQuery.getQueryLabels(OrganisationConfig.getCurrentConfig(), pm).get(1)
+                    BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ), pm).get(1)
                 }
                 else if (pm.filter == 'subscription') {
-                    BaseQuery.getQueryLabels(SubscriptionConfig.getCurrentConfig(), pm).get(1)
+                    BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ), pm).get(1)
                 }
             }
 
@@ -709,7 +706,7 @@ class AjaxJsonController {
                 queryResult.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (clone.query.endsWith('assignment')) {
-                    Map<String, Object> cfg = LicenseConfig.getCurrentConfig().base.query2.getAt('Verteilung').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
                     queryResult.labels.chart = cfg.getAt('chartLabels')
                     queryResult.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
@@ -721,7 +718,7 @@ class AjaxJsonController {
                 queryResult.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (clone.query.endsWith('assignment')) {
-                    Map<String, Object> cfg = OrganisationConfig.getCurrentConfig().base.query2.getAt('Verteilung').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
                     queryResult.labels.chart = cfg.getAt('chartLabels')
                     queryResult.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
@@ -733,7 +730,7 @@ class AjaxJsonController {
                 queryResult.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (clone.query.endsWith('assignment')) {
-                    Map<String, Object> cfg = SubscriptionConfig.getCurrentConfig().base.query2.getAt('Verteilung').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
                     queryResult.labels.chart = cfg.getAt('chartLabels')
                     queryResult.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')

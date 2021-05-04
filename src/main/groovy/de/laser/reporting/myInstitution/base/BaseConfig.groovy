@@ -4,7 +4,7 @@ import de.laser.ContextService
 import de.laser.RefdataCategory
 import de.laser.auth.Role
 import de.laser.helper.RDConstants
-import de.laser.reporting.myInstitution.CostItemConfig
+import de.laser.reporting.myInstitution.config.CostItemConfig
 import de.laser.reporting.myInstitution.config.LicenseConsortium
 import de.laser.reporting.myInstitution.config.LicenseInst
 import de.laser.reporting.myInstitution.config.OrganisationConsortium
@@ -62,7 +62,7 @@ class BaseConfig {
 
         if (key == KEY_COSTITEM) {
 
-            CostItemConfig.CONFIG_X
+            CostItemConfig.CONFIG
         }
         else if (key == KEY_LICENSE) {
 
