@@ -91,6 +91,9 @@ class ReportingService {
         if (SubscriptionConfig.getCurrentConfig().provider) {
             result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().provider.query)
         }
+        if (SubscriptionConfig.getCurrentConfig().agency) {
+            result.cfgQueryList.putAll(SubscriptionConfig.getCurrentConfig().agency.query)
+        }
 
         result.cfgQuery2List.putAll( SubscriptionConfig.getCurrentConfig().base.query2 ) // Verteilung
     }

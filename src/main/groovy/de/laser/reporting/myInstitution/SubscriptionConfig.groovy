@@ -141,9 +141,7 @@ class SubscriptionConfig extends BaseConfig {
                             'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
                     ],
                     filter : [
-                            default: [
-                                    [ 'country' ]
-                            ]
+                            default: []
                     ],
                     query : [
                             'Anbieter' : [ // TODO ..
@@ -153,6 +151,29 @@ class SubscriptionConfig extends BaseConfig {
                             ]
                     ]
             ],
+
+            agency : [
+                    meta : [
+                            class: Org
+                    ],
+                    source : [
+                            'depending-agency' : 'Alle betroffenen Lieferanten'
+                    ],
+                    fields : [
+                            'country'   : BaseConfig.FIELD_TYPE_REFDATA,
+                            'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
+                    ],
+                    filter : [
+                            default: []
+                    ],
+                    query : [
+                            'Lieferant' : [ // TODO ..
+                                            'agency-orgType'      : 'Organisationstyp',
+                                            // 'provider-country'      : 'Länder',
+                                            // 'provider-region'       : 'Bundesländer'
+                            ]
+                    ]
+            ]
     ]
 
     static Map<String, Object> CONFIG_ORG_INST = [
@@ -285,9 +306,7 @@ class SubscriptionConfig extends BaseConfig {
                             'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
                     ],
                     filter : [
-                            default: [
-                                    [ 'country' ]
-                            ]
+                            default: []
                     ],
                     query : [
                             'Anbieter' : [ // TODO ..
@@ -297,6 +316,29 @@ class SubscriptionConfig extends BaseConfig {
                             ]
                     ]
             ],
+
+            agency : [
+                    meta : [
+                            class: Org
+                    ],
+                    source : [
+                            'depending-agency' : 'Alle betroffenen Lieferanten'
+                    ],
+                    fields : [
+                            'country'   : BaseConfig.FIELD_TYPE_REFDATA,
+                            'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
+                    ],
+                    filter : [
+                            default: []
+                    ],
+                    query : [
+                            'Lieferant' : [ // TODO ..
+                                           'agency-orgType'      : 'Organisationstyp',
+                                           // 'provider-country'      : 'Länder',
+                                           // 'provider-region'       : 'Bundesländer'
+                            ]
+                    ]
+            ]
     ]
 
     static Map<String, Object> getCurrentConfig() {

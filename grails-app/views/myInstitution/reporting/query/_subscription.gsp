@@ -4,7 +4,7 @@
 <g:if test="${filterResult}">
     <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />
 
-    <g:if test="${filterResult.data.subscriptionIdList || filterResult.data.memberIdList || filterResult.data.consortiumIdList || filterResult.data.providerIdList}">
+    <g:if test="${filterResult.data.subscriptionIdList || filterResult.data.memberIdList || filterResult.data.consortiumIdList || filterResult.data.providerIdList || filterResult.data.agencyIdList}">
 
         <div class="ui message success">
             <p>
@@ -18,6 +18,9 @@
                 </g:if>
                 <g:if test="${filterResult.data.providerIdList}">
                     und <strong>${filterResult.data.providerIdList.size()} Anbieter</strong>
+                </g:if>
+                <g:if test="${filterResult.data.agencyIdList}">
+                    und <strong>${filterResult.data.agencyIdList.size()} Lieferanten</strong>
                 </g:if>
                 gefunden.
             </p>
