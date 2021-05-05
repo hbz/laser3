@@ -3,9 +3,7 @@ package de.laser.reporting.myInstitution.config
 import de.laser.Org
 import de.laser.reporting.myInstitution.base.BaseConfig
 
-class OrganisationConsortium extends BaseConfig {
-
-    static String KEY = 'organisation'
+class OrganisationConsCfg extends BaseConfig {
 
     static Map<String, Object> CONFIG = [
 

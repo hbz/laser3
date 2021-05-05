@@ -676,7 +676,7 @@ class AjaxJsonController {
     def chart() {
         Map<String, Object> queryResult = [:]
 
-        if (params.context == BaseConfig.KEY && params.query) {
+        if (params.context == BaseConfig.KEY_MYINST && params.query) {
 
             Closure getTooltipLabels = { GrailsParameterMap pm ->
                 if (pm.filter == 'license') {

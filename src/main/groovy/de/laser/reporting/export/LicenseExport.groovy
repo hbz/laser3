@@ -3,7 +3,6 @@ package de.laser.reporting.export
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.License
-import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.reporting.myInstitution.base.BaseDetails
@@ -63,22 +62,11 @@ class LicenseExport extends AbstractExport {
         selectedExportFields = getAllFields().findAll{ it.key in fields.keySet() }
     }
 
-    Map<String, Object> getCurrentConfig() {
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-
-        if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
-            LicenseExport.CONFIG_ORG_CONSORTIUM
-        }
-        else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
-            LicenseExport.CONFIG_ORG_INST
-        }
-    }
-
     @Override
     Map<String, Object> getAllFields() {
         String suffix = ExportHelper.getCachedQuerySuffix(token)
 
-        getCurrentConfig().base.fields.findAll {
+        getCurrentConfig( KEY ).base.fields.findAll {
             (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == suffix)
         }
     }
@@ -90,7 +78,7 @@ class LicenseExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportHelper.getFieldLabel( token, getCurrentConfig().base as Map<String, Object>, fieldName )
+        ExportHelper.getFieldLabel( token, getCurrentConfig( KEY ).base as Map<String, Object>, fieldName )
     }
 
     @Override

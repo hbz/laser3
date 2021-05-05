@@ -133,11 +133,10 @@ class LicenseFilter extends BaseFilter {
 
         filterResult.data.put( 'licenseIdList', queryParams.licenseIdList ? License.executeQuery( query, queryParams ) : [] )
 
-        //if (BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).member) {
-            //handleInternalOrgFilter(params, 'member', result)
-        //}
-        if (BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).licensor) {
-            handleInternalOrgFilter(params, 'licensor', filterResult)
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).keySet().each{pk ->
+            if (pk != 'base') {
+                handleInternalOrgFilter(params, pk, filterResult)
+            }
         }
 
 //        println 'licenses >> ' + result.licenseIdList.size()

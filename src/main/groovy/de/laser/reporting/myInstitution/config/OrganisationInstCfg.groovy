@@ -3,9 +3,7 @@ package de.laser.reporting.myInstitution.config
 import de.laser.Org
 import de.laser.reporting.myInstitution.base.BaseConfig
 
-class OrganisationInst extends BaseConfig {
-
-    static String KEY = 'organisation'
+class OrganisationInstCfg extends BaseConfig {
 
     static Map<String, Object> CONFIG = [
 
@@ -78,17 +76,17 @@ class OrganisationInst extends BaseConfig {
                     ],
                     query2 : [
                             'Verteilung' : [ // TODO ..
-                                             'org-property-assignment' : [
-                                                     label: 'Organisation → Merkmale (eigene/allgemeine)',
-                                                     template: '2axis2values',
-                                                     chartLabels: [ 'Organisationen', 'Vergebene Merkmale (eigene/allgemeine)' ]
-                                             ],
-                                             'org-identifier-assignment' : [
-                                                     label : 'Organisation → Identifikatoren',
-                                                     template: '2axis2values_nonMatches',
-                                                     chartLabels: [ 'Organisationen', 'Vergebene Identifikatoren' ]
-                                             ]
-                                             //'org-serverAccess-assignment' : 'Organisation nach Datenweitergabe',
+                                     'org-property-assignment' : [
+                                             label: 'Organisation → Merkmale (eigene/allgemeine)',
+                                             template: '2axis2values',
+                                             chartLabels: [ 'Organisationen', 'Vergebene Merkmale (eigene/allgemeine)' ]
+                                     ],
+                                     'org-identifier-assignment' : [
+                                             label : 'Organisation → Identifikatoren',
+                                             template: '2axis2values_nonMatches',
+                                             chartLabels: [ 'Organisationen', 'Vergebene Identifikatoren' ]
+                                     ]
+                                     //'org-serverAccess-assignment' : 'Organisation nach Datenweitergabe',
                             ]
                     ]
             ]

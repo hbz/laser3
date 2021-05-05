@@ -135,17 +135,10 @@ class SubscriptionFilter extends BaseFilter {
 
         filterResult.data.put('subscriptionIdList', queryParams.subscriptionIdList ? Subscription.executeQuery( query, queryParams ) : [])
 
-        if (BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).member) {
-            handleInternalOrgFilter(params, 'member', filterResult)
-        }
-        if (BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).consortium) {
-            handleInternalOrgFilter(params, 'consortium', filterResult)
-        }
-        if (BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).provider) {
-            handleInternalOrgFilter(params, 'provider', filterResult)
-        }
-        if (BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency) {
-            handleInternalOrgFilter(params, 'agency', filterResult)
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).keySet().each{pk ->
+            if (pk != 'base') {
+                handleInternalOrgFilter(params, pk, filterResult)
+            }
         }
 
 //        println 'subscriptions >> ' + result.subscriptionIdList.size()

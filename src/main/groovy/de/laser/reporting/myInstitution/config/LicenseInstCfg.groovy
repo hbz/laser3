@@ -4,9 +4,7 @@ import de.laser.License
 import de.laser.Org
 import de.laser.reporting.myInstitution.base.BaseConfig
 
-class LicenseInst extends BaseConfig {
-
-    static String KEY = 'license'
+class LicenseInstCfg extends BaseConfig {
 
     static Map<String, Object> CONFIG = [
 
@@ -44,21 +42,21 @@ class LicenseInst extends BaseConfig {
                     ],
                     query2 : [
                             'Verteilung' : [ // TODO ..
-                                             'license-property-assignment' : [
-                                                     label : 'Vertrag → Merkmale (eigene/allgemeine)',
-                                                     template: '2axis2values',
-                                                     chartLabels : [ 'Verträge', 'Vergebene Merkmale (eigene/allgemeine)' ]
-                                             ],
-                                             'license-identifier-assignment' : [
-                                                     label : 'Vertrag → Identifikatoren',
-                                                     template: '2axis2values_nonMatches',
-                                                     chartLabels: [ 'Verträge', 'Vergebene Identifikatoren' ]
-                                             ],
-                                             'license-annual-assignment' : [
-                                                     label : 'Vertrag → Jahresring',
-                                                     template: 'generic',
-                                                     chartLabels : []
-                                             ],
+                                     'license-property-assignment' : [
+                                             label : 'Vertrag → Merkmale (eigene/allgemeine)',
+                                             template: '2axis2values',
+                                             chartLabels : [ 'Verträge', 'Vergebene Merkmale (eigene/allgemeine)' ]
+                                     ],
+                                     'license-identifier-assignment' : [
+                                             label : 'Vertrag → Identifikatoren',
+                                             template: '2axis2values_nonMatches',
+                                             chartLabels: [ 'Verträge', 'Vergebene Identifikatoren' ]
+                                     ],
+                                     'license-annual-assignment' : [
+                                             label : 'Vertrag → Jahresring',
+                                             template: 'generic',
+                                             chartLabels : []
+                                     ],
                             ]
                     ]
             ],

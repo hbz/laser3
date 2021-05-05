@@ -4,9 +4,7 @@ import de.laser.License
 import de.laser.Org
 import de.laser.reporting.myInstitution.base.BaseConfig
 
-class LicenseConsortium extends BaseConfig {
-
-    static String KEY = 'license'
+class LicenseConsCfg extends BaseConfig {
 
     static Map<String, Object> CONFIG = [
 

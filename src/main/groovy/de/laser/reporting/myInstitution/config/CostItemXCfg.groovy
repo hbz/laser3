@@ -3,9 +3,7 @@ package de.laser.reporting.myInstitution.config
 import de.laser.finance.CostItem
 import de.laser.reporting.myInstitution.base.BaseConfig
 
-class CostItemConfig extends BaseConfig {
-
-    static String KEY = 'costItem'
+class CostItemXCfg extends BaseConfig {
 
     static Map<String, Object> CONFIG = [
 

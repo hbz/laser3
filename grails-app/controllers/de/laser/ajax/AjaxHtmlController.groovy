@@ -386,7 +386,7 @@ class AjaxHtmlController {
             id:     params.id ? params.id as Long : ''
         ]
 
-        if (params.context == BaseConfig.KEY && params.query) {
+        if (params.context == BaseConfig.KEY_MYINST && params.query) {
             String prefix = params.query.split('-')[0]
             List idList = []
 

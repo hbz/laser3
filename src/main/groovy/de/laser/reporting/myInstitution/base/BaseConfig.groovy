@@ -4,20 +4,20 @@ import de.laser.ContextService
 import de.laser.RefdataCategory
 import de.laser.auth.Role
 import de.laser.helper.RDConstants
-import de.laser.reporting.myInstitution.config.CostItemConfig
-import de.laser.reporting.myInstitution.config.LicenseConsortium
-import de.laser.reporting.myInstitution.config.LicenseInst
-import de.laser.reporting.myInstitution.config.OrganisationConsortium
-import de.laser.reporting.myInstitution.config.OrganisationInst
-import de.laser.reporting.myInstitution.config.SubscriptionConsortium
-import de.laser.reporting.myInstitution.config.SubscriptionInst
+import de.laser.reporting.myInstitution.config.CostItemXCfg
+import de.laser.reporting.myInstitution.config.LicenseConsCfg
+import de.laser.reporting.myInstitution.config.LicenseInstCfg
+import de.laser.reporting.myInstitution.config.OrganisationConsCfg
+import de.laser.reporting.myInstitution.config.OrganisationInstCfg
+import de.laser.reporting.myInstitution.config.SubscriptionConsCfg
+import de.laser.reporting.myInstitution.config.SubscriptionInstCfg
 import grails.util.Holders
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 class BaseConfig {
 
-    static String KEY                           = 'myInstitution'
+    static String KEY_MYINST                    = 'myInstitution'
 
     static String KEY_COSTITEM                  = 'costItem'
     static String KEY_LICENSE                   = 'license'
@@ -62,33 +62,33 @@ class BaseConfig {
 
         if (key == KEY_COSTITEM) {
 
-            CostItemConfig.CONFIG
+            CostItemXCfg.CONFIG
         }
         else if (key == KEY_LICENSE) {
 
             if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
-                LicenseConsortium.CONFIG
+                LicenseConsCfg.CONFIG
             }
             else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
-                LicenseInst.CONFIG
+                LicenseInstCfg.CONFIG
             }
         }
         else if (key == KEY_ORGANISATION) {
 
             if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
-                OrganisationConsortium.CONFIG
+                OrganisationConsCfg.CONFIG
             }
             else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
-                OrganisationInst.CONFIG
+                OrganisationInstCfg.CONFIG
             }
         }
         else if (key == KEY_SUBSCRIPTION) {
 
             if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
-                SubscriptionConsortium.CONFIG
+                SubscriptionConsCfg.CONFIG
             }
             else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
-                SubscriptionInst.CONFIG
+                SubscriptionInstCfg.CONFIG
             }
         }
     }

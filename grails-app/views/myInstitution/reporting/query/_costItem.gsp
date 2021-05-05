@@ -17,7 +17,7 @@
 
         <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.app.reporting.current.request = {
-                context: '${BaseConfig.KEY}',
+                context: '${BaseConfig.KEY_MYINST}',
                 filter: '${BaseConfig.KEY_COSTITEM}',
                 token: '${token}'
             }

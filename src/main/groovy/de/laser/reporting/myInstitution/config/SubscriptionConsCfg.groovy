@@ -4,9 +4,7 @@ import de.laser.Org
 import de.laser.Subscription
 import de.laser.reporting.myInstitution.base.BaseConfig
 
-class SubscriptionInst extends BaseConfig {
-
-    static String KEY = 'subscription'
+class SubscriptionConsCfg extends BaseConfig {
 
     static Map<String, Object> CONFIG = [
 
@@ -15,7 +13,7 @@ class SubscriptionInst extends BaseConfig {
                             class: Subscription
                     ],
                     source : [
-                            'my-sub' : 'Meine Lizenzen'
+                            'consortia-sub' : 'Meine Lizenzen'
                     ],
                     fields: [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
@@ -35,75 +33,75 @@ class SubscriptionInst extends BaseConfig {
                     filter : [
                             default: [
                                     [ 'form', 'kind', 'status', 'annual' ],
-                                    [ 'hasPerpetualAccess', 'isMultiYear', 'isPublicForApi', 'resource' ],
+                                    [ 'resource', 'hasPerpetualAccess', 'isMultiYear', 'isPublicForApi' ],
                                     [ 'startDate', 'endDate' ]
                             ]
                     ],
                     query : [
                             default: [
                                     'Lizenz' : [ // TODO ..
-                                             'subscription-form'        : 'Lizenzform',
-                                             'subscription-kind'        : 'Lizenztyp',
-                                             'subscription-resource'    : 'Ressourcentyp',
-                                             'subscription-status'      : 'Lizenzstatus',
-                                             'subscription-isMultiYear' : 'Mehrjahreslaufzeit',
-                                             'subscription-manualCancellationDate'  : 'Kündigungsdatum'
+                                            'subscription-form'         : 'Lizenzform',
+                                            'subscription-kind'         : 'Lizenztyp',
+                                            'subscription-resource'     : 'Ressourcentyp',
+                                            'subscription-status'       : 'Lizenzstatus',
+                                            'subscription-isMultiYear'  : 'Mehrjahreslaufzeit',
+                                            'subscription-manualCancellationDate'  : 'Kündigungsdatum'
                                     ]
                             ]
                     ],
                     query2 : [
                             'Verteilung' : [ // TODO ..
-                                             'subscription-provider-assignment' : [
-                                                     label : 'Lizenz → Anbieter',
-                                                     template: 'generic',
-                                                     chartLabels : []
-                                             ],
-                                             'subscription-platform-assignment' : [
-                                                     label : 'Lizenz → Anbieter → Plattform',
-                                                     template: '2axis2values_nonMatches',
-                                                     chartLabels : [ 'Ermittelt durch Bestand', 'Zuordnung über Anbieter' ]
-                                             ],
-                                             'subscription-property-assignment' : [
-                                                     label : 'Lizenz → Merkmale (eigene/allgemeine)',
-                                                     template: '2axis2values',
-                                                     chartLabels : [ 'Lizenzen', 'Vergebene Merkmale (eigene/allgemeine)' ]
-                                             ],
-                                             'subscription-identifier-assignment' : [
-                                                     label : 'Lizenz → Identifikatoren',
-                                                     template: '2axis2values_nonMatches',
-                                                     chartLabels : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
-                                             ],
-                                             'subscription-annual-assignment' : [
-                                                     label : 'Lizenz → Jahresring',
-                                                     template: 'generic',
-                                                     chartLabels : []
-                                             ],
-                                             'subscription-subscription-assignment' : [
-                                                     label : 'Teilnehmerlizenz → Lizenz',
-                                                     template: 'generic',
-                                                     chartLabels : []
-                                             ]
+                                    'subscription-provider-assignment' : [
+                                            label : 'Lizenz → Anbieter',
+                                            template: 'generic',
+                                            chartLabels : []
+                                    ],
+                                    'subscription-platform-assignment' : [
+                                            label : 'Lizenz → Anbieter → Plattform',
+                                            template: '2axis2values_nonMatches',
+                                            chartLabels : [ 'Ermittelt durch Bestand', 'Zuordnung über Anbieter' ]
+                                    ],
+                                    'subscription-property-assignment' : [
+                                            label : 'Lizenz → Merkmale (eigene/allgemeine)',
+                                            template: '2axis2values',
+                                            chartLabels : [ 'Lizenzen', 'Vergebene Merkmale (eigene/allgemeine)' ]
+                                    ],
+                                    'subscription-identifier-assignment' : [
+                                            label : 'Lizenz → Identifikatoren',
+                                            template: '2axis2values_nonMatches',
+                                            chartLabels : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
+                                    ],
+                                     'subscription-annual-assignment' : [
+                                             label : 'Lizenz → Jahresring',
+                                             template: 'generic',
+                                             chartLabels : []
+                                     ],
+                                     'subscription-subscription-assignment' : [
+                                             label : 'Teilnehmerlizenz → Lizenz',
+                                             template: 'generic',
+                                             chartLabels : []
+                                     ],
                             ]
                     ]
             ],
 
-            consortium : [
+            member : [
                     meta : [
                             class: Org
                     ],
                     source : [
-                            'depending-consortium' : 'Alle betroffenen Konsortialstellen'
+                            'depending-member' : 'Alle betroffenen Teilnehmer'
                     ],
                     fields : [
                             'country'           : BaseConfig.FIELD_TYPE_REFDATA,
-                            //'customerType'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
+                            'customerType'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'eInvoice'          : BaseConfig.FIELD_TYPE_PROPERTY,
                             'funderHskType'     : BaseConfig.FIELD_TYPE_REFDATA,
                             'funderType'        : BaseConfig.FIELD_TYPE_REFDATA,
                             'legalInfo'         : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'libraryNetwork'    : BaseConfig.FIELD_TYPE_REFDATA,
                             'libraryType'       : BaseConfig.FIELD_TYPE_REFDATA,
-                            //'orgType'           : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE,
+                            'orgType'           : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE,
                             //'region'            : FIELD_TYPE_REFDATA,
                             'subjectGroup'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL
                     ],
@@ -111,20 +109,21 @@ class SubscriptionInst extends BaseConfig {
                             default: [
                                     [ 'country', 'subjectGroup', 'libraryType' ],
                                     [ 'libraryNetwork', 'funderType', 'funderHskType' ],
-                                    [ 'eInvoice' ]
+                                    [ 'orgType', 'eInvoice' ],
+                                    [ 'customerType', 'legalInfo' ]
                             ]
                     ],
                     query : [
                             default: [
-                                    'Konsortialstelle' : [ // TODO ..
-                                             //'consortium-orgType'            : 'Organisationstyp',
-                                             //'consortium-customerType'       : 'Kundentyp',
-                                             'consortium-libraryType'        : 'Bibliothekstyp',
-                                             'consortium-region'             : 'Bundesländer',
-                                             'consortium-subjectGroup'       : 'Fächergruppen',
-                                             'consortium-libraryNetwork'     : 'Verbundzugehörigkeit',
-                                             'consortium-funderType'         : 'Unterhaltsträger',
-                                             'consortium-funderHskType'      : 'Trägerschaft'
+                                    'Teilnehmer' : [ // TODO ..
+                                            'member-orgType'            : 'Organisationstyp',
+                                            'member-customerType'       : 'Kundentyp',
+                                            'member-libraryType'        : 'Bibliothekstyp',
+                                            'member-region'             : 'Bundesländer',
+                                            'member-subjectGroup'       : 'Fächergruppen',
+                                            'member-libraryNetwork'     : 'Verbundzugehörigkeit',
+                                            'member-funderType'         : 'Unterhaltsträger',
+                                            'member-funderHskType'      : 'Trägerschaft'
                                     ]
                             ]
                     ]
@@ -147,9 +146,9 @@ class SubscriptionInst extends BaseConfig {
                     query : [
                             default: [
                                     'Anbieter' : [ // TODO ..
-                                               'provider-orgType'      : 'Organisationstyp',
-                                              // 'provider-country'      : 'Länder',
-                                              // 'provider-region'       : 'Bundesländer'
+                                            'provider-orgType'      : 'Organisationstyp',
+                                            //'provider-country'      : 'Länder',
+                                            //'provider-region'       : 'Bundesländer'
                                     ]
                             ]
                     ]
@@ -172,9 +171,9 @@ class SubscriptionInst extends BaseConfig {
                     query : [
                             default: [
                                     'Lieferant' : [ // TODO ..
-                                           'agency-orgType'      : 'Organisationstyp',
-                                           // 'provider-country'      : 'Länder',
-                                           // 'provider-region'       : 'Bundesländer'
+                                            'agency-orgType'      : 'Organisationstyp',
+                                            // 'provider-country'      : 'Länder',
+                                            // 'provider-region'       : 'Bundesländer'
                                     ]
                             ]
                     ]
