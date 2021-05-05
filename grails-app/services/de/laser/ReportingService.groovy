@@ -53,10 +53,8 @@ class ReportingService {
         LicenseFilter filter = new LicenseFilter()
         result.filterResult = filter.filter(params)
 
-        result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.query.default )
-
-        if (BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).licensor) {
-            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).licensor.query.default )
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).keySet().each{ pk ->
+            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).get( pk ).query.default )
         }
 
         result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.query2 ) // Verteilung
@@ -88,19 +86,8 @@ class ReportingService {
         SubscriptionFilter filter = new SubscriptionFilter()
         result.filterResult = filter.filter(params)
 
-        result.cfgQueryList.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base.query.default )
-
-        if (BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).member) {
-            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).member.query.default )
-        }
-        if (BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).consortium) {
-            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).consortium.query.default )
-        }
-        if (BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).provider) {
-            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).provider.query.default )
-        }
-        if (BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency) {
-            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency.query.default )
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).keySet().each{ pk ->
+            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).get( pk ).query.default )
         }
 
         result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base.query2 ) // Verteilung

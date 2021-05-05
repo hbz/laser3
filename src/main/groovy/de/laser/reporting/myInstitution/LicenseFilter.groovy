@@ -178,15 +178,14 @@ class LicenseFilter extends BaseFilter {
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
             //println key + " >> " + params.get(key)
+            List<String> validPartKeys = ['member', 'licensor']
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
                 String pType
-                if (partKey == 'member') {
-                    pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).member, p)
-                }
-                else if (partKey == 'licensor') {
-                    pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).licensor, p)
+
+                if (partKey in validPartKeys) {
+                    pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).get( partKey ), p)
                 }
 
                 def filterLabelValue
@@ -262,11 +261,11 @@ class LicenseFilter extends BaseFilter {
                 }
 
                 if (filterLabelValue) {
-                    if (partKey == 'member') {
-                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).member, p), value: filterLabelValue])
-                    }
-                    else if (partKey == 'licensor') {
-                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).licensor, p), value: filterLabelValue])
+                    if (partKey in validPartKeys) {
+                        filterResult.labels.get(partKey).put( p, [
+                                label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).get( partKey ), p),
+                                value: filterLabelValue
+                        ] )
                     }
                 }
             }

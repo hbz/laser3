@@ -186,21 +186,14 @@ class SubscriptionFilter extends BaseFilter {
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
             //println key + " >> " + params.get(key)
+            List<String> validPartKeys = ['member', 'consortium', 'provider', 'agency']
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
                 String pType
-                if (partKey == 'member') {
-                    pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).member, p)
-                }
-                else if (partKey == 'consortium') {
-                    pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).consortium, p)
-                }
-                else if (partKey == 'provider') {
-                    pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).provider, p)
-                }
-                else if (partKey == 'agency') {
-                    pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency, p)
+
+                if (partKey in validPartKeys) {
+                    pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).get( partKey ), p)
                 }
 
                 def filterLabelValue
@@ -282,17 +275,11 @@ class SubscriptionFilter extends BaseFilter {
                 }
 
                 if (filterLabelValue) {
-                    if (partKey == 'member') {
-                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).member, p), value: filterLabelValue])
-                    }
-                    else if (partKey == 'consortium') {
-                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).consortium, p), value: filterLabelValue])
-                    }
-                    else if (partKey == 'provider') {
-                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).provider, p), value: filterLabelValue])
-                    }
-                    else if (partKey == 'agency') {
-                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency, p), value: filterLabelValue])
+                    if (partKey in validPartKeys) {
+                        filterResult.labels.get(partKey).put( p, [
+                                label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).get( partKey ), p),
+                                value: filterLabelValue
+                        ] )
                     }
                 }
             }
