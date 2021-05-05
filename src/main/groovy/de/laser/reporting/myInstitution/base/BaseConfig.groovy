@@ -1,15 +1,28 @@
 package de.laser.reporting.myInstitution.base
 
+import de.laser.ContextService
 import de.laser.RefdataCategory
 import de.laser.auth.Role
 import de.laser.helper.RDConstants
+import de.laser.reporting.myInstitution.config.CostItemXCfg
+import de.laser.reporting.myInstitution.config.LicenseConsCfg
+import de.laser.reporting.myInstitution.config.LicenseInstCfg
+import de.laser.reporting.myInstitution.config.OrganisationConsCfg
+import de.laser.reporting.myInstitution.config.OrganisationInstCfg
+import de.laser.reporting.myInstitution.config.SubscriptionConsCfg
+import de.laser.reporting.myInstitution.config.SubscriptionInstCfg
 import grails.util.Holders
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 class BaseConfig {
 
-    static String KEY                           = 'myInstitution'
+    static String KEY_MYINST                    = 'myInstitution'
+
+    static String KEY_COSTITEM                  = 'costItem'
+    static String KEY_LICENSE                   = 'license'
+    static String KEY_ORGANISATION              = 'organisation'
+    static String KEY_SUBSCRIPTION              = 'subscription'
 
     static String FILTER_PREFIX                 = 'filter:'
     static String FILTER_SOURCE_POSTFIX         = '_source'
@@ -43,6 +56,42 @@ class BaseConfig {
             pie   : 'Tortendiagramm',
             //radar : 'Netzdiagramm'
     ]
+
+    static Map<String, Object> getCurrentConfig(String key) {
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+
+        if (key == KEY_COSTITEM) {
+
+            CostItemXCfg.CONFIG
+        }
+        else if (key == KEY_LICENSE) {
+
+            if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+                LicenseConsCfg.CONFIG
+            }
+            else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+                LicenseInstCfg.CONFIG
+            }
+        }
+        else if (key == KEY_ORGANISATION) {
+
+            if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+                OrganisationConsCfg.CONFIG
+            }
+            else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+                OrganisationInstCfg.CONFIG
+            }
+        }
+        else if (key == KEY_SUBSCRIPTION) {
+
+            if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+                SubscriptionConsCfg.CONFIG
+            }
+            else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+                SubscriptionInstCfg.CONFIG
+            }
+        }
+    }
 
     static Map<String, Object> getCustomRefdata(String key) {
 

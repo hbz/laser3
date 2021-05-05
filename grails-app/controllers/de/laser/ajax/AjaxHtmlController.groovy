@@ -12,6 +12,7 @@ import de.laser.Org
 import de.laser.OrgRole
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
+import de.laser.ReportingService
 import de.laser.Subscription
 import de.laser.Address
 import de.laser.Doc
@@ -32,13 +33,9 @@ import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.helper.SessionCacheWrapper
-import de.laser.reporting.myInstitution.CostItemConfig
 import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.reporting.myInstitution.base.BaseDetails
 import de.laser.reporting.myInstitution.base.BaseQuery
-import de.laser.reporting.myInstitution.LicenseConfig
-import de.laser.reporting.myInstitution.OrganisationConfig
-import de.laser.reporting.myInstitution.SubscriptionConfig
 import de.laser.reporting.subscription.SubscriptionReporting
 import grails.plugin.springsecurity.annotation.Secured
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -64,6 +61,7 @@ class AjaxHtmlController {
     LinksGenerationService linksGenerationService
     AccessService accessService
     GokbService gokbService
+    ReportingService reportingService
     SubscriptionService subscriptionService
     LicenseControllerService licenseControllerService
 
@@ -390,106 +388,7 @@ class AjaxHtmlController {
             id:     params.id ? params.id as Long : ''
         ]
 
-        if (params.context == BaseConfig.KEY && params.query) {
-            String prefix = params.query.split('-')[0]
-            List idList = []
-
-            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String, Object> cacheMap = sessionCache.get("MyInstitutionController/reporting/" + params.token)
-
-            //println 'AjaxHtmlController.chartDetails()'
-            cacheMap.queryCache.dataDetails.each{ it ->
-                if (it.get('id') == params.long('id')) {
-                    idList = it.get('idList')
-                    return
-                }
-            }
-
-            if (prefix in ['license']) {
-                result.labels = BaseQuery.getQueryLabels(LicenseConfig.getCurrentConfig(), params)
-                result.list   = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
-                result.tmpl   = '/myInstitution/reporting/details/license'
-            }
-            else if (prefix in ['licensor']) {
-                result.labels = BaseQuery.getQueryLabels(LicenseConfig.getCurrentConfig(), params)
-                result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
-                result.tmpl   = '/myInstitution/reporting/details/organisation'
-            }
-            else if (prefix in ['org']) {
-                result.labels = BaseQuery.getQueryLabels(OrganisationConfig.getCurrentConfig(), params)
-                result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
-                result.tmpl   = '/myInstitution/reporting/details/organisation'
-            }
-            else if (prefix in ['subscription']) {
-                result.labels = BaseQuery.getQueryLabels(SubscriptionConfig.getCurrentConfig(), params)
-                result.list   = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
-                result.tmpl   = '/myInstitution/reporting/details/subscription'
-            }
-            else if (prefix in ['member', 'consortium', 'provider', 'agency']) {
-                result.labels = BaseQuery.getQueryLabels(SubscriptionConfig.getCurrentConfig(), params)
-                result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
-                result.tmpl   = '/myInstitution/reporting/details/organisation'
-            }
-            else if (prefix in ['costItem']) {
-                result.labels = BaseQuery.getQueryLabels(CostItemConfig.getCurrentConfig(), params)
-                result.list   = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList])
-                result.tmpl   = '/myInstitution/reporting/details/costItem'
-            }
-
-            cacheMap.queryCache.labels.put('labels', result.labels)
-
-            cacheMap.detailsCache = [
-                    prefix : prefix,
-                    id :     params.long('id'),
-                    idList : result.list.collect{ it.id } // only existing ids
-            ]
-
-            sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)
-        }
-        else if (params.context == SubscriptionConfig.KEY && params.query) {
-            if (params.query == 'timeline-cost') {
-                result.labels = SubscriptionReporting.getTimelineQueryLabels(params)
-
-                GrailsParameterMap clone = params.clone() as GrailsParameterMap
-                clone.setProperty('id', params.id)
-                Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, financeControllerService.getResultGenerics(clone))
-
-                result.billingSums = finance.cons.sums.billingSums ?: []
-                result.localSums   = finance.cons.sums.localSums ?: []
-                result.tmpl        = '/subscription/reporting/details/timeline/cost'
-            }
-            else if (params.query in ['timeline-entitlement', 'timeline-member']) {
-                result.labels = SubscriptionReporting.getTimelineQueryLabels(params)
-
-                List idList      = params.list('idList[]').collect { it as Long }
-                List plusIdList  = params.list('plusIdList[]').collect { it as Long }
-                List minusIdList = params.list('minusIdList[]').collect { it as Long }
-
-                if (params.query == 'timeline-entitlement') {
-                    String hql = 'select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name'
-
-                    result.list      = idList      ? TitleInstancePackagePlatform.executeQuery( hql, [idList: idList] ) : []
-                    result.plusList  = plusIdList  ? TitleInstancePackagePlatform.executeQuery( hql, [idList: plusIdList] ) : []
-                    result.minusList = minusIdList ? TitleInstancePackagePlatform.executeQuery( hql, [idList: minusIdList] ) : []
-                    result.tmpl      = '/subscription/reporting/details/timeline/entitlement'
-                }
-                else {
-                    String hql = 'select o from Org o where o.id in (:idList) order by o.sortname, o.name'
-
-                    result.list      = idList      ? Org.executeQuery( hql, [idList: idList] ) : []
-                    result.plusList  = plusIdList  ? Org.executeQuery( hql, [idList: plusIdList] ) : []
-                    result.minusList = minusIdList ? Org.executeQuery( hql, [idList: minusIdList] ) : []
-                    result.tmpl      = '/subscription/reporting/details/timeline/organisation'
-                }
-            }
-            else {
-                List idList = params.list('idList[]').collect { it as Long }
-
-                result.labels = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, params)
-                result.list   = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name', [idList: idList])
-                result.tmpl   = '/subscription/reporting/details/entitlement'
-            }
-        }
+        reportingService.doChartDetails( result, params ) // manipulates result
 
         render template: result.tmpl, model: result
     }

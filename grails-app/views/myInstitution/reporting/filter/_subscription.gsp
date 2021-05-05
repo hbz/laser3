@@ -1,25 +1,25 @@
-<%@page import="de.laser.reporting.myInstitution.SubscriptionConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.ReportingService;de.laser.Org;de.laser.Subscription;de.laser.reporting.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
     <g:form action="reporting" method="POST" class="ui form">
 
         <div class="menu ui top attached tabular">
             <a class="active item" data-tab="sub-filter-tab-1">${message(code:'subscription.plural')}</a>
-            <g:if test="${SubscriptionConfig.getCurrentConfig().member}">
+            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).member}">
                 <a class="item" data-tab="sub-filter-tab-2">${message(code:'subscription.details.consortiaMembers.label')}</a>
             </g:if>
-            <g:if test="${SubscriptionConfig.getCurrentConfig().consortium}">
+            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).consortium}">
                 <a class="item" data-tab="sub-filter-tab-3">${message(code:'subscription.details.consortia.label')}</a>
             </g:if>
-            <g:if test="${SubscriptionConfig.getCurrentConfig().provider}">
+            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).provider}">
                 <a class="item" data-tab="sub-filter-tab-4">${message(code:'default.provider.label')}</a>
             </g:if>
-            <g:if test="${SubscriptionConfig.getCurrentConfig().agency}">
+            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency}">
                 <a class="item" data-tab="sub-filter-tab-5">${message(code:'default.agency.plural.label')}</a>
             </g:if>
         </div><!-- .menu -->
 
-        <g:set var="config" value="${SubscriptionConfig.getCurrentConfig().base}" />
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base}" />
 
         <div class="ui bottom attached active tab segment" data-tab="sub-filter-tab-1">
             <div class="field">
@@ -42,7 +42,7 @@
 
         </div><!-- .first -->
 
-        <g:set var="config" value="${SubscriptionConfig.getCurrentConfig().member}" />
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).member}" />
         <g:if test="${config}">
 
             <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-2">
@@ -62,7 +62,7 @@
 
         </g:if>
 
-        <g:set var="config" value="${SubscriptionConfig.getCurrentConfig().consortium}" />
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).consortium}" />
         <g:if test="${config}">
 
             <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-3">
@@ -85,7 +85,7 @@
 
         </g:if>
 
-        <g:set var="config" value="${SubscriptionConfig.getCurrentConfig().provider}" />
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).provider}" />
         <g:if test="${config}">
 
             <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-4">
@@ -106,7 +106,7 @@
 
         </g:if>
 
-        <g:set var="config" value="${SubscriptionConfig.getCurrentConfig().agency}" />
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency}" />
         <g:if test="${config}">
 
             <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-5">
@@ -130,7 +130,7 @@
         <div class="field">
             <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
             <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
-            <input type="hidden" name="filter" value="${SubscriptionConfig.KEY}" />
+            <input type="hidden" name="filter" value="${BaseConfig.KEY_SUBSCRIPTION}" />
             <input type="hidden" name="token" value="${token}" />
         </div>
 

@@ -151,7 +151,7 @@
                             Object.assign(clone, JSPC.app.reporting.current.request);
                             clone.id = params.data[0];
                             clone.label = params.data[1];
-                            clone.context = '${BaseConfig.KEY}';
+                            clone.context = '${BaseConfig.KEY_MYINST}';
                             JSPC.app.reporting.requestChartHtmlDetails(clone);
                         });
                         echart.on( 'legendselectchanged', function (params) { /* console.log(params); */ });

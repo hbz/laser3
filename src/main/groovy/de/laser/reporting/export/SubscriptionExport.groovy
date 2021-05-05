@@ -70,22 +70,11 @@ class SubscriptionExport extends AbstractExport {
         selectedExportFields = getAllFields().findAll{ it.key in fields.keySet() }
     }
 
-    Map<String, Object> getCurrentConfig() {
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-
-        if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
-            SubscriptionExport.CONFIG_ORG_CONSORTIUM
-        }
-        else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
-            SubscriptionExport.CONFIG_ORG_INST
-        }
-    }
-
     @Override
     Map<String, Object> getAllFields() {
         String suffix = ExportHelper.getCachedQuerySuffix(token)
 
-        getCurrentConfig().base.fields.findAll {
+        getCurrentConfig( KEY ).base.fields.findAll {
             (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == suffix)
         }
     }
@@ -97,7 +86,7 @@ class SubscriptionExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportHelper.getFieldLabel( token, getCurrentConfig().base as Map<String, Object>, fieldName )
+        ExportHelper.getFieldLabel( token, getCurrentConfig( KEY ).base as Map<String, Object>, fieldName )
     }
 
     @Override

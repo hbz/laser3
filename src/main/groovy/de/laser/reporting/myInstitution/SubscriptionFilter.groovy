@@ -37,7 +37,7 @@ class SubscriptionFilter extends BaseFilter {
         Map<String, Object> queryParams = [ subscriptionIdList: [] ]
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'subscription' + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put('base', [source: getFilterSourceLabel(SubscriptionConfig.getCurrentConfig().base, filterSource)])
+        filterResult.labels.put('base', [source: getFilterSourceLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base, filterSource)])
 
         switch (filterSource) {
             case 'all-sub':
@@ -65,7 +65,7 @@ class SubscriptionFilter extends BaseFilter {
                 //println key + " >> " + params.get(key)
 
                 String p = key.replaceFirst(cmbKey,'')
-                String pType = GenericHelper.getFieldType(SubscriptionConfig.getCurrentConfig().base, p)
+                String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base, p)
 
                 def filterLabelValue
 
@@ -121,7 +121,7 @@ class SubscriptionFilter extends BaseFilter {
                 }
 
                 if (filterLabelValue) {
-                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.getCurrentConfig().base, p), value: filterLabelValue])
+                    filterResult.labels.get('base').put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base, p), value: filterLabelValue])
                 }
             }
         }
@@ -135,17 +135,10 @@ class SubscriptionFilter extends BaseFilter {
 
         filterResult.data.put('subscriptionIdList', queryParams.subscriptionIdList ? Subscription.executeQuery( query, queryParams ) : [])
 
-        if (SubscriptionConfig.getCurrentConfig().member) {
-            handleInternalOrgFilter(params, 'member', filterResult)
-        }
-        if (SubscriptionConfig.getCurrentConfig().consortium) {
-            handleInternalOrgFilter(params, 'consortium', filterResult)
-        }
-        if (SubscriptionConfig.getCurrentConfig().provider) {
-            handleInternalOrgFilter(params, 'provider', filterResult)
-        }
-        if (SubscriptionConfig.getCurrentConfig().agency) {
-            handleInternalOrgFilter(params, 'agency', filterResult)
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).keySet().each{pk ->
+            if (pk != 'base') {
+                handleInternalOrgFilter(params, pk, filterResult)
+            }
         }
 
 //        println 'subscriptions >> ' + result.subscriptionIdList.size()
@@ -158,7 +151,7 @@ class SubscriptionFilter extends BaseFilter {
     private void handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put(partKey, [source: getFilterSourceLabel(SubscriptionConfig.getCurrentConfig().get(partKey), filterSource)])
+        filterResult.labels.put(partKey, [source: getFilterSourceLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).get(partKey), filterSource)])
 
         //println 'internalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
         if (! filterResult.data.get('subscriptionIdList')) {
@@ -193,21 +186,14 @@ class SubscriptionFilter extends BaseFilter {
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
             //println key + " >> " + params.get(key)
+            List<String> validPartKeys = ['member', 'consortium', 'provider', 'agency']
 
             if (params.get(key)) {
                 String p = key.replaceFirst(cmbKey,'')
                 String pType
-                if (partKey == 'member') {
-                    pType = GenericHelper.getFieldType(SubscriptionConfig.getCurrentConfig().member, p)
-                }
-                else if (partKey == 'consortium') {
-                    pType = GenericHelper.getFieldType(SubscriptionConfig.getCurrentConfig().consortium, p)
-                }
-                else if (partKey == 'provider') {
-                    pType = GenericHelper.getFieldType(SubscriptionConfig.getCurrentConfig().provider, p)
-                }
-                else if (partKey == 'agency') {
-                    pType = GenericHelper.getFieldType(SubscriptionConfig.getCurrentConfig().agency, p)
+
+                if (partKey in validPartKeys) {
+                    pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).get( partKey ), p)
                 }
 
                 def filterLabelValue
@@ -289,17 +275,11 @@ class SubscriptionFilter extends BaseFilter {
                 }
 
                 if (filterLabelValue) {
-                    if (partKey == 'member') {
-                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.getCurrentConfig().member, p), value: filterLabelValue])
-                    }
-                    else if (partKey == 'consortium') {
-                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.getCurrentConfig().consortium, p), value: filterLabelValue])
-                    }
-                    else if (partKey == 'provider') {
-                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.getCurrentConfig().provider, p), value: filterLabelValue])
-                    }
-                    else if (partKey == 'agency') {
-                        filterResult.labels.get(partKey).put(p, [label: GenericHelper.getFieldLabel(SubscriptionConfig.getCurrentConfig().agency, p), value: filterLabelValue])
+                    if (partKey in validPartKeys) {
+                        filterResult.labels.get(partKey).put( p, [
+                                label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).get( partKey ), p),
+                                value: filterLabelValue
+                        ] )
                     }
                 }
             }
