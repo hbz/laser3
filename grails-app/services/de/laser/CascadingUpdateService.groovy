@@ -33,6 +33,19 @@ class CascadingUpdateService {
         //        tipp:   TitleInstancePackagePlatform
     }
 
+    void update(DeweyDecimalClassification obj, Date luc) {
+        log(obj, luc)
+
+        DeweyDecimalClassification.executeUpdate("update DeweyDecimalClassification ddc set ddc.lastUpdatedCascading = :luc where ddc = :obj", [
+                luc: luc, obj: obj
+        ])
+
+        if (obj.pkg) { update(obj.pkg, luc) }
+        //if (obj.ti)  { update(obj.ti,  luc) }
+
+        //        tipp:   TitleInstancePackagePlatform
+    }
+
     void update(AbstractPropertyWithCalculatedLastUpdated obj, Date luc) {
         log(obj, luc)
 

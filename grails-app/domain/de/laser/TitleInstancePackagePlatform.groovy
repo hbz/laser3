@@ -77,13 +77,16 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     Date dateCreated
     Date lastUpdated
     SortedSet ids
+    SortedSet ddcs
 
   static mappedBy = [ids: 'tipp',
+                     ddcs: 'tipp',
                      orgs: 'tipp',
                      prsLinks: 'tipp',
                      priceItems: 'tipp',
                      historyEvents: 'tipp']
   static hasMany = [ids: Identifier,
+                    ddcs: DeweyDecimalClassification,
                     coverages: TIPPCoverage,
                     orgs: OrgRole,
                     historyEvents: TitleHistoryEvent,
@@ -141,7 +144,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
       lastUpdated column: 'tipp_last_updated'
 
       ids                   batchSize: 10, sort: 'ns'
-    //additionalPlatforms   batchSize: 10
+      ddcs                  batchSize: 10
       coverages             batchSize: 10, sort: 'startDate', order: 'asc'
       priceItems            batchSize: 10, sort: 'startDate', order: 'asc'
   }
