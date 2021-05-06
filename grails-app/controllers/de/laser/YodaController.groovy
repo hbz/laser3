@@ -577,19 +577,22 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def globalSync() {
-        log.debug("start global sync ..")
+        log.debug("start global sync ...")
         globalSourceSyncService.startSync()
-        log.debug("done global sync ..")
+        //log.debug("done global sync ...")
 
         redirect controller: 'package'
     }
 
     @Secured(['ROLE_YODA'])
-    def globalMultithreadSync() {
-        log.debug("start global sync ..")
-        globalSourceSyncService.startMultithreadSync()
-        log.debug("done global sync ..")
-
+    def reloadPackages() {
+        if(!globalSourceSyncService.running) {
+            log.debug("start reloading ...")
+            globalSourceSyncService.reloadPackages()
+        }
+        else {
+            log.debug("process running, lock is set!")
+        }
         redirect controller: 'package'
     }
 
@@ -706,8 +709,8 @@ class YodaController {
         }
 
         OrgProperty.executeQuery(
-                'select op from OrgProperty op join op.type pd where pd.descr = :orgConf '
-                + 'and ( pd.name = \'API Key\' or pd.name = \'RequestorID\' ) and op.tenant = :context and op.isPublic = false',
+                'select op from OrgProperty op join op.type pd where pd.descr = :orgConf '+
+                'and ( pd.name = \'API Key\' or pd.name = \'RequestorID\' ) and op.tenant = :context and op.isPublic = false',
                 [orgConf: PropertyDefinition.ORG_CONF, context: contextOrg]).each{
             it.delete()
         }

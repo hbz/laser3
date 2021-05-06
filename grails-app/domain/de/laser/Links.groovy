@@ -1,10 +1,9 @@
 package de.laser
 
-import com.k_int.kbplus.GenericOIDService
+import de.laser.annotations.RefdataAnnotation
 import de.laser.exceptions.CreationException
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-import javax.persistence.Transient
 
 class Links {
 
@@ -22,6 +21,7 @@ class Links {
     String sourceType
     String destinationType
      */
+    @RefdataAnnotation(cat = 'link.type')
     RefdataValue linkType
     Org     owner
     Date    dateCreated

@@ -29,7 +29,8 @@ currency,Währung,Currency
 customer.identifier.type,Kategorie der Kundennummer,Customer Identifier Type
 document.context.status,Document Context Status,Document Context Status
 document.type,Dokumenttyp,Document Type
-dbs.subject.group, DBS Fächergruppe, DBS Subject Group
+dbs.subject.group,DBS Fächergruppe,DBS Subject Group
+ddc,Dewey-Dezimalklassifikation,Dewey Decimal Classification
 e.invoice.portal,eRechnungs Portal,eInvoice Portal
 existence,Vorliegen,Existence
 external.internal,Extern und intern,External and internal
