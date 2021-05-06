@@ -2,7 +2,9 @@ package de.laser.reporting.myInstitution
 
 import de.laser.ContextService
 import de.laser.Org
+import de.laser.Subscription
 import de.laser.auth.Role
+import de.laser.helper.RDStore
 import de.laser.reporting.myInstitution.base.BaseFilter
 import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.util.Holders
@@ -125,37 +127,6 @@ class OrganisationQuery extends BaseQuery {
                     result
             )
         }
-            /*
-        else if ( params.query in ['org-serverAccess-assignment']) {
-
-            result.data = Org.executeQuery(
-                    'select oss.key, oss.rdValue.id, count(*) from Org o, OrgSetting oss where oss.org = o and oss.key in (\'OAMONITOR_SERVER_ACCESS\', \'NATSTAT_SERVER_ACCESS\') and oss.rdValue is not null and o.id in (:idList) group by oss.key, oss.rdValue.id',
-                    [idList: idList]
-            )
-            result.data.each { d ->
-                String id1 = d[0].toString() + '-' + d[1]
-                String id2 = messageSource.getMessage('org.setting.' + d[0].toString(), null, locale) + ': ' + RefdataValue.get(d[1])?.getI10n('value')
-
-                result.dataDetails.add([
-                        query : params.query,
-                        id    : id1,
-                        label : id2,
-                        idList: Org.executeQuery(
-                                'select o.id from Org o, OrgSetting oss where oss.org = o and oss.key = :d and oss.rdValue.id = :rdvId and o.id in (:idList) order by o.name',
-                                [idList: idList, d: d[0], rdvId: d[1]]
-                        )
-                ])
-                d[0] = "'${id1}'"
-                d[1] = id2
-            }
-
-            handleNonMatchingData( // FEHLER ?????
-                    params.query,
-                    'select distinct o.id from Org o where o.id in (:idList) and not exists (select oss from OrgSetting oss where oss.org = o and oss.key in (\'OAMONITOR_SERVER_ACCESS\', \'NATSTAT_SERVER_ACCESS\'))',
-                    idList,
-                    result
-            )
-        } */
 
         result
     }

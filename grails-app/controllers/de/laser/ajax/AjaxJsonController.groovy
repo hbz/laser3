@@ -679,8 +679,6 @@ class AjaxJsonController {
 
         reportingService.doChart( result, params ) // manipulates result
 
-        println result
-
         if (result.tmpl) {
             render template: result.tmpl, model: result
         }
