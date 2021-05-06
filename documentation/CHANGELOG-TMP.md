@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3423    06.05.2021  dev     2.1         Andreas Bug         Anzeigefehler und Ladezeit behoben
+
 3452    04.05.2021  rc2.0   2.0.8       David   Feature     Filterspez. Query-Formulare ermöglichen
 
 3450    04.05.2021  rc2.0   2.0.8       Andreas Bug         Private Merkmale sind in Merkmalsgruppen aufgetaucht
