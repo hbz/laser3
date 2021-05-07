@@ -122,6 +122,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                  startDate (nullable:true)
                    endDate (nullable:true)
                      scope (nullable:true)
+                      file (nullable:true)
                     gokbId(blank:false, unique: true, maxSize: 511)
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)

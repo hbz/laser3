@@ -1268,7 +1268,7 @@ class SubscriptionControllerService {
 
             SwissKnife.setPaginationParams(result, params, result.user)
 
-            result.editUrl = apiSource.baseUrl+apiSource.fixToken
+            result.editUrl = apiSource.baseUrl
             String esQuery = "?componentType=Package"
             if(params.q) {
                 result.filterSet = true

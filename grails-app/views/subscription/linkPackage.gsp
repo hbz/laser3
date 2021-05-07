@@ -114,7 +114,7 @@
                 <td>
                     <div class="ui bulleted list">
                         <g:each in="${record.curatoryGroups}" var="curatoryGroup">
-                            <div class="item">${curatoryGroup}</div>
+                            <div class="item"><g:link url="${editUrl.endsWith('/') ? editUrl : editUrl+'/'}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name}</g:link></div>
                         </g:each>
                     </div>
                 </td>
