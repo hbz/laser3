@@ -526,7 +526,7 @@
             enum: <% printRefdataEnum(RDConstants.PACKAGE_LIST_STATUS, 12) --%>
           scope:
             type: string
-            description: Mapping RefdataCategory
+            description: Mapping RefdataCategory "${RDConstants.PACKAGE_SCOPE}"
             enum: <% printRefdataEnum(RDConstants.PACKAGE_SCOPE, 12) %>
           packageStatus:
             type: string
