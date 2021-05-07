@@ -72,8 +72,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
             titleMedium = [:],
             tippStatus = [:],
             packageStatus = [:],
-            openAccess = [:],
-            regionalRange = [:],
             orgStatus = [:],
             currency = [:],
             ddc = [:]
@@ -2330,12 +2328,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
         titleStatus.put(RDStore.TITLE_STATUS_CURRENT.value,RDStore.TITLE_STATUS_CURRENT)
         titleStatus.put(RDStore.TITLE_STATUS_RETIRED.value,RDStore.TITLE_STATUS_RETIRED)
         titleStatus.put(RDStore.TITLE_STATUS_DELETED.value,RDStore.TITLE_STATUS_DELETED)
-        openAccess.put('Blue OA',RefdataValue.getByValueAndCategory('Blue Open Access',RDConstants.LICENSE_OA_TYPE))
-        openAccess.put('Gold OA',RefdataValue.getByValueAndCategory('Gold Open Access',RDConstants.LICENSE_OA_TYPE))
-        openAccess.put('Green OA',RefdataValue.getByValueAndCategory('Green Open Access',RDConstants.LICENSE_OA_TYPE))
-        openAccess.put('Hybrid',RefdataValue.getByValueAndCategory('Hybrid',RDConstants.LICENSE_OA_TYPE))
-        openAccess.put('White OA',RefdataValue.getByValueAndCategory('White Open Access',RDConstants.LICENSE_OA_TYPE))
-        openAccess.put('Yellow OA',RefdataValue.getByValueAndCategory('Yellow Open Access',RDConstants.LICENSE_OA_TYPE))
         //this complicated way is necessary because of static in order to avoid a NonUniqueObjectException
         List<RefdataValue> staticMediumTypes = [RDStore.TITLE_TYPE_DATABASE,RDStore.TITLE_TYPE_EBOOK,RDStore.TITLE_TYPE_JOURNAL]
         RefdataValue.findAllByIdNotInListAndOwner(staticMediumTypes.collect { RefdataValue rdv -> rdv.id },RefdataCategory.findByDesc(RDConstants.TITLE_MEDIUM)).each { RefdataValue rdv ->
@@ -2346,9 +2338,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS).each { RefdataValue rdv ->
             packageStatus.put(rdv.value,rdv)
-        }
-        RefdataCategory.getAllRefdataValues(RDConstants.REGIONS_DE).each { RefdataValue rdv ->
-            regionalRange.put(rdv.value,rdv)
         }
         RefdataCategory.getAllRefdataValues(RDConstants.ORG_STATUS).each { RefdataValue rdv ->
             orgStatus.put(rdv.value,rdv)
