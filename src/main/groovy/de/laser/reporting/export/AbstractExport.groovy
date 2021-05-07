@@ -1,5 +1,8 @@
 package de.laser.reporting.export
 
+import de.laser.ContextService
+import grails.util.Holders
+
 abstract class AbstractExport {
 
     static String FIELD_TYPE_PROPERTY           = 'property'
@@ -28,6 +31,33 @@ abstract class AbstractExport {
     String token
 
     Map<String, Object> selectedExportFields = [:]
+
+    Map<String, Object> getCurrentConfig(String key) {
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+
+        if (key == LicenseExport.KEY) {
+
+            if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+                LicenseExport.CONFIG_ORG_CONSORTIUM
+            }
+            else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+                LicenseExport.CONFIG_ORG_INST
+            }
+        }
+        else if (key == OrgExport.KEY) {
+
+            OrgExport.CONFIG_X
+        }
+        else if (key == SubscriptionExport.KEY) {
+
+            if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+                SubscriptionExport.CONFIG_ORG_CONSORTIUM
+            }
+            else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+                SubscriptionExport.CONFIG_ORG_INST
+            }
+        }
+    }
 
     abstract Map<String, Object> getAllFields()
 

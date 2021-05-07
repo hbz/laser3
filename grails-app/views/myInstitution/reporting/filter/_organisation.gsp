@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.OrganisationConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.ReportingService;de.laser.Org;de.laser.Subscription;de.laser.reporting.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
     <g:form action="reporting" method="POST" class="ui form">
@@ -10,7 +10,7 @@
         <div class="ui bottom attached active tab segment" data-tab="org-filter-tab-1">
             <div class="field">
                 <label for="filter:org_source">${message(code:'reporting.filter.selection')}</label>
-                <g:set var="config" value="${OrganisationConfig.getCurrentConfig().base}" />
+                <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base}" />
                 <g:select name="filter:org_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:org_source')}" />
             </div>
 
@@ -38,7 +38,7 @@
         <div class="field">
             <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
             <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
-            <input type="hidden" name="filter" value="${OrganisationConfig.KEY}" />
+            <input type="hidden" name="filter" value="${BaseConfig.KEY_ORGANISATION}" />
             <input type="hidden" name="token" value="${token}" />
         </div>
 
