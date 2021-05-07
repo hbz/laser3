@@ -284,10 +284,10 @@ class ReportingService {
             cacheMap.queryCache.labels.put('labels', result.labels)
 
             cacheMap.detailsCache = [
-                    prefix : prefix,
-                    id :     params.long('id'),
-                    idList : result.list.collect{ it.id }, // only existing ids
-                    tmpl :   result.tmpl
+                    query   : params.query,
+                    tmpl    : result.tmpl,
+                    id      : params.long('id'),
+                    idList  : result.list.collect{ it.id }, // only existing ids
             ]
 
             sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)

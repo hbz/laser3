@@ -23,20 +23,22 @@ class SubscriptionExport extends AbstractExport {
                             class: Subscription
                     ],
                     fields : [
-                            'globalUID'             : FIELD_TYPE_PROPERTY,
-                            'name'                  : FIELD_TYPE_PROPERTY,
-                            'startDate'             : FIELD_TYPE_PROPERTY,
-                            'endDate'               : FIELD_TYPE_PROPERTY,
-                            'status'                : FIELD_TYPE_REFDATA,
-                            'kind'                  : FIELD_TYPE_REFDATA,
-                            'form'                  : FIELD_TYPE_REFDATA,
-                            'resource'              : FIELD_TYPE_REFDATA,
-                            '___subscription_members'   : FIELD_TYPE_CUSTOM_IMPL,   // AbstractExport.CUSTOM_LABEL - virtual
-                            'provider-assignment'   : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                            'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
-                            'isPublicForApi'        : FIELD_TYPE_PROPERTY,
-                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                            default: [
+                                    'globalUID'             : FIELD_TYPE_PROPERTY,
+                                    'name'                  : FIELD_TYPE_PROPERTY,
+                                    'startDate'             : FIELD_TYPE_PROPERTY,
+                                    'endDate'               : FIELD_TYPE_PROPERTY,
+                                    'status'                : FIELD_TYPE_REFDATA,
+                                    'kind'                  : FIELD_TYPE_REFDATA,
+                                    'form'                  : FIELD_TYPE_REFDATA,
+                                    'resource'              : FIELD_TYPE_REFDATA,
+                                    '___subscription_members'   : FIELD_TYPE_CUSTOM_IMPL,   // AbstractExport.CUSTOM_LABEL - virtual
+                                    'provider-assignment'   : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
+                                    'isPublicForApi'        : FIELD_TYPE_PROPERTY,
+                                    'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                            ]
                     ]
             ]
     ]
@@ -48,19 +50,21 @@ class SubscriptionExport extends AbstractExport {
                             class: Subscription
                     ],
                     fields : [
-                            'globalUID'             : FIELD_TYPE_PROPERTY,
-                            'name'                  : FIELD_TYPE_PROPERTY,
-                            'startDate'             : FIELD_TYPE_PROPERTY,
-                            'endDate'               : FIELD_TYPE_PROPERTY,
-                            'status'                : FIELD_TYPE_REFDATA,
-                            'kind'                  : FIELD_TYPE_REFDATA,
-                            'form'                  : FIELD_TYPE_REFDATA,
-                            'resource'              : FIELD_TYPE_REFDATA,
-                            'provider-assignment'   : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                            'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
-                            'isPublicForApi'        : FIELD_TYPE_PROPERTY,
-                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                            default: [
+                                    'globalUID'             : FIELD_TYPE_PROPERTY,
+                                    'name'                  : FIELD_TYPE_PROPERTY,
+                                    'startDate'             : FIELD_TYPE_PROPERTY,
+                                    'endDate'               : FIELD_TYPE_PROPERTY,
+                                    'status'                : FIELD_TYPE_REFDATA,
+                                    'kind'                  : FIELD_TYPE_REFDATA,
+                                    'form'                  : FIELD_TYPE_REFDATA,
+                                    'resource'              : FIELD_TYPE_REFDATA,
+                                    'provider-assignment'   : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
+                                    'isPublicForApi'        : FIELD_TYPE_PROPERTY,
+                                    'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                            ]
                     ]
             ]
     ]
@@ -68,15 +72,6 @@ class SubscriptionExport extends AbstractExport {
     SubscriptionExport (String token, Map<String, Object> fields) {
         this.token = token
         selectedExportFields = getAllFields().findAll{ it.key in fields.keySet() }
-    }
-
-    @Override
-    Map<String, Object> getAllFields() {
-        String suffix = ExportHelper.getCachedQuerySuffix(token)
-
-        getCurrentConfig( KEY ).base.fields.findAll {
-            (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == suffix)
-        }
     }
 
     @Override

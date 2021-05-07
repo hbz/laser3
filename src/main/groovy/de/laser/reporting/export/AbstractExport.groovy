@@ -18,14 +18,15 @@ abstract class AbstractExport {
 
     static Map<String, String> CUSTOM_LABEL = [
 
-            'globalUID'                 : 'Link (Global UID)',
-            'identifier-assignment'     : 'Identifikatoren',
-            'provider-assignment'       : 'Anbieter',
+            'globalUID'              : 'Link (Global UID)',
+            'identifier-assignment'     : 'Identifikatoren',            // XYCfg.CONFIG.base.query2.Verteilung
+            'provider-assignment'       : 'Anbieter',                   // XYCfg.CONFIG.base.query2.Verteilung
             'property-assignment'       : 'impl @ ExportHelper.getFieldLabel()',
             '___subscription_members'   : 'Anzahl Teilnehmer',          // virtual
             '___license_subscriptions'  : 'Anzahl Lizenzen',            // virtual
             '___license_members'        : 'Anzahl Teilnehmerverträge',  // virtual
             '___org_contact'            : 'Kontaktdaten',               // virtual
+            '___org_readerNumber'       : 'Nutzerzahlen (Semester)',    // virtual
     ]
 
     String token
@@ -59,7 +60,19 @@ abstract class AbstractExport {
         }
     }
 
-    abstract Map<String, Object> getAllFields()
+    Map<String, Object> getAllFields() {
+        String fkey   = ExportHelper.getCachedQueryFieldKey( token )
+        String suffix = ExportHelper.getCachedQuerySuffix( token )
+
+        Map<String, Object> base = getCurrentConfig( KEY ).base as Map
+
+        if (! base.fields.keySet().contains(fkey)) {
+            fkey = 'default'
+        }
+        base.fields.get(fkey).findAll {
+            (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == suffix)
+        }
+    }
 
     abstract Map<String, Object> getSelectedFields()
 

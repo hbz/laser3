@@ -5,7 +5,9 @@ import de.laser.Identifier
 import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.OrgSubjectGroup
+import de.laser.OrganisationService
 import de.laser.Person
+import de.laser.ReaderNumber
 import de.laser.RefdataValue
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
@@ -26,22 +28,49 @@ class OrgExport extends AbstractExport {
                             class: Org
                     ],
                     fields : [
-                            'globalUID'         : FIELD_TYPE_PROPERTY,
-                            'sortname'          : FIELD_TYPE_PROPERTY,
-                            'name'              : FIELD_TYPE_PROPERTY,
-                            'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
-                            'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
-                            'libraryType'       : FIELD_TYPE_REFDATA,
-                            'libraryNetwork'    : FIELD_TYPE_REFDATA,
-                            'funderHskType'     : FIELD_TYPE_REFDATA,
-                            'funderType'        : FIELD_TYPE_REFDATA,
-                            'country'           : FIELD_TYPE_REFDATA,
-                            'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
-                            'eInvoice'          : FIELD_TYPE_PROPERTY,
-                            '___org_contact'        : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL- virtual
-                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
-                            'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL
+                            default: [
+                                    'globalUID'         : FIELD_TYPE_PROPERTY,
+                                    'sortname'          : FIELD_TYPE_PROPERTY,
+                                    'name'              : FIELD_TYPE_PROPERTY,
+                                    'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
+                                    'libraryType'       : FIELD_TYPE_REFDATA,
+                                    'libraryNetwork'    : FIELD_TYPE_REFDATA,
+                                    'funderHskType'     : FIELD_TYPE_REFDATA,
+                                    'funderType'        : FIELD_TYPE_REFDATA,
+                                    'country'           : FIELD_TYPE_REFDATA,
+                                    'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
+                                    'eInvoice'          : FIELD_TYPE_PROPERTY,
+                                    '___org_contact'            : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL - virtual
+                                    'identifier-assignment'     : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    '___org_readerNumber'       : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL - virtual
+                                    'property-assignment'       : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                                    'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL
+                            ],
+                            provider: [
+                                    'globalUID'         : FIELD_TYPE_PROPERTY,
+                                    'sortname'          : FIELD_TYPE_PROPERTY,
+                                    'name'              : FIELD_TYPE_PROPERTY,
+                                    'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
+                                    'country'           : FIELD_TYPE_REFDATA,
+                                    'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
+                                    'eInvoice'          : FIELD_TYPE_PROPERTY,
+                                    '___org_contact'            : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL - virtual
+                                    'identifier-assignment'     : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    'property-assignment'       : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                            ],
+                            agency: [
+                                    'globalUID'         : FIELD_TYPE_PROPERTY,
+                                    'sortname'          : FIELD_TYPE_PROPERTY,
+                                    'name'              : FIELD_TYPE_PROPERTY,
+                                    'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
+                                    'country'           : FIELD_TYPE_REFDATA,
+                                    'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
+                                    'eInvoice'          : FIELD_TYPE_PROPERTY,
+                                    '___org_contact'            : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL - virtual
+                                    'identifier-assignment'     : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    'property-assignment'       : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                            ]
                     ]
             ]
     ]
@@ -49,15 +78,6 @@ class OrgExport extends AbstractExport {
     OrgExport (String token, Map<String, Object> fields) {
         this.token = token
         selectedExportFields = getAllFields().findAll{ it.key in fields.keySet() }
-    }
-
-    @Override
-    Map<String, Object> getAllFields() {
-        String suffix = ExportHelper.getCachedQuerySuffix(token)
-
-        getCurrentConfig( KEY ).base.fields.findAll {
-            (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == suffix)
-        }
     }
 
     @Override
@@ -181,6 +201,21 @@ class OrgExport extends AbstractExport {
                     }
 
                     content.add( personList.join( CSV_VALUE_SEPARATOR ) )
+                }
+                else if (key == '___org_readerNumber') {
+
+                    OrganisationService organisationService = (OrganisationService) Holders.grailsApplication.mainContext.getBean('organisationService')
+                    Map<String,Map<String, ReaderNumber>> semesterMap = organisationService.groupReaderNumbersByProperty(
+                            ReaderNumber.findAllByOrgAndSemesterIsNotNull( org ), "semester"
+                    )
+
+                    String all = semesterMap.collect { sem ->
+                        "${sem.key != 'semester.not.applicable' ?: 'Unbekannt' }: " + sem.value.collect { rn ->
+                            rn.key + ' ' + rn.value.value
+                        }.join(', ')
+                    }.join( CSV_VALUE_SEPARATOR )
+
+                    content.add( all )
                 }
             }
             // --> custom query depending filter implementation

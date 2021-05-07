@@ -22,17 +22,19 @@ class LicenseExport extends AbstractExport {
                             class: License
                     ],
                     fields : [
-                            'globalUID'         : FIELD_TYPE_PROPERTY,
-                            'reference'         : FIELD_TYPE_PROPERTY,
-                            'startDate'         : FIELD_TYPE_PROPERTY,
-                            'endDate'           : FIELD_TYPE_PROPERTY,
-                            'status'            : FIELD_TYPE_REFDATA,
-                            'licenseCategory'   : FIELD_TYPE_REFDATA,
-                            'type'              : FIELD_TYPE_REFDATA,
-                            '___license_subscriptions'  : FIELD_TYPE_CUSTOM_IMPL,   // AbstractExport.CUSTOM_LABEL - virtual
-                            '___license_members'        : FIELD_TYPE_CUSTOM_IMPL,   // AbstractExport.CUSTOM_LABEL - virtual
-                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                            default: [
+                                    'globalUID'         : FIELD_TYPE_PROPERTY,
+                                    'reference'         : FIELD_TYPE_PROPERTY,
+                                    'startDate'         : FIELD_TYPE_PROPERTY,
+                                    'endDate'           : FIELD_TYPE_PROPERTY,
+                                    'status'            : FIELD_TYPE_REFDATA,
+                                    'licenseCategory'   : FIELD_TYPE_REFDATA,
+                                    'type'              : FIELD_TYPE_REFDATA,
+                                    '___license_subscriptions'  : FIELD_TYPE_CUSTOM_IMPL,   // AbstractExport.CUSTOM_LABEL - virtual
+                                    '___license_members'        : FIELD_TYPE_CUSTOM_IMPL,   // AbstractExport.CUSTOM_LABEL - virtual
+                                    'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                            ]
                     ]
             ]
     ]
@@ -44,15 +46,17 @@ class LicenseExport extends AbstractExport {
                             class: License
                     ],
                     fields : [
-                            'globalUID'         : FIELD_TYPE_PROPERTY,
-                            'reference'         : FIELD_TYPE_PROPERTY,
-                            'startDate'         : FIELD_TYPE_PROPERTY,
-                            'endDate'           : FIELD_TYPE_PROPERTY,
-                            'status'            : FIELD_TYPE_REFDATA,
-                            'licenseCategory'   : FIELD_TYPE_REFDATA,
-                            'type'              : FIELD_TYPE_REFDATA,
-                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                            default: [
+                                    'globalUID'         : FIELD_TYPE_PROPERTY,
+                                    'reference'         : FIELD_TYPE_PROPERTY,
+                                    'startDate'         : FIELD_TYPE_PROPERTY,
+                                    'endDate'           : FIELD_TYPE_PROPERTY,
+                                    'status'            : FIELD_TYPE_REFDATA,
+                                    'licenseCategory'   : FIELD_TYPE_REFDATA,
+                                    'type'              : FIELD_TYPE_REFDATA,
+                                    'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                            ]
                     ]
             ]
     ]
@@ -60,15 +64,6 @@ class LicenseExport extends AbstractExport {
     LicenseExport (String token, Map<String, Object> fields) {
         this.token = token
         selectedExportFields = getAllFields().findAll{ it.key in fields.keySet() }
-    }
-
-    @Override
-    Map<String, Object> getAllFields() {
-        String suffix = ExportHelper.getCachedQuerySuffix(token)
-
-        getCurrentConfig( KEY ).base.fields.findAll {
-            (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == suffix)
-        }
     }
 
     @Override

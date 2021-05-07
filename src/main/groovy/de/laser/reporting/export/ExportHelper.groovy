@@ -9,11 +9,23 @@ class ExportHelper {
 
     // ----- Cache -----
 
+    static String getCachedQueryPrefix(String token) {
+
+        Map<String, Object> detailsCache = BaseDetails.getDetailsCache(token)
+        detailsCache.query.split('-')[0]
+    }
+
     static String getCachedQuerySuffix(String token) {
 
-        Map<String, Object> queryCache = BaseQuery.getQueryCache(token)
-        String suffix = queryCache.query.replaceFirst( queryCache.query.split('-')[0] + '-', '' )
-        suffix
+        Map<String, Object> detailsCache = BaseDetails.getDetailsCache(token)
+        detailsCache.query.split('-')[1]
+    }
+
+    static String getCachedQueryFieldKey(String token) {
+
+        Map<String, Object> detailsCache = BaseDetails.getDetailsCache(token)
+        List<String> queryParts = detailsCache.query.split('-')
+        queryParts.size() == 3 ? queryParts[1] : queryParts[0]
     }
 
     static String getCachedTmplStrategy(String token) {
@@ -46,7 +58,18 @@ class ExportHelper {
             return AbstractExport.CUSTOM_LABEL.get(fieldName)
         }
 
-        GenericHelper.getFieldLabel( objConfig, fieldName )
+        // --- adapter ---
+
+        String fkey = getCachedQueryFieldKey(token)
+        if (! objConfig.fields.keySet().contains(fkey)) {
+            fkey = 'default'
+        }
+        Map<String, Object> objConfig2 = [
+                meta   : objConfig.meta,
+                fields : objConfig.fields.get(fkey)
+        ]
+
+        GenericHelper.getFieldLabel( objConfig2, fieldName )
     }
 
     static String getFileName(List<String> labels) {
