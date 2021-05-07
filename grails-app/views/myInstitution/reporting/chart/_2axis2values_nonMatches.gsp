@@ -91,12 +91,14 @@
         },
         xAxis: {
             type: 'value',
+            offset: 5,
             axisLabel: {
                 formatter (value) { return Math.abs(value) }
             }
         },
         yAxis: {
             type: 'category',
+            offset: 5,
             axisTick: { show: true },
             axisLine: { onZero: true }
         },

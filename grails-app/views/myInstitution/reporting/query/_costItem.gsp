@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.reporting.myInstitution.CostItemConfig;" %>
+<%@page import="de.laser.reporting.myInstitution.base.BaseConfig;" %>
 <laser:serviceInjection/>
 
 <g:if test="${filterResult}">
@@ -17,8 +17,8 @@
 
         <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.app.reporting.current.request = {
-                context: '${BaseConfig.KEY}',
-                filter: '${CostItemConfig.KEY}',
+                context: '${BaseConfig.KEY_MYINST}',
+                filter: '${BaseConfig.KEY_COSTITEM}',
                 token: '${token}'
             }
         </laser:script>

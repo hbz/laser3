@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3463    07.05.2021  rc2.0   2.0.10      David   Feature     Reporting: Interne Routing-Komponente für Queries erweitern
+
 3452    04.05.2021  rc2.0   2.0.8       David   Feature     Filterspez. Query-Formulare ermöglichen
 
 3450    04.05.2021  rc2.0   2.0.8       Andreas Bug         Private Merkmale sind in Merkmalsgruppen aufgetaucht
@@ -14,6 +16,8 @@
 3424    03.05.2021  dev     2.0.8       Andreas Bug         Abfragefehler bei Paketentknüpfung behoben
 
 3423    03.05.2021  rc2.0   2.0.8       Andreas Bug         KBART-Vorauswahl wieder instandgesetzt
+
+3441    03.05.2021  rc2.0   2.0.8       David   Feature     Reporting: Jahresringe
 
 3436    30.04.2021  rc2.0   2.0.8       David   Feature     Makro-Reporting: Anpassung für Vollnutzer
 
