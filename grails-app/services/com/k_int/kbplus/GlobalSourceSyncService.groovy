@@ -423,16 +423,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 tippsInLaser.put(tipp.gokbId, tipp)
             }
         }
-        //create or update packages
-        packageUUIDs.each { String packageUUID ->
-            try {
-                packagesOnPage.put(packageUUID,createOrUpdatePackage(packageUUID))
-            }
-            catch (SyncException e) {
-                log.error("Error on updating package ${packageUUID}: ",e)
-                SystemEvent.createEvent("GSSS_JSON_WARNING",[packageRecordKey:packageUUID])
-            }
-        }
         //create or update platforms
         platformUUIDs.each { String platformUUID ->
             try {
@@ -441,6 +431,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
             catch (SyncException e) {
                 log.error("Error on updating platform ${platformUUID}: ",e)
                 SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:platformUUID])
+            }
+        }
+        //create or update packages
+        packageUUIDs.each { String packageUUID ->
+            try {
+                packagesOnPage.put(packageUUID,createOrUpdatePackage(packageUUID))
+            }
+            catch (SyncException e) {
+                log.error("Error on updating package ${packageUUID}: ",e)
+                SystemEvent.createEvent("GSSS_JSON_WARNING",[packageRecordKey:packageUUID])
             }
         }
 
@@ -1037,16 +1037,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
             if(!result || result?.lastUpdated < lastUpdatedDisplay) {
                 log.info("package record loaded, reconciling package record for UUID ${packageUUID}")
                 RefdataValue packageStatus = packageRecord.status ? RefdataValue.getByValueAndCategory(packageRecord.status, RDConstants.PACKAGE_STATUS) : null
-                RefdataValue packageListStatus = packageRecord.listStatus ? RefdataValue.getByValueAndCategory(packageRecord.listStatus,RDConstants.PACKAGE_LIST_STATUS) : null
                 RefdataValue contentType = packageRecord.contentType ? RefdataValue.getByValueAndCategory(packageRecord.contentType,RDConstants.PACKAGE_CONTENT_TYPE) : null
-                Date listVerifiedDate = packageRecord.listVerifiedDate ? DateUtils.parseDateGeneric(packageRecord.listVerifiedDate) : null
+                RefdataValue file = packageRecord.file ? RefdataValue.getByValueAndCategory(packageRecord.file,RDConstants.PACKAGE_FILE) : null
+                RefdataValue scope = packageRecord.scope ? RefdataValue.getByValueAndCategory(packageRecord.scope,RDConstants.PACKAGE_SCOPE) : null
                 Map<String,Object> newPackageProps = [
                     uuid: packageUUID,
                     name: packageRecord.name,
                     packageStatus: packageStatus,
-                    listVerifiedDate: listVerifiedDate,
-                    packageListStatus: packageListStatus,
-                    contentType: packageRecord.contentType
+                    contentType: packageRecord.contentType,
+                    file: file,
+                    scope: scope
                 ]
                 if(result) {
                     if(packageStatus == RDStore.PACKAGE_STATUS_DELETED && result.packageStatus != RDStore.PACKAGE_STATUS_DELETED) {
@@ -1074,9 +1074,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 result.name = packageRecord.name
                 result.packageStatus = packageStatus
-                result.listVerifiedDate = listVerifiedDate
-                result.packageListStatus = packageListStatus
                 result.contentType = contentType
+                result.scope = scope
+                result.file = file
                 if(result.save()) {
                     if(packageRecord.nominalPlatformUuid) {
                         result.nominalPlatform = Platform.findByGokbId(packageRecord.nominalPlatformUuid)

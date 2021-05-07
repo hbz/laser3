@@ -344,7 +344,12 @@ class PackageController {
         Map<String, Object> result = [:]
 
         result.user = contextService.getUser()
-        Package packageInstance = Package.get(params.id)
+        Package packageInstance
+        if(params.id.isLong())
+            packageInstance = Package.get(params.id)
+        else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
+            packageInstance = Package.findByGokbId(params.id)
+        else packageInstance = Package.findByGlobalUID(params.id)
         if (!packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
             redirect action: 'index'

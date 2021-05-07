@@ -77,11 +77,30 @@
                             </dd>
                         </dl>
                         <dl>
+                            <dt>${message(code: 'package.source.label')}</dt>
+                            <dd>
+                                <g:if test="${packageInstanceRecord.source?.automaticUpdates}">
+                                    <g:message code="package.index.result.automaticUpdates"/>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                          data-content="${packageInstanceRecord.source.frequency}">
+                                        <i class="question circle icon"></i>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <g:message code="package.index.result.noAutomaticUpdates"/>
+                                </g:else>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'package.file')}</dt>
+                            <dd>${packageInstance.file?.getI10n("value")}</dd>
+                        </dl>
+                        <dl>
                             <dt>${message(code: 'package.curatoryGroup.label')}</dt>
                             <dd>
                                 <div class="ui bulleted list">
                                     <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
-                                        <div class="item"><g:link url="${editUrl}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name}</g:link></div>
+                                        <div class="item"><g:link url="${editUrl}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link></div>
                                     </g:each>
                                 </div>
                             </dd>
@@ -116,20 +135,53 @@
                             <dd>${packageInstance.packageStatus?.getI10n('value')}</dd>
                         </dl>
                         <dl>
-                            <dt>${message(code: 'package.source.label')}</dt>
-                            <dd>
-                                <g:if test="${packageInstanceRecord.source?.automaticUpdates}">
-                                    <g:message code="package.index.result.automaticUpdates"/>
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${packageInstanceRecord.source.frequency}">
-                                        <i class="question circle icon"></i>
-                                    </span>
-                                </g:if>
-                                <g:else>
-                                    <g:message code="package.index.result.noAutomaticUpdates"/>
-                                </g:else>
+                            <dt>${message(code: 'package.scope.label')}</dt>
+                            <dd>${packageInstance.scope?.getI10n("value")}</dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'package.openAccess.label')}</dt>
+                            <dd><%
+                                String oaType
+                                switch(packageInstanceRecord.openAccess) {
+                                    case 'Empty':
+                                    case 'empty':
+                                    case null: oaType = RefdataValue.getByValueAndCategory('No Open Access', RDConstants.LICENSE_OA_TYPE)
+                                        break
+                                    default: oaType = RefdataValue.getByValueAndCategory(packageInstanceRecord.openAccess, RDConstants.LICENSE_OA_TYPE)
+                                        break
+                                }
+                            %>
+                                ${oaType}
                             </dd>
                         </dl>
+                        <dl>
+                            <dt>${message(code: 'package.paymentType.label')}</dt>
+                            <dd>TODO</dd>
+                        </dl>
+                        <g:if test="${packageInstanceRecord.nationalRanges}">
+                            <dl>
+                                <dt>${message(code: 'package.nationalRange.label')}</dt>
+                                <dd>
+                                    <div class="ui bulleted list">
+                                        <g:each in="${packageInstanceRecord.nationalRanges}" var="nr">
+                                            <div class="item">${RefdataValue.getByValueAndCategory(nr.value,RDConstants.COUNTRY) ? RefdataValue.getByValueAndCategory(nr.value,RDConstants.COUNTRY).getI10n('value') : nr}</div>
+                                        </g:each>
+                                    </div>
+                                </dd>
+                            </dl>
+                        </g:if>
+                        <g:if test="${packageInstanceRecord.regionalRanges}">
+                            <dl>
+                                <dt>${message(code: 'package.regionalRange.label')}</dt>
+                                <dd>
+                                    <div class="ui bulleted list">
+                                        <g:each in="${packageInstanceRecord.regionalRanges}" var="rr">
+                                            <div class="item">${RefdataValue.getByValueAndCategory(rr.value,RDConstants.REGIONS_DE) ? RefdataValue.getByValueAndCategory(rr.value,RDConstants.REGIONS_DE).getI10n('value') : rr}</div>
+                                        </g:each>
+                                    </div>
+                                </dd>
+                            </dl>
+                        </g:if>
                     </div>
                 </div>
             </div>
@@ -192,16 +244,16 @@
                             </g:if>
                         </dd>
                     </dl>
-                    <dl>
-                        <dt>${message(code: 'package.show.descriptionURL')}</dt>
-                        <dd>
-                            <g:if test="${packageInstanceRecord.descriptionURL}">
+                    <g:if test="${packageInstanceRecord.descriptionURL}">
+                        <dl>
+                            <dt>${message(code: 'package.show.descriptionURL')}</dt>
+                            <dd>
                                 ${packageInstanceRecord.descriptionURL}
                                 <semui:linkIcon
                                         href="${packageInstanceRecord.descriptionURL.startsWith('http') ? packageInstanceRecord.descriptionURL : 'http://' + packageInstanceRecord.descriptionURL}"/>
-                            </g:if>
-                        </dd>
-                    </dl>
+                            </dd>
+                        </dl>
+                    </g:if>
                     %{--<dl>
                         <dt>${message(code: 'package.breakable')}</dt>
                         <dd>
