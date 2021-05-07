@@ -212,6 +212,7 @@
                         </dd>
                     </dl>
 --}%
+                    <%-- deactivated U.F.N. - do not delete as prespectively needed!
                     <g:if test="${statsWibid && packageIdentifier}">
                         <dl>
                             <dt><g:message code="package.show.usage"/></dt>
@@ -232,7 +233,7 @@
                             </dd>
                         </dl>
                     </g:if>
-
+                    --%>
                 </div>
             </div>
         </div>

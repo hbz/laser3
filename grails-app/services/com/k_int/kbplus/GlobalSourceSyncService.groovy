@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import de.laser.ApiSource
 import de.laser.AuditConfig
 import de.laser.AuditService
+import de.laser.DeweyDecimalClassification
 import de.laser.EscapeService
 import de.laser.GlobalRecordSource
 import de.laser.Identifier
@@ -62,7 +63,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
     EscapeService escapeService
     GlobalRecordSource source
     ApiSource apiSource
-    AuditService auditService
 
     final static long RECTYPE_PACKAGE = 0
     final static long RECTYPE_TITLE = 1
@@ -70,7 +70,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     final static long RECTYPE_TIPP = 3
     final static Map<Long,String> RECTYPES = [(RECTYPE_PACKAGE):'packages',(RECTYPE_TITLE):'titles',(RECTYPE_ORG):'orgs',(RECTYPE_TIPP):'tipps']
 
-    Map<String, RefdataValue> titleStatus = [:], titleMedium = [:], tippStatus = [:], packageStatus = [:], orgStatus = [:], currency = [:]
+    Map<String, RefdataValue> titleStatus = [:], titleMedium = [:], tippStatus = [:], packageStatus = [:], orgStatus = [:], currency = [:], ddc = [:]
     Long maxTimestamp = 0
     Map<String,Integer> initialPackagesCounter = [:]
     Map<String,Set<Map<String,Object>>> pkgPropDiffsContainer = [:]
@@ -346,6 +346,57 @@ class GlobalSourceSyncService extends AbstractLockableService {
         running = false
     }
 
+    void reloadPackages() {
+        executorService.execute({
+            running = true
+            Thread.currentThread().setName("GlobalPackageUpdate")
+            this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
+            log.info("getting all records from job #${source.id} with uri ${source.uri}")
+            Map<String,Object> result
+            //5000 records because of local testing ability
+            String componentType = 'TitleInstancePackagePlatform'
+            result = fetchRecordJSON(false,[componentType: componentType, max: 5000])
+            if(result && result.count >= 5000) {
+                String scrollId
+                boolean more = true
+                while(more) {
+                    //actually, scrollId alone should do the trick but tests revealed that other parameters are necessary, too, because of current workaround solution
+                    log.debug("using scrollId ${scrollId}")
+                    if(scrollId) {
+                        result = fetchRecordJSON(true, [component_type: componentType, scrollId: scrollId])
+                    }
+                    else {
+                        result = fetchRecordJSON(true, [component_type: componentType])
+                    }
+                    if(result.count > 0) {
+                        updateRecords(result.records)
+                        if(result.hasMoreRecords) {
+                            scrollId = result.scrollId
+                        }
+                        else {
+                            more = false
+                        }
+                    }
+                    else {
+                        //workaround until GOKb-ES migration is done and hopefully works ...
+                        if(result.hasMoreRecords) {
+                            scrollId = result.scrollId
+                            log.info("page is empty, turning to next page ...")
+                        }
+                        else {
+                            more = false
+                            log.info("no records updated - leaving everything as is ...")
+                        }
+                    }
+                }
+            }
+            else if(result && result.count > 0 && result.count < 5000) {
+                updateRecords(result.records)
+            }
+            running = false
+        })
+    }
+
     //Used for Sync with Json
     void updateRecords(List<Map> rawRecords) {
         //necessary filter for DEV database
@@ -412,6 +463,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     priceItems: [],
                     hostPlatformURL: tipp.url ?: null,
                     identifiers: [],
+                    ddcs: [],
                     history: [],
                     uuid: tipp.uuid,
                     accessStartDate : tipp.accessStartDate ? DateUtils.parseDateGeneric(tipp.accessStartDate) : null,
@@ -447,6 +499,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 tipp.identifiers.each { identifier ->
                     updatedTIPP.identifiers << [namespace:identifier.namespace, value: identifier.value, name_de: identifier.namespaceName]
+                }
+                tipp.ddcs.each { ddcData ->
+                    updatedTIPP.ddcs << ddc.get(ddcData.value)
                 }
                 tipp.titleHistory.each { historyEvent ->
                     updatedTIPP.history << [date:DateUtils.parseDateGeneric(historyEvent.date),from:historyEvent.from,to:historyEvent.to]
@@ -982,12 +1037,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 RefdataValue contentType = packageRecord.contentType ? RefdataValue.getByValueAndCategory(packageRecord.contentType,RDConstants.PACKAGE_CONTENT_TYPE) : null
                 Date listVerifiedDate = packageRecord.listVerifiedDate ? DateUtils.parseDateGeneric(packageRecord.listVerifiedDate) : null
                 Map<String,Object> newPackageProps = [
-                        uuid: packageUUID,
-                        name: packageRecord.name,
-                        packageStatus: packageStatus,
-                        listVerifiedDate: listVerifiedDate,
-                        packageListStatus: packageListStatus,
-                        contentType: packageRecord.contentType
+                    uuid: packageUUID,
+                    name: packageRecord.name,
+                    packageStatus: packageStatus,
+                    listVerifiedDate: listVerifiedDate,
+                    packageListStatus: packageListStatus,
+                    contentType: packageRecord.contentType
                 ]
                 if(result) {
                     if(packageStatus == RDStore.PACKAGE_STATUS_DELETED && result.packageStatus != RDStore.PACKAGE_STATUS_DELETED) {
@@ -1031,12 +1086,23 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             throw e
                         }
                     }
-                    if(result.ids) {
-                        Identifier.executeUpdate('delete from Identifier i where i.pkg = :pkg',[pkg:result]) //damn those wrestlers ...
+                    if(packageRecord.identifiers) {
+                        if(result.ids) {
+                            Identifier.executeUpdate('delete from Identifier i where i.pkg = :pkg',[pkg:result]) //damn those wrestlers ...
+                        }
+                        packageRecord.identifiers.each { id ->
+                            if(id.namespace.toLowerCase() != 'originediturl') {
+                                Identifier.construct([namespace: id.namespace, value: id.value, reference: result, isUnique: false, nsType: Package.class.name])
+                            }
+                        }
                     }
-                    packageRecord.identifiers.each { id ->
-                        if(id.namespace.toLowerCase() != 'originediturl') {
-                            Identifier.construct([namespace: id.namespace, value: id.value, reference: result, isUnique: false, nsType: Package.class.name])
+                    if(packageRecord.ddcs) {
+                        if(result.ddcs) {
+                            DeweyDecimalClassification.executeUpdate('delete from DeweyDecimalClassification ddc where ddc.pkg = :pkg',[pkg:result])
+                        }
+                        packageRecord.ddcs.each { ddcData ->
+                            if(!DeweyDecimalClassification.construct(ddc: ddc.get(ddcData.value), pkg: result))
+                                throw new SyncException("Error on saving Dewey decimal classification! See stack trace as follows:")
                         }
                     }
                 }
@@ -1604,6 +1670,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 //}
             }
+            if(tippB.ddcs) {
+                if(tippA.ddcs) {
+                    DeweyDecimalClassification.executeUpdate('delete from DeweyDecimalClassification ddc where ddc.tipp = :tipp',[tipp:tippA])
+                }
+                tippB.ddcs.each { ddcData ->
+                    if(!DeweyDecimalClassification.construct(ddc: ddcData, tipp: tippA))
+                        throw new SyncException("Error on saving Dewey decimal classification! See stack trace as follows:")
+                }
+            }
             if(tippB.history) {
                 if(tippA.historyEvents) {
                     TitleHistoryEvent.executeUpdate('delete from TitleHistoryEvent the where the.tipp = :tipp',[tipp:tippA])
@@ -1760,6 +1835,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 if(idB.namespace.toLowerCase() != 'originediturl') {
                     Identifier.construct([namespace: idB.namespace, value: idB.value, name_de: idB.name_de, reference: newTIPP, isUnique: false, nsType: TitleInstancePackagePlatform.class.name])
                 }
+            }
+            tippData.ddcs.each { ddcB ->
+                if(!DeweyDecimalClassification.construct(ddc: ddcB, tipp: newTIPP))
+                    throw new SyncException("Error on saving Dewey decimal classification! See stack trace as follows:")
             }
             tippData.history.each { historyEvent ->
                 historyEvent.from.each { from ->
@@ -2261,6 +2340,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         RefdataCategory.getAllRefdataValues(RDConstants.CURRENCY).each { RefdataValue rdv ->
             currency.put(rdv.value,rdv)
+        }
+        RefdataCategory.getAllRefdataValues(RDConstants.DDC).each { RefdataValue rdv ->
+            ddc.put(rdv.value,rdv)
         }
     }
 }

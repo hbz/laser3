@@ -38,6 +38,7 @@ class RDConstants {
     public static final String CURRENCY               = 'currency'
     public static final String CUSTOMER_IDENTIFIER_TYPE   = 'customer.identifier.type'
 
+    public static final String DDC                    = 'ddc'
     public static final String DOCUMENT_CONTEXT_STATUS    = 'document.context.status'
     public static final String DOCUMENT_TYPE          = 'document.type'
 

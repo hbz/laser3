@@ -55,7 +55,14 @@
                     <g:sortableColumn property="lastUpdatedDisplay" title="${message(code: 'package.lastUpdated.label')}"
                                       params="${params}" defaultOrder="desc"/>
                     <sec:ifAllGranted roles="ROLE_YODA">
-                        <th class="x"></th>
+                        <th class="x">
+                            <g:link class="ui button js-open-confirm-modal"
+                                    data-confirm-tokenMsg="${message(code: 'menu.yoda.reloadPackages.confirm')}"
+                                    data-confirm-term-how="ok"
+                                    controller="yoda" action="reloadPackages">
+                                <g:message code="menu.yoda.reloadPackages"/>
+                            </g:link>
+                        </th>
                     </sec:ifAllGranted>
                 </tr>
                 </thead>
@@ -99,7 +106,7 @@
                         <td>
                             <div class="ui bulleted list">
                                 <g:each in="${record.curatoryGroups}" var="curatoryGroup">
-                                    <div class="item">${curatoryGroup}</div>
+                                    <div class="item"><g:link url="${editUrl.endsWith('/') ? editUrl : editUrl+'/'}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name}</g:link></div>
                                 </g:each>
                             </div>
                         </td>

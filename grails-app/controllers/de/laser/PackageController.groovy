@@ -57,7 +57,7 @@ class PackageController {
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, result.user)
 
-        result.editUrl = apiSource.baseUrl + apiSource.fixToken
+        result.editUrl = apiSource.editUrl
 
         String esQuery = "?componentType=Package"
         if (params.q) {
