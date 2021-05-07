@@ -24,7 +24,7 @@ class SubscriptionQuery extends BaseQuery {
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
         String prefix = params.query.split('-')[0]
-        String suffix = params.query.split('-')[1]
+        String suffix = params.query.split('-')[1] // only simply cfg.query
         List idList   = BaseFilter.getCachedFilterIdList(prefix, params)
 
         if (! idList) {
@@ -196,6 +196,34 @@ class SubscriptionQuery extends BaseQuery {
             handleGenericNonMatchingData( params.query,
                     'select sub.id from Subscription sub where not exists (select mbr from Subscription mbr where mbr.instanceOf = sub) and sub.id in (:idList) order by sub.name',
                     idList, result )
+        }
+        else if ( params.query in ['subscription-member-assignment']) {
+
+            result.data = idList ? Subscription.executeQuery(
+                    'select sub.id, sub.name, count(mbr.id) from Subscription mbr join mbr.instanceOf sub where sub.id in (:idList) group by sub.id order by sub.name',
+                    [idList: idList] ) : []
+
+            List<Long> memberIdList = BaseFilter.getCachedFilterIdList('member', params) // filter is set
+
+            result.data.each { d ->
+                List<Long> validMemberIdList = memberIdList ? Subscription.executeQuery(
+                        'select distinct orgRole.org.id from OrgRole orgRole join orgRole.sub sub where orgRole.org.id in (:memberIdList) and ' +
+                                'sub in (select sub from Subscription sub where sub.instanceOf.id = :d) and orgRole.roleType in (:roleTypes)',
+                        [d: d[0], roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER], memberIdList: memberIdList]
+
+                ) : []
+                d[2] = validMemberIdList.size()
+
+                result.dataDetails.add( [
+                        query:  params.query,
+                        id:     d[0],
+                        label:  d[1],
+                        idList: validMemberIdList
+                ])
+            }
+//            handleGenericNonMatchingData( params.query,
+//                    'select sub.id from Subscription sub where not exists (select mbr from Subscription mbr where mbr.instanceOf = sub) and sub.id in (:idList) order by sub.name',
+//                    idList, result )
         }
 
         result

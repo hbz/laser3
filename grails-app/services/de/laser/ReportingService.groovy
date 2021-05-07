@@ -138,7 +138,7 @@ class ReportingService {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels')
-                    result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
+                    result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('chartTemplate')
                 }
             }
             else if (prefix in ['org', 'member', 'consortium', 'provider', 'agency', 'licensor']) {
@@ -150,19 +150,19 @@ class ReportingService {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels')
-                    result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
+                    result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('chartTemplate')
                 }
             }
             else if (prefix in ['subscription']) {
-                result.putAll( SubscriptionQuery.query(clone) )
+                result.putAll(SubscriptionQuery.query(clone))
                 result.labels.tooltip = getTooltipLabels(clone)
                 result.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (clone.query.endsWith('assignment')) {
-                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base.query2.getAt('Verteilung').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig(BaseConfig.KEY_SUBSCRIPTION).base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels')
-                    result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('template')
+                    result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('chartTemplate')
                 }
             }
             else if (prefix in ['costItem']) {
@@ -222,43 +222,72 @@ class ReportingService {
                 }
             }
 
-            if (prefix in ['license']) {
-                result.labels = BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ), params)
-                result.list   = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
-                result.tmpl   = '/myInstitution/reporting/details/license'
-            }
-            else if (prefix in ['licensor']) {
-                result.labels = BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ), params)
-                result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
-                result.tmpl   = '/myInstitution/reporting/details/organisation'
+            Map<String, Object> cfg
+
+            if (prefix in ['license', 'licensor']) {
+                cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE )
             }
             else if (prefix in ['org']) {
-                result.labels = BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ), params)
-                result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
-                result.tmpl   = '/myInstitution/reporting/details/organisation'
+                cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION )
             }
-            else if (prefix in ['subscription']) {
-                result.labels = BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ), params)
-                result.list   = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
-                result.tmpl   = '/myInstitution/reporting/details/subscription'
-            }
-            else if (prefix in ['member', 'consortium', 'provider', 'agency']) {
-                result.labels = BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ), params)
-                result.list   = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
-                result.tmpl   = '/myInstitution/reporting/details/organisation'
+            else if (prefix in ['subscription', 'member', 'consortium', 'provider', 'agency']) {
+                cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
             }
             else if (prefix in ['costItem']) {
-                result.labels = BaseQuery.getQueryLabels(BaseConfig.getCurrentConfig( BaseConfig.KEY_COSTITEM ), params)
-                result.list   = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList])
-                result.tmpl   = '/myInstitution/reporting/details/costItem'
+                cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_COSTITEM )
             }
 
+            if (cfg) {
+                result.labels = BaseQuery.getQueryLabels( cfg, params )
+
+                if (params.query.endsWith('assignment')) {
+
+                    String tmpl = cfg.base.query2.get('Verteilung').get(params.query).detailsTemplate
+                    result.tmpl = '/myInstitution/reporting/details/' + tmpl
+
+                    if (! idList) {
+                        result.list = []
+                    }
+                    else if (tmpl == BaseConfig.KEY_LICENSE) {
+                        result.list = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
+                    }
+                    else if (tmpl == BaseConfig.KEY_ORGANISATION) {
+                        result.list = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
+                    }
+                    else if (tmpl == BaseConfig.KEY_SUBSCRIPTION) {
+                        result.list = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
+                    }
+                    else if (tmpl == BaseConfig.KEY_COSTITEM) {
+                        result.list = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList])
+                    }
+                }
+                else {
+
+                    if (prefix in ['license']) {
+                        result.list = idList ? License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList]) : []
+                        result.tmpl = '/myInstitution/reporting/details/license'
+                    }
+                    else if (prefix in ['licensor', 'org', 'member', 'consortium', 'provider', 'agency']) {
+                        result.list = idList ? Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList]) : []
+                        result.tmpl = '/myInstitution/reporting/details/organisation'
+                    }
+                    else if (prefix in ['subscription']) {
+                        result.list = idList ? Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList]) : []
+                        result.tmpl = '/myInstitution/reporting/details/subscription'
+                    }
+                    else if (prefix in ['costItem']) {
+                        result.list = idList ? CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList]) : []
+                        result.tmpl = '/myInstitution/reporting/details/costItem'
+                    }
+                }
+            }
             cacheMap.queryCache.labels.put('labels', result.labels)
 
             cacheMap.detailsCache = [
                     prefix : prefix,
                     id :     params.long('id'),
-                    idList : result.list.collect{ it.id } // only existing ids
+                    idList : result.list.collect{ it.id }, // only existing ids
+                    tmpl :   result.tmpl
             ]
 
             sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)

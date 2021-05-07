@@ -1,6 +1,7 @@
 package de.laser.reporting.export
 
 import de.laser.reporting.myInstitution.GenericHelper
+import de.laser.reporting.myInstitution.base.BaseDetails
 import de.laser.reporting.myInstitution.base.BaseFilter
 import de.laser.reporting.myInstitution.base.BaseQuery
 
@@ -8,18 +9,18 @@ class ExportHelper {
 
     // ----- Cache -----
 
-    static String getCachedQueryPrefix(String token) {
-
-        Map<String, Object> queryCache = BaseQuery.getQueryCache(token)
-        String prefix = queryCache.query.split('-')[0]
-        prefix
-    }
-
     static String getCachedQuerySuffix(String token) {
 
         Map<String, Object> queryCache = BaseQuery.getQueryCache(token)
         String suffix = queryCache.query.replaceFirst( queryCache.query.split('-')[0] + '-', '' )
         suffix
+    }
+
+    static String getCachedTmplStrategy(String token) {
+
+        Map<String, Object> detailsCache = BaseDetails.getDetailsCache(token)
+        List parts = detailsCache.tmpl.split('/')
+        parts[parts.size()-1]
     }
 
     // -----

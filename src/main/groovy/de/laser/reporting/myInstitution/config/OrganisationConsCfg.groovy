@@ -78,14 +78,16 @@ class OrganisationConsCfg extends BaseConfig {
                     query2 : [
                             'Verteilung' : [ // TODO ..
                                     'org-property-assignment' : [
-                                            label: 'Organisation → Merkmale (eigene/allgemeine)',
-                                            template: '2axis2values',
-                                            chartLabels: [ 'Organisationen', 'Vergebene Merkmale (eigene/allgemeine)' ]
+                                            label               : 'Organisation → Merkmale (eigene/allgemeine)',
+                                            detailsTemplate     : 'organisation',
+                                            chartTemplate       : '2axis2values',
+                                            chartLabels         : [ 'Organisationen', 'Vergebene Merkmale (eigene/allgemeine)' ]
                                             ],
                                     'org-identifier-assignment' : [
-                                            label : 'Organisation → Identifikatoren',
-                                            template: '2axis2values_nonMatches',
-                                            chartLabels: [ 'Organisationen', 'Vergebene Identifikatoren' ]
+                                            label               : 'Organisation → Identifikatoren',
+                                            detailsTemplate     : 'organisation',
+                                            chartTemplate       : '2axis2values_nonMatches',
+                                            chartLabels         : [ 'Organisationen', 'Vergebene Identifikatoren' ]
                                     ]
                                     //'org-serverAccess-assignment' : 'Organisation nach Datenweitergabe',
                             ]

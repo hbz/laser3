@@ -43,19 +43,22 @@ class LicenseInstCfg extends BaseConfig {
                     query2 : [
                             'Verteilung' : [ // TODO ..
                                      'license-property-assignment' : [
-                                             label : 'Vertrag → Merkmale (eigene/allgemeine)',
-                                             template: '2axis2values',
-                                             chartLabels : [ 'Verträge', 'Vergebene Merkmale (eigene/allgemeine)' ]
+                                             label              : 'Vertrag → Merkmale (eigene/allgemeine)',
+                                             detailsTemplate    : 'license',
+                                             chartTemplate      : '2axis2values',
+                                             chartLabels        : [ 'Verträge', 'Vergebene Merkmale (eigene/allgemeine)' ]
                                      ],
                                      'license-identifier-assignment' : [
-                                             label : 'Vertrag → Identifikatoren',
-                                             template: '2axis2values_nonMatches',
-                                             chartLabels: [ 'Verträge', 'Vergebene Identifikatoren' ]
+                                             label              : 'Vertrag → Identifikatoren',
+                                             detailsTemplate    : 'license',
+                                             chartTemplate      : '2axis2values_nonMatches',
+                                             chartLabels        : [ 'Verträge', 'Vergebene Identifikatoren' ]
                                      ],
                                      'license-annual-assignment' : [
-                                             label : 'Vertrag → Jahresring',
-                                             template: 'generic',
-                                             chartLabels : []
+                                             label              : 'Vertrag → Jahresring',
+                                             detailsTemplate    : 'license',
+                                             chartTemplate      : 'generic',
+                                             chartLabels        : []
                                      ],
                             ]
                     ]
