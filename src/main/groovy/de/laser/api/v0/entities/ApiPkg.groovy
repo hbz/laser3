@@ -76,7 +76,7 @@ class ApiPkg {
 		result.lastUpdated      	= ApiToolkit.formatInternalDate(pkg._getCalculatedLastUpdated())
 		result.vendorURL        	= pkg.vendorURL
 		result.startDate        	= ApiToolkit.formatInternalDate(pkg.startDate)
-		result.listVerifiedDate     = ApiToolkit.formatInternalDate(pkg.listVerifiedDate)
+		//result.listVerifiedDate     = ApiToolkit.formatInternalDate(pkg.listVerifiedDate)
 
 		// RefdataValues
 

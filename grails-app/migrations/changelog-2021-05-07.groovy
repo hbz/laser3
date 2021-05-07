@@ -32,4 +32,14 @@ databaseChangeLog = {
     changeSet(author: "galffy (generated)", id: "1620365933647-7") {
         dropColumn(columnName: "pkg_list_verified_date", tableName: "package")
     }
+
+    changeSet(author: "galffy (generated)", id: "1620365933647-8") {
+        addColumn(tableName: "package") {
+            column(name: "pkg_scope_rv_fk", type: "int8")
+        }
+    }
+
+    changeSet(author: "galffy (generated)", id: "1620365933647-9") {
+        addForeignKeyConstraint(baseColumnNames: "pkg_scope_rv_fk", baseTableName: "package", constraintName: "FKb94p7yqnvpica6fg1d5i2tcl", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value")
+    }
 }
