@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.ConfigUtils; de.laser.helper.DateUtils; de.laser.helper.RDStore; de.laser.helper.RDConstants;de.laser.Package;de.laser.RefdataCategory;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.helper.ConfigUtils; de.laser.helper.DateUtils; de.laser.helper.RDStore; de.laser.helper.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -81,12 +81,21 @@
                             <dd>
                                 <div class="ui bulleted list">
                                     <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
-                                        <div class="item">${curatoryGroup}</div>
+                                        <div class="item"><g:link url="${editUrl}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name}</g:link></div>
                                     </g:each>
                                 </div>
                             </dd>
                         </dl>
-
+                        <dl>
+                            <dt>${message(code: 'package.ddc.label')}</dt>
+                            <dd>
+                                <div class="ui bulleted list">
+                                    <g:each in="${packageInstanceRecord.ddcs}" var="ddc">
+                                        <div class="item">${RefdataValue.getByValueAndCategory(ddc.value,RDConstants.DDC) ? RefdataValue.getByValueAndCategory(ddc.value,RDConstants.DDC).getI10n('value') : message(code:'package.ddc.invalid')}</div>
+                                    </g:each>
+                                </div>
+                            </dd>
+                        </dl>
                         <dl>
                             <dt>${message(code: 'package.show.altname')}</dt>
                             <dd>

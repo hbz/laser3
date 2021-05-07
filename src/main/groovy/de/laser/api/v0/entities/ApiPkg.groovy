@@ -80,13 +80,12 @@ class ApiPkg {
 
 		// RefdataValues
 
-		result.packageListStatus 	= pkg.packageListStatus?.value
 		result.contentType      	= pkg.contentType?.value
-		result.packageScope     	= pkg.packageScope?.value
+		result.scope     			= pkg.scope?.value
+		result.file	 				= pkg.file?.value
 		result.packageStatus    	= pkg.packageStatus?.value
 		result.breakable        	= pkg.breakable?.value
 		result.consistent       	= pkg.consistent?.value
-		result.fixed            	= pkg.fixed?.value
 		result.isPublic         	= pkg.isPublic ? 'Yes' : 'No'
 
 		// References

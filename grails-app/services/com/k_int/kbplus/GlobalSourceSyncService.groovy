@@ -1,8 +1,6 @@
 package com.k_int.kbplus
 
 import de.laser.ApiSource
-import de.laser.AuditConfig
-import de.laser.AuditService
 import de.laser.DeweyDecimalClassification
 import de.laser.EscapeService
 import de.laser.GlobalRecordSource
@@ -70,7 +68,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
     final static long RECTYPE_TIPP = 3
     final static Map<Long,String> RECTYPES = [(RECTYPE_PACKAGE):'packages',(RECTYPE_TITLE):'titles',(RECTYPE_ORG):'orgs',(RECTYPE_TIPP):'tipps']
 
-    Map<String, RefdataValue> titleStatus = [:], titleMedium = [:], tippStatus = [:], packageStatus = [:], orgStatus = [:], currency = [:], ddc = [:]
+    Map<String, RefdataValue> titleStatus = [:],
+            titleMedium = [:],
+            tippStatus = [:],
+            packageStatus = [:],
+            openAccess = [:],
+            regionalRange = [:],
+            orgStatus = [:],
+            currency = [:],
+            ddc = [:]
     Long maxTimestamp = 0
     Map<String,Integer> initialPackagesCounter = [:]
     Map<String,Set<Map<String,Object>>> pkgPropDiffsContainer = [:]
@@ -518,7 +524,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }//test with set, otherwise make check
                     packagesToNotify.put(updatedTIPP.packageUUID,diffsOfPackage)
                 }
-                else {
+                else if(updatedTIPP.status != RDStore.TIPP_STATUS_DELETED.value) {
                     addNewTIPP(packagesOnPage.get(updatedTIPP.packageUUID), updatedTIPP, platformsOnPage,null)
                 }
                 Date lastUpdatedTime = DateUtils.parseDateGeneric(tipp.lastUpdatedDisplay)
@@ -939,7 +945,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         result.name = packageName
                         result.packageStatus = packageStatus
                         result.listVerifiedDate = listVerifiedDate
-                        result.packageScope = packageScope //needed?
+                        result.scope = packageScope //needed?
                         result.packageListStatus = packageListStatus //needed?
                         result.breakable = breakable //needed?
                         result.consistent = consistent //needed?
@@ -982,7 +988,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 name: packageName,
                                 listVerifiedDate: listVerifiedDate,
                                 packageStatus: packageStatus,
-                                packageScope: packageScope, //needed?
+                                scope: packageScope, //needed?
                                 packageListStatus: packageListStatus, //needed?
                                 breakable: breakable, //needed?
                                 consistent: consistent, //needed?
@@ -1558,7 +1564,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     Set<Map<String,Object>> getPkgPropDiff(Package pkgA, Map<String,Object> pkgB) {
         log.info("processing package prop diffs; the respective GOKb UUIDs are: ${pkgA.gokbId} (LAS:eR) vs. ${pkgB.uuid} (remote)")
         Set<Map<String,Object>> result = []
-        Set<String> controlledProperties = ['name','packageStatus','listVerifiedDate','packageScope','packageListStatus','breakable','consistent','fixed']
+        Set<String> controlledProperties = ['name','packageStatus','packageScope','packageListStatus','breakable','consistent']
 
         controlledProperties.each { String prop ->
             if(pkgA[prop] != pkgB[prop]) {
@@ -1632,7 +1638,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.save()
             [event: "delete", target: tippA]
         }
-        else {
+        else if(tippA.status != RDStore.TIPP_STATUS_DELETED && status != RDStore.TIPP_STATUS_DELETED) {
             //process central differences which are without effect to issue entitlements
             tippA.titleType = tippB.titleType
             tippA.name = tippB.name //TODO include name, sortName in IssueEntitlements, then, this property may move to the controlled ones
@@ -2324,6 +2330,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
         titleStatus.put(RDStore.TITLE_STATUS_CURRENT.value,RDStore.TITLE_STATUS_CURRENT)
         titleStatus.put(RDStore.TITLE_STATUS_RETIRED.value,RDStore.TITLE_STATUS_RETIRED)
         titleStatus.put(RDStore.TITLE_STATUS_DELETED.value,RDStore.TITLE_STATUS_DELETED)
+        openAccess.put('Blue OA',RefdataValue.getByValueAndCategory('Blue Open Access',RDConstants.LICENSE_OA_TYPE))
+        openAccess.put('Gold OA',RefdataValue.getByValueAndCategory('Gold Open Access',RDConstants.LICENSE_OA_TYPE))
+        openAccess.put('Green OA',RefdataValue.getByValueAndCategory('Green Open Access',RDConstants.LICENSE_OA_TYPE))
+        openAccess.put('Hybrid',RefdataValue.getByValueAndCategory('Hybrid',RDConstants.LICENSE_OA_TYPE))
+        openAccess.put('White OA',RefdataValue.getByValueAndCategory('White Open Access',RDConstants.LICENSE_OA_TYPE))
+        openAccess.put('Yellow OA',RefdataValue.getByValueAndCategory('Yellow Open Access',RDConstants.LICENSE_OA_TYPE))
         //this complicated way is necessary because of static in order to avoid a NonUniqueObjectException
         List<RefdataValue> staticMediumTypes = [RDStore.TITLE_TYPE_DATABASE,RDStore.TITLE_TYPE_EBOOK,RDStore.TITLE_TYPE_JOURNAL]
         RefdataValue.findAllByIdNotInListAndOwner(staticMediumTypes.collect { RefdataValue rdv -> rdv.id },RefdataCategory.findByDesc(RDConstants.TITLE_MEDIUM)).each { RefdataValue rdv ->
@@ -2334,6 +2346,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS).each { RefdataValue rdv ->
             packageStatus.put(rdv.value,rdv)
+        }
+        RefdataCategory.getAllRefdataValues(RDConstants.REGIONS_DE).each { RefdataValue rdv ->
+            regionalRange.put(rdv.value,rdv)
         }
         RefdataCategory.getAllRefdataValues(RDConstants.ORG_STATUS).each { RefdataValue rdv ->
             orgStatus.put(rdv.value,rdv)

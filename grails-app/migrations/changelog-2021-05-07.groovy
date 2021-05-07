@@ -1,0 +1,35 @@
+databaseChangeLog = {
+
+    changeSet(author: "galffy (hand-coded)", id: "1620365933647-1") {
+        grailsChange {
+            change {
+                sql.execute("update refdata_category set rdc_description = 'package.file', rdc_description_de = 'Package.File', rdc_description_en = 'Package.File' where rdc_description = 'package.scope'")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "galffy (modified)", id: "1620365933647-2") {
+        renameColumn(tableName: "package", oldColumnName: "pkg_scope_rv_fk", newColumnName: "pkg_file_rv_fk")
+    }
+
+    changeSet(author: "galffy (generated)", id: "1620365933647-3") {
+        dropForeignKeyConstraint(baseTableName: "package", constraintName: "fkcfe53446d4a9c3d3")
+    }
+
+    changeSet(author: "galffy (generated)", id: "1620365933647-4") {
+        dropColumn(columnName: "pkg_fixed_rv_fk", tableName: "package")
+    }
+
+    changeSet(author: "galffy (generated)", id: "1620365933647-5") {
+        dropColumn(columnName: "pkg_forum_id", tableName: "package")
+    }
+
+    changeSet(author: "galffy (generated)", id: "1620365933647-6") {
+        dropColumn(columnName: "pkg_list_status_rv_fk", tableName: "package")
+    }
+
+    changeSet(author: "galffy (generated)", id: "1620365933647-7") {
+        dropColumn(columnName: "pkg_list_verified_date", tableName: "package")
+    }
+}
