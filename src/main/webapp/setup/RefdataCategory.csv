@@ -94,12 +94,13 @@ org.type,Organisationstyp,Organisation Type
 organisational.role,Organisational Role,Organisational Role
 package.breakable,Package.Breakable,Package.Breakable
 package.consistent,Package.Consistent,Package.Consistent
-package.fixed,Package.Fixed,Package.Fixed
+package.file,Package.File,Package.File
 package.list.status,Package.ListStatus,Package.ListStatus
 package.scope,Package.Scope,Package.Scope
 package.status,Paketstatus,Package Status
 package.type,Package.Type,Package.Type
 package.content.type,Package Content Type,Package Content Type
+payment.type,Payment Type,Payment Type
 pending.change.status,PendingChangeStatus,PendingChangeStatus
 pending.change.configuration.setting,Änderungseinstellung,Pending Change Configuration Setting
 permissions,Berechtigungen,Permissions

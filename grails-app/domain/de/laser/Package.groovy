@@ -8,29 +8,19 @@ import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
-import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait
 import grails.converters.JSON
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.hibernate.Session
 
 import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
 class Package extends AbstractBaseWithCalculatedLastUpdated {
-        //implements ShareSupport {
 
-  //def grailsApplication
-  //def deletionService
     def accessService
-
-    static auditable = [ ignore:['version', 'lastUpdated', 'lastUpdatedCascading', 'pendingChanges'] ]
-    static Log static_logger = LogFactory.getLog(Package)
 
     String name
     String sortName
@@ -38,16 +28,11 @@ class Package extends AbstractBaseWithCalculatedLastUpdated {
     String vendorURL
     String cancellationAllowances
 
-    Date listVerifiedDate
-
     @RefdataAnnotation(cat = RDConstants.PACKAGE_CONTENT_TYPE)
     RefdataValue contentType
 
     @RefdataAnnotation(cat = RDConstants.PACKAGE_STATUS)
     RefdataValue packageStatus
-
-    @RefdataAnnotation(cat = RDConstants.PACKAGE_LIST_STATUS)
-    RefdataValue packageListStatus
 
     @RefdataAnnotation(cat = RDConstants.PACKAGE_BREAKABLE)
     RefdataValue breakable
@@ -55,19 +40,17 @@ class Package extends AbstractBaseWithCalculatedLastUpdated {
     @RefdataAnnotation(cat = RDConstants.PACKAGE_CONSISTENT)
     RefdataValue consistent
 
-    @RefdataAnnotation(cat = RDConstants.PACKAGE_FIXED)
-    RefdataValue fixed
-
-    boolean isPublic = false
+    @RefdataAnnotation(cat = RDConstants.PACKAGE_FILE)
+    RefdataValue file
 
     @RefdataAnnotation(cat = RDConstants.PACKAGE_SCOPE)
-    RefdataValue packageScope
+    RefdataValue scope
+
+    boolean isPublic = false
 
     Platform nominalPlatform
     Date startDate
     Date endDate
-    //License license
-    String forumId
     Set pendingChanges
     SortedSet ids
     SortedSet ddcs
@@ -106,23 +89,19 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                   gokbId column:'pkg_gokb_id'
              contentType column:'pkg_content_type_rv_fk'
            packageStatus column:'pkg_status_rv_fk'
-       packageListStatus column:'pkg_list_status_rv_fk'
+                    file column:'pkg_file_rv_fk'
                breakable column:'pkg_breakable_rv_fk'
               consistent column:'pkg_consistent_rv_fk'
-                   fixed column:'pkg_fixed_rv_fk'
          nominalPlatform column:'pkg_nominal_platform_fk'
                startDate column:'pkg_start_date',   index:'pkg_dates_idx'
                  endDate column:'pkg_end_date',     index:'pkg_dates_idx'
-               //license column:'pkg_license_fk'
                 isPublic column:'pkg_is_public'
-            packageScope column:'pkg_scope_rv_fk'
+            scope column:'pkg_scope_rv_fk'
                vendorURL column:'pkg_vendor_url'
   cancellationAllowances column:'pkg_cancellation_allowances', type:'text'
-                 forumId column:'pkg_forum_id'
                      tipps batchSize: 10
             pendingChanges sort:'ts', order: 'asc', batchSize: 10
 
-            listVerifiedDate column: 'pkg_list_verified_date'
         lastUpdatedCascading column: 'pkg_last_updated_cascading'
 
             orgs            batchSize: 10
@@ -138,20 +117,15 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                contentType (nullable:true)
              packageStatus (nullable:true)
            nominalPlatform (nullable:true)
-         packageListStatus (nullable:true)
                  breakable (nullable:true)
                 consistent (nullable:true)
-                     fixed (nullable:true)
                  startDate (nullable:true)
                    endDate (nullable:true)
-                 //license (nullable:true)
-              packageScope (nullable:true)
-                   forumId(nullable:true, blank:false)
+                     scope (nullable:true)
                     gokbId(blank:false, unique: true, maxSize: 511)
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
-      listVerifiedDate     (nullable:true)
       lastUpdatedCascading (nullable:true)
   }
 

@@ -400,7 +400,7 @@ class PackageController {
         result.packageInstance = packageInstance
 
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-
+        result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
         String esQuery = "?componentType=Package&uuid=${packageInstance.gokbId}"
 
         Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery)
