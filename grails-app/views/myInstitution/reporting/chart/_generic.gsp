@@ -71,8 +71,13 @@
             left: '5%',
             containLabel: true
         },
-        xAxis: { },
-        yAxis: { type: 'category' },
+        xAxis: {
+            offset: 5
+        },
+        yAxis: {
+            type: 'category',
+            offset: 5
+        },
         series: [
             {
                 type: 'bar',

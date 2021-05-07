@@ -135,7 +135,7 @@
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
 
                         if (JSPC.app.reporting.current.request.chart == 'bar') {
-                            $('#chart-wrapper').css('height', 150 + (18 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                            $('#chart-wrapper').css('height', 150 + (19 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                         }
                         else if (JSPC.app.reporting.current.request.chart == 'pie') {
                             $('#chart-wrapper').css('height', 350 + (12 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');

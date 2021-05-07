@@ -19,7 +19,7 @@ class LicenseQuery extends BaseQuery {
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
         String prefix = params.query.split('-')[0]
-        String suffix = params.query.split('-')[1]
+        String suffix = params.query.split('-')[1] // only simply cfg.query
         List idList   = BaseFilter.getCachedFilterIdList(prefix, params)
 
         if (! idList) {
