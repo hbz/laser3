@@ -10,11 +10,13 @@
 
     <semui:modal id="${modalID}" text="CSV-Export" hideSubmitButton="true">
 
-        <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterLabels, tmplSize: 'tiny', tmplShowLabel: true]}" />
-
-        <g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: queryLabels, tmplSize: 'tiny', tmplShowLabel: true]}" />
-
         <p><span class="ui label red">DEMO : in Entwicklung</span></p>
+
+        <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterLabels, tmplSize: 'tiny']}" />
+
+        <g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: queryLabels, tmplSize: 'tiny']}" />
+
+        <br />
 
         <g:form controller="ajaxHtml" action="chartDetailsExport" method="POST" target="_blank">
             <div class="ui form">

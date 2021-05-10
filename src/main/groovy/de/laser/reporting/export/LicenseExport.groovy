@@ -30,10 +30,10 @@ class LicenseExport extends AbstractExport {
                                     'status'            : FIELD_TYPE_REFDATA,
                                     'licenseCategory'   : FIELD_TYPE_REFDATA,
                                     'type'              : FIELD_TYPE_REFDATA,
-                                    '___license_subscriptions'  : FIELD_TYPE_CUSTOM_IMPL,   // AbstractExport.CUSTOM_LABEL - virtual
-                                    '___license_members'        : FIELD_TYPE_CUSTOM_IMPL,   // AbstractExport.CUSTOM_LABEL - virtual
-                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                                    '@ae-license-subscription' : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@ae-license-member'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                             ]
                     ]
             ]
@@ -54,8 +54,8 @@ class LicenseExport extends AbstractExport {
                                     'status'            : FIELD_TYPE_REFDATA,
                                     'licenseCategory'   : FIELD_TYPE_REFDATA,
                                     'type'              : FIELD_TYPE_REFDATA,
-                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                             ]
                     ]
             ]
@@ -138,14 +138,14 @@ class LicenseExport extends AbstractExport {
                     )
                     content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '___license_subscriptions') { // TODO: query
+                else if (key == '@ae-license-subscription') { // TODO: query
                     Long count = License.executeQuery(
                             'select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
                             [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
                     )[0]
                     content.add( count as String )
                 }
-                else if (key == '___license_members') {
+                else if (key == '@ae-license-member') {
                     Long count = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
                     content.add( count as String )
                 }

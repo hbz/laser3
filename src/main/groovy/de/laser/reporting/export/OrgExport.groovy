@@ -14,6 +14,7 @@ import de.laser.helper.RDStore
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -41,11 +42,11 @@ class OrgExport extends AbstractExport {
                                     'country'           : FIELD_TYPE_REFDATA,
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                                     'eInvoice'          : FIELD_TYPE_PROPERTY,
-                                    '___org_contact'        : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL - virtual
-                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                                    '___org_readerNumber'   : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL - virtual
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
-                                    'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL
+                                    '@ae-org-contact'          : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@ae-org-readerNumber'     : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                                    'subjectGroup'          : FIELD_TYPE_CUSTOM_IMPL
                             ],
                             provider: [
                                     'globalUID'         : FIELD_TYPE_PROPERTY,
@@ -54,10 +55,9 @@ class OrgExport extends AbstractExport {
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
-                                    'eInvoice'          : FIELD_TYPE_PROPERTY,
-                                    '___org_contact'    : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL - virtual
-                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                                    '@ae-org-contact'      : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                             ],
                             agency: [
                                     'globalUID'         : FIELD_TYPE_PROPERTY,
@@ -66,10 +66,9 @@ class OrgExport extends AbstractExport {
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
-                                    'eInvoice'          : FIELD_TYPE_PROPERTY,
-                                    '___org_contact'    : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL - virtual
-                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                                    '@ae-org-contact'      : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                             ]
                     ]
             ]
@@ -176,7 +175,7 @@ class OrgExport extends AbstractExport {
                     )
                     content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '___org_contact') {
+                else if (key == '@ae-org-contact') {
 
                     List personList = []
                     List<RefdataValue> funcTypes = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT]
@@ -202,15 +201,15 @@ class OrgExport extends AbstractExport {
 
                     content.add( personList.join( CSV_VALUE_SEPARATOR ) )
                 }
-                else if (key == '___org_readerNumber') {
-
+                else if (key == '@ae-org-readerNumber') {
+                    
                     OrganisationService organisationService = (OrganisationService) Holders.grailsApplication.mainContext.getBean('organisationService')
                     Map<String,Map<String, ReaderNumber>> semesterMap = organisationService.groupReaderNumbersByProperty(
                             ReaderNumber.findAllByOrgAndSemesterIsNotNull( org ), "semester"
                     )
 
                     String all = semesterMap.collect { sem ->
-                        "${sem.key != 'semester.not.applicable' ?: 'Unbekannt' }: " + sem.value.collect { rn ->
+                        sem.key.getI10n('value') + ': ' + sem.value.collect { rn ->
                             rn.key + ' ' + rn.value.value
                         }.join(', ')
                     }.join( CSV_VALUE_SEPARATOR )

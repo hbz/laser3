@@ -19,14 +19,16 @@ abstract class AbstractExport {
     static Map<String, String> CUSTOM_LABEL = [
 
             'globalUID'                 : 'Link (Global UID)',
+
             'x-identifier'              : 'Identifikatoren',            // XYCfg.CONFIG.base.query2.Verteilung
             'x-provider'                : 'Anbieter',                   // XYCfg.CONFIG.base.query2.Verteilung
-            'x-property'                : 'impl @ ExportHelper.getFieldLabel()',
-            '___subscription_members'   : 'Anzahl Teilnehmer',          // virtual
-            '___license_subscriptions'  : 'Anzahl Lizenzen',            // virtual
-            '___license_members'        : 'Anzahl Teilnehmerverträge',  // virtual
-            '___org_contact'            : 'Kontaktdaten',               // virtual
-            '___org_readerNumber'       : 'Nutzerzahlen (Semester)',    // virtual
+            'x-property'                : 'impl @ ExportHelper.getFieldLabel()',    // qdp; dyn. value
+
+            '@ae-subscription-member'   : 'Anzahl Teilnehmer',          // virtual; without XY.CONFIG.base.x
+            '@ae-license-subscription'  : 'Anzahl Lizenzen',            // virtual; without XY.CONFIG.base.x
+            '@ae-license-member'        : 'Anzahl Teilnehmerverträge',  // virtual; without XY.CONFIG.base.x
+            '@ae-org-contact'           : 'Kontaktdaten',               // virtual; without XY.CONFIG.base.x
+            '@ae-org-readerNumber'      : 'Nutzerzahlen (Semester)',    // virtual; without XY.CONFIG.base.x
     ]
 
     String token

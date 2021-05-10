@@ -32,12 +32,12 @@ class SubscriptionExport extends AbstractExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-                                    '___subscription_members'   : FIELD_TYPE_CUSTOM_IMPL,   // AbstractExport.CUSTOM_LABEL - virtual
-                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    '@ae-subscription-member'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
-                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   //  qdp
                             ]
                     ]
             ]
@@ -59,11 +59,11 @@ class SubscriptionExport extends AbstractExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
-                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                             ]
                     ]
             ]
@@ -152,7 +152,7 @@ class SubscriptionExport extends AbstractExport {
                     )
                     content.add( plts.collect{ it.name }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '___subscription_members') {
+                else if (key == '@ae-subscription-member') {
                     int members = Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
                             [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
                     )[0]

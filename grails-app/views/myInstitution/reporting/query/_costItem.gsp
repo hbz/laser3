@@ -8,8 +8,7 @@
 
         <div class="ui message success">
             <p>
-                Mit diesen Filtereinstellungen wurden
-                <strong>${filterResult.data.costItemIdList.size()} Kosten</strong> gefunden.
+                ${message(code: 'reporting.filterResult.costItem', args: [filterResult.data.costItemIdList.size()])}
             </p>
         </div>
 

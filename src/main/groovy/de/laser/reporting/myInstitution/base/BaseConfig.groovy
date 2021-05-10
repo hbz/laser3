@@ -15,6 +15,8 @@ import grails.util.Holders
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
+import java.time.Year
+
 class BaseConfig {
 
     static String KEY_MYINST                    = 'myInstitution'
@@ -119,18 +121,19 @@ class BaseConfig {
         }
         else if (key == CUSTOM_KEY_LEGAL_INFO) {
             return [
-                    label: 'Erstellt bzw. organisiert durch ..', // TODO
+                    label: messageSource.getMessage('reporting.baseConfig.legalInfo.label', null, locale),
                     from: [
-                        [id: 0, value_de: 'Keine Einträge'],
-                        [id: 1, value_de: 'Erstellt von / Organisiert durch (beides)'], // ui icon green check circle
-                        [id: 2, value_de: 'Erstellt von (exklusive)'],                  // ui icon grey outline circle
-                        [id: 3, value_de: 'Organisiert durch (exklusive)']              // ui icon red question mark
+                        [id: 0, value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.0', null, locale)],
+                        [id: 1, value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.1', null, locale)],  // ui icon green check circle
+                        [id: 2, value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.2', null, locale)],  // ui icon grey outline circle
+                        [id: 3, value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.3', null, locale)]   // ui icon red question mark
             ]]
         }
         else if (key == CUSTOM_KEY_ANNUAL) {
+            int y = Year.now().value
             return [
-                    label: 'Jahresring',
-                    from: (2023..2017).collect{[ id: it, value_de: it] }  // TODO hardcoded
+                    label: messageSource.getMessage('reporting.baseConfig.annual.label', null, locale),
+                    from: (y+2..y-5).collect{[ id: it, value_de: it] }
             ]
         }
     }
