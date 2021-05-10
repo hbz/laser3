@@ -390,7 +390,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     packagesToNotify.put(updatedTIPP.packageUUID,diffsOfPackage)
                 }
                 else if(updatedTIPP.status != RDStore.TIPP_STATUS_DELETED.value) {
-                    addNewTIPP(packagesOnPage.get(updatedTIPP.packageUUID), updatedTIPP, platformsOnPage,null)
+                    Package pkg = packagesOnPage.get(updatedTIPP.packageUUID)
+                    if(pkg)
+                        addNewTIPP(pkg, updatedTIPP, platformsOnPage)
                 }
                 Date lastUpdatedTime = DateUtils.parseDateGeneric(tipp.lastUpdatedDisplay)
                 if(lastUpdatedTime.getTime() > maxTimestamp) {
@@ -524,9 +526,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             else {
                 Package pkg = newPackages.get(tippB.packageUUID)
-                if(pkg.packageStatus != RDStore.PACKAGE_STATUS_DELETED) {
+                //Unbelievable! But package may miss at this point!
+                if(pkg && pkg?.packageStatus != RDStore.PACKAGE_STATUS_DELETED) {
                     //new TIPP
-                    TitleInstancePackagePlatform target = addNewTIPP(pkg, tippB, newPlatforms, null)
+                    TitleInstancePackagePlatform target = addNewTIPP(pkg, tippB, newPlatforms)
                     result.event = 'add'
                     result.target = target
                 }
@@ -957,7 +960,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param tippData
      * @return the new {@link TitleInstancePackagePlatform} object
      */
-    TitleInstancePackagePlatform addNewTIPP(Package pkg, Map<String,Object> tippData,Map<String,Platform> platformsInPackage,Map<String,TitleInstance> titleInstancesInPackage) throws SyncException {
+    TitleInstancePackagePlatform addNewTIPP(Package pkg, Map<String,Object> tippData, Map<String,Platform> platformsInPackage) throws SyncException {
         TitleInstancePackagePlatform newTIPP = new TitleInstancePackagePlatform(
                 titleType: tippData.titleType,
                 name: tippData.name,
