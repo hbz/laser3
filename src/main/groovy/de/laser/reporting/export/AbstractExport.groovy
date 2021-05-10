@@ -18,10 +18,10 @@ abstract class AbstractExport {
 
     static Map<String, String> CUSTOM_LABEL = [
 
-            'globalUID'              : 'Link (Global UID)',
-            'identifier-assignment'     : 'Identifikatoren',            // XYCfg.CONFIG.base.query2.Verteilung
-            'provider-assignment'       : 'Anbieter',                   // XYCfg.CONFIG.base.query2.Verteilung
-            'property-assignment'       : 'impl @ ExportHelper.getFieldLabel()',
+            'globalUID'                 : 'Link (Global UID)',
+            'x-identifier'              : 'Identifikatoren',            // XYCfg.CONFIG.base.query2.Verteilung
+            'x-provider'                : 'Anbieter',                   // XYCfg.CONFIG.base.query2.Verteilung
+            'x-property'                : 'impl @ ExportHelper.getFieldLabel()',
             '___subscription_members'   : 'Anzahl Teilnehmer',          // virtual
             '___license_subscriptions'  : 'Anzahl Lizenzen',            // virtual
             '___license_members'        : 'Anzahl Teilnehmerverträge',  // virtual

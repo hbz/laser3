@@ -33,11 +33,11 @@ class SubscriptionExport extends AbstractExport {
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
                                     '___subscription_members'   : FIELD_TYPE_CUSTOM_IMPL,   // AbstractExport.CUSTOM_LABEL - virtual
-                                    'provider-assignment'   : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
-                                    'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                                    'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
                             ]
                     ]
             ]
@@ -59,11 +59,11 @@ class SubscriptionExport extends AbstractExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-                                    'provider-assignment'   : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
-                                    'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                                    'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
                             ]
                     ]
             ]

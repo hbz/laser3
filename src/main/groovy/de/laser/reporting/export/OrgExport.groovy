@@ -41,10 +41,10 @@ class OrgExport extends AbstractExport {
                                     'country'           : FIELD_TYPE_REFDATA,
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                                     'eInvoice'          : FIELD_TYPE_PROPERTY,
-                                    '___org_contact'            : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL - virtual
-                                    'identifier-assignment'     : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                                    '___org_readerNumber'       : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL - virtual
-                                    'property-assignment'       : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                                    '___org_contact'        : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL - virtual
+                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    '___org_readerNumber'   : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL - virtual
+                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
                                     'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL
                             ],
                             provider: [
@@ -55,9 +55,9 @@ class OrgExport extends AbstractExport {
                                     'country'           : FIELD_TYPE_REFDATA,
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                                     'eInvoice'          : FIELD_TYPE_PROPERTY,
-                                    '___org_contact'            : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL - virtual
-                                    'identifier-assignment'     : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                                    'property-assignment'       : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                                    '___org_contact'    : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL - virtual
+                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
                             ],
                             agency: [
                                     'globalUID'         : FIELD_TYPE_PROPERTY,
@@ -67,9 +67,9 @@ class OrgExport extends AbstractExport {
                                     'country'           : FIELD_TYPE_REFDATA,
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                                     'eInvoice'          : FIELD_TYPE_PROPERTY,
-                                    '___org_contact'            : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL - virtual
-                                    'identifier-assignment'     : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                                    'property-assignment'       : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                                    '___org_contact'    : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL - virtual
+                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
+                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
                             ]
                     ]
             ]
