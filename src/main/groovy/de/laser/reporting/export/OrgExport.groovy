@@ -69,11 +69,7 @@ class OrgExport extends AbstractExport {
                                     '@ae-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
-                            ],
-                            member: [
-                                    'globalUID'         : FIELD_TYPE_PROPERTY,
-                                    'sortname'          : FIELD_TYPE_PROPERTY
-                                    ]
+                            ]
                     ]
             ]
     ]
