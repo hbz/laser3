@@ -67,7 +67,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                <g:each in="${records}" var="record" status="jj">
+                <g:each in="${records}" var="entry" status="jj">
+                    <g:if test="${entry._source}">
+                        <g:set var="record" value="${entry._source}"/>
+                    </g:if>
+                    <g:else>
+                        <g:set var="record" value="${entry}"/>
+                    </g:else>
                     <tr>
                         <g:set var="pkg" value="${Package.findByGokbId(record.uuid)}"/>
                         <g:set var="org" value="${Org.findByGokbId(record.providerUuid)}"/>
