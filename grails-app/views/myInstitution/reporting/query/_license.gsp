@@ -8,12 +8,12 @@
 
         <div class="ui message success">
             <p>
-                Mit diesen Filtereinstellungen wurden
-                <strong>${filterResult.data.licenseIdList.size()} Verträge</strong>
+                ${message(code: 'reporting.filterResult.license.part', args: [filterResult.data.licenseIdList.size()])}
+
                 <g:if test="${filterResult.data.licensorIdList.size()}">
-                    und <strong>${filterResult.data.licensorIdList.size()} Lizenzgeber</strong>
+                    ${message(code: 'reporting.filterResult.and.licensor', args: [filterResult.data.licensorIdList.size()])}
                 </g:if>
-                gefunden.
+                ${message(code: 'reporting.filterResult.end')}
             </p>
         </div>
 

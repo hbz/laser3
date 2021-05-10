@@ -2,9 +2,7 @@ package de.laser.reporting.myInstitution
 
 import de.laser.ContextService
 import de.laser.Org
-import de.laser.Subscription
 import de.laser.auth.Role
-import de.laser.helper.RDStore
 import de.laser.reporting.myInstitution.base.BaseFilter
 import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.util.Holders
@@ -105,27 +103,30 @@ class OrganisationQuery extends BaseQuery {
                     result
             )
         }
-        else if ( params.query in ['org-identifier-assignment']) {
+        else if ( suffix in ['x']) {
 
-            handleGenericIdentifierAssignmentQuery(
-                    params.query,
-                    'select ns.id, ns.ns, count(*) from Org o join o.ids ident join ident.ns ns where o.id in (:idList)',
-                    'select o.id from Org o join o.ids ident join ident.ns ns where o.id in (:idList)',
-                    'select o.id from Org o where o.id in (:idList)', // modified idList
-                    idList,
-                    result
-            )
-        }
-        else if ( params.query in ['org-property-assignment']) {
+            if (params.query in ['org-x-identifier']) {
 
-            handleGenericPropertyAssignmentQuery(
-                    params.query,
-                    'select pd.id, pd.name, count(*) from Org o join o.propertySet prop join prop.type pd where o.id in (:idList)',
-                    'select o.id from Org o join o.propertySet prop join prop.type pd where o.id in (:idList)',
-                    idList,
-                    contextService.getOrg(),
-                    result
-            )
+                handleGenericIdentifierXQuery(
+                        params.query,
+                        'select ns.id, ns.ns, count(*) from Org o join o.ids ident join ident.ns ns where o.id in (:idList)',
+                        'select o.id from Org o join o.ids ident join ident.ns ns where o.id in (:idList)',
+                        'select o.id from Org o where o.id in (:idList)', // modified idList
+                        idList,
+                        result
+                )
+            }
+            else if (params.query in ['org-x-property']) {
+
+                handleGenericPropertyXQuery(
+                        params.query,
+                        'select pd.id, pd.name, count(*) from Org o join o.propertySet prop join prop.type pd where o.id in (:idList)',
+                        'select o.id from Org o join o.propertySet prop join prop.type pd where o.id in (:idList)',
+                        idList,
+                        contextService.getOrg(),
+                        result
+                )
+            }
         }
 
         result

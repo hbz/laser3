@@ -42,19 +42,19 @@ class LicenseConsCfg extends BaseConfig {
                     ],
                     query2 : [
                             'Verteilung' : [ // TODO ..
-                                    'license-property-assignment' : [
+                                    'license-x-property' : [
                                             label               : 'Vertrag → Merkmale (eigene/allgemeine)',
                                             detailsTemplate     : 'license',
                                             chartTemplate       : '2axis2values',
                                             chartLabels         : [ 'Verträge', 'Vergebene Merkmale (eigene/allgemeine)' ]
                                     ],
-                                    'license-identifier-assignment' : [
+                                    'license-x-identifier' : [
                                             label               : 'Vertrag → Identifikatoren',
                                             detailsTemplate     : 'license',
                                             chartTemplate       : '2axis2values_nonMatches',
                                             chartLabels         : [ 'Verträge', 'Vergebene Identifikatoren' ]
                                     ],
-                                    'license-annual-assignment' : [
+                                    'license-x-annual' : [
                                             label               : 'Vertrag → Jahresring',
                                             detailsTemplate     : 'license',
                                             chartTemplate       : 'generic',

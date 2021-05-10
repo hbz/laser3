@@ -1,6 +1,7 @@
 package de.laser.reporting.export
 
 import de.laser.ContextService
+import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 
 abstract class AbstractExport {
@@ -19,13 +20,16 @@ abstract class AbstractExport {
     static Map<String, String> CUSTOM_LABEL = [
 
             'globalUID'                 : 'Link (Global UID)',
-            'identifier-assignment'     : 'Identifikatoren',
-            'provider-assignment'       : 'Anbieter',
-            'property-assignment'       : 'impl @ ExportHelper.getFieldLabel()',
-            '___subscription_members'   : 'Anzahl Teilnehmer',          // virtual
-            '___license_subscriptions'  : 'Anzahl Lizenzen',            // virtual
-            '___license_members'        : 'Anzahl Teilnehmerverträge',  // virtual
-            '___org_contact'            : 'Kontaktdaten',               // virtual
+
+            'x-identifier'              : 'Identifikatoren',            // XYCfg.CONFIG.base.query2.Verteilung
+            'x-provider'                : 'Anbieter',                   // XYCfg.CONFIG.base.query2.Verteilung
+            'x-property'                : 'impl @ ExportHelper.getFieldLabel()',    // qdp; dyn. value
+
+            '@ae-subscription-member'   : 'Anzahl Teilnehmer',          // virtual; without XY.CONFIG.base.x
+            '@ae-license-subscription'  : 'Anzahl Lizenzen',            // virtual; without XY.CONFIG.base.x
+            '@ae-license-member'        : 'Anzahl Teilnehmerverträge',  // virtual; without XY.CONFIG.base.x
+            '@ae-org-contact'           : 'Kontaktdaten',               // virtual; without XY.CONFIG.base.x
+            '@ae-org-readerNumber'      : 'Nutzerzahlen (Semester)',    // virtual; without XY.CONFIG.base.x
     ]
 
     String token
@@ -59,7 +63,19 @@ abstract class AbstractExport {
         }
     }
 
-    abstract Map<String, Object> getAllFields()
+    Map<String, Object> getAllFields() {
+        String cfg   = ExportHelper.getCachedConfigStrategy( token )
+        String field = ExportHelper.getCachedFieldStrategy( token )
+
+        Map<String, Object> base = getCurrentConfig( KEY ).base as Map
+
+        if (! base.fields.keySet().contains(cfg)) {
+            cfg = 'default'
+        }
+        base.fields.get(cfg).findAll {
+            (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == field)
+        }
+    }
 
     abstract Map<String, Object> getSelectedFields()
 

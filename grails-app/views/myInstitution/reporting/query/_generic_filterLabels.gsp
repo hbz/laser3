@@ -1,11 +1,4 @@
 <div class="ui ${tmplSize ?: 'small'} steps">
-    <g:if test="${tmplShowLabel}">
-        <div class="step active">
-            <div class="content">
-                <div class="title">Abfrage :</div>
-            </div>
-        </div>
-    </g:if>
     <g:each in="${filterLabels}" var="lblGroup">
         <div class="step">
             <div class="content">

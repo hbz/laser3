@@ -128,13 +128,14 @@ class ReportingService {
             }
 
             String prefix = params.query.split('-')[0]
+            String suffix = params.query.split('-')[1]
 
             if (prefix in ['license']) {
                 result.putAll( LicenseQuery.query(clone) )
                 result.labels.tooltip = getTooltipLabels(clone)
                 result.tmpl = '/myInstitution/reporting/chart/generic'
 
-                if (clone.query.endsWith('assignment')) {
+                if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels')
@@ -146,7 +147,7 @@ class ReportingService {
                 result.labels.tooltip = getTooltipLabels(clone)
                 result.tmpl = '/myInstitution/reporting/chart/generic'
 
-                if (clone.query.endsWith('assignment')) {
+                if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels')
@@ -158,7 +159,7 @@ class ReportingService {
                 result.labels.tooltip = getTooltipLabels(clone)
                 result.tmpl = '/myInstitution/reporting/chart/generic'
 
-                if (clone.query.endsWith('assignment')) {
+                if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig(BaseConfig.KEY_SUBSCRIPTION).base.query2.getAt('Verteilung').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels')
@@ -209,6 +210,7 @@ class ReportingService {
         if (params.context == BaseConfig.KEY_MYINST && params.query) {
 
             String prefix = params.query.split('-')[0]
+            String suffix = params.query.split('-')[1]
             List idList = []
 
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
@@ -240,7 +242,7 @@ class ReportingService {
             if (cfg) {
                 result.labels = BaseQuery.getQueryLabels( cfg, params )
 
-                if (params.query.endsWith('assignment')) {
+                if (suffix in ['x']) {
 
                     String tmpl = cfg.base.query2.get('Verteilung').get(params.query).detailsTemplate
                     result.tmpl = '/myInstitution/reporting/details/' + tmpl
@@ -284,10 +286,10 @@ class ReportingService {
             cacheMap.queryCache.labels.put('labels', result.labels)
 
             cacheMap.detailsCache = [
-                    prefix : prefix,
-                    id :     params.long('id'),
-                    idList : result.list.collect{ it.id }, // only existing ids
-                    tmpl :   result.tmpl
+                    query   : params.query,
+                    tmpl    : result.tmpl,
+                    id      : params.long('id'),
+                    idList  : result.list.collect{ it.id }, // only existing ids
             ]
 
             sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)
