@@ -22,17 +22,19 @@ class LicenseExport extends AbstractExport {
                             class: License
                     ],
                     fields : [
-                            'globalUID'         : FIELD_TYPE_PROPERTY,
-                            'reference'         : FIELD_TYPE_PROPERTY,
-                            'startDate'         : FIELD_TYPE_PROPERTY,
-                            'endDate'           : FIELD_TYPE_PROPERTY,
-                            'status'            : FIELD_TYPE_REFDATA,
-                            'licenseCategory'   : FIELD_TYPE_REFDATA,
-                            'type'              : FIELD_TYPE_REFDATA,
-                            '___license_subscriptions'  : FIELD_TYPE_CUSTOM_IMPL,   // AbstractExport.CUSTOM_LABEL - virtual
-                            '___license_members'        : FIELD_TYPE_CUSTOM_IMPL,   // AbstractExport.CUSTOM_LABEL - virtual
-                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                            default: [
+                                    'globalUID'         : FIELD_TYPE_PROPERTY,
+                                    'reference'         : FIELD_TYPE_PROPERTY,
+                                    'startDate'         : FIELD_TYPE_PROPERTY,
+                                    'endDate'           : FIELD_TYPE_PROPERTY,
+                                    'status'            : FIELD_TYPE_REFDATA,
+                                    'licenseCategory'   : FIELD_TYPE_REFDATA,
+                                    'type'              : FIELD_TYPE_REFDATA,
+                                    '@ae-license-subscription' : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@ae-license-member'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                            ]
                     ]
             ]
     ]
@@ -44,15 +46,17 @@ class LicenseExport extends AbstractExport {
                             class: License
                     ],
                     fields : [
-                            'globalUID'         : FIELD_TYPE_PROPERTY,
-                            'reference'         : FIELD_TYPE_PROPERTY,
-                            'startDate'         : FIELD_TYPE_PROPERTY,
-                            'endDate'           : FIELD_TYPE_PROPERTY,
-                            'status'            : FIELD_TYPE_REFDATA,
-                            'licenseCategory'   : FIELD_TYPE_REFDATA,
-                            'type'              : FIELD_TYPE_REFDATA,
-                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                            default: [
+                                    'globalUID'         : FIELD_TYPE_PROPERTY,
+                                    'reference'         : FIELD_TYPE_PROPERTY,
+                                    'startDate'         : FIELD_TYPE_PROPERTY,
+                                    'endDate'           : FIELD_TYPE_PROPERTY,
+                                    'status'            : FIELD_TYPE_REFDATA,
+                                    'licenseCategory'   : FIELD_TYPE_REFDATA,
+                                    'type'              : FIELD_TYPE_REFDATA,
+                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                            ]
                     ]
             ]
     ]
@@ -60,15 +64,6 @@ class LicenseExport extends AbstractExport {
     LicenseExport (String token, Map<String, Object> fields) {
         this.token = token
         selectedExportFields = getAllFields().findAll{ it.key in fields.keySet() }
-    }
-
-    @Override
-    Map<String, Object> getAllFields() {
-        String suffix = ExportHelper.getCachedQuerySuffix(token)
-
-        getCurrentConfig( KEY ).base.fields.findAll {
-            (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == suffix)
-        }
     }
 
     @Override
@@ -137,20 +132,20 @@ class LicenseExport extends AbstractExport {
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
-                if (key == 'identifier-assignment') {
+                if (key == 'x-identifier') {
                     List<Identifier> ids = Identifier.executeQuery(
                             "select i from Identifier i where i.value != null and i.value != '' and i.lic = :lic", [lic: lic]
                     )
                     content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '___license_subscriptions') { // TODO: query
+                else if (key == '@ae-license-subscription') { // TODO: query
                     Long count = License.executeQuery(
                             'select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
                             [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
                     )[0]
                     content.add( count as String )
                 }
-                else if (key == '___license_members') {
+                else if (key == '@ae-license-member') {
                     Long count = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
                     content.add( count as String )
                 }
@@ -158,7 +153,7 @@ class LicenseExport extends AbstractExport {
             // --> custom query depending filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
 
-                if (key == 'property-assignment') {
+                if (key == 'x-property') {
                     Long pdId = BaseDetails.getDetailsCache(token).id as Long
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(lic, pdId, contextService.getOrg())

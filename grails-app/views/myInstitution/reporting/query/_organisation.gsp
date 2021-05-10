@@ -8,8 +8,7 @@
 
         <div class="ui message success">
             <p>
-                Mit diesen Filtereinstellungen wurden
-                <strong>${filterResult.data.orgIdList.size()} Organisationen</strong> gefunden.
+                ${message(code: 'reporting.filterResult.organisation', args: [filterResult.data.orgIdList.size()])}
             </p>
         </div>
 

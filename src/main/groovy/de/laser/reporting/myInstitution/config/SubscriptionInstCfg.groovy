@@ -51,31 +51,31 @@ class SubscriptionInstCfg extends BaseConfig {
                     ],
                     query2 : [
                             'Verteilung' : [ // TODO ..
-                                     'subscription-provider-assignment' : [
+                                     'subscription-x-provider' : [
                                              label              : 'Lizenz → Anbieter',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
                                      ],
-                                     'subscription-platform-assignment' : [
+                                     'subscription-x-platform' : [
                                              label              : 'Lizenz → Anbieter → Plattform',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : '2axis2values_nonMatches',
                                              chartLabels        : [ 'Ermittelt durch Bestand', 'Zuordnung über Anbieter' ]
                                      ],
-                                     'subscription-property-assignment' : [
+                                     'subscription-x-property' : [
                                              label              : 'Lizenz → Merkmale (eigene/allgemeine)',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : '2axis2values',
                                              chartLabels        : [ 'Lizenzen', 'Vergebene Merkmale (eigene/allgemeine)' ]
                                      ],
-                                     'subscription-identifier-assignment' : [
+                                     'subscription-x-identifier' : [
                                              label              : 'Lizenz → Identifikatoren',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : '2axis2values_nonMatches',
                                              chartLabels        : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
                                      ],
-                                     'subscription-annual-assignment' : [
+                                     'subscription-x-annual' : [
                                              label              : 'Lizenz → Jahresring',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
