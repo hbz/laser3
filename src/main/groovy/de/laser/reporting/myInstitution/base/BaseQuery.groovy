@@ -164,7 +164,7 @@ class BaseQuery {
         handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
     }
 
-    static void handleGenericIdentifierAssignmentQuery(String query, String dataHqlPart, String dataDetailsHqlPart, String nonMatchingHql, List idList, Map<String, Object> result) {
+    static void handleGenericIdentifierXQuery(String query, String dataHqlPart, String dataDetailsHqlPart, String nonMatchingHql, List idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery(
                 dataHqlPart + " and ident.value is not null and trim(ident.value) != '' group by ns.id order by ns.ns",
@@ -203,7 +203,7 @@ class BaseQuery {
         }
     }
 
-    static void handleGenericPropertyAssignmentQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List idList, Org ctxOrg, Map<String, Object> result) {
+    static void handleGenericPropertyXQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List idList, Org ctxOrg, Map<String, Object> result) {
 
         String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
@@ -230,7 +230,7 @@ class BaseQuery {
         }
     }
 
-    static void handleGenericAnnualAssignmentQuery(String query, String domainClass, List idList, Map<String, Object> result) {
+    static void handleGenericAnnualXQuery(String query, String domainClass, List idList, Map<String, Object> result) {
 
         List years = Org.executeQuery( 'select distinct YEAR(dc.startDate) from ' + domainClass + ' dc' )
         years.addAll( Org.executeQuery( 'select distinct YEAR(dc.endDate) from ' + domainClass + ' dc' ) )

@@ -51,7 +51,7 @@ class ExportHelper {
 
     static String getFieldLabel(String token, Map<String, Object> objConfig, String fieldName) {
 
-        if (fieldName == 'property-assignment') {
+        if (fieldName == 'x-property') {
             return 'Merkmal: ' + BaseQuery.getQueryCache(token).labels.labels[2] // TODO TODO TODO
         }
         else if (AbstractExport.CUSTOM_LABEL.containsKey(fieldName)) {
@@ -74,6 +74,6 @@ class ExportHelper {
 
     static String getFileName(List<String> labels) {
 
-        labels.collect{ it.replaceAll('→', '').replaceAll(' ', '') }.join('_')
+        labels.collect{ it.replaceAll('→', '_').replaceAll(' ', '') }.join('_')
     }
 }

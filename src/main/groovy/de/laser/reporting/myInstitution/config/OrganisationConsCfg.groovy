@@ -89,7 +89,7 @@ class OrganisationConsCfg extends BaseConfig {
                                             chartTemplate       : '2axis2values_nonMatches',
                                             chartLabels         : [ 'Organisationen', 'Vergebene Identifikatoren' ]
                                     ]
-                                    //'org-serverAccess-assignment' : 'Organisation nach Datenweitergabe',
+                                    //'org-x-serverAccess' : 'Organisation nach Datenweitergabe',
                             ]
                     ]
             ]

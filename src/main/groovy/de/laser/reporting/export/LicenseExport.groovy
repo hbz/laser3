@@ -132,7 +132,7 @@ class LicenseExport extends AbstractExport {
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
-                if (key == 'identifier-assignment') {
+                if (key == 'x-identifier') {
                     List<Identifier> ids = Identifier.executeQuery(
                             "select i from Identifier i where i.value != null and i.value != '' and i.lic = :lic", [lic: lic]
                     )
@@ -153,7 +153,7 @@ class LicenseExport extends AbstractExport {
             // --> custom query depending filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
 
-                if (key == 'property-assignment') {
+                if (key == 'x-property') {
                     Long pdId = BaseDetails.getDetailsCache(token).id as Long
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(lic, pdId, contextService.getOrg())

@@ -170,7 +170,7 @@ class OrgExport extends AbstractExport {
                         content.add( '' )
                     }
                 }
-                else if (key == 'identifier-assignment') {
+                else if (key == 'x-identifier') {
                     List<Identifier> ids = Identifier.executeQuery(
                             "select i from Identifier i where i.value != null and i.value != '' and i.org = :org", [org: org]
                     )
@@ -221,7 +221,7 @@ class OrgExport extends AbstractExport {
             // --> custom query depending filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
 
-                if (key == 'property-assignment') {
+                if (key == 'x-property') {
                     Long pdId = BaseDetails.getDetailsCache(token).id as Long
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(org, pdId, contextService.getOrg())

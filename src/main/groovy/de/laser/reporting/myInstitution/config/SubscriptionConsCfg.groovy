@@ -81,7 +81,7 @@ class SubscriptionConsCfg extends BaseConfig {
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
                                      ],
-//                                     'subscription-subscription-provider-assignment' : [
+//                                     'subscription-x-subscription-provider' : [
 //                                            label : 'Teilnehmerlizenz → Anbieter',
 //                                            chartTemplate : 'generic',
 //                                            chartLabels : []
