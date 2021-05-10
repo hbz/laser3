@@ -1,6 +1,7 @@
 package de.laser.reporting.export
 
 import de.laser.ContextService
+import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 
 abstract class AbstractExport {
@@ -63,16 +64,16 @@ abstract class AbstractExport {
     }
 
     Map<String, Object> getAllFields() {
-        String fkey   = ExportHelper.getCachedQueryFieldKey( token )
-        String suffix = ExportHelper.getCachedQuerySuffix( token )
+        String cfg   = ExportHelper.getCachedConfigStrategy( token )
+        String field = ExportHelper.getCachedFieldStrategy( token )
 
         Map<String, Object> base = getCurrentConfig( KEY ).base as Map
 
-        if (! base.fields.keySet().contains(fkey)) {
-            fkey = 'default'
+        if (! base.fields.keySet().contains(cfg)) {
+            cfg = 'default'
         }
-        base.fields.get(fkey).findAll {
-            (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == suffix)
+        base.fields.get(cfg).findAll {
+            (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == field)
         }
     }
 

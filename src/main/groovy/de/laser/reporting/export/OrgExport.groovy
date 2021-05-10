@@ -42,9 +42,9 @@ class OrgExport extends AbstractExport {
                                     'country'           : FIELD_TYPE_REFDATA,
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                                     'eInvoice'          : FIELD_TYPE_PROPERTY,
-                                    '@ae-org-contact'          : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@ae-org-contact'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@ae-org-readerNumber'     : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@ae-org-readerNumber'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                                     'subjectGroup'          : FIELD_TYPE_CUSTOM_IMPL
                             ],
@@ -55,7 +55,7 @@ class OrgExport extends AbstractExport {
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@ae-org-contact'      : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@ae-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                             ],
@@ -66,10 +66,14 @@ class OrgExport extends AbstractExport {
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@ae-org-contact'      : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@ae-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
-                            ]
+                            ],
+                            member: [
+                                    'globalUID'         : FIELD_TYPE_PROPERTY,
+                                    'sortname'          : FIELD_TYPE_PROPERTY
+                                    ]
                     ]
             ]
     ]

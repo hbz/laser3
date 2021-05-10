@@ -9,30 +9,24 @@ class ExportHelper {
 
     // ----- Cache -----
 
-    static String getCachedQueryPrefix(String token) {
-
-        Map<String, Object> detailsCache = BaseDetails.getDetailsCache(token)
-        detailsCache.query.split('-')[0]
-    }
-
-    static String getCachedQuerySuffix(String token) {
-
-        Map<String, Object> detailsCache = BaseDetails.getDetailsCache(token)
-        detailsCache.query.split('-')[1]
-    }
-
-    static String getCachedQueryFieldKey(String token) {
-
-        Map<String, Object> detailsCache = BaseDetails.getDetailsCache(token)
-        List<String> queryParts = detailsCache.query.split('-')
-        queryParts.size() == 3 ? queryParts[1] : queryParts[0]
-    }
-
-    static String getCachedTmplStrategy(String token) {
+    static String getCachedExportStrategy(String token) {
 
         Map<String, Object> detailsCache = BaseDetails.getDetailsCache(token)
         List parts = detailsCache.tmpl.split('/')
         parts[parts.size()-1]
+    }
+
+    static String getCachedConfigStrategy(String token) {
+
+        Map<String, Object> detailsCache = BaseDetails.getDetailsCache(token)
+        List<String> queryParts = detailsCache.query.split('-')
+        queryParts.size() == 3 ? queryParts[2] : queryParts[0]
+    }
+
+    static String getCachedFieldStrategy(String token) {
+
+        Map<String, Object> detailsCache = BaseDetails.getDetailsCache(token)
+        detailsCache.query.substring( detailsCache.query.indexOf('-') + 1 )
     }
 
     // -----
@@ -60,13 +54,13 @@ class ExportHelper {
 
         // --- adapter ---
 
-        String fkey = getCachedQueryFieldKey(token)
-        if (! objConfig.fields.keySet().contains(fkey)) {
-            fkey = 'default'
+        String cfg = getCachedConfigStrategy(token)
+        if (! objConfig.fields.keySet().contains(cfg)) {
+            cfg = 'default'
         }
         Map<String, Object> objConfig2 = [
                 meta   : objConfig.meta,
-                fields : objConfig.fields.get(fkey)
+                fields : objConfig.fields.get(cfg)
         ]
 
         GenericHelper.getFieldLabel( objConfig2, fieldName )
