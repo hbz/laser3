@@ -116,24 +116,42 @@ class BaseConfig {
             List<Role> roles = Role.findAllByRoleType('org')
             return [
                     label: messageSource.getMessage('org.setting.CUSTOMER_TYPE', null, locale),
-                    from: roles.collect{[ id: it.id, value_de: it.getI10n('authority') ] }
+                    from: roles.collect{[id: it.id,
+                                         value_de: it.getI10n('authority', 'de'),
+                                         value_en: it.getI10n('authority', 'en')
+                    ] }
             ]
         }
         else if (key == CUSTOM_KEY_LEGAL_INFO) {
+            Locale localeDe = new Locale.Builder().setLanguage("de").build()
+            Locale localeEn = new Locale.Builder().setLanguage("en").build()
+
             return [
                     label: messageSource.getMessage('reporting.baseConfig.legalInfo.label', null, locale),
                     from: [
-                        [id: 0, value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.0', null, locale)],
-                        [id: 1, value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.1', null, locale)],  // ui icon green check circle
-                        [id: 2, value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.2', null, locale)],  // ui icon grey outline circle
-                        [id: 3, value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.3', null, locale)]   // ui icon red question mark
+                        [   id: 0,
+                            value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.0', null, localeDe),
+                            value_en: messageSource.getMessage('reporting.baseConfig.legalInfo.0', null, localeEn),
+                        ],
+                        [   id: 1,
+                            value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.1', null, localeDe),
+                            value_en: messageSource.getMessage('reporting.baseConfig.legalInfo.1', null, localeEn),
+                        ],  // ui icon green check circle
+                        [   id: 2,
+                            value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.2', null, localeDe),
+                            value_en: messageSource.getMessage('reporting.baseConfig.legalInfo.2', null, localeEn),
+                        ],  // ui icon grey outline circle
+                        [   id: 3,
+                            value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.3', null, localeDe),
+                            value_en: messageSource.getMessage('reporting.baseConfig.legalInfo.3', null, localeEn),
+                        ]   // ui icon red question mark
             ]]
         }
         else if (key == CUSTOM_KEY_ANNUAL) {
             int y = Year.now().value
             return [
                     label: messageSource.getMessage('reporting.baseConfig.annual.label', null, locale),
-                    from: (y+2..y-5).collect{[ id: it, value_de: it] }
+                    from: (y+2..y-5).collect{[ id: it, value_de: it, value_en: it] }
             ]
         }
     }

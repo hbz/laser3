@@ -8,7 +8,7 @@
     <g:set var="filterLabels" value="${ExportHelper.getCachedFilterLabels( token )}" />
     <g:set var="queryLabels" value="${ExportHelper.getCachedQueryLabels( token )}" />
 
-    <semui:modal id="${modalID}" text="CSV-Export" hideSubmitButton="true">
+    <semui:modal id="${modalID}" text="CSV-${message(code: 'reporting.export.key.' + export.KEY)}" hideSubmitButton="true">
 
         <p><span class="ui label red">DEMO : in Entwicklung</span></p>
 
