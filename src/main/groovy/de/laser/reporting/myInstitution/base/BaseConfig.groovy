@@ -15,6 +15,8 @@ import grails.util.Holders
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
+import java.time.Year
+
 class BaseConfig {
 
     static String KEY_MYINST                    = 'myInstitution'
@@ -114,23 +116,42 @@ class BaseConfig {
             List<Role> roles = Role.findAllByRoleType('org')
             return [
                     label: messageSource.getMessage('org.setting.CUSTOMER_TYPE', null, locale),
-                    from: roles.collect{[ id: it.id, value_de: it.getI10n('authority') ] }
+                    from: roles.collect{[id: it.id,
+                                         value_de: it.getI10n('authority', 'de'),
+                                         value_en: it.getI10n('authority', 'en')
+                    ] }
             ]
         }
         else if (key == CUSTOM_KEY_LEGAL_INFO) {
+            Locale localeDe = new Locale.Builder().setLanguage("de").build()
+            Locale localeEn = new Locale.Builder().setLanguage("en").build()
+
             return [
-                    label: 'Erstellt bzw. organisiert durch ..', // TODO
+                    label: messageSource.getMessage('reporting.baseConfig.legalInfo.label', null, locale),
                     from: [
-                        [id: 0, value_de: 'Keine Einträge'],
-                        [id: 1, value_de: 'Erstellt von / Organisiert durch (beides)'], // ui icon green check circle
-                        [id: 2, value_de: 'Erstellt von (exklusive)'],                  // ui icon grey outline circle
-                        [id: 3, value_de: 'Organisiert durch (exklusive)']              // ui icon red question mark
+                        [   id: 0,
+                            value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.0', null, localeDe),
+                            value_en: messageSource.getMessage('reporting.baseConfig.legalInfo.0', null, localeEn),
+                        ],
+                        [   id: 1,
+                            value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.1', null, localeDe),
+                            value_en: messageSource.getMessage('reporting.baseConfig.legalInfo.1', null, localeEn),
+                        ],  // ui icon green check circle
+                        [   id: 2,
+                            value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.2', null, localeDe),
+                            value_en: messageSource.getMessage('reporting.baseConfig.legalInfo.2', null, localeEn),
+                        ],  // ui icon grey outline circle
+                        [   id: 3,
+                            value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.3', null, localeDe),
+                            value_en: messageSource.getMessage('reporting.baseConfig.legalInfo.3', null, localeEn),
+                        ]   // ui icon red question mark
             ]]
         }
         else if (key == CUSTOM_KEY_ANNUAL) {
+            int y = Year.now().value
             return [
-                    label: 'Jahresring',
-                    from: (2023..2017).collect{[ id: it, value_de: it] }  // TODO hardcoded
+                    label: messageSource.getMessage('reporting.baseConfig.annual.label', null, locale),
+                    from: (y+2..y-5).collect{[ id: it, value_de: it, value_en: it] }
             ]
         }
     }

@@ -9,10 +9,10 @@
             <tr>
                 <th></th>
                 <th>${message(code:'license.label')}</th>
-                    <g:if test="${query == 'license-property-assignment'}">
+                    <g:if test="${query == 'license-x-property'}">
                         <th>${message(code:'reporting.details.property.value')}</th>
                     </g:if>
-                    <g:elseif test="${query == 'org-identifier-assignment'}">
+                    <g:elseif test="${query == 'org-x-identifier'}">
                         <th>${message(code:'identifier.label')}</th>
                     </g:elseif>
                     <g:else>
@@ -34,7 +34,7 @@
                     <td>
                         <g:link controller="license" action="show" id="${lic.id}" target="_blank">${lic.reference}</g:link>
                     </td>
-                    <g:if test="${query == 'license-property-assignment'}">
+                    <g:if test="${query == 'license-x-property'}">
                         <td>
                             <%
                                 List<LicenseProperty> properties = BaseDetails.getPropertiesGeneric(lic, id as Long, contextService.getOrg()) as List<LicenseProperty>
@@ -52,7 +52,7 @@
                             %>
                         </td>
                     </g:if>
-                    <g:elseif test="${query == 'org-identifier-assignment'}">
+                    <g:elseif test="${query == 'org-x-identifier'}">
                         <td>
                             <%
                                 List<Identifier> identList = Identifier.findAllByLicAndNs(lic, IdentifierNamespace.get(id))

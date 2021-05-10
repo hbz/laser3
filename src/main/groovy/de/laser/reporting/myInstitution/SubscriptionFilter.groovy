@@ -13,8 +13,6 @@ import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.ApplicationContext
 
-import java.time.YearMonth
-
 class SubscriptionFilter extends BaseFilter {
 
     def contextService

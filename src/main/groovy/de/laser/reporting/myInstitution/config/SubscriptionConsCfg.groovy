@@ -51,48 +51,48 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     query2 : [
                             'Verteilung' : [ // TODO ..
-                                    'subscription-provider-assignment' : [
+                                    'subscription-x-provider' : [
                                             label               : 'Lizenz → Anbieter',
                                             detailsTemplate     : 'subscription',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
                                     ],
-                                    'subscription-platform-assignment' : [
+                                    'subscription-x-platform' : [
                                             label               : 'Lizenz → Anbieter → Plattform',
                                             detailsTemplate     : 'subscription',
                                             chartTemplate       : '2axis2values_nonMatches',
                                             chartLabels         : [ 'Ermittelt durch Bestand', 'Zuordnung über Anbieter' ]
                                     ],
-                                    'subscription-property-assignment' : [
+                                    'subscription-x-property' : [
                                             label               : 'Lizenz → Merkmale (eigene/allgemeine)',
                                             detailsTemplate     : 'subscription',
                                             chartTemplate       : '2axis2values',
                                             chartLabels         : [ 'Lizenzen', 'Vergebene Merkmale (eigene/allgemeine)' ]
                                     ],
-                                    'subscription-identifier-assignment' : [
+                                    'subscription-x-identifier' : [
                                             label               : 'Lizenz → Identifikatoren',
                                             detailsTemplate     : 'subscription',
                                             chartTemplate       : '2axis2values_nonMatches',
                                             chartLabels         : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
                                     ],
-                                     'subscription-annual-assignment' : [
+                                     'subscription-x-annual' : [
                                              label              : 'Lizenz → Jahresring',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
                                      ],
-//                                     'subscription-subscription-provider-assignment' : [
+//                                     'subscription-x-subscription-provider' : [
 //                                            label : 'Teilnehmerlizenz → Anbieter',
 //                                            chartTemplate : 'generic',
 //                                            chartLabels : []
 //                                    ],
-                                     'subscription-subscription-assignment' : [
+                                     'subscription-x-subscription' : [
                                              label              : 'Teilnehmerlizenz → Lizenz',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
                                      ],
-                                     'subscription-member-assignment' : [
+                                     'subscription-x-member' : [
                                              label              : 'Teilnehmer → Lizenz',
                                              detailsTemplate    : 'organisation',
                                              chartTemplate      : 'generic',

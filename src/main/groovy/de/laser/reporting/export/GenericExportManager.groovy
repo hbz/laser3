@@ -12,7 +12,7 @@ class GenericExportManager {
 
     static AbstractExport createExport(String token, Map<String, Object> selectedFields) {
 
-        String tmpl = ExportHelper.getCachedTmplStrategy( token )
+        String tmpl = ExportHelper.getCachedExportStrategy( token )
 
         if (tmpl == LicenseExport.KEY) {
             return new LicenseExport( token, selectedFields )
