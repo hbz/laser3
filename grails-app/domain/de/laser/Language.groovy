@@ -72,4 +72,22 @@ class Language implements CalculatedLastUpdated, Comparable {
     Date _getCalculatedLastUpdated() {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
+
+    static Language construct(Map<String, Object> configMap) {
+        if(configMap.tipp || configMap.pkg) {
+            Language lang = new Language(language: configMap.language)
+            if(configMap.tipp)
+                lang.tipp = configMap.tipp
+            else if(configMap.pkg)
+                lang.pkg = configMap.pkg
+            if(!lang.save()) {
+                static_logger.error("error on creating lang: ${lang.getErrors().getAllErrors().toListString()}")
+            }
+            lang
+        }
+        else {
+            static_logger.error("No reference object specified for Language!")
+            null
+        }
+    }
 }
