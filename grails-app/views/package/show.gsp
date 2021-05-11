@@ -156,7 +156,7 @@
                         </dl>
                         <dl>
                             <dt>${message(code: 'package.paymentType.label')}</dt>
-                            <dd>TODO</dd>
+                            <dd>${RefdataValue.getByValueAndCategory(packageInstanceRecord.paymentType,RDConstants.PAYMENT_TYPE) ? RefdataValue.getByValueAndCategory(packageInstanceRecord.paymentType,RDConstants.PAYMENT_TYPE).getI10n("value") : packageInstanceRecord.paymentType}</dd>
                         </dl>
                         <g:if test="${packageInstanceRecord.nationalRanges}">
                             <dl>

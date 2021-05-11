@@ -42,4 +42,22 @@ databaseChangeLog = {
     changeSet(author: "galffy (generated)", id: "1620365933647-9") {
         addForeignKeyConstraint(baseColumnNames: "pkg_scope_rv_fk", baseTableName: "package", constraintName: "FKb94p7yqnvpica6fg1d5i2tcl", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value")
     }
+
+    changeSet(author: "galffy (hand-coded)", id: "1620365933647-10") {
+        grailsChange {
+            change {
+                sql.execute("update refdata_value set rdv_value = concat('0',rdv_value) where rdv_value::numeric::integer >= 10 and rdv_value::numeric::integer < 100 and rdv_owner = (select rdc_id from refdata_category where rdc_description = 'ddc');")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "galffy (hand-coded)", id: "1620365933647-11") {
+        grailsChange {
+            change {
+                sql.execute("update refdata_value set rdv_value = concat('00',rdv_value) where rdv_value::numeric::integer < 10 and rdv_owner = (select rdc_id from refdata_category where rdc_description = 'ddc');")
+            }
+            rollback {}
+        }
+    }
 }

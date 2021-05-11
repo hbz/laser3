@@ -1270,11 +1270,13 @@ class SubscriptionControllerService {
 
             result.editUrl = apiSource.baseUrl
             String esQuery = "?componentType=Package"
+            List<GString> nameQueries = []
             if(params.q) {
                 result.filterSet = true
-                //for ElasticSearch
-                esQuery += "&name=${params.q}"
-                //the result set has to be broadened down by IdentifierNamespace queries! Problematic if the package is not in LAS:eR yet!
+                //workaround for or-connection; find api supports only and-connection
+                nameQueries << "&name=${params.q}"
+                nameQueries << "&ids=Anbieter_Produkt_ID,*${params.q}*"
+                nameQueries << "&ids=isil,*${params.q}*"
             }
 
             if(params.provider) {
@@ -1292,17 +1294,6 @@ class SubscriptionControllerService {
                 esQuery += "&contentType=${params.resourceTyp}"
             }
 
-
-            /*
-            to implement:
-            - provider
-            - componentType
-            - series
-            - subjectArea
-            - curatoryGroup
-            - year (combination of dateFirstPrint and dateFirstOnline)
-             */
-
             String sort = params.sort ? "&sort="+params.sort: "&sort=sortname"
             String order = params.order ? "&order="+params.order: "&order=asc"
             String max = params.max ? "&max=${params.max}": "&max=${result.max}"
@@ -1314,13 +1305,31 @@ class SubscriptionControllerService {
                 result.curatoryGroups = recordsCuratoryGroups?.findAll {it.status == "Current"}
             }
 
-
-            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/find'+esQuery+sort+order+max+offset)
-            if(queryResult.warning) {
-                List records = queryResult.warning.records
-                result.recordsCount = queryResult.warning.count
-                result.records = records
+            Set records = []
+            if(nameQueries) {
+                nameQueries.each { GString nameQuery ->
+                    Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + nameQuery)
+                    if (queryResult.warning) {
+                        records.addAll(queryResult.warning.records)
+                        result.recordsCount = queryResult.warning.count
+                        //log.debug(records.toListString())
+                    }
+                }
+                //impossible to delegate this to ES because of multiple queries workaround! Very ugly!
+                if(params.sort)
+                    records.sort { a, b -> a[params.sort] <=> b[params.sort] }
+                else
+                    records.sort { a, b -> a.sortname <=> b.sortname }
             }
+            else {
+                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + sort + order + max + offset)
+                if (queryResult.warning) {
+                    records.addAll(queryResult.warning.records)
+                    result.recordsCount = queryResult.warning.count
+                    //log.debug(records.toListString())
+                }
+            }
+            result.records = records
 
             [result:result,status:STATUS_OK]
         }
