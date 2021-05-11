@@ -1316,20 +1316,25 @@ class SubscriptionControllerService {
                     }
                 }
                 //impossible to delegate this to ES because of multiple queries workaround! Very ugly!
-                if(params.sort)
+                if(params.sort) {
                     records.sort { a, b -> a[params.sort] <=> b[params.sort] }
-                else
+                    if(params.order == "desc")
+                        result.records = records.toList().reverse(true)
+                    else result.records = records
+                }
+                else {
                     records.sort { a, b -> a.sortname <=> b.sortname }
+                    result.records = records
+                }
             }
             else {
                 Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + sort + order + max + offset)
                 if (queryResult.warning) {
                     records.addAll(queryResult.warning.records)
                     result.recordsCount = queryResult.warning.count
-                    //log.debug(records.toListString())
+                    result.records = records
                 }
             }
-            result.records = records
 
             [result:result,status:STATUS_OK]
         }

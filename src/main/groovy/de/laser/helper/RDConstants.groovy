@@ -62,6 +62,7 @@ class RDConstants {
     public static final String IPV6_ADDRESS_FORMAT    = 'ipv6.address.format'
 
     public static final String LANGUAGE               = 'language'
+    public static final String LANGUAGE_ISO           = 'language.iso'
     public static final String LIBRARY_NETWORK        = 'library.network'
     public static final String LIBRARY_TYPE           = 'library.type'
     public static final String LICENSE_CATEGORY       = 'license.category'
