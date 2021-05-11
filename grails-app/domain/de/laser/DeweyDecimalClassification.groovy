@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.annotations.RefdataAnnotation
+import de.laser.helper.RDConstants
 import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -11,13 +12,13 @@ class DeweyDecimalClassification implements CalculatedLastUpdated, Comparable{
 
     Long id
     Long version
-    @RefdataAnnotation(cat = 'ddc')
+    @RefdataAnnotation(cat = RDConstants.DDC)
     RefdataValue ddc
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
 
-    static Log static_logger = LogFactory.getLog(Identifier)
+    static Log static_logger = LogFactory.getLog(DeweyDecimalClassification)
 
     static belongsTo = [
         tipp: TitleInstancePackagePlatform,
