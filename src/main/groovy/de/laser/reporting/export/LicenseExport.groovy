@@ -63,7 +63,13 @@ class LicenseExport extends AbstractExport {
 
     LicenseExport (String token, Map<String, Object> fields) {
         this.token = token
-        selectedExportFields = getAllFields().findAll{ it.key in fields.keySet() }
+        selectedExportFields = fields.findAll { it.key in getAllFields().keySet() }
+
+        selectedExportFields.each {it ->
+            if ( it.key in ['x-identifier'] ) {
+                it.value = it.value instanceof String ? [ Long.parseLong(it.value) ] : it.value.collect{ Long.parseLong(it) }
+            }
+        }
     }
 
     @Override
@@ -73,7 +79,7 @@ class LicenseExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportHelper.getFieldLabel( token, getCurrentConfig( KEY ).base as Map<String, Object>, fieldName )
+        ExportHelper.getFieldLabel( this, fieldName )
     }
 
     @Override
@@ -87,7 +93,7 @@ class LicenseExport extends AbstractExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = f.value
+            String type = getAllFields().get(f.key)
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
@@ -121,8 +127,8 @@ class LicenseExport extends AbstractExport {
             }
             // --> generic refdata
             else if (type == FIELD_TYPE_REFDATA) {
-                String value = lic.getProperty(key)?.getI10n('value')
-                content.add( value ?: '')
+                String rdv = lic.getProperty(key)?.getI10n('value')
+                content.add( rdv ?: '')
             }
             // --> refdata join tables
             else if (type == FIELD_TYPE_REFDATA_JOINTABLE) {
@@ -133,9 +139,17 @@ class LicenseExport extends AbstractExport {
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
                 if (key == 'x-identifier') {
-                    List<Identifier> ids = Identifier.executeQuery(
-                            "select i from Identifier i where i.value != null and i.value != '' and i.lic = :lic", [lic: lic]
-                    )
+                    List<Identifier> ids = []
+
+                    if (f.value) {
+                        ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.lic = :lic and i.ns.id in (:idnsList)",
+                                [lic: lic, idnsList: f.value] )
+                    }
+//                    else {
+//                        ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.lic = :lic",
+//                                [lic: lic] )
+//                    }
+
                     content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
                 else if (key == '@ae-license-subscription') { // TODO: query

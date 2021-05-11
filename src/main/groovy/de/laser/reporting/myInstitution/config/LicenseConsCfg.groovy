@@ -15,7 +15,7 @@ class LicenseConsCfg extends BaseConfig {
                     source : [
                             'consortia-lic' : 'Meine Verträge'
                     ],
-                    fields: [
+                    fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
                             'licenseCategory'       : BaseConfig.FIELD_TYPE_REFDATA,
@@ -25,13 +25,13 @@ class LicenseConsCfg extends BaseConfig {
                             'type'                  : BaseConfig.FIELD_TYPE_REFDATA
                     ],
                     filter : [
-                            default: [
+                            default : [
                                     [ 'licenseCategory', 'type', 'status', 'annual' ],
                                     [ 'startDate', 'endDate' /*, 'openEnded' */ ]
                             ]
                     ],
                     query : [
-                            default: [
+                            default : [
                                     'Vertrag' : [ // TODO ..
                                             'license-licenseCategory'   : 'Lizenzkategorie',
                                             'license-type'              : 'Lizenztyp',
@@ -79,7 +79,7 @@ class LicenseConsCfg extends BaseConfig {
                             default: []
                     ],
                     query : [
-                            default: [
+                            default : [
                                     'Lizenzgeber' : [ // TODO ..
                                             'licensor-orgType'      : 'Organisationstyp',
                                             'licensor-country'      : 'Länder',

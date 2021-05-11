@@ -15,7 +15,7 @@ class SubscriptionInstCfg extends BaseConfig {
                     source : [
                             'my-sub' : 'Meine Lizenzen'
                     ],
-                    fields: [
+                    fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
                             'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
@@ -31,7 +31,7 @@ class SubscriptionInstCfg extends BaseConfig {
                             //'manualCancellationDate'  : FIELD_TYPE_PROPERTY
                     ],
                     filter : [
-                            default: [
+                            default : [
                                     [ 'form', 'kind', 'status', 'annual' ],
                                     [ 'resource', 'hasPerpetualAccess', 'isMultiYear', 'isPublicForApi' ],
                                     [ 'startDate', 'endDate' ]
@@ -165,10 +165,10 @@ class SubscriptionInstCfg extends BaseConfig {
                             'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
                     ],
                     filter : [
-                            default: []
+                            default : []
                     ],
                     query : [
-                            default: [
+                            default : [
                                     'Lieferant' : [ // TODO ..
                                            'agency-orgType'      : 'Organisationstyp',
                                            // 'provider-country'      : 'Länder',

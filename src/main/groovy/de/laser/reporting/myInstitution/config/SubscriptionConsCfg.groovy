@@ -15,7 +15,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     source : [
                             'consortia-sub' : 'Meine Lizenzen'
                     ],
-                    fields: [
+                    fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
                             'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
@@ -31,14 +31,14 @@ class SubscriptionConsCfg extends BaseConfig {
                             //'manualCancellationDate'  : FIELD_TYPE_PROPERTY
                     ],
                     filter : [
-                            default: [
+                            default : [
                                     [ 'form', 'kind', 'status', 'annual' ],
                                     [ 'resource', 'hasPerpetualAccess', 'isMultiYear', 'isPublicForApi' ],
                                     [ 'startDate', 'endDate' ]
                             ]
                     ],
                     query : [
-                            default: [
+                            default : [
                                     'Lizenz' : [ // TODO ..
                                             'subscription-form'         : 'Lizenzform',
                                             'subscription-kind'         : 'Lizenztyp',
@@ -124,7 +124,7 @@ class SubscriptionConsCfg extends BaseConfig {
                             'subjectGroup'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL
                     ],
                     filter : [
-                            default: [
+                            default : [
                                     [ 'country', 'subjectGroup', 'libraryType' ],
                                     [ 'libraryNetwork', 'funderType', 'funderHskType' ],
                                     [ 'orgType', 'eInvoice' ],
@@ -132,7 +132,7 @@ class SubscriptionConsCfg extends BaseConfig {
                             ]
                     ],
                     query : [
-                            default: [
+                            default : [
                                     'Teilnehmer' : [ // TODO ..
                                             'member-orgType'            : 'Organisationstyp',
                                             'member-customerType'       : 'Kundentyp',
@@ -159,10 +159,10 @@ class SubscriptionConsCfg extends BaseConfig {
                             'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
                     ],
                     filter : [
-                            default: []
+                            default : []
                     ],
                     query : [
-                            default: [
+                            default : [
                                     'Anbieter' : [ // TODO ..
                                             'provider-orgType'      : 'Organisationstyp',
                                             //'provider-country'      : 'Länder',
@@ -184,7 +184,7 @@ class SubscriptionConsCfg extends BaseConfig {
                             'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
                     ],
                     filter : [
-                            default: []
+                            default : []
                     ],
                     query : [
                             default: [

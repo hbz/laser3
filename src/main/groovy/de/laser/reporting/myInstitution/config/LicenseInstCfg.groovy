@@ -15,7 +15,7 @@ class LicenseInstCfg extends BaseConfig {
                     source : [
                             'my-lic' : 'Meine Verträge'
                     ],
-                    fields: [
+                    fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
                             'licenseCategory'       : BaseConfig.FIELD_TYPE_REFDATA,
@@ -25,13 +25,13 @@ class LicenseInstCfg extends BaseConfig {
                             'type'                  : BaseConfig.FIELD_TYPE_REFDATA
                     ],
                     filter : [
-                            default: [
+                            default : [
                                     [ 'licenseCategory', 'type', 'status', 'annual' ],
                                     [ 'startDate', 'endDate' /*, 'openEnded' */ ]
                             ]
                     ],
                     query : [
-                            default: [
+                            default : [
                                     'Vertrag' : [ // TODO ..
                                           'license-licenseCategory'   : 'Lizenzkategorie',
                                           'license-type'              : 'Lizenztyp',
@@ -76,10 +76,10 @@ class LicenseInstCfg extends BaseConfig {
                             'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE,
                     ],
                     filter : [
-                            default: []
+                            default : []
                     ],
                     query : [
-                            default: [
+                            default : [
                                     'Lizenzgeber' : [ // TODO ..
                                               'licensor-orgType'      : 'Organisationstyp',
                                               'licensor-country'      : 'Länder',
