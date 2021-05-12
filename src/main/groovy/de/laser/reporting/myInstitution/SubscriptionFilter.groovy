@@ -107,12 +107,13 @@ class SubscriptionFilter extends BaseFilter {
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
                     if (p == BaseConfig.CUSTOM_KEY_ANNUAL) {
+                        List tmpList = []
 
-                        whereParts.add( '(YEAR(sub.startDate) <= :p' + (++pCount) + ' or sub.startDate is null)' )
-                        queryParams.put( 'p' + pCount, params.get(key) as Integer )
-
-                        whereParts.add( '(YEAR(sub.endDate) >= :p' + (++pCount) + ' or sub.endDate is null)' )
-                        queryParams.put( 'p' + pCount, params.get(key) as Integer )
+                        params.list(key).each { pk ->
+                            tmpList.add( '( (YEAR(sub.startDate) <= :p' + (++pCount) + ' or sub.startDate is null) and (YEAR(sub.endDate) >= :p' + pCount + ' or sub.endDate is null) )' )
+                            queryParams.put( 'p' + pCount, pk as Integer )
+                        }
+                        whereParts.add( '(' + tmpList.join(' or ') + ')' )
 
                         filterLabelValue = params.get(key)
                     }

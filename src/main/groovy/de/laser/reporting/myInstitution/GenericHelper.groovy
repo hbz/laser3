@@ -11,6 +11,13 @@ import java.lang.reflect.Field
 
 class GenericHelper {
 
+    static boolean isFieldMultiple(String fieldName) {
+        if (fieldName in [ 'annual' ]) {
+            return true
+        }
+        return false
+    }
+
     static String getFieldType(Map<String, Object> objConfig, String fieldName) {
         objConfig.fields.get(fieldName)
     }

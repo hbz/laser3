@@ -22,7 +22,7 @@ class OrganisationConsCfg extends BaseConfig {
                             'my-agency'             : 'Meine Lieferanten',
                             'my-providerAndAgency'  : 'Meine Anbieter und Lieferanten'
                     ],
-                    fields: [
+                    fields : [
                             'country'           : BaseConfig.FIELD_TYPE_REFDATA,
                             'customerType'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'eInvoice'          : BaseConfig.FIELD_TYPE_PROPERTY,
@@ -36,13 +36,13 @@ class OrganisationConsCfg extends BaseConfig {
                             'subjectGroup'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                     ],
                     filter : [
-                            default: [
+                            default : [
                                     [ 'country',  'subjectGroup', 'orgType' ],
                                     [ 'libraryNetwork', 'funderType', 'funderHskType' ] ,
                                     [ 'libraryType', 'eInvoice' ],
                                     [ 'customerType', 'legalInfo' ]
                             ],
-                            provider: [ // TODO : provider != agency
+                            provider : [ // TODO : provider != agency
                                     // all disabled
                             ]
                     ],
@@ -59,17 +59,17 @@ class OrganisationConsCfg extends BaseConfig {
                                             'org-funderHskType'     : 'Trägerschaft'
                                     ]
                             ],
-                            providerAndAgency: [
+                            providerAndAgency : [
                                     'Organisation' : [
                                             'org-orgType' : 'Organisationstyp'
                                     ]
                             ],
-                            provider: [
+                            provider : [
                                     'Organisation' : [
                                             'org-orgType' : 'Organisationstyp'
                                     ]
                             ],
-                            agency: [
+                            agency : [
                                     'Organisation' : [
                                             'org-orgType' : 'Organisationstyp'
                                     ]

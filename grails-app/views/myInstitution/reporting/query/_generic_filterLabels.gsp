@@ -1,3 +1,4 @@
+<%@page import="de.laser.reporting.myInstitution.GenericHelper" %>
 <div class="ui ${tmplSize ?: 'small'} steps">
     <g:each in="${filterLabels}" var="lblGroup">
         <div class="step">
@@ -10,7 +11,18 @@
                                 - ${label.value.label} ${label.value.value} <br/>
                             </g:if>
                             <g:else>
-                                - ${label.value.label}: ${label.value.value} <br/>
+                                - ${label.value.label}:
+                                <g:if test="${GenericHelper.isFieldMultiple(label.key)}">
+                                    <g:if test="${label.value.value instanceof String}">
+                                        ${label.value.value} <br />
+                                    </g:if>
+                                     <g:else>
+                                         ${label.value.value.join(', ')} <br />
+                                     </g:else>
+                                </g:if>
+                                <g:else>
+                                    ${label.value.value} <br/>
+                                </g:else>
                             </g:else>
                         </g:if>
                     </g:each>
@@ -19,19 +31,3 @@
         </div>
     </g:each>
 </div>
-%{-- <g:each in="${filterLabels}" var="labelGroup">
-    <p>
-        <strong>${labelGroup.value.source}</strong>
-        <br />
-        <g:each in="${labelGroup.value}" var="label">
-            <g:if test="${label.key != 'source'}">
-                <g:if test="${label.key in ['endDate', 'startDate']}">
-                    - ${label.value.label} ${label.value.value} <br/>
-                </g:if>
-                <g:else>
-                    - ${label.value.label}: ${label.value.value} <br/>
-                </g:else>
-            </g:if>
-        </g:each>
-    </p>
-</g:each> --}%

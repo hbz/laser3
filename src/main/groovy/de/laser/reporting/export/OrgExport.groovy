@@ -1,5 +1,6 @@
 package de.laser.reporting.export
 
+import de.laser.AccessPointService
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.Org
@@ -14,7 +15,6 @@ import de.laser.helper.RDStore
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -43,9 +43,10 @@ class OrgExport extends AbstractExport {
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                                     'eInvoice'          : FIELD_TYPE_PROPERTY,
                                     '@ae-org-contact'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@ae-org-readerNumber'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
+                                    '@ae-org-accessPoint'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@ae-org-readerNumber'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'subjectGroup'          : FIELD_TYPE_CUSTOM_IMPL
                             ],
                             provider: [
@@ -56,8 +57,8 @@ class OrgExport extends AbstractExport {
                                     'country'           : FIELD_TYPE_REFDATA,
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                                     '@ae-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp,
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                             ],
                             agency: [
                                     'globalUID'         : FIELD_TYPE_PROPERTY,
@@ -67,8 +68,8 @@ class OrgExport extends AbstractExport {
                                     'country'           : FIELD_TYPE_REFDATA,
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                                     '@ae-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                             ]
                     ]
             ]
@@ -76,7 +77,9 @@ class OrgExport extends AbstractExport {
 
     OrgExport (String token, Map<String, Object> fields) {
         this.token = token
-        selectedExportFields = getAllFields().findAll{ it.key in fields.keySet() }
+        selectedExportFields = fields.findAll { it.key in getAllFields().keySet() }
+
+        ExportHelper.normalizeSelectedFieldValues( this )
     }
 
     @Override
@@ -86,7 +89,7 @@ class OrgExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportHelper.getFieldLabel( token, getCurrentConfig( KEY ).base as Map<String, Object>, fieldName )
+        ExportHelper.getFieldLabel( this, fieldName )
     }
 
     @Override
@@ -100,7 +103,7 @@ class OrgExport extends AbstractExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = f.value
+            String type = getAllFields().get(f.key)
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
@@ -134,8 +137,8 @@ class OrgExport extends AbstractExport {
             }
             // --> generic refdata
             else if (type == FIELD_TYPE_REFDATA) {
-                String value = org.getProperty(key)?.getI10n('value')
-                content.add( value ?: '')
+                String rdv = org.getProperty(key)?.getI10n('value')
+                content.add( rdv ?: '')
             }
             // --> refdata join tables
             else if (type == FIELD_TYPE_REFDATA_JOINTABLE) {
@@ -170,9 +173,17 @@ class OrgExport extends AbstractExport {
                     }
                 }
                 else if (key == 'x-identifier') {
-                    List<Identifier> ids = Identifier.executeQuery(
-                            "select i from Identifier i where i.value != null and i.value != '' and i.org = :org", [org: org]
-                    )
+                    List<Identifier> ids = []
+
+                    if (f.value) {
+                        ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.org = :org and i.ns.id in (:idnsList)",
+                                [org: org, idnsList: f.value] )
+                    }
+//                    else {
+//                        ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.org = :org",
+//                                [org: org] )
+//                    }
+
                     content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
                 else if (key == '@ae-org-contact') {
@@ -215,6 +226,45 @@ class OrgExport extends AbstractExport {
                     }.join( CSV_VALUE_SEPARATOR )
 
                     content.add( all )
+                }
+                else if (key == '@ae-org-accessPoint') {
+
+                    List oapList = []
+
+                    AccessPointService accessPointService = (AccessPointService) Holders.grailsApplication.mainContext.getBean('accessPointService')
+                    accessPointService.getOapListWithLinkCounts( org ).each {oa ->
+
+                        List entry = []
+                        Map<String, Object> ipRanges = oa['oap'].getAccessPointIpRanges()
+
+                        ipRanges['ipv4Ranges'].each { ipv4 ->
+                            entry.add( ipv4['ipInput'] )
+//                            //entry.add( ipv4['name'] + ' - ' + ipv4['ipRange'] + ' - ' + ipv4['ipCidr'] + ' - ' + ipv4['ipInput'] )
+//                            String t = ipv4['ipRange'].split('-')
+//                            if ( t.size() == 2 && (t[0] != t[1]) ) {
+//                                entry.add( ipv4['ipRange'] )
+//                            }
+//                            else {
+//                                entry.add( ipv4['ipInput'] )
+//                            }
+                        }
+                        ipRanges['ipv6Ranges'].each { ipv6 ->
+                            entry.add( ipv6['ipInput'] )
+//                            //entry.add( ipv6['name'] + ' - ' +  ipv6['ipRange'] + ' - ' + ipv6['ipCidr'] + ' - ' + ipv6['ipInput'] )
+//                            String t = ipv6['ipRange'].split('-')
+//                            if ( t.size() == 2 && (t[0] != t[1]) ) {
+//                                entry.add( ipv6['ipRange'] )
+//                            }
+//                            else {
+//                                entry.add( ipv6['ipInput'] )
+//                            }
+                        }
+                        if (! entry.isEmpty()) {
+                            oapList.add( oa['oap'].accessMethod.getI10n('value') + ': ' + entry.join(' / ') )
+                        }
+                    }
+
+                    content.add( oapList.join( CSV_VALUE_SEPARATOR ) )
                 }
             }
             // --> custom query depending filter implementation

@@ -71,7 +71,9 @@ class SubscriptionExport extends AbstractExport {
 
     SubscriptionExport (String token, Map<String, Object> fields) {
         this.token = token
-        selectedExportFields = getAllFields().findAll{ it.key in fields.keySet() }
+        selectedExportFields = fields.findAll { it.key in getAllFields().keySet() }
+
+        ExportHelper.normalizeSelectedFieldValues( this )
     }
 
     @Override
@@ -81,7 +83,7 @@ class SubscriptionExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportHelper.getFieldLabel( token, getCurrentConfig( KEY ).base as Map<String, Object>, fieldName )
+        ExportHelper.getFieldLabel( this, fieldName )
     }
 
     @Override
@@ -95,7 +97,7 @@ class SubscriptionExport extends AbstractExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = f.value
+            String type = getAllFields().get(f.key)
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
@@ -129,8 +131,8 @@ class SubscriptionExport extends AbstractExport {
             }
             // --> generic refdata
             else if (type == FIELD_TYPE_REFDATA) {
-                String value = sub.getProperty(key)?.getI10n('value')
-                content.add( value ?: '')
+                String rdv = sub.getProperty(key)?.getI10n('value')
+                content.add( rdv ?: '')
             }
             // --> refdata join tables
             else if (type == FIELD_TYPE_REFDATA_JOINTABLE) {
@@ -141,9 +143,17 @@ class SubscriptionExport extends AbstractExport {
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
                 if (key == 'x-identifier') {
-                    List<Identifier> ids = Identifier.executeQuery(
-                            "select i from Identifier i where i.value != null and i.value != '' and i.sub = :sub", [sub: sub]
-                    )
+                    List<Identifier> ids = []
+
+                    if (f.value) {
+                        ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.sub = :sub and i.ns.id in (:idnsList)",
+                                [sub: sub, idnsList: f.value] )
+                    }
+//                    else {
+//                        ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.sub = :sub",
+//                                [sub: sub] )
+//                    }
+
                     content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
                 else if (key == 'x-provider') {

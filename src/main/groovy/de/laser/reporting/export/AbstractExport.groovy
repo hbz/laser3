@@ -1,7 +1,7 @@
 package de.laser.reporting.export
 
 import de.laser.ContextService
-import de.laser.reporting.myInstitution.base.BaseDetails
+import de.laser.Identifier
 import grails.util.Holders
 
 abstract class AbstractExport {
@@ -21,20 +21,27 @@ abstract class AbstractExport {
 
             'globalUID'                 : 'Link (Global UID)',
 
-            'x-identifier'              : 'Identifikatoren',            // XYCfg.CONFIG.base.query2.Verteilung
-            'x-provider'                : 'Anbieter',                   // XYCfg.CONFIG.base.query2.Verteilung
-            'x-property'                : 'impl @ ExportHelper.getFieldLabel()',    // qdp; dyn. value
+            'x-identifier'              : 'ExportHelper.getFieldLabel()',   // qdp; dyn. value
+            'x-provider'                : 'Anbieter',                       // XYCfg.CONFIG.base.query2.Verteilung
+            'x-property'                : 'ExportHelper.getFieldLabel()',   // qdp; dyn. value
 
             '@ae-subscription-member'   : 'Anzahl Teilnehmer',          // virtual; without XY.CONFIG.base.x
             '@ae-license-subscription'  : 'Anzahl Lizenzen',            // virtual; without XY.CONFIG.base.x
             '@ae-license-member'        : 'Anzahl Teilnehmerverträge',  // virtual; without XY.CONFIG.base.x
-            '@ae-org-contact'           : 'Kontaktdaten',               // virtual; without XY.CONFIG.base.x
-            '@ae-org-readerNumber'      : 'Nutzerzahlen (Semester)',    // virtual; without XY.CONFIG.base.x
+            '@ae-org-accessPoint'       : 'Zugangskonfigurationen (ohne Links)', // virtual; without XY.CONFIG.base.x
+            '@ae-org-contact'           : 'Kontaktdaten',                   // virtual; without XY.CONFIG.base.x
+            '@ae-org-readerNumber'      : 'Nutzerzahlen (nur Semester)',    // virtual; without XY.CONFIG.base.x
     ]
 
     String token
 
     Map<String, Object> selectedExportFields = [:]
+
+    abstract Map<String, Object> getSelectedFields()
+
+    abstract String getFieldLabel(String fieldName)
+
+    abstract List<String> getObject(Long id, Map<String, Object> fields)
 
     Map<String, Object> getCurrentConfig(String key) {
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
@@ -76,10 +83,4 @@ abstract class AbstractExport {
             (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == field)
         }
     }
-
-    abstract Map<String, Object> getSelectedFields()
-
-    abstract String getFieldLabel(String fieldName)
-
-    abstract List<String> getObject(Long id, Map<String, Object> fields)
 }
