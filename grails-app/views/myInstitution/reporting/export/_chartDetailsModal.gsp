@@ -23,7 +23,6 @@
                 </div>
 
                 <div class="fields">
-                    <g:set var="tmpFF" value="${formFields.findAll { !ExportHelper.isFieldMultiple( it.key ) }}" />
                     <g:each in="${ExportHelper.reorderFieldsForUI( formFields.findAll { !ExportHelper.isFieldMultiple( it.key ) } )}" var="field" status="fc">
                         <div class="wide eight field">
 
