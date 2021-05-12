@@ -81,6 +81,46 @@ class ExportHelper {
         labels.collect{ it.replaceAll('→', '_').replaceAll(' ', '') }.join('_')
     }
 
+    // -----  -----
+
+    static void normalizeSelectedFieldValues(AbstractExport export) {
+
+        export.selectedExportFields.each {it ->
+            if ( isFieldMultiple( it.key ) ) {
+                it.value = it.value instanceof String ? [ Long.parseLong(it.value) ] : it.value.collect{ Long.parseLong(it) }
+            }
+        }
+    }
+
+    static def reorderFieldsForUI(Map<String, Object> formFields) {
+
+        Map<String, Object> result = [:]
+        List<Integer> reorder = []
+        int max = formFields.keySet().size()
+
+        for (def i=0; i<max; i++) {
+            if (i%2==0) {
+                reorder[i] = ( i - i/2 ) as Integer
+            } else {
+                reorder[i] = Math.round(Math.floor(i/2 + max/2)) as Integer
+            }
+        }
+        reorder.each {i ->
+            String key = formFields.keySet()[i]
+            result.putAt(key, formFields.get(key))
+        }
+
+        result
+    }
+
+    static boolean isFieldMultiple(String fieldName) {
+
+        if (fieldName in [ 'x-identifier' ]) {
+            return true
+        }
+        return false
+    }
+
     static List getIdentifiersForDropdown(Map<String, Object> cfg) {
 
         List<IdentifierNamespace> idnsList = []

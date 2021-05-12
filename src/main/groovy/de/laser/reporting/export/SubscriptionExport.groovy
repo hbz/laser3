@@ -73,11 +73,7 @@ class SubscriptionExport extends AbstractExport {
         this.token = token
         selectedExportFields = fields.findAll { it.key in getAllFields().keySet() }
 
-        selectedExportFields.each {it ->
-            if ( it.key in ['x-identifier'] ) {
-                it.value = it.value instanceof String ? [ Long.parseLong(it.value) ] : it.value.collect{ Long.parseLong(it) }
-            }
-        }
+        ExportHelper.normalizeSelectedFieldValues( this )
     }
 
     @Override

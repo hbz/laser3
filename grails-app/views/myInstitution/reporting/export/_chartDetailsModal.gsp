@@ -23,7 +23,8 @@
                 </div>
 
                 <div class="fields">
-                    <g:each in="${formFields.findAll { !['x-identifier'].contains( it.key ) }}" var="field" status="fc">
+                    <g:set var="tmpFF" value="${formFields.findAll { !ExportHelper.isFieldMultiple( it.key ) }}" />
+                    <g:each in="${ExportHelper.reorderFieldsForUI( formFields.findAll { !ExportHelper.isFieldMultiple( it.key ) } )}" var="field" status="fc">
                         <div class="wide eight field">
 
                             <g:if test="${field.key == 'globalUID'}">
@@ -32,12 +33,12 @@
                                     <label for="cde:${field.key}">${export.getFieldLabel(field.key as String)}</label>
                                 </div>
                             </g:if>
-                            <g:elseif test="${! ['x-identifier'].contains( field.key )}">
+                            <g:else>
                                 <div class="ui checkbox">
                                     <input type="checkbox" name="cde:${field.key}" id="cde:${field.key}" checked="checked">
                                     <label for="cde:${field.key}">${export.getFieldLabel(field.key as String)}</label>
                                 </div>
-                            </g:elseif>
+                            </g:else>
 
                         </div><!-- .field -->
 
@@ -50,7 +51,7 @@
                 </div>
                 <div class="fields">
 
-                    <g:each in="${formFields.findAll { ['x-identifier'].contains( it.key ) }}" var="field" status="fc">
+                    <g:each in="${formFields.findAll { ['x-identifier'].contains( it.key ) }}" var="field" status="fc"> %{-- TODO --}%
                         <div class="wide eight field">
 
                             <g:set var="idnsList" value="${ExportHelper.getIdentifiersForDropdown(export.getCurrentConfig( export.KEY ))}" />

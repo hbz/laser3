@@ -46,6 +46,7 @@ class LaserReportingTagLib {
     def reportFilterField = { attrs, body ->
 
         String fieldType = GenericHelper.getFieldType(attrs.config, attrs.field) // [ property, refdata ]
+        //boolean fieldIsMultiple = GenericHelper.isFieldMultiple(attrs.config, attrs.field)
 
         if (fieldType == BaseConfig.FIELD_TYPE_PROPERTY) {
             out << laser.reportFilterProperty(config: attrs.config, property: attrs.field, key: attrs.key)
@@ -142,23 +143,24 @@ class LaserReportingTagLib {
         out << '<div class="field">'
         out << '<label for="' + filterName + '">' + filterLabel + '</label>'
 
-        out << laser.select([
-                class      : "ui fluid dropdown",
-                name       : filterName,
-                id         : getUniqueId(filterName),
-                from       : customRdv.get('from'),
-                optionKey  : "id",
-                optionValue: "value",
-                value      : filterValue,
-                noSelection: ['': message(code: 'default.select.choose.label')]
-        ])
-        out << '</div>'
-    }
+        Map<String, Object> map = [
+            class      : 'ui fluid dropdown',
+            name       : filterName,
+            id         : getUniqueId(filterName),
+            from       : customRdv.get('from'),
+            optionKey  : 'id',
+            optionValue: 'value',
+            noSelection: ['': message(code: 'default.select.choose.label')]
+        ]
+        if ( GenericHelper.isFieldMultiple(attrs.refdata) ) {  // TODO - other tags
+            map.putAt('multiple', true)
+            map.putAt('value', params.list(filterName).collect { Integer.parseInt(it) })
+        }
+        else {
+            map.putAt('value', filterValue)
+        }
 
-    def reportingNotice = { attrs, body ->
-        // TODO ..
-        out << '<div ' + (attrs.id ? 'id="' + attrs.id + '" ' : '') + 'class="ui hidden message">'
-        out << body()
+        out << laser.select( map )
         out << '</div>'
     }
 

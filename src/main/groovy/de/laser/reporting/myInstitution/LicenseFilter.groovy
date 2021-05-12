@@ -107,12 +107,13 @@ class LicenseFilter extends BaseFilter {
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
                     if (p == BaseConfig.CUSTOM_KEY_ANNUAL) {
+                        List tmpList = []
 
-                        whereParts.add( '(YEAR(lic.startDate) <= :p' + (++pCount) + ' or lic.startDate is null)' )
-                        queryParams.put( 'p' + pCount, params.get(key) as Integer )
-
-                        whereParts.add( '(YEAR(lic.endDate) >= :p' + (++pCount) + ' or lic.endDate is null)' )
-                        queryParams.put( 'p' + pCount, params.get(key) as Integer )
+                        params.list(key).each { pk ->
+                            tmpList.add( '( (YEAR(lic.startDate) <= :p' + (++pCount) + ' or lic.startDate is null) and (YEAR(lic.endDate) >= :p' + pCount + ' or lic.endDate is null) )' )
+                            queryParams.put( 'p' + pCount, pk as Integer )
+                        }
+                        whereParts.add( '(' + tmpList.join(' or ') + ')' )
 
                         filterLabelValue = params.get(key)
                     }
