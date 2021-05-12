@@ -6,6 +6,7 @@ import de.laser.EscapeService
 import de.laser.GlobalRecordSource
 import de.laser.Identifier
 import de.laser.IssueEntitlement
+import de.laser.Language
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.Package
@@ -65,7 +66,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
     final static long RECTYPE_TITLE = 1
     final static long RECTYPE_ORG = 2
     final static long RECTYPE_TIPP = 3
-    final static Map<Long,String> RECTYPES = [(RECTYPE_PACKAGE):'packages',(RECTYPE_TITLE):'titles',(RECTYPE_ORG):'orgs',(RECTYPE_TIPP):'tipps']
 
     Map<String, RefdataValue> titleStatus = [:],
             titleMedium = [:],
@@ -78,8 +78,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
     Map<String,Integer> initialPackagesCounter = [:]
     Map<String,Set<Map<String,Object>>> pkgPropDiffsContainer = [:]
     Map<String,Set<Map<String,Object>>> packagesToNotify = [:]
-
-    SimpleDateFormat xmlTimestampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
     boolean running = false
 
@@ -217,52 +215,57 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     void reloadPackages() {
+        running = true
+        defineMapFields()
         executorService.execute({
-            running = true
             Thread.currentThread().setName("GlobalPackageUpdate")
+            this.source = GlobalRecordSource.findByActiveAndRectype(true,RECTYPE_TIPP)
             this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
             log.info("getting all records from job #${source.id} with uri ${source.uri}")
             Map<String,Object> result
             //5000 records because of local testing ability
             String componentType = 'TitleInstancePackagePlatform'
-            result = fetchRecordJSON(false,[componentType: componentType, max: 5000])
-            if(result && result.count >= 5000) {
-                String scrollId
-                boolean more = true
-                while(more) {
-                    //actually, scrollId alone should do the trick but tests revealed that other parameters are necessary, too, because of current workaround solution
-                    log.debug("using scrollId ${scrollId}")
-                    if(scrollId) {
-                        result = fetchRecordJSON(true, [component_type: componentType, scrollId: scrollId])
-                    }
-                    else {
-                        result = fetchRecordJSON(true, [component_type: componentType])
-                    }
-                    if(result.count > 0) {
-                        updateRecords(result.records)
-                        if(result.hasMoreRecords) {
-                            scrollId = result.scrollId
+            //TitleInstancePackagePlatform.withNewSession { Session sess ->
+                result = fetchRecordJSON(false,[componentType: componentType, max: 2000])
+                if(result && result.count >= 2000) {
+                    String scrollId
+                    boolean more = true
+                    while(more) {
+                        //actually, scrollId alone should do the trick but tests revealed that other parameters are necessary, too, because of current workaround solution
+                        log.debug("using scrollId ${scrollId}")
+                        if(scrollId) {
+                            result = fetchRecordJSON(true, [component_type: componentType, scrollId: scrollId, max: 2000])
                         }
                         else {
-                            more = false
+                            result = fetchRecordJSON(true, [component_type: componentType, max: 2000])
                         }
-                    }
-                    else {
-                        //workaround until GOKb-ES migration is done and hopefully works ...
-                        if(result.hasMoreRecords) {
-                            scrollId = result.scrollId
-                            log.info("page is empty, turning to next page ...")
+                        if(result.count > 0) {
+                            updateRecords(result.records)
+                            if(result.hasMoreRecords) {
+                                scrollId = result.scrollId
+                            }
+                            else {
+                                more = false
+                            }
                         }
                         else {
-                            more = false
-                            log.info("no records updated - leaving everything as is ...")
+                            //workaround until GOKb-ES migration is done and hopefully works ...
+                            if(result.hasMoreRecords) {
+                                scrollId = result.scrollId
+                                log.info("page is empty, turning to next page ...")
+                            }
+                            else {
+                                more = false
+                                log.info("no records updated - leaving everything as is ...")
+                            }
                         }
+                        //sess.flush()
                     }
                 }
-            }
-            else if(result && result.count > 0 && result.count < 5000) {
-                updateRecords(result.records)
-            }
+                else if(result && result.count > 0 && result.count < 2000) {
+                    updateRecords(result.records)
+                }
+            //}
             running = false
         })
     }
@@ -335,6 +338,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     hostPlatformURL: tipp.url ?: null,
                     identifiers: [],
                     ddcs: [],
+                    languages: [],
                     history: [],
                     uuid: tipp.uuid,
                     accessStartDate : tipp.accessStartDate ? DateUtils.parseDateGeneric(tipp.accessStartDate) : null,
@@ -373,6 +377,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 tipp.ddcs.each { ddcData ->
                     updatedTIPP.ddcs << ddc.get(ddcData.value)
+                }
+                tipp.languages.each { langData ->
+                    updatedTIPP.ddcs << RefdataValue.getByValueAndCategory(langData.value, RDConstants.LANGUAGE_ISO)
                 }
                 tipp.titleHistory.each { historyEvent ->
                     updatedTIPP.history << [date:DateUtils.parseDateGeneric(historyEvent.date),from:historyEvent.from,to:historyEvent.to]
@@ -616,7 +623,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             Identifier.executeUpdate('delete from Identifier i where i.pkg = :pkg',[pkg:result]) //damn those wrestlers ...
                         }
                         packageRecord.identifiers.each { id ->
-                            if(id.namespace.toLowerCase() != 'originediturl') {
+                            if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
                                 Identifier.construct([namespace: id.namespace, value: id.value, reference: result, isUnique: false, nsType: Package.class.name])
                             }
                         }
@@ -628,6 +635,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         packageRecord.ddcs.each { ddcData ->
                             if(!DeweyDecimalClassification.construct(ddc: ddc.get(ddcData.value), pkg: result))
                                 throw new SyncException("Error on saving Dewey decimal classification! See stack trace as follows:")
+                        }
+                    }
+                    if(packageRecord.languages) {
+                        if(result.languages) {
+                            Language.executeUpdate('delete from Language lang where lang.pkg = :pkg',[pkg:result])
+                        }
+                        packageRecord.languages.each { langData ->
+                            if(!Language.construct(language: RefdataValue.getByValueAndCategory(langData.value,RDConstants.LANGUAGE_ISO), pkg: result))
+                                throw new SyncException("Error on saving language! See stack trace as follows:")
                         }
                     }
                 }
@@ -856,7 +872,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         Identifier.executeUpdate('delete from Identifier i where i.tipp = :tipp',[tipp:tippA]) //damn those wrestlers ...
                     }
                     tippB.identifiers.each { idData ->
-                        if(idData.namespace.toLowerCase() != 'originediturl') {
+                        if(!(idData.namespace.toLowerCase() in ['originediturl','uri'])) {
                             Identifier.construct([namespace: idData.namespace, value: idData.value, name_de: idData.namespaceName, reference: tippA, isUnique: false, nsType: TitleInstancePackagePlatform.class.name])
                         }
                     }
@@ -869,6 +885,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 tippB.ddcs.each { ddcData ->
                     if(!DeweyDecimalClassification.construct(ddc: ddcData, tipp: tippA))
                         throw new SyncException("Error on saving Dewey decimal classification! See stack trace as follows:")
+                }
+            }
+            if(tippB.languages) {
+                if(tippA.languages) {
+                    Language.executeUpdate('delete from Language lang where lang.tipp = :tipp',[tipp:tippA])
+                }
+                tippB.languages.each { langData ->
+                    if(!Language.construct(language: langData, tipp: tippA))
+                        throw new SyncException("Error on saving language! See stack trace as follows:")
                 }
             }
             if(tippB.history) {
@@ -951,6 +976,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             else [:]
         }
+        else [:]
     }
 
     /**
@@ -1031,6 +1057,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippData.ddcs.each { ddcB ->
                 if(!DeweyDecimalClassification.construct(ddc: ddcB, tipp: newTIPP))
                     throw new SyncException("Error on saving Dewey decimal classification! See stack trace as follows:")
+            }
+            tippData.languages.each { langB ->
+                if(!Language.construct(ddc: langB, tipp: newTIPP))
+                    throw new SyncException("Error on saving language! See stack trace as follows:")
             }
             tippData.history.each { historyEvent ->
                 historyEvent.from.each { from ->
