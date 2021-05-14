@@ -142,9 +142,10 @@ class PendingChange {
      */
     static PendingChange construct(Map<String, Object> configMap) throws CreationException {
 
-        Set<String> SETTING_KEYS = [PendingChangeConfiguration.TITLE_UPDATED,
+        Set<String> SETTING_KEYS = [PendingChangeConfiguration.NEW_TITLE,
+                                    PendingChangeConfiguration.TITLE_UPDATED,
+                                    PendingChangeConfiguration.NEW_COVERAGE,
                                     PendingChangeConfiguration.COVERAGE_UPDATED,
-                                    PendingChangeConfiguration.PRICE_UPDATED,
                                     PendingChangeConfiguration.PACKAGE_PROP]
         SETTING_KEYS << PendingChangeConfiguration.PACKAGE_TIPP_COUNT_CHANGED
 

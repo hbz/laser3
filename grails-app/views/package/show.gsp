@@ -116,6 +116,16 @@
                             </dd>
                         </dl>
                         <dl>
+                            <dt>${message(code: 'package.language.label')}</dt>
+                            <dd>
+                                <div class="ui bulleted list">
+                                    <g:each in="${packageInstanceRecord.languages}" var="language">
+                                        <div class="item">${RefdataValue.getByValueAndCategory(language.value,RDConstants.LANGUAGE_ISO) ? RefdataValue.getByValueAndCategory(language.value,RDConstants.LANGUAGE_ISO).getI10n('value') : message(code:'package.language.invalid')}</div>
+                                    </g:each>
+                                </div>
+                            </dd>
+                        </dl>
+                        <dl>
                             <dt>${message(code: 'package.show.altname')}</dt>
                             <dd>
                                 <div class="ui bulleted list">
@@ -158,9 +168,9 @@
                             <dt>${message(code: 'package.paymentType.label')}</dt>
                             <dd>${RefdataValue.getByValueAndCategory(packageInstanceRecord.paymentType,RDConstants.PAYMENT_TYPE) ? RefdataValue.getByValueAndCategory(packageInstanceRecord.paymentType,RDConstants.PAYMENT_TYPE).getI10n("value") : packageInstanceRecord.paymentType}</dd>
                         </dl>
-                        <g:if test="${packageInstanceRecord.nationalRanges}">
-                            <dl>
-                                <dt>${message(code: 'package.nationalRange.label')}</dt>
+                        <dl>
+                            <dt>${message(code: 'package.nationalRange.label')}</dt>
+                            <g:if test="${packageInstanceRecord.nationalRanges}">
                                 <dd>
                                     <div class="ui bulleted list">
                                         <g:each in="${packageInstanceRecord.nationalRanges}" var="nr">
@@ -168,11 +178,11 @@
                                         </g:each>
                                     </div>
                                 </dd>
-                            </dl>
-                        </g:if>
-                        <g:if test="${packageInstanceRecord.regionalRanges}">
-                            <dl>
-                                <dt>${message(code: 'package.regionalRange.label')}</dt>
+                            </g:if>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'package.regionalRange.label')}</dt>
+                            <g:if test="${packageInstanceRecord.regionalRanges}">
                                 <dd>
                                     <div class="ui bulleted list">
                                         <g:each in="${packageInstanceRecord.regionalRanges}" var="rr">
@@ -180,8 +190,8 @@
                                         </g:each>
                                     </div>
                                 </dd>
-                            </dl>
-                        </g:if>
+                            </g:if>
+                        </dl>
                     </div>
                 </div>
             </div>

@@ -352,7 +352,7 @@
                             <dd>
                             <g:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency]"/>
 
-                            <g:if test="${isProviderOrAgency && (accessService.checkConstraint_ORG_COM_EDITOR())}">
+                            <g:if test="${isProviderOrAgency && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')}">
                                 <div class="ui list">
 
                                     <div class="item">
@@ -525,7 +525,9 @@
         func();
     }
 
-    JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
+    <g:if test="${!isProviderOrAgency}">
+        JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
+    </g:if>
 
 <g:if test="${isProviderOrAgency}">
 

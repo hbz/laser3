@@ -46,6 +46,19 @@ class CascadingUpdateService {
         //        tipp:   TitleInstancePackagePlatform
     }
 
+    void update(Language obj, Date luc) {
+        log(obj, luc)
+
+        Language.executeUpdate("update Language lang set lang.lastUpdatedCascading = :luc where lang = :obj", [
+                luc: luc, obj: obj
+        ])
+
+        if (obj.pkg) { update(obj.pkg, luc) }
+        //if (obj.ti)  { update(obj.ti,  luc) }
+
+        //        tipp:   TitleInstancePackagePlatform
+    }
+
     void update(AbstractPropertyWithCalculatedLastUpdated obj, Date luc) {
         log(obj, luc)
 
