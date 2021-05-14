@@ -43,7 +43,6 @@ class PersonController  {
                     break
                 case 'POST':
                     if (formService.validateToken(params)) {
-                        log.debug(params.toMapString()) //continue here: extract contact params from here and translate the whole switch block to sync
                         Person personInstance = new Person(params)
                         if (!personInstance.save()) {
                             flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label')])
