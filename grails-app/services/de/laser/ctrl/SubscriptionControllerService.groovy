@@ -521,7 +521,7 @@ class SubscriptionControllerService {
             result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             result.members_disabled = Subscription.executeQuery("select oo.org.id from OrgRole oo join oo.sub s where s.instanceOf = :io",[io: result.subscription])
             result.validPackages = result.subscription.packages?.sort { it.pkg.name }
-            result.memberLicenses = License.executeQuery("select l from Links li join li.sourceLicense l where li.destinationSubscription = :subscription and li.linkType = :linkType and exists (select l2 from License l2 where l2.instanceOf = l)",[subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE])
+            result.memberLicenses = License.executeQuery("select l from License l where l.instanceOf in (select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType)",[subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE])
 
             [result:result,status:STATUS_OK]
         }
