@@ -42,13 +42,25 @@ class SubscriptionFilter extends BaseFilter {
                 queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id from Subscription s' )
                 break
             case 'consortia-sub':
-                List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(    // roleType:Subscription Consortia
+                List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
                         [validOn: null, orgRole: 'Subscription Consortia'], contextService.getOrg() )
                 queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
                 break
-            case 'my-sub':
-                List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(    // roleType:Subscriber
+            case 'inst-sub':
+                List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
                         [validOn: null, orgRole: 'Subscriber'], contextService.getOrg() )
+                queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
+                break
+            case 'inst-sub-consortia':
+                List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
+                        [validOn: null, orgRole: RDStore.OR_SUBSCRIBER.value, subTypes: RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id],
+                        contextService.getOrg() )
+                queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
+                break
+            case 'inst-sub-local':
+                List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
+                        [validOn: null, orgRole: RDStore.OR_SUBSCRIBER.value, subTypes: RDStore.SUBSCRIPTION_TYPE_LOCAL.id],
+                        contextService.getOrg() )
                 queryParams.subscriptionIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
                 break
         }

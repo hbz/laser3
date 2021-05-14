@@ -42,15 +42,25 @@ class LicenseFilter extends BaseFilter {
                 queryParams.licenseIdList = License.executeQuery( 'select l.id from License l' )
                 break
             case 'consortia-lic':
-                List tmp1 = licenseService.getLicensesConsortiaQuery( [:] )         // roleType:Licensing Consortium
-                queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp1[0], tmp1[1]) )
+                List tmp = licenseService.getLicensesConsortiaQuery( [:] )  // roleType:Licensing Consortium
+                queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp[0], tmp[1]) )
                 queryParams.licenseIdList.unique()
                 break
-            case 'my-lic':
-                List tmp2 = licenseService.getLicensesConsortialLicenseQuery( [:] ) // roleType:Licensee_Consortial
-                List tmp3 = licenseService.getLicensesLocalLicenseQuery( [:] )      // roleType:Licensee
+            case 'inst-lic':
+                List tmp1 = licenseService.getLicensesConsortialLicenseQuery( [:] ) // roleType:Licensee_Consortial
+                List tmp2 = licenseService.getLicensesLocalLicenseQuery( [:] )      // roleType:Licensee
+                queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp1[0], tmp1[1]) )
                 queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp2[0], tmp2[1]) )
-                queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp3[0], tmp3[1]) )
+                queryParams.licenseIdList.unique()
+                break
+            case 'inst-lic-consortia':
+                List tmp = licenseService.getLicensesConsortialLicenseQuery( [:] ) // roleType:Licensee_Consortial
+                queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp[0], tmp[1]) )
+                queryParams.licenseIdList.unique()
+                break
+            case 'inst-lic-local':
+                List tmp = licenseService.getLicensesLocalLicenseQuery( [:] )      // roleType:Licensee
+                queryParams.licenseIdList.addAll( License.executeQuery( 'select l.id ' + tmp[0], tmp[1]) )
                 queryParams.licenseIdList.unique()
                 break
         }

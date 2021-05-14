@@ -55,7 +55,6 @@ class OrgExport extends AbstractExport {
                                     'name'              : FIELD_TYPE_PROPERTY,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
-                                    'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                                     '@ae-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp,
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
@@ -66,7 +65,6 @@ class OrgExport extends AbstractExport {
                                     'name'              : FIELD_TYPE_PROPERTY,
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
-                                    'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                                     '@ae-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
@@ -77,8 +75,13 @@ class OrgExport extends AbstractExport {
 
     OrgExport (String token, Map<String, Object> fields) {
         this.token = token
-        selectedExportFields = fields.findAll { it.key in getAllFields().keySet() }
 
+        // keeping order ..
+        getAllFields().keySet().each { k ->
+            if (k in fields.keySet() ) {
+                selectedExportFields.put(k, fields.get(k))
+            }
+        }
         ExportHelper.normalizeSelectedFieldValues( this )
     }
 
@@ -159,7 +162,8 @@ class OrgExport extends AbstractExport {
                 }
                 else if (key == 'legalInfo') {
                     content.add(
-                            ( org.createdBy != null ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value') ) + '/' +
+                            ( org.createdBy != null ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value') ) +
+                            CSV_VALUE_SEPARATOR +
                             ( org.legallyObligedBy != null? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value') )
                     )
                 }
@@ -215,17 +219,25 @@ class OrgExport extends AbstractExport {
                 else if (key == '@ae-org-readerNumber') {
                     
                     OrganisationService organisationService = (OrganisationService) Holders.grailsApplication.mainContext.getBean('organisationService')
+
                     Map<String,Map<String, ReaderNumber>> semesterMap = organisationService.groupReaderNumbersByProperty(
                             ReaderNumber.findAllByOrgAndSemesterIsNotNull( org ), "semester"
                     )
-
-                    String all = semesterMap.collect { sem ->
+                    Map<String,Map<String, ReaderNumber>> dueDateMap = organisationService.groupReaderNumbersByProperty(
+                            ReaderNumber.findAllByOrgAndDueDateIsNotNull( org ), "dueDate"
+                    )
+                    List entries = semesterMap.collect { sem ->
                         sem.key.getI10n('value') + ': ' + sem.value.collect { rn ->
-                            rn.key + ' ' + rn.value.value
-                        }.join(', ')
-                    }.join( CSV_VALUE_SEPARATOR )
+                            rn.value.value ? (rn.key + ' ' + rn.value.value) : null
+                        }.findAll().join(', ')
+                    }
+                    entries.addAll( dueDateMap.collect { sem ->
+                        DateUtils.getSDF_NoTime().format( sem.key ) + ': ' + sem.value.collect { rn ->
+                            rn.value.value ? (rn.key + ' ' + rn.value.value) : null
+                        }.findAll().join(', ')
+                    } )
 
-                    content.add( all )
+                    content.add( entries.join( CSV_VALUE_SEPARATOR ) )
                 }
                 else if (key == '@ae-org-accessPoint') {
 
@@ -260,7 +272,7 @@ class OrgExport extends AbstractExport {
 //                            }
                         }
                         if (! entry.isEmpty()) {
-                            oapList.add( oa['oap'].accessMethod.getI10n('value') + ': ' + entry.join(' / ') )
+                            oapList.add( oa['oap'].accessMethod.getI10n('value') + ': ' + entry.join(', ') )
                         }
                     }
 

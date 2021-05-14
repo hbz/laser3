@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3483    12.05.2021  dev     2.1         David   Feature     Mehrfachauswahl für Export- und Filter-Optionen
+
+3432    12.05.2021  dev     2.1         David   Feature     Reporting: Export-Verbesserungen
+
 3442    11.05.2021  dev     2.1         Andreas Feature     Aufräumen unter Identifier
 
 3466    10.05.2021  dev     2.1         Andreas Feature     Erweiterung der Paketdetailseite um neue Felder
