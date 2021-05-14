@@ -126,7 +126,6 @@ class Identifier implements CalculatedLastUpdated, Comparable {
             }
             else {
                 if(ns.name_de != name_de && name_de != null) {
-                    log.debug("${ns.name_de} vs. ${name_de}")
                     ns.name_de = name_de
                     ns.save()
                 }

@@ -43,6 +43,7 @@ class PersonController  {
                     break
                 case 'POST':
                     if (formService.validateToken(params)) {
+
                         Person personInstance = new Person(params)
                         if (!personInstance.save()) {
                             flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label')])
