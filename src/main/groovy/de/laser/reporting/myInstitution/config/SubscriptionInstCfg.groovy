@@ -13,7 +13,9 @@ class SubscriptionInstCfg extends BaseConfig {
                             class: Subscription
                     ],
                     source : [
-                            'my-sub' : 'Meine Lizenzen'
+                            'inst-sub'            : 'Meine Lizenzen (alle)',
+                            'inst-sub-consortia'  : 'Meine zentral verwalteten Lizenzen',
+                            'inst-sub-local'      : 'Meine lokalen Lizenzen',
                     ],
                     fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,

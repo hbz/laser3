@@ -98,6 +98,10 @@ class ReportingService {
             result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).get( pk ).query.default )
         }
 
+        if (! params.get('filter:consortium_source')) {
+            result.cfgQueryList.remove('Konsortialstelle')
+        }
+
         result.cfgQuery2List.putAll( BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base.query2 ) // Verteilung
     }
 

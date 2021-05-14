@@ -13,7 +13,9 @@ class LicenseInstCfg extends BaseConfig {
                             class: License
                     ],
                     source : [
-                            'my-lic' : 'Meine Verträge'
+                            'inst-lic'              : 'Meine Verträge (alle)',
+                            'inst-lic-consortia'    : 'Meine zentral verwalteten Verträge',
+                            'inst-lic-local'        : 'Meine lokalen Verträge',
                     ],
                     fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,

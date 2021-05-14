@@ -63,8 +63,13 @@ class LicenseExport extends AbstractExport {
 
     LicenseExport (String token, Map<String, Object> fields) {
         this.token = token
-        selectedExportFields = fields.findAll { it.key in getAllFields().keySet() }
 
+        // keeping order ..
+        getAllFields().keySet().each { k ->
+            if (k in fields.keySet() ) {
+                selectedExportFields.put(k, fields.get(k))
+            }
+        }
         ExportHelper.normalizeSelectedFieldValues( this )
     }
 
