@@ -7,7 +7,7 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-3310    14.05.2021  rc2.0   2.0.10      Andreas Bug         erneute Behebung der Fehlverknüpfungen Vertrag-Lizenz
+3316    14.05.2021  rc2.0   2.0.10      Andreas Bug         erneute Behebung der Fehlverknüpfungen Vertrag-Lizenz
 
 3469    10.05.2021  rc2.0   2.0.10      David   Feature     Reporting-Export: Konfiguration erweitern
 
