@@ -42,13 +42,13 @@ class SubscriptionInstCfg extends BaseConfig {
                     query : [
                             default: [
                                     'Lizenz' : [ // TODO ..
-                                             'subscription-*'           : 'Alle',
                                              'subscription-form'        : 'Lizenzform',
                                              'subscription-kind'        : 'Lizenztyp',
                                              'subscription-resource'    : 'Ressourcentyp',
                                              'subscription-status'      : 'Lizenzstatus',
                                              'subscription-isMultiYear' : 'Mehrjahreslaufzeit',
-                                             'subscription-manualCancellationDate'  : 'Kündigungsdatum'
+                                             'subscription-manualCancellationDate'  : 'Kündigungsdatum',
+                                             'subscription-*'           : 'Alle'
                                     ]
                             ]
                     ],
@@ -120,13 +120,13 @@ class SubscriptionInstCfg extends BaseConfig {
                                     'Konsortialstelle' : [ // TODO ..
                                              //'consortium-orgType'            : 'Organisationstyp',
                                              //'consortium-customerType'       : 'Kundentyp',
-                                             'consortium-*'                  : 'Alle',
                                              'consortium-libraryType'        : 'Bibliothekstyp',
                                              'consortium-region'             : 'Bundesländer',
                                              'consortium-subjectGroup'       : 'Fächergruppen',
                                              'consortium-libraryNetwork'     : 'Verbundzugehörigkeit',
                                              'consortium-funderType'         : 'Unterhaltsträger',
-                                             'consortium-funderHskType'      : 'Trägerschaft'
+                                             'consortium-funderHskType'      : 'Trägerschaft',
+                                             'consortium-*'                  : 'Alle'
                                     ]
                             ]
                     ]
@@ -149,8 +149,8 @@ class SubscriptionInstCfg extends BaseConfig {
                     query : [
                             default: [
                                     'Anbieter' : [ // TODO ..
-                                               'provider-*'            : 'Alle',
                                                'provider-orgType'      : 'Organisationstyp',
+                                               'provider-*'            : 'Alle'
                                               // 'provider-country'      : 'Länder',
                                               // 'provider-region'       : 'Bundesländer'
                                     ]
@@ -175,8 +175,8 @@ class SubscriptionInstCfg extends BaseConfig {
                     query : [
                             default : [
                                     'Lieferant' : [ // TODO ..
-                                           'agency-*'            : 'Alle',
                                            'agency-orgType'      : 'Organisationstyp',
+                                           'agency-*'            : 'Alle'
                                            // 'provider-country'      : 'Länder',
                                            // 'provider-region'       : 'Bundesländer'
                                     ]

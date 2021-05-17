@@ -33,11 +33,11 @@ class LicenseConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     'Vertrag' : [ // TODO ..
-                                            'license-*'                 : 'Alle',
                                             'license-licenseCategory'   : 'Lizenzkategorie',
                                             'license-type'              : 'Lizenztyp',
                                             //'license-openEnded'         : 'Unbefristet',
-                                            'license-status'            : 'Lizenzstatus'
+                                            'license-status'            : 'Lizenzstatus',
+                                            'license-*'                 : 'Alle'
                                     ]
                             ]
                     ],
@@ -82,10 +82,10 @@ class LicenseConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     'Lizenzgeber' : [ // TODO ..
-                                            'licensor-*'            : 'Alle',
                                             'licensor-orgType'      : 'Organisationstyp',
                                             'licensor-country'      : 'Länder',
-                                            'licensor-region'       : 'Bundesländer'
+                                            'licensor-region'       : 'Bundesländer',
+                                            'licensor-*'            : 'Alle'
                                     ]
                             ]
                     ]

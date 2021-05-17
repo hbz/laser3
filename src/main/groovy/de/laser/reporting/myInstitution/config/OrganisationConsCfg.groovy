@@ -49,7 +49,6 @@ class OrganisationConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     'Organisation' : [ // TODO ..
-                                            'org-*'                 : 'Alle',
                                             'org-orgType'           : 'Organisationstyp',
                                             'org-customerType'      : 'Kundentyp',
                                             'org-libraryType'       : 'Bibliothekstyp',
@@ -57,7 +56,8 @@ class OrganisationConsCfg extends BaseConfig {
                                             'org-subjectGroup'      : 'Fächergruppen',
                                             'org-libraryNetwork'    : 'Verbundzugehörigkeit',
                                             'org-funderType'        : 'Unterhaltsträger',
-                                            'org-funderHskType'     : 'Trägerschaft'
+                                            'org-funderHskType'     : 'Trägerschaft',
+                                            'org-*'                 : 'Alle'
                                     ]
                             ],
                             providerAndAgency : [

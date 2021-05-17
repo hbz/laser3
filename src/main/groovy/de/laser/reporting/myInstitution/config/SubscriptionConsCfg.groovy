@@ -40,13 +40,13 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     'Lizenz' : [ // TODO ..
-                                            'subscription-*'            : 'Alle',
                                             'subscription-form'         : 'Lizenzform',
                                             'subscription-kind'         : 'Lizenztyp',
                                             'subscription-resource'     : 'Ressourcentyp',
                                             'subscription-status'       : 'Lizenzstatus',
                                             'subscription-isMultiYear'  : 'Mehrjahreslaufzeit',
-                                            'subscription-manualCancellationDate'  : 'Kündigungsdatum'
+                                            'subscription-manualCancellationDate'  : 'Kündigungsdatum',
+                                            'subscription-*'            : 'Alle'
                                     ]
                             ]
                     ],
@@ -135,7 +135,6 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     'Teilnehmer' : [ // TODO ..
-                                            'member-*'                  : 'Alle',
                                             'member-orgType'            : 'Organisationstyp',
                                             'member-customerType'       : 'Kundentyp',
                                             'member-libraryType'        : 'Bibliothekstyp',
@@ -143,7 +142,8 @@ class SubscriptionConsCfg extends BaseConfig {
                                             'member-subjectGroup'       : 'Fächergruppen',
                                             'member-libraryNetwork'     : 'Verbundzugehörigkeit',
                                             'member-funderType'         : 'Unterhaltsträger',
-                                            'member-funderHskType'      : 'Trägerschaft'
+                                            'member-funderHskType'      : 'Trägerschaft',
+                                            'member-*'                  : 'Alle'
                                     ]
                             ]
                     ]
@@ -166,8 +166,8 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     'Anbieter' : [ // TODO ..
-                                            'provider-*'            : 'Alle',
                                             'provider-orgType'      : 'Organisationstyp',
+                                            'provider-*'            : 'Alle'
                                             //'provider-country'      : 'Länder',
                                             //'provider-region'       : 'Bundesländer'
                                     ]
@@ -192,8 +192,8 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default: [
                                     'Lieferant' : [ // TODO ..
-                                            'agency-*'            : 'Alle',
                                             'agency-orgType'      : 'Organisationstyp',
+                                            'agency-*'            : 'Alle'
                                             // 'provider-country'      : 'Länder',
                                             // 'provider-region'       : 'Bundesländer'
                                     ]
