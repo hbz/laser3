@@ -92,6 +92,7 @@
         xAxis: {
             type: 'value',
             offset: 5,
+            minInterval: 1,
             axisLabel: {
                 formatter (value) { return Math.abs(value) }
             }
@@ -99,6 +100,7 @@
         yAxis: {
             type: 'category',
             offset: 5,
+            minInterval: 1,
             axisTick: { show: true },
             axisLine: { onZero: true }
         },

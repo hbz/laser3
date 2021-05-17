@@ -74,11 +74,13 @@
             containLabel: true
         },
         xAxis: {
-            offset: 5
+            offset: 5,
+            minInterval: 1
         },
         yAxis: {
             type: 'category',
             offset: 5,
+            minInterval: 1,
             axisLabel: {
                 formatter: function (value) {
                     return value.replace(/\s\(ID:[0-9]*\)/,'')

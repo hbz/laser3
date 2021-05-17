@@ -22,6 +22,16 @@ class LicenseQuery extends BaseQuery {
 
         if (! idList) {
         }
+        else if ( suffix in ['*']) {
+
+            handleGenericAllQuery(
+                    params.query,
+                    'select l.reference, l.reference, count(l.reference) from License l where l.id in (:idList) group by l.reference',
+                    'select l.id from License l where l.id in (:idList) and l.reference = :d order by l.id',
+                    idList,
+                    result
+            )
+        }
         else if ( suffix in ['licenseCategory']) {
 
             processSimpleRefdataQuery(params.query,'licenseCategory', idList, result)

@@ -48,6 +48,7 @@ class OrganisationInstCfg extends BaseConfig {
                     query : [
                             default : [
                                     'Organisation' : [ // TODO ..
+                                           'org-*'                 : 'Alle',
                                            'org-orgType'           : 'Organisationstyp',
                                            'org-customerType'      : 'Kundentyp',
                                            'org-libraryType'       : 'Bibliothekstyp',

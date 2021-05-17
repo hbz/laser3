@@ -93,6 +93,22 @@ class BaseQuery {
         handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
     }
 
+    static void handleGenericAllQuery(String query, String dataHql, String dataDetailsHql, List idList, Map<String, Object> result) {
+
+        result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
+
+        result.data.each { d ->
+            d[0] = Math.abs(d[0].hashCode())
+
+            result.dataDetails.add([
+                    query : query,
+                    id    : d[0],
+                    label : d[1],
+                    idList: Org.executeQuery( dataDetailsHql, [idList: idList, d: d[1]] )
+            ])
+        }
+    }
+
     static void handleGenericRefdataQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []

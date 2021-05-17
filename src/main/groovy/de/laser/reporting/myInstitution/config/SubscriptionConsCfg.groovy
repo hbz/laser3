@@ -40,6 +40,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     'Lizenz' : [ // TODO ..
+                                            'subscription-*'            : 'Alle',
                                             'subscription-form'         : 'Lizenzform',
                                             'subscription-kind'         : 'Lizenztyp',
                                             'subscription-resource'     : 'Ressourcentyp',
@@ -134,6 +135,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     'Teilnehmer' : [ // TODO ..
+                                            'member-*'                  : 'Alle',
                                             'member-orgType'            : 'Organisationstyp',
                                             'member-customerType'       : 'Kundentyp',
                                             'member-libraryType'        : 'Bibliothekstyp',
@@ -164,6 +166,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     'Anbieter' : [ // TODO ..
+                                            'provider-*'            : 'Alle',
                                             'provider-orgType'      : 'Organisationstyp',
                                             //'provider-country'      : 'Länder',
                                             //'provider-region'       : 'Bundesländer'
@@ -189,6 +192,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default: [
                                     'Lieferant' : [ // TODO ..
+                                            'agency-*'            : 'Alle',
                                             'agency-orgType'      : 'Organisationstyp',
                                             // 'provider-country'      : 'Länder',
                                             // 'provider-region'       : 'Bundesländer'

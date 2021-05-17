@@ -31,6 +31,7 @@ class CostItemXCfg extends BaseConfig {
                     query : [
                             default: [
                                     'Kosten' : [ // TODO ..
+                                            'costItem-*'                            : 'Alle',
                                             'costItem-type'                         : 'type',
                                             'costItem-costItemStatus'               : 'costItemStatus',
                                             'costItem-costItemCategory'             : 'costItemCategory',

@@ -30,6 +30,16 @@ class OrganisationQuery extends BaseQuery {
 
         if (! idList) {
         }
+        else if ( suffix in ['*']) {
+
+            handleGenericAllQuery(
+                    params.query,
+                    'select o.name, o.name, count(o.name) from Org o where o.id in (:idList) group by o.name',
+                    'select o.id from Org o where o.id in (:idList) and o.name = :d order by o.id',
+                    idList,
+                    result
+            )
+        }
         else if ( suffix in ['libraryType']) {
 
             processSimpleRefdataQuery(params.query, 'libraryType', idList, result)
