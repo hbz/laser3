@@ -187,25 +187,25 @@
                 </div><!-- .card -->
             </g:if>
 
-            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
+            <g:if test="${isGrantedOrgRoleAdmin}">
                 <div class="ui card">
                     <div class="content">
-                        <%-- ROLE_ADMIN: all , ROLE_ORG_EDITOR: all minus Consortium --%>
+                        <%-- ROLE_ADMIN: all --%>
                         <dl>
                             <dt><g:message code="org.orgType.label" /></dt>
                             <dd>
                                 <g:render template="orgTypeAsList"
-                                          model="${[org: orgInstance, orgTypes: orgInstance.orgType, availableOrgTypes: availableOrgTypes, editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
+                                          model="${[org: orgInstance, orgTypes: orgInstance.orgType, availableOrgTypes: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE), editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
                             </dd>
                         </dl>
 
                         <g:render template="orgTypeModal"
-                                  model="${[org: orgInstance, availableOrgTypes: orgType_types, editable: orgType_editable]}"/>
+                                  model="${[org: orgInstance, availableOrgTypes: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE), editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
                     </div>
                 </div>
             </g:if>
 
-            <g:if test="${ !isProviderOrAgency}">
+            <g:if test="${ !isPrviderOrAgency}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
