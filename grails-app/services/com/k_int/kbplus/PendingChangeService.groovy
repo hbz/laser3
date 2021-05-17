@@ -461,12 +461,12 @@ class PendingChangeService extends AbstractLockableService {
         }
         List query1Clauses = [], query2Clauses = [], query3Clauses = []
         String query1 = "select pc from PendingChange pc where pc.owner = :contextOrg and pc.status in (:status) and (pc.msgToken = :newSubscription or pc.costItem != null)",
-        query2 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'pkg\' from PendingChange pc join pc.pkg pkg where pkg in (:packages) and pc.oid = null',
-        query5 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'pkg\' from PendingChange pc join pc.pkg pkg where pkg in (:packages) and pc.oid = null',
-        query3 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'tipp.pkg\'  from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = null',
-        query6 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'tipp.pkg\'  from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = null',
-        query4 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'tippCoverage.tipp.pkg\'  from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = null',
-        query7 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'tippCoverage.tipp.pkg\'  from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = null'
+        query2 = 'select pc.msgToken,pkg.id,count(distinct pkg.id),\'pkg\' from PendingChange pc join pc.pkg pkg where pkg in (:packages) and pc.oid = null',
+        query5 = 'select pc.msgToken,pkg.id,count(distinct pkg.id),\'pkg\' from PendingChange pc join pc.pkg pkg where pkg in (:packages) and pc.oid = null',
+        query3 = 'select pc.msgToken,pkg.id,count(distinct tipp.id),\'tipp.pkg\'  from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg in (:packages) and pc.oid = null',
+        query6 = 'select pc.msgToken,pkg.id,count(distinct tipp.id),\'tipp.pkg\'  from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg in (:packages) and pc.oid = null',
+        query4 = 'select pc.msgToken,pkg.id,count(distinct tc.id),\'tc.tipp.pkg\'  from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg in (:packages) and pc.oid = null',
+        query7 = 'select pc.msgToken,pkg.id,count(distinct tc.id),\'tc.tipp.pkg\'  from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg in (:packages) and pc.oid = null'
         //query5 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'priceItem.tipp.pkg\' from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = null'
         Map<String,Object> query1Params = [contextOrg:configMap.contextOrg, status:[RDStore.PENDING_CHANGE_PENDING,RDStore.PENDING_CHANGE_ACCEPTED], newSubscription: "pendingChange.message_SU_NEW_01"],
         query2Params = [packages:subscribedPackages],
@@ -510,12 +510,12 @@ class PendingChangeService extends AbstractLockableService {
         List<PendingChange> nonPackageChanges = PendingChange.executeQuery(query1,query1Params) //PendingChanges need to be refilled in maps
         List tokensNotifications = [], tokensPrompt = [], pending = [], notifications = []
         if (subscribedPackages) {
-            tokensNotifications.addAll(PendingChange.executeQuery(query2 + ' group by pc.msgToken,pkg.id', query2Params))
-            tokensPrompt.addAll(PendingChange.executeQuery(query5 + ' group by pc.msgToken,pkg.id', query3Params))
-            tokensNotifications.addAll(PendingChange.executeQuery(query3 + ' group by pc.msgToken,pkg.id', query2Params))
-            tokensPrompt.addAll(PendingChange.executeQuery(query6 + ' group by pc.msgToken,pkg.id', query3Params))
-            tokensNotifications.addAll(PendingChange.executeQuery(query4 + ' group by pc.msgToken,pkg.id', query2Params))
-            tokensPrompt.addAll(PendingChange.executeQuery(query7 + ' group by pc.msgToken,pkg.id', query3Params))
+            tokensNotifications.addAll(PendingChange.executeQuery(query2 + ' group by pc.msgToken, pkg.id', query2Params))
+            tokensPrompt.addAll(PendingChange.executeQuery(query5 + ' group by pc.msgToken, pkg.id', query3Params))
+            tokensNotifications.addAll(PendingChange.executeQuery(query3 + ' group by pc.msgToken, pkg.id', query2Params))
+            tokensPrompt.addAll(PendingChange.executeQuery(query6 + ' group by pc.msgToken, pkg.id', query3Params))
+            tokensNotifications.addAll(PendingChange.executeQuery(query4 + ' group by pc.msgToken, pkg.id', query2Params))
+            tokensPrompt.addAll(PendingChange.executeQuery(query7 + ' group by pc.msgToken, pkg.id', query3Params))
             //tokensOnly.addAll(PendingChange.executeQuery(query5 + ' group by pc.msgToken,pkg.id', query2Params))
             /*
                I need to summarize here:

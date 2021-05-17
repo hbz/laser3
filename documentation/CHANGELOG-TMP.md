@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3332    14.05.2021  dev     2.1         Andreas Feature     Default-Sortierung nach Ereignistyp und Zeitstempel
+
+3329    14.05.2021  dev     2.1         Andreas Bug         falsche Zählung der Pakethistorie
+
 3483    12.05.2021  dev     2.1         David   Feature     Mehrfachauswahl für Export- und Filter-Optionen
 
 3432    12.05.2021  dev     2.1         David   Feature     Reporting: Export-Verbesserungen

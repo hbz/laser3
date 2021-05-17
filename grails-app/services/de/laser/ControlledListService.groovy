@@ -562,6 +562,46 @@ class ControlledListService {
         seriesName
     }
 
+    Set<DeweyDecimalClassification> getAllPossibleDdcsByPackage(Package pkg, String forTitles) {
+        Locale locale = LocaleContextHolder.getLocale()
+        RefdataValue tippStatus = getTippStatusForRequest(forTitles)
+        Set<DeweyDecimalClassification> ddcs = []
+
+        ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and status = :status order by ddc.ddc.value_"+I10nTranslation.decodeLocale(locale), [pkg: pkg, status: tippStatus]))
+
+        ddcs
+    }
+
+    Set<DeweyDecimalClassification> getAllPossibleDdcsBySub(Subscription subscription) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<DeweyDecimalClassification> ddcs = []
+
+        if(subscription.packages){
+            ddcs.addAll(DeweyDecimalClassification.executeQuery("select ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by ddc.ddc.value_"+I10nTranslation.decodeLocale(locale), [pkg: subscription.packages.pkg]))
+        }
+        ddcs
+    }
+
+    Set<Language> getAllPossibleLanguagesByPackage(Package pkg, String forTitles) {
+        Locale locale = LocaleContextHolder.getLocale()
+        RefdataValue tippStatus = getTippStatusForRequest(forTitles)
+        Set<Language> languages = []
+
+        languages.addAll(TitleInstancePackagePlatform.executeQuery("select lang from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg = :pkg and status = :status order by lang.language.value_"+I10nTranslation.decodeLocale(locale), [pkg: pkg, status: tippStatus]))
+
+        languages
+    }
+
+    Set<Language> getAllPossibleLanguagesBySub(Subscription subscription) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<Language> languages = []
+
+        if(subscription.packages){
+            languages.addAll(DeweyDecimalClassification.executeQuery("select lang from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by lang.language.value_"+I10nTranslation.decodeLocale(locale), [pkg: subscription.packages.pkg]))
+        }
+        languages
+    }
+
     Set<String> getAllPossibleSubjectsByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)

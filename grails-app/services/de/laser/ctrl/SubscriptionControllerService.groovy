@@ -1578,7 +1578,7 @@ class SubscriptionControllerService {
             }
 
             params.tab = params.tab ?: 'changes'
-            params.sort = params.sort ?: 'ts'
+            params.sort = params.sort ?: 'msgToken, ts'
             params.order = params.order ?: 'desc'
             params.max = result.max
             params.offset = result.offset
