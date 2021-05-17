@@ -181,7 +181,7 @@ class SubscriptionQuery extends BaseQuery {
             else if (params.query in ['subscription-x-subscription']) {
 
                 result.data = idList ? Subscription.executeQuery(
-                        'select sub.id, sub.name, count(mbr.id) from Subscription mbr join mbr.instanceOf sub where sub.id in (:idList) group by sub.id order by sub.name',
+                        'select sub.id, concat(sub.name, \' (ID:\', sub.id,\')\'), count(mbr.id) from Subscription mbr join mbr.instanceOf sub where sub.id in (:idList) group by sub.id order by sub.name, sub.id',
                         [idList: idList]) : []
 
                 result.data.each { d ->
@@ -200,7 +200,7 @@ class SubscriptionQuery extends BaseQuery {
             else if (params.query in ['subscription-x-member']) {
 
                 result.data = idList ? Subscription.executeQuery(
-                        'select sub.id, sub.name, count(mbr.id) from Subscription mbr join mbr.instanceOf sub where sub.id in (:idList) group by sub.id order by sub.name',
+                        'select sub.id, concat(sub.name, \' (ID:\', sub.id,\')\'), count(mbr.id) from Subscription mbr join mbr.instanceOf sub where sub.id in (:idList) group by sub.id order by sub.name, sub.id',
                         [idList: idList]) : []
 
                 List<Long> memberIdList = BaseFilter.getCachedFilterIdList('member', params) // filter is set
@@ -221,9 +221,6 @@ class SubscriptionQuery extends BaseQuery {
                             idList: validMemberIdList
                     ])
                 }
-//            handleGenericNonMatchingData( params.query,
-//                    'select sub.id from Subscription sub where not exists (select mbr from Subscription mbr where mbr.instanceOf = sub) and sub.id in (:idList) order by sub.name',
-//                    idList, result )
             }
         }
 

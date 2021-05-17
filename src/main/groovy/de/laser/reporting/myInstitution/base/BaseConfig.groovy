@@ -31,7 +31,6 @@ class BaseConfig {
 
     static String CHART_BAR                     = 'bar'
     static String CHART_PIE                     = 'pie'
-    static String CHART_RADAR                   = 'radar'
 
     static String FIELD_TYPE_PROPERTY           = 'property'
     static String FIELD_TYPE_REFDATA            = 'refdata'
@@ -55,8 +54,7 @@ class BaseConfig {
     static Map<String, String> CHARTS = [
 
             bar   : 'Balkendiagramm',
-            pie   : 'Tortendiagramm',
-            //radar : 'Netzdiagramm'
+            pie   : 'Tortendiagramm'
     ]
 
     static Map<String, Object> getCurrentConfig(String key) {

@@ -39,7 +39,15 @@ if (! JSPC.app.reporting) {
                 getEntry: function(marker, text, value) {
                     return '<br/>' + marker + ' ' + text + '&nbsp;&nbsp;&nbsp;<strong style="float:right">' + value + '</strong>'
                 }
-            }
+            },
+            toolbox: {
+                showTitle: false,
+                feature: {
+                    saveAsImage: {
+                        title: 'Exportieren'
+                    },
+                }
+            },
         },
         requestChartHtmlDetails: function(data) {
             $.ajax({

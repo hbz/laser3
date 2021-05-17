@@ -1,17 +1,15 @@
 
 -> echarts build
--> 2021-03-05
+-> version 5.1.1
 
     chart
         - bar *
         - line *
         - pie *
         - scatter *
-        - radar *
 
     coordinate systems
         - grid *
-        - polar *
         - singleaxis *
 
     component
@@ -21,6 +19,7 @@
         - markpoint *
         - markline *
         - markarea *
+        - toolbox *
 
     others
         - utilites *

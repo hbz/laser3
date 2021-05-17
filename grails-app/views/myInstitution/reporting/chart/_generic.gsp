@@ -9,6 +9,7 @@
             text: '${labels.tooltip}',
             show: false
         },
+        toolbox: JSPC.app.reporting.helper.toolbox,
         dataset: {
             source: [
                 ['id', 'name', 'value'],
@@ -50,6 +51,7 @@
             text: '${labels.tooltip}',
             show: false
         },
+        toolbox: JSPC.app.reporting.helper.toolbox,
         dataset: {
             source: [
                 ['id', 'name', 'value'],
@@ -76,7 +78,12 @@
         },
         yAxis: {
             type: 'category',
-            offset: 5
+            offset: 5,
+            axisLabel: {
+                formatter: function (value) {
+                    return value.replace(/\s\(ID:[0-9]*\)/,'')
+                }
+            }
         },
         series: [
             {
