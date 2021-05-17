@@ -5,6 +5,11 @@
 </g:if>
 <g:elseif test="${chart == BaseConfig.CHART_PIE}">
     JSPC.app.reporting.current.chart.option = {
+        title: {
+            text: '${labels.tooltip}',
+            show: false
+        },
+        toolbox: JSPC.app.reporting.helper.toolbox,
         dataset: {
             source: [
                 ['id', 'name', 'value1', 'value2' ],
@@ -49,6 +54,11 @@
 </g:elseif>
 <g:elseif test="${chart == BaseConfig.CHART_BAR}">
     JSPC.app.reporting.current.chart.option = {
+        title: {
+            text: '${labels.tooltip}',
+            show: false
+        },
+        toolbox: JSPC.app.reporting.helper.toolbox,
         dataset: {
             source: [
                 ['id', 'name', 'value1', 'value2'],
