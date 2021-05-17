@@ -3047,7 +3047,10 @@ join sub.orgRelations or_sub where
         result.languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
         Map<String, Set<PropertyDefinition>> propDefs = [:]
-        PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { String it ->
+        Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR
+        if(result.institution.getCustomerType() == "ORG_INST")
+            availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR-PropertyDefinition.SVY_PROP
+        availablePrivDescs.each { String it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name_'+result.languageSuffix]) // ONLY private properties!
             propDefs[it] = itResult
         }
