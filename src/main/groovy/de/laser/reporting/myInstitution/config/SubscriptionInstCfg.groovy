@@ -47,7 +47,8 @@ class SubscriptionInstCfg extends BaseConfig {
                                              'subscription-resource'    : 'Ressourcentyp',
                                              'subscription-status'      : 'Lizenzstatus',
                                              'subscription-isMultiYear' : 'Mehrjahreslaufzeit',
-                                             'subscription-manualCancellationDate'  : 'Kündigungsdatum'
+                                             'subscription-manualCancellationDate'  : 'Kündigungsdatum',
+                                             'subscription-*'           : 'Alle'
                                     ]
                             ]
                     ],
@@ -124,7 +125,8 @@ class SubscriptionInstCfg extends BaseConfig {
                                              'consortium-subjectGroup'       : 'Fächergruppen',
                                              'consortium-libraryNetwork'     : 'Verbundzugehörigkeit',
                                              'consortium-funderType'         : 'Unterhaltsträger',
-                                             'consortium-funderHskType'      : 'Trägerschaft'
+                                             'consortium-funderHskType'      : 'Trägerschaft',
+                                             'consortium-*'                  : 'Alle'
                                     ]
                             ]
                     ]
@@ -148,6 +150,7 @@ class SubscriptionInstCfg extends BaseConfig {
                             default: [
                                     'Anbieter' : [ // TODO ..
                                                'provider-orgType'      : 'Organisationstyp',
+                                               'provider-*'            : 'Alle'
                                               // 'provider-country'      : 'Länder',
                                               // 'provider-region'       : 'Bundesländer'
                                     ]
@@ -173,6 +176,7 @@ class SubscriptionInstCfg extends BaseConfig {
                             default : [
                                     'Lieferant' : [ // TODO ..
                                            'agency-orgType'      : 'Organisationstyp',
+                                           'agency-*'            : 'Alle'
                                            // 'provider-country'      : 'Länder',
                                            // 'provider-region'       : 'Bundesländer'
                                     ]

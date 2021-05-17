@@ -45,7 +45,8 @@ class SubscriptionConsCfg extends BaseConfig {
                                             'subscription-resource'     : 'Ressourcentyp',
                                             'subscription-status'       : 'Lizenzstatus',
                                             'subscription-isMultiYear'  : 'Mehrjahreslaufzeit',
-                                            'subscription-manualCancellationDate'  : 'Kündigungsdatum'
+                                            'subscription-manualCancellationDate'  : 'Kündigungsdatum',
+                                            'subscription-*'            : 'Alle'
                                     ]
                             ]
                     ],
@@ -141,7 +142,8 @@ class SubscriptionConsCfg extends BaseConfig {
                                             'member-subjectGroup'       : 'Fächergruppen',
                                             'member-libraryNetwork'     : 'Verbundzugehörigkeit',
                                             'member-funderType'         : 'Unterhaltsträger',
-                                            'member-funderHskType'      : 'Trägerschaft'
+                                            'member-funderHskType'      : 'Trägerschaft',
+                                            'member-*'                  : 'Alle'
                                     ]
                             ]
                     ]
@@ -165,6 +167,7 @@ class SubscriptionConsCfg extends BaseConfig {
                             default : [
                                     'Anbieter' : [ // TODO ..
                                             'provider-orgType'      : 'Organisationstyp',
+                                            'provider-*'            : 'Alle'
                                             //'provider-country'      : 'Länder',
                                             //'provider-region'       : 'Bundesländer'
                                     ]
@@ -190,6 +193,7 @@ class SubscriptionConsCfg extends BaseConfig {
                             default: [
                                     'Lieferant' : [ // TODO ..
                                             'agency-orgType'      : 'Organisationstyp',
+                                            'agency-*'            : 'Alle'
                                             // 'provider-country'      : 'Länder',
                                             // 'provider-region'       : 'Bundesländer'
                                     ]

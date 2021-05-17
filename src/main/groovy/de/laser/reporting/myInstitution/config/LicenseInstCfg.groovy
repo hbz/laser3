@@ -35,10 +35,12 @@ class LicenseInstCfg extends BaseConfig {
                     query : [
                             default : [
                                     'Vertrag' : [ // TODO ..
+
                                           'license-licenseCategory'   : 'Lizenzkategorie',
                                           'license-type'              : 'Lizenztyp',
                                           //'license-openEnded'         : 'Unbefristet',
-                                          'license-status'            : 'Lizenzstatus'
+                                          'license-status'            : 'Lizenzstatus',
+                                          'license-*'                 : 'Alle'
                                     ]
                             ]
                     ],
@@ -83,9 +85,10 @@ class LicenseInstCfg extends BaseConfig {
                     query : [
                             default : [
                                     'Lizenzgeber' : [ // TODO ..
-                                              'licensor-orgType'      : 'Organisationstyp',
-                                              'licensor-country'      : 'Länder',
-                                              'licensor-region'       : 'Bundesländer'
+                                            'licensor-orgType'      : 'Organisationstyp',
+                                            'licensor-country'      : 'Länder',
+                                            'licensor-region'       : 'Bundesländer',
+                                            'licensor-*'            : 'Alle'
                                     ]
                             ]
                     ]

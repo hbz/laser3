@@ -55,7 +55,8 @@ class OrganisationInstCfg extends BaseConfig {
                                            'org-subjectGroup'      : 'Fächergruppen',
                                            'org-libraryNetwork'    : 'Verbundzugehörigkeit',
                                            'org-funderType'        : 'Unterhaltsträger',
-                                           'org-funderHskType'     : 'Trägerschaft'
+                                           'org-funderHskType'     : 'Trägerschaft',
+                                           'org-*'                 : 'Alle'
                                     ]
                             ],
                             providerAndAgency : [

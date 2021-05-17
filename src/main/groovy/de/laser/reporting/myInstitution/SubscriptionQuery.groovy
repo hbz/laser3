@@ -27,6 +27,16 @@ class SubscriptionQuery extends BaseQuery {
 
         if (! idList) {
         }
+        else if ( suffix in ['*']) {
+
+            handleGenericAllQuery(
+                    params.query,
+                    'select s.name, s.name, count(s.name) from Subscription s where s.id in (:idList) group by s.name',
+                    'select s.id from Subscription s where s.id in (:idList) and s.name = :d order by s.id',
+                    idList,
+                    result
+            )
+        }
         else if ( suffix in ['form']) {
 
             processSimpleRefdataQuery(params.query,'form', idList, result)

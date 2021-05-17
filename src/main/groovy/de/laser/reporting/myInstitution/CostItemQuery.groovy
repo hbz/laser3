@@ -20,6 +20,10 @@ class CostItemQuery extends BaseQuery {
 
         if (! idList) {
         }
+        else if ( suffix in ['*']) {
+
+            println '--- TODO ---'
+        }
         else if ( suffix in ['type']) {
 
             processSimpleRefdataQuery(params.query,'type', idList, result)
