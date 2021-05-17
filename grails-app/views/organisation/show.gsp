@@ -205,7 +205,7 @@
                 </div>
             </g:if>
 
-            <g:if test="${ !isPrviderOrAgency}">
+            <g:if test="${ !isProviderOrAgency}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
