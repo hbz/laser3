@@ -187,7 +187,7 @@
                 </div><!-- .card -->
             </g:if>
 
-            <g:if test="${isGrantedOrgRoleAdmin}">
+            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                 <div class="ui card">
                     <div class="content">
                         <%-- ROLE_ADMIN: all --%>
