@@ -5,17 +5,20 @@
 
         <div class="menu ui top attached tabular">
             <a class="active item" data-tab="sub-filter-tab-1">${message(code:'subscription.plural')}</a>
+            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).memberSubscription}">
+                <a class="item" data-tab="sub-filter-tab-2">${message(code:'subscription.propertiesMembers.subscriber')}</a>
+            </g:if>
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).member}">
-                <a class="item" data-tab="sub-filter-tab-2">${message(code:'subscription.details.consortiaMembers.label')}</a>
+                <a class="item" data-tab="sub-filter-tab-3">${message(code:'subscription.details.consortiaMembers.label')}</a>
             </g:if>
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).consortium}">
-                <a class="item filter-wrapper-consortium" data-tab="sub-filter-tab-3">${message(code:'subscription.details.consortia.label')}</a>
+                <a class="item filter-wrapper-consortium" data-tab="sub-filter-tab-4">${message(code:'subscription.details.consortia.label')}</a>
             </g:if>
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).provider}">
-                <a class="item" data-tab="sub-filter-tab-4">${message(code:'default.provider.label')}</a>
+                <a class="item" data-tab="sub-filter-tab-5">${message(code:'default.provider.label')}</a>
             </g:if>
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency}">
-                <a class="item" data-tab="sub-filter-tab-5">${message(code:'default.agency.plural.label')}</a>
+                <a class="item" data-tab="sub-filter-tab-6">${message(code:'default.agency.plural.label')}</a>
             </g:if>
         </div><!-- .menu -->
 
@@ -40,12 +43,32 @@
                 </div>
             </g:each>
 
-        </div><!-- .first -->
+        </div><!-- .tab -->
+
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).memberSubscription}" />
+        <g:if test="${config}">
+
+            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-2">
+                <div class="field">
+                    <label for="filter:memberSubscription_source">${message(code:'reporting.filter.selection')}</label>
+                    <g:select name="filter:memberSubscription_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:memberSubscription_source')}" />
+                </div>
+
+                <g:each in="${config.filter.default}" var="cfgFilter">
+                    <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
+                        <g:each in="${cfgFilter}" var="field">
+                            <laser:reportFilterField config="${config}" field="${field}" key="memberSubscription" />
+                        </g:each>
+                    </div>
+                </g:each>
+            </div><!-- .tab -->
+
+        </g:if>
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).member}" />
         <g:if test="${config}">
 
-            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-2">
+            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-3">
                 <div class="field">
                     <label for="filter:member_source">${message(code:'reporting.filter.selection')}</label>
                     <g:select name="filter:member_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:member_source')}" />
@@ -58,14 +81,14 @@
                         </g:each>
                     </div>
                 </g:each>
-            </div><!-- .second -->
+            </div><!-- .tab -->
 
         </g:if>
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).consortium}" />
         <g:if test="${config}">
 
-            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-3">
+            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-4">
                 <div class="filter-wrapper-consortium">
                     <div class="field">
                         <label for="filter:consortium_source">${message(code:'reporting.filter.selection')}</label>
@@ -83,14 +106,14 @@
 
                     --}%
                 </div>
-            </div><!-- .second -->
+            </div><!-- .tab -->
 
         </g:if>
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).provider}" />
         <g:if test="${config}">
 
-            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-4">
+            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-5">
                 <div class="field">
                     <label for="filter:provider_source">${message(code:'reporting.filter.selection')}</label>
 
@@ -104,14 +127,14 @@
                         </g:each>
                     </div>
                 </g:each>
-            </div><!-- .second -->
+            </div><!-- .tab -->
 
         </g:if>
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency}" />
         <g:if test="${config}">
 
-            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-5">
+            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-6">
                 <div class="field">
                     <label for="filter:agency_source">${message(code:'reporting.filter.selection')}</label>
 
@@ -125,7 +148,7 @@
                         </g:each>
                     </div>
                 </g:each>
-            </div><!-- .second -->
+            </div><!-- .tab -->
 
         </g:if>
 

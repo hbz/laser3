@@ -162,7 +162,7 @@ class LicenseFilter extends BaseFilter {
         String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
         filterResult.labels.put(partKey, [source: getFilterSourceLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).get(partKey), filterSource)])
 
-        //println 'internalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
+        //println 'handleInternalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
         if (! filterResult.data.get('licenseIdList')) {
             filterResult.data.put( partKey + 'IdList', [] )
             return
@@ -284,7 +284,7 @@ class LicenseFilter extends BaseFilter {
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
 
-//        println 'LicenseFilter.internalOrgFilter() -->'
+//        println 'LicenseFilter.handleInternalOrgFilter() -->'
 //        println query
 //        println queryParams
 

@@ -73,7 +73,7 @@ class LicenseInstCfg extends BaseConfig {
                             class: Org
                     ],
                     source : [
-                            'depending-licensor' : 'Alle betroffenen Lizenzgeber'
+                            'depending-licensor' : 'Betreffende Lizenzgeber'
                     ],
                     fields : [
                             'country'   : BaseConfig.FIELD_TYPE_REFDATA,

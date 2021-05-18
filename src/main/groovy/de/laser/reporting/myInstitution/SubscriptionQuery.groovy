@@ -188,11 +188,14 @@ class SubscriptionQuery extends BaseQuery {
                         result
                 )
             }
-            else if (params.query in ['subscription-x-subscription']) {
+            else if (params.query in ['subscription-x-memberSubscription']) {
+
+                List<Long> memberSubscriptionIdList = BaseFilter.getCachedFilterIdList('memberSubscription', params) // filter is set
 
                 result.data = idList ? Subscription.executeQuery(
-                        'select sub.id, concat(sub.name, \' (ID:\', sub.id,\')\'), count(mbr.id) from Subscription mbr join mbr.instanceOf sub where sub.id in (:idList) group by sub.id order by sub.name, sub.id',
-                        [idList: idList]) : []
+                        'select sub.id, concat(sub.name, \' (ID:\', sub.id,\')\'), count(mbr.id) from Subscription mbr join mbr.instanceOf sub ' +
+                                'where sub.id in (:idList) and mbr.id in (:memberSubscriptionIdList) group by sub.id order by sub.name, sub.id',
+                        [idList: idList, memberSubscriptionIdList: memberSubscriptionIdList]) : []
 
                 result.data.each { d ->
 
@@ -200,37 +203,45 @@ class SubscriptionQuery extends BaseQuery {
                             query : params.query,
                             id    : d[0],
                             label : d[1],
-                            idList: Subscription.executeQuery('select sub.id from Subscription sub where sub.instanceOf.id = :d order by sub.name', [d: d[0]])
+                            idList: Subscription.executeQuery(
+                                    'select sub.id from Subscription sub where sub.instanceOf.id = :d and sub.id in (:memberSubscriptionIdList) order by sub.name',
+                                    [d: d[0], memberSubscriptionIdList: memberSubscriptionIdList]
+                            )
                     ])
                 }
-                handleGenericNonMatchingData(params.query,
-                        'select sub.id from Subscription sub where not exists (select mbr from Subscription mbr where mbr.instanceOf = sub) and sub.id in (:idList) order by sub.name',
-                        idList, result)
             }
             else if (params.query in ['subscription-x-member']) {
 
+                List<Long> memberSubscriptionIdList = BaseFilter.getCachedFilterIdList('memberSubscription', params) // filter is set
+
                 result.data = idList ? Subscription.executeQuery(
-                        'select sub.id, concat(sub.name, \' (ID:\', sub.id,\')\'), count(mbr.id) from Subscription mbr join mbr.instanceOf sub where sub.id in (:idList) group by sub.id order by sub.name, sub.id',
-                        [idList: idList]) : []
+                        'select sub.id, concat(sub.name, \' (ID:\', sub.id,\')\'), count(mbr.id) from Subscription mbr join mbr.instanceOf sub ' +
+                                'where sub.id in (:idList) and mbr.id in (:memberSubscriptionIdList) group by sub.id order by sub.name, sub.id',
+                        [idList: idList, memberSubscriptionIdList: memberSubscriptionIdList]) : []
 
                 List<Long> memberIdList = BaseFilter.getCachedFilterIdList('member', params) // filter is set
 
                 result.data.each { d ->
                     List<Long> validMemberIdList = memberIdList ? Subscription.executeQuery(
-                            'select distinct orgRole.org.id from OrgRole orgRole join orgRole.sub sub where orgRole.org.id in (:memberIdList) and ' +
-                                    'sub in (select sub from Subscription sub where sub.instanceOf.id = :d) and orgRole.roleType in (:roleTypes)',
-                            [d: d[0], roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER], memberIdList: memberIdList]
+                            'select distinct orgRole.org.id from OrgRole orgRole join orgRole.sub mbr where orgRole.org.id in (:memberIdList) and ' +
+                                    'mbr in (select mbr from Subscription mbr where mbr.instanceOf.id = :d and mbr.id in (:memberSubscriptionIdList)) and ' +
+                                    'orgRole.roleType in (:roleTypes)',
+                            [d: d[0], memberIdList: memberIdList, memberSubscriptionIdList: memberSubscriptionIdList, roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
 
                     ) : []
                     d[2] = validMemberIdList.size()
 
-                    result.dataDetails.add([
-                            query : params.query,
-                            id    : d[0],
-                            label : d[1],
-                            idList: validMemberIdList
-                    ])
+                    if (! validMemberIdList.isEmpty()) {
+                        result.dataDetails.add([
+                                query : params.query,
+                                id    : d[0],
+                                label : d[1],
+                                idList: validMemberIdList
+                        ])
+                    }
                 }
+
+                result.data = result.data.findAll { it[2] > 0 } // remove ms without matching m
             }
         }
 

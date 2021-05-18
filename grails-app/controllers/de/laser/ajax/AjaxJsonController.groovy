@@ -679,10 +679,6 @@ class AjaxJsonController {
 
         reportingService.doChart( result, params ) // manipulates result
 
-        result.data.each{ d ->
-            d[1] = d[1].replaceAll("'", '"')
-        }
-
         if (result.tmpl) {
             render template: result.tmpl, model: result
         }

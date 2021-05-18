@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3494    18.05.2021  dev     2.1         David   Feature     Einstiegspunkt Lizenzen: TN-Lizenz-Reiter
+
 3316    14.05.2021  rc2.0   2.0.10      Andreas Bug         erneute Behebung der Fehlverknüpfungen Vertrag-Lizenz
 
 3332    14.05.2021  dev     2.1         Andreas Feature     Default-Sortierung nach Ereignistyp und Zeitstempel

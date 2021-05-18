@@ -18,8 +18,10 @@
             <g:elseif test="${query == 'subscription-x-identifier'}">
                 <th>${message(code:'identifier.label')}</th>
             </g:elseif>
-            <g:elseif test="${query == 'subscription-x-subscription'}">
+            <g:elseif test="${query == 'subscription-x-memberSubscription'}">
                 <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
+            </g:elseif>
+            <g:elseif test="${query.startsWith( 'memberSubscription-' )}">
             </g:elseif>
             <g:else>
                 <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">
@@ -77,7 +79,7 @@
                             %>
                         </td>
                     </g:elseif>
-                    <g:elseif test="${query == 'subscription-x-subscription'}">
+                    <g:elseif test="${query == 'subscription-x-memberSubscription'}">
                         <td>
                         <%
                             Org.executeQuery('select oo.org from Subscription s join s.orgRelations oo where s = :sub and oo.roleType in :subscriberRoleTypes',
@@ -87,6 +89,8 @@
                             }
                         %>
                         </td>
+                    </g:elseif>
+                    <g:elseif test="${query.startsWith( 'memberSubscription-' )}">
                     </g:elseif>
                     <g:else>
                         <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">

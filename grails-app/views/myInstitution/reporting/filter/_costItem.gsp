@@ -26,7 +26,7 @@
                 </div>
             </g:each>
 
-        </div><!-- .first -->
+        </div><!-- .tab -->
 
         <div class="field">
             <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>

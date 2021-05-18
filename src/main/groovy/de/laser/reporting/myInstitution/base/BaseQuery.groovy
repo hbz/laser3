@@ -46,8 +46,9 @@ class BaseQuery {
 
         List<String> meta = []
 
-        //println 'BaseQuery.getQueryLabels()'
-        //println params
+//        println 'BaseQuery.getQueryLabels()'
+//        println params
+//        println config
 
         config.each {it ->
             it.value.get('query')?.default.each { it2 ->  // TODO ???
@@ -99,6 +100,7 @@ class BaseQuery {
 
         result.data.each { d ->
             d[0] = Math.abs(d[0].hashCode())
+            d[1] = d[1].replaceAll("'", '"')
 
             result.dataDetails.add([
                     query : query,
