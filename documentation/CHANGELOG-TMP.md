@@ -7,6 +7,18 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3423    18.05.2021  dev     2.1         Andreas Bug         Einladen und Verarbeiten der KBART-Vorauswahl repariert und beschleunigt
+
+3404    18.05.2021  dev     2.1         Andreas Feature     Statistiksprunglink abgeblendet
+
+3371    18.05.2021  dev     2.1         Andreas Feature     Einführung und Verdrahtung der Struktur für Sprachen der Titel
+
+3344    18.05.2021  dev     2.1         Andreas Feature     Einführung und Verdrahtung der Struktur für DDC
+
+2967    18.05.2021  dev     2.1         Andreas Feature     Erweiterung des Syncs um Übernahme des technischen Supports
+
+2213    18.05.2021  dev     2.1         Andreas Feature     (Epic konkret) Neuer Synchronisationsprozess und -quelle für automatisiertes Aktualisieren der Anbieterdaten
+
 3494    18.05.2021  dev     2.1         David   Feature     Einstiegspunkt Lizenzen: TN-Lizenz-Reiter
 
 3493    17.05.2021  dev     2.1         Andreas Bug         Einrichtungstyp war für niemanden mehr bearbeitbar

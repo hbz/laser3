@@ -32,41 +32,44 @@
         </div>
 
         <div class="two fields">
-            %{--<div class="field">
-                <label for="provider">${message(code: 'package.index.filter.resource.typ')}
-                    <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay"
-                          data-content="${message(code: 'package.index.filter.resource.typ.tooltipp')}">
-                        <i class="question circle icon"></i>
-                    </span>
-                </label>
+            <div class="field">
+                <label for="ddc">${message(code: 'package.ddc.label')}</label>
 
-                <div class="ui input">
-                    <input type="text" id="resourceTyp" name="resourceTyp"
-                           placeholder="${message(code: 'default.search.ph')}"
-                           value="${params.resourceTyp}"/>
-                </div>
-            </div>--}%
+                <select name="ddc" id="ddc" multiple=""
+                        class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${ddcs}" var="ddc">
+                        <option <%=(params.list('ddc')?.contains(ddc.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${ddc.id}">
+                            ${ddc.value} - ${ddc.getI10n("value")}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
 
             <div class="field">
                 <label for="curatoryGroup">${message(code: 'package.curatoryGroup.label')}
                 </label>
 
                 <g:select class="ui fluid dropdown" name="curatoryGroup"
-                              from="${curatoryGroups.sort{it.name.toLowerCase()}}"
-                              optionKey="name"
-                              optionValue="name"
-                              value="${params.curatoryGroup}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                          from="${curatoryGroups.sort{it.name.toLowerCase()}}"
+                          optionKey="name"
+                          optionValue="name"
+                          value="${params.curatoryGroup}"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
-
         </div>
 
-
-        <div class="field la-field-right-aligned">
-            <a href="${request.forwardURI}"
-               class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
-            <button type="submit" name="search" value="yes"
-                    class="ui secondary button">${message(code: 'default.button.filter.label')}</button>
+        <div class="two fields">
+            <div class="field">
+            </div>
+            <div class="field la-field-right-aligned">
+                <a href="${request.forwardURI}"
+                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
+                <button type="submit" name="search" value="yes"
+                        class="ui secondary button">${message(code: 'default.button.filter.label')}</button>
+            </div>
         </div>
     </g:form>
 </semui:filter>

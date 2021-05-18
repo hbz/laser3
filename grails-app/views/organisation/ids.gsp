@@ -79,6 +79,11 @@
                     <g:render template="idTableRow"
                               model="[orgInstance:orgInstance, tableRowNr:1, showGlobalUid:true, editable:false]"
                     />
+                    <g:if test="${orgInstance.gokbId}">
+                        <g:render template="idTableRow"
+                                  model="[orgInstance:orgInstance, tableRowNr:2, showWekbId:true, editable:false]"
+                        />
+                    </g:if>
                     <g:each in="${orgInstance.ids?.toSorted{it.ns?.ns?.toLowerCase()}}" var="id" status="rowno">
                         <g:if test="${rowno == 0}"><g:set var="rowno" value="${rowno+=1}"/></g:if>
                         <g:render template="idTableRow"

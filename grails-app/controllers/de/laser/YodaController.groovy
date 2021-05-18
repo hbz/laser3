@@ -588,12 +588,24 @@ class YodaController {
     def reloadPackages() {
         if(!globalSourceSyncService.running) {
             log.debug("start reloading ...")
-            globalSourceSyncService.reloadPackages()
+            globalSourceSyncService.reloadData('TitleInstancePackagePlatform')
         }
         else {
             log.debug("process running, lock is set!")
         }
         redirect controller: 'package'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def reloadWekbOrg() {
+        if(!globalSourceSyncService.running) {
+            log.debug("start reloading ...")
+            globalSourceSyncService.reloadData('Org')
+        }
+        else {
+            log.debug("process running, lock is set!")
+        }
+        redirect controller: 'organisation', action: 'listProvider'
     }
 
     @Secured(['ROLE_YODA'])

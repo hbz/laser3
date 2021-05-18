@@ -37,7 +37,7 @@
         <input type="hidden" name="sort" value="${params.sort}">
         <input type="hidden" name="order" value="${params.order}">
 
-        <div class="three fields">
+        <div class="two fields">
             <div class="field">
                 <label for="filter">${message(code: 'default.search.text')}
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay"
@@ -109,9 +109,9 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${ddcs}" var="ddc">
-                        <option <%=(params.list('ddcs')?.contains(ddc.id)) ? 'selected="selected"' : ''%>
-                                value="${ddc.id}">
-                            ${ddc.getI10n("value")}
+                        <option <%=(params.list('ddcs')?.contains(ddc.ddc.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${ddc.ddc.id}">
+                            ${ddc.ddc.value} - ${ddc.ddc.getI10n("value")}
                         </option>
                     </g:each>
                 </select>
@@ -125,9 +125,9 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${languages}" var="language">
-                        <option <%=(params.list('subject_references')?.contains(language)) ? 'selected="selected"' : ''%>
-                                value="${language}">
-                            ${language}
+                        <option <%=(params.list('languages')?.contains(language.language.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${language.language.id}">
+                            ${language.language.getI10n("value")}
                         </option>
                     </g:each>
                 </select>
@@ -201,7 +201,7 @@
         </div>
 
         <div class="two fields">
-
+            <div class="field"></div>
 
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}"
