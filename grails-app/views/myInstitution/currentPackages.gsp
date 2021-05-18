@@ -46,6 +46,19 @@
         </div>
         <div class="two fields">
             <div class="field">
+                <label for="ddc">${message(code: 'package.ddc.label')}</label>
+
+                <select name="ddc" id="ddc" multiple=""
+                        class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${ddcs}" var="ddc">
+                        <option <%=(params.list('ddc')?.contains(ddc.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${ddc.id}">
+                            ${ddc.value} - ${ddc.getI10n("value")}
+                        </option>
+                    </g:each>
+                </select>
             </div>
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>

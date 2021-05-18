@@ -1218,7 +1218,8 @@ join sub.orgRelations or_sub where
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
-
+        result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+        result.languages = RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         //def cache = contextService.getCache('MyInstitutionController/currentPackages/', contextService.ORG_SCOPE)
@@ -1272,10 +1273,15 @@ join sub.orgRelations or_sub where
             ]
 
             if (params.pkg_q?.length() > 0) {
-                qry3 += "and ("
+                qry3 += " and ("
                 qry3 += "   genfunc_filter_matcher(pkg.name, :query) = true"
                 qry3 += ")"
                 qryParams3.put('query', "${params.pkg_q}")
+            }
+
+            if (params.ddc?.length() > 0) {
+                qry3 += " and ((exists (select ddc.id from DeweyDecimalClassification ddc where ddc.ddc in (:ddcs) and ddc.tipp = tipp)) or (exists (select ddc.id from DeweyDecimalClassification ddc where ddc.ddc in (:ddcs) and ddc.pkg = pkg)))"
+                qryParams3.put('ddcs', RefdataValue.findAllByIdInList(params.list("ddc").collect { String ddc -> Long.parseLong(ddc) }))
             }
 
             qry3 += " group by pkg, s"

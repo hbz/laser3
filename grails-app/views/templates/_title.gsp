@@ -208,9 +208,11 @@
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'tipp.ddc') + ':'}
-                <g:each in="${tipp.ddcs}" var="ddc">
-                    ${ddc.getI10n("value")}
-                </g:each>
+                <ul>
+                    <g:each in="${tipp.ddcs}" var="ddc">
+                        <li>${ddc.ddc.value} - ${ddc.ddc.getI10n("value")}</li>
+                    </g:each>
+                </ul>
             </div>
         </div>
     </g:if>
@@ -222,9 +224,11 @@
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'tipp.language') + ':'}
-                <g:each in="${tipp.languages}" var="language">
-                    ${language.getI10n("value")}
-                </g:each>
+                <ul>
+                    <g:each in="${tipp.languages}" var="language">
+                        <li>${language.language.getI10n("value")}</li>
+                    </g:each>
+                </ul>
             </div>
         </div>
     </g:if>

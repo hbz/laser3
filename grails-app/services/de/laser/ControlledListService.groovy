@@ -567,7 +567,7 @@ class ControlledListService {
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<DeweyDecimalClassification> ddcs = []
 
-        ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and status = :status order by ddc.ddc.value_"+I10nTranslation.decodeLocale(locale), [pkg: pkg, status: tippStatus]))
+        ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by ddc.ddc.value_"+I10nTranslation.decodeLocale(locale), [pkg: pkg, status: tippStatus]))
 
         ddcs
     }
@@ -587,7 +587,7 @@ class ControlledListService {
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<Language> languages = []
 
-        languages.addAll(TitleInstancePackagePlatform.executeQuery("select lang from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg = :pkg and status = :status order by lang.language.value_"+I10nTranslation.decodeLocale(locale), [pkg: pkg, status: tippStatus]))
+        languages.addAll(TitleInstancePackagePlatform.executeQuery("select lang from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by lang.language.value_"+I10nTranslation.decodeLocale(locale), [pkg: pkg, status: tippStatus]))
 
         languages
     }

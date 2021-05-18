@@ -66,9 +66,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippStatus = [:],
             packageStatus = [:],
             orgStatus = [:],
+            orgTypes = [:],
             currency = [:],
             ddc = [:]
-    Long maxTimestamp = 0
+    Long maxTimestamp
     Map<String,Integer> initialPackagesCounter = [:]
     Map<String,Set<Map<String,Object>>> pkgPropDiffsContainer = [:]
     Map<String,Set<Map<String,Object>>> packagesToNotify = [:]
@@ -102,6 +103,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         List<GlobalRecordSource> jobs = GlobalRecordSource.findAllByActive(true)
         jobs.each { GlobalRecordSource source ->
             this.source = source
+            maxTimestamp = 0
             try {
                 SystemEvent.createEvent('GSSS_JSON_START',['jobId':source.id])
                 Thread.currentThread().setName("GlobalDataSync_Json")
@@ -121,54 +123,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 */
                 switch(source.rectype) {
-                    case RECTYPE_PACKAGE: componentType = 'Package'
+                    case RECTYPE_ORG: componentType = 'Org'
                         break
                     case RECTYPE_TIPP: componentType = 'TitleInstancePackagePlatform'
-                        //do prequest: are we needing the scroll api?
-                        Map<String,Object> result
-                        //5000 records because of local testing ability
-                        result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),max:5000])
-                        if(result && result.count >= 5000) {
-                            String scrollId
-                            boolean more = true
-                            while(more) {
-                                //actually, scrollId alone should do the trick but tests revealed that other parameters are necessary, too, because of current workaround solution
-                                log.debug("using scrollId ${scrollId}")
-                                if(scrollId) {
-                                    result = fetchRecordJSON(true, [component_type: componentType, changedSince: sdf.format(oldDate), scrollId: scrollId])
-                                }
-                                else {
-                                    result = fetchRecordJSON(true,[component_type: componentType,changedSince:sdf.format(oldDate)])
-                                }
-                                if(result.count > 0) {
-                                    updateRecords(result.records)
-                                    if(result.hasMoreRecords) {
-                                        scrollId = result.scrollId
-                                    }
-                                    else {
-                                        more = false
-                                    }
-                                }
-                                else {
-                                    //workaround until GOKb-ES migration is done and hopefully works ...
-                                    if(result.hasMoreRecords) {
-                                        scrollId = result.scrollId
-                                        log.info("page is empty, turning to next page ...")
-                                    }
-                                    else {
-                                        more = false
-                                        log.info("no records updated - leaving everything as is ...")
-                                    }
-                                }
-                            }
-                        }
-                        else if(result && result.count > 0 && result.count < 5000) {
-                            updateRecords(result.records)
-                        }
-                        else {
-                            log.info("no records updated - leaving everything as is ...")
-                        }
                         break
+                }
+                //do prequest: are we needing the scroll api?
+                //5000 records because of local testing ability
+                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),max:5000])
+                if(result) {
+                    processScrollPage(result, componentType)
+                }
+                else {
+                    log.info("no records updated - leaving everything as is ...")
                 }
                 if(maxTimestamp+1000 > source.haveUpTo.getTime()) {
                     log.debug("old ${sdf.format(source.haveUpTo)}")
@@ -177,25 +144,27 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if (!source.save())
                         log.error(source.getErrors().getAllErrors().toListString())
                 }
-                if(packagesToNotify.keySet().size() > 0) {
-                    log.info("notifying subscriptions ...")
-                    trackPackageHistory()
-                    //get subscription packages and their respective holders, parent level only!
-                    String query = 'select oo.org,sp from SubscriptionPackage sp join sp.pkg pkg ' +
-                            'join sp.subscription s ' +
-                            'join s.orgRelations oo ' +
-                            'where s.instanceOf = null and pkg.gokbId in (:packages) ' +
-                            'and oo.roleType in (:roleTypes)'
-                    List subPkgHolders = SubscriptionPackage.executeQuery(query,[packages:packagesToNotify.keySet(),roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
-                    subPkgHolders.each { row ->
-                        Org org = (Org) row[0]
-                        SubscriptionPackage sp = (SubscriptionPackage) row[1]
-                        autoAcceptPendingChanges(org,sp)
-                        //nonAutoAcceptPendingChanges(org, sp)
+                if(source.rectype == RECTYPE_TIPP) {
+                    if(packagesToNotify.keySet().size() > 0) {
+                        log.info("notifying subscriptions ...")
+                        trackPackageHistory()
+                        //get subscription packages and their respective holders, parent level only!
+                        String query = 'select oo.org,sp from SubscriptionPackage sp join sp.pkg pkg ' +
+                                'join sp.subscription s ' +
+                                'join s.orgRelations oo ' +
+                                'where s.instanceOf = null and pkg.gokbId in (:packages) ' +
+                                'and oo.roleType in (:roleTypes)'
+                        List subPkgHolders = SubscriptionPackage.executeQuery(query,[packages:packagesToNotify.keySet(),roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+                        subPkgHolders.each { row ->
+                            Org org = (Org) row[0]
+                            SubscriptionPackage sp = (SubscriptionPackage) row[1]
+                            autoAcceptPendingChanges(org,sp)
+                            //nonAutoAcceptPendingChanges(org, sp)
+                        }
                     }
-                }
-                else {
-                    log.info("no diffs recorded ...")
+                    else {
+                        log.info("no diffs recorded ...")
+                    }
                 }
                 log.info("sync job finished")
                 SystemEvent.createEvent('GSSS_JSON_COMPLETE',['jobId':source.id])
@@ -208,56 +177,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
         running = false
     }
 
-    void reloadPackages() {
+    void reloadData(String componentType) {
         running = true
         defineMapFields()
         executorService.execute({
-            Thread.currentThread().setName("GlobalPackageUpdate")
+            Thread.currentThread().setName("GlobalDataUpdate_${componentType}")
             this.source = GlobalRecordSource.findByActiveAndRectype(true,RECTYPE_TIPP)
             this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
             log.info("getting all records from job #${source.id} with uri ${source.uri}")
-            Map<String,Object> result
-            //5000 records because of local testing ability
-            String componentType = 'TitleInstancePackagePlatform'
             try {
-                result = fetchRecordJSON(false,[componentType: componentType, max: 5000])
-                if(result && result.count >= 5000) {
-                    String scrollId
-                    boolean more = true
-                    while(more) {
-                        //actually, scrollId alone should do the trick but tests revealed that other parameters are necessary, too, because of current workaround solution
-                        log.debug("using scrollId ${scrollId}")
-                        if(scrollId) {
-                            result = fetchRecordJSON(true, [component_type: componentType, scrollId: scrollId, max: 5000])
-                        }
-                        else {
-                            result = fetchRecordJSON(true, [component_type: componentType, max: 5000])
-                        }
-                        if(result.count > 0) {
-                            updateRecords(result.records)
-                            if(result.hasMoreRecords) {
-                                scrollId = result.scrollId
-                            }
-                            else {
-                                more = false
-                            }
-                        }
-                        else {
-                            //workaround until GOKb-ES migration is done and hopefully works ...
-                            if(result.hasMoreRecords) {
-                                scrollId = result.scrollId
-                                log.info("page is empty, turning to next page ...")
-                            }
-                            else {
-                                more = false
-                                log.info("no records updated - leaving everything as is ...")
-                            }
-                        }
-                        //sess.flush()
-                    }
-                }
-                else if(result && result.count > 0 && result.count < 5000) {
-                    updateRecords(result.records)
+                //5000 records because of local testing ability
+                Map<String,Object> result = fetchRecordJSON(false,[componentType: componentType, max: 5000])
+                if(result) {
+                    processScrollPage(result, componentType)
                 }
             }
             catch (Exception e) {
@@ -265,6 +197,60 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             running = false
         })
+    }
+
+    void processScrollPage(Map<String, Object> result, String componentType) {
+        if(result.count >= 5000) {
+            String scrollId
+            boolean more = true
+            while(more) {
+                //actually, scrollId alone should do the trick but tests revealed that other parameters are necessary, too, because of current workaround solution
+                log.debug("using scrollId ${scrollId}")
+                if(scrollId) {
+                    result = fetchRecordJSON(true, [component_type: componentType, scrollId: scrollId, max: 5000])
+                }
+                else {
+                    result = fetchRecordJSON(true, [component_type: componentType, max: 5000])
+                }
+                if(result.count > 0) {
+                    switch (source.rectype) {
+                        case RECTYPE_ORG: result.records.each { record ->
+                            createOrUpdateOrgJSON(record)
+                        }
+                            break
+                        case RECTYPE_TIPP: updateRecords(result.records)
+                            break
+                    }
+                    if(result.hasMoreRecords) {
+                        scrollId = result.scrollId
+                    }
+                    else {
+                        more = false
+                    }
+                }
+                else {
+                    //workaround until GOKb-ES migration is done and hopefully works ...
+                    if(result.hasMoreRecords) {
+                        scrollId = result.scrollId
+                        log.info("page is empty, turning to next page ...")
+                    }
+                    else {
+                        more = false
+                        log.info("no records updated - leaving everything as is ...")
+                    }
+                }
+            }
+        }
+        else if(result.count > 0 && result.count < 5000) {
+            switch (source.rectype) {
+                case RECTYPE_ORG: result.records.each { record ->
+                    createOrUpdateOrgJSON(record)
+                }
+                    break
+                case RECTYPE_TIPP: updateRecords(result.records)
+                    break
+            }
+        }
     }
 
     void updateRecords(List<Map> rawRecords) {
@@ -376,7 +362,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     updatedTIPP.ddcs << ddc.get(ddcData.value)
                 }
                 tipp.languages.each { langData ->
-                    updatedTIPP.ddcs << RefdataValue.getByValueAndCategory(langData.value, RDConstants.LANGUAGE_ISO)
+                    updatedTIPP.languages << RefdataValue.getByValueAndCategory(langData.value, RDConstants.LANGUAGE_ISO)
                 }
                 tipp.titleHistory.each { historyEvent ->
                     updatedTIPP.history << [date:DateUtils.parseDateGeneric(historyEvent.date),from:historyEvent.from,to:historyEvent.to]
@@ -608,8 +594,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     if(packageRecord.providerUuid) {
                         try {
-                            Org provider = createOrUpdateOrgJSON(packageRecord.providerUuid)
-                            createOrUpdatePackageProvider(provider,result)
+                            Map<String, Object> providerRecord = fetchRecordJSON(false,[uuid:packageRecord.providerUuid])
+                            if(providerRecord) {
+                                Org provider = createOrUpdateOrgJSON(providerRecord)
+                                createOrUpdatePackageProvider(provider,result)
+                            }
+                            else
+                                throw new SyncException("Provider loading failed for UUID ${packageRecord.providerUuid}!")
                         }
                         catch (SyncException e) {
                             throw e
@@ -671,54 +662,55 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param providerUUID - the GOKb UUID of the given provider {@link Org}
      * @throws SyncException
      */
-    Org createOrUpdateOrgJSON(String providerUUID) throws SyncException {
-        //This method is under Package.newSession! Do not hook up new session here!
-        Map<String,Object> providerJSON = fetchRecordJSON(false,[uuid:providerUUID])
-        if(providerJSON.records) {
-            Map providerRecord = providerJSON.records[0]
-            log.info("provider record loaded, reconciling provider record for UUID ${providerUUID}")
-            Org provider = Org.findByGokbId(providerUUID)
-            if(provider) {
-                provider.name = providerRecord.name
-                provider.status = orgStatus.get(providerRecord.status)
-                List allOrgTypeIds = provider.getAllOrgTypeIds()
-                if(!(RDStore.OT_PROVIDER.id in allOrgTypeIds)){
-                    provider.addToOrgType(RDStore.OT_PROVIDER)
-                }
-
-            }
-            else {
-                provider = new Org(
-                        name: providerRecord.name,
-                        sector: RDStore.O_SECTOR_PUBLISHER,
-                        status: orgStatus.get(providerRecord.status),
-                        gokbId: providerUUID
-                )
-                provider.addToOrgType(RDStore.OT_PROVIDER)
-            }
-            if(provider.save()) {
-                //providedPlatforms are missing in ES output -> see GOKb-ticket #378! But maybe, it is wiser to not implement it at all
-                if(providerRecord.additionalProperties) {
-                    providerRecord.additionalProperties.each { addProp ->
-                        switch(addProp.name) {
-                            case "Technical Support":
-                                if(formService.validateEmailAddress(addProp.value) || formService.validatePhoneNumber(addProp.value))
-                                    createOrUpdateTechnicalSupport(provider, addProp)
-                                else {
-                                    throw new SyncException("Error on setting technical support for ${provider}, concerning contact: no valid contact string submitted: ${addProp.value}")
-                                }
-                                break
-                            default: log.warn("unhandled additional property type for ${provider.gokbId}: ${addProp.name}")
-                                break
-                        }
+    Org createOrUpdateOrgJSON(Map<String,Object> providerJSON) throws SyncException {
+        Map providerRecord
+        if(providerJSON.records)
+            providerRecord = providerJSON.records[0]
+        else providerRecord = providerJSON
+        log.info("provider record loaded, reconciling provider record for UUID ${providerRecord.uuid}")
+        Org provider = Org.findByGokbId(providerRecord.uuid)
+        if(provider) {
+            provider.name = providerRecord.name
+            provider.status = orgStatus.get(providerRecord.status)
+            if(!provider.sector)
+                provider.sector = RDStore.O_SECTOR_PUBLISHER
+        }
+        else {
+            provider = new Org(
+                    name: providerRecord.name,
+                    sector: RDStore.O_SECTOR_PUBLISHER,
+                    status: orgStatus.get(providerRecord.status),
+                    gokbId: providerRecord.uuid
+            )
+        }
+        if(provider.orgType)
+            provider.orgType.clear()
+        if(provider.save()) {
+            provider.addToOrgType(orgTypes.get("Provider"))
+            provider.save()
+            //providedPlatforms are missing in ES output -> see GOKb-ticket #378! But maybe, it is wiser to not implement it at all
+            if(providerRecord.additionalProperties) {
+                providerRecord.additionalProperties.each { addProp ->
+                    switch(addProp.name) {
+                        case "Technical Support":
+                            if (formService.validateEmailAddress(addProp.value) || formService.validatePhoneNumber(addProp.value))
+                                createOrUpdateTechnicalSupport(provider, addProp)
+                            else {
+                                throw new SyncException("Error on setting technical support for ${provider}, concerning contact: no valid contact string submitted: ${addProp.value}")
+                            }
+                            break
+                        default: log.warn("unhandled additional property type for ${provider.gokbId}: ${addProp.name}")
+                            break
                     }
                 }
-                provider
             }
-            else throw new SyncException(provider.errors)
+            Date lastUpdatedTime = DateUtils.parseDateGeneric(providerRecord.lastUpdatedDisplay)
+            if(lastUpdatedTime.getTime() > maxTimestamp) {
+                maxTimestamp = lastUpdatedTime.getTime()
+            }
+            provider
         }
-        else
-            throw new SyncException("Provider loading failed for UUID ${providerUUID}!")
+        else throw new SyncException(provider.errors)
     }
 
     /**
@@ -732,8 +724,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
      */
     void lookupOrCreateTitlePublisher(Map<String,Object> publisherParams, TitleInstancePackagePlatform tipp) throws SyncException {
         if(publisherParams.gokbId && publisherParams.gokbId instanceof String) {
-            Org publisher = createOrUpdateOrgJSON((String) publisherParams.gokbId)
-            setupOrgRole([org: publisher, tipp: tipp, roleTypeCheckup: [RDStore.OR_PUBLISHER,RDStore.OR_CONTENT_PROVIDER], definiteRoleType: RDStore.OR_PUBLISHER])
+            Map<String, Object> publisherData = fetchRecordJSON(false, [uuid: publisherParams.gokbId])
+            if(publisherData) {
+                Org publisher = createOrUpdateOrgJSON(publisherData)
+                setupOrgRole([org: publisher, tipp: tipp, roleTypeCheckup: [RDStore.OR_PUBLISHER,RDStore.OR_CONTENT_PROVIDER], definiteRoleType: RDStore.OR_PUBLISHER])
+            }
+            else throw new SyncException("Provider record loading failed for ${publisherParams.gokbId}")
         }
         else {
             throw new SyncException("Org submitted without UUID! No checking possible!")
@@ -791,6 +787,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
         }
         RefdataValue contentType
+        Contact.executeUpdate('delete from Contact c where c.prs = :prs',[prs:personInstance])
+        Contact contact = new Contact(prs: personInstance, type: RDStore.CONTACT_TYPE_JOBRELATED)
         //submitted value is an email address
         if(formService.validateEmailAddress(techSupportProps.value)) {
             contentType = RDStore.CCT_EMAIL
@@ -800,9 +798,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             contentType = RDStore.CCT_PHONE
         }
         if(contentType) {
-            Contact contact = Contact.findByPrsAndContentType(personInstance, contentType)
-            if(!contact)
-                contact = new Contact(prs: personInstance, contentType: contentType, type: RDStore.CONTACT_TYPE_JOBRELATED)
+            contact.contentType = contentType
             contact.content = techSupportProps.value
             if(!contact.save()) {
                 throw new SyncException("Error on setting technical support for ${provider}, concerning contact: ${contact.getErrors().getAllErrors().toListString()}")
@@ -831,8 +827,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 platform.normname = platformRecord.name.toLowerCase()
                 if(platformRecord.primaryUrl)
                     platform.primaryUrl = new URL(platformRecord.primaryUrl)
-                if(platformRecord.providerUuid)
-                    platform.org = createOrUpdateOrgJSON(platformRecord.providerUuid)
+                if(platformRecord.providerUuid) {
+                    Map<String, Object> providerData = fetchRecordJSON(false,[uuid: platformRecord.providerUuid])
+                    if(providerData)
+                        platform.org = createOrUpdateOrgJSON(providerData)
+                    else throw new SyncException("Provider loading failed for ${platformRecord.providerUuid}")
+                }
                 if(platform.save()) {
                    platform
                 }
@@ -1397,7 +1397,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else http = new HTTPBuilder(source.uri+'/find')
         Map<String,Object> result = [:]
         //setting default status
-        queryParams.status = ["Current","Expected","Retired"]
+        queryParams.status = ["Current","Expected","Retired","Deleted"]
         log.debug("mem check: ${Runtime.getRuntime().freeMemory()} bytes")
         http.request(Method.POST, ContentType.JSON) { req ->
             body = queryParams
@@ -1449,6 +1449,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         RefdataCategory.getAllRefdataValues(RDConstants.CURRENCY).each { RefdataValue rdv ->
             currency.put(rdv.value,rdv)
+        }
+        RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE).each { RefdataValue rdv ->
+            orgTypes.put(rdv.value,rdv)
         }
         RefdataCategory.getAllRefdataValues(RDConstants.DDC).each { RefdataValue rdv ->
             ddc.put(rdv.value,rdv)
