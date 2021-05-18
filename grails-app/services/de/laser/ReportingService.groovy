@@ -95,7 +95,9 @@ class ReportingService {
         result.filterResult = filter.filter(params)
 
         BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).keySet().each{ pk ->
-            result.cfgQueryList.putAll(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).get( pk ).query.default )
+            //if (pk != 'memberSubscription') {
+                result.cfgQueryList.putAll(BaseConfig.getCurrentConfig(BaseConfig.KEY_SUBSCRIPTION).get(pk).query.default)
+            //}
         }
 
         if (! params.get('filter:consortium_source')) {
@@ -158,7 +160,7 @@ class ReportingService {
                     result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('chartTemplate')
                 }
             }
-            else if (prefix in ['subscription']) {
+            else if (prefix in ['subscription', 'memberSubscription']) {
                 result.putAll(SubscriptionQuery.query(clone))
                 result.labels.tooltip = getTooltipLabels(clone)
                 result.tmpl = '/myInstitution/reporting/chart/generic'
@@ -236,7 +238,7 @@ class ReportingService {
             else if (prefix in ['org']) {
                 cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION )
             }
-            else if (prefix in ['subscription', 'member', 'consortium', 'provider', 'agency']) {
+            else if (prefix in ['subscription', 'memberSubscription', 'member', 'consortium', 'provider', 'agency']) {
                 cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
             }
             else if (prefix in ['costItem']) {
@@ -277,7 +279,7 @@ class ReportingService {
                         result.list = idList ? Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList]) : []
                         result.tmpl = '/myInstitution/reporting/details/organisation'
                     }
-                    else if (prefix in ['subscription']) {
+                    else if (prefix in ['subscription', 'memberSubscription']) {
                         result.list = idList ? Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList]) : []
                         result.tmpl = '/myInstitution/reporting/details/subscription'
                     }

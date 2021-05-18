@@ -93,7 +93,7 @@ class SubscriptionInstCfg extends BaseConfig {
                             class: Org
                     ],
                     source : [
-                            'depending-consortium' : 'Alle betroffenen Konsortialstellen'
+                            'depending-consortium' : 'Betreffende Konsortialstellen'
                     ],
                     fields : [
                             'country'           : BaseConfig.FIELD_TYPE_REFDATA,
@@ -137,7 +137,7 @@ class SubscriptionInstCfg extends BaseConfig {
                             class: Org
                     ],
                     source : [
-                            'depending-provider' : 'Alle betroffenen Anbieter'
+                            'depending-provider' : 'Betreffende Anbieter'
                     ],
                     fields : [
                             'country'   : BaseConfig.FIELD_TYPE_REFDATA,
@@ -163,7 +163,7 @@ class SubscriptionInstCfg extends BaseConfig {
                             class: Org
                     ],
                     source : [
-                            'depending-agency' : 'Alle betroffenen Lieferanten'
+                            'depending-agency' : 'Betreffende Lieferanten'
                     ],
                     fields : [
                             'country'   : BaseConfig.FIELD_TYPE_REFDATA,

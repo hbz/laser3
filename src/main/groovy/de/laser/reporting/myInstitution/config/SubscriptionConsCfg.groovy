@@ -87,14 +87,14 @@ class SubscriptionConsCfg extends BaseConfig {
 //                                            chartTemplate : 'generic',
 //                                            chartLabels : []
 //                                    ],
-                                     'subscription-x-subscription' : [
+                                     'subscription-x-memberSubscription' : [
                                              label              : 'Teilnehmerlizenz → Lizenz',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
                                      ],
                                      'subscription-x-member' : [
-                                             label              : 'Teilnehmer → Lizenz',
+                                             label              : 'Teilnehmer → Teilnehmerlizenz → Lizenz',
                                              detailsTemplate    : 'organisation',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
@@ -104,12 +104,53 @@ class SubscriptionConsCfg extends BaseConfig {
                     ]
             ],
 
+            memberSubscription : [
+                    meta : [
+                            class: Subscription
+                    ],
+                    source : [
+                            'depending-memberSubscription' : 'Betreffende Teilnehmerlizenzen',
+                    ],
+                    fields : [
+                            'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
+                            'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
+                            'hasPerpetualAccess'    : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'isPublicForApi'        : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'isMultiYear'           : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'kind'                  : BaseConfig.FIELD_TYPE_REFDATA,
+                            'resource'              : BaseConfig.FIELD_TYPE_REFDATA,
+                            'startDate'             : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'status'                : BaseConfig.FIELD_TYPE_REFDATA,
+                    ],
+                    filter : [
+                            default : [
+                                    [ 'form', 'kind', 'status', 'annual' ],
+                                    [ 'resource', 'hasPerpetualAccess', 'isMultiYear', 'isPublicForApi' ],
+                                    [ 'startDate', 'endDate' ]
+                            ]
+                    ],
+                    query : [
+                            default: [
+                                    'Teilnehmerlizenz' : [ // TODO ..
+                                                 'memberSubscription-form'        : 'Lizenzform',
+                                                 'memberSubscription-kind'        : 'Lizenztyp',
+                                                 'memberSubscription-resource'    : 'Ressourcentyp',
+                                                 'memberSubscription-status'      : 'Lizenzstatus',
+                                                 'memberSubscription-isMultiYear' : 'Mehrjahreslaufzeit',
+                                                 'memberSubscription-manualCancellationDate'  : 'Kündigungsdatum',
+                                                 'memberSubscription-*'           : 'Alle'
+                                    ]
+                            ]
+                    ]
+            ],
+
             member : [
                     meta : [
                             class: Org
                     ],
                     source : [
-                            'depending-member' : 'Alle betroffenen Teilnehmer'
+                            'depending-member' : 'Betreffende Teilnehmer'
                     ],
                     fields : [
                             'country'           : BaseConfig.FIELD_TYPE_REFDATA,
@@ -154,7 +195,7 @@ class SubscriptionConsCfg extends BaseConfig {
                             class: Org
                     ],
                     source : [
-                            'depending-provider' : 'Alle betroffenen Anbieter'
+                            'depending-provider' : 'Betreffende Anbieter'
                     ],
                     fields : [
                             'country'   : BaseConfig.FIELD_TYPE_REFDATA,
@@ -180,7 +221,7 @@ class SubscriptionConsCfg extends BaseConfig {
                             class: Org
                     ],
                     source : [
-                            'depending-agency' : 'Alle betroffenen Lieferanten'
+                            'depending-agency' : 'Betreffende Lieferanten'
                     ],
                     fields : [
                             'country'   : BaseConfig.FIELD_TYPE_REFDATA,

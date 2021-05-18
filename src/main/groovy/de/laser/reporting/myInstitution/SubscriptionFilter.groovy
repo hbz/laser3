@@ -146,9 +146,14 @@ class SubscriptionFilter extends BaseFilter {
 
         filterResult.data.put('subscriptionIdList', queryParams.subscriptionIdList ? Subscription.executeQuery( query, queryParams ) : [])
 
-        BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).keySet().each{pk ->
+        BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).keySet().each{ pk ->
             if (pk != 'base') {
-                handleInternalOrgFilter(params, pk, filterResult)
+                if (pk == 'memberSubscription') {
+                    handleInternalSubFilter(params, pk, filterResult)
+                }
+                else {
+                    handleInternalOrgFilter(params, pk, filterResult)
+                }
             }
         }
 
@@ -157,6 +162,99 @@ class SubscriptionFilter extends BaseFilter {
 //        println 'provider >> ' + result.providerIdList.size()
 
         filterResult
+    }
+
+    private void handleInternalSubFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
+
+        String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
+        filterResult.labels.put(partKey, [source: getFilterSourceLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).get(partKey), filterSource)])
+
+        if (! filterResult.data.get('subscriptionIdList')) {
+            filterResult.data.put( partKey + 'IdList', [] )
+            return
+        }
+
+        String queryBase                = 'select distinct (mbr.id) from Subscription mbr join mbr.instanceOf sub'
+        List<String> whereParts         = [ 'sub.id in (:subscriptionIdList)']
+        Map<String, Object> queryParams = [ subscriptionIdList: filterResult.data.subscriptionIdList ]
+
+        String cmbKey = BaseConfig.FILTER_PREFIX + 'memberSubscription_'
+        int pCount = 0
+
+        getCurrentFilterKeys(params, cmbKey).each{ key ->
+            if (params.get(key)) {
+                //println key + " >> " + params.get(key)
+
+                String p = key.replaceFirst(cmbKey,'')
+                String pType = GenericHelper.getFieldType(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).memberSubscription, p)
+
+                def filterLabelValue
+
+                // --> generic properties
+                if (pType == BaseConfig.FIELD_TYPE_PROPERTY) {
+                    if (Subscription.getDeclaredField(p).getType() == Date) {
+
+                        String modifier = getDateModifier( params.get(key + '_modifier') )
+
+                        whereParts.add( 'mbr.' + p + ' ' + modifier + ' :p' + (++pCount) )
+                        queryParams.put( 'p' + pCount, DateUtils.parseDateGeneric(params.get(key)) )
+
+                        filterLabelValue = getDateModifier(params.get(key + '_modifier')) + ' ' + params.get(key)
+                    }
+                    else if (Subscription.getDeclaredField(p).getType() in [boolean, Boolean]) {
+                        if (RefdataValue.get(params.get(key)) == RDStore.YN_YES) {
+                            whereParts.add( 'mbr.' + p + ' is true' )
+                        }
+                        else if (RefdataValue.get(params.get(key)) == RDStore.YN_NO) {
+                            whereParts.add( 'mbr.' + p + ' is false' )
+                        }
+                        filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                    }
+                    else {
+                        queryParams.put( 'p' + pCount, params.get(key) )
+                        filterLabelValue = params.get(key)
+                    }
+                }
+                // --> generic refdata
+                else if (pType == BaseConfig.FIELD_TYPE_REFDATA) {
+                    whereParts.add( 'mbr.' + p + '.id = :p' + (++pCount) )
+                    queryParams.put( 'p' + pCount, params.long(key) )
+
+                    filterLabelValue = RefdataValue.get(params.get(key)).getI10n('value')
+                }
+                // --> refdata join tables
+                else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
+                    println ' ------------ not implemented ------------ '
+                }
+                // --> custom filter implementation
+                else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
+
+                    if (p == BaseConfig.CUSTOM_KEY_ANNUAL) {
+                        List tmpList = []
+
+                        params.list(key).each { pk ->
+                            tmpList.add( '( (YEAR(mbr.startDate) <= :p' + (++pCount) + ' or mbr.startDate is null) and (YEAR(mbr.endDate) >= :p' + pCount + ' or mbr.endDate is null) )' )
+                            queryParams.put( 'p' + pCount, pk as Integer )
+                        }
+                        whereParts.add( '(' + tmpList.join(' or ') + ')' )
+
+                        filterLabelValue = params.get(key)
+                    }
+                }
+
+                if (filterLabelValue) {
+                    filterResult.labels.get('memberSubscription').put(p, [label: GenericHelper.getFieldLabel(BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).memberSubscription, p), value: filterLabelValue])
+                }
+            }
+        }
+
+        String query = queryBase + ' where ' + whereParts.join(' and ')
+
+//        println 'SubscriptionFilter.handleInternalSubFilter() -->'
+//        println query
+//        println queryParams
+
+        filterResult.data.put( partKey + 'IdList', queryParams.subscriptionIdList ? Subscription.executeQuery(query, queryParams) : [] )
     }
 
     private void handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
@@ -177,10 +275,7 @@ class SubscriptionFilter extends BaseFilter {
         if (partKey == 'member') {
             queryParams.put( 'roleTypes', [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN] ) // TODO <- RDStore.OR_SUBSCRIBER
             // check ONLY members
-            queryParams.subscriptionIdList = Subscription.executeQuery(
-                    'select distinct (sub.id) from Subscription sub where sub.instanceOf.id in (:subscriptionIdList)',
-                    [ subscriptionIdList: queryParams.subscriptionIdList ]
-            )
+            queryParams.subscriptionIdList = filterResult.data.get('memberSubscriptionIdList') // if memberSubscription filter is set
         }
         if (partKey == 'consortium') {
             queryParams.put( 'roleTypes', [RDStore.OR_SUBSCRIPTION_CONSORTIA] )
@@ -298,7 +393,7 @@ class SubscriptionFilter extends BaseFilter {
 
         String query = queryBase + ' where ' + whereParts.join(' and ')
 
-//        println 'SubscriptionFilter.internalOrgFilter() -->'
+//        println 'SubscriptionFilter.handleInternalOrgFilter() -->'
 //        println query
 //        println queryParams
         filterResult.data.put( partKey + 'IdList', queryParams.subscriptionIdList ? Org.executeQuery(query, queryParams) : [] )

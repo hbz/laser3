@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3494    18.05.2021  dev     2.1         David   Feature     Einstiegspunkt Lizenzen: TN-Lizenz-Reiter
+
 3493    17.05.2021  dev     2.1         Andreas Bug         Einrichtungstyp war für niemanden mehr bearbeitbar
 
 3316    14.05.2021  rc2.0   2.0.10      Andreas Bug         erneute Behebung der Fehlverknüpfungen Vertrag-Lizenz

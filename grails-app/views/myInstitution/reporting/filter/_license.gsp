@@ -28,7 +28,7 @@
                 </div>
             </g:each>
 
-        </div><!-- .first -->
+        </div><!-- .tab -->
 
         %{--<div class="ui bottom attached tab segment" data-tab="lic-filter-tab-2">
             <div class="field">
@@ -45,7 +45,7 @@
                 </div>
             </g:each>
 
-        </div><!-- .second --> --}%
+        </div><!-- .tab --> --}%
 
         <div class="ui bottom attached tab segment" data-tab="lic-filter-tab-3">
             <div class="field">
@@ -62,7 +62,7 @@
                 </div>
             </g:each>
 
-        </div><!-- .second -->
+        </div><!-- .tab -->
 
         <div class="field">
             <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
