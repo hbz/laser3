@@ -51,7 +51,7 @@
                                 </laser:script>
                             </div>
 
-                            <g:form action="processCostItemsBulk" name="costItemsBulk" method="post" class="ui form">
+                            <g:form action="processCostItemsBulk" name="editCost_${idSuffix}" method="post" class="ui form">
                                 <div id="bulkCostItems" class="hidden">
                                     <g:render template="costItemInput" />
                                     <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>

@@ -26,7 +26,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final String GND_ORG_NR = "gnd_org_nr"
     public static final String EZB_ORG_ID = "ezb_org_id"
     public static final String GRID_ID    = "GRID ID"
-    public static final String DBS_ID     = "DBS-ID"
+    public static final String DBS_ID     = "dbis_org_id"
     public static final String VAT        = "VAT"
     public static final String LEIT_ID   = "Leitweg-ID"
     public static final String LEIT_KR   = "Leitkriterium (intern)"
@@ -173,6 +173,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
             idns.isHidden = configMap.isHidden
             idns.isHardData = configMap.isHardData
             idns.validationRegex = configMap.validationRegex
+            idns.urlPrefix = configMap.urlPrefix
             if(!idns.save())
                 log.error(idns.getErrors().getAllErrors().toListString())
             idns
