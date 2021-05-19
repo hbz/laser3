@@ -134,7 +134,7 @@ class SubscriptionFilter extends BaseFilter {
 
                         Map<String, Object> customRdv = BaseConfig.getCustomRefdata(p)
                         List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Integer.parseInt(it2) } }
-                        filterLabelValue = labels.collect { it.get('value_de') }
+                        filterLabelValue = labels.collect { it.get('value_de') } // TODO
                     }
                 }
 
@@ -252,7 +252,7 @@ class SubscriptionFilter extends BaseFilter {
 
                         Map<String, Object> customRdv = BaseConfig.getCustomRefdata(p)
                         List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Integer.parseInt(it2) } }
-                        filterLabelValue = labels.collect { it.get('value_de') }
+                        filterLabelValue = labels.collect { it.get('value_de') } // TODO
                     }
                 }
 
