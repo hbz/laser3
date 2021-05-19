@@ -58,7 +58,7 @@ class LaserReportingTagLib {
             out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
         }
         if (fieldType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-            out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
+            out << laser.reportFilterCustomImpl(config: attrs.config, field: attrs.field, key: attrs.key)
         }
     }
 
@@ -132,6 +132,7 @@ class LaserReportingTagLib {
 
     def reportFilterRefdataRelTable = { attrs, body ->
 
+        //println 'reportFilterRefdataRelTable'
         Map<String, Object> customRdv = BaseConfig.getCustomRefdata(attrs.refdata)
 
         String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
@@ -162,6 +163,12 @@ class LaserReportingTagLib {
 
         out << laser.select( map )
         out << '</div>'
+    }
+
+    def reportFilterCustomImpl = { attrs, body ->
+
+        //println '> reportFilterCustomImpl: ' + attrs.field
+        out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
     }
 
     static String getUniqueId(String id) {

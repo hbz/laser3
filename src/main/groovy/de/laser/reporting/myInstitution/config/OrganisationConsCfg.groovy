@@ -24,6 +24,7 @@ class OrganisationConsCfg extends BaseConfig {
                     ],
                     fields : [
                             'country'           : BaseConfig.FIELD_TYPE_REFDATA,
+                            'region'            : BaseConfig.FIELD_TYPE_REFDATA,
                             'customerType'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'eInvoice'          : BaseConfig.FIELD_TYPE_PROPERTY,
                             'funderHskType'     : BaseConfig.FIELD_TYPE_REFDATA,
@@ -37,8 +38,8 @@ class OrganisationConsCfg extends BaseConfig {
                     ],
                     filter : [
                             default : [
-                                    [ 'country',  'subjectGroup', 'orgType' ],
-                                    [ 'libraryNetwork', 'funderType', 'funderHskType' ] ,
+                                    [ 'country', 'region', 'libraryNetwork', 'subjectGroup' ],
+                                    [ 'orgType', 'funderType', 'funderHskType' ] ,
                                     [ 'libraryType', 'eInvoice' ],
                                     [ 'customerType', 'legalInfo' ]
                             ],

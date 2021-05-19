@@ -167,6 +167,59 @@
             }
 
             $('#chart-chooser').dropdown('set selected', 'bar');
+
+            JSPC.app.reporting.countryRegionParams = {
+                'filter\\:member' : ${raw(params.list('filter:member_region'))},
+                'filter\\:org' : ${raw(params.list('filter:org_region'))}
+            }
+
+            JSPC.app.reporting.countryRegionUpdate = function( selectorPart ) {
+                var $region  = $('select[name=' + selectorPart + '_region]');
+                var $country = $('select[name=' + selectorPart + '_country]');
+
+                /* - TODO
+                $region.dropdown('change values', []);
+                $region.dropdown('restore placeholder text');
+                */
+                var url = '<g:createLink controller="ajaxJson" action="getRegions"/>?simple=true&country=';
+                if ($country.val()) {
+                    url = url + $country.val()
+                }
+
+                $region.empty();
+                $region.append($('<option value="" selected="selected">${message(code: 'default.select.choose.label')}</option>'));
+                $region.dropdown('clear').dropdown('set selected', '');
+
+                $.ajax({
+                    url: url,
+                    success: function (data) {
+                        $.each(data, function (key, entry) {
+                            var $elem = $('<option></option>').attr('value', entry.id).text( entry['value_' + JSPC.currLanguage] );
+                            if (JSPC.helper.contains( JSPC.app.reporting.countryRegionParams[ selectorPart ], entry.id )) {
+                                $elem.attr('selected', 'selected');
+                            }
+                            $region.append($elem);
+                        });
+
+                        /* - TODO
+                        $region.dropdown('change values', data.map( function(e){
+                            return { value: e.id, name: e.value_de, text: e.value_de }
+                        }))
+                        $region.dropdown('set selected', JSPC.app.reporting.countryRegionParams[ selectorPart ]);
+
+                        $region.dropdown('refresh');
+                        */
+                    }
+                });
+            }
+
+            $("select[name=filter\\:member_country]").on( 'change', function() {
+                JSPC.app.reporting.countryRegionUpdate( 'filter\\:member' );
+            }).trigger( 'change' );
+
+            $("select[name=filter\\:org_country]").on( 'change', function() {
+                JSPC.app.reporting.countryRegionUpdate( 'filter\\:org' );
+            }).trigger( 'change' );
         </laser:script>
 
         <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">

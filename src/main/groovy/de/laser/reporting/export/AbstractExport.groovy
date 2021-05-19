@@ -30,7 +30,7 @@ abstract class AbstractExport {
             '@ae-license-member'        : 'Anzahl Teilnehmerverträge',  // virtual; without XY.CONFIG.base.x
             '@ae-org-accessPoint'       : 'Zugangskonfigurationen (ohne Links)', // virtual; without XY.CONFIG.base.x
             '@ae-org-contact'           : 'Kontaktdaten',                   // virtual; without XY.CONFIG.base.x
-            '@ae-org-readerNumber'      : 'Nutzerzahlen (nur Semester)',    // virtual; without XY.CONFIG.base.x
+            '@ae-org-readerNumber'      : 'Nutzerzahlen',                   // virtual; without XY.CONFIG.base.x
     ]
 
     String token

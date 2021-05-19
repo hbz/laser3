@@ -120,12 +120,19 @@ class LicenseFilter extends BaseFilter {
                         List tmpList = []
 
                         params.list(key).each { pk ->
-                            tmpList.add( '( (YEAR(lic.startDate) <= :p' + (++pCount) + ' or lic.startDate is null) and (YEAR(lic.endDate) >= :p' + pCount + ' or lic.endDate is null) )' )
-                            queryParams.put( 'p' + pCount, pk as Integer )
+                            if (pk == 0) {
+                                tmpList.add('( lic.startDate != null and lic.endDate is null )')
+                            }
+                            else {
+                                tmpList.add('( (YEAR(lic.startDate) <= :p' + (++pCount) + ' or lic.startDate is null) and (YEAR(lic.endDate) >= :p' + pCount + ' or lic.endDate is null) )')
+                                queryParams.put('p' + pCount, pk as Integer)
+                            }
                         }
                         whereParts.add( '(' + tmpList.join(' or ') + ')' )
 
-                        filterLabelValue = params.get(key)
+                        Map<String, Object> customRdv = BaseConfig.getCustomRefdata(p)
+                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Integer.parseInt(it2) } }
+                        filterLabelValue = labels.collect { it.get('value_de') } // TODO
                     }
                 }
 

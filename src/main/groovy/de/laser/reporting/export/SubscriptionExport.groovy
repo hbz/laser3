@@ -35,6 +35,7 @@ class SubscriptionExport extends AbstractExport {
                                     '@ae-subscription-member'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
+                                    'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   //  qdp
@@ -61,6 +62,7 @@ class SubscriptionExport extends AbstractExport {
                                     'resource'              : FIELD_TYPE_REFDATA,
                                     'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
+                                    'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp

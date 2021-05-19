@@ -20,6 +20,7 @@ class SubscriptionConsCfg extends BaseConfig {
                             'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
                             'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'hasPerpetualAccess'    : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'hasPublishComponent'   : BaseConfig.FIELD_TYPE_PROPERTY,
                             'isPublicForApi'        : BaseConfig.FIELD_TYPE_PROPERTY,
                             'isMultiYear'           : BaseConfig.FIELD_TYPE_PROPERTY,
                             'kind'                  : BaseConfig.FIELD_TYPE_REFDATA,
@@ -33,7 +34,8 @@ class SubscriptionConsCfg extends BaseConfig {
                     filter : [
                             default : [
                                     [ 'form', 'kind', 'status', 'annual' ],
-                                    [ 'resource', 'hasPerpetualAccess', 'isMultiYear', 'isPublicForApi' ],
+                                    [ 'resource', 'hasPerpetualAccess', 'hasPublishComponent' ],
+                                    [ 'isMultiYear', 'isPublicForApi' ],
                                     [ 'startDate', 'endDate' ]
                             ]
                     ],
@@ -93,13 +95,18 @@ class SubscriptionConsCfg extends BaseConfig {
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
                                      ],
+                                     'subscription-x-memberAnnual' : [
+                                             label              : 'Teilnehmerlizenz → Jahresring',
+                                             detailsTemplate    : 'subscription',
+                                             chartTemplate      : 'generic',
+                                             chartLabels        : []
+                                     ],
                                      'subscription-x-member' : [
                                              label              : 'Teilnehmer → Teilnehmerlizenz → Lizenz',
                                              detailsTemplate    : 'organisation',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
-                                     ],
-
+                                     ]
                             ]
                     ]
             ],
@@ -116,6 +123,7 @@ class SubscriptionConsCfg extends BaseConfig {
                             'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
                             'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'hasPerpetualAccess'    : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'hasPublishComponent'   : BaseConfig.FIELD_TYPE_PROPERTY,
                             'isPublicForApi'        : BaseConfig.FIELD_TYPE_PROPERTY,
                             'isMultiYear'           : BaseConfig.FIELD_TYPE_PROPERTY,
                             'kind'                  : BaseConfig.FIELD_TYPE_REFDATA,
@@ -126,7 +134,8 @@ class SubscriptionConsCfg extends BaseConfig {
                     filter : [
                             default : [
                                     [ 'form', 'kind', 'status', 'annual' ],
-                                    [ 'resource', 'hasPerpetualAccess', 'isMultiYear', 'isPublicForApi' ],
+                                    [ 'resource', 'hasPerpetualAccess', 'hasPublishComponent' ],
+                                    [ 'isMultiYear', 'isPublicForApi' ],
                                     [ 'startDate', 'endDate' ]
                             ]
                     ],
@@ -154,6 +163,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     fields : [
                             'country'           : BaseConfig.FIELD_TYPE_REFDATA,
+                            'region'            : BaseConfig.FIELD_TYPE_REFDATA,
                             'customerType'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'eInvoice'          : BaseConfig.FIELD_TYPE_PROPERTY,
                             'funderHskType'     : BaseConfig.FIELD_TYPE_REFDATA,
@@ -167,7 +177,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     filter : [
                             default : [
-                                    [ 'country', 'subjectGroup', 'libraryType' ],
+                                    [ 'country', 'region', 'subjectGroup', 'libraryType' ],
                                     [ 'libraryNetwork', 'funderType', 'funderHskType' ],
                                     [ 'orgType', 'eInvoice' ],
                                     [ 'customerType', 'legalInfo' ]
@@ -199,6 +209,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     fields : [
                             'country'   : BaseConfig.FIELD_TYPE_REFDATA,
+                            'region'    : BaseConfig.FIELD_TYPE_REFDATA,
                             'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
                     ],
                     filter : [
@@ -225,6 +236,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     fields : [
                             'country'   : BaseConfig.FIELD_TYPE_REFDATA,
+                            'region'    : BaseConfig.FIELD_TYPE_REFDATA,
                             'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
                     ],
                     filter : [

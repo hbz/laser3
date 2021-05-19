@@ -20,6 +20,9 @@
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency}">
                 <a class="item" data-tab="sub-filter-tab-6">${message(code:'default.agency.plural.label')}</a>
             </g:if>
+            <sec:ifAnyGranted roles="ROLE_YODA">
+                <a class="item" data-tab="sub-filter-tab-help"> ? %{--<i class="icon question"></i>--}%</a>
+            </sec:ifAnyGranted>
         </div><!-- .menu -->
 
         <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base}" />
@@ -55,10 +58,15 @@
                 </div>
 
                 <g:each in="${config.filter.default}" var="cfgFilter">
-                    <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
-                        <g:each in="${cfgFilter}" var="field">
-                            <laser:reportFilterField config="${config}" field="${field}" key="memberSubscription" />
-                        </g:each>
+                    <g:if test="${cfgFilter.findAll{it.contains('Date')}.size() == cfgFilter.size()}">%{-- tmp datepicker layout fix --}%
+                        <div class="fields">
+                    </g:if>
+                    <g:else>
+                        <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
+                    </g:else>
+                    <g:each in="${cfgFilter}" var="field">
+                        <laser:reportFilterField config="${config}" field="${field}" key="memberSubscription" />
+                    </g:each>
                     </div>
                 </g:each>
             </div><!-- .tab -->
@@ -151,6 +159,16 @@
             </div><!-- .tab -->
 
         </g:if>
+
+        <sec:ifAnyGranted roles="ROLE_YODA">
+            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-help">
+                <div class="field">
+                    <div style="text-align:center; padding:2em 0">
+                        <asset:image src="reporting/help-filter-1.png" absolute="true" style="width:85%" />
+                    </div>
+                </div>
+            </div><!-- .tab -->
+        </sec:ifAnyGranted>
 
         <div class="field">
             <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
