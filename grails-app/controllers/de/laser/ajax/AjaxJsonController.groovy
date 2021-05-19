@@ -399,7 +399,13 @@ class AjaxJsonController {
         else {
             result.addAll(RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE,RDConstants.REGIONS_AT,RDConstants.REGIONS_CH]))
         }
-        render result as JSON
+
+        if (params.simple) {
+            render result.collect { it -> [id: it.id, value: it.value, value_de: it.value_de, value_en: it.value_en]} as JSON
+        }
+        else {
+            render result as JSON
+        }
     }
 
     @Secured(['ROLE_USER'])

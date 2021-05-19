@@ -122,12 +122,19 @@ class SubscriptionFilter extends BaseFilter {
                         List tmpList = []
 
                         params.list(key).each { pk ->
-                            tmpList.add( '( (YEAR(sub.startDate) <= :p' + (++pCount) + ' or sub.startDate is null) and (YEAR(sub.endDate) >= :p' + pCount + ' or sub.endDate is null) )' )
-                            queryParams.put( 'p' + pCount, pk as Integer )
+                            if (pk == 0) {
+                                tmpList.add('( sub.startDate != null and sub.endDate is null )')
+                            }
+                            else {
+                                tmpList.add('( (YEAR(sub.startDate) <= :p' + (++pCount) + ' or sub.startDate is null) and (YEAR(sub.endDate) >= :p' + pCount + ' or sub.endDate is null) )')
+                                queryParams.put('p' + pCount, pk as Integer)
+                            }
                         }
                         whereParts.add( '(' + tmpList.join(' or ') + ')' )
 
-                        filterLabelValue = params.get(key)
+                        Map<String, Object> customRdv = BaseConfig.getCustomRefdata(p)
+                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Integer.parseInt(it2) } }
+                        filterLabelValue = labels.collect { it.get('value_de') }
                     }
                 }
 
@@ -233,12 +240,19 @@ class SubscriptionFilter extends BaseFilter {
                         List tmpList = []
 
                         params.list(key).each { pk ->
-                            tmpList.add( '( (YEAR(mbr.startDate) <= :p' + (++pCount) + ' or mbr.startDate is null) and (YEAR(mbr.endDate) >= :p' + pCount + ' or mbr.endDate is null) )' )
-                            queryParams.put( 'p' + pCount, pk as Integer )
+                            if (pk == 0) {
+                                tmpList.add('( sub.startDate != null and sub.endDate is null )')
+                            }
+                            else {
+                                tmpList.add('( (YEAR(mbr.startDate) <= :p' + (++pCount) + ' or mbr.startDate is null) and (YEAR(mbr.endDate) >= :p' + pCount + ' or mbr.endDate is null) )')
+                                queryParams.put('p' + pCount, pk as Integer)
+                            }
                         }
                         whereParts.add( '(' + tmpList.join(' or ') + ')' )
 
-                        filterLabelValue = params.get(key)
+                        Map<String, Object> customRdv = BaseConfig.getCustomRefdata(p)
+                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Integer.parseInt(it2) } }
+                        filterLabelValue = labels.collect { it.get('value_de') }
                     }
                 }
 

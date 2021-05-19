@@ -74,6 +74,7 @@ class LicenseConsCfg extends BaseConfig {
                     ],
                     fields : [
                             'country'   : BaseConfig.FIELD_TYPE_REFDATA,
+                            'region'    : BaseConfig.FIELD_TYPE_REFDATA,
                             'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE,
                     ],
                     filter : [

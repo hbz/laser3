@@ -149,7 +149,7 @@ class BaseConfig {
             int y = Year.now().value
             return [
                     label: messageSource.getMessage('reporting.baseConfig.annual.label', null, locale),
-                    from: (y+2..y-5).collect{[ id: it, value_de: it, value_en: it] }
+                    from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] } + [ id: 0, value_de: 'Alle ohne Ablauf', value_en: 'Open-Ended']
             ]
         }
     }

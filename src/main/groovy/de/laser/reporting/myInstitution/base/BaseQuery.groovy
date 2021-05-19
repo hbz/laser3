@@ -277,13 +277,15 @@ class BaseQuery {
                 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate is null',
                 [idList: idList]
         )
-        result.data.add( [null, BaseQuery.NO_DATA_LABEL, noDataList.size()] )
+        if (noDataList) {
+            result.data.add([null, BaseQuery.NO_DATA_LABEL, noDataList.size()])
 
-        result.dataDetails.add( [
-                query:  query,
-                id:     null,
-                label:  BaseQuery.NO_DATA_LABEL,
-                idList: noDataList
-        ])
+            result.dataDetails.add([
+                    query : query,
+                    id    : null,
+                    label : BaseQuery.NO_DATA_LABEL,
+                    idList: noDataList
+            ])
+        }
     }
 }
