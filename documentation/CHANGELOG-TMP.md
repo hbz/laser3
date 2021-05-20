@@ -7,6 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
+3496    20.05.2021  dev     2.1         David   Feature     Makro-Reporting Konsortialstelle
+
 3475    19.05.2021  dev     2.1         Andreas Feature     neues Umfragemerkmal Rechnungszeitpunkt; altes, nicht mehr hart kodiertes Merkmal Rechungs-Zeitpunkt einschließlich Werte entfernt
 
 3462    19.05.2021  dev     2.1         Andreas Bug         Unterbinden der Erstellung eigener Merkmalsdefinitionen des Typs Umfrage für Vollnutzer

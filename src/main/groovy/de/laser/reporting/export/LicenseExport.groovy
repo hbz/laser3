@@ -70,7 +70,7 @@ class LicenseExport extends AbstractExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportHelper.normalizeSelectedFieldValues( this )
+        ExportHelper.normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -146,11 +146,6 @@ class LicenseExport extends AbstractExport {
                         ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.lic = :lic and i.ns.id in (:idnsList)",
                                 [lic: lic, idnsList: f.value] )
                     }
-//                    else {
-//                        ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.lic = :lic",
-//                                [lic: lic] )
-//                    }
-
                     content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
                 else if (key == '@ae-license-subscription') { // TODO: query

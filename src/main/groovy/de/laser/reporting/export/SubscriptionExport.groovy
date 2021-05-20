@@ -80,7 +80,7 @@ class SubscriptionExport extends AbstractExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportHelper.normalizeSelectedFieldValues( this )
+        ExportHelper.normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -156,11 +156,6 @@ class SubscriptionExport extends AbstractExport {
                         ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.sub = :sub and i.ns.id in (:idnsList)",
                                 [sub: sub, idnsList: f.value] )
                     }
-//                    else {
-//                        ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.sub = :sub",
-//                                [sub: sub] )
-//                    }
-
                     content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
                 else if (key == 'x-provider') {
