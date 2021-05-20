@@ -50,15 +50,15 @@
                 </div>
                 <div class="fields">
 
-                    <g:each in="${formFields.findAll { ['x-identifier'].contains( it.key ) }}" var="field" status="fc"> %{-- TODO --}%
+                    <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-readerNumber'].contains( it.key ) }}" var="field" status="fc"> %{-- TODO --}%
                         <div class="wide eight field">
 
-                            <g:set var="idnsList" value="${ExportHelper.getIdentifiersForDropdown(export.getCurrentConfig( export.KEY ))}" />
+                            <g:set var="multiList" value="${ExportHelper.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
 
                             <g:select name="cde:${field.key}" class="ui selection dropdown"
-                                      from="${idnsList}" multiple="true"
+                                      from="${multiList}" multiple="true"
                                       optionKey="${{it[0]}}" optionValue="${{it[1]}}"
-                                      noSelection="${['': export.getFieldLabel(field.key as String)]}"
+                                      noSelection="${['': 'Bitte auswählen: ' + export.getFieldLabel(field.key as String)]}"
                             />
 
                         </div><!-- .field -->

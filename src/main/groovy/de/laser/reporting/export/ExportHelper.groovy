@@ -3,11 +3,16 @@ package de.laser.reporting.export
 import de.laser.IdentifierNamespace
 import de.laser.License
 import de.laser.Org
+import de.laser.RefdataCategory
+import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.helper.RDConstants
 import de.laser.reporting.myInstitution.GenericHelper
 import de.laser.reporting.myInstitution.base.BaseDetails
 import de.laser.reporting.myInstitution.base.BaseFilter
 import de.laser.reporting.myInstitution.base.BaseQuery
+
+import java.time.Year
 
 class ExportHelper {
 
@@ -49,9 +54,25 @@ class ExportHelper {
 
     static String getFieldLabel(AbstractExport export, String fieldName) {
 
-        if (fieldName == 'x-identifier') {
-            List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
-            return 'Identifikatoren' + (selList ? ': ' + selList.collect{it -> IdentifierNamespace.get(it).ns }.join(', ') : '') // TODO - export
+        if ( isFieldMultiple(fieldName) ) {
+            String label = AbstractExport.CUSTOM_LABEL.get(fieldName)
+
+            if (fieldName == 'x-identifier') {
+                List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
+                label += (selList ? ': ' + selList.collect{it -> IdentifierNamespace.get(it).ns }.join(', ') : '') // TODO - export
+            }
+            else if (fieldName == '@ae-org-accessPoint') {
+                List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
+                label += (selList ? ': ' + selList.collect{it -> RefdataValue.get(it).getI10n('value') }.join(', ') : '') // TODO - export
+            }
+            else if (fieldName == '@ae-org-readerNumber') {
+                List selList = export.getSelectedFields().get(fieldName)
+                List semList = selList.findAll{ it.startsWith('sem-') }.collect{ RefdataValue.get( it.replace('sem-', '') ).getI10n('value') }
+                List ddList  = selList.findAll{ it.startsWith('dd-') }.collect{ it.replace('dd-', 'Stichtage ') }
+                label += (selList ? ': ' + (semList + ddList).join(', ') : '') // TODO - export
+            }
+
+            return label
         }
         else if (fieldName == 'x-property') {
             return 'Merkmal: ' + BaseQuery.getQueryCache( export.token ).labels.labels[2] // TODO - modal
@@ -83,11 +104,16 @@ class ExportHelper {
 
     // -----  -----
 
-    static void normalizeSelectedFieldValues(AbstractExport export) {
+    static void normalizeSelectedMultipleFields(AbstractExport export) {
 
         export.selectedExportFields.each {it ->
             if ( isFieldMultiple( it.key ) ) {
-                it.value = it.value instanceof String ? [ Long.parseLong(it.value) ] : it.value.collect{ Long.parseLong(it) }
+                if ( it.key == '@ae-org-readerNumber' ) {
+                    export.selectedExportFields[it.key] = it.value instanceof String ? [ it.value ] : it.value.collect { it }
+                }
+                else {
+                    export.selectedExportFields[it.key] = it.value instanceof String ? [Long.parseLong(it.value)] : it.value.collect { Long.parseLong(it) }
+                }
             }
         }
     }
@@ -115,18 +141,30 @@ class ExportHelper {
 
     static boolean isFieldMultiple(String fieldName) {
 
-        if (fieldName in [ 'x-identifier' ]) {
+        if (fieldName in [ 'x-identifier', '@ae-org-accessPoint', '@ae-org-readerNumber']) {
             return true
         }
         return false
     }
 
-    static List getIdentifiersForDropdown(Map<String, Object> cfg) {
+    static List getMultipleFieldListForDropdown(String key, Map<String, Object> cfg) {
 
+        if (key == 'x-identifier') {
+            getIdentifierNamespacesForDropdown( cfg )
+        }
+        else if (key == '@ae-org-accessPoint') {
+            getAccessPointMethodsforDropdown()
+        }
+        else if (key == '@ae-org-readerNumber') {
+            getReaderNumberSemesterAndDueDatesForDropdown()
+        }
+    }
+
+    static List getIdentifierNamespacesForDropdown(Map<String, Object> cfg) {
         List<IdentifierNamespace> idnsList = []
 
         if (cfg.base.meta.class == Org) {
-            idnsList = Org.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type',  [type: Org.class.name] )
+            idnsList = Org.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: Org.class.name] )
         }
         else if (cfg.base.meta.class == License) {
             idnsList = License.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: License.class.name] )
@@ -137,7 +175,27 @@ class ExportHelper {
 
         idnsList.collect{ it ->
             [ it.id, it.ns ]
-            //[ it.class.name + ':' + it.id, it.ns ]
         }
+    }
+
+    static List getAccessPointMethodsforDropdown() {
+        List<RefdataValue> aptList = RefdataCategory.getAllRefdataValues( RDConstants.ACCESS_POINT_TYPE )
+
+        aptList.collect{ it ->
+            [ it.id, it.getI10n('value') ]
+        }
+    }
+
+    static List getReaderNumberSemesterAndDueDatesForDropdown() {
+        List<RefdataValue> semList = RefdataCategory.getAllRefdataValuesWithOrder( RDConstants.SEMESTER )
+
+        List result = semList.collect{ it ->
+            [ 'sem-' + it.id, it.getI10n('value') ]
+        }
+
+        int y = Year.now().value
+        result.addAll( (y+2..y-4).collect{[ 'dd-' + it, 'Stichtage für ' + it ]} )
+
+        result
     }
 }

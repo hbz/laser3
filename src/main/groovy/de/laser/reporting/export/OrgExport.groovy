@@ -12,6 +12,13 @@ import de.laser.ReaderNumber
 import de.laser.RefdataValue
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.oap.OrgAccessPoint
+import de.laser.oap.OrgAccessPointEzproxy
+import de.laser.oap.OrgAccessPointLink
+import de.laser.oap.OrgAccessPointOA
+import de.laser.oap.OrgAccessPointProxy
+import de.laser.oap.OrgAccessPointShibboleth
+import de.laser.oap.OrgAccessPointVpn
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
@@ -82,7 +89,7 @@ class OrgExport extends AbstractExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportHelper.normalizeSelectedFieldValues( this )
+        ExportHelper.normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -183,11 +190,6 @@ class OrgExport extends AbstractExport {
                         ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.org = :org and i.ns.id in (:idnsList)",
                                 [org: org, idnsList: f.value] )
                     }
-//                    else {
-//                        ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.org = :org",
-//                                [org: org] )
-//                    }
-
                     content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
                 else if (key == '@ae-org-contact') {
@@ -217,25 +219,43 @@ class OrgExport extends AbstractExport {
                     content.add( personList.join( CSV_VALUE_SEPARATOR ) )
                 }
                 else if (key == '@ae-org-readerNumber') {
-                    
+
                     OrganisationService organisationService = (OrganisationService) Holders.grailsApplication.mainContext.getBean('organisationService')
 
-                    Map<String,Map<String, ReaderNumber>> semesterMap = organisationService.groupReaderNumbersByProperty(
-                            ReaderNumber.findAllByOrgAndSemesterIsNotNull( org ), "semester"
-                    )
-                    Map<String,Map<String, ReaderNumber>> dueDateMap = organisationService.groupReaderNumbersByProperty(
-                            ReaderNumber.findAllByOrgAndDueDateIsNotNull( org ), "dueDate"
-                    )
-                    List entries = semesterMap.collect { sem ->
-                        sem.key.getI10n('value') + ': ' + sem.value.collect { rn ->
-                            rn.value.value ? (rn.key + ' ' + rn.value.value) : null
-                        }.findAll().join(', ')
+                    List entries = []
+                    List<Long> semIdList = f.value.findAll{ it.startsWith('sem-') }.collect{ Long.parseLong( it.replace('sem-', '') ) }
+                    List<Integer> ddList = f.value.findAll{ it.startsWith('dd-') }.collect{ Integer.parseInt( it.replace('dd-', '') ) }
+
+                    if (semIdList) {
+
+                        Map<String,Map<String, ReaderNumber>> semesterMap = organisationService.groupReaderNumbersByProperty(
+                                ReaderNumber.executeQuery(
+                                        'select rn from ReaderNumber rn where rn.org = :org and rn.semester.id in (:semIdList)',
+                                        [org: org, semIdList: semIdList]
+                                )
+                                , "semester"
+                        )
+                        entries.addAll( semesterMap.collect { sem ->
+                            sem.key.getI10n('value') + ': ' + sem.value.collect { rn ->
+                                rn.value.value ? (rn.key + ' ' + rn.value.value) : null
+                            }.findAll().join(', ')
+                        } )
                     }
-                    entries.addAll( dueDateMap.collect { sem ->
-                        DateUtils.getSDF_NoTime().format( sem.key ) + ': ' + sem.value.collect { rn ->
-                            rn.value.value ? (rn.key + ' ' + rn.value.value) : null
-                        }.findAll().join(', ')
-                    } )
+                    if (ddList) {
+
+                        Map<String,Map<String, ReaderNumber>> dueDateMap = organisationService.groupReaderNumbersByProperty(
+                                ReaderNumber.executeQuery(
+                                        'select rn from ReaderNumber rn where rn.org = :org and YEAR(rn.dueDate) in (:ddList)',
+                                        [org: org, ddList: ddList]
+                                ), "dueDate"
+                        )
+
+                        entries.addAll( dueDateMap.collect { sem ->
+                            DateUtils.getSDF_NoTime().format( sem.key ) + ': ' + sem.value.collect { rn ->
+                                rn.value.value ? (rn.key + ' ' + rn.value.value) : null
+                            }.findAll().join(', ')
+                        } )
+                    }
 
                     content.add( entries.join( CSV_VALUE_SEPARATOR ) )
                 }
@@ -243,36 +263,30 @@ class OrgExport extends AbstractExport {
 
                     List oapList = []
 
-                    AccessPointService accessPointService = (AccessPointService) Holders.grailsApplication.mainContext.getBean('accessPointService')
-                    accessPointService.getOapListWithLinkCounts( org ).each {oa ->
-
+                    f.value.each { amId ->
+                        RefdataValue am = RefdataValue.get( amId )
                         List entry = []
-                        Map<String, Object> ipRanges = oa['oap'].getAccessPointIpRanges()
 
-                        ipRanges['ipv4Ranges'].each { ipv4 ->
-                            entry.add( ipv4['ipInput'] )
-//                            //entry.add( ipv4['name'] + ' - ' + ipv4['ipRange'] + ' - ' + ipv4['ipCidr'] + ' - ' + ipv4['ipInput'] )
-//                            String t = ipv4['ipRange'].split('-')
-//                            if ( t.size() == 2 && (t[0] != t[1]) ) {
-//                                entry.add( ipv4['ipRange'] )
-//                            }
-//                            else {
-//                                entry.add( ipv4['ipInput'] )
-//                            }
-                        }
-                        ipRanges['ipv6Ranges'].each { ipv6 ->
-                            entry.add( ipv6['ipInput'] )
-//                            //entry.add( ipv6['name'] + ' - ' +  ipv6['ipRange'] + ' - ' + ipv6['ipCidr'] + ' - ' + ipv6['ipInput'] )
-//                            String t = ipv6['ipRange'].split('-')
-//                            if ( t.size() == 2 && (t[0] != t[1]) ) {
-//                                entry.add( ipv6['ipRange'] )
-//                            }
-//                            else {
-//                                entry.add( ipv6['ipInput'] )
-//                            }
+                        OrgAccessPoint.findAllByOrgAndAccessMethod(org, am, [sort: [name: 'asc']] ).each {oap ->
+                            Map<String, Object> ipRanges = oap.getAccessPointIpRanges()
+
+                            ipRanges['ipv4Ranges'].each { ipv4 ->
+                                entry.add(ipv4['ipInput'])
+                            }
+                            ipRanges['ipv6Ranges'].each { ipv6 ->
+                                entry.add(ipv6['ipInput'])
+                            }
+
+                            if (oap instanceof OrgAccessPointEzproxy || org instanceof OrgAccessPointProxy || org instanceof OrgAccessPointVpn) {
+                                entry.add( oap.url )
+                            }
+                            else if (oap instanceof OrgAccessPointOA || oap instanceof OrgAccessPointShibboleth) {
+                                entry.add( oap.entityId )
+                            }
+                            // ignored: OrgAccessPointLink
                         }
                         if (! entry.isEmpty()) {
-                            oapList.add( oa['oap'].accessMethod.getI10n('value') + ': ' + entry.join(', ') )
+                            oapList.add( am.getI10n('value') + ': ' + entry.join(', ') )
                         }
                     }
 

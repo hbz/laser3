@@ -21,16 +21,18 @@ abstract class AbstractExport {
 
             'globalUID'                 : 'Link (Global UID)',
 
-            'x-identifier'              : 'ExportHelper.getFieldLabel()',   // qdp; dyn. value
-            'x-provider'                : 'Anbieter',                       // XYCfg.CONFIG.base.query2.Verteilung
-            'x-property'                : 'ExportHelper.getFieldLabel()',   // qdp; dyn. value
+            'x-identifier'              : 'Identifikatoren',                    // dyn.value
+            'x-provider'                : 'Anbieter',                           // XYCfg.CONFIG.base.query2.Verteilung
+            'x-property'                : 'Merkmal',                            // QDP; dyn.value
 
-            '@ae-subscription-member'   : 'Anzahl Teilnehmer',          // virtual; without XY.CONFIG.base.x
-            '@ae-license-subscription'  : 'Anzahl Lizenzen',            // virtual; without XY.CONFIG.base.x
-            '@ae-license-member'        : 'Anzahl Teilnehmerverträge',  // virtual; without XY.CONFIG.base.x
-            '@ae-org-accessPoint'       : 'Zugangskonfigurationen (ohne Links)', // virtual; without XY.CONFIG.base.x
-            '@ae-org-contact'           : 'Kontaktdaten',                   // virtual; without XY.CONFIG.base.x
-            '@ae-org-readerNumber'      : 'Nutzerzahlen',                   // virtual; without XY.CONFIG.base.x
+            // virtual; without XY.CONFIG.base.x
+
+            '@ae-subscription-member'   : 'Anzahl Teilnehmer',
+            '@ae-license-subscription'  : 'Anzahl Lizenzen',
+            '@ae-license-member'        : 'Anzahl Teilnehmerverträge',
+            '@ae-org-accessPoint'       : 'Zugangskonfigurationen (ohne Links)',    // dyn.value
+            '@ae-org-contact'           : 'Kontaktdaten',
+            '@ae-org-readerNumber'      : 'Nutzerzahlen und Stichtage',             // dyn.value
     ]
 
     String token
