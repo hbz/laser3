@@ -1431,8 +1431,8 @@ class SubscriptionController {
 
     //--------------------------------------------- reporting -------------------------------------------------
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM,ORG_INST", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST", "INST_USER") })
     def reporting() {
         Map<String,Object> ctrlResult = subscriptionControllerService.reporting( params )
 

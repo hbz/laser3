@@ -21,6 +21,8 @@ import org.apache.commons.lang3.RandomStringUtils
 class ReportingService {
 
     def contextService
+    def financeService
+    def financeControllerService
 
     // ----- MyInstitutionController.reporting() -----
 
@@ -111,6 +113,8 @@ class ReportingService {
 
     void doChart (Map<String, Object> result, GrailsParameterMap params) {
 
+        // global reporting
+
         if (params.context == BaseConfig.KEY_MYINST && params.query) {
 
             Closure getTooltipLabels = { GrailsParameterMap pm ->
@@ -185,13 +189,18 @@ class ReportingService {
 
             sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)
         }
+
+        // local reporting
+
         else if (params.context == BaseConfig.KEY_SUBSCRIPTION && params.query) {
             GrailsParameterMap clone = params.clone() as GrailsParameterMap // TODO: simplify
             String prefix = clone.query.split('-')[0]
 
+            Subscription sub = Subscription.get( params.id )
+
             if (prefix in ['timeline']) {
                 result.putAll( SubscriptionReporting.query(clone) )
-                result.labels.chart = SubscriptionReporting.CONFIG.base.query2.getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
+                result.labels.chart = SubscriptionReporting.getCurrentQuery2Config( sub ).getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
 
                 if (clone.query in ['timeline-cost']) {
                     result.tmpl = '/subscription/reporting/chart/timeline-cost'
@@ -212,6 +221,8 @@ class ReportingService {
     // ----- 3 - details
 
     void doChartDetails (Map<String, Object> result, GrailsParameterMap params) {
+
+        // global reporting
 
         if (params.context == BaseConfig.KEY_MYINST && params.query) {
 
@@ -300,6 +311,9 @@ class ReportingService {
 
             sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)
         }
+
+        // local reporting
+
         else if (params.context == BaseConfig.KEY_SUBSCRIPTION && params.query) {
 
             if (params.query == 'timeline-cost') {
