@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3505    21.05.2021  dev     2.1         David   Feature     Vollnutzer Reporting
+
 3496    20.05.2021  dev     2.1         David   Feature     Makro-Reporting Konsortialstelle
 
 3423    18.05.2021  dev     2.1         Andreas Bug         Einladen und Verarbeiten der KBART-Vorauswahl repariert und beschleunigt
