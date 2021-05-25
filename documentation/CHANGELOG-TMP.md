@@ -13,6 +13,8 @@
 
 1500    25.05.2021  dev     2.1         Andreas Feature     Org-Status nicht mehr nullable, Default-Wert aktuell
 
+3505    21.05.2021  dev     2.1         David   Feature     Vollnutzer Reporting
+
 3496    20.05.2021  dev     2.1         David   Feature     Makro-Reporting Konsortialstelle
 
 3475    19.05.2021  dev     2.1         Andreas Feature     neues Umfragemerkmal Rechnungszeitpunkt; altes, nicht mehr hart kodiertes Merkmal Rechungs-Zeitpunkt einschließlich Werte entfernt

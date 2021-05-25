@@ -17,10 +17,11 @@
 
         <semui:securedSubNavItem orgPerm="ORG_CONSORTIUM" controller="subscription" action="surveysConsortia" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
 
-        <sec:ifAnyGranted roles="ROLE_ADMIN">
+        %{-- <semui:subNavItem controller="subscription" action="pendingChanges" params="${[id:params.id]}" message="pendingChange.plural" /> --}%
+    </g:if>
+
+    <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_INST']}">
             <semui:subNavItem controller="subscription" action="reporting" params="${[id:params.id]}" message="myinst.reporting" />
-            %{-- <semui:subNavItem controller="subscription" action="pendingChanges" params="${[id:params.id]}" message="pendingChange.plural" /> --}%
-        </sec:ifAnyGranted>
     </g:if>
 
     <g:if test="${((contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM']) && subscription.instanceOf)}">
