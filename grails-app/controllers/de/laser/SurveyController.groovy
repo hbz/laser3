@@ -4312,7 +4312,7 @@ class SurveyController {
                 row.add([field: participantResult.participantPropertyThreeComment ?: '', style: null])
             }
 
-            participantResult.properties.sort { it.type.name }.each { participantResultProperty ->
+            participantResult.properties?.sort { it.type.name }.each { participantResultProperty ->
                 row.add([field: participantResultProperty.getResult() ?: "", style: null])
 
                 row.add([field: participantResultProperty.comment ?: "", style: null])
