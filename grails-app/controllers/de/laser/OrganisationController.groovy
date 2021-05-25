@@ -520,18 +520,17 @@ class OrganisationController  {
     def createProvider() {
         Org.withTransaction {
 
-            Org orgInstance = new Org(name: params.provider, sector: RDStore.O_SECTOR_PUBLISHER)
+            Org orgInstance = new Org(name: params.provider, sector: RDStore.O_SECTOR_PUBLISHER, status: RDStore.O_STATUS_CURRENT)
             if (orgInstance.save()) {
 
                 orgInstance.addToOrgType(RDStore.OT_PROVIDER)
-                orgInstance.addToOrgType(RDStore.OT_AGENCY)
                 orgInstance.save()
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.label'), orgInstance.name])
                 redirect action: 'show', id: orgInstance.id
             }
             else {
-                log.error("Problem creating title: ${orgInstance.errors}");
+                log.error("Problem creating org: ${orgInstance.errors}");
                 flash.message = message(code: 'org.error.createProviderError', args: [orgInstance.errors])
                 redirect(action: 'findProviderMatches')
             }

@@ -55,6 +55,7 @@ class Package extends AbstractBaseWithCalculatedLastUpdated {
     SortedSet ids
     SortedSet ddcs
     SortedSet languages
+    SortedSet altnames
     Boolean autoAccept = false
 
     Date dateCreated
@@ -69,7 +70,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     pendingChanges: PendingChange,
                     ids: Identifier,
                     ddcs: DeweyDecimalClassification,
-                    languages: Language]
+                    languages: Language,
+                    altnames: AlternativeName]
 
   static mappedBy = [tipps:     'pkg',
                      orgs:      'pkg',
@@ -79,7 +81,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                      pendingChanges: 'pkg',
                      ids:       'pkg',
                      ddcs:      'pkg',
-                     languages: 'pkg']
+                     languages: 'pkg',
+                     altnames:  'pkg']
 
 
   static mapping = {

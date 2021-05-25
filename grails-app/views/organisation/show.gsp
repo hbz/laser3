@@ -91,6 +91,18 @@
                         </g:if>
                     </g:if>
                     <dl>
+                        <dt>
+                            <g:message code="org.altname.label" />
+                        </dt>
+                        <dd>
+                            <ul>
+                                <g:each in="${orgInstance.altnames}" var="altname">
+                                    <li>${altname.name}</li>
+                                </g:each>
+                            </ul>
+                        </dd>
+                    </dl>
+                    <dl>
                         <dt><g:message code="org.url.label"/></dt>
                         <dd>
                             <semui:xEditable owner="${orgInstance}" type="url" field="url" class="la-overflow la-ellipsis" />
