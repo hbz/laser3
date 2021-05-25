@@ -68,6 +68,30 @@
                 <div class="ui card la-time-card">
                     <div class="content">
                         <dl>
+                            <dt>${message(code: 'default.status.label')}</dt>
+                            <dd>${packageInstance.packageStatus?.getI10n('value')}</dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'package.show.altname')}</dt>
+                            <dd>
+                                <div class="ui bulleted list">
+                                    <g:each in="${packageInstanceRecord.altname}" var="altname">
+                                        <div class="item">${altname}</div>
+                                    </g:each>
+                                </div>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'package.curatoryGroup.label')}</dt>
+                            <dd>
+                                <div class="ui bulleted list">
+                                    <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
+                                        <div class="item"><g:link url="${editUrl}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link></div>
+                                    </g:each>
+                                </div>
+                            </dd>
+                        </dl>
+                        <dl>
                             <dt>${message(code: 'package.lastUpdated.label')}</dt>
                             <dd>
                                 <g:if test="${packageInstanceRecord.lastUpdatedDisplay}">
@@ -95,15 +119,62 @@
                             <dt>${message(code: 'package.file')}</dt>
                             <dd>${packageInstance.file?.getI10n("value")}</dd>
                         </dl>
+                    </div>
+                </div>
+
+                <div class="ui card">
+                    <div class="content">
                         <dl>
-                            <dt>${message(code: 'package.curatoryGroup.label')}</dt>
+                            <dt>${message(code: 'package.contentType.label')}</dt>
+                            <dd>${packageInstance.contentType?.getI10n("value")}</dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'package.breakable')}</dt>
+                            <dd>${packageInstanceRecord.breakable ? RefdataValue.getByValueAndCategory(packageInstanceRecord.breakable, RDConstants.PACKAGE_BREAKABLE).getI10n("value") : message(code: 'default.not.available')}</dd>
+                        </dl>
+                        <%--<dl>
+                            <dt>${message(code: 'package.consistent')}</dt>
+                            <dd>${packageInstanceRecord.consistent ? RefdataValue.getByValueAndCategory(packageInstanceRecord.consistent, RDConstants.PACKAGE_CONSISTENT).getI10n("value") : message(code: 'default.not.available')}</dd>
+                        </dl>--%>
+                        <dl>
+                            <dt>${message(code: 'package.scope.label')}</dt>
                             <dd>
-                                <div class="ui bulleted list">
-                                    <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
-                                        <div class="item"><g:link url="${editUrl}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link></div>
-                                    </g:each>
-                                </div>
+                                ${packageInstanceRecord.scope ? RefdataValue.getByValueAndCategory(packageInstanceRecord.scope, RDConstants.PACKAGE_SCOPE).getI10n("value") : message(code: 'default.not.available')}
+                                <g:if test="${packageInstanceRecord.scope == RDStore.PACKAGE_SCOPE_NATIONAL.value}">
+                                    <dl>
+                                        <dt>${message(code: 'package.nationalRange.label')}</dt>
+                                        <g:if test="${packageInstanceRecord.nationalRanges}">
+                                            <dd>
+                                                <div class="ui bulleted list">
+                                                    <g:each in="${packageInstanceRecord.nationalRanges}" var="nr">
+                                                        <div class="item">${RefdataValue.getByValueAndCategory(nr.value,RDConstants.COUNTRY) ? RefdataValue.getByValueAndCategory(nr.value,RDConstants.COUNTRY).getI10n('value') : nr}</div>
+                                                    </g:each>
+                                                </div>
+                                            </dd>
+                                        </g:if>
+                                    </dl>
+                                    <dl>
+                                        <dt>${message(code: 'package.regionalRange.label')}</dt>
+                                        <g:if test="${packageInstanceRecord.regionalRanges}">
+                                            <dd>
+                                                <div class="ui bulleted list">
+                                                    <g:each in="${packageInstanceRecord.regionalRanges}" var="rr">
+                                                        <div class="item">${RefdataValue.getByValueAndCategory(rr.value,RDConstants.REGIONS_DE) ? RefdataValue.getByValueAndCategory(rr.value,RDConstants.REGIONS_DE).getI10n('value') : rr}</div>
+                                                    </g:each>
+                                                </div>
+                                            </dd>
+                                        </g:if>
+                                    </dl>
+                                </g:if>
                             </dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'package.paymentType.label')}</dt>
+                            <dd>${RefdataValue.getByValueAndCategory(packageInstanceRecord.paymentType, RDConstants.PAYMENT_TYPE) ? RefdataValue.getByValueAndCategory(packageInstanceRecord.paymentType,RDConstants.PAYMENT_TYPE).getI10n("value") : packageInstanceRecord.paymentType}</dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'package.openAccess.label')}</dt>
+                            <dd>${packageInstanceRecord.openAccess ? RefdataValue.getByValueAndCategory(packageInstanceRecord.openAccess, RDConstants.LICENSE_OA_TYPE)?.getI10n("value") : RefdataValue.getByValueAndCategory('Empty', RDConstants.LICENSE_OA_TYPE).getI10n("value")}</dd>
                         </dl>
                         <dl>
                             <dt>${message(code: 'package.ddc.label')}</dt>
@@ -114,83 +185,6 @@
                                     </g:each>
                                 </div>
                             </dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'package.language.label')}</dt>
-                            <dd>
-                                <div class="ui bulleted list">
-                                    <g:each in="${packageInstanceRecord.languages}" var="language">
-                                        <div class="item">${RefdataValue.getByValueAndCategory(language.value,RDConstants.LANGUAGE_ISO) ? RefdataValue.getByValueAndCategory(language.value,RDConstants.LANGUAGE_ISO).getI10n('value') : message(code:'package.language.invalid')}</div>
-                                    </g:each>
-                                </div>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'package.show.altname')}</dt>
-                            <dd>
-                                <div class="ui bulleted list">
-                                    <g:each in="${packageInstanceRecord.altname}" var="altname">
-                                        <div class="item">${altname}</div>
-                                    </g:each>
-                                </div>
-                            </dd>
-                        </dl>
-                    </div>
-                </div>
-
-                <div class="ui card">
-                    <div class="content">
-                        <dl>
-                            <dt>${message(code: 'default.status.label')}</dt>
-                            <dd>${packageInstance.packageStatus?.getI10n('value')}</dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'package.scope.label')}</dt>
-                            <dd>${packageInstance.scope?.getI10n("value")}</dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'package.openAccess.label')}</dt>
-                            <dd><%
-                                String oaType
-                                switch(packageInstanceRecord.openAccess) {
-                                    case 'Empty':
-                                    case 'empty':
-                                    case null: oaType = RefdataValue.getByValueAndCategory('No Open Access', RDConstants.LICENSE_OA_TYPE)
-                                        break
-                                    default: oaType = RefdataValue.getByValueAndCategory(packageInstanceRecord.openAccess, RDConstants.LICENSE_OA_TYPE)
-                                        break
-                                }
-                            %>
-                                ${oaType}
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'package.paymentType.label')}</dt>
-                            <dd>${RefdataValue.getByValueAndCategory(packageInstanceRecord.paymentType,RDConstants.PAYMENT_TYPE) ? RefdataValue.getByValueAndCategory(packageInstanceRecord.paymentType,RDConstants.PAYMENT_TYPE).getI10n("value") : packageInstanceRecord.paymentType}</dd>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'package.nationalRange.label')}</dt>
-                            <g:if test="${packageInstanceRecord.nationalRanges}">
-                                <dd>
-                                    <div class="ui bulleted list">
-                                        <g:each in="${packageInstanceRecord.nationalRanges}" var="nr">
-                                            <div class="item">${RefdataValue.getByValueAndCategory(nr.value,RDConstants.COUNTRY) ? RefdataValue.getByValueAndCategory(nr.value,RDConstants.COUNTRY).getI10n('value') : nr}</div>
-                                        </g:each>
-                                    </div>
-                                </dd>
-                            </g:if>
-                        </dl>
-                        <dl>
-                            <dt>${message(code: 'package.regionalRange.label')}</dt>
-                            <g:if test="${packageInstanceRecord.regionalRanges}">
-                                <dd>
-                                    <div class="ui bulleted list">
-                                        <g:each in="${packageInstanceRecord.regionalRanges}" var="rr">
-                                            <div class="item">${RefdataValue.getByValueAndCategory(rr.value,RDConstants.REGIONS_DE) ? RefdataValue.getByValueAndCategory(rr.value,RDConstants.REGIONS_DE).getI10n('value') : rr}</div>
-                                        </g:each>
-                                    </div>
-                                </dd>
-                            </g:if>
                         </dl>
                     </div>
                 </div>

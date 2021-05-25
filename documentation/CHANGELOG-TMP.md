@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3466    25.05.2021  dev     2.1         Andreas Feature     Nachbesserungen für Paketdetailsicht
+
 3088    25.05.2021  dev     2.1         Andreas Feature     Bereinigung von Einrichtungsdaten
 
 3059    25.05.2021  dev     2.1         Andreas Feature     Neue Struktur für Alternativnamen eingerichtet
