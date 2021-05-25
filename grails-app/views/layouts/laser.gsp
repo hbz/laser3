@@ -580,12 +580,12 @@
                         <g:if test="${controllerName == 'survey' && (actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia')}">
                             <div class="item">
                                 <g:if test="${actionName == 'workflowsSurveysConsortia'}">
-                                    <g:link action="currentSurveysConsortia" controller="survey" class="ui button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right">
+                                    <g:link action="currentSurveysConsortia" controller="survey" class="ui button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.change.currentSurveysConsortiaView.tooltip')}" data-position="bottom right">
                                         <i class="exchange icon"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link action="workflowsSurveysConsortia" controller="survey" class="ui button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right">
+                                    <g:link action="workflowsSurveysConsortia" controller="survey" class="ui button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.change.workflowsSurveysConsortiaView.tooltip')}" data-position="bottom right">
                                         <i class="exchange icon"></i>
                                     </g:link>
                                 </g:else>
