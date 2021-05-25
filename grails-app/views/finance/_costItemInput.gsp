@@ -128,10 +128,19 @@
                 <div class="two fields">
                     <div class="field la-exchange-rate">
                         <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
+                        <%
+                            Double value
+                            if(idSuffix != 'bulk') {
+                                if(costItem) {
+                                    value = costItem.currencyRate
+                                }
+                                else value = 1.0
+                            }
+                        %>
                         <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
                                name="newCostCurrencyRate" id="newCostCurrencyRate_${idSuffix}"
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}"
-                               value="${costItem ? costItem.currencyRate : 1.0}" step="0.001" />
+                               value="${value}" step="0.001" />
 
                         <div id="calculateExchangeRate_${idSuffix}" class="ui icon button la-popup-tooltip la-delay" data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
@@ -615,7 +624,8 @@
                     JSPC.app.finance${idSuffix}.ciec.dropdown('set selected','null');
             });
             this.calc.change( function() {
-                JSPC.app.finance${idSuffix}.calcTaxResults();
+                if('${idSuffix}' !== 'bulk')
+                    JSPC.app.finance${idSuffix}.calcTaxResults();
             });
             this.costElems.change(function(){
                 JSPC.app.finance${idSuffix}.checkValues();
@@ -635,7 +645,25 @@
             });
             this.currentForm.submit(function(e){
                 e.preventDefault();
-                if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
+                if('${idSuffix}' === 'bulk') {
+                    if((JSPC.app.finance${idSuffix}.costBillingCurrency.val() && JSPC.app.finance${idSuffix}.costLocalCurrency.val()) ||
+                        (JSPC.app.finance${idSuffix}.costBillingCurrency.val() && JSPC.app.finance${idSuffix}.costCurrencyRate.val()) ||
+                        (JSPC.app.finance${idSuffix}.costLocalCurrency.val() && JSPC.app.finance${idSuffix}.costCurrencyRate.val())) {
+                        let valuesCorrect = JSPC.app.finance${idSuffix}.checkValues();
+                        if(valuesCorrect) {
+                            JSPC.app.finance${idSuffix}.costCurrency.parent(".field").removeClass("error");
+                            JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                        }
+                        else {
+                             alert("${message(code:'financials.newCosts.calculationError')}");
+                        }
+                    }
+                    else {
+                        //modifications in only one of the fields
+                        JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                    }
+                }
+                else if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
                     let valuesCorrect = JSPC.app.finance${idSuffix}.checkValues();
                     if(valuesCorrect) {
                         JSPC.app.finance${idSuffix}.costCurrency.parent(".field").removeClass("error");
@@ -661,7 +689,7 @@
                 else {
                     alert("${message(code:'financials.newCosts.noCurrencyPicked')}");
                     JSPC.app.finance${idSuffix}.costCurrency.parent(".field").addClass("error");
-               }
+                }
             });
         }
     }
