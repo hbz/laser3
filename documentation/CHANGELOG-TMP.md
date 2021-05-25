@@ -7,6 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3088    25.05.2021  dev     2.1         Andreas Feature     Bereinigung von Einrichtungsdaten
+
+3059    25.05.2021  dev     2.1         Andreas Feature     Neue Struktur für Alternativnamen eingerichtet
+
+1500    25.05.2021  dev     2.1         Andreas Feature     Org-Status nicht mehr nullable, Default-Wert aktuell
 
 3496    20.05.2021  dev     2.1         David   Feature     Makro-Reporting Konsortialstelle
 
