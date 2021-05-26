@@ -99,6 +99,8 @@ class RDStore {
     public static final PACKAGE_STATUS_DELETED         = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
     public static final PLATFORM_STATUS_DELETED        = getRefdataValue('Deleted', RDConstants.PLATFORM_STATUS)
 
+    public static final PACKAGE_SCOPE_NATIONAL    = getRefdataValue('National', RDConstants.PACKAGE_SCOPE)
+
     public static final PENDING_CHANGE_PENDING    = getRefdataValue('Pending', RDConstants.PENDING_CHANGE_STATUS)
     public static final PENDING_CHANGE_ACCEPTED   = getRefdataValue('Accepted', RDConstants.PENDING_CHANGE_STATUS)
     public static final PENDING_CHANGE_SUPERSEDED = getRefdataValue('Superseded', RDConstants.PENDING_CHANGE_STATUS)
