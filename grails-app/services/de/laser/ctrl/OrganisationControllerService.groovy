@@ -138,7 +138,11 @@ class OrganisationControllerService {
         }
 
         if (params.id) {
-            result.orgInstance = Org.get(params.id)
+            if(params.id.isLong())
+                result.orgInstance = Org.get(params.id)
+            else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
+                result.orgInstance = Org.findByGokbId(params.id)
+            else result.orgInstance = Org.findByGlobalUID(params.id)
             result.editable = controller.checkIsEditable(user, result.orgInstance)
             result.inContextOrg = result.orgInstance.id == org.id
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member

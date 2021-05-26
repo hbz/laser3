@@ -268,7 +268,7 @@ class GokbService {
                 }
                 response.failure = { resp ->
                     log.error("server response: ${resp.statusLine}")
-                    result = ['error': resp.statusLine]
+                    result = ['error': resp.status]
                 }
             }
             http.shutdown()

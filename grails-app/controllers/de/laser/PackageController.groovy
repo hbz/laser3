@@ -85,24 +85,38 @@ class PackageController {
             }
         }
 
+        //you rarely encounter it; ^ is the XOR operator in Java - if both options are set, we mean all curatory group types
+        if (params.containsKey('curatoryGroupProvider') ^ params.containsKey('curatoryGroupOther')) {
+            result.filterSet = true
+            if(params.curatoryGroupProvider)
+                esQuery += "&curatoryGroupType=provider"
+            else if(params.curatoryGroupOther)
+                esQuery += "&curatoryGroupType=other" //setting to this includes also missing ones, this is already implemented in we:kb
+        }
+
         String sort = params.sort ? "&sort=" + params.sort : "&sort=sortname"
         String order = params.order ? "&order=" + params.order : "&order=asc"
         String max = params.max ? "&max=${params.max}" : "&max=${result.max}"
         String offset = params.offset ? "&offset=${params.offset}" : "&offset=${result.offset}"
 
         Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups')
-        if (queryCuratoryGroups.warning) {
-            List recordsCuratoryGroups = queryCuratoryGroups.warning.result
-            result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+        if(queryCuratoryGroups.error == 404) {
+            result.error = message(code:'wekb.error.'+queryCuratoryGroups.error)
         }
-        result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+        else {
+            if (queryCuratoryGroups.warning) {
+                List recordsCuratoryGroups = queryCuratoryGroups.warning.result
+                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+            }
+            result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
 
-        Set records = []
-        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + sort + order + max + offset)
-        if (queryResult.warning) {
-            records.addAll(queryResult.warning.records)
-            result.recordsCount = queryResult.warning.count
-            result.records = records
+            Set records = []
+            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + sort + order + max + offset)
+            if (queryResult.warning) {
+                records.addAll(queryResult.warning.records)
+                result.recordsCount = queryResult.warning.count
+                result.records = records
+            }
         }
 
         result
@@ -402,7 +416,10 @@ class PackageController {
         String esQuery = "?componentType=Package&uuid=${packageInstance.gokbId}"
 
         Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery)
-        if (queryResult.warning) {
+        if (queryResult.error && queryResult.error == 404) {
+            flash.error = message(code:'wekb.error.404')
+        }
+        else if (queryResult.warning) {
             List records = queryResult.warning.records
             result.packageInstanceRecord = records ? records[0] : [:]
         }
