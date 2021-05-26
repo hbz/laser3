@@ -4,7 +4,6 @@ import de.laser.ApiSource
 import de.laser.Contact
 import de.laser.DeweyDecimalClassification
 import de.laser.EscapeService
-import de.laser.FormService
 import de.laser.GlobalRecordSource
 import de.laser.Identifier
 import de.laser.IssueEntitlement
@@ -52,7 +51,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
     PendingChangeService pendingChangeService
     def genericOIDService
     EscapeService escapeService
-    FormService formService
     GlobalRecordSource source
     ApiSource apiSource
 
@@ -61,14 +59,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
     final static long RECTYPE_ORG = 2
     final static long RECTYPE_TIPP = 3
 
-    Map<String, RefdataValue> titleStatus = [:],
-            titleMedium = [:],
+    Map<String, RefdataValue> titleMedium = [:],
             tippStatus = [:],
             packageStatus = [:],
             orgStatus = [:],
             orgTypes = [:],
             currency = [:],
-            ddc = [:]
+            ddc = [:],
+            contactTypes = [:]
     Long maxTimestamp
     Map<String,Integer> initialPackagesCounter = [:]
     Map<String,Set<Map<String,Object>>> pkgPropDiffsContainer = [:]
@@ -131,43 +129,49 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 //do prequest: are we needing the scroll api?
                 //5000 records because of local testing ability
                 Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),max:5000])
-                if(result) {
-                    processScrollPage(result, componentType)
+                if(result.error == 404) {
+                    log.error("we:kb server is down")
+                    SystemEvent.createEvent('GSSS_JSON_ERROR',['jobId':source.id])
                 }
                 else {
-                    log.info("no records updated - leaving everything as is ...")
-                }
-                if(maxTimestamp+1000 > source.haveUpTo.getTime()) {
-                    log.debug("old ${sdf.format(source.haveUpTo)}")
-                    source.haveUpTo = new Date(maxTimestamp + 1000)
-                    log.debug("new ${sdf.format(source.haveUpTo)}")
-                    if (!source.save())
-                        log.error(source.getErrors().getAllErrors().toListString())
-                }
-                if(source.rectype == RECTYPE_TIPP) {
-                    if(packagesToNotify.keySet().size() > 0) {
-                        log.info("notifying subscriptions ...")
-                        trackPackageHistory()
-                        //get subscription packages and their respective holders, parent level only!
-                        String query = 'select oo.org,sp from SubscriptionPackage sp join sp.pkg pkg ' +
-                                'join sp.subscription s ' +
-                                'join s.orgRelations oo ' +
-                                'where s.instanceOf = null and pkg.gokbId in (:packages) ' +
-                                'and oo.roleType in (:roleTypes)'
-                        List subPkgHolders = SubscriptionPackage.executeQuery(query,[packages:packagesToNotify.keySet(),roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
-                        subPkgHolders.each { row ->
-                            Org org = (Org) row[0]
-                            SubscriptionPackage sp = (SubscriptionPackage) row[1]
-                            autoAcceptPendingChanges(org,sp)
-                            //nonAutoAcceptPendingChanges(org, sp)
-                        }
+                    if(result) {
+                        processScrollPage(result, componentType)
                     }
                     else {
-                        log.info("no diffs recorded ...")
+                        log.info("no records updated - leaving everything as is ...")
                     }
+                    if(maxTimestamp+1000 > source.haveUpTo.getTime()) {
+                        log.debug("old ${sdf.format(source.haveUpTo)}")
+                        source.haveUpTo = new Date(maxTimestamp + 1000)
+                        log.debug("new ${sdf.format(source.haveUpTo)}")
+                        if (!source.save())
+                            log.error(source.getErrors().getAllErrors().toListString())
+                    }
+                    if(source.rectype == RECTYPE_TIPP) {
+                        if(packagesToNotify.keySet().size() > 0) {
+                            log.info("notifying subscriptions ...")
+                            trackPackageHistory()
+                            //get subscription packages and their respective holders, parent level only!
+                            String query = 'select oo.org,sp from SubscriptionPackage sp join sp.pkg pkg ' +
+                                    'join sp.subscription s ' +
+                                    'join s.orgRelations oo ' +
+                                    'where s.instanceOf = null and pkg.gokbId in (:packages) ' +
+                                    'and oo.roleType in (:roleTypes)'
+                            List subPkgHolders = SubscriptionPackage.executeQuery(query,[packages:packagesToNotify.keySet(),roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+                            subPkgHolders.each { row ->
+                                Org org = (Org) row[0]
+                                SubscriptionPackage sp = (SubscriptionPackage) row[1]
+                                autoAcceptPendingChanges(org,sp)
+                                //nonAutoAcceptPendingChanges(org, sp)
+                            }
+                        }
+                        else {
+                            log.info("no diffs recorded ...")
+                        }
+                    }
+                    log.info("sync job finished")
+                    SystemEvent.createEvent('GSSS_JSON_COMPLETE',['jobId':source.id])
                 }
-                log.info("sync job finished")
-                SystemEvent.createEvent('GSSS_JSON_COMPLETE',['jobId':source.id])
             }
             catch (Exception e) {
                 SystemEvent.createEvent('GSSS_JSON_ERROR',['jobId':source.id])
@@ -189,7 +193,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 //5000 records because of local testing ability
                 Map<String,Object> result = fetchRecordJSON(false,[componentType: componentType, max: 5000])
                 if(result) {
-                    processScrollPage(result, componentType)
+                    if(result.error == 404) {
+                        log.error("we:kb server currently down")
+                    }
+                    else
+                        processScrollPage(result, componentType)
                 }
             }
             catch (Exception e) {
@@ -199,7 +207,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         })
     }
 
-    void processScrollPage(Map<String, Object> result, String componentType) {
+    void processScrollPage(Map<String, Object> result, String componentType) throws SyncException {
         if(result.count >= 5000) {
             String scrollId
             boolean more = true
@@ -212,7 +220,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 else {
                     result = fetchRecordJSON(true, [component_type: componentType, max: 5000])
                 }
-                if(result.count > 0) {
+                if(result.error && result.error == 404) {
+                    more = false
+                }
+                else if(result.count > 0) {
                     switch (source.rectype) {
                         case RECTYPE_ORG: result.records.each { record ->
                             createOrUpdateOrgJSON(record)
@@ -250,6 +261,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 case RECTYPE_TIPP: updateRecords(result.records)
                     break
             }
+        }
+        else if(result.error && result.error == 404) {
+            log.error("we:kb server is down")
+            throw new SyncException("we:kb server is unavailable!")
         }
     }
 
@@ -595,9 +610,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if(packageRecord.providerUuid) {
                         try {
                             Map<String, Object> providerRecord = fetchRecordJSON(false,[uuid:packageRecord.providerUuid])
-                            if(providerRecord) {
+                            if(providerRecord && !providerRecord.error) {
                                 Org provider = createOrUpdateOrgJSON(providerRecord)
                                 createOrUpdatePackageProvider(provider,result)
+                            }
+                            else if(providerRecord && providerRecord.error == 404) {
+                                log.error("we:kb server is down")
+                                throw new SyncException("we:kb server is unvailable")
                             }
                             else
                                 throw new SyncException("Provider loading failed for UUID ${packageRecord.providerUuid}!")
@@ -640,6 +659,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
             }
             result
+        }
+        else if(packageJSON.error == 404) {
+            log.error("we:kb server is unavailable!")
+            throw new SyncException("we:kb server was down!")
         }
         else {
             log.warn("Package ${packageUUID} seems to be unexistent!")
@@ -689,19 +712,23 @@ class GlobalSourceSyncService extends AbstractLockableService {
             provider.addToOrgType(orgTypes.get("Provider"))
             provider.save()
             //providedPlatforms are missing in ES output -> see GOKb-ticket #378! But maybe, it is wiser to not implement it at all
-            if(providerRecord.additionalProperties) {
-                providerRecord.additionalProperties.each { addProp ->
-                    switch(addProp.name) {
+            if(providerRecord.contacts) {
+                List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :provider and p.isPublic = true and p.last_name in (:contactTypes)',[provider: provider, contactTypes: contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }])
+                if(oldPersons)
+                    Contact.executeUpdate('delete from Contact c where c.prs in (:oldPersons) and c.type = :type',[oldPersons: oldPersons, type: RDStore.CONTACT_TYPE_JOBRELATED])
+                providerRecord.contacts.findAll{ Map<String, String> cParams -> cParams.content != null }.each { contact ->
+                    switch(contact.type) {
                         case "Technical Support":
-                            if (formService.validateEmailAddress(addProp.value) || formService.validatePhoneNumber(addProp.value))
-                                createOrUpdateTechnicalSupport(provider, addProp)
-                            else {
-                                throw new SyncException("Error on setting technical support for ${provider}, concerning contact: no valid contact string submitted: ${addProp.value}")
-                            }
+                            contact.rdType = RDStore.PRS_FUNC_TECHNICAL_SUPPORT
                             break
-                        default: log.warn("unhandled additional property type for ${provider.gokbId}: ${addProp.name}")
+                        case "Service Support":
+                            contact.rdType = RDStore.PRS_FUNC_SERVICE_SUPPORT
+                            break
+                        default: log.warn("unhandled additional property type for ${provider.gokbId}: ${contact.name}")
                             break
                     }
+                    if(contact.rdType)
+                        createOrUpdateSupport(provider, contact)
                 }
             }
             Date lastUpdatedTime = DateUtils.parseDateGeneric(providerRecord.lastUpdatedDisplay)
@@ -725,10 +752,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
     void lookupOrCreateTitlePublisher(Map<String,Object> publisherParams, TitleInstancePackagePlatform tipp) throws SyncException {
         if(publisherParams.gokbId && publisherParams.gokbId instanceof String) {
             Map<String, Object> publisherData = fetchRecordJSON(false, [uuid: publisherParams.gokbId])
-            if(publisherData) {
+            if(publisherData && !publisherData.error) {
                 Org publisher = createOrUpdateOrgJSON(publisherData)
                 setupOrgRole([org: publisher, tipp: tipp, roleTypeCheckup: [RDStore.OR_PUBLISHER,RDStore.OR_CONTENT_PROVIDER], definiteRoleType: RDStore.OR_PUBLISHER])
             }
+            else if(publisherData && publisherData.error) throw new SyncException("we:kb server is down")
             else throw new SyncException("Provider record loading failed for ${publisherParams.gokbId}")
         }
         else {
@@ -771,38 +799,32 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
     }
 
-    void createOrUpdateTechnicalSupport(Org provider, Map<String, String> techSupportProps) throws SyncException {
-        Person personInstance = Person.findByTenantAndIsPublicAndLast_name(provider, true, RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n("value"))
+    void createOrUpdateSupport(Org provider, Map<String, String> supportProps) throws SyncException {
+        Person personInstance = Person.findByTenantAndIsPublicAndLast_name(provider, true, supportProps.rdType.getI10n("value"))
         if(!personInstance) {
-            personInstance = new Person(tenant: provider, isPublic: true, last_name: RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n("value"))
+            personInstance = new Person(tenant: provider, isPublic: true, last_name: supportProps.rdType.getI10n("value"))
             if(!personInstance.save()) {
                 throw new SyncException("Error on setting up technical support for ${provider}, concerning person instance: ${personInstance.getErrors().getAllErrors().toListString()}")
             }
         }
-        PersonRole personRole = PersonRole.findByPrsAndOrgAndFunctionType(personInstance, provider, RDStore.PRS_FUNC_TECHNICAL_SUPPORT)
+        PersonRole personRole = PersonRole.findByPrsAndOrgAndFunctionType(personInstance, provider, supportProps.rdType)
         if(!personRole) {
-            personRole = new PersonRole(prs: personInstance, org: provider, functionType: RDStore.PRS_FUNC_TECHNICAL_SUPPORT)
+            personRole = new PersonRole(prs: personInstance, org: provider, functionType: supportProps.rdType)
             if(!personRole.save()) {
                 throw new SyncException("Error on setting technical support for ${provider}, concerning person role: ${personRole.getErrors().getAllErrors().toListString()}")
             }
         }
-        RefdataValue contentType
-        Contact.executeUpdate('delete from Contact c where c.prs = :prs',[prs:personInstance])
+        RefdataValue contentType = RefdataValue.getByValueAndCategory(supportProps.contentType, RDConstants.CONTACT_CONTENT_TYPE)
         Contact contact = new Contact(prs: personInstance, type: RDStore.CONTACT_TYPE_JOBRELATED)
-        //submitted value is an email address
-        if(formService.validateEmailAddress(techSupportProps.value)) {
-            contentType = RDStore.CCT_EMAIL
+        if(supportProps.language)
+            contact.language = RefdataValue.getByValueAndCategory(supportProps.language, RDConstants.LANGUAGE_ISO) ?: null
+        if(!contentType) {
+            throw new SyncException("Invalid contact type submitted: ${supportProps.contentType}")
         }
-        //submitted value is a phone number
-        else if(formService.validatePhoneNumber(techSupportProps.value)) {
-            contentType = RDStore.CCT_PHONE
-        }
-        if(contentType) {
-            contact.contentType = contentType
-            contact.content = techSupportProps.value
-            if(!contact.save()) {
-                throw new SyncException("Error on setting technical support for ${provider}, concerning contact: ${contact.getErrors().getAllErrors().toListString()}")
-            }
+        contact.contentType = contentType
+        contact.content = supportProps.content
+        if(!contact.save()) {
+            throw new SyncException("Error on setting technical support for ${provider}, concerning contact: ${contact.getErrors().getAllErrors().toListString()}")
         }
     }
 
@@ -829,15 +851,26 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     platform.primaryUrl = new URL(platformRecord.primaryUrl)
                 if(platformRecord.providerUuid) {
                     Map<String, Object> providerData = fetchRecordJSON(false,[uuid: platformRecord.providerUuid])
-                    if(providerData)
+                    if(providerData && !providerData.error)
                         platform.org = createOrUpdateOrgJSON(providerData)
-                    else throw new SyncException("Provider loading failed for ${platformRecord.providerUuid}")
+                    else if(providerData && providerData.error == 404) {
+                        throw new SyncException("we:kb server is currently down")
+                    }
+                    else {
+                        throw new SyncException("Provider loading failed for ${platformRecord.providerUuid}")
+                    }
                 }
                 if(platform.save()) {
                    platform
                 }
                 else throw new SyncException("Error on saving platform: ${platform.errors}")
             //}
+        }
+        else if(platformJSON && platformJSON.error == 404) {
+            throw new SyncException("we:kb server is down")
+        }
+        else {
+            throw new SyncException("Platform data called without data for UUID ${platformUUID}! PANIC!")
         }
     }
 
@@ -1101,7 +1134,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     throw new SyncException("Error on saving Dewey decimal classification! See stack trace as follows:")
             }
             tippData.languages.each { langB ->
-                if(!Language.construct(ddc: langB, tipp: newTIPP))
+                if(!Language.construct(language: langB, tipp: newTIPP))
                     throw new SyncException("Error on saving language! See stack trace as follows:")
             }
             tippData.history.each { historyEvent ->
@@ -1415,7 +1448,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             response.failure = { resp, reader ->
                 log.error("server response: ${resp.statusLine}")
-                throw new SyncException("error on request: ${resp.statusLine} : ${reader}")
+                if(resp.status == 404) {
+                    result.error = resp.status
+                }
+                else
+                    throw new SyncException("error on request: ${resp.statusLine} : ${reader}")
             }
         }
         http.shutdown()
@@ -1430,9 +1467,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
         tippStatus.put(RDStore.TIPP_STATUS_EXPECTED.value,RDStore.TIPP_STATUS_EXPECTED)
         tippStatus.put(RDStore.TIPP_STATUS_TRANSFERRED.value,RDStore.TIPP_STATUS_TRANSFERRED)
         tippStatus.put(RDStore.TIPP_STATUS_UNKNOWN.value,RDStore.TIPP_STATUS_UNKNOWN)
-        titleStatus.put(RDStore.TITLE_STATUS_CURRENT.value,RDStore.TITLE_STATUS_CURRENT)
-        titleStatus.put(RDStore.TITLE_STATUS_RETIRED.value,RDStore.TITLE_STATUS_RETIRED)
-        titleStatus.put(RDStore.TITLE_STATUS_DELETED.value,RDStore.TITLE_STATUS_DELETED)
+        contactTypes.put(RDStore.PRS_FUNC_TECHNICAL_SUPPORT.value,RDStore.PRS_FUNC_TECHNICAL_SUPPORT)
+        contactTypes.put(RDStore.PRS_FUNC_SERVICE_SUPPORT.value,RDStore.PRS_FUNC_SERVICE_SUPPORT)
         //this complicated way is necessary because of static in order to avoid a NonUniqueObjectException
         List<RefdataValue> staticMediumTypes = [RDStore.TITLE_TYPE_DATABASE,RDStore.TITLE_TYPE_EBOOK,RDStore.TITLE_TYPE_JOURNAL]
         RefdataValue.findAllByIdNotInListAndOwner(staticMediumTypes.collect { RefdataValue rdv -> rdv.id },RefdataCategory.findByDesc(RDConstants.TITLE_MEDIUM)).each { RefdataValue rdv ->

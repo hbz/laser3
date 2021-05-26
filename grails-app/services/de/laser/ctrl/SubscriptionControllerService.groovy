@@ -1270,13 +1270,12 @@ class SubscriptionControllerService {
 
             result.editUrl = apiSource.baseUrl
             String esQuery = "?componentType=Package"
-            List<GString> nameQueries = []
-            if(params.q) {
+            if (params.q) {
                 result.filterSet = true
                 //workaround for or-connection; find api supports only and-connection
-                nameQueries << "&name=${params.q}"
-                nameQueries << "&ids=Anbieter_Produkt_ID,*${params.q}*"
-                nameQueries << "&ids=isil,*${params.q}*"
+                esQuery += "&name=${params.q}"
+                esQuery += "&ids=Anbieter_Produkt_ID,*${params.q}*"
+                esQuery += "&ids=isil,*${params.q}*"
             }
 
             if(params.provider) {
@@ -1294,49 +1293,49 @@ class SubscriptionControllerService {
                 esQuery += "&contentType=${params.resourceTyp}"
             }
 
+            if (params.ddc) {
+                result.filterSet = true
+                params.list("ddc").each { String key ->
+                    esQuery += "&ddc=${RefdataValue.get(key).value}"
+                }
+            }
+
+            //you rarely encounter it; ^ is the XOR operator in Java - if both options are set, we mean all curatory group types
+            if (params.containsKey('curatoryGroupProvider') ^ params.containsKey('curatoryGroupOther')) {
+                result.filterSet = true
+                if(params.curatoryGroupProvider)
+                    esQuery += "&curatoryGroupType=provider"
+                else if(params.curatoryGroupOther)
+                    esQuery += "&curatoryGroupType=other" //setting to this includes also missing ones, this is already implemented in we:kb
+            }
+
             String sort = params.sort ? "&sort="+params.sort: "&sort=sortname"
             String order = params.order ? "&order="+params.order: "&order=asc"
             String max = params.max ? "&max=${params.max}": "&max=${result.max}"
             String offset = params.offset ? "&offset=${params.offset}": "&offset=${result.offset}"
 
             Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/groups')
-            if(queryCuratoryGroups.warning) {
-                List recordsCuratoryGroups = queryCuratoryGroups.warning.result
-                result.curatoryGroups = recordsCuratoryGroups?.findAll {it.status == "Current"}
-            }
-
-            Set records = []
-            if(nameQueries) {
-                nameQueries.each { GString nameQuery ->
-                    Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + nameQuery)
-                    if (queryResult.warning) {
-                        records.addAll(queryResult.warning.records)
-                        result.recordsCount = queryResult.warning.count
-                        //log.debug(records.toListString())
-                    }
-                }
-                //impossible to delegate this to ES because of multiple queries workaround! Very ugly!
-                if(params.sort) {
-                    records.sort { a, b -> a[params.sort] <=> b[params.sort] }
-                    if(params.order == "desc")
-                        result.records = records.toList().reverse(true)
-                    else result.records = records
-                }
-                else {
-                    records.sort { a, b -> a.sortname <=> b.sortname }
-                    result.records = records
-                }
+            if(queryCuratoryGroups.error && queryCuratoryGroups.error == 404) {
+                result.error = messageSource.getMessage('wekb.error.404', null, LocaleContextHolder.getLocale())
+                [result:result, status: STATUS_ERROR]
             }
             else {
+                if(queryCuratoryGroups.warning) {
+                    List recordsCuratoryGroups = queryCuratoryGroups.warning.result
+                    result.curatoryGroups = recordsCuratoryGroups?.findAll {it.status == "Current"}
+                }
+                result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+
+                Set records = []
                 Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + sort + order + max + offset)
                 if (queryResult.warning) {
                     records.addAll(queryResult.warning.records)
                     result.recordsCount = queryResult.warning.count
                     result.records = records
                 }
+                [result:result,status:STATUS_OK]
             }
 
-            [result:result,status:STATUS_OK]
         }
     }
 
@@ -1368,22 +1367,27 @@ class SubscriptionControllerService {
                         try {
                             globalSourceSyncService.defineMapFields()
                             Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID,max:5000])
-
-                            if(queryResult.records && queryResult.count > 0) {
-                                globalSourceSyncService.updateRecords(queryResult.records)
-                            }else {
-                                globalSourceSyncService.createOrUpdatePackage(pkgUUID)
+                            if(queryResult.error && queryResult.error == 404) {
+                                log.error("we:kb server currently unavailable")
                             }
-                            Package pkgToLink = Package.findByGokbId(pkgUUID)
-                            result.packageName = pkgToLink.name
-                            log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                            if (addType == 'With') {
-                                pkgToLink.addToSubscription(result.subscription, true)
+                            else {
+                                if(queryResult.records && queryResult.count > 0) {
+                                    globalSourceSyncService.updateRecords(queryResult.records)
+                                }
+                                else {
+                                    globalSourceSyncService.createOrUpdatePackage(pkgUUID)
+                                }
+                                Package pkgToLink = Package.findByGokbId(pkgUUID)
+                                result.packageName = pkgToLink.name
+                                log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
+                                if (addType == 'With') {
+                                    pkgToLink.addToSubscription(result.subscription, true)
+                                }
+                                else if (addType == 'Without') {
+                                    pkgToLink.addToSubscription(result.subscription, false)
+                                }
+                                pkgToLink.addPendingChangeConfiguration(result.subscription, params)
                             }
-                            else if (addType == 'Without') {
-                                pkgToLink.addToSubscription(result.subscription, false)
-                            }
-                            pkgToLink.addPendingChangeConfiguration(result.subscription, params)
                         }
                         catch (Exception e) {
                             log.error("sync job has failed, please consult stacktrace as follows: ")

@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3403    26.05.2021  dev     2.1         Andreas Feature     404 seitens der we:kb wird abgefangen und menschenlesbar dargestellt
+
+3366    26.05.2021  dev     2.1         Andreas Feature     Erweiterung der Paketfilter um Parameter Kuratorengruppentyp
+
+2967    26.05.2021  dev     2.1         Andreas Feature     neue Ladestruktur und Sprache von Kontakten implementiert
+
 3466    25.05.2021  dev     2.1         Andreas Feature     Nachbesserungen für Paketdetailsicht
 
 3088    25.05.2021  dev     2.1         Andreas Feature     Bereinigung von Einrichtungsdaten

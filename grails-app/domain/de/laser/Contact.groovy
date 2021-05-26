@@ -27,6 +27,9 @@ class Contact implements Comparable<Contact>{
 
     @RefdataAnnotation(cat = RDConstants.CONTACT_TYPE)
     RefdataValue type
+
+    @RefdataAnnotation(cat = RDConstants.LANGUAGE_ISO)
+    RefdataValue language
     
     static mapping = {
         id          column:'ct_id'
@@ -34,6 +37,7 @@ class Contact implements Comparable<Contact>{
         content     column:'ct_content'
         contentType column:'ct_content_type_rv_fk'
         type        column:'ct_type_rv_fk'
+        language    column:'ct_language_rv_fk'
         prs         column:'ct_prs_fk', index: 'ct_prs_idx'
         org         column:'ct_org_fk', index: 'ct_org_idx'
 
@@ -48,6 +52,7 @@ class Contact implements Comparable<Contact>{
         org         (nullable:true)
 
         // Nullable is true, because values are already in the database
+        language    (nullable: true)
         lastUpdated (nullable: true)
         dateCreated (nullable: true)
     }

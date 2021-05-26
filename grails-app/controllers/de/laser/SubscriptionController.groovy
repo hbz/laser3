@@ -541,6 +541,10 @@ class SubscriptionController {
             if (!ctrlResult.result) {
                 response.sendError(401)
             }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
         }
         else {
             if(params.addUUID) {
@@ -555,7 +559,6 @@ class SubscriptionController {
             }
             else {
                 flash.message = ctrlResult.result.message
-                flash.error = ctrlResult.result.error
                 ctrlResult.result
             }
         }

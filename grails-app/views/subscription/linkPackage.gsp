@@ -33,7 +33,10 @@
 <semui:totalNumber total="${recordsCount}"/>
 </h3>
 
-<g:render template="/templates/filter/packageGokbFilter"/>
+
+<g:if test="${!error}">
+    <g:render template="/templates/filter/packageGokbFilter"/>
+</g:if>
 
 <semui:messages data="${flash}"/>
 
@@ -90,7 +93,7 @@
                     </g:if>
                     <g:else>
                         ${record.name} <a target="_blank"
-                                          href="${record.editUrl ? record.editUrl + '/public/packageContent/?id=' + record.uuid : '#'}"><i
+                                          href="${editUrl ? editUrl + '/public/packageContent/?id=' + record.uuid : '#'}"><i
                                 title="we:kb Link" class="external alternate icon"></i></a>
                     </g:else>
                 </td>
