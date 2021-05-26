@@ -120,9 +120,9 @@
                     <div id="person_title"
                          class="field wide four ${hasErrors(bean: personInstance, field: 'title', 'error')}">
                         <label for="title">
-                            <g:message code="person.title.label"/> <g:message code="messageRequiredField" />
+                            <g:message code="person.title.label"/>
                         </label>
-                        <g:textField name="title" required="required" value="${personInstance?.title}"/>
+                        <g:textField name="title" value="${personInstance?.title}"/>
                     </div>
 
                 </div>
