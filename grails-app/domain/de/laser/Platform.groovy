@@ -48,12 +48,15 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
 
   Org org
 
-  static mappedBy = [tipps: 'platform']
+  SortedSet altnames
+
+  static mappedBy = [tipps: 'platform', altnames: 'platform']
 
   static hasMany = [
           tipps      : TitleInstancePackagePlatform,
           oapp       : OrgAccessPointLink,
-          propertySet:   PlatformProperty,
+          propertySet: PlatformProperty,
+          altnames   : AlternativeName
   ]
 
   static transients = ['currentTipps', 'calculatedPropDefGroups'] // mark read-only accessor methods

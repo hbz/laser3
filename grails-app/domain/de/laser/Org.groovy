@@ -97,6 +97,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     RefdataValue eInvoicePortal
 
     SortedSet ids
+    SortedSet altnames
 
     static transients = [
             'deleted', 'customerType', 'customerTypeI10n', 'designation',
@@ -113,7 +114,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         addresses:          'org',
         affiliations:       'org',
         propertySet:        'owner',
-        //privateProperties:  'owner',
+        altnames:           'org',
         documents:          'org',
         hasCreated:         'createdBy',
         hasLegallyObliged:  'legallyObligedBy'
@@ -130,7 +131,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         addresses:          Address,
         affiliations:       UserOrg,
         propertySet:        OrgProperty,
-        //privateProperties:  OrgPrivateProperty,
+        altnames:           AlternativeName,
         orgType:            RefdataValue,
         documents:          DocContext,
         platforms:          Platform,
@@ -215,7 +216,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
            shortcode(nullable:true, blank:true, maxSize:128)
                scope(nullable:true, blank:true, maxSize:128)
           categoryId(nullable:true, blank:true, maxSize:128)
-              status(nullable:true)
           membership(nullable:true)
              country(nullable:true)
               region(nullable:true)

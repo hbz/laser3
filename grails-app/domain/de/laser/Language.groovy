@@ -82,8 +82,9 @@ class Language implements CalculatedLastUpdated, Comparable {
                 lang.pkg = configMap.pkg
             if(!lang.save()) {
                 static_logger.error("error on creating lang: ${lang.getErrors().getAllErrors().toListString()}")
+                null
             }
-            lang
+            else lang
         }
         else {
             static_logger.error("No reference object specified for Language!")

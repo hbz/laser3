@@ -210,7 +210,6 @@ class FinanceService {
                 CostItem.executeUpdate('update CostItem ci set ci.costItemStatus = :deleted where ci.id in (:ids)',[deleted:RDStore.COST_ITEM_DELETED,ids:selectedCostItems])
             }
             else if(params.percentOnOldPrice) {
-                //continue here: bulk accepting does not work, then, the check if no participant is selected needs to be revised
                 Double percentage = 1 + params.int('percentOnOldPrice') / 100
                 CostItem.executeUpdate('update CostItem ci set ci.costInBillingCurrency = ci.costInBillingCurrency * :percentage, ci.costInLocalCurrency = ci.costInLocalCurrency * :percentage where ci.id in (:ids)',[ids:selectedCostItems,percentage:percentage])
             }
@@ -223,25 +222,39 @@ class FinanceService {
                         costItem.invoice = configMap.invoice ?: costItem.invoice
                         costItem.costItemElement = configMap.costItemElement ?: costItem.costItemElement
                         costItem.costItemElementConfiguration = configMap.elementSign ?: costItem.costItemElementConfiguration
-                        costItem.costItemStatus = RefdataValue.get(params.newCostItemStatus)
-                        costItem.costInBillingCurrency = configMap.costBillingCurrency ?: costItem.costInBillingCurrency
+                        costItem.costItemStatus = params.newCostItemStatus ? RefdataValue.get(params.newCostItemStatus) : null
+                        costItem.taxKey = configMap.taxKey ?: costItem.taxKey
+                        if(configMap.costBillingCurrency) {
+                            costItem.costInBillingCurrency = configMap.costBillingCurrency
+                            costItem.costInBillingCurrencyAfterTax = configMap.costBillingCurrency * (1.0 + (0.01 * costItem.taxKey.taxRate))
+                            costItem.costInLocalCurrency = costItem.currencyRate * configMap.costBillingCurrency
+                            costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * costItem.taxKey.taxRate))
+                        }
                         costItem.billingCurrency = configMap.billingCurrency ?: costItem.billingCurrency
-                        costItem.costInLocalCurrency = configMap.costLocalCurrency ?: costItem.costInLocalCurrency
+                        if(configMap.costLocalCurrency) {
+                            costItem.costInLocalCurrency = configMap.costLocalCurrency
+                            costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * costItem.taxKey.taxRate))
+                            costItem.costInBillingCurrency = configMap.costLocalCurrency / costItem.currencyRate
+                            costItem.costInBillingCurrencyAfterTax = configMap.costBillingCurrency * (1.0 + (0.01 * costItem.taxKey.taxRate))
+                        }
                         costItem.billingSumRounding = Boolean.valueOf(params.billingSumRounding) != costItem.billingSumRounding ? Boolean.valueOf(params.billingSumRounding) : costItem.billingSumRounding
                         costItem.finalCostRounding = Boolean.valueOf(params.finalCostRounding) != costItem.finalCostRounding ? Boolean.valueOf(params.finalCostRounding) : costItem.finalCostRounding
-                        costItem.currencyRate = configMap.currencyRate ?: costItem.currencyRate
-                        costItem.taxKey = configMap.taxKey ?: costItem.taxKey
+                        if(configMap.currencyRate) {
+                            costItem.currencyRate = configMap.currencyRate
+                            costItem.costInLocalCurrency = configMap.currencyRate * costItem.costInBillingCurrency
+                            costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * costItem.taxKey.taxRate))
+                        }
                         if(result.subscription)
                             costItem.isVisibleForSubscriber = result.subscription._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE ? false : configMap.isVisibleForSubscriber
                         else costItem.isVisibleForSubscriber = false
-                        costItem.costDescription = configMap.costDescription
-                        costItem.costTitle = configMap.costTitle
-                        costItem.datePaid = configMap.datePaid
-                        costItem.startDate = configMap.startDate
-                        costItem.endDate = configMap.endDate
-                        costItem.invoiceDate = configMap.invoiceDate
-                        costItem.financialYear = configMap.financialYear
-                        costItem.reference = configMap.reference
+                        costItem.costDescription = configMap.costDescription ?: costItem.costDescription
+                        costItem.costTitle = configMap.costTitle ?: costItem.costTitle
+                        costItem.datePaid = configMap.datePaid ?: costItem.datePaid
+                        costItem.startDate = configMap.startDate ?: costItem.startDate
+                        costItem.endDate = configMap.endDate ?: costItem.endDate
+                        costItem.invoiceDate = configMap.invoiceDate ?: costItem.invoiceDate
+                        costItem.financialYear = configMap.financialYear ?: costItem.financialYear
+                        costItem.reference = configMap.reference ?: costItem.reference
                         costItem.save()
                         List<BudgetCode> newBcObjs = []
                         params.list('newBudgetCodes').each { newbc ->
@@ -324,7 +337,7 @@ class FinanceService {
 
     CostItem.TAX_TYPES setTaxKey(String newTaxRateString) {
         CostItem.TAX_TYPES tax_key = null //on invoice, self declared, etc
-        if(!newTaxRateString.contains("null")) {
+        if(newTaxRateString && !newTaxRateString.contains("null")) {
             String[] newTaxRate = newTaxRateString.split("§")
             RefdataValue taxType = (RefdataValue) genericOIDService.resolveOID(newTaxRate[0])
             int taxRate = Integer.parseInt(newTaxRate[1])
@@ -386,12 +399,14 @@ class FinanceService {
         //row 1
         Double costBillingCurrency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : null //0.00
         RefdataValue billingCurrency = RefdataValue.get(params.long('newCostCurrency')) //billingCurrency should be not null
+        //value is transient
         Double costBillingCurrencyAfterTax = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : costBillingCurrency
         //row 2
         Double currencyRate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : null //1.00
         CostItem.TAX_TYPES taxKey = setTaxKey(params.newTaxRate)
         //row 3
         Double costLocalCurrency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : null //0.00
+        //value is transient
         Double costLocalCurrencyAfterTax = params.newCostInLocalCurrencyAfterTax ? format.parse(params.newCostInLocalCurrencyAfterTax).doubleValue() : costLocalCurrency
         //block footer
         //row 1

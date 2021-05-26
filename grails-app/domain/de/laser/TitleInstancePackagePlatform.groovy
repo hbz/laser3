@@ -79,6 +79,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     SortedSet ids
     SortedSet ddcs
     SortedSet languages
+    SortedSet altnames
 
   static mappedBy = [ids: 'tipp',
                      ddcs: 'tipp',
@@ -86,7 +87,8 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
                      orgs: 'tipp',
                      prsLinks: 'tipp',
                      priceItems: 'tipp',
-                     historyEvents: 'tipp']
+                     historyEvents: 'tipp',
+                     altnames: 'tipp']
   static hasMany = [ids: Identifier,
                     ddcs: DeweyDecimalClassification,
                     languages: Language,
@@ -94,7 +96,8 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
                     orgs: OrgRole,
                     historyEvents: TitleHistoryEvent,
                     prsLinks: PersonRole,
-                    priceItems: PriceItem]
+                    priceItems: PriceItem,
+                    altnames   : AlternativeName]
 
   static belongsTo = [
     pkg:Package,
