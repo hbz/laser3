@@ -47,7 +47,9 @@ ${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
-<g:render template="nav"/>
+<g:if test="${surveyConfig.subSurveyUseForTransfer}">
+    <g:render template="nav"/>
+</g:if>
 
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
@@ -55,7 +57,7 @@ ${surveyInfo.name}
 
 <br/>
 
-<g:if test="${!(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
+<g:if test="${surveyConfig.subSurveyUseForTransfer && !(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
     <div class="ui segment">
         <strong>${message(code: 'renewalEvaluation.notInEvaliation')}</strong>
     </div>
@@ -75,6 +77,7 @@ ${surveyInfo.name}
 
     </g:if>
     <g:else>
+        <g:if test="${surveyConfig.subSurveyUseForTransfer}">
         <g:if test="${parentSuccessorSubscription.getAllSubscribers().size() > 0}">
             <g:link controller="subscription" action="copyElementsIntoSubscription" id="${parentSubscription.id}"
                     params="[sourceObjectId: genericOIDService.getOID(parentSubscription), targetObjectId: genericOIDService.getOID(parentSuccessorSubscription), isRenewSub: true, fromSurvey: true]"
@@ -86,6 +89,7 @@ ${surveyInfo.name}
                 <a class="ui button" data-semui="modal" href="#transferParticipantsModal"><g:message code="surveyInfo.transferParticipants"/></a>
         </g:else>
         <br>
+        </g:if>
 
         <div class="ui tablet stackable steps">
 
