@@ -687,9 +687,9 @@
         <g:if test="${fromSurvey && surveyConfig}">
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
-                    <g:link controller="survey" action="renewalWithSurvey" id="${surveyConfig.surveyInfo.id}"
+                    <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id]" class="ui button js-click-control">
-                        <g:message code="renewalWithSurvey.back"/>
+                        <g:message code="renewalEvaluation.back"/>
                     </g:link>
                 </div>
 

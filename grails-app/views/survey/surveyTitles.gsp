@@ -32,7 +32,7 @@
 
 <semui:messages data="${flash}"/>
 
-
+<br />
 
 <div class="sixteen wide column">
 

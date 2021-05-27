@@ -1013,6 +1013,29 @@ class SurveyController {
 
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    Map<String,Object> renewalSent() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.surveyInfo.isRenewalSent = params.renewalSent ?: false
+        SurveyInfo.withTransaction { TransactionStatus ts ->
+            if (result.surveyInfo.save()) {
+                //flash.message = g.message(code: 'survey.change.successfull')
+            } else {
+                flash.error = g.message(code: 'survey.change.fail')
+            }
+        }
+
+        redirect(url: request.getHeader('referer'))
+
+    }
+
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -1034,6 +1057,29 @@ class SurveyController {
         redirect(url: request.getHeader('referer'))
 
     }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    Map<String,Object> surveyCompleted() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.surveyInfo.status = params.surveyCompleted ? RDStore.SURVEY_COMPLETED : RDStore.SURVEY_IN_EVALUATION
+
+        SurveyInfo.withTransaction { TransactionStatus ts ->
+            if (!result.surveyInfo.save()) {
+                flash.error = g.message(code: 'survey.change.fail')
+            }
+        }
+
+        redirect(url: request.getHeader('referer'))
+
+    }
+
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
@@ -2202,7 +2248,7 @@ class SurveyController {
         }
 
         if(result.surveyConfig && result.surveyConfig.subSurveyUseForTransfer) {
-            redirect action: 'renewalWithSurvey', params: [surveyConfigID: result.surveyConfig.id, id: result.surveyInfo.id]
+            redirect action: 'renewalEvaluation', params: [surveyConfigID: result.surveyConfig.id, id: result.surveyInfo.id]
         }else{
             redirect(uri: request.getHeader('referer'))
         }
@@ -2512,7 +2558,7 @@ class SurveyController {
             }
         }
 
-        redirect action: 'renewalWithSurvey', params:[surveyConfigID: result.surveyConfig.id, id: result.surveyInfo.id]
+        redirect action: 'renewalEvaluation', params:[surveyConfigID: result.surveyConfig.id, id: result.surveyInfo.id]
 
     }
 
@@ -2543,7 +2589,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
-     Map<String,Object> setCompleteSurvey() {
+     Map<String,Object> setCompletedSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
@@ -2586,7 +2632,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
-     Map<String,Object> renewalWithSurvey() {
+     Map<String,Object> renewalEvaluation() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
@@ -2606,6 +2652,28 @@ class SurveyController {
         if(result.parentSuccessorSubscription) {
             String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
             result.memberLicenses = License.executeQuery(query, [subscription: result.parentSuccessorSubscription, linkType: RDStore.LINKTYPE_LICENSE])
+        }
+
+
+        if(result.parentSubChilds) {
+            Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null",[subscriptionSet:validSubChildren,ctx:result.institution])
+            propList.addAll(result.parentSubscription.propertySet.type)
+            result.propList = propList
+            result.filteredSubChilds = validSubChildren
+            List<Subscription> childSubs = result.parentSubscription.getNonDeletedDerivedSubscriptions()
+            if(childSubs) {
+                String localizedName
+                switch(LocaleContextHolder.getLocale()) {
+                    case Locale.GERMANY:
+                    case Locale.GERMAN: localizedName = "name_de"
+                        break
+                    default: localizedName = "name_en"
+                        break
+                }
+                String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
+                result.memberProperties = memberProperties
+            }
         }
 
         result.properties = []
@@ -4261,25 +4329,25 @@ class SurveyController {
         ]
 
 
-        titles << g.message(code: 'renewalWithSurvey.period')
+        titles << g.message(code: 'renewalEvaluation.period')
 
         if (renewalResult.multiYearTermTwoSurvey || renewalResult.multiYearTermThreeSurvey)
         {
-            titles << g.message(code: 'renewalWithSurvey.periodComment')
+            titles << g.message(code: 'renewalEvaluation.periodComment')
         }
 
         renewalResult.properties.each { surveyProperty ->
             titles << surveyProperty?.getI10n('name')
-            titles << g.message(code: 'surveyResult.participantComment') + " " + g.message(code: 'renewalWithSurvey.exportRenewal.to') +" " + surveyProperty?.getI10n('name')
+            titles << g.message(code: 'surveyResult.participantComment') + " " + g.message(code: 'renewalEvaluation.exportRenewal.to') +" " + surveyProperty?.getI10n('name')
         }
-        titles << g.message(code: 'renewalWithSurvey.costBeforeTax')
-        titles << g.message(code: 'renewalWithSurvey.costAfterTax')
-        titles << g.message(code: 'renewalWithSurvey.costTax')
-        titles << g.message(code: 'renewalWithSurvey.currency')
+        titles << g.message(code: 'renewalEvaluation.costBeforeTax')
+        titles << g.message(code: 'renewalEvaluation.costAfterTax')
+        titles << g.message(code: 'renewalEvaluation.costTax')
+        titles << g.message(code: 'renewalEvaluation.currency')
 
         List renewalData = []
 
-        renewalData.add([[field: g.message(code: 'renewalWithSurvey.continuetoSubscription.label')+ " (${renewalResult.orgsContinuetoSubscription.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalEvaluation.continuetoSubscription.label')+ " (${renewalResult.orgsContinuetoSubscription.size() ?: 0})", style: 'positive']])
 
         renewalResult.orgsContinuetoSubscription.sort{it.participant.sortname}.each { participantResult ->
             List row = []
@@ -4333,7 +4401,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalWithSurvey.withMultiYearTermSub.label')+ " (${renewalResult.orgsWithMultiYearTermSub.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalEvaluation.withMultiYearTermSub.label')+ " (${renewalResult.orgsWithMultiYearTermSub.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.orgsWithMultiYearTermSub.each { sub ->
@@ -4369,7 +4437,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalWithSurvey.orgsWithParticipationInParentSuccessor.label')+ " (${renewalResult.orgsWithParticipationInParentSuccessor.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalEvaluation.orgsWithParticipationInParentSuccessor.label')+ " (${renewalResult.orgsWithParticipationInParentSuccessor.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.orgsWithParticipationInParentSuccessor.each { sub ->
@@ -4404,7 +4472,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalWithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgsContinuetoSubscription.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: g.message(code: 'renewalEvaluation.newOrgstoSubscription.label')+ " (${renewalResult.newOrgsContinuetoSubscription.size() ?: 0})", style: 'positive']])
 
 
         renewalResult.newOrgsContinuetoSubscription.sort{it.participant.sortname}.each { participantResult ->
@@ -4459,7 +4527,7 @@ class SurveyController {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalWithSurvey.withTermination.label')+ " (${renewalResult.orgsWithTermination.size() ?: 0})", style: 'negative']])
+        renewalData.add([[field: g.message(code: 'renewalEvaluation.withTermination.label')+ " (${renewalResult.orgsWithTermination.size() ?: 0})", style: 'negative']])
 
 
         renewalResult.orgsWithTermination.sort{it.participant.sortname}.each { participantResult ->

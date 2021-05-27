@@ -54,6 +54,8 @@
     <semui:messages data="${flash}"/>
 </g:if>
 
+<br />
+
 <g:if test="${participant}">
     <semui:form>
         <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>

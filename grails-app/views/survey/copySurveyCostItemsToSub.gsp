@@ -55,7 +55,7 @@ ${surveyInfo.name}
                                 id="${parentSubscription.id}">${parentSubscription.dropdownNamingConvention()}</g:link>
                         <br />
                         <g:link controller="subscription" action="members"
-                                id="${parentSubscription.id}">${message(code: 'renewalWithSurvey.orgsInSub')}</g:link>
+                                id="${parentSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
                         <semui:totalNumber total="${parentSubscription.getDerivedSubscribers().size() ?: 0}"/>
                     </g:if>
                 </h3>
