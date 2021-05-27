@@ -54,7 +54,7 @@
                     <label for="title">
                         <g:message code="person.title.label" />
                     </label>
-                    <g:textField name="title" required="required" value="${personInstance?.title}"/>
+                    <g:textField name="title" value="${personInstance?.title}"/>
                 </div>
 
             </div>

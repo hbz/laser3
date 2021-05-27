@@ -14,12 +14,14 @@
 </semui:breadcrumbs>
 
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'package.show.all')}
-<semui:totalNumber total="${recordsCount}"/>
+<semui:totalNumber total="${recordsCount ?: 0}"/>
 </h1>
 
 <semui:messages data="${flash}"/>
 
-<g:render template="/templates/filter/packageGokbFilter"/>
+<g:if test="${!error}">
+    <g:render template="/templates/filter/packageGokbFilter"/>
+</g:if>
 
 %{--<div class="ui icon info message">
     <i class="exclamation triangle icon"></i>
@@ -33,6 +35,20 @@
         <p>${message(code: 'message.attention.needTime')}</p>
     </div>
 </div>--}%
+<g:if test="${error}">
+    <div class="ui icon info error message">
+        <i class="exclamation triangle icon"></i>
+        <i class="close icon"></i>
+
+        <div class="content">
+            <div class="header">
+                ${message(code: 'message.attention')}
+            </div>
+
+            <p>${error}</p>
+        </div>
+    </div>
+</g:if>
 
 <div class="twelve wide column la-clear-before">
     <div>
@@ -158,10 +174,10 @@
                 <br/><strong><g:message code="filter.result.empty.object"
                                         args="${[message(code: "package.plural")]}"/></strong>
             </g:if>
-            <g:else>
+            <g:elseif test="${!error}">
                 <br/><strong><g:message code="result.empty.object"
                                         args="${[message(code: "package.plural")]}"/></strong>
-            </g:else>
+            </g:elseif>
         </g:else>
     </div>
 </div>

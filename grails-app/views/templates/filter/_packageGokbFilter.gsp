@@ -63,6 +63,23 @@
 
         <div class="two fields">
             <div class="field">
+                <label>${message(code: 'package.curatoryGroup.type')}</label>
+                <div class="inline fields la-filter-inline">
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="curatoryGroupProvider">${message(code: 'package.curatoryGroup.provider')}</label>
+                            <input id="curatoryGroupProvider" name="curatoryGroupProvider" type="checkbox" <g:if test="${params.curatoryGroupProvider}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="curatoryGroupOther">${message(code: 'package.curatoryGroup.other')}</label>
+                            <input id="curatoryGroupOther" name="curatoryGroupOther" type="checkbox" <g:if test="${params.curatoryGroupOther}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}"

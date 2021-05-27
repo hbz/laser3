@@ -196,7 +196,7 @@ class RDStore {
     public static final PRS_FUNC_GASCO_CONTACT         = getRefdataValue('GASCO-Contact', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_GENERAL_CONTACT_PRS   = getRefdataValue('General contact person', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_RESPONSIBLE_ADMIN     = getRefdataValue('Responsible Admin', RDConstants.PERSON_FUNCTION)
-    public static final PRS_FUNC_STATISTICAL_SUPPORT     = getRefdataValue('Statistical Support', RDConstants.PERSON_FUNCTION)
+    public static final PRS_FUNC_SERVICE_SUPPORT     = getRefdataValue('Service Support', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_TECHNICAL_SUPPORT     = getRefdataValue('Technichal Support', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_METADATA     = getRefdataValue('Metadata', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_CUSTOMER_SERVICE     = getRefdataValue('Customer Service', RDConstants.PERSON_FUNCTION)
