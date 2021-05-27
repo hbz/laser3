@@ -1499,7 +1499,7 @@ SELECT * FROM (
 
         Map<String,Object> propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { String it ->
-            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
+            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_de']) // NO private properties!
             propDefs << ["${it}": itResult]
         }
 
