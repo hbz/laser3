@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3514    27.05.2021  dev     2.1         Andreas Feature     neue allgemeine Vertragsmerkmale hinzugefügt
+
+3513    27.05.2021  dev     2.1         Andreas Feature     Identifier-Namensräume für Lizenzen neu hinzugefügt und mit urlPrefixes sowie Erläuterungen versehen
+
+3399    27.05.2021  dev     2.1         Andreas Feature     neue allgemeine Lizenzmerkmale hinzugefügt
+
 3403    26.05.2021  dev     2.1         Andreas Feature     404 seitens der we:kb wird abgefangen und menschenlesbar dargestellt
 
 3366    26.05.2021  dev     2.1         Andreas Feature     Erweiterung der Paketfilter um Parameter Kuratorengruppentyp
