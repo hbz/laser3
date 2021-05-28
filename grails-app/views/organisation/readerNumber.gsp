@@ -66,6 +66,15 @@
                                     <g:set var="number" value="${numbersInstance.getValue().get(column)}"/>
                                     <g:if test="${number}">
                                         <semui:xEditable owner="${number}" field="value" format="number"/>
+                                        <g:if test="${editable}">
+                                            <g:link class="ui mini icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
+                                                    data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
+                                                    data-confirm-term-how="ok" params="${[number:number.id]}"
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                                <i class="trash alternate icon"></i>
+                                            </g:link>
+                                        </g:if>
                                     </g:if>
                                 </td>
                             </g:each>
@@ -132,6 +141,15 @@
                                         <g:set var="number" value="${numbersInstance.getValue().get(column)}"/>
                                         <g:if test="${number}">
                                             <semui:xEditable owner="${number}" field="value" type="number"/>
+                                            <g:if test="${editable}">
+                                                <g:link class="ui mini icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
+                                                        data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
+                                                        data-confirm-term-how="ok" params="${[number:number.id]}"
+                                                        role="button"
+                                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                                    <i class="trash alternate icon"></i>
+                                                </g:link>
+                                            </g:if>
                                         </g:if>
                                     </td>
                                 </g:each>
@@ -139,7 +157,7 @@
                                 <td>
                                     <g:if test="${editable}">
                                         <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
-                                                data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
+                                                data-confirm-tokenMsg="${message(code: 'readerNumber.confirmRow.delete')}"
                                                 data-confirm-term-how="ok" params="${[dueDate:numbersInstance.getKey(),org:params.id]}"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">

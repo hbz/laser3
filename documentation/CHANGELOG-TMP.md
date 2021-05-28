@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3519    28.05.2021  dev     2.1         Andreas Feature     Linkresolver-Base-URL für Einrichtungen hinzugefügt
+
+3309    28.05.2021  dev     2.1         Andreas Feature     Löschung alter unbrauchbarer Werte, Beschränkung der Nutzerzahltypen, Mülleimer bei Zahlen hinzugefügt
+
+--      28.05.2021  dev     2.1         Andreas Bug         Identifier-Zählung bei Orgs inkorrekt, falsche Kodierung der Namensräume
+
 3165    28.05.2021  dev     2.1         Andreas Feature     Identifikatoren für Lizenzen und Verträge 
 
 3514    27.05.2021  dev     2.1         Andreas Feature     neue allgemeine Vertragsmerkmale hinzugefügt
