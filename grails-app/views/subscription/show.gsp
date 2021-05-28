@@ -51,6 +51,7 @@
     <g:render template="message" />
     <g:render template="/templates/meta/identifier" model="${[object: subscription, editable: editable]}" />
 
+
         <semui:messages data="${flash}" />
 
     <div id="collapseableSubDetails" class="ui stackable grid">

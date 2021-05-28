@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3165    28.05.2021  dev     2.1         Andreas Feature     Identifikatoren für Lizenzen und Verträge 
+
 3514    27.05.2021  dev     2.1         Andreas Feature     neue allgemeine Vertragsmerkmale hinzugefügt
 
 3513    27.05.2021  dev     2.1         Andreas Feature     Identifier-Namensräume für Lizenzen neu hinzugefügt und mit urlPrefixes sowie Erläuterungen versehen

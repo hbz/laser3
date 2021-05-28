@@ -616,43 +616,48 @@ class SubscriptionControllerService {
                             synShareTargetList.add(memberSub)
                             SubscriptionProperty.findAllByOwner(result.subscription).each { SubscriptionProperty sp ->
                                 AuditConfig ac = AuditConfig.getConfig(sp)
-
-                                        if (ac) {
-                                            // multi occurrence props; add one additional with backref
-                                            if (sp.type.multipleOccurrence) {
-                                                SubscriptionProperty additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
-                                                additionalProp = sp.copyInto(additionalProp)
-                                                additionalProp.instanceOf = sp
-                                                additionalProp.save()
-                                            }
-                                            else {
-                                                // no match found, creating new prop with backref
-                                                SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
-                                                newProp = sp.copyInto(newProp)
-                                                newProp.instanceOf = sp
-                                                newProp.save()
-                                            }
-                                        }
+                                if (ac) {
+                                    // multi occurrence props; add one additional with backref
+                                    if (sp.type.multipleOccurrence) {
+                                        SubscriptionProperty additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
+                                        additionalProp = sp.copyInto(additionalProp)
+                                        additionalProp.instanceOf = sp
+                                        additionalProp.save()
                                     }
-
-                                    memberSub.refresh()
-
-                                    packagesToProcess.each { Package pkg ->
-                                        if(params.linkWithEntitlements)
-                                            pkg.addToSubscriptionCurrentStock(memberSub, result.subscription)
-                                        else
-                                            pkg.addToSubscription(memberSub, false)
+                                    else {
+                                        // no match found, creating new prop with backref
+                                        SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
+                                        newProp = sp.copyInto(newProp)
+                                        newProp.instanceOf = sp
+                                        newProp.save()
                                     }
-
-                                    licensesToProcess.each { License lic ->
-                                        subscriptionService.setOrgLicRole(memberSub,lic,false)
-                                    }
-
                                 }
-                                //}
+                            }
+                            Identifier.findAllBySub(result.subscription).each { Identifier id ->
+                                AuditConfig ac = AuditConfig.getConfig(id)
+                                if(ac) {
+                                    Identifier.constructWithFactoryResult([value: id.value, parent: id, reference: memberSub, namespace: id.ns])
+                                }
                             }
 
-                        result.subscription.syncAllShares(synShareTargetList)
+                            memberSub.refresh()
+
+                            packagesToProcess.each { Package pkg ->
+                                if(params.linkWithEntitlements)
+                                    pkg.addToSubscriptionCurrentStock(memberSub, result.subscription)
+                                else
+                                    pkg.addToSubscription(memberSub, false)
+                            }
+
+                            licensesToProcess.each { License lic ->
+                                subscriptionService.setOrgLicRole(memberSub,lic,false)
+                            }
+
+                        }
+                                //}
+                    }
+
+                    result.subscription.syncAllShares(synShareTargetList)
                 } else {
                     [result:result,status:STATUS_ERROR]
                 }

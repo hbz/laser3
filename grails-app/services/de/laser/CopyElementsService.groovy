@@ -306,6 +306,13 @@ class CopyElementsService {
                         //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                     }*/
                 }
+
+                if (subMember.ids) {
+                    subMember.ids.each { Identifier id ->
+                        Identifier.constructWithFactoryResult([value: id.value, parent: id.instanceOf, reference: newSubscription, namespace: id.ns])
+                    }
+                }
+
                 /*
                 if (subMember.privateProperties) {
                     //privatProperties
@@ -502,7 +509,7 @@ class CopyElementsService {
 
             if (params.list('copyObject.takeIdentifierIds') && isBothObjectsSet(sourceObject, targetObject)) {
                 List<Identifier> toCopyIdentifiers = params.list('copyObject.takeIdentifierIds').collect { genericOIDService.resolveOID(it) }
-                copyIdentifiers(sourceObject, toCopyIdentifiers, targetObject, flash)
+                copyIdentifiers(sourceObject, toCopyIdentifiers, targetObject, takeAudit, flash)
                 //isTargetSubChanged = true
             }
 
@@ -612,7 +619,7 @@ class CopyElementsService {
         if (params.copyObject?.takeIdentifierIds && isBothObjectsSet(sourceObject, targetObject)) {
             def toCopyIdentifiers = []
             params.list('copyObject.takeIdentifierIds').each { identifier -> toCopyIdentifiers << Long.valueOf(identifier) }
-            copyIdentifiers(sourceObject, toCopyIdentifiers, targetObject, flash)
+            copyIdentifiers(sourceObject, toCopyIdentifiers, targetObject, [], flash) //this method is not used, no idea where to fetch audit information?
             isTargetSubChanged = true
         }
 
@@ -855,14 +862,19 @@ class CopyElementsService {
         }
     }
 
-    void copyIdentifiers(Object sourceObject, List<Identifier> toCopyIdentifiers, Object targetObject, def flash) {
-        toCopyIdentifiers.each { sourceIdentifier ->
+    void copyIdentifiers(Object sourceObject, List<Identifier> toCopyIdentifiers, Object targetObject, List takeAudit, def flash) {
+        toCopyIdentifiers.each { Identifier sourceIdentifier ->
             def owner = targetObject
             IdentifierNamespace namespace = sourceIdentifier.ns
             String value = sourceIdentifier.value
 
             if (owner && namespace && value) {
                 FactoryResult factoryResult = Identifier.constructWithFactoryResult([value: value, reference: owner, namespace: namespace])
+                if(genericOIDService.getOID(sourceIdentifier) in takeAudit) {
+                    if(!AuditConfig.getConfig(factoryResult.result)) {
+                        AuditConfig.addConfig(factoryResult.result, AuditConfig.COMPLETE_OBJECT)
+                    }
+                }
 
                 //factoryResult.setFlashScopeByStatus(flash)
             }
@@ -871,6 +883,10 @@ class CopyElementsService {
 
     void deleteIdentifiers(List<Identifier> toDeleteIdentifiers, Object targetObject, def flash) {
         String attr = Identifier.getAttributeName(targetObject)
+        Identifier.executeUpdate('delete from Identifier i where i.instanceOf in (:toDeleteIdentifiers)')
+        toDeleteIdentifiers.each { Identifier delId ->
+            AuditConfig.removeConfig(delId)
+        }
         int countDeleted = Identifier.executeUpdate('delete from Identifier i where i in (:toDeleteIdentifiers) and i.' + attr + ' = :reference',
                 [toDeleteIdentifiers: toDeleteIdentifiers, reference: targetObject])
         Object[] args = [countDeleted]
