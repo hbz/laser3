@@ -34,7 +34,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   RefdataValue type
 
   @RefdataAnnotation(cat = RDConstants.PLATFORM_STATUS)
-  RefdataValue status // TODO: not in Bootstrap
+  RefdataValue status
 
   @RefdataAnnotation(cat = RDConstants.Y_N)
   RefdataValue serviceProvider
@@ -86,7 +86,6 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     primaryUrl(nullable:true, blank:false)
     provenance(nullable:true, blank:false)
     type            (nullable:true)
-    status          (nullable:true)
     serviceProvider (nullable:true)
     softwareProvider(nullable:true)
     gokbId (blank:false, unique: true, maxSize:511)

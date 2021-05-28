@@ -62,7 +62,6 @@ class PackageController {
         String esQuery = "?componentType=Package"
         if (params.q) {
             result.filterSet = true
-            //workaround for or-connection; find api supports only and-connection
             esQuery += "&name=${params.q}"
             esQuery += "&ids=Anbieter_Produkt_ID,*${params.q}*"
             esQuery += "&ids=isil,*${params.q}*"

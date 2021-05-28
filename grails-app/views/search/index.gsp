@@ -455,7 +455,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                             <semui:linkIcon href="${hit.getSourceAsMap().primaryUrl}"/>
                                         </g:if>
                                     <br />
-                                    <strong>${message(code: 'platform.org')}</strong>:
+                                    <strong>${message(code: 'platform.provider')}</strong>:
                                 <g:link controller="organisation" action="show"
                                         id="${hit.getSourceAsMap().orgId}">${hit.getSourceAsMap().orgName}</g:link>
 
