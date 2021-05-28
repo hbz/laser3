@@ -1077,6 +1077,53 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     @Transactional
+    def toggleIdentifierAuditConfig() {
+        def owner = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+        if(formService.validateToken(params)) {
+            Identifier identifier  = Identifier.get(params.id)
+
+            Org contextOrg = contextService.getOrg()
+            if (AuditConfig.getConfig(identifier, AuditConfig.COMPLETE_OBJECT)) {
+                AuditConfig.removeAllConfigs(identifier)
+
+                Identifier.findAllByInstanceOf(identifier).each{ Identifier id ->
+                    id.delete()
+                }
+            }
+            else {
+                String memberType
+                    if(owner instanceof Subscription)
+                        memberType = 'sub'
+                    else if(owner instanceof License)
+                        memberType = 'lic'
+                if(memberType) {
+                    owner.getClass().findAllByInstanceOf(owner).each { member ->
+                        Identifier existingProp = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.instanceOf = :id', [member: member, id: identifier])[0]
+                        if (! existingProp) {
+                            //List<Identifier> matchingProps = Identifier.findAllByOwnerAndTypeAndTenant(member, property.type, contextOrg)
+                            List<Identifier> matchingIds = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.ns = :ns',[member: member, ns: identifier.ns])
+                            // unbound prop found with matching type, set backref
+                            if (matchingIds) {
+                                matchingIds.each { Identifier memberId ->
+                                    memberId.instanceOf = identifier
+                                    memberId.save()
+                                }
+                            }
+                            else {
+                                // no match found, creating new prop with backref
+                                Identifier.constructWithFactoryResult([value: identifier.value, parent: identifier, reference: member, namespace: identifier.ns])
+                            }
+                        }
+                    }
+                    AuditConfig.addConfig(identifier, AuditConfig.COMPLETE_OBJECT)
+                }
+            }
+        }
+        render template: "/templates/meta/identifierList", model: identifierService.prepareIDsForTable(owner)
+    }
+
+    @Secured(['ROLE_USER'])
+    @Transactional
     def togglePropertyIsPublic() {
         if(formService.validateToken(params)) {
             AbstractPropertyWithCalculatedLastUpdated property = genericOIDService.resolveOID(params.oid)

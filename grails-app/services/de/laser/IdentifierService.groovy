@@ -1,12 +1,20 @@
 package de.laser
 
 import com.k_int.kbplus.GenericOIDService
+import de.laser.ctrl.LicenseControllerService
+import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 @Transactional
 class IdentifierService {
 
     GenericOIDService genericOIDService
+    MessageSource messageSource
+    SubscriptionService subscriptionService
+    ContextService contextService
+    LicenseControllerService licenseControllerService
 
     void checkNullUIDs() {
         List<Person> persons = Person.findAllByGlobalUIDIsNull()
@@ -60,6 +68,44 @@ class IdentifierService {
                 }
             }
         }
+    }
+
+    Map<String, Object> prepareIDsForTable(object) {
+        boolean objIsOrgAndInst = object instanceof Org && object.getAllOrgTypeIds().contains(RDStore.OT_INSTITUTION.id)
+        Locale locale = LocaleContextHolder.getLocale()
+        String lang = I10nTranslation.decodeLocale(locale)
+        List<IdentifierNamespace> nsList = IdentifierNamespace.executeQuery('select idns from IdentifierNamespace idns where (idns.nsType = :objectType or idns.nsType = null) and idns.isFromLaser = true order by idns.name_'+lang+' asc',[objectType:object.class.name])
+        Map<String, SortedSet> objectIds = [:]
+        if(!objIsOrgAndInst && object.hasProperty("gokbId") && object.gokbId) {
+            SortedSet idSet = new TreeSet()
+            idSet << object.gokbId
+            objectIds.put(messageSource.getMessage('org.wekbId.label', null, locale), idSet)
+        }
+        if(object.globalUID) {
+            SortedSet idSet = new TreeSet()
+            idSet << object.globalUID
+            objectIds.put(messageSource.getMessage('globalUID.label', null, locale), idSet)
+        }
+        if(object.hasProperty("ids")) {
+            object.ids.each { Identifier ident ->
+                String key = ident.ns.getI10n('name') ?: ident.ns.ns
+                SortedSet<Identifier> idsOfNamespace = objectIds.get(key)
+                if(!idsOfNamespace)
+                    idsOfNamespace = new TreeSet<Identifier>()
+                idsOfNamespace << ident
+                objectIds.put(key, idsOfNamespace)
+            }
+        }
+        int count = 0
+        objectIds.values().each { SortedSet idSet ->
+            count += idSet.size()
+        }
+        boolean showConsortiaFunctions = false
+        if(object instanceof Subscription)
+            showConsortiaFunctions = subscriptionService.showConsortiaFunctions(contextService.getOrg(), object)
+        else if(object instanceof License)
+            showConsortiaFunctions = licenseControllerService.showConsortiaFunctions(object)
+        [objIsOrgAndInst: objIsOrgAndInst, count: count, objectIds: objectIds, nsList: nsList, editable: true, object: object, showConsortiaFunctions: showConsortiaFunctions]
     }
 
 }
