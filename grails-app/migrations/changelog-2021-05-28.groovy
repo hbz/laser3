@@ -15,4 +15,12 @@ databaseChangeLog = {
         }
     }
 
+    changeSet(author: "djebeniani (generated)", id: "1622209756718-3") {
+        dropForeignKeyConstraint(baseTableName: "survey_property", constraintName: "fk594d0d1aab666169")
+    }
+
+    changeSet(author: "djebeniani (generated)", id: "1622209756718-4") {
+        dropTable(tableName: "survey_property")
+    }
+
 }
