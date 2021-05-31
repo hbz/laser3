@@ -9,6 +9,8 @@
 
 3519    28.05.2021  dev     2.1         Andreas Feature     Linkresolver-Base-URL für Einrichtungen hinzugefügt
 
+3476    28.05.2021  dev     2.1         Andreas Bug         Validierung für Kostenbezeichner und Start-/Enddatum bei Kosten eingefügt
+
 3309    28.05.2021  dev     2.1         Andreas Feature     Löschung alter unbrauchbarer Werte, Beschränkung der Nutzerzahltypen, Mülleimer bei Zahlen hinzugefügt
 
 --      28.05.2021  dev     2.1         Andreas Bug         Identifier-Zählung bei Orgs inkorrekt, falsche Kodierung der Namensräume
