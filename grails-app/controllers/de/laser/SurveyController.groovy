@@ -4227,9 +4227,9 @@ class SurveyController {
 
                     packagesToProcess.each { pkg ->
                         if(params.linkWithEntitlements)
-                            pkg.addToSubscriptionCurrentStock(memberSub, newParentSub)
+                            subscriptionService.addToSubscriptionCurrentStock(memberSub, newParentSub, pkg)
                         else
-                            pkg.addToSubscription(memberSub, false)
+                            subscriptionService.addToSubscription(memberSub, pkg, false)
                     }
 
                     licensesToProcess.each { License lic ->

@@ -206,106 +206,155 @@
 
     <g:form class="ui form" url="[controller: 'subscription', action: 'processLinkPackage', id: params.id]">
         <input type="hidden" name="addUUID" value=""/>
-
         <div class="field">
             <label for="pkgName">${message(code: 'package.label')}</label>
             <input type="text" id="pkgName" name="pkgName" value="" readonly/>
         </div>
+        <div class="ui grid">
+            <g:set var="colCount" value="${institution.getCustomerType() == 'ORG_CONSORTIUM' ? 'eight' : 'sixteen'}"/>
+            <div class="${colCount} wide column">
+                <div class="grouped required fields">
+                    <label for="With">${message(code: 'subscription.details.linkPackage.label')}</label>
 
-        <div class="grouped required fields">
-            <label for="With">${message(code: 'subscription.details.linkPackage.label')}</label>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="addType" id="With" value="With" tabindex="0" class="hidden">
+                            <label>${message(code: 'subscription.details.link.with_ents')}</label>
+                        </div>
+                    </div>
 
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" name="addType" id="With" value="With" tabindex="0" class="hidden">
-                    <label>${message(code: 'subscription.details.link.with_ents')}</label>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="addType" id="Without" value="Without" tabindex="0" class="hidden">
+                            <label>${message(code: 'subscription.details.link.no_ents')}</label>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" name="addType" id="Without" value="Without" tabindex="0" class="hidden">
-                    <label>${message(code: 'subscription.details.link.no_ents')}</label>
-                </div>
-            </div>
-        </div>
+                <br>
+                <br>
 
-        <br>
-        <br>
+                <div class="field">
+                    <h5 class="ui dividing header">
+                        <g:message code="subscription.packages.config.label" args="${[""]}"/>
+                    </h5>
 
-        <div class="field">
-            <h5 class="ui dividing header">
-                <g:message code="subscription.packages.config.label" args="${[""]}"/>
-            </h5>
-
-            <table class="ui table compact">
-                <tr>
-                    <th class="control-label"><g:message code="subscription.packages.changeType.label"/></th>
-                    <th class="control-label">
-                        <g:message code="subscription.packages.setting.label"/>
-                    </th>
-                    <th class="control-label"
-                        data-tooltip="${message(code: "subscription.packages.notification.label")}">
-                        <i class="ui large icon bullhorn"></i>
-                    </th>
-                    <g:if test="${contextCustomerType == 'ORG_CONSORTIUM'}">
-                        <th class="control-label"
-                            data-tooltip="${message(code: 'subscription.packages.auditable')}">
-                            <i class="ui large icon thumbtack"></i>
-                        </th>
-                    </g:if>
-                </tr>
-                <g:set var="excludes"
-                       value="${[PendingChangeConfiguration.PACKAGE_PROP,
-                                 PendingChangeConfiguration.PACKAGE_DELETED,
-                                 PendingChangeConfiguration.NEW_PRICE,
-                                 PendingChangeConfiguration.PRICE_UPDATED,
-                                 PendingChangeConfiguration.PRICE_DELETED]}"/>
-                <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
-                    <tr>
-                        <td class="control-label">
-                            <g:message code="subscription.packages.${settingKey}"/>
-                        </td>
-                        <td>
-                            <g:if test="${!(settingKey in excludes)}">
-                                <g:if test="${editable}">
-                                    <laser:select class="ui dropdown"
-                                                  name="${settingKey}!§!setting"
-                                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
-                                                  optionKey="id" optionValue="value"
-                                                  value="${RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"/>
-                                </g:if>
-                                <g:else>
-                                    ${RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n("value")}
-                                </g:else>
-                            </g:if>
-                        </td>
-                        <td>
-                            <g:if test="${editable}">
-                                <g:checkBox class="ui checkbox" name="${settingKey}!§!notification"
-                                            checked="${false}"/>
-                            </g:if>
-                            <g:else>
-                                ${RDStore.YN_NO.getI10n("value")}
-                            </g:else>
-                        </td>
-                        <g:if test="${contextCustomerType == 'ORG_CONSORTIUM'}">
-                            <td>
-                                <g:if test="${!(settingKey in excludes)}">
+                    <table class="ui table compact">
+                        <tr>
+                            <th class="control-label"><g:message code="subscription.packages.changeType.label"/></th>
+                            <th class="control-label">
+                                <g:message code="subscription.packages.setting.label"/>
+                            </th>
+                            <th class="control-label"
+                                data-tooltip="${message(code: "subscription.packages.notification.label")}">
+                                <i class="ui large icon bullhorn"></i>
+                            </th>
+                        </tr>
+                        <g:set var="excludes"
+                               value="${[PendingChangeConfiguration.PACKAGE_PROP,
+                                         PendingChangeConfiguration.PACKAGE_DELETED]}"/>
+                        <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
+                            <tr>
+                                <td class="control-label">
+                                    <g:message code="subscription.packages.${settingKey}"/>
+                                </td>
+                                <td>
+                                    <g:if test="${!(settingKey in excludes)}">
+                                        <g:if test="${editable}">
+                                            <laser:select class="ui dropdown"
+                                                          name="${settingKey}!§!setting"
+                                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
+                                                          optionKey="id" optionValue="value"
+                                                          value="${RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"/>
+                                        </g:if>
+                                        <g:else>
+                                            ${RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n("value")}
+                                        </g:else>
+                                    </g:if>
+                                </td>
+                                <td>
                                     <g:if test="${editable}">
-                                        <g:checkBox class="ui checkbox" name="${settingKey}!§!auditable"
+                                        <g:checkBox class="ui checkbox" name="${settingKey}!§!notification"
                                                     checked="${false}"/>
                                     </g:if>
                                     <g:else>
                                         ${RDStore.YN_NO.getI10n("value")}
                                     </g:else>
-                                </g:if>
-                            </td>
-                        </g:if>
-                    </tr>
-                </g:each>
-            </table>
+                                </td>
+                            </tr>
+                        </g:each>
+                    </table>
+                </div>
+            </div>
+            <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
+                <div class="${colCount} wide column">
+                    <div class="grouped fields">
+                        <label for="WithForChildren">${message(code: 'subscription.details.linkPackage.children.label')}</label>
+
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="addTypeChildren" id="WithForChildren" value="WithForChildren" tabindex="0" class="hidden">
+                                <label>${message(code: 'subscription.details.link.with_ents')}</label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="addTypeChildren" id="WithoutForChildren" value="WithoutForChildren" tabindex="0" class="hidden">
+                                <label>${message(code: 'subscription.details.link.no_ents')}</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+                    <br>
+
+                    <div class="field">
+                        <h5 class="ui dividing header">
+                            <g:message code="subscription.packages.config.children.label" args="${[""]}"/>
+                        </h5>
+
+                        <table class="ui table compact">
+                            <tr>
+                                <th class="control-label"><g:message code="subscription.packages.changeType.label"/></th>
+                                <th class="control-label" data-tooltip="${message(code: "subscription.packages.auditable")}">
+                                    <i class="ui large icon thumbtack"></i>
+                                </th>
+                                <th class="control-label" data-tooltip="${message(code: "subscription.packages.notification.auditable")}">
+                                    <i class="ui large icon thumbtack"></i><i class="ui large icon plus"></i><i class="ui large icon bullhorn"></i>
+                                </th>
+                            </tr>
+                            <g:set var="excludes"
+                                   value="${[PendingChangeConfiguration.PACKAGE_PROP,
+                                             PendingChangeConfiguration.PACKAGE_DELETED]}"/>
+                            <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
+                                <tr>
+                                    <td class="control-label">
+                                        <g:message code="subscription.packages.${settingKey}"/>
+                                    </td>
+                                    <td>
+                                        <g:if test="${!(settingKey in excludes)}">
+                                            <g:checkBox class="ui checkbox" name="${settingKey}!§!auditable"
+                                                        checked="${false}"/>
+                                        </g:if>
+                                    </td>
+                                    <td>
+                                        <g:if test="${editable}">
+                                            <g:checkBox class="ui checkbox" name="${settingKey}!§!notificationAudit"
+                                                        checked="${false}"/>
+                                        </g:if>
+                                        <g:else>
+                                            ${RDStore.YN_NO.getI10n("value")}
+                                        </g:else>
+                                    </td>
+                                </tr>
+                            </g:each>
+                        </table>
+                    </div>
+                </div>
+            </g:if>
         </div>
+
     </g:form>
 
     <laser:script file="${this.getGroovyPageFileName()}">

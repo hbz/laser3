@@ -979,9 +979,8 @@ class DataloadService {
 
                         }
                         if (shardInfo.getFailed() > 0) {
-                            for (ReplicationResponse.ShardInfo.Failure failure :
-                                    shardInfo.getFailures()) {
-                                String reason = failure.reason();
+                            for (ReplicationResponse.ShardInfo.Failure failure : shardInfo.getFailures()) {
+                                String reason = failure.reason()
                                 println(reason)
                             }
                         }

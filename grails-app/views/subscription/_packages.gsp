@@ -81,7 +81,7 @@
                             <h5 class="ui header">
                                 <g:message code="subscription.packages.config.label" args="${[sp.pkg.name]}"/>
                             </h5>
-                            <g:form controller="subscription" action="setupPendingChangeConfiguration" params="[id:sp.subscription.id,subscriptionPackage:sp.id]">
+                            <g:form controller="subscription" action="setupPendingChangeConfiguration" params="[id:sp.subscription.id,pkg:sp.pkg.id]">
                                 <dl>
                                     <dt class="control-label"><g:message code="subscription.packages.changeType.label"/></dt>
                                     <dt class="control-label">
@@ -94,13 +94,13 @@
                                         <dt class="control-label" data-tooltip="${message(code:'subscription.packages.auditable')}">
                                             <i class="ui large icon thumbtack"></i>
                                         </dt>
+                                        <dt class="control-label" data-tooltip="${message(code:'subscription.packages.notification.auditable')}">
+                                            <i class="ui large icon bullhorn"></i><i class="ui large icon plus"></i><i class="ui large icon thumbtack"></i>
+                                        </dt>
                                     </g:if>
                                 </dl>
                                 <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,
-                                                                PendingChangeConfiguration.PACKAGE_DELETED,
-                                                                PendingChangeConfiguration.NEW_PRICE,
-                                                                PendingChangeConfiguration.PRICE_UPDATED,
-                                                                PendingChangeConfiguration.PRICE_DELETED]}"/>
+                                                                PendingChangeConfiguration.PACKAGE_DELETED]}"/>
                                 <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
                                     <%
                                         PendingChangeConfiguration pcc = sp.getPendingChangeConfig(settingKey)
@@ -136,6 +136,16 @@
                                                 <g:if test="${!(settingKey in excludes)}">
                                                     <g:if test="${editmode}">
                                                         <g:checkBox class="ui checkbox" name="${settingKey}!§!auditable" checked="${pcc ? auditService.getAuditConfig(subscription, settingKey) : false}"/>
+                                                    </g:if>
+                                                    <g:else>
+                                                        ${pcc ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
+                                                    </g:else>
+                                                </g:if>
+                                            </dd>
+                                            <dd>
+                                                <g:if test="${!(settingKey in excludes)}">
+                                                    <g:if test="${editmode}">
+                                                        <g:checkBox class="ui checkbox" name="${settingKey}!§!notificationAudit" checked="${pcc ? auditService.getAuditConfig(subscription, settingKey+PendingChangeConfiguration.NOTIFICATION_SUFFIX) : false}"/>
                                                     </g:if>
                                                     <g:else>
                                                         ${pcc ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
