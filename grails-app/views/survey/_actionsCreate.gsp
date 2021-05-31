@@ -7,9 +7,9 @@
 <semui:actionsDropdownItem controller="survey" action="createIssueEntitlementsSurvey"
                            message="createIssueEntitlementsSurvey.label"/>
 
-<g:if test="${actionName == 'currentSurveysConsortia'}">
+%{--<g:if test="${actionName == 'currentSurveysConsortia'}">
     <div class="ui divider"></div>
 
     <semui:actionsDropdownItem controller="survey" action="workflowsSurveysConsortia"
                                message="workflowsSurveysConsortia.label"/>
-</g:if>
+</g:if>--}%

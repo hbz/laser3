@@ -52,6 +52,7 @@ class SurveyController {
     LinksGenerationService linksGenerationService
     CopyElementsService copyElementsService
     SurveyControllerService surveyControllerService
+    ExportClickMeService exportClickMeService
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
@@ -1013,6 +1014,29 @@ class SurveyController {
 
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    Map<String,Object> renewalSent() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.surveyInfo.isRenewalSent = params.renewalSent ?: false
+        SurveyInfo.withTransaction { TransactionStatus ts ->
+            if (result.surveyInfo.save()) {
+                //flash.message = g.message(code: 'survey.change.successfull')
+            } else {
+                flash.error = g.message(code: 'survey.change.fail')
+            }
+        }
+
+        redirect(url: request.getHeader('referer'))
+
+    }
+
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -1034,6 +1058,29 @@ class SurveyController {
         redirect(url: request.getHeader('referer'))
 
     }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    Map<String,Object> surveyCompleted() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.surveyInfo.status = params.surveyCompleted ? RDStore.SURVEY_COMPLETED : RDStore.SURVEY_IN_EVALUATION
+
+        SurveyInfo.withTransaction { TransactionStatus ts ->
+            if (!result.surveyInfo.save()) {
+                flash.error = g.message(code: 'survey.change.fail')
+            }
+        }
+
+        redirect(url: request.getHeader('referer'))
+
+    }
+
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
@@ -2202,7 +2249,7 @@ class SurveyController {
         }
 
         if(result.surveyConfig && result.surveyConfig.subSurveyUseForTransfer) {
-            redirect action: 'renewalWithSurvey', params: [surveyConfigID: result.surveyConfig.id, id: result.surveyInfo.id]
+            redirect action: 'renewalEvaluation', params: [surveyConfigID: result.surveyConfig.id, id: result.surveyInfo.id]
         }else{
             redirect(uri: request.getHeader('referer'))
         }
@@ -2512,7 +2559,7 @@ class SurveyController {
             }
         }
 
-        redirect action: 'renewalWithSurvey', params:[surveyConfigID: result.surveyConfig.id, id: result.surveyInfo.id]
+        redirect action: 'renewalEvaluation', params:[surveyConfigID: result.surveyConfig.id, id: result.surveyInfo.id]
 
     }
 
@@ -2543,7 +2590,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
-     Map<String,Object> setCompleteSurvey() {
+     Map<String,Object> setCompletedSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(401); return
@@ -2586,304 +2633,49 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
-     Map<String,Object> renewalWithSurvey() {
-        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-        if (!result.editable) {
-            response.sendError(401); return
+     Map<String,Object> renewalEvaluation() {
+        Map<String,Object> ctrlResult = surveyControllerService.renewalEvaluation(params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            response.sendError(401)
         }
-        result.superOrgType = []
-        if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            result.superOrgType << message(code:'consortium.superOrgType')
-        }
+        else {
 
-        result.parentSubscription = result.surveyConfig.subscription
-        result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
-        result.parentSuccessorSubscription = result.surveyConfig.subscription._getCalculatedSuccessor()
-        result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
+            if (params.exportXLSX) {
+                try {
+                    String message = g.message(code: 'renewalexport.renewals')
+                    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                    String datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
-
-        result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
-        if(result.parentSuccessorSubscription) {
-            String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
-            result.memberLicenses = License.executeQuery(query, [subscription: result.parentSuccessorSubscription, linkType: RDStore.LINKTYPE_LICENSE])
-        }
-
-        result.properties = []
-        result.properties.addAll(SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty.sort {
-            it.getI10n('name')
-        })
-
-
-        result.multiYearTermThreeSurvey = null
-        result.multiYearTermTwoSurvey = null
-
-        if (RDStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in result.properties.id) {
-            result.multiYearTermThreeSurvey = RDStore.SURVEY_PROPERTY_MULTI_YEAR_3
-            result.properties.remove(result.multiYearTermThreeSurvey)
-        }
-        if (RDStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in result.properties.id) {
-            result.multiYearTermTwoSurvey = RDStore.SURVEY_PROPERTY_MULTI_YEAR_2
-            result.properties.remove(result.multiYearTermTwoSurvey)
-
-        }
-
-        List currentParticipantIDs = []
-        result.orgsWithMultiYearTermSub = []
-        //result.orgsLateCommers = []
-        List orgsWithMultiYearTermOrgsID = []
-        List orgsLateCommersOrgsID = []
-        result.parentSubChilds.each { sub ->
-            if (sub.isCurrentMultiYearSubscriptionNew())
-            {
-                result.orgsWithMultiYearTermSub << sub
-                sub.getAllSubscribers().each { org ->
-                    orgsWithMultiYearTermOrgsID << org.id
-                }
-            }
-            else
-            {
-                sub.getAllSubscribers().each { org ->
-                    currentParticipantIDs << org.id
-                }
-            }
-        }
-
-
-        result.orgsWithParticipationInParentSuccessor = []
-        result.parentSuccessorSubChilds.each { sub ->
-            sub.getAllSubscribers().each { org ->
-                if(!(org.id in orgsWithMultiYearTermOrgsID) || !(org.id in currentParticipantIDs)) {
-                    result.orgsWithParticipationInParentSuccessor  << sub
-                }
-            }
-        }
-
-        result.orgsWithTermination = []
-
-            //Orgs with termination there sub
-            SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue  order by participant.sortname",
-                    [
-                     owner      : result.institution.id,
-                     surProperty: result.participationProperty.id,
-                     surConfig  : result.surveyConfig.id,
-                     refValue   : RDStore.YN_NO]).each {
-                Map newSurveyResult = [:]
-                newSurveyResult.participant = it.participant
-                newSurveyResult.resultOfParticipation = it
-                newSurveyResult.surveyConfig = result.surveyConfig
-                newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                        [parentSub  : result.parentSubscription,
-                         participant: it.participant
-                        ])[0]
-                if(result.properties) {
-                    if(result.properties) {
-                        String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
-                        //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
-                        //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
-                        String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
-                        newSurveyResult.properties = SurveyResult.executeQuery(query,[participant: it.participant,context: result.institution,cfg: result.surveyConfig,properties: result.properties])
+                    String filename
+                    if (params.filename) {
+                        filename =params.filename
                     }
-                }
-
-                result.orgsWithTermination << newSurveyResult
-
-            }
-
-
-        // Orgs that renew or new to Sub
-        result.orgsContinuetoSubscription = []
-        result.newOrgsContinuetoSubscription = []
-
-        List<SurveyResult> surveyResults = SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue order by participant.sortname",
-                    [
-                     owner      : result.institution.id,
-                     surProperty: result.participationProperty.id,
-                     surConfig  : result.surveyConfig.id,
-                     refValue   : RDStore.YN_YES])
-        surveyResults.each {
-                Map newSurveyResult = [:]
-                newSurveyResult.participant = it.participant
-                newSurveyResult.resultOfParticipation = it
-                newSurveyResult.surveyConfig = result.surveyConfig
-                if(result.properties) {
-                    String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
-                    //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
-                    //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
-                    String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
-                    newSurveyResult.properties = SurveyResult.executeQuery(query,[participant: it.participant,context: result.institution,cfg: result.surveyConfig,properties: result.properties])
-                }
-
-                if (it.participant.id in currentParticipantIDs) {
-
-                    newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                            [parentSub  : result.parentSubscription,
-                             participant: it.participant
-                            ])[0]
-
-                    //newSurveyResult.sub = result.parentSubscription.getDerivedSubscriptionBySubscribers(it.participant)
-
-                    if (result.multiYearTermTwoSurvey) {
-
-                        newSurveyResult.newSubPeriodTwoStartDate = null
-                        newSurveyResult.newSubPeriodTwoEndDate = null
-
-                        SurveyResult participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
-
-                        if (participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
-                            use(TimeCategory) {
-                                newSurveyResult.newSubPeriodTwoStartDate = newSurveyResult.sub.startDate ? (newSurveyResult.sub.endDate + 1.day) : null
-                                newSurveyResult.newSubPeriodTwoEndDate = newSurveyResult.sub.endDate ? (newSurveyResult.sub.endDate + 2.year) : null
-                                newSurveyResult.participantPropertyTwoComment = participantPropertyTwo.comment
-                            }
-                        }
-
-                    }
-                    if (result.multiYearTermThreeSurvey) {
-                        newSurveyResult.newSubPeriodThreeStartDate = null
-                        newSurveyResult.newSubPeriodThreeEndDate = null
-
-                        SurveyResult participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
-                        if (participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
-                            use(TimeCategory) {
-                                newSurveyResult.newSubPeriodThreeStartDate = newSurveyResult.sub.startDate ? (newSurveyResult.sub.endDate + 1.day) : null
-                                newSurveyResult.newSubPeriodThreeEndDate = newSurveyResult.sub.endDate ? (newSurveyResult.sub.endDate + 3.year) : null
-                                newSurveyResult.participantPropertyThreeComment = participantPropertyThree.comment
-                            }
-                        }
+                    else {
+                        filename = message + "_" + ctrlResult.result.surveyConfig.getSurveyName() + "_${datetoday}"
                     }
 
-                    result.orgsContinuetoSubscription << newSurveyResult
+                    Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                    Map<String, Object> selectedFields = [:]
+                    selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportRenewalResult(ctrlResult.result, selectedFields)
+                    // Write the output to a file
+
+                    response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    wb.write(response.outputStream)
+                    response.outputStream.flush()
+                    response.outputStream.close()
+                    wb.dispose()
                 }
-                if (!(it.participant.id in currentParticipantIDs) && !(it.participant.id in orgsLateCommersOrgsID) && !(it.participant.id in orgsWithMultiYearTermOrgsID)) {
-
-
-                    if (result.multiYearTermTwoSurvey) {
-
-                        newSurveyResult.newSubPeriodTwoStartDate = null
-                        newSurveyResult.newSubPeriodTwoEndDate = null
-
-                        SurveyResult participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
-
-                        if (participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
-                            use(TimeCategory) {
-                                newSurveyResult.newSubPeriodTwoStartDate = result.parentSubscription.startDate ? (result.parentSubscription.endDate + 1.day) : null
-                                newSurveyResult.newSubPeriodTwoEndDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + 2.year) : null
-                                newSurveyResult.participantPropertyTwoComment = participantPropertyTwo.comment
-                            }
-                        }
-
-                    }
-                    if (result.multiYearTermThreeSurvey) {
-                        newSurveyResult.newSubPeriodThreeStartDate = null
-                        newSurveyResult.newSubPeriodThreeEndDate = null
-
-                        SurveyResult participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
-                        if (participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
-                            use(TimeCategory) {
-                                newSurveyResult.newSubPeriodThreeStartDate = result.parentSubscription.startDate ? (result.parentSubscription.endDate + 1.day) : null
-                                newSurveyResult.newSubPeriodThreeEndDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + 3.year) : null
-                                newSurveyResult.participantPropertyThreeComment = participantPropertyThree.comment
-                            }
-                        }
-                    }
-
-                    result.newOrgsContinuetoSubscription << newSurveyResult
-                }
-
-
-            }
-
-
-        //Orgs without really result
-        result.orgsWithoutResult = []
-
-            SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue is null order by participant.sortname",
-                    [
-                     owner      : result.institution.id,
-                     surProperty: result.participationProperty.id,
-                     surConfig  : result.surveyConfig.id]).each {
-                Map newSurveyResult = [:]
-                newSurveyResult.participant = it.participant
-                newSurveyResult.resultOfParticipation = it
-                newSurveyResult.surveyConfig = result.surveyConfig
-                if(result.properties) {
-                    String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
-                    //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
-                    //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
-                    String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
-                    newSurveyResult.properties = SurveyResult.executeQuery(query,[participant: it.participant,context: result.institution,cfg: result.surveyConfig,properties: result.properties])
-                }
-
-
-                if (it.participant.id in currentParticipantIDs) {
-                    newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                            [parentSub  : result.parentSubscription,
-                             participant: it.participant
-                            ])[0]
-                    //newSurveyResult.sub = result.parentSubscription.getDerivedSubscriptionBySubscribers(it.participant)
-                } else {
-                    newSurveyResult.sub = null
-                }
-                result.orgsWithoutResult << newSurveyResult
-            }
-
-
-        //MultiYearTerm Subs
-        Integer sumParticipantWithSub = ((result.orgsContinuetoSubscription.groupBy {
-            it.participant.id
-        }.size()?:0) + (result.orgsWithTermination.groupBy { it.participant.id }.size()?:0) + (result.orgsWithMultiYearTermSub.size()?:0))
-
-        if (sumParticipantWithSub < result.parentSubChilds.size()?:0) {
-            /*def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
-
-            def removeSurveyResultOfOrg = []
-            result.orgsWithoutResult.each { surveyResult ->
-                if (surveyResult.participant.id in currentParticipantIDs && surveyResult.sub) {
-
-                    if (property.isRefdataValueType()) {
-                        if (surveyResult.sub.propertySet.find {
-                            it.type.id == property.id
-                        }?.refValue == RefdataValue.getByValueAndCategory('Yes', property.refdataCategory)) {
-
-                            result.orgsWithMultiYearTermSub << surveyResult.sub
-                            removeSurveyResultOfOrg << surveyResult
-                        }
-                    }
+                catch (Exception e) {
+                    log.error("Problem", e);
+                    response.sendError(500)
                 }
             }
-            removeSurveyResultOfOrg.each{ it
-                result.orgsWithoutResult?.remove(it)
-            }*/
 
-            result.orgsWithMultiYearTermSub = result.orgsWithMultiYearTermSub.sort{it.getAllSubscribers().sortname}
-
+            ctrlResult.result
         }
-
-
-        String message = g.message(code: 'renewalexport.renewals')
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-        String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-        String filename = message + "_" + result.surveyConfig.getSurveyName() +"_${datetoday}"
-        if (params.exportXLSX) {
-            try {
-                SXSSFWorkbook wb = (SXSSFWorkbook) exportRenewalResult(result)
-                // Write the output to a file
-
-                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
-                wb.dispose()
-            }
-            catch (Exception e) {
-                log.error("Problem", e);
-                response.sendError(500)
-            }
-        }
-
-        result
-
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
@@ -4248,302 +4040,6 @@ class SurveyController {
                 }
             }
         }
-    }
-
-    @DebugAnnotation(wtc = 0)
-    private def exportRenewalResult(Map renewalResult) {
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-        List titles = [g.message(code: 'org.sortname.label'),
-                       g.message(code: 'default.name.label'),
-
-                       renewalResult.participationProperty?.getI10n('name'),
-                       g.message(code: 'surveyResult.participantComment') + " " + renewalResult.participationProperty?.getI10n('name')
-        ]
-
-
-        titles << g.message(code: 'renewalWithSurvey.period')
-
-        if (renewalResult.multiYearTermTwoSurvey || renewalResult.multiYearTermThreeSurvey)
-        {
-            titles << g.message(code: 'renewalWithSurvey.periodComment')
-        }
-
-        renewalResult.properties.each { surveyProperty ->
-            titles << surveyProperty?.getI10n('name')
-            titles << g.message(code: 'surveyResult.participantComment') + " " + g.message(code: 'renewalWithSurvey.exportRenewal.to') +" " + surveyProperty?.getI10n('name')
-        }
-        titles << g.message(code: 'renewalWithSurvey.costBeforeTax')
-        titles << g.message(code: 'renewalWithSurvey.costAfterTax')
-        titles << g.message(code: 'renewalWithSurvey.costTax')
-        titles << g.message(code: 'renewalWithSurvey.currency')
-
-        List renewalData = []
-
-        renewalData.add([[field: g.message(code: 'renewalWithSurvey.continuetoSubscription.label')+ " (${renewalResult.orgsContinuetoSubscription.size() ?: 0})", style: 'positive']])
-
-        renewalResult.orgsContinuetoSubscription.sort{it.participant.sortname}.each { participantResult ->
-            List row = []
-
-            row.add([field: participantResult.participant.sortname ?: '', style: null])
-            row.add([field: participantResult.participant.name ?: '', style: null])
-            row.add([field: participantResult.resultOfParticipation.getResult() ?: '', style: null])
-
-            row.add([field: participantResult.resultOfParticipation.comment ?: '', style: null])
-
-
-            String period = ""
-            if (renewalResult.multiYearTermTwoSurvey) {
-                period = participantResult.newSubPeriodTwoStartDate ? sdf.format(participantResult.newSubPeriodTwoStartDate) : ""
-                period = participantResult.newSubPeriodTwoEndDate ? period + " - " +sdf.format(participantResult.newSubPeriodTwoEndDate) : ""
-            }
-
-            if (renewalResult.multiYearTermThreeSurvey) {
-                period = participantResult.newSubPeriodThreeStartDate ? sdf.format(participantResult.newSubPeriodThreeStartDate) : ""
-                period = participantResult.newSubPeriodThreeEndDate ? period + " - " +sdf.format(participantResult.newSubPeriodThreeEndDate) : ""
-            }
-
-            row.add([field: period ?: '', style: null])
-
-            if (renewalResult.multiYearTermTwoSurvey) {
-                row.add([field: participantResult.participantPropertyTwoComment ?: '', style: null])
-            }
-
-            if (renewalResult.multiYearTermThreeSurvey) {
-                row.add([field: participantResult.participantPropertyThreeComment ?: '', style: null])
-            }
-
-            participantResult.properties.sort { it.type.name }.each { participantResultProperty ->
-                row.add([field: participantResultProperty.getResult() ?: "", style: null])
-
-                row.add([field: participantResultProperty.comment ?: "", style: null])
-
-            }
-
-            CostItem costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(participantResult.resultOfParticipation.surveyConfig, participantResult.participant),RDStore.COST_ITEM_DELETED)
-
-            row.add([field: costItem?.costInBillingCurrency ? costItem.costInBillingCurrency : "", style: null])
-            row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem.costInBillingCurrencyAfterTax : "", style: null])
-            row.add([field: costItem?.taxKey ? costItem.taxKey.taxRate+'%' : "", style: null])
-            row.add([field: costItem?.billingCurrency ? costItem.billingCurrency.getI10n('value').split('-').first() : "", style: null])
-
-
-            renewalData.add(row)
-        }
-
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalWithSurvey.withMultiYearTermSub.label')+ " (${renewalResult.orgsWithMultiYearTermSub.size() ?: 0})", style: 'positive']])
-
-
-        renewalResult.orgsWithMultiYearTermSub.each { sub ->
-            List row = []
-
-            sub.getAllSubscribers().sort{it.sortname}.each{ subscriberOrg ->
-
-                row.add([field: subscriberOrg.sortname ?: '', style: null])
-                row.add([field: subscriberOrg.name ?: '', style: null])
-
-                row.add([field: '', style: null])
-
-                row.add([field: '', style: null])
-
-                String period = ""
-
-                period = sub.startDate ? sdf.format(sub.startDate) : ""
-                period = sub.endDate ? period + " - " +sdf.format(sub.endDate) : ""
-
-                row.add([field: period?: '', style: null])
-
-                if (renewalResult.multiYearTermTwoSurvey || renewalResult.multiYearTermThreeSurvey)
-                {
-                    row.add([field: '', style: null])
-                }
-
-            }
-
-
-            renewalData.add(row)
-        }
-
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalWithSurvey.orgsWithParticipationInParentSuccessor.label')+ " (${renewalResult.orgsWithParticipationInParentSuccessor.size() ?: 0})", style: 'positive']])
-
-
-        renewalResult.orgsWithParticipationInParentSuccessor.each { sub ->
-            List row = []
-
-            sub.getAllSubscribers().sort{it.sortname}.each{ subscriberOrg ->
-
-                row.add([field: subscriberOrg.sortname ?: '', style: null])
-                row.add([field: subscriberOrg.name ?: '', style: null])
-
-                row.add([field: '', style: null])
-
-                row.add([field: '', style: null])
-
-                String period = ""
-
-                period = sub.startDate ? sdf.format(sub.startDate) : ""
-                period = sub.endDate ? period + " - " +sdf.format(sub.endDate) : ""
-
-                row.add([field: period?: '', style: null])
-
-                if (renewalResult.multiYearTermTwoSurvey || renewalResult.multiYearTermThreeSurvey)
-                {
-                    row.add([field: '', style: null])
-                }
-            }
-
-
-            renewalData.add(row)
-        }
-
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalWithSurvey.newOrgstoSubscription.label')+ " (${renewalResult.newOrgsContinuetoSubscription.size() ?: 0})", style: 'positive']])
-
-
-        renewalResult.newOrgsContinuetoSubscription.sort{it.participant.sortname}.each { participantResult ->
-            List row = []
-
-            row.add([field: participantResult.participant.sortname ?: '', style: null])
-            row.add([field: participantResult.participant.name ?: '', style: null])
-
-            row.add([field: participantResult.resultOfParticipation.getResult() ?: '', style: null])
-
-            row.add([field: participantResult.resultOfParticipation.comment ?: '', style: null])
-
-
-            String period = ""
-            if (renewalResult.multiYearTermTwoSurvey) {
-                period = participantResult.newSubPeriodTwoStartDate ? sdf.format(participantResult.newSubPeriodTwoStartDate) : ""
-                period = period + " - " + participantResult.newSubPeriodTwoEndDate ? sdf.format(participantResult.newSubPeriodTwoEndDate) : ""
-            }
-            period = ""
-            if (renewalResult.multiYearTermThreeSurvey) {
-                period = participantResult.newSubPeriodThreeStartDate ?: ""
-                period = period + " - " + participantResult.newSubPeriodThreeEndDate ?: ""
-            }
-            row.add([field: period ?: '', style: null])
-
-            if (renewalResult.multiYearTermTwoSurvey) {
-                row.add([field: participantResult.participantPropertyTwoComment ?: '', style: null])
-            }
-
-            if (renewalResult.multiYearTermThreeSurvey) {
-                row.add([field: participantResult.participantPropertyThreeComment ?: '', style: null])
-            }
-
-            participantResult.properties.sort {
-                it.type.name
-            }.each { participantResultProperty ->
-                row.add([field: participantResultProperty.getResult() ?: "", style: null])
-
-                row.add([field: participantResultProperty.comment ?: "", style: null])
-
-            }
-
-            CostItem costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(participantResult.resultOfParticipation.surveyConfig, participantResult.participant),RDStore.COST_ITEM_DELETED)
-            row.add([field: costItem?.costInBillingCurrency ? costItem.costInBillingCurrency : "", style: null])
-            row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem.costInBillingCurrencyAfterTax : "", style: null])
-            row.add([field: costItem?.taxKey ? costItem.taxKey.taxRate+'%' : "", style: null])
-            row.add([field: costItem?.billingCurrency ? costItem.billingCurrency.getI10n('value').split('-').first() : "", style: null])
-
-            renewalData.add(row)
-        }
-
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'renewalWithSurvey.withTermination.label')+ " (${renewalResult.orgsWithTermination.size() ?: 0})", style: 'negative']])
-
-
-        renewalResult.orgsWithTermination.sort{it.participant.sortname}.each { participantResult ->
-            List row = []
-
-            row.add([field: participantResult.participant.sortname ?: '', style: null])
-            row.add([field: participantResult.participant.name ?: '', style: null])
-
-            row.add([field: participantResult.resultOfParticipation.getResult() ?: '', style: null])
-
-            row.add([field: participantResult.resultOfParticipation.comment ?: '', style: null])
-
-            row.add([field: '', style: null])
-
-            if (renewalResult.multiYearTermTwoSurvey || renewalResult.multiYearTermThreeSurvey)
-            {
-                row.add([field: '', style: null])
-            }
-
-            participantResult.properties.sort {
-                it.type.name
-            }.each { participantResultProperty ->
-                row.add([field: participantResultProperty.getResult() ?: "", style: null])
-
-                row.add([field: participantResultProperty.comment ?: "", style: null])
-
-            }
-
-            CostItem costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(participantResult.resultOfParticipation.surveyConfig, participantResult.participant),RDStore.COST_ITEM_DELETED)
-
-            row.add([field: costItem?.costInBillingCurrency ? costItem.costInBillingCurrency : "", style: null])
-            row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem.costInBillingCurrencyAfterTax : "", style: null])
-            row.add([field: costItem?.taxKey ? costItem.taxKey.taxRate+'%' : "", style: null])
-            row.add([field: costItem?.billingCurrency ? costItem.billingCurrency.getI10n('value').split('-').first() : "", style: null])
-
-            renewalData.add(row)
-        }
-
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: g.message(code: 'surveys.tabs.termination')+ " (${renewalResult.orgsWithoutResult.size()})", style: 'negative']])
-
-
-        renewalResult.orgsWithoutResult.sort{it.participant.sortname}.each { participantResult ->
-            List row = []
-
-            row.add([field: participantResult.participant.sortname ?: '', style: null])
-            row.add([field: participantResult.participant.name ?: '', style: null])
-
-            row.add([field: participantResult.resultOfParticipation.getResult() ?: '', style: null])
-
-            row.add([field: participantResult.resultOfParticipation.comment ?: '', style: null])
-
-            row.add([field: '', style: null])
-
-            if (renewalResult.multiYearTermTwoSurvey || renewalResult.multiYearTermThreeSurvey)
-            {
-                row.add([field: '', style: null])
-            }
-
-            participantResult.properties.sort {
-                it.type.name
-            }.each { participantResultProperty ->
-                row.add([field: participantResultProperty.getResult() ?: "", style: null])
-
-                row.add([field: participantResultProperty.comment ?: "", style: null])
-
-            }
-
-            CostItem costItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(participantResult.resultOfParticipation.surveyConfig, participantResult.participant),RDStore.COST_ITEM_DELETED)
-
-            row.add([field: costItem?.costInBillingCurrency ? costItem.costInBillingCurrency : "", style: null])
-            row.add([field: costItem?.costInBillingCurrencyAfterTax ? costItem.costInBillingCurrencyAfterTax : "", style: null])
-            row.add([field: costItem?.taxKey ? costItem.taxKey.taxRate+'%' : "", style: null])
-            row.add([field: costItem?.billingCurrency ? costItem.billingCurrency.getI10n('value').split('-').first() : "", style: null])
-
-            renewalData.add(row)
-        }
-
-
-        Map sheetData = [:]
-        sheetData[message(code: 'renewalexport.renewals')] = [titleRow: titles, columnData: renewalData]
-        return exportService.generateXLSXWorkbook(sheetData)
     }
 
     /*

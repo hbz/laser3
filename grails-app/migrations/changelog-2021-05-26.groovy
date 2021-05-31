@@ -60,4 +60,31 @@ databaseChangeLog = {
         }
     }
 
+
+    changeSet(author: "djebeniani (generated)", id: "1622018225727-7") {
+        addColumn(tableName: "survey_info") {
+            column(name: "surin_is_renewal_sent", type: "boolean") {
+                constraints(nullable: "true")
+            }
+        }
+    }
+
+    changeSet(author: "djebeniani (hand-coded)", id: "1622018225727-8") {
+        grailsChange {
+            change {
+                sql.execute("update survey_info set surin_is_renewal_sent = false where  surin_is_renewal_sent is null")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "djebeniani (hand-coded)", id: "1622018225727-9") {
+        grailsChange {
+            change {
+                sql.execute("alter table survey_info alter column surin_is_renewal_sent set not null;")
+            }
+            rollback {}
+        }
+    }
+
 }

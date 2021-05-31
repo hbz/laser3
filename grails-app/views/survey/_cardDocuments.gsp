@@ -15,11 +15,6 @@
     }
     boolean editable2 = accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
 
-
-    if(ownobj.subscription) {
-        baseItems = baseItems + ownobj?.subscription?.documents?.findAll { it.doctype == RefdataValue.getByValueAndCategory("Usage Statistics", RDConstants.DOCUMENT_TYPE) }.sort { it.owner?.title }
-
-    }
 %>
 
 <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER,ORG_CONSORTIUM")}">

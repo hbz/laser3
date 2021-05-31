@@ -1869,6 +1869,7 @@ join sub.orgRelations or_sub where
 
         if(sendMailToSurveyOwner) {
             surveyService.emailToSurveyOwnerbyParticipationFinish(surveyInfo, result.institution)
+            surveyService.emailToSurveyParticipationByFinish(surveyInfo, result.institution)
         }
 
 

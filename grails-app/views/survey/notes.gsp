@@ -1,10 +1,11 @@
 <%@ page import="de.laser.SurveyConfig;" %>
 <!doctype html>
 <html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'default.notes.label')}</title>
+<head>
+    <meta name="layout" content="laser">
+    <title>${message(code: 'laser')} : ${message(code: 'default.notes.label')}</title>
 </head>
+
 <body>
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
@@ -18,7 +19,12 @@
 <semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
 </h1>
 
-    <g:render template="nav" />
+<g:render template="nav"/>
+
+<semui:messages data="${flash}"/>
+
+
+<br/>
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
     <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
@@ -34,7 +40,7 @@
     : ${message(code: 'default.notes.label')}
 </h2>
 
-    <g:render template="/templates/notes/table" model="${[instance: surveyConfig, redirect: 'notes']}"/>
+<g:render template="/templates/notes/table" model="${[instance: surveyConfig, redirect: 'notes']}"/>
 
 </body>
 </html>

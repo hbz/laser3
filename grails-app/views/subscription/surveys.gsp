@@ -18,7 +18,7 @@
 
 <h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
 <semui:xEditable owner="${subscription}" field="name"/>
-<semui:totalNumber total="${surveys.size() ?: 0}"/>
+<semui:totalNumber total="${surveys.size()}"/>
 </h1>
 <semui:anualRings object="${subscription}" controller="subscription" action="surveys"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
