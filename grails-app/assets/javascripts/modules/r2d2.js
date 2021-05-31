@@ -328,6 +328,11 @@ r2d2 = {
                                 return "Das Enddatum darf nicht vor dem Anfangsdatum liegen.";
                         }
                     }
+                    if (dVal.includes('maxlength')) {
+                        if(value.length > $(this).attr("data-maxlength")) {
+                            return "Der eingegebene Wert ist zu lang!";
+                        }
+                    }
                 }
             },
             success: function(response) {

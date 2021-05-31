@@ -115,6 +115,19 @@
                     <g:if test="${!isProviderOrAgency}">
                         <dl>
                             <dt>
+                                <g:message code="org.linkResolverBase.label"/>
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.linkResolverBase.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <semui:xEditable owner="${orgInstance}" field="linkResolverBaseURL" />
+                                <br />&nbsp<br />&nbsp<br />
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
                                 <g:message code="org.legalPatronName.label" />
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                       data-content="${message(code: 'org.legalPatronName.expl')}">

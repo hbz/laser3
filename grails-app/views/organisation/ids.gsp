@@ -80,12 +80,14 @@
                               model="[orgInstance:orgInstance, tableRowNr:1, showGlobalUid:true, editable:false]"
                     />
                     <g:if test="${orgInstance.gokbId}">
-                        <g:render template="idTableRow"
-                                  model="[orgInstance:orgInstance, tableRowNr:2, showWekbId:true, editable:false]"
-                        />
+                        <g:render template="idTableRow" model="[orgInstance:orgInstance, tableRowNr:2, showWekbId:true, editable:false]"/>
+                        <g:set var="globalCount" value="${2}"/>
                     </g:if>
+                    <g:else>
+                        <g:set var="globalCount" value="${1}"/>
+                    </g:else>
                     <g:each in="${orgInstance.ids?.toSorted{it.ns?.ns?.toLowerCase()}}" var="id" status="rowno">
-                        <g:if test="${rowno == 0}"><g:set var="rowno" value="${rowno+=1}"/></g:if>
+                        <g:if test="${rowno == 0}"><g:set var="rowno" value="${rowno+=globalCount}"/></g:if>
                         <g:render template="idTableRow"
                                   model="[orgInstance:orgInstance, tableRowNr:rowno+1, id:id, editable:editable_identifier]"
                          />
