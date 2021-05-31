@@ -14,6 +14,7 @@ import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
 import grails.util.Holders
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -34,6 +35,7 @@ class SurveyService {
     String replyTo
     GenericOIDService genericOIDService
     SubscriptionService subscriptionService
+    FilterService filterService
 
     SimpleDateFormat formatter = DateUtils.getSDF_dmy()
     String from
@@ -1229,6 +1231,76 @@ class SurveyService {
                         surveyConfig: newSurveyConfig).save()
             }
         }
+    }
+
+    private def getSurveyParticipantCounts_New(Org participant, GrailsParameterMap parameterMap){
+        Map<String, Object> result = [:]
+
+        Org contextOrg = contextService.getOrg()
+
+
+        Map fsq = [:]
+        if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM') {
+
+            result = setSurveyParticipantCounts(result, 'new', parameterMap, participant, contextOrg)
+
+            result = setSurveyParticipantCounts(result, 'processed', parameterMap, participant, contextOrg)
+
+            result = setSurveyParticipantCounts(result, 'finish', parameterMap, participant, contextOrg)
+
+            result = setSurveyParticipantCounts(result, 'notFinish', parameterMap, participant, contextOrg)
+
+            result = setSurveyParticipantCounts(result, 'termination', parameterMap, participant, contextOrg)
+
+
+        }else {
+
+            result = setSurveyParticipantCounts(result, 'new', parameterMap, participant, null)
+
+            result = setSurveyParticipantCounts(result, 'processed', parameterMap, participant, null)
+
+            result = setSurveyParticipantCounts(result, 'finish', parameterMap, participant, null)
+
+            result = setSurveyParticipantCounts(result, 'notFinish', parameterMap, participant, null)
+
+            result = setSurveyParticipantCounts(result, 'termination', parameterMap, participant, null)
+        }
+        return result
+    }
+
+    private Map setSurveyParticipantCounts(Map result, String tab, GrailsParameterMap parameterMap, Org participant, Org owner = null){
+        SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
+        Map fsq = [:]
+
+        if(owner){
+            parameterMap.owner = owner
+        }
+        parameterMap.tab = tab
+        fsq = filterService.getParticipantSurveyQuery_New(parameterMap, sdFormat, participant)
+        result."${tab}" = SurveyResult.executeQuery(fsq.query, fsq.queryParams, parameterMap).groupBy { it.id[1] }.size()
+
+        return result
+
+    }
+
+    private def getSurveyParticipantCounts(Org participant){
+        Map<String, Object> result = [:]
+
+        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and sr.finishDate is null))",
+                [status: RDStore.SURVEY_SURVEY_STARTED,
+                 participant: participant]).groupBy {it.id[1]}.size()
+
+        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and sr.finishDate is null))",
+                [status: RDStore.SURVEY_SURVEY_STARTED,
+                 participant: participant]).groupBy {it.id[1]}.size()
+
+        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
+                [participant: participant]).groupBy {it.id[1]}.size()
+
+        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status in (:status))",
+                [status: [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED],
+                 participant: participant]).groupBy {it.id[1]}.size()
+        return result
     }
 
 }
