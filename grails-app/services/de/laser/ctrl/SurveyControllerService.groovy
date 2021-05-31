@@ -346,9 +346,9 @@ class SurveyControllerService {
             //MultiYearTerm Subs
             Integer sumParticipantWithSub = ((result.orgsContinuetoSubscription.groupBy {
                 it.participant.id
-            }.size() ?: 0) + (result.orgsWithTermination.groupBy { it.participant.id }.size() ?: 0) + (result.orgsWithMultiYearTermSub.size() ?: 0))
+            }.size()) + (result.orgsWithTermination.groupBy { it.participant.id }.size()) + (result.orgsWithMultiYearTermSub.size()))
 
-            if (sumParticipantWithSub < result.parentSubChilds.size() ?: 0) {
+            if (sumParticipantWithSub < result.parentSubChilds.size()) {
                 /*def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
 
             def removeSurveyResultOfOrg = []
@@ -373,6 +373,9 @@ class SurveyControllerService {
                 result.orgsWithMultiYearTermSub = result.orgsWithMultiYearTermSub.sort { it.getAllSubscribers().sortname }
 
             }
+
+            result.totalOrgs = result.orgsContinuetoSubscription.size() + result.newOrgsContinuetoSubscription.size() + result.orgsWithMultiYearTermSub.size()  + result.orgsWithTermination.size() + result.orgsWithParticipationInParentSuccessor.size()
+
             result
         }
         [result:result,status:STATUS_OK]

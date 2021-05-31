@@ -119,9 +119,6 @@ ${surveyInfo.name}
         </br>
         </h3>--}%
 
-        <g:set var="totalOrgs"
-               value="${(orgsContinuetoSubscription?.size() ?: 0) + (newOrgsContinuetoSubscription?.size() ?: 0) + (orgsWithMultiYearTermSub?.size() ?: 0) + (orgsLateCommers?.size() ?: 0) + (orgsWithTermination?.size() ?: 0) + (orgsWithParticipationInParentSuccessor?.size() ?: 0)}"/>
-
         <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
         <div class="ui horizontal segments">
             <div class="ui segment center aligned">
