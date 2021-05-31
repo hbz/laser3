@@ -212,7 +212,7 @@
                             </g:each>
                             <br />
                         </g:if>
-                        <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" overwriteEditable="${editable}"/>
+                        <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" overwriteEditable="${editable}" validation="maxlength" maxlength="255"/>
                     </td>
                     <g:if test="${!fixedSubscription}">
                         <td>
@@ -259,9 +259,9 @@
                         <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
                     </td>
                     <td>
-                        <semui:xEditable owner="${ci}" type="date" field="startDate" overwriteEditable="${editable}"/>
+                        <semui:xEditable owner="${ci}" type="date" field="startDate" overwriteEditable="${editable}" validation="datesCheck"/>
                         <br />
-                        <semui:xEditable owner="${ci}" type="date" field="endDate" overwriteEditable="${editable}"/>
+                        <semui:xEditable owner="${ci}" type="date" field="endDate" overwriteEditable="${editable}" validation="datesCheck"/>
                     </td>
                     <td>
                         ${ci.costItemElement?.getI10n("value")}

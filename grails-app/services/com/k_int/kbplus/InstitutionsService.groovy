@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.Doc
 import de.laser.DocContext
+import de.laser.Identifier
 import de.laser.License
 import de.laser.Org
 import de.laser.OrgRole
@@ -78,6 +79,14 @@ class InstitutionsService {
                             newProp.instanceOf = lp
                             newProp.save()
                         }
+                    }
+                }
+
+                Identifier.findAllByLic(base).each { Identifier id ->
+                    AuditConfig ac = AuditConfig.getConfig(id)
+
+                    if(ac) {
+                        Identifier.constructWithFactoryResult([value: id.value, parent: id, reference: licenseInstance, namespace: id.ns])
                     }
                 }
 

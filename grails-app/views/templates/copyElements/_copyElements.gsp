@@ -562,6 +562,12 @@
                     </td>
                     <g:if test="${isConsortialObjects}">
                         <td class="center aligned">
+                            <div class="ui checkbox la-toggle-radio la-inherit">
+                                <g:each in="${sourceIdentifiers}" var="ident">
+                                    <g:checkBox name="copyObject.toggleAudit" value="${genericOIDService.getOID(ident)}"
+                                                checked="${AuditConfig.getConfig(ident) ? 'true' : 'false'}"/>
+                                </g:each>
+                            </div>
                         </td>
                     </g:if>
 
@@ -585,6 +591,11 @@
                                 <div data-oid="${genericOIDService.getOID(ident)}">
                                     <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br />
                                 </div>
+                                <%
+                                    if (AuditConfig.getConfig(ident)) {
+                                        println '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                    }
+                                %>
                             </g:each>
                             </div>
                         </td>

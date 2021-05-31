@@ -98,7 +98,7 @@
                     </td>
                     <td>
                         <g:if test="${editable}">
-                            <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
+                            <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" validation="maxlength" maxlength="5"/>
                         </g:if>
                         <g:else>
                             ${ci.costTitle}
@@ -145,9 +145,9 @@
                         <semui:xEditableRefData config="${de.laser.helper.RDConstants.COST_ITEM_STATUS}" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
                     </td>
                     <td>
-                        <semui:xEditable owner="${ci}" type="date" field="startDate" />
+                        <semui:xEditable owner="${ci}" type="date" field="startDate" validation="datesCheck"/>
                         <br />
-                        <semui:xEditable owner="${ci}" type="date" field="endDate" />
+                        <semui:xEditable owner="${ci}" type="date" field="endDate" validation="datesCheck"/>
                     </td>
                     <td>
                         ${ci.costItemElement?.getI10n("value")}

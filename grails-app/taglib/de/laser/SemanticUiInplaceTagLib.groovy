@@ -60,9 +60,11 @@ class SemanticUiInplaceTagLib {
             out << " data-pk=\"${oid}\""
             out << " data-name=\"${attrs.field}\""
 
-
             if (attrs.validation) {
                 out << " data-validation=\"${attrs.validation}\" "
+            }
+            if (attrs.maxlength) {
+                out << " data-maxlength=\"${attrs.maxlength}\" "
             }
 
             switch (attrs.type) {
