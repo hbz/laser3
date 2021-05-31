@@ -10,19 +10,18 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ReaderNumberController  {
 
-	//TODO [ticket=2937]: as there are minor bugs in the current release, the closures are going to be deployed (and merged into OrganisationController/-Service) along with the bugfixes.
-
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
 			SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+			Map<String, Object> rnData = params.clone()
 			if (params.dueDate)
-				params.dueDate = sdf.parse(params.dueDate)
+				rnData.dueDate = sdf.parse(params.dueDate)
 
-			params.org = Org.get(params.orgid)
-			params.referenceGroup = params.referenceGroup.isLong() ? RefdataValue.findById(Long.parseLong(params.referenceGroup)).getI10n('value') : params.referenceGroup
-			ReaderNumber numbersInstance = new ReaderNumber(params)
+			rnData.org = Org.get(params.orgid)
+			rnData.referenceGroup = RefdataValue.get(params.referenceGroup).getI10n('value')
+			ReaderNumber numbersInstance = new ReaderNumber(rnData)
 			if (! numbersInstance.save()) {
 				flash.error = message(code: 'default.not.created.message', args: [message(code: 'readerNumber.number.label')])
 				log.error(numbersInstance.errors.toString())
@@ -36,14 +35,15 @@ class ReaderNumberController  {
     def edit() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
 			ReaderNumber numbersInstance = ReaderNumber.get(params.id)
+			Map<String, Object> rnData = params.clone()
 			if (! numbersInstance) {
 				flash.message = message(code: 'default.not.found.message', args: [message(code: 'readerNumber.label'), params.id])
 			}
 			SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-			params.referenceGroup = params.referenceGroup.isLong() ? RefdataValue.findById(Long.parseLong(params.referenceGroup)).getI10n('value') : params.referenceGroup
+			rnData.referenceGroup = RefdataValue.get(params.referenceGroup).getI10n('value')
 			if(params.dueDate)
-				params.dueDate = sdf.parse(params.dueDate)
-			numbersInstance.properties = params
+				rnData.dueDate = sdf.parse(params.dueDate)
+			numbersInstance.properties = rnData
 			if (! numbersInstance.save()) {
 				flash.error = message(code:'default.not.updated.message', args: [message(code: 'readerNumber.label'), numbersInstance.id])
 				log.error(numbersInstance.errors.toString())
@@ -58,7 +58,11 @@ class ReaderNumberController  {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
 			List<Long> numbersToDelete = []
 			Org org = Org.get(params.org)
-			if(params.dueDate) {
+			if(params.number) {
+				ReaderNumber rn = ReaderNumber.get(params.number)
+				rn.delete()
+			}
+			else if(params.dueDate) {
 				Date dueDate = DateUtils.parseDateGeneric(params.dueDate)
 				numbersToDelete.addAll(ReaderNumber.findAllByDueDateAndOrg(dueDate,org).collect{ ReaderNumber rn -> rn.id })
 			}
