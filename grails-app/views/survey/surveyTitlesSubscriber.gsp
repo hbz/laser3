@@ -125,7 +125,7 @@
                     <div class="header"><g:message code="renewEntitlementsWithSurvey.currentFixedEntitlements"/></div>
                     <dl>
                         <dt class="control-label">${message(code: 'myinst.selectPackages.pkg_titles')}</dt>
-                        <dd>${iesFix.size() ?: 0}</dd>
+                        <dd>${iesFix.size()}</dd>
                     </dl>
                     <dl>
                         <dt class="control-label">${message(code: 'tipp.price.listPrice')}</dt>
@@ -145,7 +145,7 @@
                     <div class="header"><g:message code="renewEntitlementsWithSurvey.currentEntitlements"/></div>
                     <dl>
                         <dt class="control-label">${message(code: 'myinst.selectPackages.pkg_titles')}</dt>
-                        <dd>${ies.size() ?: 0}</dd>
+                        <dd>${ies.size()}</dd>
                     </dl>
                     <dl>
                         <dt class="control-label">${message(code: 'tipp.price.listPrice')}</dt>

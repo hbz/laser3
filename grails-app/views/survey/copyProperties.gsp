@@ -222,7 +222,7 @@ ${surveyInfo.name}
                             <br/>
                             <g:link controller="subscription" action="members"
                                     id="${parentSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
-                            <semui:totalNumber total="${parentSubscription.getDerivedSubscribers().size() ?: 0}"/>
+                            <semui:totalNumber total="${parentSubscription.getDerivedSubscribers().size()}"/>
                         </g:if>
                     </h3>
                 </div>
@@ -242,7 +242,7 @@ ${surveyInfo.name}
                             <g:link controller="subscription" action="members"
                                     id="${parentSuccessorSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
                             <semui:totalNumber
-                                    total="${parentSuccessorSubscription.getDerivedSubscribers().size() ?: 0}"/>
+                                    total="${parentSuccessorSubscription.getDerivedSubscribers().size()}"/>
 
                         </g:if>
                     </h3>

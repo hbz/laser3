@@ -177,38 +177,38 @@ ${surveyInfo.name}
         <div class="ui top attached tabular menu">
             <a class="active item" data-tab="orgsContinuetoSubscription">
                 ${message(code: 'renewalEvaluation.continuetoSubscription.label')} <semui:totalNumber
-                        total="${orgsContinuetoSubscription?.size() ?: 0}"/>
+                        total="${orgsContinuetoSubscription.size()}"/>
             </a>
 
             <a class="item" data-tab="newOrgsContinuetoSubscription">
                 ${message(code: 'renewalEvaluation.newOrgstoSubscription.label')} <semui:totalNumber
-                        total="${newOrgsContinuetoSubscription?.size() ?: 0}"/>
+                        total="${newOrgsContinuetoSubscription.size()}"/>
             </a>
 
             <a class="item" data-tab="orgsWithMultiYearTermSub">
                 ${message(code: 'renewalEvaluation.withMultiYearTermSub.label')} <semui:totalNumber
-                        total="${orgsWithMultiYearTermSub?.size() ?: 0}"/>
+                        total="${orgsWithMultiYearTermSub.size()}"/>
             </a>
 
             <a class="item" data-tab="orgsWithParticipationInParentSuccessor">
                 ${message(code: 'renewalEvaluation.orgsWithParticipationInParentSuccessor.label')} <semui:totalNumber
-                        total="${orgsWithParticipationInParentSuccessor?.size() ?: 0}"/>
+                        total="${orgsWithParticipationInParentSuccessor.size()}"/>
             </a>
 
             <a class="item" data-tab="orgsWithTermination">
                 ${message(code: 'renewalEvaluation.withTermination.label')} <semui:totalNumber
-                        total="${orgsWithTermination?.size() ?: 0}"/>
+                        total="${orgsWithTermination.size()}"/>
             </a>
 
            %{-- <a class="item" data-tab="orgsWithoutResult">
                 ${message(code: 'renewalEvaluation.orgsWithoutResult.label')} <semui:totalNumber
-                        total="${orgsWithoutResult?.size() ?: 0}"/>
+                        total="${orgsWithoutResult.size()}"/>
             </a>--}%
         </div>
 
         <div class="ui bottom attached active tab segment" data-tab="orgsContinuetoSubscription">
             <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.continuetoSubscription.label')} <semui:totalNumber
-                    total="${orgsContinuetoSubscription?.size() ?: 0}"/></h4>
+                    total="${orgsContinuetoSubscription.size()}"/></h4>
 
             <g:render template="renewalResult" model="[participantResults: orgsContinuetoSubscription]"/>
         </div>
@@ -216,14 +216,14 @@ ${surveyInfo.name}
 
         <div class="ui bottom attached tab segment" data-tab="newOrgsContinuetoSubscription">
             <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.newOrgstoSubscription.label')} <semui:totalNumber
-                    total="${newOrgsContinuetoSubscription?.size() ?: 0}"/></h4>
+                    total="${newOrgsContinuetoSubscription.size()}"/></h4>
 
             <g:render template="renewalResult" model="[participantResults: newOrgsContinuetoSubscription]"/>
         </div>
 
         <div class="ui bottom attached tab segment" data-tab="orgsWithTermination">
             <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.withTermination.label')} <semui:totalNumber
-                    total="${orgsWithTermination?.size() ?: 0}"/></h4>
+                    total="${orgsWithTermination.size()}"/></h4>
 
             <g:render template="renewalResult" model="[participantResults: orgsWithTermination]"/>
         </div>
@@ -231,7 +231,7 @@ ${surveyInfo.name}
 
         %{--<div class="ui bottom attached tab segment" data-tab="orgsWithoutResult">
             <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.orgsWithoutResult.label')} (${message(code: 'surveys.tabs.termination')})<semui:totalNumber
-                    total="${orgsWithoutResult?.size() ?: 0}"/></h4>
+                    total="${orgsWithoutResult.size()}"/></h4>
 
             <g:render template="renewalResult" model="[participantResults: orgsWithoutResult]"/>
         </div>--}%
@@ -239,7 +239,7 @@ ${surveyInfo.name}
 
         <div class="ui bottom attached tab segment" data-tab="orgsWithMultiYearTermSub">
             <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.withMultiYearTermSub.label')} <semui:totalNumber
-                    total="${orgsWithMultiYearTermSub?.size() ?: 0}"/></h4>
+                    total="${orgsWithMultiYearTermSub.size()}"/></h4>
 
             <table class="ui celled la-table table">
                 <thead>
@@ -293,7 +293,7 @@ ${surveyInfo.name}
 
         <div class="ui bottom attached tab segment" data-tab="orgsWithParticipationInParentSuccessor">
             <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.orgsWithParticipationInParentSuccessor.label')} <semui:totalNumber
-                    total="${orgsWithParticipationInParentSuccessor?.size() ?: 0}"/></h4>
+                    total="${orgsWithParticipationInParentSuccessor.size() }"/></h4>
 
             <table class="ui celled la-table table">
                 <thead>

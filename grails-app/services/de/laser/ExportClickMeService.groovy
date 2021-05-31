@@ -120,7 +120,7 @@ class ExportClickMeService {
 
         List renewalData = []
 
-        renewalData.add([[field: messageSource.getMessage('renewalEvaluation.continuetoSubscription.label', null, locale) + " (${renewalResult.orgsContinuetoSubscription.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: messageSource.getMessage('renewalEvaluation.continuetoSubscription.label', null, locale) + " (${renewalResult.orgsContinuetoSubscription.size()})", style: 'positive']])
 
         renewalResult.orgsContinuetoSubscription.sort { it.participant.sortname }.each { participantResult ->
             setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey)
@@ -129,7 +129,7 @@ class ExportClickMeService {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: messageSource.getMessage('renewalEvaluation.withMultiYearTermSub.label', null, locale) + " (${renewalResult.orgsWithMultiYearTermSub.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: messageSource.getMessage('renewalEvaluation.withMultiYearTermSub.label', null, locale) + " (${renewalResult.orgsWithMultiYearTermSub.size()})", style: 'positive']])
 
 
         renewalResult.orgsWithMultiYearTermSub.each { sub ->
@@ -162,7 +162,7 @@ class ExportClickMeService {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: messageSource.getMessage('renewalEvaluation.orgsWithParticipationInParentSuccessor.label', null, locale) + " (${renewalResult.orgsWithParticipationInParentSuccessor.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: messageSource.getMessage('renewalEvaluation.orgsWithParticipationInParentSuccessor.label', null, locale) + " (${renewalResult.orgsWithParticipationInParentSuccessor.size()})", style: 'positive']])
 
 
         renewalResult.orgsWithParticipationInParentSuccessor.each { sub ->
@@ -194,7 +194,7 @@ class ExportClickMeService {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: messageSource.getMessage('renewalEvaluation.newOrgstoSubscription.label', null, locale) + " (${renewalResult.newOrgsContinuetoSubscription.size() ?: 0})", style: 'positive']])
+        renewalData.add([[field: messageSource.getMessage('renewalEvaluation.newOrgstoSubscription.label', null, locale) + " (${renewalResult.newOrgsContinuetoSubscription.size()})", style: 'positive']])
 
 
         renewalResult.newOrgsContinuetoSubscription.sort{it.participant.sortname}.each { participantResult ->
@@ -204,7 +204,7 @@ class ExportClickMeService {
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
         renewalData.add([[field: '', style: null]])
-        renewalData.add([[field: messageSource.getMessage('renewalEvaluation.withTermination.label', null, locale) + " (${renewalResult.orgsWithTermination.size() ?: 0})", style: 'negative']])
+        renewalData.add([[field: messageSource.getMessage('renewalEvaluation.withTermination.label', null, locale) + " (${renewalResult.orgsWithTermination.size()})", style: 'negative']])
 
 
         renewalResult.orgsWithTermination.sort{it.participant.sortname}.each { participantResult ->
