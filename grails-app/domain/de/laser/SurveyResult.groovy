@@ -169,4 +169,16 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
     def afterDelete() {
         super.afterDeleteHandler()
     }
+
+    Subscription getParticipantSubscription(){
+        Subscription subscription
+        if (surveyConfig.subscription){
+            subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                    [parentSub  : surveyConfig.subscription,
+                     participant: participant
+                    ])[0]
+        }
+
+        return subscription
+    }
 }

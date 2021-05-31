@@ -191,22 +191,19 @@ class SurveyControllerService {
                             owner      : result.institution.id,
                             surProperty: result.participationProperty.id,
                             surConfig  : result.surveyConfig.id,
-                            refValue   : RDStore.YN_NO]).each {
+                            refValue   : RDStore.YN_NO]).each { SurveyResult surveyResult ->
                 Map newSurveyResult = [:]
-                newSurveyResult.participant = it.participant
-                newSurveyResult.resultOfParticipation = it
+                newSurveyResult.participant = surveyResult.participant
+                newSurveyResult.resultOfParticipation = surveyResult
                 newSurveyResult.surveyConfig = result.surveyConfig
-                newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                        [parentSub  : result.parentSubscription,
-                         participant: it.participant
-                        ])[0]
+                newSurveyResult.sub = surveyResult.participantSubscription
                 if (result.properties) {
                     if (result.properties) {
                         String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
-                        //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
+                        //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(surveyResult.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
                         //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
                         String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
-                        newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: it.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
+                        newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
                     }
                 }
 
@@ -225,34 +222,31 @@ class SurveyControllerService {
                             surProperty: result.participationProperty.id,
                             surConfig  : result.surveyConfig.id,
                             refValue   : RDStore.YN_YES])
-            surveyResults.each {
+            surveyResults.each { SurveyResult surveyResult ->
                 Map newSurveyResult = [:]
-                newSurveyResult.participant = it.participant
-                newSurveyResult.resultOfParticipation = it
+                newSurveyResult.participant = surveyResult.participant
+                newSurveyResult.resultOfParticipation = surveyResult
                 newSurveyResult.surveyConfig = result.surveyConfig
                 if (result.properties) {
                     String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
-                    //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
+                    //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(surveyResult.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
                     //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
                     String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
-                    newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: it.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
+                    newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
                 }
 
-                if (it.participant.id in currentParticipantIDs) {
+                if (surveyResult.participant.id in currentParticipantIDs) {
 
-                    newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                            [parentSub  : result.parentSubscription,
-                             participant: it.participant
-                            ])[0]
+                    newSurveyResult.sub = surveyResult.participantSubscription
 
-                    //newSurveyResult.sub = result.parentSubscription.getDerivedSubscriptionBySubscribers(it.participant)
+                    //newSurveyResult.sub = result.parentSubscription.getDerivedSubscriptionBySubscribers(surveyResult.participant)
 
                     if (result.multiYearTermTwoSurvey) {
 
                         newSurveyResult.newSubPeriodTwoStartDate = null
                         newSurveyResult.newSubPeriodTwoEndDate = null
 
-                        SurveyResult participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
+                        SurveyResult participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(surveyResult.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
 
                         if (participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
                             use(TimeCategory) {
@@ -267,7 +261,7 @@ class SurveyControllerService {
                         newSurveyResult.newSubPeriodThreeStartDate = null
                         newSurveyResult.newSubPeriodThreeEndDate = null
 
-                        SurveyResult participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
+                        SurveyResult participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(surveyResult.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
                         if (participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
                             use(TimeCategory) {
                                 newSurveyResult.newSubPeriodThreeStartDate = newSurveyResult.sub.startDate ? (newSurveyResult.sub.endDate + 1.day) : null
@@ -279,7 +273,7 @@ class SurveyControllerService {
 
                     result.orgsContinuetoSubscription << newSurveyResult
                 }
-                if (!(it.participant.id in currentParticipantIDs) && !(it.participant.id in orgsLateCommersOrgsID) && !(it.participant.id in orgsWithMultiYearTermOrgsID)) {
+                if (!(surveyResult.participant.id in currentParticipantIDs) && !(surveyResult.participant.id in orgsLateCommersOrgsID) && !(surveyResult.participant.id in orgsWithMultiYearTermOrgsID)) {
 
 
                     if (result.multiYearTermTwoSurvey) {
@@ -287,7 +281,7 @@ class SurveyControllerService {
                         newSurveyResult.newSubPeriodTwoStartDate = null
                         newSurveyResult.newSubPeriodTwoEndDate = null
 
-                        SurveyResult participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
+                        SurveyResult participantPropertyTwo = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(surveyResult.participant, result.institution, result.surveyConfig, result.multiYearTermTwoSurvey)
 
                         if (participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
                             use(TimeCategory) {
@@ -302,7 +296,7 @@ class SurveyControllerService {
                         newSurveyResult.newSubPeriodThreeStartDate = null
                         newSurveyResult.newSubPeriodThreeEndDate = null
 
-                        SurveyResult participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
+                        SurveyResult participantPropertyThree = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(surveyResult.participant, result.institution, result.surveyConfig, result.multiYearTermThreeSurvey)
                         if (participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
                             use(TimeCategory) {
                                 newSurveyResult.newSubPeriodThreeStartDate = result.parentSubscription.startDate ? (result.parentSubscription.endDate + 1.day) : null
@@ -315,7 +309,6 @@ class SurveyControllerService {
                     result.newOrgsContinuetoSubscription << newSurveyResult
                 }
 
-
             }
 
 
@@ -326,26 +319,23 @@ class SurveyControllerService {
                     [
                             owner      : result.institution.id,
                             surProperty: result.participationProperty.id,
-                            surConfig  : result.surveyConfig.id]).each {
+                            surConfig  : result.surveyConfig.id]).each { SurveyResult surveyResult ->
                 Map newSurveyResult = [:]
-                newSurveyResult.participant = it.participant
-                newSurveyResult.resultOfParticipation = it
+                newSurveyResult.participant = surveyResult.participant
+                newSurveyResult.resultOfParticipation = surveyResult
                 newSurveyResult.surveyConfig = result.surveyConfig
                 if (result.properties) {
                     String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
                     //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
                     //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
                     String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
-                    newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: it.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
+                    newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
                 }
 
 
-                if (it.participant.id in currentParticipantIDs) {
-                    newSurveyResult.sub = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                            [parentSub  : result.parentSubscription,
-                             participant: it.participant
-                            ])[0]
-                    //newSurveyResult.sub = result.parentSubscription.getDerivedSubscriptionBySubscribers(it.participant)
+                if (surveyResult.participant.id in currentParticipantIDs) {
+                    newSurveyResult.sub = surveyResult.participantSubscription
+                    //newSurveyResult.sub = result.parentSubscription.getDerivedSubscriptionBySubscribers(surveyResult.participant)
                 } else {
                     newSurveyResult.sub = null
                 }

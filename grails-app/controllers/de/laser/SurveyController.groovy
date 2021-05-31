@@ -2648,7 +2648,7 @@ class SurveyController {
 
                     String filename
                     if (params.filename) {
-                        filename = sdf.format(new Date()) + '_' + params.filename + '.csv'
+                        filename =params.filename
                     }
                     else {
                         filename = message + "_" + ctrlResult.result.surveyConfig.getSurveyName() + "_${datetoday}"
