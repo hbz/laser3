@@ -24,29 +24,16 @@
 
         <semui:messages data="${flash}" />
 
-        <div class="ui top attached tabular menu">
-            <g:link action="settings" id="${orgInstance.id}" params="[tab: 'general']"
-                    class="item ${params.tab == 'general' ? 'active' : ''}">
-                <g:message code="org.setting.tab.general"/>
-            </g:link>
+        <semui:tabs actionName="settings">
+            <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'general']" tab="general" text="${message(code: 'org.setting.tab.general')}"/>
             <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                <g:link action="settings" id="${orgInstance.id}" params="[tab: 'api']"
-                        class="item ${params.tab == 'api' ? 'active' : ''}">
-                    <g:message code="org.setting.tab.api"/>
-                </g:link>
+                <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'api']" tab="api" text="${message(code: 'org.setting.tab.api')}"/>
             </g:if>
-            <g:link action="settings" id="${orgInstance.id}" params="[tab: 'natstat']"
-                    class="item ${params.tab == 'natstat' ? 'active' : ''}">
-                <g:message code="org.setting.tab.natstat"/>
-            </g:link>
+            <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'natstat']" tab="natstat" text="${message(code: 'org.setting.tab.natstat')}"/>
             <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                <g:link action="settings" id="${orgInstance.id}" params="[tab: 'oamonitor']"
-                        class="item ${params.tab == 'oamonitor' ? 'active' : ''}">
-                    <g:message code="org.setting.tab.oamonitor"/>
-                </g:link>
+                <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'oamonitor']" tab="oamonitor" text="${message(code: 'org.setting.tab.oamonitor')}"/>
             </g:if>
-
-        </div>
+        </semui:tabs>
 
         <div class="ui bottom attached tab active segment">
 
@@ -151,7 +138,7 @@
                         </div><!-- .content -->
                     </div>
 
-                    <g:if test="${params.tab == 'general}">
+                    <g:if test="${params.tab == 'general'}">
                         <div class="ui card la-dl-no-table la-js-hideable">
                             <div class="content">
                                 <h2 class="ui header">
