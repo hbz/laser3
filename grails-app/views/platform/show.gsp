@@ -17,17 +17,10 @@
 </semui:breadcrumbs>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
-
-    <g:if test="${editable}"><span id="platformNameEdit"
-                                   class="xEditableValue"
-                                   data-type="textarea"
-                                   data-pk="${platformInstance.class.name}:${platformInstance.id}"
-                                   data-name="name"
-                                   data-url='<g:createLink controller="ajax"
-                                                           action="editableSetValue"/>'>${platformInstance.name}</span>
-    </g:if>
-    <g:else>${platformInstance.name}</g:else>
+    ${platformInstance.name}
 </h1>
+
+<g:render template="/templates/meta/identifier" model="${[object: platformInstance, editable: false]}"/>
 
 <semui:messages data="${flash}"/>
 
@@ -41,68 +34,36 @@
                   <dt>${message(code: 'platform.name')}</dt>
                   <dd><semui:xEditable owner="${platformInstance}" field="name"/></dd>
                 </dl>
-                <dl>
-                  <dt>we:kb ID</dt>
-                  <dd>
-                    ${platformInstance?.gokbId}
-                    <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
-                            var="gokbAPI">
-                      <g:if test="${platformInstance?.gokbId}">
-                        <a target="_blank"
-                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/platformContent/?id=' + platformInstance?.gokbId : '#'}"><i
-                            title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
-                      </g:if>
-                    </g:each>
-                  </dd>
-                </dl>
-                <dl>
-                  <dt>${message(code: 'platform.org')}</dt>
-                  <dd>
-                    <g:if test="${platformInstance.org}">
-                      <g:link controller="organisation" action="show"
-                              id="${platformInstance.org.id}">${platformInstance.org.name}</g:link>
-                    </g:if>
-                  </dd>
-                </dl>
+                  <dl>
+                      <dt>${message(code: 'default.status.label')}</dt>
+                      <dd>${platformInstance.status.getI10n("value")}</dd>
+                  </dl>
+
               </div>
             </div>
             <div class="ui card">
               <div class="content">
-                <dl>
-                  <dt>${message(code: 'platform.primaryUrl', default: 'Primary URL')}</dt>
-                  <dd>
-                    <semui:xEditable owner="${platformInstance}" field="primaryUrl"/>
-                    <g:if test="${platformInstance?.primaryUrl}">
-                      <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                         data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                         href="${platformInstance?.primaryUrl?.contains('http') ? platformInstance?.primaryUrl : 'http://' + platformInstance?.primaryUrl}"
-                         target="_blank"><i class="share square icon"></i></a>
-                    </g:if>
-                  </dd>
-                </dl>
-                <dl>
-                  <dt>${message(code: 'platform.serviceProvider')}</dt>
-                  <dd><semui:xEditableRefData owner="${platformInstance}" field="serviceProvider" config="${RDConstants.Y_N}"/></dd>
-                </dl>
-                <dl>
-                  <dt>${message(code: 'platform.softwareProvider')}</dt>
-                  <dd><semui:xEditableRefData owner="${platformInstance}" field="softwareProvider" config="${RDConstants.Y_N}"/></dd>
-                </dl>
-                <g:if test="${params.mode == 'advanced'}">
                   <dl>
-                    <dt>${message(code: 'default.type.label')}</dt>
-                    <dd><semui:xEditableRefData owner="${platformInstance}" field="type" config="${RDConstants.Y_N_O}"/></dd>
+                    <dt>${message(code: 'platform.provider')}</dt>
+                    <dd>
+                      <g:if test="${platformInstance.org}">
+                          <g:link controller="organisation" action="show"
+                                  id="${platformInstance.org.id}">${platformInstance.org.name}</g:link>
+                      </g:if>
+                    </dd>
                   </dl>
                   <dl>
-                    <dt>${message(code: 'default.status.label')}</dt>
-                    <dd><semui:xEditableRefData owner="${platformInstance}" field="status"
-                                                config="${RDConstants.USAGE_STATUS}"/></dd>
+                      <dt>${message(code: 'platform.primaryURL')}</dt>
+                      <dd>
+                          <semui:xEditable owner="${platformInstance}" field="primaryUrl"/>
+                          <g:if test="${platformInstance.primaryUrl}">
+                              <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                 data-content="${message(code: 'tipp.tooltip.callUrl')}"
+                                 href="${platformInstance.primaryUrl?.contains('http') ? platformInstance.primaryUrl : 'http://' + platformInstance.primaryUrl}"
+                                 target="_blank"><i class="share square icon"></i></a>
+                          </g:if>
+                      </dd>
                   </dl>
-                  <dl>
-                    <dt><g:message code="platform.globalUID.label" default="Global UID"/></dt>
-                    <dd><g:fieldValue bean="${platformInstance}" field="globalUID"/></dd>
-                  </dl>
-                </g:if>
               </div>
             </div>
           </div>
