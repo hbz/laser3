@@ -76,9 +76,14 @@
             <semui:menuDropdownItems actionName="surveyTransfer" message="surveyTransfer.label">
                 <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
                     <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-                        <semui:menuDropdownItem controller="survey" action="renewalWithSurvey"
+                        <semui:menuDropdownItem controller="survey" action="renewalEvaluation"
                                                 params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                                                 text="${surveyConfig.getConfigNameShort()}"/>
+
+                        <semui:menuDropdownItem controller="survey" action="compareMembersOfTwoSubs"
+                                                params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                                                text="${message(code: 'surveyInfo.renewal') +' '+surveyConfig.getConfigNameShort()}"/>
+
                     </g:if>
                     <g:else>
                         <semui:menuDropdownItem controller="survey" action="surveyTransfer"
@@ -121,7 +126,12 @@
                               class="${(actionName in evalutionsViews) ? "active" : ""}"/>
 
             <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-                <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="renewalWithSurvey"
+                <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="renewalEvaluation"
+                                  params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                                  message="surveyInfo.evaluation"/>
+
+                <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="compareMembersOfTwoSubs"
+                                  class="${actionName in ['copyProperties', 'copySurveyCostItems'] ? 'active' : ''}"
                                   params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                                   message="surveyInfo.renewal"/>
             </g:if>

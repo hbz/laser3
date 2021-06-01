@@ -24,6 +24,8 @@
 
 <semui:messages data="${flash}"/>
 
+<br />
+
 <h2 class="ui icon header la-clear-before la-noMargin-top">
     <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
         <i class="icon clipboard outline la-list-icon"></i>

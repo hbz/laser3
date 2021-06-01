@@ -340,8 +340,8 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <g:set var="surveyConfig" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(genericOIDService.resolveOID(sourceObjectId), true)}" />
-                    <g:link controller="survey" action="renewalWithSurvey" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
-                        <g:message code="renewalWithSurvey.back"/>
+                    <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig?.surveyInfo?.id}" params="[surveyConfigID: surveyConfig?.id]" class="ui button js-click-control">
+                        <g:message code="renewalEvaluation.back"/>
                     </g:link>
                 </div>
                 <div class="eight wide field" style="text-align: right;">

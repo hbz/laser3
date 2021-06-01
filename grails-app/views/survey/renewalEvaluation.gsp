@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'surveyInfo.renewalOverView')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'surveyInfo.evaluation')}</title>
 
 </head>
 
@@ -18,7 +18,7 @@
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
     </g:if>
-    <semui:crumb message="surveyInfo.renewalOverView" class="active"/>
+    <semui:crumb message="surveyInfo.evaluation" class="active"/>
 </semui:breadcrumbs>
 
 
@@ -31,12 +31,13 @@ ${surveyInfo.name}
 <semui:surveyStatus object="${surveyInfo}"/>
 </h1>
 
-
 <g:render template="nav"/>
 
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
 <semui:messages data="${flash}"/>
+
+<br />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
     <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
@@ -49,51 +50,44 @@ ${surveyInfo.name}
     <g:else>
         ${surveyConfig.getConfigNameShort()}
     </g:else>
-    : ${message(code: 'surveyInfo.renewalOverView')}
+    : ${message(code: 'surveyInfo.evaluation')}
 </h2>
 
 <g:if test="${!(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
     <div class="ui segment">
-        <strong>${message(code: 'renewalWithSurvey.notInEvaliation')}</strong>
+        <strong>${message(code: 'renewalEvaluation.notInEvaliation')}</strong>
     </div>
 </g:if>
 <g:else>
 
-    <semui:messages data="${[message: message(code: 'renewalWithSurvey.dynamicSite')]}"/>
+    <semui:messages data="${[message: message(code: 'renewalEvaluation.dynamicSite')]}"/>
 
     <semui:form>
 
         <div style="text-align: right">
             <semui:controlButtons>
                 <semui:exportDropdown>
-                    <semui:exportDropdownItem>
-                        <g:link class="item" action="renewalWithSurvey" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'renewalWithSurvey.exportRenewal')}</g:link>
-                    </semui:exportDropdownItem>
+                %{--<semui:exportDropdownItem>
+                    <g:link class="item" action="renewalEvaluation" id="${surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'renewalEvaluation.exportRenewal')}</g:link>
+                    </semui:exportDropdownItem>--}%
+
+                    <semui:actionsDropdownItem data-semui="modal" href="#individuallyExportModal"
+                                               message="renewalEvaluation.exportRenewal"/>
+
                 </semui:exportDropdown>
-                <semui:actionsDropdown>
+                %{--<semui:actionsDropdown>
                     <g:if test="${parentSuccessorSubscription}">
-
-                        <semui:actionsDropdownItem data-semui="modal" href="#transferParticipantsModal"
-                                                   message="surveyInfo.transferParticipants"/>
-
-
-                        <semui:actionsDropdownItem controller="survey" action="compareMembersOfTwoSubs"
+                                              <semui:actionsDropdownItem controller="survey" action="compareMembersOfTwoSubs"
                                                    params="[id: params.id, surveyConfigID: surveyConfig.id]"
                                                    message="surveyInfo.transferOverView"/>
                     </g:if>
-                    <g:else>
-                        <semui:actionsDropdownItemDisabled data-semui="modal" href="#transferParticipantsModal"
-                                                           message="surveyInfo.transferParticipants"
-                                                           tooltip="${message(code: 'renewalWithSurvey.noParentSuccessorSubscription')}"/>
-                    </g:else>
-
-                </semui:actionsDropdown>
+                </semui:actionsDropdown>--}%
             </semui:controlButtons>
         </div>
 
-        <h3 class="ui header">
-        <g:message code="renewalWithSurvey.parentSubscription"/>:
+        %{--<h3 class="ui header">
+        <g:message code="renewalEvaluation.parentSubscription"/>:
         <g:if test="${parentSubscription}">
             <g:link controller="subscription" action="show"
                     id="${parentSubscription.id}">${parentSubscription.dropdownNamingConvention()}</g:link>
@@ -101,7 +95,7 @@ ${surveyInfo.name}
 
         <br/>
         <br/>
-        <g:message code="renewalWithSurvey.parentSuccessorSubscription"/>:
+        <g:message code="renewalEvaluation.parentSuccessorSubscription"/>:
         <g:if test="${parentSuccessorSubscription}">
             <g:link controller="subscription" action="show"
                     id="${parentSuccessorSubscription.id}">${parentSuccessorSubscription.dropdownNamingConvention()}</g:link>
@@ -110,7 +104,7 @@ ${surveyInfo.name}
                 <g:link controller="subscription" action="copyElementsIntoSubscription" id="${parentSubscription.id}"
                         params="[sourceObjectId: genericOIDService.getOID(parentSubscription), targetObjectId: genericOIDService.getOID(parentSuccessorSubscription), isRenewSub: true, fromSurvey: true]"
                         class="ui button ">
-                    <g:message code="renewalWithSurvey.newSub.change"/>
+                    <g:message code="renewalEvaluation.newSub.change"/>
                 </g:link>
             </g:if>
 
@@ -119,14 +113,11 @@ ${surveyInfo.name}
             <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo.id}"
                     params="[surveyConfig: surveyConfig.id, parentSub: parentSubscription.id]"
                     class="ui button ">
-                <g:message code="renewalWithSurvey.newSub"/>
+                <g:message code="renewalEvaluation.newSub"/>
             </g:link>
         </g:else>
         </br>
-        </h3>
-
-        <g:set var="totalOrgs"
-               value="${(orgsContinuetoSubscription?.size() ?: 0) + (newOrgsContinuetoSubscription?.size() ?: 0) + (orgsWithMultiYearTermSub?.size() ?: 0) + (orgsLateCommers?.size() ?: 0) + (orgsWithTermination?.size() ?: 0) + (orgsWithoutResult?.size() ?: 0) + (orgsWithParticipationInParentSuccessor?.size() ?: 0)}"/>
+        </h3>--}%
 
         <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
         <div class="ui horizontal segments">
@@ -156,7 +147,7 @@ ${surveyInfo.name}
             </div>
 
             <div class="ui segment center aligned">
-                <strong>${message(code: 'renewalWithSurvey.orgsTotalInRenewalProcess')}:</strong>
+                <strong>${message(code: 'renewalEvaluation.orgsTotalInRenewalProcess')}:</strong>
                 <semui:totalNumber class="${totalOrgs != countParticipants.subMembers ? 'red' : ''}"
                                    total="${totalOrgs}"/>
 
@@ -165,74 +156,90 @@ ${surveyInfo.name}
 
     </semui:form>
 
+    <g:if test="${memberProperties}">%{-- check for content --}%
+        <g:if test="${parentSubscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_ADMINISTRATIVE]}">
+            <div class="ui card la-dl-no-table">
+                <div class="content">
+                    <h2 class="ui header">${message(code:'subscription.properties.consortium')}</h2>
+                    <div id="member_props_div">
+                        <g:render template="/templates/properties/members" model="${[
+                                prop_desc: PropertyDefinition.SUB_PROP,
+                                ownobj: parentSubscription,
+                                custom_props_div: "member_props_div"]}"/>
+                    </div>
+                </div>
+            </div>
+        </g:if>
+    </g:if>
+
     <semui:form>
 
         <div class="ui top attached tabular menu">
             <a class="active item" data-tab="orgsContinuetoSubscription">
-                ${message(code: 'renewalWithSurvey.continuetoSubscription.label')} <semui:totalNumber
-                        total="${orgsContinuetoSubscription?.size() ?: 0}"/>
+                ${message(code: 'renewalEvaluation.continuetoSubscription.label')} <semui:totalNumber
+                        total="${orgsContinuetoSubscription.size()}"/>
             </a>
 
             <a class="item" data-tab="newOrgsContinuetoSubscription">
-                ${message(code: 'renewalWithSurvey.newOrgstoSubscription.label')} <semui:totalNumber
-                        total="${newOrgsContinuetoSubscription?.size() ?: 0}"/>
+                ${message(code: 'renewalEvaluation.newOrgstoSubscription.label')} <semui:totalNumber
+                        total="${newOrgsContinuetoSubscription.size()}"/>
             </a>
 
             <a class="item" data-tab="orgsWithMultiYearTermSub">
-                ${message(code: 'renewalWithSurvey.withMultiYearTermSub.label')} <semui:totalNumber
-                        total="${orgsWithMultiYearTermSub?.size() ?: 0}"/>
+                ${message(code: 'renewalEvaluation.withMultiYearTermSub.label')} <semui:totalNumber
+                        total="${orgsWithMultiYearTermSub.size()}"/>
             </a>
 
             <a class="item" data-tab="orgsWithParticipationInParentSuccessor">
-                ${message(code: 'renewalWithSurvey.orgsWithParticipationInParentSuccessor.label')} <semui:totalNumber
-                        total="${orgsWithParticipationInParentSuccessor?.size() ?: 0}"/>
+                ${message(code: 'renewalEvaluation.orgsWithParticipationInParentSuccessor.label')} <semui:totalNumber
+                        total="${orgsWithParticipationInParentSuccessor.size()}"/>
             </a>
 
             <a class="item" data-tab="orgsWithTermination">
-                ${message(code: 'renewalWithSurvey.withTermination.label')} <semui:totalNumber
-                        total="${orgsWithTermination?.size() ?: 0}"/>
+                ${message(code: 'renewalEvaluation.withTermination.label')} <semui:totalNumber
+                        total="${orgsWithTermination.size()}"/>
             </a>
 
-            <a class="item" data-tab="orgsWithoutResult">
-                ${message(code: 'renewalWithSurvey.orgsWithoutResult.label')} <semui:totalNumber
-                        total="${orgsWithoutResult?.size() ?: 0}"/>
-            </a>
+           %{-- <a class="item" data-tab="orgsWithoutResult">
+                ${message(code: 'renewalEvaluation.orgsWithoutResult.label')} <semui:totalNumber
+                        total="${orgsWithoutResult.size()}"/>
+            </a>--}%
         </div>
 
         <div class="ui bottom attached active tab segment" data-tab="orgsContinuetoSubscription">
-            <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalWithSurvey.continuetoSubscription.label')} <semui:totalNumber
-                    total="${orgsContinuetoSubscription?.size() ?: 0}"/></h4>
+            <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.continuetoSubscription.label')} <semui:totalNumber
+                    total="${orgsContinuetoSubscription.size()}"/></h4>
 
             <g:render template="renewalResult" model="[participantResults: orgsContinuetoSubscription]"/>
         </div>
 
 
         <div class="ui bottom attached tab segment" data-tab="newOrgsContinuetoSubscription">
-            <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalWithSurvey.newOrgstoSubscription.label')} <semui:totalNumber
-                    total="${newOrgsContinuetoSubscription?.size() ?: 0}"/></h4>
+            <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.newOrgstoSubscription.label')} <semui:totalNumber
+                    total="${newOrgsContinuetoSubscription.size()}"/></h4>
 
             <g:render template="renewalResult" model="[participantResults: newOrgsContinuetoSubscription]"/>
         </div>
 
         <div class="ui bottom attached tab segment" data-tab="orgsWithTermination">
-            <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalWithSurvey.withTermination.label')} <semui:totalNumber
-                    total="${orgsWithTermination?.size() ?: 0}"/></h4>
+            <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.withTermination.label')} <semui:totalNumber
+                    total="${orgsWithTermination.size()}"/></h4>
 
             <g:render template="renewalResult" model="[participantResults: orgsWithTermination]"/>
         </div>
 
 
-        <div class="ui bottom attached tab segment" data-tab="orgsWithoutResult">
-            <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalWithSurvey.orgsWithoutResult.label')} (${message(code: 'surveys.tabs.termination')})<semui:totalNumber
-                    total="${orgsWithoutResult?.size() ?: 0}"/></h4>
+        %{--<div class="ui bottom attached tab segment" data-tab="orgsWithoutResult">
+            <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.orgsWithoutResult.label')} (${message(code: 'surveys.tabs.termination')})<semui:totalNumber
+                    total="${orgsWithoutResult.size()}"/></h4>
 
             <g:render template="renewalResult" model="[participantResults: orgsWithoutResult]"/>
-        </div>
+        </div>--}%
 
 
         <div class="ui bottom attached tab segment" data-tab="orgsWithMultiYearTermSub">
-            <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalWithSurvey.withMultiYearTermSub.label')} <semui:totalNumber
-                    total="${orgsWithMultiYearTermSub?.size() ?: 0}"/></h4>
+            <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.withMultiYearTermSub.label')} <semui:totalNumber
+                    total="${orgsWithMultiYearTermSub.size()}"/></h4>
 
             <table class="ui celled la-table table">
                 <thead>
@@ -285,8 +292,8 @@ ${surveyInfo.name}
         </div>
 
         <div class="ui bottom attached tab segment" data-tab="orgsWithParticipationInParentSuccessor">
-            <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalWithSurvey.orgsWithParticipationInParentSuccessor.label')} <semui:totalNumber
-                    total="${orgsWithParticipationInParentSuccessor?.size() ?: 0}"/></h4>
+            <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.orgsWithParticipationInParentSuccessor.label')} <semui:totalNumber
+                    total="${orgsWithParticipationInParentSuccessor.size() }"/></h4>
 
             <table class="ui celled la-table table">
                 <thead>
@@ -338,10 +345,24 @@ ${surveyInfo.name}
         </div>
 
     </semui:form>
+
+
+    <g:form action="renewalSent" method="post" class="ui form"
+            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+
+        <div class="ui right floated compact segment">
+            <div class="ui checkbox">
+                <input type="checkbox" onchange="this.form.submit()"
+                       name="renewalSent" ${surveyInfo.isRenewalSent ? 'checked' : ''}>
+                <label><g:message code="surveyInfo.isRenewalSent.label"/></label>
+            </div>
+        </div>
+
+    </g:form>
+
+    <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal', token: token]" />
+
 </g:else>
 
-<g:if test="${parentSuccessorSubscription}">
-    <g:render template="transferParticipantsModal"/>
-</g:if>
 </body>
 </html>

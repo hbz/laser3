@@ -1320,7 +1320,7 @@ class SubscriptionController {
             if(params.workFlowPart == CopyElementsService.WORKFLOW_END && ctrlResult.result.targetObject) {
                 SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(ctrlResult.result.sourceObject, true)
                 if (surveyConfig && ctrlResult.result.fromSurvey) {
-                    redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
+                    redirect controller: 'survey', action: 'renewalEvaluation', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
                 }
                 else {
                     redirect controller: 'subscription', action: 'show', params: [id: ctrlResult.result.targetObject.id]

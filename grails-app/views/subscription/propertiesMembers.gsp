@@ -73,7 +73,7 @@
         <div class="ui vertical divider"><g:message code="default.or"/> </div>
     </div>
 
-    <g:if test="${!memberProperties}">%{-- check for content --}%
+    <g:if test="${memberProperties}">%{-- check for content --}%
     <div class="ui one stackable cards">
         <div class="ui card la-dl-no-table">
             <div class="content">

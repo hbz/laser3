@@ -19,7 +19,7 @@
         </th>
         <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey}">
             <th>
-                <g:message code="renewalWithSurvey.period"/>
+                <g:message code="renewalEvaluation.period"/>
             </th>
         </g:if>
 
@@ -36,7 +36,7 @@
                 </g:if>
             </th>
         </g:each>
-        <th>${message(code: 'renewalWithSurvey.costItem.label')}</th>
+        <th>${message(code: 'renewalEvaluation.costItem.label')}</th>
         <th>${message(code: 'default.actions.label')}</th>
     </tr>
     </thead>

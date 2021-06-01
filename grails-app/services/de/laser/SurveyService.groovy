@@ -3,6 +3,7 @@ package de.laser
 
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GenericOIDService
+import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
@@ -638,14 +639,14 @@ class SurveyService {
                                         from    from
                                         cc      ccAddress
                                         subject mailSubject
-                                        html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
+                                        html    (view: "/mailTemplates/html/notificationSurveyParticipationFinishForOwner", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
                                     }
                                 } else {
                                     mailService.sendMail {
                                         to      emailReceiver
                                         from from
                                         subject mailSubject
-                                        html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
+                                        html    (view: "/mailTemplates/html/notificationSurveyParticipationFinishForOwner", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
                                     }
                                 }
 
@@ -657,6 +658,87 @@ class SurveyService {
                             log.error("emailToSurveyOwnerbyParticipationFinish - sendSurveyEmail() :: Unable to perform email due to exception ${eMsg}")
                             SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: participationFinish.name, survey: surveyInfo.name])
                         }
+                }
+            }
+
+        }
+
+    }
+
+
+    def emailToSurveyParticipationByFinish(SurveyInfo surveyInfo, Org participationFinish){
+
+        if (grailsApplication.config.grails.mail.disabled == true) {
+            println 'surveyService.emailToSurveyParticipationByFinish() failed due grailsApplication.config.grails.mail.disabled = true'
+            return false
+        }
+
+        if(surveyInfo.owner)
+        {
+            //Only User that approved
+            List<UserOrg> userOrgs = UserOrg.findAllByOrg(participationFinish)
+
+            //Only User with Notification by Email and for Surveys Start
+            userOrgs.each { userOrg ->
+                if(userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
+                        userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+                {
+
+                    User user = userOrg.user
+                    Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
+                    String emailReceiver = user.getEmail()
+                    String currentServer = ServerUtils.getCurrentServer()
+                    String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD)? "" : (ConfigUtils.getLaserSystemId() + " - ")
+
+                    String subjectText
+                    Object[] args = [surveyInfo.name]
+                    if(surveyInfo.type.id == RDStore.SURVEY_TYPE_RENEWAL.id){
+                        subjectText = messageSource.getMessage('email.survey.participation.finish.renewal.subject', args, language)
+                    }else if(surveyInfo.type.id == RDStore.SURVEY_TYPE_SUBSCRIPTION.id){
+                        subjectText = messageSource.getMessage('email.survey.participation.finish.subscriptionSurvey.subject', args, language)
+                    }else {
+                        subjectText = messageSource.getMessage('email.survey.participation.finish.subject', args, language)
+                    }
+
+                    String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + subjectText)
+
+                    try {
+                        if (emailReceiver == null || emailReceiver.isEmpty()) {
+                            log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
+                        } else {
+                            boolean isNotificationCCbyEmail = user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
+                            String ccAddress = null
+                            if (isNotificationCCbyEmail){
+                                ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
+                            }
+
+                            List surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participationFinish, surveyInfo.surveyConfigs[0]).sort { it.surveyConfig.configOrder }
+
+                            if (isNotificationCCbyEmail && ccAddress) {
+                                mailService.sendMail {
+                                    to      emailReceiver
+                                    from    from
+                                    cc      ccAddress
+                                    subject mailSubject
+                                    html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults])
+                                }
+                            } else {
+                                mailService.sendMail {
+                                    to      emailReceiver
+                                    from from
+                                    subject mailSubject
+                                    html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults])
+                                }
+                            }
+
+                            log.debug("emailToSurveyParticipationByFinish - finished sendSurveyEmail() to " + user.displayName + " (" + user.email + ") " + participationFinish.name);
+                        }
+                    } catch (Exception e) {
+                        String eMsg = e.message
+
+                        log.error("emailToSurveyParticipationByFinish - sendSurveyEmail() :: Unable to perform email due to exception ${eMsg}")
+                        SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: participationFinish.name, survey: surveyInfo.name])
+                    }
                 }
             }
 

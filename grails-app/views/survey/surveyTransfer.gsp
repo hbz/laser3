@@ -59,7 +59,7 @@
 </g:if>
 <g:else>
     <div class="ui segment">
-        <strong>${message(code: 'renewalWithSurvey.notInEvaliation')}</strong>
+        <strong>${message(code: 'renewalEvaluation.notInEvaliation')}</strong>
     </div>
 </g:else>
 
