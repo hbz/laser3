@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3260    31.05.2021  dev     2.1         Moe     Feature     Teilnehmersicht Meine Umfragen vorfiltern
+
 3476    01.06.2021  dev     2.1         Andreas Bug         Zeichenbegrenzung auch im Kostenhinzufügemodal nachgereicht
 
 3462    01.06.2021  dev     2.1         Andreas Bug         Typ Umfrage ist für Vollnutzer jetzt auch beim neuen Merkmalstyp entfernt

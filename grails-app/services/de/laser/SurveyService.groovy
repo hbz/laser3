@@ -20,6 +20,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 @Transactional
@@ -1024,25 +1025,34 @@ class SurveyService {
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }
 
-    Map<String,Object> getSurveyConfigCounts() {
+    Map<String,Object> getSurveyConfigCounts(GrailsParameterMap parameterMap) {
         Map<String, Object> result = [:]
 
         Org contextOrg = contextService.getOrg()
 
-        result.created = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and (surInfo.status = :status or surInfo.status = :status2)",
-                [contextOrg: contextOrg, status: RDStore.SURVEY_READY, status2: RDStore.SURVEY_IN_PROCESSING]).size()
+        GrailsParameterMap tmpParams = (GrailsParameterMap) parameterMap.clone()
 
-        result.active = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
-                [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_STARTED]).size()
+        result = setSurveyConfigCounts(result, 'created', tmpParams, contextOrg)
 
-        result.finish = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
-                [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_COMPLETED]).size()
+        result = setSurveyConfigCounts(result, 'active', tmpParams, contextOrg)
 
-        result.inEvaluation = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
-                [contextOrg: contextOrg, status: RDStore.SURVEY_IN_EVALUATION]).size()
+        result = setSurveyConfigCounts(result, 'finish', tmpParams, contextOrg)
 
+        result = setSurveyConfigCounts(result, 'inEvaluation', tmpParams, contextOrg)
 
         return result
+    }
+
+    private Map setSurveyConfigCounts(Map result, String tab, GrailsParameterMap parameterMap, Org owner){
+        SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
+        Map<String,Object> fsq = [:]
+
+        parameterMap.tab = tab
+        fsq = filterService.getSurveyConfigQueryConsortia(parameterMap, sdFormat, owner)
+        result."${tab}" =  SurveyInfo.executeQuery(fsq.query, fsq.queryParams, parameterMap).size()
+
+        return result
+
     }
 
     List getSurveyProperties(Org contextOrg) {
@@ -1238,32 +1248,31 @@ class SurveyService {
 
         Org contextOrg = contextService.getOrg()
 
-
-        Map fsq = [:]
+        GrailsParameterMap tmpParams = (GrailsParameterMap) parameterMap.clone()
         if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM') {
 
-            result = setSurveyParticipantCounts(result, 'new', parameterMap, participant, contextOrg)
+            result = setSurveyParticipantCounts(result, 'new', tmpParams, participant, contextOrg)
 
-            result = setSurveyParticipantCounts(result, 'processed', parameterMap, participant, contextOrg)
+            result = setSurveyParticipantCounts(result, 'processed', tmpParams, participant, contextOrg)
 
-            result = setSurveyParticipantCounts(result, 'finish', parameterMap, participant, contextOrg)
+            result = setSurveyParticipantCounts(result, 'finish', tmpParams, participant, contextOrg)
 
-            result = setSurveyParticipantCounts(result, 'notFinish', parameterMap, participant, contextOrg)
+            result = setSurveyParticipantCounts(result, 'notFinish', tmpParams, participant, contextOrg)
 
-            result = setSurveyParticipantCounts(result, 'termination', parameterMap, participant, contextOrg)
+            result = setSurveyParticipantCounts(result, 'termination', tmpParams, participant, contextOrg)
 
 
         }else {
 
-            result = setSurveyParticipantCounts(result, 'new', parameterMap, participant, null)
+            result = setSurveyParticipantCounts(result, 'new', tmpParams, participant, null)
 
-            result = setSurveyParticipantCounts(result, 'processed', parameterMap, participant, null)
+            result = setSurveyParticipantCounts(result, 'processed', tmpParams, participant, null)
 
-            result = setSurveyParticipantCounts(result, 'finish', parameterMap, participant, null)
+            result = setSurveyParticipantCounts(result, 'finish', tmpParams, participant, null)
 
-            result = setSurveyParticipantCounts(result, 'notFinish', parameterMap, participant, null)
+            result = setSurveyParticipantCounts(result, 'notFinish', tmpParams, participant, null)
 
-            result = setSurveyParticipantCounts(result, 'termination', parameterMap, participant, null)
+            result = setSurveyParticipantCounts(result, 'termination', tmpParams, participant, null)
         }
         return result
     }

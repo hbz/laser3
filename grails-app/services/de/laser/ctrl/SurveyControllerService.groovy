@@ -374,7 +374,7 @@ class SurveyControllerService {
 
             }
 
-            result.totalOrgs = result.orgsContinuetoSubscription.size() + result.newOrgsContinuetoSubscription.size() + result.orgsWithMultiYearTermSub.size()  + result.orgsWithTermination.size() + result.orgsWithParticipationInParentSuccessor.size()
+            result.totalOrgs = result.orgsContinuetoSubscription.size() + result.newOrgsContinuetoSubscription.size() + result.orgsWithMultiYearTermSub.size()  + result.orgsWithTermination.size() + result.orgsWithParticipationInParentSuccessor.size() + result.orgsWithoutResult.size()
 
             result
         }
