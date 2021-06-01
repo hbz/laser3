@@ -195,7 +195,7 @@
             </div>
 
             <div class="item">
-                ${message(code: 'platform.org')}:  <g:if test="${tipp.platform.org}">
+                ${message(code: 'platform.provider')}:  <g:if test="${tipp.platform.org}">
                     <g:link controller="organisation" action="show"
                             id="${tipp.platform.org.id}">${tipp.platform.org.name}</g:link>
                 </g:if>
