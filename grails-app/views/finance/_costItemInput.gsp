@@ -17,7 +17,7 @@
                     <div class="two fields la-fields-no-margin-button">
                         <div class="field">
                             <label><g:message code="financials.newCosts.costTitle"/></label>
-                            <input type="text" name="newCostTitle" value="${costItem?.costTitle}" />
+                            <input type="text" name="newCostTitle" value="${costItem?.costTitle}" maxlength="255"/>
                         </div><!-- .field -->
                         <div class="field">
                             <label><g:message code="financials.isVisibleForSubscriber"/></label>
@@ -33,7 +33,7 @@
                 <g:else>
                     <div class="field">
                         <label><g:message code="financials.newCosts.costTitle"/></label>
-                        <input type="text" name="newCostTitle" value="${costItem?.costTitle}" />
+                        <input type="text" name="newCostTitle" value="${costItem?.costTitle}" maxlength="255"/>
                     </div><!-- .field -->
                 </g:else>
                 <div class="two fields la-fields-no-margin-button">
