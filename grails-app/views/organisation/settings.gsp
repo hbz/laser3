@@ -24,17 +24,36 @@
 
         <semui:messages data="${flash}" />
 
+        <div class="ui top attached tabular menu">
+            <g:link action="settings" id="${orgInstance.id}" params="[tab: 'general']"
+                    class="item ${params.tab == 'general' ? 'active' : ''}">
+                <g:message code="org.setting.tab.general"/>
+            </g:link>
+            <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                <g:link action="settings" id="${orgInstance.id}" params="[tab: 'api']"
+                        class="item ${params.tab == 'api' ? 'active' : ''}">
+                    <g:message code="org.setting.tab.api"/>
+                </g:link>
+            </g:if>
+            <g:link action="settings" id="${orgInstance.id}" params="[tab: 'natstat']"
+                    class="item ${params.tab == 'natstat' ? 'active' : ''}">
+                <g:message code="org.setting.tab.natstat"/>
+            </g:link>
+            <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                <g:link action="settings" id="${orgInstance.id}" params="[tab: 'oamonitor']"
+                        class="item ${params.tab == 'oamonitor' ? 'active' : ''}">
+                    <g:message code="org.setting.tab.oamonitor"/>
+                </g:link>
+            </g:if>
 
-        <div class="ui stackable grid">
-            <div class="sixteen wide column">
+        </div>
+
+        <div class="ui bottom attached tab active segment">
 
                 <div class="la-inline-lists">
 
                     <div class="ui card la-dl-no-table la-js-hideable">
                         <div class="content">
-                            <h2 class="ui header">
-                                ${message(code:'org.orgSettings')}
-                            </h2>
 
                             <table class="ui la-table table">
                                 <thead>
@@ -132,30 +151,31 @@
                         </div><!-- .content -->
                     </div>
 
+                    <g:if test="${params.tab == 'general}">
+                        <div class="ui card la-dl-no-table la-js-hideable">
+                            <div class="content">
+                                <h2 class="ui header">
+                                    ${message(code:'org.confProperties')}
+                                </h2>
 
-                    <div class="ui card la-dl-no-table la-js-hideable">
-                        <div class="content">
-                            <h2 class="ui header">
-                                ${message(code:'org.confProperties')}
-                            </h2>
+                                <div id="custom_props_div_1">
+                                    <g:render template="/templates/properties/custom" model="${[
+                                            prop_desc: PropertyDefinition.ORG_CONF,
+                                            ownobj: orgInstance,
+                                            orphanedProperties: orgInstance.propertySet,
+                                            custom_props_div: "custom_props_div_1" ]}"/>
+                                </div>
+                            </div><!-- .content -->
+                        </div><!-- .card -->
 
-                            <div id="custom_props_div_1">
-                                <g:render template="/templates/properties/custom" model="${[
-                                        prop_desc: PropertyDefinition.ORG_CONF,
-                                        ownobj: orgInstance,
-                                        orphanedProperties: orgInstance.propertySet,
-                                        custom_props_div: "custom_props_div_1" ]}"/>
-                            </div>
-                        </div><!-- .content -->
-                    </div><!-- .card -->
+                        <laser:script file="${this.getGroovyPageFileName()}">
+                            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
+                        </laser:script>
+                    </g:if>
 
-                    <laser:script file="${this.getGroovyPageFileName()}">
-                        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
-                    </laser:script>
 
                 </div><!-- .la-inline-lists -->
 
-            </div><!-- .twelve -->
         </div><!-- .grid -->
 
     </body>
