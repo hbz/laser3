@@ -27,52 +27,130 @@
 <div id="collapseableSubDetails" class="ui stackable grid">
     <div class="sixteen wide column">
         <div class="la-inline-lists">
-          <div class="ui two stackable cards">
-            <div class="ui card la-time-card">
-              <div class="content">
-                <dl>
-                  <dt>${message(code: 'platform.name')}</dt>
-                  <dd><semui:xEditable owner="${platformInstance}" field="name"/></dd>
-                </dl>
-                  <dl>
-                      <dt>${message(code: 'default.status.label')}</dt>
-                      <dd>${platformInstance.status.getI10n("value")}</dd>
-                  </dl>
-
-              </div>
+            <div class="ui two stackable cards">
+                <div class="ui card la-time-card">
+                    <div class="content">
+                        <dl>
+                            <dt>${message(code: 'platform.name')}</dt>
+                            <dd><semui:xEditable owner="${platformInstance}" field="name"/></dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'default.status.label')}</dt>
+                            <dd>${platformInstance.status.getI10n("value")}</dd>
+                        </dl>
+                    </div>
+                </div>
+                <div class="ui card">
+                    <div class="content">
+                        <dl>
+                            <dt>${message(code: 'platform.provider')}</dt>
+                            <dd>
+                                <g:if test="${platformInstance.org}">
+                                    <g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.name}</g:link>
+                                </g:if>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'platform.primaryURL')}</dt>
+                            <dd>
+                                <semui:xEditable owner="${platformInstance}" field="primaryUrl"/>
+                                <g:if test="${platformInstance.primaryUrl}">
+                                    <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                       data-content="${message(code: 'tipp.tooltip.callUrl')}"
+                                       href="${platformInstance.primaryUrl?.contains('http') ? platformInstance.primaryUrl : 'http://' + platformInstance.primaryUrl}"
+                                       target="_blank"><i class="share square icon"></i></a>
+                                </g:if>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
             </div>
             <div class="ui card">
-              <div class="content">
-                  <dl>
-                    <dt>${message(code: 'platform.provider')}</dt>
-                    <dd>
-                      <g:if test="${platformInstance.org}">
-                          <g:link controller="organisation" action="show"
-                                  id="${platformInstance.org.id}">${platformInstance.org.name}</g:link>
-                      </g:if>
-                    </dd>
-                  </dl>
-                  <dl>
-                      <dt>${message(code: 'platform.primaryURL')}</dt>
-                      <dd>
-                          <semui:xEditable owner="${platformInstance}" field="primaryUrl"/>
-                          <g:if test="${platformInstance.primaryUrl}">
-                              <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                                 data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                                 href="${platformInstance.primaryUrl?.contains('http') ? platformInstance.primaryUrl : 'http://' + platformInstance.primaryUrl}"
-                                 target="_blank"><i class="share square icon"></i></a>
-                          </g:if>
-                      </dd>
-                  </dl>
-              </div>
+                <div class="content">
+                    <h2 class="ui header">
+                        <g:message code="platform.auth.header"/>
+                    </h2>
+                    <dl>
+                        <dt><g:message code="platform.auth.ip.supported"/></dt>
+                        <dd>missing in ES index</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.auth.shibboleth.supported"/></dt>
+                        <dd>missing in ES index</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.auth.userPass.supported"/></dt>
+                        <dd>missing in ES index</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.auth.proxy.supported"/></dt>
+                        <dd>${platformInstanceRecord.proxySupported}</dd>
+                    </dl>
+                </div>
             </div>
-          </div>
+            <div class="ui card">
+                <div class="content">
+                    <h2 class="ui header">
+                        <g:message code="platform.stats.header"/>
+                    </h2>
+                    <dl>
+                        <dt><g:message code="platform.stats.format"/></dt>
+                        <dd>${platformInstanceRecord.statisticsFormat}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.update"/></dt>
+                        <dd>${platformInstanceRecord.statisticsUpdate}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.adminURL"/></dt>
+                        <dd>${platformInstanceRecord.statisticsAdminPortalUrl}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.certified"/></dt>
+                        <dd>${platformInstanceRecord.counterCertified}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.registryURL"/></dt>
+                        <dd>${platformInstanceRecord.counterRegistryUrl}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.r3supported"/></dt>
+                        <dd>${platformInstanceRecord.counterR3Supported}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.r4supported"/></dt>
+                        <dd>${platformInstanceRecord.counterR4Supported}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.r5supported"/></dt>
+                        <dd>${platformInstanceRecord.counterR5Supported}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.r4sushi"/></dt>
+                        <dd>${platformInstanceRecord.counterR4SushiApiSupported}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.r5sushi"/></dt>
+                        <dd>${platformInstanceRecord.counterR5SushiApiSupported}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.r4serverURL"/></dt>
+                        <dd>${platformInstanceRecord.counterR4SushiServerUrl}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.r5serverURL"/></dt>
+                        <dd>${platformInstanceRecord.counterR5SushiServerUrl}</dd>
+                    </dl>
+                </div>
+            </div>
             <div id="new-dynamic-properties-block">
                 <g:render template="properties" model="${[ platform: platformInstance ]}"/>
             </div><!-- #new-dynamic-properties-block -->
-
             <div class="ui card">
                 <div class="content">
+                    <h2 class="ui header">
+                        <g:message code="accessPoint.label"/>
+                    </h2>
                     <table class="ui three column table">
                         <g:each in="${orgAccessPointList}" var="orgAccessPoint">
                             <tr>

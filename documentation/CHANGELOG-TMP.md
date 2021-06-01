@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3492    01.06.2021  dev     2.1         Andreas Feature     "Alle Plattformen" werden per ES-Index bespeist, Detailansicht um we:kb-Eigenschaften erweitert 
+
 3519    28.05.2021  dev     2.1         Andreas Feature     Linkresolver-Base-URL für Einrichtungen hinzugefügt
 
 3476    28.05.2021  dev     2.1         Andreas Bug         Validierung für Kostenbezeichner und Start-/Enddatum bei Kosten eingefügt
