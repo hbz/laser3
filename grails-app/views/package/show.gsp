@@ -53,7 +53,7 @@
 
 <semui:objectStatus object="${packageInstance}" status="${packageInstance.packageStatus}"/>
 
-<g:render template="/templates/meta/identifier" model="${[object: packageInstance, editable: editable]}"/>
+<g:render template="/templates/meta/identifier" model="${[object: packageInstance, editable: false]}"/>
 
 <semui:messages data="${flash}"/>
 

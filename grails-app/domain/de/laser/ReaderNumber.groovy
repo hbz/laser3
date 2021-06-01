@@ -9,6 +9,7 @@ class ReaderNumber {
     /*@RefdataAnnotation(cat = '?')
     RefdataValue type*/
     String referenceGroup
+    String dateGroupNote //counts for every number for a given date
 
     Integer value
     @RefdataAnnotation(cat = RDConstants.SEMESTER)
@@ -32,6 +33,7 @@ class ReaderNumber {
     static constraints = {
         //type            (blank:false)
         referenceGroup(blank: false)
+        dateGroupNote(nullable: true, blank: false)
         value(nullable: true)
         semester(nullable: true, validator: { RefdataValue val, ReaderNumber obj ->
             if (obj.dueDate && obj.semester) {
@@ -51,6 +53,7 @@ class ReaderNumber {
 
         //type            column:'num_typ_rdv_fk'
         referenceGroup  column:'num_reference_group'
+        dateGroupNote   column:'num_date_group_note', type: 'text'
         value           column:'num_value'
         semester        column:'num_semester_rv_fk'
         dueDate         column:'num_due_date'

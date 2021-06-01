@@ -17,101 +17,140 @@
 </semui:breadcrumbs>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
-
-    <g:if test="${editable}"><span id="platformNameEdit"
-                                   class="xEditableValue"
-                                   data-type="textarea"
-                                   data-pk="${platformInstance.class.name}:${platformInstance.id}"
-                                   data-name="name"
-                                   data-url='<g:createLink controller="ajax"
-                                                           action="editableSetValue"/>'>${platformInstance.name}</span>
-    </g:if>
-    <g:else>${platformInstance.name}</g:else>
+    ${platformInstance.name}
 </h1>
+
+<g:render template="/templates/meta/identifier" model="${[object: platformInstance, editable: false]}"/>
 
 <semui:messages data="${flash}"/>
 
 <div id="collapseableSubDetails" class="ui stackable grid">
     <div class="sixteen wide column">
         <div class="la-inline-lists">
-          <div class="ui two stackable cards">
-            <div class="ui card la-time-card">
-              <div class="content">
-                <dl>
-                  <dt>${message(code: 'platform.name')}</dt>
-                  <dd><semui:xEditable owner="${platformInstance}" field="name"/></dd>
-                </dl>
-                <dl>
-                  <dt>we:kb ID</dt>
-                  <dd>
-                    ${platformInstance?.gokbId}
-                    <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
-                            var="gokbAPI">
-                      <g:if test="${platformInstance?.gokbId}">
-                        <a target="_blank"
-                           href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/platformContent/?id=' + platformInstance?.gokbId : '#'}"><i
-                            title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
-                      </g:if>
-                    </g:each>
-                  </dd>
-                </dl>
-                <dl>
-                  <dt>${message(code: 'platform.org')}</dt>
-                  <dd>
-                    <g:if test="${platformInstance.org}">
-                      <g:link controller="organisation" action="show"
-                              id="${platformInstance.org.id}">${platformInstance.org.name}</g:link>
-                    </g:if>
-                  </dd>
-                </dl>
-              </div>
+            <div class="ui two stackable cards">
+                <div class="ui card la-time-card">
+                    <div class="content">
+                        <dl>
+                            <dt>${message(code: 'platform.name')}</dt>
+                            <dd><semui:xEditable owner="${platformInstance}" field="name"/></dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'default.status.label')}</dt>
+                            <dd>${platformInstance.status.getI10n("value")}</dd>
+                        </dl>
+                    </div>
+                </div>
+                <div class="ui card">
+                    <div class="content">
+                        <dl>
+                            <dt>${message(code: 'platform.provider')}</dt>
+                            <dd>
+                                <g:if test="${platformInstance.org}">
+                                    <g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.name}</g:link>
+                                </g:if>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>${message(code: 'platform.primaryURL')}</dt>
+                            <dd>
+                                <semui:xEditable owner="${platformInstance}" field="primaryUrl"/>
+                                <g:if test="${platformInstance.primaryUrl}">
+                                    <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                       data-content="${message(code: 'tipp.tooltip.callUrl')}"
+                                       href="${platformInstance.primaryUrl?.contains('http') ? platformInstance.primaryUrl : 'http://' + platformInstance.primaryUrl}"
+                                       target="_blank"><i class="share square icon"></i></a>
+                                </g:if>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
             </div>
             <div class="ui card">
-              <div class="content">
-                <dl>
-                  <dt>${message(code: 'platform.primaryUrl', default: 'Primary URL')}</dt>
-                  <dd>
-                    <semui:xEditable owner="${platformInstance}" field="primaryUrl"/>
-                    <g:if test="${platformInstance?.primaryUrl}">
-                      <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                         data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                         href="${platformInstance?.primaryUrl?.contains('http') ? platformInstance?.primaryUrl : 'http://' + platformInstance?.primaryUrl}"
-                         target="_blank"><i class="share square icon"></i></a>
-                    </g:if>
-                  </dd>
-                </dl>
-                <dl>
-                  <dt>${message(code: 'platform.serviceProvider')}</dt>
-                  <dd><semui:xEditableRefData owner="${platformInstance}" field="serviceProvider" config="${RDConstants.Y_N}"/></dd>
-                </dl>
-                <dl>
-                  <dt>${message(code: 'platform.softwareProvider')}</dt>
-                  <dd><semui:xEditableRefData owner="${platformInstance}" field="softwareProvider" config="${RDConstants.Y_N}"/></dd>
-                </dl>
-                <g:if test="${params.mode == 'advanced'}">
-                  <dl>
-                    <dt>${message(code: 'default.type.label')}</dt>
-                    <dd><semui:xEditableRefData owner="${platformInstance}" field="type" config="${RDConstants.Y_N_O}"/></dd>
-                  </dl>
-                  <dl>
-                    <dt>${message(code: 'default.status.label')}</dt>
-                    <dd><semui:xEditableRefData owner="${platformInstance}" field="status"
-                                                config="${RDConstants.USAGE_STATUS}"/></dd>
-                  </dl>
-                  <dl>
-                    <dt><g:message code="platform.globalUID.label" default="Global UID"/></dt>
-                    <dd><g:fieldValue bean="${platformInstance}" field="globalUID"/></dd>
-                  </dl>
-                </g:if>
-              </div>
+                <div class="content">
+                    <h2 class="ui header">
+                        <g:message code="platform.auth.header"/>
+                    </h2>
+                    <dl>
+                        <dt><g:message code="platform.auth.ip.supported"/></dt>
+                        <dd>missing in ES index</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.auth.shibboleth.supported"/></dt>
+                        <dd>missing in ES index</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.auth.userPass.supported"/></dt>
+                        <dd>missing in ES index</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.auth.proxy.supported"/></dt>
+                        <dd>${platformInstanceRecord.proxySupported}</dd>
+                    </dl>
+                </div>
             </div>
-          </div>
+            <div class="ui card">
+                <div class="content">
+                    <h2 class="ui header">
+                        <g:message code="platform.stats.header"/>
+                    </h2>
+                    <dl>
+                        <dt><g:message code="platform.stats.format"/></dt>
+                        <dd>${platformInstanceRecord.statisticsFormat}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.update"/></dt>
+                        <dd>${platformInstanceRecord.statisticsUpdate}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.adminURL"/></dt>
+                        <dd>${platformInstanceRecord.statisticsAdminPortalUrl}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.certified"/></dt>
+                        <dd>${platformInstanceRecord.counterCertified}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.registryURL"/></dt>
+                        <dd>${platformInstanceRecord.counterRegistryUrl}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.r3supported"/></dt>
+                        <dd>${platformInstanceRecord.counterR3Supported}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.r4supported"/></dt>
+                        <dd>${platformInstanceRecord.counterR4Supported}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.r5supported"/></dt>
+                        <dd>${platformInstanceRecord.counterR5Supported}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.r4sushi"/></dt>
+                        <dd>${platformInstanceRecord.counterR4SushiApiSupported}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.r5sushi"/></dt>
+                        <dd>${platformInstanceRecord.counterR5SushiApiSupported}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.r4serverURL"/></dt>
+                        <dd>${platformInstanceRecord.counterR4SushiServerUrl}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.r5serverURL"/></dt>
+                        <dd>${platformInstanceRecord.counterR5SushiServerUrl}</dd>
+                    </dl>
+                </div>
+            </div>
             <div id="new-dynamic-properties-block">
                 <g:render template="properties" model="${[ platform: platformInstance ]}"/>
             </div><!-- #new-dynamic-properties-block -->
-
             <div class="ui card">
                 <div class="content">
+                    <h2 class="ui header">
+                        <g:message code="accessPoint.label"/>
+                    </h2>
                     <table class="ui three column table">
                         <g:each in="${orgAccessPointList}" var="orgAccessPoint">
                             <tr>

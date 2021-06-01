@@ -201,7 +201,10 @@
                     <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
                     <%
                         Map<String,Object> availablePrivateDescr = [:]
-                        PropertyDefinition.AVAILABLE_PRIVATE_DESCR.each { String pd ->
+                        Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR
+                        if(institution.getCustomerType() == "ORG_INST")
+                            availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR-PropertyDefinition.SVY_PROP
+                        availablePrivDescs.each { String pd ->
                             availablePrivateDescr[pd] = message(code:"propertyDefinition.${pd}.label")
                         }
                     %>
