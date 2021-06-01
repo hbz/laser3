@@ -840,11 +840,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
             Map platformRecord = platformJSON.records[0]
             //Platform.withTransaction { TransactionStatus ts ->
                 Platform platform = Platform.findByGokbId(platformUUID)
+                RefdataValue platformStatus = RefdataValue.getByValueAndCategory(platformRecord.status, RDConstants.PLATFORM_STATUS)
                 if(platform) {
                     platform.name = platformRecord.name
+                    platform.status = platformStatus
                 }
                 else {
-                    platform = new Platform(name: platformRecord.name, gokbId: platformRecord.uuid)
+                    platform = new Platform(name: platformRecord.name, gokbId: platformRecord.uuid, status: platformStatus)
                 }
                 platform.normname = platformRecord.name.toLowerCase()
                 if(platformRecord.primaryUrl)

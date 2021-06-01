@@ -63,8 +63,7 @@ class PackageController {
         String esQuery = "?componentType=Package"
         if (params.q) {
             result.filterSet = true
-            //workaround for or-connection; find api supports only and-connection
-            esQuery += "&name=${params.q}"
+            esQuery += "&q=${params.q}"
             esQuery += "&ids=Anbieter_Produkt_ID,*${params.q}*"
             esQuery += "&ids=isil,*${params.q}*"
         }
@@ -95,11 +94,6 @@ class PackageController {
                 esQuery += "&curatoryGroupType=other" //setting to this includes also missing ones, this is already implemented in we:kb
         }
 
-        String sort = params.sort ? "&sort=" + params.sort : "&sort=sortname"
-        String order = params.order ? "&order=" + params.order : "&order=asc"
-        String max = params.max ? "&max=${params.max}" : "&max=${result.max}"
-        String offset = params.offset ? "&offset=${params.offset}" : "&offset=${result.offset}"
-
         Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups')
         if(queryCuratoryGroups.error == 404) {
             result.error = message(code:'wekb.error.'+queryCuratoryGroups.error)
@@ -111,13 +105,7 @@ class PackageController {
             }
             result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
 
-            Set records = []
-            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + sort + order + max + offset)
-            if (queryResult.warning) {
-                records.addAll(queryResult.warning.records)
-                result.recordsCount = queryResult.warning.count
-                result.records = records
-            }
+            result.putAll(gokbService.doQuery(result, params.clone(), esQuery))
         }
 
         result
@@ -414,9 +402,8 @@ class PackageController {
 
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
-        String esQuery = "?componentType=Package&uuid=${packageInstance.gokbId}"
 
-        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery)
+        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${packageInstance.gokbId}")
         if (queryResult.error && queryResult.error == 404) {
             flash.error = message(code:'wekb.error.404')
         }
