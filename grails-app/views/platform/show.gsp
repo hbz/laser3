@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ApiSource; de.laser.helper.RDConstants; de.laser.Platform" %>
+<%@ page import="de.laser.ApiSource; de.laser.helper.RDConstants; de.laser.Platform; de.laser.RefdataValue; de.laser.helper.RDConstants" %>
 <!doctype html>
 <html>
 <head>
@@ -57,7 +57,7 @@
                                 <g:if test="${platformInstance.primaryUrl}">
                                     <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
-                                       href="${platformInstance.primaryUrl?.contains('http') ? platformInstance.primaryUrl : 'http://' + platformInstance.primaryUrl}"
+                                       href="${platformInstance.primaryUrl.startsWith('http') ? platformInstance.primaryUrl : 'http://' + platformInstance.primaryUrl}"
                                        target="_blank"><i class="share square icon"></i></a>
                                 </g:if>
                             </dd>
@@ -72,19 +72,19 @@
                     </h2>
                     <dl>
                         <dt><g:message code="platform.auth.ip.supported"/></dt>
-                        <dd>missing in ES index</dd>
+                        <dd>${platformInstanceRecord.ipAuthentication ? RefdataValue.getByValueAndCategory(platformInstanceRecord.ipAuthentication, RDConstants.IP_AUTHENTICATION).getI10n("value") : message(code: 'default.not.available')}</dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.auth.shibboleth.supported"/></dt>
-                        <dd>missing in ES index</dd>
+                        <dd>${platformInstanceRecord.shibbolethAuthentication ? RefdataValue.getByValueAndCategory(platformInstanceRecord.shibbolethAuthentication, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.auth.userPass.supported"/></dt>
-                        <dd>missing in ES index</dd>
+                        <dd>${platformInstanceRecord.passwordAuthentication ? RefdataValue.getByValueAndCategory(platformInstanceRecord.passwordAuthentication, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.auth.proxy.supported"/></dt>
-                        <dd>${platformInstanceRecord.proxySupported}</dd>
+                        <dd>${platformInstanceRecord.proxySupported ? RefdataValue.getByValueAndCategory(platformInstanceRecord.proxySupported, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                     </dl>
                 </div>
             </div>
@@ -95,51 +95,99 @@
                     </h2>
                     <dl>
                         <dt><g:message code="platform.stats.format"/></dt>
-                        <dd>${platformInstanceRecord.statisticsFormat}</dd>
+                        <dd>${platformInstanceRecord.statisticsFormat ? RefdataValue.getByValueAndCategory(platformInstanceRecord.statisticsFormat, RDConstants.PLATFORM_STATISTICS_FORMAT).getI10n("value") : message(code: 'default.not.available')}</dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.stats.update"/></dt>
-                        <dd>${platformInstanceRecord.statisticsUpdate}</dd>
+                        <dd>${platformInstanceRecord.statisticsUpdate ? RefdataValue.getByValueAndCategory(platformInstanceRecord.statisticsUpdate, RDConstants.PLATFORM_STATISTICS_FREQUENCY).getI10n("value") : message(code: 'default.not.available')}</dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.stats.adminURL"/></dt>
-                        <dd>${platformInstanceRecord.statisticsAdminPortalUrl}</dd>
+                        <dd>
+                            <g:if test="${platformInstanceRecord.statisticsAdminPortalUrl}">
+                                <g:if test="${platformInstanceRecord.statisticsAdminPortalUrl.startsWith('http')}">
+                                    ${platformInstanceRecord.statisticsAdminPortalUrl} <a href="${platformInstanceRecord.statisticsAdminPortalUrl}"><i title="${message(code: 'platform.stats.adminURL')} Link" class="external alternate icon"></i></a>
+                                </g:if>
+                                <g:else>
+                                    <g:message code="default.url.invalid"/>
+                                </g:else>
+                            </g:if>
+                            <g:else>
+                                <g:message code="default.not.available"/>
+                            </g:else>
+                        </dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.stats.counter.certified"/></dt>
-                        <dd>${platformInstanceRecord.counterCertified}</dd>
+                        <dd>${platformInstanceRecord.counterCertified ? RefdataValue.getByValueAndCategory(platformInstanceRecord.counterCertified, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.stats.counter.registryURL"/></dt>
-                        <dd>${platformInstanceRecord.counterRegistryUrl}</dd>
+                        <dd>
+                            <g:if test="${platformInstanceRecord.counterRegistryUrl}">
+                                <g:if test="${platformInstanceRecord.counterRegistryUrl.startsWith('http')}">
+                                    ${platformInstanceRecord.counterRegistryUrl} <a href="${platformInstanceRecord.counterRegistryUrl}"><i title="${message(code: 'platform.stats.counter.registryURL')} Link" class="external alternate icon"></i></a>
+                                </g:if>
+                                <g:else>
+                                    <g:message code="default.url.invalid"/>
+                                </g:else>
+                            </g:if>
+                            <g:else>
+                                <g:message code="default.not.available"/>
+                            </g:else>
+                        </dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.stats.counter.r3supported"/></dt>
-                        <dd>${platformInstanceRecord.counterR3Supported}</dd>
+                        <dd>${platformInstanceRecord.counterR3Supported ? RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR3Supported, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.stats.counter.r4supported"/></dt>
-                        <dd>${platformInstanceRecord.counterR4Supported}</dd>
+                        <dd>${platformInstanceRecord.counterR4Supported ? RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR4Supported, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.stats.counter.r5supported"/></dt>
-                        <dd>${platformInstanceRecord.counterR5Supported}</dd>
+                        <dd>${platformInstanceRecord.counterR5Supported ? RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR5Supported, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.stats.counter.r4sushi"/></dt>
-                        <dd>${platformInstanceRecord.counterR4SushiApiSupported}</dd>
+                        <dd>${platformInstanceRecord.counterR4SushiApiSupported ? RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR4SushiApiSupported, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.stats.counter.r5sushi"/></dt>
-                        <dd>${platformInstanceRecord.counterR5SushiApiSupported}</dd>
+                        <dd>${platformInstanceRecord.counterR5SushiApiSupported ? RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR5SushiApiSupported, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.stats.counter.r4serverURL"/></dt>
-                        <dd>${platformInstanceRecord.counterR4SushiServerUrl}</dd>
+                        <dd>
+                            <g:if test="${platformInstanceRecord.counterR4SushiServerUrl}">
+                                <g:if test="${platformInstanceRecord.counterR4SushiServerUrl.startsWith('http')}">
+                                    ${platformInstanceRecord.counterR4SushiServerUrl} <a href="${platformInstanceRecord.counterR4SushiServerUrl}"><i title="${message(code: 'platform.stats.counter.r4serverURL')} Link" class="external alternate icon"></i></a>
+                                </g:if>
+                                <g:else>
+                                    <g:message code="default.url.invalid"/>
+                                </g:else>
+                            </g:if>
+                            <g:else>
+                                <g:message code="default.not.available"/>
+                            </g:else>
+                        </dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.stats.counter.r5serverURL"/></dt>
-                        <dd>${platformInstanceRecord.counterR5SushiServerUrl}</dd>
+                        <dd>
+                            <g:if test="${platformInstanceRecord.counterR5SushiServerUrl}">
+                                <g:if test="${platformInstanceRecord.counterR5SushiServerUrl.startsWith('http')}">
+                                    ${platformInstanceRecord.counterR5SushiServerUrl} <a href="${platformInstanceRecord.counterR5SushiServerUrl}"><i title="${message(code: 'platform.stats.counter.r5serverURL')} Link" class="external alternate icon"></i></a>
+                                </g:if>
+                                <g:else>
+                                    <g:message code="default.url.invalid"/>
+                                </g:else>
+                            </g:if>
+                            <g:else>
+                                <g:message code="default.not.available"/>
+                            </g:else>
+                        </dd>
                     </dl>
                 </div>
             </div>

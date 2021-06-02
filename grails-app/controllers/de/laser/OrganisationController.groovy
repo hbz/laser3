@@ -621,12 +621,15 @@ class OrganisationController  {
             return
         }
         if (! result.orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
             return
         }
 
         result.availableOrgTypes = RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)-RDStore.OT_CONSORTIUM
         result.missing = [:]
+        if(result.error)
+            flash.error = result.error //to display we:kb's eventual 404
 
         if(result.inContextOrg && result.institution.eInvoice) {
             if(!result.institution.eInvoicePortal)
@@ -636,12 +639,6 @@ class OrganisationController  {
         }
 
         pu.setBenchmark('orgRoles & editable')
-
-      if (!result.orgInstance) {
-        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
-        redirect action: 'list'
-        return
-      }
 
         pu.setBenchmark('tasks')
 

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3532    02.06.2021  dev     2.1         Andreas Feature     Metadaten-Download- und KBART-Download-URL für Anbieter aus der we:kb übernommen
+
 3421    02.06.2021  dev     2.1         Andreas Feature     Filter für Einrichtungsmerkmale bei Teilnehmer hinzufügen angelegt
 
 3222    01.06.2021  dev     2.1         Andreas Feature     Unterteilung der Einrichtungseinstellungen in Reiter

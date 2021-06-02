@@ -30,7 +30,7 @@
         </g:if>
         <g:elseif test="${showWekbId}">
             ${orgInstance.gokbId}
-            <semui:linkIcon href="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)?.editUrl}/resource/show/${orgInstance.gokbId}" />
+            <semui:linkIcon href="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)?.editUrl}/public/orgContent/${orgInstance.gokbId}" />
         </g:elseif>
         <g:else>
             ${id.value}
