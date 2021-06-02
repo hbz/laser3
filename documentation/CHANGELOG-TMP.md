@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3532    01.06.2021  dev     2.1         Andreas Feature     Metadaten-Download- und KBART-Download-URL für Anbieter aus der we:kb übernommen
+
 3476    01.06.2021  dev     2.1         Andreas Bug         Zeichenbegrenzung auch im Kostenhinzufügemodal nachgereicht
 
 3462    01.06.2021  dev     2.1         Andreas Bug         Typ Umfrage ist für Vollnutzer jetzt auch beim neuen Merkmalstyp entfernt
