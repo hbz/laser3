@@ -47,7 +47,7 @@
     </g:if>
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu" />
     <nav aria-label="${message(code:'wcag.label.mainMenu')}">
-        <div id="mainMenue" class="ui fixed inverted stackable menu" role="menubar" >
+        <div id="mainMenue" class="ui inverted vertical accordion  menu" role="menubar" >
             <div class="ui container" role="none">
                 <semui:link generateElementId="true" role="menuitem" controller="home" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
                     <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
@@ -56,11 +56,13 @@
                 <sec:ifAnyGranted roles="ROLE_USER">
 
                     <g:if test="${contextOrg}">
-                        <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
-                            ${message(code:'menu.public')}
-                            <i  class="dropdown icon"></i>
+                        <div class="item" role="menuitem" aria-haspopup="true">
+                            <a class="active title">
+                                ${message(code:'menu.public')}
+                                <i  class="dropdown icon"></i>
+                            </a>
 
-                            <div class="menu" role="menu">
+                            <div class="active content" role="menu">
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="package" action="index">${message(code:'menu.public.all_pkg')}</semui:link>
                                     <semui:link generateElementId="true"  class="item" role="menuitem" controller="title" action="index">${message(code:'menu.public.all_titles')}</semui:link>
 
@@ -84,7 +86,8 @@
                             </div>
                         </div>
 
-                        <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
+                        <div class="item" role="menuitem" aria-haspopup="true">
+                            <a class="title">
                             ${message(code:'menu.my')}
                             <i  class="dropdown icon"></i>
 
@@ -724,6 +727,7 @@
 
         <script data-type="fix">
             $(document).ready(function() {
+
                 $('#system-jsqtk').on('click', function(){ jsqtk.go() })
                 $('#system-jspc').on('click',  function(){ console.dir('JSPC:', JSPC) })
 
