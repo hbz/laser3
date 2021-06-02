@@ -54,7 +54,8 @@ class OrganisationController  {
             redirect action: 'list'
             return
         }
-
+        if(!params.containsKey("tab"))
+            params.tab = "general"
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
         result.isComboRelated = isComboRelated
         result.contextOrg = result.institution //for the properties template
@@ -74,24 +75,37 @@ class OrganisationController  {
         // collecting visible settings by customer type, role and/or combo
         List<OrgSetting> allSettings = OrgSetting.findAllByOrg(result.orgInstance)
 
-        List<OrgSetting.KEYS> ownerSet = [
+        List<OrgSetting.KEYS> apiSet = [
                 OrgSetting.KEYS.API_LEVEL,
                 OrgSetting.KEYS.API_KEY,
-                OrgSetting.KEYS.API_PASSWORD,
+                OrgSetting.KEYS.API_PASSWORD
+        ]
+        List<OrgSetting.KEYS> generalSet = [
                 OrgSetting.KEYS.CUSTOMER_TYPE,
                 OrgSetting.KEYS.GASCO_ENTRY
         ]
-        List<OrgSetting.KEYS> accessSet = [
-                OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS,
-                OrgSetting.KEYS.NATSTAT_SERVER_ACCESS
+        List<OrgSetting.KEYS> oaMonitorSet = [
+                OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS
         ]
-        List<OrgSetting.KEYS> credentialsSet = [
+        List<OrgSetting.KEYS> natstatSet = [
                 OrgSetting.KEYS.NATSTAT_SERVER_API_KEY,
-                OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID
+                OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID,
+                OrgSetting.KEYS.NATSTAT_SERVER_ACCESS
         ]
 
         result.settings = []
 
+        switch(params.tab) {
+            case 'general': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in generalSet })
+                break
+            case 'api': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in apiSet })
+                break
+            case 'natstat': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in natstatSet })
+                break
+            case 'oamonitor': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in oaMonitorSet })
+                break
+        }
+        /* kept for case of reference, permission check should be handed over to tab display
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
             result.settings.addAll(allSettings.findAll { it.key in ownerSet })
             result.settings.addAll(allSettings.findAll { it.key in accessSet })
@@ -112,6 +126,7 @@ class OrganisationController  {
                 result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
             }
         }
+        */
 
 //        result.allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
         result
