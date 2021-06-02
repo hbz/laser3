@@ -522,6 +522,7 @@ class SubscriptionControllerService {
             //the following two are arguments for a g.message-call on the view which expects an Object[]
             result.superOrgType = [messageSource.getMessage('consortium.superOrgType',null,locale)]
             result.memberType = [messageSource.getMessage('consortium.subscriber',null,locale)]
+            result.propList= PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
             Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
             result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             result.members_disabled = Subscription.executeQuery("select oo.org.id from OrgRole oo join oo.sub s where s.instanceOf = :io",[io: result.subscription])

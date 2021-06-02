@@ -208,6 +208,12 @@ class FilterService {
             queryParams << [orgIdentifier: "%${params.orgIdentifier}%"]
         }
 
+        if (params.filterPropDef?.size() > 0) {
+            def psq = propertyService.evalFilterQuery(params, '', 'o', queryParams)
+            query << psq.query.split(' and', 2)[1]
+            queryParams << psq.queryParams
+        }
+
          queryParams << [org : org]
          queryParams << [comboType : params.comboType]
 
