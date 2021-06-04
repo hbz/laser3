@@ -10,6 +10,8 @@ class OrgSetting {
     def genericOIDService
 
     final static SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
+    //in order of display
+    final static SETTING_TABS = ['general', 'api', 'natstat', 'oamonitor']
 
     static enum KEYS {
         API_LEVEL                   (String),

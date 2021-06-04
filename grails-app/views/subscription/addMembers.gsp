@@ -34,7 +34,7 @@
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow      : [['name'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']],
+                              tmplConfigShow      : [['name'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['property&value']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
@@ -43,7 +43,8 @@
     <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscription" method="post" class="ui form">
 
         <g:render template="/templates/filter/orgFilterTable"
-                  model="[orgList          : members,
+                  model="[propList         : propList,
+                          orgList          : members,
                           tmplDisableOrgIds: members_disabled,
                           subInstance      : subscription,
                           tmplShowCheckbox : true,

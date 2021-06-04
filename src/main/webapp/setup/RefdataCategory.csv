@@ -47,6 +47,7 @@ ie.medium,IEMedium,IEMedium
 ill.code,Fernleihindikator,Ill code
 indemnification,Entschädigung Auswahl,Indemnification Choice
 invoicing,Rechnungsstellung,Invoicing
+ip.authentication,IP-Authentifizierung,IP Authentication
 ipv4.address.format,IPv4 Address Format,IPv4 Address Format
 ipv6.address.format,IPv6 Address Format,IPv6 Address Format
 language,Sprache,Language
@@ -73,8 +74,8 @@ license.oa.type,Open Access Typ,Open Access Type
 license.remote.access,License.RemoteAccess,License.RemoteAccess
 license.remote.access2,Remote-Zugriff,Remote Access
 license.statistics.delivery,Statistik Liefermethode,Statistics Delivery
-license.statistics.format,Statistik Auslieferungsformat,Statistics Format
-license.statistics.frequency,Statistik Auslieferungsfrequenz,Statistics Frequency
+license.statistics.format,Statistik Auslieferungsformat (Vertrag),Statistics Format (License)
+license.statistics.frequency,Statistik Auslieferungsfrequenz (Vertrag),Statistics Frequency (License)
 license.statistics.standards,Statistikstandard,Statistics Standards
 license.statistics.user.creds,Statistik Nutzeridentifikation,Statistics User Credentials
 license.status,Vertragsstatus,License Status
@@ -120,6 +121,8 @@ reminder.unit,ReminderUnit,ReminderUnit
 semester,Semester,Semester
 share.configuration,Share Configuration,Share Configuration
 sim.user.number,Sim User Zahl,Sim-User Number
+platform.statistics.format,Statistik Auslieferungsformat (Plattform),Statistics Format (Platform)
+platform.statistics.frequency,Statistik Auslieferungsfrequenz (Plattform),Statistics Frequency (Platform)
 subjectgroup,Fächergruppe,Subject Group
 subscription.form,Lizenzform,Subscription Form
 subscription.resource,Ressourcentyp,Resource type
