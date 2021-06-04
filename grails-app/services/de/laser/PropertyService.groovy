@@ -202,7 +202,7 @@ class PropertyService {
 
         AppUtils.getAllDomainClasses().each { dc ->
 
-            if (dc.shortName.endsWith('Property') && !SurveyProperty.class.name.contains(dc.name)) {
+            if (dc.shortName.endsWith('Property')) {
 
                 //log.debug( dc.shortName )
                 String query = "SELECT DISTINCT type FROM " + dc.name

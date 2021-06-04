@@ -38,5 +38,12 @@ databaseChangeLog = {
     changeSet(author: "galffy (generated)", id: "1622209756718-5") {
         addNotNullConstraint(columnDataType: "bigint", columnName: "plat_status_rv_fk", tableName: "platform")
     }
+      
+    changeSet(author: "djebeniani (generated)", id: "1622209756718-6") {
+        dropForeignKeyConstraint(baseTableName: "survey_property", constraintName: "fk594d0d1aab666169")
+    }
+
+    changeSet(author: "djebeniani (generated)", id: "1622209756718-7") {
+        dropTable(tableName: "survey_property")
 
 }

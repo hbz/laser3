@@ -4103,7 +4103,7 @@ class SurveyController {
             }
         }
 
-        SurveyProperty.withTransaction { TransactionStatus ts ->
+        PropertyDefinition.withTransaction { TransactionStatus ts ->
             if (value == '' && field) {
                 // Allow user to set a rel to null be calling set rel ''
                 property[field] = null
