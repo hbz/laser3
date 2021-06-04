@@ -5,17 +5,21 @@ import de.laser.ContextService
 import de.laser.I10nTranslation
 import de.laser.License
 import de.laser.LicenseController
+import de.laser.Org
 import de.laser.Subscription
 import de.laser.SubscriptionService
 import de.laser.SurveyConfig
 import de.laser.SurveyConfigProperties
 import de.laser.SurveyController
 import de.laser.SurveyInfo
+import de.laser.SurveyOrg
 import de.laser.SurveyResult
 import de.laser.Task
 import de.laser.TaskService
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.properties.PropertyDefinition
+import de.laser.properties.SubscriptionProperty
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -372,6 +376,43 @@ class SurveyControllerService {
 
                 result.orgsWithMultiYearTermSub = result.orgsWithMultiYearTermSub.sort { it.getAllSubscribers().sortname }
 
+            }
+
+            result.propertiesChanged = [:]
+            result.propertiesChangedByParticipant = []
+            result.properties.sort{it.getI10n('name')}.each { PropertyDefinition propertyDefinition ->
+
+                PropertyDefinition subPropDef = PropertyDefinition.getByNameAndDescr(propertyDefinition.name, PropertyDefinition.SUB_PROP)
+                if(subPropDef){
+                    result.surveyConfig.orgs.each{ SurveyOrg surveyOrg ->
+                        Subscription subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                                [parentSub  : result.surveyConfig.subscription,
+                                 participant: surveyOrg.org
+                                ])[0]
+                        SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, propertyDefinition, result.surveyConfig, result.contextOrg)
+                        SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, result.contextOrg)
+
+                        if(surveyResult && subscriptionProperty){
+                            String surveyValue = surveyResult.getValue()
+                            String subValue = subscriptionProperty.getValue()
+                            if (surveyValue != subValue) {
+                                Map changedMap = [:]
+                                //changedMap.surveyResult = surveyResult
+                                //changedMap.subscriptionProperty = subscriptionProperty
+                                //changedMap.surveyValue = surveyValue
+                                //changedMap.subValue = subValue
+                                changedMap.participant = surveyOrg.org
+
+                                result.propertiesChanged."${propertyDefinition.id}" = result.propertiesChanged."${propertyDefinition.id}" ?: []
+                                result.propertiesChanged."${propertyDefinition.id}" << changedMap
+
+                                result.propertiesChangedByParticipant << surveyOrg.org
+                            }
+                        }
+
+                    }
+
+                }
             }
 
             result.totalOrgs = result.orgsContinuetoSubscription.size() + result.newOrgsContinuetoSubscription.size() + result.orgsWithMultiYearTermSub.size()  + result.orgsWithTermination.size() + result.orgsWithParticipationInParentSuccessor.size() + result.orgsWithoutResult.size()

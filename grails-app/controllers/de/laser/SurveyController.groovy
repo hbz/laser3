@@ -2678,6 +2678,50 @@ class SurveyController {
         }
     }
 
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    Map<String,Object> showPropertiesChanged() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.changedProperties = []
+        result.propertyDefinition = PropertyDefinition.findById(params.propertyDefinitionId)
+        PropertyDefinition subPropDef = PropertyDefinition.getByNameAndDescr(result.propertyDefinition.name, PropertyDefinition.SUB_PROP)
+        if(subPropDef){
+            result.surveyConfig.orgs.sort{it.org.sortname}.each{ SurveyOrg surveyOrg ->
+                Subscription subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                        [parentSub  : result.surveyConfig.subscription,
+                         participant: surveyOrg.org
+                        ])[0]
+                SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, result.propertyDefinition, result.surveyConfig, result.contextOrg)
+                SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, result.contextOrg)
+
+                if(surveyResult && subscriptionProperty){
+                    String surveyValue = surveyResult.getValue()
+                    String subValue = subscriptionProperty.getValue()
+                    if (surveyValue != subValue) {
+                        Map changedMap = [:]
+                        changedMap.surveyResult = surveyResult
+                        changedMap.subscriptionProperty = subscriptionProperty
+                        changedMap.surveyValue = surveyValue
+                        changedMap.subValue = subValue
+                        changedMap.participant = surveyOrg.org
+                        result.changedProperties << changedMap
+                    }
+                }
+
+            }
+
+        }
+
+        render template: "/survey/modal_PropertiesChanged", model: result
+
+    }
+
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
