@@ -89,6 +89,13 @@
                                 <i class="x red icon"></i>
                             </span>
                         </g:else>
+
+                        <g:if test="${participantResult.participant in propertiesChangedByParticipant}">
+                            <span data-position="top right" class="la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
+                                <i class="exclamation triangle yellow large icon"></i>
+                            </span>
+                        </g:if>
                     </div>
                 </div>
             </td>
