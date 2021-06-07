@@ -283,6 +283,14 @@
                                 </td>
                             </tr>
                         </g:each>
+                        <tr>
+                            <td class="control-label">
+                                <g:message code="subscription.packages.freezeHolding"/>
+                            </td>
+                            <td colspan="2">
+                                <g:checkBox class="ui checkbox" name="freezeHolding" checked="${false}"/>
+                            </td>
+                        </tr>
                     </table>
                 </div>
             </div>
@@ -349,6 +357,14 @@
                                     </td>
                                 </tr>
                             </g:each>
+                            <tr>
+                                <td class="control-label">
+                                    <g:message code="subscription.packages.freezeHolding"/>
+                                </td>
+                                <td colspan="2">
+                                    <g:checkBox class="ui checkbox" name="freezeHoldingAudit" checked="${false}"/>
+                                </td>
+                            </tr>
                         </table>
                     </div>
                 </div>

@@ -947,11 +947,11 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def startDateCheck(){
-        if(statusUpdateService.startDateCheck())
-            flash.message = "Lizenzen ohne Startdatum verlieren ihren Status ..."
+    def freezeSubscriptionHoldings(){
+        if(subscriptionService.freezeSubscriptionHoldings())
+            flash.message = "Bestände werden festgefroren ..."
         else
-            flash.message = "Lizenzen ohne Startdatum haben bereits ihren Status verloren!"
+            flash.message = "Bestände sind bereits festgefroren!"
         redirect(url: request.getHeader('referer'))
     }
 

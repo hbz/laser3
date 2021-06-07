@@ -895,8 +895,7 @@ class SubscriptionService {
                             break
                         case 'auditable': auditable = true
                             break
-                        case 'notificationAudit': auditable = true
-                            memberNotification = true
+                        case 'notificationAudit': memberNotification = true
                             break
                         case 'notification': configMap.withNotification = params[key] != null
                             break
@@ -923,6 +922,11 @@ class SubscriptionService {
                     log.error("ProcessLinkPackage -> PendingChangeConfiguration: " + e.message)
                 }
             }
+            subscriptionPackage.freezeHolding = params.freezeHolding == 'on'
+            if(params.freezeHoldingAudit == 'on' && !AuditConfig.getConfig(subscriptionPackage.subscription, SubscriptionPackage.FREEZE_HOLDING))
+                AuditConfig.addConfig(subscriptionPackage.subscription, SubscriptionPackage.FREEZE_HOLDING)
+            else if(params.freezeHoldingAudit != 'on' && AuditConfig.getConfig(subscriptionPackage.subscription, SubscriptionPackage.FREEZE_HOLDING))
+                AuditConfig.removeConfig(subscriptionPackage.subscription, SubscriptionPackage.FREEZE_HOLDING)
         }
     }
 
@@ -2011,6 +2015,24 @@ class SubscriptionService {
             }
         }
 
+    }
+
+    //-------------------------------------- cronjob section ----------------------------------------
+    boolean freezeSubscriptionHoldings() {
+        boolean done, doneChild
+        Calendar cal = GregorianCalendar.getInstance()
+        //on parent level
+        Set<SubscriptionPackage> subPkgs = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp join sp.subscription s where s.endDate != null and s.endDate <= :endOfYear and sp.freezeHolding = true', [endOfYear: cal.getTime()])
+        //log.debug(subPkgs.toListString())
+        if(subPkgs)
+            done = PendingChangeConfiguration.executeUpdate('update PendingChangeConfiguration pcc set pcc.settingValue = :reject where pcc.subscriptionPackage in (:subPkgs)', [reject: RDStore.PENDING_CHANGE_CONFIG_REJECT, subPkgs: subPkgs]) > 0
+        else done = false
+        //on child level
+        //Set<Subscription> subsWithFreezeAudit = AuditConfig.executeQuery('select ac.referenceId from AuditConfig ac where ac.referenceField = :freezeHoldingAudit', [freezeHoldingAudit: SubscriptionPackage.FREEZE_HOLDING]).collect { row -> Subscription.get(row) }
+        //log.debug(subsWithFreezeAudit.toListString())
+        Set<String> settingKeysAndNots = PendingChangeConfiguration.SETTING_KEYS+PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX }
+        doneChild = AuditConfig.executeUpdate('delete from AuditConfig ac where ac.referenceId in (select ac.referenceId from AuditConfig ac where ac.referenceField = :freezeHoldingAudit) and ac.referenceField in (:settingKeysAndNots)', [freezeHoldingAudit: SubscriptionPackage.FREEZE_HOLDING, settingKeysAndNots: settingKeysAndNots]) > 0
+        done || doneChild
     }
 
 }
