@@ -8,6 +8,7 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.SurveyControllerService
+import de.laser.finance.Order
 import de.laser.finance.PriceItem
 import de.laser.properties.SubscriptionProperty
 import de.laser.auth.User
@@ -3458,6 +3459,17 @@ class SurveyController {
                         copyCostItem.currencyRate = 1.0
                         copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
                     }
+                    Org org = participantSub.getSubscriber()
+                    SurveyResult surveyResult = org ? SurveyResult.findBySurveyConfigAndParticipantAndType(result.surveyConfig, org, RDStore.SURVEY_PROPERTY_ORDER_NUMBER) : null
+
+                    if(surveyResult){
+                        Order order = new Order(orderNumber: surveyResult.getValue(), owner: result.institution)
+                        if(order.save()) {
+                            copyCostItem.order = order
+                        }
+                        else log.error(order.errors)
+                    }
+
                     if(copyCostItem.save()) {
                         countNewCostItems++
                     }else {
