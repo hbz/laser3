@@ -522,11 +522,12 @@ class SubscriptionControllerService {
             //the following two are arguments for a g.message-call on the view which expects an Object[]
             result.superOrgType = [messageSource.getMessage('consortium.superOrgType',null,locale)]
             result.memberType = [messageSource.getMessage('consortium.subscriber',null,locale)]
+            result.propList= PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
             Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
             result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             result.members_disabled = Subscription.executeQuery("select oo.org.id from OrgRole oo join oo.sub s where s.instanceOf = :io",[io: result.subscription])
             result.validPackages = result.subscription.packages?.sort { it.pkg.name }
-            result.memberLicenses = License.executeQuery("select l from Links li join li.sourceLicense l where li.destinationSubscription = :subscription and li.linkType = :linkType and exists (select l2 from License l2 where l2.instanceOf = l)",[subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE])
+            result.memberLicenses = License.executeQuery("select l from License l where l.instanceOf in (select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType)",[subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE])
 
             [result:result,status:STATUS_OK]
         }
@@ -616,43 +617,48 @@ class SubscriptionControllerService {
                             synShareTargetList.add(memberSub)
                             SubscriptionProperty.findAllByOwner(result.subscription).each { SubscriptionProperty sp ->
                                 AuditConfig ac = AuditConfig.getConfig(sp)
-
-                                        if (ac) {
-                                            // multi occurrence props; add one additional with backref
-                                            if (sp.type.multipleOccurrence) {
-                                                SubscriptionProperty additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
-                                                additionalProp = sp.copyInto(additionalProp)
-                                                additionalProp.instanceOf = sp
-                                                additionalProp.save()
-                                            }
-                                            else {
-                                                // no match found, creating new prop with backref
-                                                SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
-                                                newProp = sp.copyInto(newProp)
-                                                newProp.instanceOf = sp
-                                                newProp.save()
-                                            }
-                                        }
+                                if (ac) {
+                                    // multi occurrence props; add one additional with backref
+                                    if (sp.type.multipleOccurrence) {
+                                        SubscriptionProperty additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
+                                        additionalProp = sp.copyInto(additionalProp)
+                                        additionalProp.instanceOf = sp
+                                        additionalProp.save()
                                     }
-
-                                    memberSub.refresh()
-
-                                    packagesToProcess.each { Package pkg ->
-                                        if(params.linkWithEntitlements)
-                                            pkg.addToSubscriptionCurrentStock(memberSub, result.subscription)
-                                        else
-                                            pkg.addToSubscription(memberSub, false)
+                                    else {
+                                        // no match found, creating new prop with backref
+                                        SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, memberSub, sp.type, sp.tenant)
+                                        newProp = sp.copyInto(newProp)
+                                        newProp.instanceOf = sp
+                                        newProp.save()
                                     }
-
-                                    licensesToProcess.each { License lic ->
-                                        subscriptionService.setOrgLicRole(memberSub,lic,false)
-                                    }
-
                                 }
-                                //}
+                            }
+                            Identifier.findAllBySub(result.subscription).each { Identifier id ->
+                                AuditConfig ac = AuditConfig.getConfig(id)
+                                if(ac) {
+                                    Identifier.constructWithFactoryResult([value: id.value, parent: id, reference: memberSub, namespace: id.ns])
+                                }
                             }
 
-                        result.subscription.syncAllShares(synShareTargetList)
+                            memberSub.refresh()
+
+                            packagesToProcess.each { Package pkg ->
+                                if(params.linkWithEntitlements)
+                                    pkg.addToSubscriptionCurrentStock(memberSub, result.subscription)
+                                else
+                                    pkg.addToSubscription(memberSub, false)
+                            }
+
+                            licensesToProcess.each { License lic ->
+                                subscriptionService.setOrgLicRole(memberSub,lic,false)
+                            }
+
+                        }
+                                //}
+                    }
+
+                    result.subscription.syncAllShares(synShareTargetList)
                 } else {
                     [result:result,status:STATUS_ERROR]
                 }
@@ -1268,13 +1274,14 @@ class SubscriptionControllerService {
 
             SwissKnife.setPaginationParams(result, params, result.user)
 
-            result.editUrl = apiSource.baseUrl+apiSource.fixToken
+            result.editUrl = apiSource.baseUrl
             String esQuery = "?componentType=Package"
-            if(params.q) {
+            if (params.q) {
                 result.filterSet = true
-                //for ElasticSearch
+                //workaround for or-connection; find api supports only and-connection
                 esQuery += "&name=${params.q}"
-                //the result set has to be broadened down by IdentifierNamespace queries! Problematic if the package is not in LAS:eR yet!
+                esQuery += "&ids=Anbieter_Produkt_ID,*${params.q}*"
+                esQuery += "&ids=isil,*${params.q}*"
             }
 
             if(params.provider) {
@@ -1292,16 +1299,21 @@ class SubscriptionControllerService {
                 esQuery += "&contentType=${params.resourceTyp}"
             }
 
+            if (params.ddc) {
+                result.filterSet = true
+                params.list("ddc").each { String key ->
+                    esQuery += "&ddc=${RefdataValue.get(key).value}"
+                }
+            }
 
-            /*
-            to implement:
-            - provider
-            - componentType
-            - series
-            - subjectArea
-            - curatoryGroup
-            - year (combination of dateFirstPrint and dateFirstOnline)
-             */
+            //you rarely encounter it; ^ is the XOR operator in Java - if both options are set, we mean all curatory group types
+            if (params.containsKey('curatoryGroupProvider') ^ params.containsKey('curatoryGroupOther')) {
+                result.filterSet = true
+                if(params.curatoryGroupProvider)
+                    esQuery += "&curatoryGroupType=provider"
+                else if(params.curatoryGroupOther)
+                    esQuery += "&curatoryGroupType=other" //setting to this includes also missing ones, this is already implemented in we:kb
+            }
 
             String sort = params.sort ? "&sort="+params.sort: "&sort=sortname"
             String order = params.order ? "&order="+params.order: "&order=asc"
@@ -1309,20 +1321,27 @@ class SubscriptionControllerService {
             String offset = params.offset ? "&offset=${params.offset}": "&offset=${result.offset}"
 
             Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/groups')
-            if(queryCuratoryGroups.warning) {
-                List recordsCuratoryGroups = queryCuratoryGroups.warning.result
-                result.curatoryGroups = recordsCuratoryGroups?.findAll {it.status == "Current"}
+            if(queryCuratoryGroups.error && queryCuratoryGroups.error == 404) {
+                result.error = messageSource.getMessage('wekb.error.404', null, LocaleContextHolder.getLocale())
+                [result:result, status: STATUS_ERROR]
+            }
+            else {
+                if(queryCuratoryGroups.warning) {
+                    List recordsCuratoryGroups = queryCuratoryGroups.warning.result
+                    result.curatoryGroups = recordsCuratoryGroups?.findAll {it.status == "Current"}
+                }
+                result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+
+                Set records = []
+                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + sort + order + max + offset)
+                if (queryResult.warning) {
+                    records.addAll(queryResult.warning.records)
+                    result.recordsCount = queryResult.warning.count
+                    result.records = records
+                }
+                [result:result,status:STATUS_OK]
             }
 
-
-            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/find'+esQuery+sort+order+max+offset)
-            if(queryResult.warning) {
-                List records = queryResult.warning.records
-                result.recordsCount = queryResult.warning.count
-                result.records = records
-            }
-
-            [result:result,status:STATUS_OK]
         }
     }
 
@@ -1354,22 +1373,27 @@ class SubscriptionControllerService {
                         try {
                             globalSourceSyncService.defineMapFields()
                             Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID,max:5000])
-
-                            if(queryResult.records && queryResult.count > 0) {
-                                globalSourceSyncService.updateRecords(queryResult.records)
-                            }else {
-                                globalSourceSyncService.createOrUpdatePackage(pkgUUID)
+                            if(queryResult.error && queryResult.error == 404) {
+                                log.error("we:kb server currently unavailable")
                             }
-                            Package pkgToLink = Package.findByGokbId(pkgUUID)
-                            result.packageName = pkgToLink.name
-                            log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                            if (addType == 'With') {
-                                pkgToLink.addToSubscription(result.subscription, true)
+                            else {
+                                if(queryResult.records && queryResult.count > 0) {
+                                    globalSourceSyncService.updateRecords(queryResult.records)
+                                }
+                                else {
+                                    globalSourceSyncService.createOrUpdatePackage(pkgUUID)
+                                }
+                                Package pkgToLink = Package.findByGokbId(pkgUUID)
+                                result.packageName = pkgToLink.name
+                                log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
+                                if (addType == 'With') {
+                                    pkgToLink.addToSubscription(result.subscription, true)
+                                }
+                                else if (addType == 'Without') {
+                                    pkgToLink.addToSubscription(result.subscription, false)
+                                }
+                                pkgToLink.addPendingChangeConfiguration(result.subscription, params)
                             }
-                            else if (addType == 'Without') {
-                                pkgToLink.addToSubscription(result.subscription, false)
-                            }
-                            pkgToLink.addPendingChangeConfiguration(result.subscription, params)
                         }
                         catch (Exception e) {
                             log.error("sync job has failed, please consult stacktrace as follows: ")
@@ -1564,7 +1588,7 @@ class SubscriptionControllerService {
             }
 
             params.tab = params.tab ?: 'changes'
-            params.sort = params.sort ?: 'ts'
+            params.sort = params.sort ?: 'msgToken, ts'
             params.order = params.order ?: 'desc'
             params.max = result.max
             params.offset = result.offset
@@ -2650,9 +2674,10 @@ class SubscriptionControllerService {
 
     Map<String,Object> reporting(GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        Subscription sub = Subscription.get(params.id)
 
         result.cfgQueryList  = SubscriptionReporting.CONFIG.base.query.default
-        result.cfgQueryList2 = SubscriptionReporting.CONFIG.base.query2
+        result.cfgQueryList2 = SubscriptionReporting.getCurrentQuery2Config( sub )
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }

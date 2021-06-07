@@ -19,7 +19,7 @@
 
             <g:if test="${sourceObject}">
                 <g:set var="surveyConfig" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sourceObject, true)}"/>
-                <semui:crumb controller="survey" action="renewalWithSurvey" id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.surveyInfo.name}" />
+                <semui:crumb controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.surveyInfo.name}" />
             </g:if>
 
             <semui:crumb class="active" message="subscription.details.renewals.renew_sub.label" />

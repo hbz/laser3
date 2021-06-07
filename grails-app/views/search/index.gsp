@@ -455,7 +455,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
                                             <semui:linkIcon href="${hit.getSourceAsMap().primaryUrl}"/>
                                         </g:if>
                                     <br />
-                                    <strong>${message(code: 'platform.org')}</strong>:
+                                    <strong>${message(code: 'platform.provider')}</strong>:
                                 <g:link controller="organisation" action="show"
                                         id="${hit.getSourceAsMap().orgId}">${hit.getSourceAsMap().orgName}</g:link>
 
@@ -630,7 +630,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
 
                                     <strong>${message(code: 'default.status.label')}</strong>: ${hit.getSourceAsMap().status?.getAt('value_'+languageSuffix) }
                                     <br />
-                                    <strong>${message(code: 'renewalWithSurvey.period')}</strong>: ${period}
+                                    <strong>${message(code: 'renewalEvaluation.period')}</strong>: ${period}
                                     <br />
                                     <g:if test="${contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                         <strong>${message(code: 'surveyParticipants.label')}</strong>: ${hit.getSourceAsMap().membersCount}
@@ -669,7 +669,7 @@ String languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLoca
 
                                     <strong>${message(code: 'default.status.label')}</strong>: ${hit.getSourceAsMap().status?.getAt('value_'+languageSuffix) }
                                     <br />
-                                    <strong>${message(code: 'renewalWithSurvey.period')}</strong>: ${period}
+                                    <strong>${message(code: 'renewalEvaluation.period')}</strong>: ${period}
                                 </td>
                             </g:if>
 

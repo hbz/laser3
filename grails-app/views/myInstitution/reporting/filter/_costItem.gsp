@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.CostItemConfig" %>
+<%@page import="de.laser.reporting.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
     <g:form action="reporting" method="POST" class="ui form">
@@ -9,7 +9,7 @@
         <div class="ui bottom attached active tab segment" data-tab="costItem-filter-tab-1">
             <div class="field">
                 <label for="filter:costItem_source">${message(code:'reporting.filter.selection')}</label>
-                <g:set var="config" value="${CostItemConfig.getCurrentConfig().base}" />
+                <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_COSTITEM ).base}" />
                 <g:select name="filter:costItem_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:costItem_source')}" />
             </div>
 
@@ -26,12 +26,12 @@
                 </div>
             </g:each>
 
-        </div><!-- .first -->
+        </div><!-- .tab -->
 
         <div class="field">
             <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
             <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
-            <input type="hidden" name="filter" value="${CostItemConfig.KEY}" />
+            <input type="hidden" name="filter" value="${BaseConfig.KEY_COSTITEM}" />
             <input type="hidden" name="token" value="${token}" />
         </div>
 

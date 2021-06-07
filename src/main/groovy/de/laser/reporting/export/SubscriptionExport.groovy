@@ -23,20 +23,23 @@ class SubscriptionExport extends AbstractExport {
                             class: Subscription
                     ],
                     fields : [
-                            'globalUID'             : FIELD_TYPE_PROPERTY,
-                            'name'                  : FIELD_TYPE_PROPERTY,
-                            'startDate'             : FIELD_TYPE_PROPERTY,
-                            'endDate'               : FIELD_TYPE_PROPERTY,
-                            'status'                : FIELD_TYPE_REFDATA,
-                            'kind'                  : FIELD_TYPE_REFDATA,
-                            'form'                  : FIELD_TYPE_REFDATA,
-                            'resource'              : FIELD_TYPE_REFDATA,
-                            '___subscription_members'   : FIELD_TYPE_CUSTOM_IMPL,   // AbstractExport.CUSTOM_LABEL - virtual
-                            'provider-assignment'   : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                            'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
-                            'isPublicForApi'        : FIELD_TYPE_PROPERTY,
-                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                            default: [
+                                    'globalUID'             : FIELD_TYPE_PROPERTY,
+                                    'name'                  : FIELD_TYPE_PROPERTY,
+                                    'startDate'             : FIELD_TYPE_PROPERTY,
+                                    'endDate'               : FIELD_TYPE_PROPERTY,
+                                    'status'                : FIELD_TYPE_REFDATA,
+                                    'kind'                  : FIELD_TYPE_REFDATA,
+                                    'form'                  : FIELD_TYPE_REFDATA,
+                                    'resource'              : FIELD_TYPE_REFDATA,
+                                    '@ae-subscription-member'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
+                                    'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
+                                    'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
+                                    'isPublicForApi'        : FIELD_TYPE_PROPERTY,
+                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   //  qdp
+                            ]
                     ]
             ]
     ]
@@ -48,46 +51,36 @@ class SubscriptionExport extends AbstractExport {
                             class: Subscription
                     ],
                     fields : [
-                            'globalUID'             : FIELD_TYPE_PROPERTY,
-                            'name'                  : FIELD_TYPE_PROPERTY,
-                            'startDate'             : FIELD_TYPE_PROPERTY,
-                            'endDate'               : FIELD_TYPE_PROPERTY,
-                            'status'                : FIELD_TYPE_REFDATA,
-                            'kind'                  : FIELD_TYPE_REFDATA,
-                            'form'                  : FIELD_TYPE_REFDATA,
-                            'resource'              : FIELD_TYPE_REFDATA,
-                            'provider-assignment'   : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                            'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
-                            'isPublicForApi'        : FIELD_TYPE_PROPERTY,
-                            'identifier-assignment' : FIELD_TYPE_CUSTOM_IMPL,       // AbstractExport.CUSTOM_LABEL
-                            'property-assignment'   : FIELD_TYPE_CUSTOM_IMPL_QDP,   // AbstractExport.CUSTOM_LABEL - qdp
+                            default: [
+                                    'globalUID'             : FIELD_TYPE_PROPERTY,
+                                    'name'                  : FIELD_TYPE_PROPERTY,
+                                    'startDate'             : FIELD_TYPE_PROPERTY,
+                                    'endDate'               : FIELD_TYPE_PROPERTY,
+                                    'status'                : FIELD_TYPE_REFDATA,
+                                    'kind'                  : FIELD_TYPE_REFDATA,
+                                    'form'                  : FIELD_TYPE_REFDATA,
+                                    'resource'              : FIELD_TYPE_REFDATA,
+                                    'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
+                                    'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
+                                    'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
+                                    'isPublicForApi'        : FIELD_TYPE_PROPERTY,
+                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
+                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
+                            ]
                     ]
             ]
     ]
 
     SubscriptionExport (String token, Map<String, Object> fields) {
         this.token = token
-        selectedExportFields = getAllFields().findAll{ it.key in fields.keySet() }
-    }
 
-    Map<String, Object> getCurrentConfig() {
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-
-        if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
-            SubscriptionExport.CONFIG_ORG_CONSORTIUM
+        // keeping order ..
+        getAllFields().keySet().each { k ->
+            if (k in fields.keySet() ) {
+                selectedExportFields.put(k, fields.get(k))
+            }
         }
-        else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
-            SubscriptionExport.CONFIG_ORG_INST
-        }
-    }
-
-    @Override
-    Map<String, Object> getAllFields() {
-        String suffix = ExportHelper.getCachedQuerySuffix(token)
-
-        getCurrentConfig().base.fields.findAll {
-            (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == suffix)
-        }
+        ExportHelper.normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -97,7 +90,7 @@ class SubscriptionExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportHelper.getFieldLabel( token, getCurrentConfig().base as Map<String, Object>, fieldName )
+        ExportHelper.getFieldLabel( this, fieldName )
     }
 
     @Override
@@ -111,7 +104,7 @@ class SubscriptionExport extends AbstractExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = f.value
+            String type = getAllFields().get(f.key)
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
@@ -145,8 +138,8 @@ class SubscriptionExport extends AbstractExport {
             }
             // --> generic refdata
             else if (type == FIELD_TYPE_REFDATA) {
-                String value = sub.getProperty(key)?.getI10n('value')
-                content.add( value ?: '')
+                String rdv = sub.getProperty(key)?.getI10n('value')
+                content.add( rdv ?: '')
             }
             // --> refdata join tables
             else if (type == FIELD_TYPE_REFDATA_JOINTABLE) {
@@ -156,19 +149,22 @@ class SubscriptionExport extends AbstractExport {
             // --> custom filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL) {
 
-                if (key == 'identifier-assignment') {
-                    List<Identifier> ids = Identifier.executeQuery(
-                            "select i from Identifier i where i.value != null and i.value != '' and i.sub = :sub", [sub: sub]
-                    )
+                if (key == 'x-identifier') {
+                    List<Identifier> ids = []
+
+                    if (f.value) {
+                        ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.sub = :sub and i.ns.id in (:idnsList)",
+                                [sub: sub, idnsList: f.value] )
+                    }
                     content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == 'provider-assignment') {
+                else if (key == 'x-provider') {
                     List<Org> plts = Org.executeQuery('select ro.org from OrgRole ro where ro.sub.id = :id and ro.roleType in (:roleTypes)',
                             [id: sub.id, roleTypes: [RDStore.OR_PROVIDER]]
                     )
                     content.add( plts.collect{ it.name }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '___subscription_members') {
+                else if (key == '@ae-subscription-member') {
                     int members = Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
                             [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
                     )[0]
@@ -178,7 +174,7 @@ class SubscriptionExport extends AbstractExport {
             // --> custom query depending filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
 
-                if (key == 'property-assignment') {
+                if (key == 'x-property') {
                     Long pdId = BaseDetails.getDetailsCache(token).id as Long
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(sub, pdId, contextService.getOrg())

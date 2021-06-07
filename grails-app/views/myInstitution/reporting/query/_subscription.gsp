@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.reporting.myInstitution.SubscriptionConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:if test="${filterResult}">
@@ -8,21 +8,24 @@
 
         <div class="ui message success">
             <p>
-                Mit diesen Filtereinstellungen wurden
-                <strong>${filterResult.data.subscriptionIdList.size()} Lizenzen</strong>
+                ${message(code: 'reporting.filterResult.subscription.part', args: [filterResult.data.subscriptionIdList.size()])}
+
+                <g:if test="${filterResult.data.memberSubscriptionIdList}">
+                    ${message(code: 'reporting.filterResult.and.memberSubscription', args: [filterResult.data.memberSubscriptionIdList.size()])}
+                </g:if>
                 <g:if test="${filterResult.data.memberIdList}">
-                    und <strong>${filterResult.data.memberIdList.size()} Teilnehmer</strong>
+                    ${message(code: 'reporting.filterResult.and.member', args: [filterResult.data.memberIdList.size()])}
                 </g:if>
                 <g:if test="${filterResult.data.consortiumIdList}">
-                    und <strong>${filterResult.data.consortiumIdList.size()} Konsortialstellen</strong>
+                    ${message(code: 'reporting.filterResult.and.consortium', args: [filterResult.data.consortiumIdList.size()])}
                 </g:if>
                 <g:if test="${filterResult.data.providerIdList}">
-                    und <strong>${filterResult.data.providerIdList.size()} Anbieter</strong>
+                    ${message(code: 'reporting.filterResult.and.provider', args: [filterResult.data.providerIdList.size()])}
                 </g:if>
                 <g:if test="${filterResult.data.agencyIdList}">
-                    und <strong>${filterResult.data.agencyIdList.size()} Lieferanten</strong>
+                    ${message(code: 'reporting.filterResult.and.agency', args: [filterResult.data.agencyIdList.size()])}
                 </g:if>
-                gefunden.
+                ${message(code: 'reporting.filterResult.end')}
             </p>
         </div>
 
@@ -30,8 +33,8 @@
 
         <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.app.reporting.current.request = {
-                context: '${BaseConfig.KEY}',
-                filter: '${SubscriptionConfig.KEY}',
+                context: '${BaseConfig.KEY_MYINST}',
+                filter: '${BaseConfig.KEY_SUBSCRIPTION}',
                 token: '${token}'
             }
         </laser:script>

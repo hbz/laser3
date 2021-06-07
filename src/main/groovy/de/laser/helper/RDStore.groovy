@@ -99,6 +99,8 @@ class RDStore {
     public static final PACKAGE_STATUS_DELETED         = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
     public static final PLATFORM_STATUS_DELETED        = getRefdataValue('Deleted', RDConstants.PLATFORM_STATUS)
 
+    public static final PACKAGE_SCOPE_NATIONAL    = getRefdataValue('National', RDConstants.PACKAGE_SCOPE)
+
     public static final PENDING_CHANGE_PENDING    = getRefdataValue('Pending', RDConstants.PENDING_CHANGE_STATUS)
     public static final PENDING_CHANGE_ACCEPTED   = getRefdataValue('Accepted', RDConstants.PENDING_CHANGE_STATUS)
     public static final PENDING_CHANGE_SUPERSEDED = getRefdataValue('Superseded', RDConstants.PENDING_CHANGE_STATUS)
@@ -194,7 +196,7 @@ class RDStore {
     public static final PRS_FUNC_GASCO_CONTACT         = getRefdataValue('GASCO-Contact', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_GENERAL_CONTACT_PRS   = getRefdataValue('General contact person', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_RESPONSIBLE_ADMIN     = getRefdataValue('Responsible Admin', RDConstants.PERSON_FUNCTION)
-    public static final PRS_FUNC_STATISTICAL_SUPPORT     = getRefdataValue('Statistical Support', RDConstants.PERSON_FUNCTION)
+    public static final PRS_FUNC_SERVICE_SUPPORT     = getRefdataValue('Service Support', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_TECHNICAL_SUPPORT     = getRefdataValue('Technichal Support', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_METADATA     = getRefdataValue('Metadata', RDConstants.PERSON_FUNCTION)
     public static final PRS_FUNC_CUSTOMER_SERVICE     = getRefdataValue('Customer Service', RDConstants.PERSON_FUNCTION)

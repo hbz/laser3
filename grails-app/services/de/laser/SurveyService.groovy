@@ -3,6 +3,7 @@ package de.laser
 
 import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GenericOIDService
+import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
@@ -13,11 +14,13 @@ import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
 import grails.util.Holders
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 @Transactional
@@ -33,6 +36,7 @@ class SurveyService {
     String replyTo
     GenericOIDService genericOIDService
     SubscriptionService subscriptionService
+    FilterService filterService
 
     SimpleDateFormat formatter = DateUtils.getSDF_dmy()
     String from
@@ -638,14 +642,14 @@ class SurveyService {
                                         from    from
                                         cc      ccAddress
                                         subject mailSubject
-                                        html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
+                                        html    (view: "/mailTemplates/html/notificationSurveyParticipationFinishForOwner", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
                                     }
                                 } else {
                                     mailService.sendMail {
                                         to      emailReceiver
                                         from from
                                         subject mailSubject
-                                        html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
+                                        html    (view: "/mailTemplates/html/notificationSurveyParticipationFinishForOwner", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
                                     }
                                 }
 
@@ -657,6 +661,87 @@ class SurveyService {
                             log.error("emailToSurveyOwnerbyParticipationFinish - sendSurveyEmail() :: Unable to perform email due to exception ${eMsg}")
                             SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: participationFinish.name, survey: surveyInfo.name])
                         }
+                }
+            }
+
+        }
+
+    }
+
+
+    def emailToSurveyParticipationByFinish(SurveyInfo surveyInfo, Org participationFinish){
+
+        if (grailsApplication.config.grails.mail.disabled == true) {
+            println 'surveyService.emailToSurveyParticipationByFinish() failed due grailsApplication.config.grails.mail.disabled = true'
+            return false
+        }
+
+        if(surveyInfo.owner)
+        {
+            //Only User that approved
+            List<UserOrg> userOrgs = UserOrg.findAllByOrg(participationFinish)
+
+            //Only User with Notification by Email and for Surveys Start
+            userOrgs.each { userOrg ->
+                if(userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
+                        userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+                {
+
+                    User user = userOrg.user
+                    Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
+                    String emailReceiver = user.getEmail()
+                    String currentServer = ServerUtils.getCurrentServer()
+                    String subjectSystemPraefix = (currentServer == ServerUtils.SERVER_PROD)? "" : (ConfigUtils.getLaserSystemId() + " - ")
+
+                    String subjectText
+                    Object[] args = [surveyInfo.name]
+                    if(surveyInfo.type.id == RDStore.SURVEY_TYPE_RENEWAL.id){
+                        subjectText = messageSource.getMessage('email.survey.participation.finish.renewal.subject', args, language)
+                    }else if(surveyInfo.type.id == RDStore.SURVEY_TYPE_SUBSCRIPTION.id){
+                        subjectText = messageSource.getMessage('email.survey.participation.finish.subscriptionSurvey.subject', args, language)
+                    }else {
+                        subjectText = messageSource.getMessage('email.survey.participation.finish.subject', args, language)
+                    }
+
+                    String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + subjectText)
+
+                    try {
+                        if (emailReceiver == null || emailReceiver.isEmpty()) {
+                            log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
+                        } else {
+                            boolean isNotificationCCbyEmail = user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
+                            String ccAddress = null
+                            if (isNotificationCCbyEmail){
+                                ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
+                            }
+
+                            List surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participationFinish, surveyInfo.surveyConfigs[0]).sort { it.surveyConfig.configOrder }
+
+                            if (isNotificationCCbyEmail && ccAddress) {
+                                mailService.sendMail {
+                                    to      emailReceiver
+                                    from    from
+                                    cc      ccAddress
+                                    subject mailSubject
+                                    html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults])
+                                }
+                            } else {
+                                mailService.sendMail {
+                                    to      emailReceiver
+                                    from from
+                                    subject mailSubject
+                                    html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults])
+                                }
+                            }
+
+                            log.debug("emailToSurveyParticipationByFinish - finished sendSurveyEmail() to " + user.displayName + " (" + user.email + ") " + participationFinish.name);
+                        }
+                    } catch (Exception e) {
+                        String eMsg = e.message
+
+                        log.error("emailToSurveyParticipationByFinish - sendSurveyEmail() :: Unable to perform email due to exception ${eMsg}")
+                        SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: participationFinish.name, survey: surveyInfo.name])
+                    }
                 }
             }
 
@@ -940,25 +1025,34 @@ class SurveyService {
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }
 
-    Map<String,Object> getSurveyConfigCounts() {
+    Map<String,Object> getSurveyConfigCounts(GrailsParameterMap parameterMap) {
         Map<String, Object> result = [:]
 
         Org contextOrg = contextService.getOrg()
 
-        result.created = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and (surInfo.status = :status or surInfo.status = :status2)",
-                [contextOrg: contextOrg, status: RDStore.SURVEY_READY, status2: RDStore.SURVEY_IN_PROCESSING]).size()
+        GrailsParameterMap tmpParams = (GrailsParameterMap) parameterMap.clone()
 
-        result.active = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
-                [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_STARTED]).size()
+        result = setSurveyConfigCounts(result, 'created', tmpParams, contextOrg)
 
-        result.finish = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
-                [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_COMPLETED]).size()
+        result = setSurveyConfigCounts(result, 'active', tmpParams, contextOrg)
 
-        result.inEvaluation = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
-                [contextOrg: contextOrg, status: RDStore.SURVEY_IN_EVALUATION]).size()
+        result = setSurveyConfigCounts(result, 'finish', tmpParams, contextOrg)
 
+        result = setSurveyConfigCounts(result, 'inEvaluation', tmpParams, contextOrg)
 
         return result
+    }
+
+    private Map setSurveyConfigCounts(Map result, String tab, GrailsParameterMap parameterMap, Org owner){
+        SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
+        Map<String,Object> fsq = [:]
+
+        parameterMap.tab = tab
+        fsq = filterService.getSurveyConfigQueryConsortia(parameterMap, sdFormat, owner)
+        result."${tab}" =  SurveyInfo.executeQuery(fsq.query, fsq.queryParams, parameterMap).size()
+
+        return result
+
     }
 
     List getSurveyProperties(Org contextOrg) {
@@ -1147,6 +1241,75 @@ class SurveyService {
                         surveyConfig: newSurveyConfig).save()
             }
         }
+    }
+
+    private def getSurveyParticipantCounts_New(Org participant, GrailsParameterMap parameterMap){
+        Map<String, Object> result = [:]
+
+        Org contextOrg = contextService.getOrg()
+
+        GrailsParameterMap tmpParams = (GrailsParameterMap) parameterMap.clone()
+        if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM') {
+
+            result = setSurveyParticipantCounts(result, 'new', tmpParams, participant, contextOrg)
+
+            result = setSurveyParticipantCounts(result, 'processed', tmpParams, participant, contextOrg)
+
+            result = setSurveyParticipantCounts(result, 'finish', tmpParams, participant, contextOrg)
+
+            result = setSurveyParticipantCounts(result, 'notFinish', tmpParams, participant, contextOrg)
+
+            result = setSurveyParticipantCounts(result, 'termination', tmpParams, participant, contextOrg)
+
+
+        }else {
+
+            result = setSurveyParticipantCounts(result, 'new', tmpParams, participant, null)
+
+            result = setSurveyParticipantCounts(result, 'processed', tmpParams, participant, null)
+
+            result = setSurveyParticipantCounts(result, 'finish', tmpParams, participant, null)
+
+            result = setSurveyParticipantCounts(result, 'notFinish', tmpParams, participant, null)
+
+            result = setSurveyParticipantCounts(result, 'termination', tmpParams, participant, null)
+        }
+        return result
+    }
+
+    private Map setSurveyParticipantCounts(Map result, String tab, GrailsParameterMap parameterMap, Org participant, Org owner = null){
+        SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
+        Map fsq = [:]
+
+        if(owner){
+            parameterMap.owner = owner
+        }
+        parameterMap.tab = tab
+        fsq = filterService.getParticipantSurveyQuery_New(parameterMap, sdFormat, participant)
+        result."${tab}" = SurveyResult.executeQuery(fsq.query, fsq.queryParams, parameterMap).groupBy { it.id[1] }.size()
+
+        return result
+
+    }
+
+    private def getSurveyParticipantCounts(Org participant){
+        Map<String, Object> result = [:]
+
+        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and sr.finishDate is null))",
+                [status: RDStore.SURVEY_SURVEY_STARTED,
+                 participant: participant]).groupBy {it.id[1]}.size()
+
+        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and sr.finishDate is null))",
+                [status: RDStore.SURVEY_SURVEY_STARTED,
+                 participant: participant]).groupBy {it.id[1]}.size()
+
+        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
+                [participant: participant]).groupBy {it.id[1]}.size()
+
+        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status in (:status))",
+                [status: [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED],
+                 participant: participant]).groupBy {it.id[1]}.size()
+        return result
     }
 
 }

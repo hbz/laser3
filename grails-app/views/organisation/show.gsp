@@ -91,6 +91,18 @@
                         </g:if>
                     </g:if>
                     <dl>
+                        <dt>
+                            <g:message code="org.altname.label" />
+                        </dt>
+                        <dd>
+                            <ul>
+                                <g:each in="${orgInstance.altnames}" var="altname">
+                                    <li>${altname.name}</li>
+                                </g:each>
+                            </ul>
+                        </dd>
+                    </dl>
+                    <dl>
                         <dt><g:message code="org.url.label"/></dt>
                         <dd>
                             <semui:xEditable owner="${orgInstance}" type="url" field="url" class="la-overflow la-ellipsis" />
@@ -101,6 +113,19 @@
                         </dd>
                     </dl>
                     <g:if test="${!isProviderOrAgency}">
+                        <dl>
+                            <dt>
+                                <g:message code="org.linkResolverBase.label"/>
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                      data-content="${message(code: 'org.linkResolverBase.expl')}">
+                                    <i class="question circle icon"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <semui:xEditable owner="${orgInstance}" field="linkResolverBaseURL" />
+                                <br />&nbsp<br />&nbsp<br />
+                            </dd>
+                        </dl>
                         <dl>
                             <dt>
                                 <g:message code="org.legalPatronName.label" />
@@ -164,8 +189,34 @@
                     </div>
                 </div><!-- .card -->
             </g:if>
+            <g:elseif test="${isProviderOrAgency && orgInstanceRecord}">
+                <div class="ui card">
+                    <div class="content">
+                        <dl>
+                            <dt>
+                                <g:message code="org.metadataDownloaderURL.label" />
+                            </dt>
+                            <dd>
+                                <g:if test="${orgInstanceRecord.metadataDownloaderURL}">
+                                    ${orgInstanceRecord.metadataDownloaderURL} <a href="${orgInstanceRecord.metadataDownloaderURL}"><i title="${message(code: 'org.metadataDownloaderURL.label')} Link" class="external alternate icon"></i></a>
+                                </g:if>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                <g:message code="org.KBARTDownloaderURL.label" />
+                            </dt>
+                            <dd>
+                                <g:if test="${orgInstanceRecord.kbartDownloaderURL}">
+                                    ${orgInstanceRecord.kbartDownloaderURL} <a href="${orgInstanceRecord.kbartDownloaderURL}"><i title="${message(code: 'org.KBARTDownloaderURL.label')} Link" class="external alternate icon"></i></a>
+                                </g:if>
+                            </dd>
+                        </dl>
+                    </div>
+                </div><!-- .card -->
+            </g:elseif>
 
-            <g:if test="${isGrantedOrgRoleAdmin}">
+            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -178,9 +229,7 @@
                             <dt>${message(code: 'default.status.label')}</dt>
 
                             <dd>
-                                <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
-                                    <semui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}"/>
-                                </g:if>
+                                <semui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}"/>
                             </dd>
                         </dl>
                     </div>
@@ -190,17 +239,17 @@
             <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                 <div class="ui card">
                     <div class="content">
-                        <%-- ROLE_ADMIN: all , ROLE_ORG_EDITOR: all minus Consortium --%>
+                        <%-- ROLE_ADMIN: all --%>
                         <dl>
                             <dt><g:message code="org.orgType.label" /></dt>
                             <dd>
                                 <g:render template="orgTypeAsList"
-                                          model="${[org: orgInstance, orgTypes: orgInstance.orgType, availableOrgTypes: availableOrgTypes, editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
+                                          model="${[org: orgInstance, orgTypes: orgInstance.orgType, availableOrgTypes: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE), editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
                             </dd>
                         </dl>
 
                         <g:render template="orgTypeModal"
-                                  model="${[org: orgInstance, availableOrgTypes: orgType_types, editable: orgType_editable]}"/>
+                                  model="${[org: orgInstance, availableOrgTypes: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE), editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
                     </div>
                 </div>
             </g:if>
@@ -352,7 +401,7 @@
                             <dd>
                             <g:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency]"/>
 
-                            <g:if test="${isProviderOrAgency && (accessService.checkConstraint_ORG_COM_EDITOR())}">
+                            <g:if test="${isProviderOrAgency && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')}">
                                 <div class="ui list">
 
                                     <div class="item">
@@ -525,7 +574,9 @@
         func();
     }
 
-    JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
+    <g:if test="${!isProviderOrAgency}">
+        JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
+    </g:if>
 
 <g:if test="${isProviderOrAgency}">
 

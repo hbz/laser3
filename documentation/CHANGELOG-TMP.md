@@ -7,6 +7,98 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3532    02.06.2021  dev     2.1         Andreas Feature     Metadaten-Download- und KBART-Download-URL für Anbieter aus der we:kb übernommen
+
+3421    02.06.2021  dev     2.1         Andreas Feature     Filter für Einrichtungsmerkmale bei Teilnehmer hinzufügen angelegt
+
+3222    01.06.2021  dev     2.1         Andreas Feature     Unterteilung der Einrichtungseinstellungen in Reiter
+
+3476    01.06.2021  dev     2.1         Andreas Bug         Zeichenbegrenzung auch im Kostenhinzufügemodal nachgereicht
+
+3462    01.06.2021  dev     2.1         Andreas Bug         Typ Umfrage ist für Vollnutzer jetzt auch beim neuen Merkmalstyp entfernt
+
+3309    01.06.2021  dev     2.1         Andreas Feature     Bemerkungsfeld für Nutzerzahlen eingefügt
+
+3492    01.06.2021  dev     2.1         Andreas Feature     "Alle Plattformen" werden per ES-Index bespeist, Detailansicht um we:kb-Eigenschaften erweitert 
+
+3260    31.05.2021  dev     2.1         Moe     Feature     Teilnehmersicht Meine Umfragen vorfiltern
+
+3519    28.05.2021  dev     2.1         Andreas Feature     Linkresolver-Base-URL für Einrichtungen hinzugefügt
+
+3476    28.05.2021  dev     2.1         Andreas Bug         Validierung für Kostenbezeichner und Start-/Enddatum bei Kosten eingefügt
+
+3309    28.05.2021  dev     2.1         Andreas Feature     Löschung alter unbrauchbarer Werte, Beschränkung der Nutzerzahltypen, Mülleimer bei Zahlen hinzugefügt
+
+--      28.05.2021  dev     2.1         Andreas Bug         Identifier-Zählung bei Orgs inkorrekt, falsche Kodierung der Namensräume
+
+3165    28.05.2021  dev     2.1         Andreas Feature     Identifikatoren für Lizenzen und Verträge 
+
+3514    27.05.2021  dev     2.1         Andreas Feature     neue allgemeine Vertragsmerkmale hinzugefügt
+
+3513    27.05.2021  dev     2.1         Andreas Feature     Identifier-Namensräume für Lizenzen neu hinzugefügt und mit urlPrefixes sowie Erläuterungen versehen
+
+3399    27.05.2021  dev     2.1         Andreas Feature     neue allgemeine Lizenzmerkmale hinzugefügt
+
+3403    26.05.2021  dev     2.1         Andreas Feature     404 seitens der we:kb wird abgefangen und menschenlesbar dargestellt
+
+3366    26.05.2021  dev     2.1         Andreas Feature     Erweiterung der Paketfilter um Parameter Kuratorengruppentyp
+
+2967    26.05.2021  dev     2.1         Andreas Feature     neue Ladestruktur und Sprache von Kontakten implementiert
+
+3466    25.05.2021  dev     2.1         Andreas Feature     Nachbesserungen für Paketdetailsicht
+
+3088    25.05.2021  dev     2.1         Andreas Feature     Bereinigung von Einrichtungsdaten
+
+3059    25.05.2021  dev     2.1         Andreas Feature     Neue Struktur für Alternativnamen eingerichtet
+
+1500    25.05.2021  dev     2.1         Andreas Feature     Org-Status nicht mehr nullable, Default-Wert aktuell
+
+3505    21.05.2021  dev     2.1         David   Feature     Vollnutzer Reporting
+
+3496    20.05.2021  dev     2.1         David   Feature     Makro-Reporting Konsortialstelle
+
+3475    19.05.2021  dev     2.1         Andreas Feature     neues Umfragemerkmal Rechnungszeitpunkt; altes, nicht mehr hart kodiertes Merkmal Rechungs-Zeitpunkt einschließlich Werte entfernt
+
+3462    19.05.2021  dev     2.1         Andreas Bug         Unterbinden der Erstellung eigener Merkmalsdefinitionen des Typs Umfrage für Vollnutzer
+
+3453    19.05.2021  dev     2.1         Andreas Feature     Identifier-Namensräume von DBIS umgewandelt und um Erklärungen erweitert 
+
+3178    19.05.2021  dev     2.1         Andreas Bug         Formular nicht ausgewertet vor Abschicken
+
+3423    18.05.2021  dev     2.1         Andreas Bug         Einladen und Verarbeiten der KBART-Vorauswahl repariert und beschleunigt
+
+3404    18.05.2021  dev     2.1         Andreas Feature     Statistiksprunglink abgeblendet
+
+3371    18.05.2021  dev     2.1         Andreas Feature     Einführung und Verdrahtung der Struktur für Sprachen der Titel
+
+3344    18.05.2021  dev     2.1         Andreas Feature     Einführung und Verdrahtung der Struktur für DDC
+
+2967    18.05.2021  dev     2.1         Andreas Feature     Erweiterung des Syncs um Übernahme des technischen Supports
+
+2213    18.05.2021  dev     2.1         Andreas Feature     (Epic konkret) Neuer Synchronisationsprozess und -quelle für automatisiertes Aktualisieren der Anbieterdaten
+
+3494    18.05.2021  dev     2.1         David   Feature     Einstiegspunkt Lizenzen: TN-Lizenz-Reiter
+
+3493    17.05.2021  dev     2.1         Andreas Bug         Einrichtungstyp war für niemanden mehr bearbeitbar
+
+3316    14.05.2021  rc2.0   2.0.10      Andreas Bug         erneute Behebung der Fehlverknüpfungen Vertrag-Lizenz
+
+3332    14.05.2021  dev     2.1         Andreas Feature     Default-Sortierung nach Ereignistyp und Zeitstempel
+
+3329    14.05.2021  dev     2.1         Andreas Bug         falsche Zählung der Pakethistorie
+
+3483    12.05.2021  dev     2.1         David   Feature     Mehrfachauswahl für Export- und Filter-Optionen
+
+3432    12.05.2021  dev     2.1         David   Feature     Reporting: Export-Verbesserungen
+
+3442    11.05.2021  dev     2.1         Andreas Feature     Aufräumen unter Identifier
+
+3466    10.05.2021  dev     2.1         Andreas Feature     Erweiterung der Paketdetailseite um neue Felder
+
+3469    10.05.2021  rc2.0   2.0.10      David   Feature     Reporting-Export: Konfiguration erweitern
+
+3463    07.05.2021  rc2.0   2.0.10      David   Feature     Reporting: Interne Routing-Komponente für Queries erweitern
+
 3423    06.05.2021  dev     2.1         Andreas Bug         Anzeigefehler und Ladezeit behoben
 
 3452    04.05.2021  rc2.0   2.0.8       David   Feature     Filterspez. Query-Formulare ermöglichen
@@ -16,6 +108,8 @@
 3424    03.05.2021  dev     2.0.8       Andreas Bug         Abfragefehler bei Paketentknüpfung behoben
 
 3423    03.05.2021  rc2.0   2.0.8       Andreas Bug         KBART-Vorauswahl wieder instandgesetzt
+
+3441    03.05.2021  rc2.0   2.0.8       David   Feature     Reporting: Jahresringe
 
 3436    30.04.2021  rc2.0   2.0.8       David   Feature     Makro-Reporting: Anpassung für Vollnutzer
 

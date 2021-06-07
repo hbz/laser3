@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinition; de.laser.UserSetting; com.k_int.kbplus.*; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
+<%@ page import="de.laser.properties.PropertyDefinition; de.laser.UserSetting; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.helper.RDStore; de.laser.RefdataValue; de.laser.helper.RDConstants; de.laser.RefdataCategory;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -14,31 +14,31 @@
 <body>
 
 <g:set var="userName" value="${raw(user.getDisplayName())}"/>
-<g:set var="orgName" value="${raw(org.name)}"/>
-<g:set var="language" value="${user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.helper.RDConstants.LANGUAGE)).value}"/>
-<g:set var="grailsApplication" bean="grailsApplication"/>
-<g:set var="surveyUrl" value="${survey.surveyConfigs[0].pickAndChoose ? "/survey/surveyTitlesSubscriber/${survey.surveyConfigs[0].id}?participant=${org.id}" : "/survey/evaluationParticipant/${survey.id}?surveyConfigID=${survey.surveyConfigs[0].id}&participant=${org.id}"}"/>
+<g:set var="language" value="${user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value}"/>
 
 ${message(code: 'email.text.title', locale: language)} ${userName},
 <br />
 <br />
-${message(code: 'email.survey.finish.text', locale: language)}
-<br />
-${message(code: 'surveyInfo.name.label', locale: language)}: <strong>${survey.name} </strong>
-<br />
-(${message(code: 'email.survey.date.from.to', args: [formatDate(format: message(code: 'default.date.format.notime'), date: survey.startDate), formatDate(format: message(code: 'default.date.format.notime'), date: survey.endDate)])})
-<br />
-<br />
-${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
-<br />
-<br />
-
-<g:if test="${survey.surveyConfigs[0].pickAndChoose}">
-    ${message(code: 'email.survey.finish.selection.text', locale: language)} ${subscriptionService.getIssueEntitlementsUnderNegotiation(survey.surveyConfigs[0].subscription.getDerivedSubscriptionBySubscribers(org)).size()}
+<g:if test="${survey.type.id == RDStore.SURVEY_TYPE_RENEWAL.id}">
+    ${message(code: 'email.survey.participation.finish.renewal.text', locale: language, args: [survey.name])}
     <br />
+    ${message(code: 'email.survey.participation.finish.renewal.text2', locale: language)}
     <br />
+    ${message(code: 'email.survey.participation.finish.renewal.text3', locale: language)}
 </g:if>
+<g:elseif test="${survey.type.id == RDStore.SURVEY_TYPE_SUBSCRIPTION.id}">
+    ${message(code: 'email.survey.participation.finish.subscriptionSurvey.text', locale: language, args: [survey.name])}
+    <br />
+    ${message(code: 'email.survey.participation.finish.subscriptionSurvey.text2', locale: language)}
 
+</g:elseif>
+<g:else>
+    ${message(code: 'email.survey.participation.finish.text', locale: language)}
+    <br />
+    ${message(code: 'email.survey.participation.finish.text2', locale: language)}
+</g:else>
+<br />
+<br />
 <g:if test="${surveyResults}">
     <table>
         <thead>
@@ -92,11 +92,22 @@ ${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
 </g:if>
 <br />
 <br />
-${message(code: 'email.survey.finish.url', locale: language)}
+<g:if test="${survey.type.id == RDStore.SURVEY_TYPE_RENEWAL.id}">
+    ${message(code: 'email.survey.participation.finish.renewal.text4', locale: language, args: [formatDate(format: message(code: 'default.date.format.notime'), date: survey.endDate) , "Test"])}
+</g:if>
+<g:elseif test="${survey.type.id == RDStore.SURVEY_TYPE_SUBSCRIPTION.id}">
+    ${message(code: 'email.survey.participation.finish.subscriptionSurvey.text3', locale: language)}
+    <br />
+    ${message(code: 'email.survey.participation.finish.renewal.text4', locale: language, args: ["Test"])}
+</g:elseif>
+
+${message(code: 'email.text.end', locale: language)}
 <br />
-${grailsApplication.config.grails.serverURL + surveyUrl}
+${message(code: 'email.survey.owner', locale: language)}
+<br />
+${survey.owner.name}
 <br />
 <br />
-<g:render template="/mailTemplates/html/signature" />
+${message(code: 'email.text.autogeneric', locale: language)}
 </body>
 </html>

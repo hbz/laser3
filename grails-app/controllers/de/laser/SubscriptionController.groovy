@@ -541,6 +541,10 @@ class SubscriptionController {
             if (!ctrlResult.result) {
                 response.sendError(401)
             }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
         }
         else {
             if(params.addUUID) {
@@ -555,7 +559,6 @@ class SubscriptionController {
             }
             else {
                 flash.message = ctrlResult.result.message
-                flash.error = ctrlResult.result.error
                 ctrlResult.result
             }
         }
@@ -1347,7 +1350,7 @@ class SubscriptionController {
             if(params.workFlowPart == CopyElementsService.WORKFLOW_END && ctrlResult.result.targetObject) {
                 SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(ctrlResult.result.sourceObject, true)
                 if (surveyConfig && ctrlResult.result.fromSurvey) {
-                    redirect controller: 'survey', action: 'renewalWithSurvey', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
+                    redirect controller: 'survey', action: 'renewalEvaluation', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
                 }
                 else {
                     redirect controller: 'subscription', action: 'show', params: [id: ctrlResult.result.targetObject.id]
@@ -1431,8 +1434,8 @@ class SubscriptionController {
 
     //--------------------------------------------- reporting -------------------------------------------------
 
-    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @DebugAnnotation(perm="ORG_CONSORTIUM,ORG_INST", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST", "INST_USER") })
     def reporting() {
         Map<String,Object> ctrlResult = subscriptionControllerService.reporting( params )
 

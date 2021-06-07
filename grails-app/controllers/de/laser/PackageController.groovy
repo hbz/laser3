@@ -62,9 +62,9 @@ class PackageController {
         String esQuery = "?componentType=Package"
         if (params.q) {
             result.filterSet = true
-            //for ElasticSearch
             esQuery += "&name=${params.q}"
-            //the result set has to be broadened down by IdentifierNamespace queries! Problematic if the package is not in LAS:eR yet!
+            esQuery += "&ids=Anbieter_Produkt_ID,*${params.q}*"
+            esQuery += "&ids=isil,*${params.q}*"
         }
 
         if (params.provider) {
@@ -77,39 +77,34 @@ class PackageController {
             esQuery += "&curatoryGroup=${params.curatoryGroup}"
         }
 
-        if (params.resourceTyp) {
+        if (params.ddc) {
             result.filterSet = true
-            esQuery += "&contentType=${params.resourceTyp}"
+            params.list("ddc").each { String key ->
+                esQuery += "&ddc=${RefdataValue.get(key).value}"
+            }
         }
 
-
-        /*
-        to implement:
-        - provider
-        - componentType
-        - series
-        - subjectArea
-        - curatoryGroup
-        - year (combination of dateFirstPrint and dateFirstOnline)
-         */
-
-        String sort = params.sort ? "&sort=" + params.sort : "&sort=sortname"
-        String order = params.order ? "&order=" + params.order : "&order=asc"
-        String max = params.max ? "&max=${params.max}" : "&max=${result.max}"
-        String offset = params.offset ? "&offset=${params.offset}" : "&offset=${result.offset}"
+        //you rarely encounter it; ^ is the XOR operator in Java - if both options are set, we mean all curatory group types
+        if (params.containsKey('curatoryGroupProvider') ^ params.containsKey('curatoryGroupOther')) {
+            result.filterSet = true
+            if(params.curatoryGroupProvider)
+                esQuery += "&curatoryGroupType=provider"
+            else if(params.curatoryGroupOther)
+                esQuery += "&curatoryGroupType=other" //setting to this includes also missing ones, this is already implemented in we:kb
+        }
 
         Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups')
-        if (queryCuratoryGroups.warning) {
-            List recordsCuratoryGroups = queryCuratoryGroups.warning.result
-            result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+        if(queryCuratoryGroups.error == 404) {
+            result.error = message(code:'wekb.error.'+queryCuratoryGroups.error)
         }
+        else {
+            if (queryCuratoryGroups.warning) {
+                List recordsCuratoryGroups = queryCuratoryGroups.warning.result
+                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+            }
+            result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
 
-
-        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + sort + order + max + offset)
-        if (queryResult.warning) {
-            List records = queryResult.warning.records
-            result.recordsCount = queryResult.warning.count
-            result.records = records
+            result.putAll(gokbService.doQuery(result, params.clone(), esQuery))
         }
 
         result
@@ -344,7 +339,12 @@ class PackageController {
         Map<String, Object> result = [:]
 
         result.user = contextService.getUser()
-        Package packageInstance = Package.get(params.id)
+        Package packageInstance
+        if(params.id.isLong())
+            packageInstance = Package.get(params.id)
+        else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
+            packageInstance = Package.findByGokbId(params.id)
+        else packageInstance = Package.findByGlobalUID(params.id)
         if (!packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
             redirect action: 'index'
@@ -400,11 +400,13 @@ class PackageController {
         result.packageInstance = packageInstance
 
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
 
-        String esQuery = "?componentType=Package&uuid=${packageInstance.gokbId}"
-
-        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery)
-        if (queryResult.warning) {
+        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${packageInstance.gokbId}")
+        if (queryResult.error && queryResult.error == 404) {
+            flash.error = message(code:'wekb.error.404')
+        }
+        else if (queryResult.warning) {
             List records = queryResult.warning.records
             result.packageInstanceRecord = records ? records[0] : [:]
         }

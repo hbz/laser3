@@ -1,5 +1,6 @@
 token,value_de,value_en
 access.choice.remote,Zugangswahl Remote,Access choice remote
+access.limitation,Zugangsbegrenzung,Access limitation
 access.method,Access Method,Access Method
 access.method.ip,Access Method IP,Access Method IP
 access.point.type,Access Point Type,Access Point Type
@@ -46,9 +47,11 @@ ie.medium,IEMedium,IEMedium
 ill.code,Fernleihindikator,Ill code
 indemnification,Entschädigung Auswahl,Indemnification Choice
 invoicing,Rechnungsstellung,Invoicing
+ip.authentication,IP-Authentifizierung,IP Authentication
 ipv4.address.format,IPv4 Address Format,IPv4 Address Format
 ipv6.address.format,IPv6 Address Format,IPv6 Address Format
 language,Sprache,Language
+language.iso,Sprache nach ISO 639-2,Language according to ISO 639-2
 library.network,Verbundzugehörigkeit,Library Network
 library.type,Bibliothekstyp,Library Type
 license.arc.archival.copy.content,Archivkopie Form,Archival Copy Content
@@ -71,8 +74,8 @@ license.oa.type,Open Access Typ,Open Access Type
 license.remote.access,License.RemoteAccess,License.RemoteAccess
 license.remote.access2,Remote-Zugriff,Remote Access
 license.statistics.delivery,Statistik Liefermethode,Statistics Delivery
-license.statistics.format,Statistik Auslieferungsformat,Statistics Format
-license.statistics.frequency,Statistik Auslieferungsfrequenz,Statistics Frequency
+license.statistics.format,Statistik Auslieferungsformat (Vertrag),Statistics Format (License)
+license.statistics.frequency,Statistik Auslieferungsfrequenz (Vertrag),Statistics Frequency (License)
 license.statistics.standards,Statistikstandard,Statistics Standards
 license.statistics.user.creds,Statistik Nutzeridentifikation,Statistics User Credentials
 license.status,Vertragsstatus,License Status
@@ -94,12 +97,13 @@ org.type,Organisationstyp,Organisation Type
 organisational.role,Organisational Role,Organisational Role
 package.breakable,Package.Breakable,Package.Breakable
 package.consistent,Package.Consistent,Package.Consistent
-package.fixed,Package.Fixed,Package.Fixed
+package.file,Package.File,Package.File
 package.list.status,Package.ListStatus,Package.ListStatus
 package.scope,Package.Scope,Package.Scope
 package.status,Paketstatus,Package Status
 package.type,Package.Type,Package.Type
 package.content.type,Package Content Type,Package Content Type
+payment.type,Payment Type,Payment Type
 pending.change.status,PendingChangeStatus,PendingChangeStatus
 pending.change.configuration.setting,Änderungseinstellung,Pending Change Configuration Setting
 permissions,Berechtigungen,Permissions
@@ -117,6 +121,8 @@ reminder.unit,ReminderUnit,ReminderUnit
 semester,Semester,Semester
 share.configuration,Share Configuration,Share Configuration
 sim.user.number,Sim User Zahl,Sim-User Number
+platform.statistics.format,Statistik Auslieferungsformat (Plattform),Statistics Format (Platform)
+platform.statistics.frequency,Statistik Auslieferungsfrequenz (Plattform),Statistics Frequency (Platform)
 subjectgroup,Fächergruppe,Subject Group
 subscription.form,Lizenzform,Subscription Form
 subscription.resource,Ressourcentyp,Resource type

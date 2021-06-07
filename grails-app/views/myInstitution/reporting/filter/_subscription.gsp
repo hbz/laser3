@@ -1,25 +1,32 @@
-<%@page import="de.laser.reporting.myInstitution.SubscriptionConfig;de.laser.ReportingService;de.laser.Org;de.laser.Subscription" %>
+<%@page import="de.laser.ReportingService;de.laser.Org;de.laser.Subscription;de.laser.reporting.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
     <g:form action="reporting" method="POST" class="ui form">
 
         <div class="menu ui top attached tabular">
             <a class="active item" data-tab="sub-filter-tab-1">${message(code:'subscription.plural')}</a>
-            <g:if test="${SubscriptionConfig.getCurrentConfig().member}">
-                <a class="item" data-tab="sub-filter-tab-2">${message(code:'subscription.details.consortiaMembers.label')}</a>
+            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).memberSubscription}">
+                <a class="item" data-tab="sub-filter-tab-2">${message(code:'subscription.propertiesMembers.subscriber')}</a>
             </g:if>
-            <g:if test="${SubscriptionConfig.getCurrentConfig().consortium}">
-                <a class="item" data-tab="sub-filter-tab-3">${message(code:'subscription.details.consortia.label')}</a>
+            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).member}">
+                <a class="item" data-tab="sub-filter-tab-3">${message(code:'subscription.details.consortiaMembers.label')}</a>
             </g:if>
-            <g:if test="${SubscriptionConfig.getCurrentConfig().provider}">
-                <a class="item" data-tab="sub-filter-tab-4">${message(code:'default.provider.label')}</a>
+            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).consortium}">
+                <a class="item filter-wrapper-consortium" data-tab="sub-filter-tab-4">${message(code:'subscription.details.consortia.label')}</a>
             </g:if>
-            <g:if test="${SubscriptionConfig.getCurrentConfig().agency}">
-                <a class="item" data-tab="sub-filter-tab-5">${message(code:'default.agency.plural.label')}</a>
+            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).provider}">
+                <a class="item" data-tab="sub-filter-tab-5">${message(code:'default.provider.label')}</a>
             </g:if>
+            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency}">
+                <a class="item" data-tab="sub-filter-tab-6">${message(code:'default.agency.plural.label')}</a>
+            </g:if>
+            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).memberSubscription}">
+                <a class="item" data-tab="sub-filter-tab-help"> ? %{--<i class="icon question"></i>--}%</a>
+            </g:if>
+
         </div><!-- .menu -->
 
-        <g:set var="config" value="${SubscriptionConfig.getCurrentConfig().base}" />
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).base}" />
 
         <div class="ui bottom attached active tab segment" data-tab="sub-filter-tab-1">
             <div class="field">
@@ -40,12 +47,37 @@
                 </div>
             </g:each>
 
-        </div><!-- .first -->
+        </div><!-- .tab -->
 
-        <g:set var="config" value="${SubscriptionConfig.getCurrentConfig().member}" />
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).memberSubscription}" />
         <g:if test="${config}">
 
             <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-2">
+                <div class="field">
+                    <label for="filter:memberSubscription_source">${message(code:'reporting.filter.selection')}</label>
+                    <g:select name="filter:memberSubscription_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:memberSubscription_source')}" />
+                </div>
+
+                <g:each in="${config.filter.default}" var="cfgFilter">
+                    <g:if test="${cfgFilter.findAll{it.contains('Date')}.size() == cfgFilter.size()}">%{-- tmp datepicker layout fix --}%
+                        <div class="fields">
+                    </g:if>
+                    <g:else>
+                        <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
+                    </g:else>
+                    <g:each in="${cfgFilter}" var="field">
+                        <laser:reportFilterField config="${config}" field="${field}" key="memberSubscription" />
+                    </g:each>
+                    </div>
+                </g:each>
+            </div><!-- .tab -->
+
+        </g:if>
+
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).member}" />
+        <g:if test="${config}">
+
+            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-3">
                 <div class="field">
                     <label for="filter:member_source">${message(code:'reporting.filter.selection')}</label>
                     <g:select name="filter:member_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:member_source')}" />
@@ -58,37 +90,39 @@
                         </g:each>
                     </div>
                 </g:each>
-            </div><!-- .second -->
+            </div><!-- .tab -->
 
         </g:if>
 
-        <g:set var="config" value="${SubscriptionConfig.getCurrentConfig().consortium}" />
-        <g:if test="${config}">
-
-            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-3">
-                <div class="field">
-                    <label for="filter:consortium_source">${message(code:'reporting.filter.selection')}</label>
-                    <g:select name="filter:consortium_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:consortium_source')}" />
-                </div>
-
-                %{--
-                <g:each in="${config.filter.default}" var="cfgFilter">
-                    <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
-                        <g:each in="${cfgFilter}" var="field">
-                            <laser:reportFilterField config="${config}" field="${field}" key="consortium" />
-                        </g:each>
-                    </div>
-                </g:each>
-
-                --}%
-            </div><!-- .second -->
-
-        </g:if>
-
-        <g:set var="config" value="${SubscriptionConfig.getCurrentConfig().provider}" />
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).consortium}" />
         <g:if test="${config}">
 
             <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-4">
+                <div class="filter-wrapper-consortium">
+                    <div class="field">
+                        <label for="filter:consortium_source">${message(code:'reporting.filter.selection')}</label>
+                        <g:select name="filter:consortium_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:consortium_source')}" />
+                    </div>
+
+                    %{--
+                    <g:each in="${config.filter.default}" var="cfgFilter">
+                        <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
+                            <g:each in="${cfgFilter}" var="field">
+                                <laser:reportFilterField config="${config}" field="${field}" key="consortium" />
+                            </g:each>
+                        </div>
+                    </g:each>
+
+                    --}%
+                </div>
+            </div><!-- .tab -->
+
+        </g:if>
+
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).provider}" />
+        <g:if test="${config}">
+
+            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-5">
                 <div class="field">
                     <label for="filter:provider_source">${message(code:'reporting.filter.selection')}</label>
 
@@ -102,14 +136,14 @@
                         </g:each>
                     </div>
                 </g:each>
-            </div><!-- .second -->
+            </div><!-- .tab -->
 
         </g:if>
 
-        <g:set var="config" value="${SubscriptionConfig.getCurrentConfig().agency}" />
+        <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).agency}" />
         <g:if test="${config}">
 
-            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-5">
+            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-6">
                 <div class="field">
                     <label for="filter:agency_source">${message(code:'reporting.filter.selection')}</label>
 
@@ -123,15 +157,43 @@
                         </g:each>
                     </div>
                 </g:each>
-            </div><!-- .second -->
+            </div><!-- .tab -->
 
+        </g:if>
+
+        <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).memberSubscription}">
+            <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-help">
+                <div class="field">
+                    <div style="text-align:center; padding:2em 0">
+                        <asset:image src="reporting/help-filter-1.png" absolute="true" style="width:85%" />
+                    </div>
+                </div>
+            </div><!-- .tab -->
         </g:if>
 
         <div class="field">
             <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
             <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
-            <input type="hidden" name="filter" value="${SubscriptionConfig.KEY}" />
+            <input type="hidden" name="filter" value="${BaseConfig.KEY_SUBSCRIPTION}" />
             <input type="hidden" name="token" value="${token}" />
         </div>
 
     </g:form>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('#filter\\:subscription_source').on( 'change', function(e) {
+
+        var $fwConsortium = $('.filter-wrapper-consortium')
+
+        if ( $(e.target).dropdown('get value') == 'inst-sub-local' ) {
+            $fwConsortium.find('*').attr('disabled', 'disabled');
+            $fwConsortium.hide();
+        }
+        else {
+            $fwConsortium.find('*').removeAttr('disabled');
+            $fwConsortium.show();
+        }
+    })
+
+    $('#filter\\:subscription_source').trigger('change');
+</laser:script>

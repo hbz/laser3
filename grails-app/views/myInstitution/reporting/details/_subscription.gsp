@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.myInstitution.base.BaseDetails; de.laser.Org; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Subscription; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty; de.laser.reporting.myInstitution.OrganisationConfig;de.laser.reporting.myInstitution.SubscriptionConfig;" %>
+<%@ page import="de.laser.reporting.myInstitution.base.BaseDetails; de.laser.Org; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Subscription; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty;" %>
 <laser:serviceInjection />
 
 <g:render template="/myInstitution/reporting/details/base.part1" />
@@ -9,17 +9,19 @@
         <tr>
             <th></th>
             <th>${message(code:'subscription.label')}</th>
-            <g:if test="${query == 'subscription-property-assignment'}">
+            <g:if test="${query == 'subscription-x-property'}">
                 <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
-            <g:elseif test="${query == 'subscription-platform-assignment'}">
+            <g:elseif test="${query == 'subscription-x-platform'}">
                 <th>${message(code:'default.provider.label')}</th>
             </g:elseif>
-            <g:elseif test="${query == 'subscription-identifier-assignment'}">
+            <g:elseif test="${query == 'subscription-x-identifier'}">
                 <th>${message(code:'identifier.label')}</th>
             </g:elseif>
-            <g:elseif test="${query == 'subscription-subscription-assignment'}">
+            <g:elseif test="${query == 'subscription-x-memberSubscription'}">
                 <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
+            </g:elseif>
+            <g:elseif test="${query.startsWith( 'memberSubscription-' )}">
             </g:elseif>
             <g:else>
                 <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">
@@ -40,7 +42,7 @@
                         <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                     </td>
 
-                    <g:if test="${query == 'subscription-property-assignment'}">
+                    <g:if test="${query == 'subscription-x-property'}">
                         <td>
                             <%
                                 List<SubscriptionProperty> properties = BaseDetails.getPropertiesGeneric(sub, id as Long, contextService.getOrg()) as List<SubscriptionProperty>
@@ -58,7 +60,7 @@
                             %>
                         </td>
                     </g:if>
-                    <g:elseif test="${query == 'subscription-platform-assignment'}">
+                    <g:elseif test="${query == 'subscription-x-platform'}">
                     <td>
                         <%
                             Org.executeQuery('select ro.org from OrgRole ro where ro.sub.id = :id and ro.roleType in (:roleTypes)',
@@ -69,7 +71,7 @@
                         %>
                     </td>
                     </g:elseif>
-                    <g:elseif test="${query == 'subscription-identifier-assignment'}">
+                    <g:elseif test="${query == 'subscription-x-identifier'}">
                         <td>
                             <%
                                 List<Identifier> identList = Identifier.findAllBySubAndNs(sub, IdentifierNamespace.get(id))
@@ -77,7 +79,7 @@
                             %>
                         </td>
                     </g:elseif>
-                    <g:elseif test="${query == 'subscription-subscription-assignment'}">
+                    <g:elseif test="${query == 'subscription-x-memberSubscription'}">
                         <td>
                         <%
                             Org.executeQuery('select oo.org from Subscription s join s.orgRelations oo where s = :sub and oo.roleType in :subscriberRoleTypes',
@@ -87,6 +89,8 @@
                             }
                         %>
                         </td>
+                    </g:elseif>
+                    <g:elseif test="${query.startsWith( 'memberSubscription-' )}">
                     </g:elseif>
                     <g:else>
                         <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">

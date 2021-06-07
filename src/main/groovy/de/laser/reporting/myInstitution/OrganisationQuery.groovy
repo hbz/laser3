@@ -25,10 +25,20 @@ class OrganisationQuery extends BaseQuery {
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
         String prefix = params.query.split('-')[0]
-        String suffix = params.query.split('-')[1]
+        String suffix = params.query.split('-')[1] // only simply cfg.query
         List idList   = BaseFilter.getCachedFilterIdList(prefix, params)
 
         if (! idList) {
+        }
+        else if ( suffix in ['*']) {
+
+            handleGenericAllQuery(
+                    params.query,
+                    'select o.name, o.name, count(o.name) from Org o where o.id in (:idList) group by o.name',
+                    'select o.id from Org o where o.id in (:idList) and o.name = :d order by o.id',
+                    idList,
+                    result
+            )
         }
         else if ( suffix in ['libraryType']) {
 
@@ -103,59 +113,31 @@ class OrganisationQuery extends BaseQuery {
                     result
             )
         }
-        else if ( params.query in ['org-identifier-assignment']) {
+        else if ( suffix in ['x']) {
 
-            handleGenericIdentifierAssignmentQuery(
-                    params.query,
-                    'select ns.id, ns.ns, count(*) from Org o join o.ids ident join ident.ns ns where o.id in (:idList)',
-                    'select o.id from Org o join o.ids ident join ident.ns ns where o.id in (:idList)',
-                    'select o.id from Org o where o.id in (:idList)', // modified idList
-                    idList,
-                    result
-            )
-        }
-        else if ( params.query in ['org-property-assignment']) {
+            if (params.query in ['org-x-identifier']) {
 
-            handleGenericPropertyAssignmentQuery(
-                    params.query,
-                    'select pd.id, pd.name, count(*) from Org o join o.propertySet prop join prop.type pd where o.id in (:idList)',
-                    'select o.id from Org o join o.propertySet prop join prop.type pd where o.id in (:idList)',
-                    idList,
-                    contextService.getOrg(),
-                    result
-            )
-        }
-            /*
-        else if ( params.query in ['org-serverAccess-assignment']) {
-
-            result.data = Org.executeQuery(
-                    'select oss.key, oss.rdValue.id, count(*) from Org o, OrgSetting oss where oss.org = o and oss.key in (\'OAMONITOR_SERVER_ACCESS\', \'NATSTAT_SERVER_ACCESS\') and oss.rdValue is not null and o.id in (:idList) group by oss.key, oss.rdValue.id',
-                    [idList: idList]
-            )
-            result.data.each { d ->
-                String id1 = d[0].toString() + '-' + d[1]
-                String id2 = messageSource.getMessage('org.setting.' + d[0].toString(), null, locale) + ': ' + RefdataValue.get(d[1])?.getI10n('value')
-
-                result.dataDetails.add([
-                        query : params.query,
-                        id    : id1,
-                        label : id2,
-                        idList: Org.executeQuery(
-                                'select o.id from Org o, OrgSetting oss where oss.org = o and oss.key = :d and oss.rdValue.id = :rdvId and o.id in (:idList) order by o.name',
-                                [idList: idList, d: d[0], rdvId: d[1]]
-                        )
-                ])
-                d[0] = "'${id1}'"
-                d[1] = id2
+                handleGenericIdentifierXQuery(
+                        params.query,
+                        'select ns.id, ns.ns, count(*) from Org o join o.ids ident join ident.ns ns where o.id in (:idList)',
+                        'select o.id from Org o join o.ids ident join ident.ns ns where o.id in (:idList)',
+                        'select o.id from Org o where o.id in (:idList)', // modified idList
+                        idList,
+                        result
+                )
             }
+            else if (params.query in ['org-x-property']) {
 
-            handleNonMatchingData( // FEHLER ?????
-                    params.query,
-                    'select distinct o.id from Org o where o.id in (:idList) and not exists (select oss from OrgSetting oss where oss.org = o and oss.key in (\'OAMONITOR_SERVER_ACCESS\', \'NATSTAT_SERVER_ACCESS\'))',
-                    idList,
-                    result
-            )
-        } */
+                handleGenericPropertyXQuery(
+                        params.query,
+                        'select pd.id, pd.name, count(*) from Org o join o.propertySet prop join prop.type pd where o.id in (:idList)',
+                        'select o.id from Org o join o.propertySet prop join prop.type pd where o.id in (:idList)',
+                        idList,
+                        contextService.getOrg(),
+                        result
+                )
+            }
+        }
 
         result
     }

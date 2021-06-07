@@ -4,17 +4,19 @@ package de.laser
 import de.laser.titles.TitleInstance
 import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
+import grails.plugins.orm.auditable.Auditable
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import grails.web.servlet.mvc.GrailsParameterMap
 
-class Identifier implements CalculatedLastUpdated, Comparable {
+class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
     def cascadingUpdateService
 
     static Log static_logger = LogFactory.getLog(Identifier)
 
     IdentifierNamespace ns
+    Identifier instanceOf
     String value
     String note = ""
 
@@ -39,13 +41,14 @@ class Identifier implements CalculatedLastUpdated, Comparable {
 			return pattern.matcher(val).matches()
 		  }
 		}
-        note    (nullable: true, blank: true)
+        note        (nullable: true, blank: true)
 
-	  	lic     (nullable:true)
-	  	org     (nullable:true)
-	  	pkg     (nullable:true)
-	  	sub     (nullable:true)
-	  	tipp    (nullable:true)
+	  	lic         (nullable:true)
+	  	org         (nullable:true)
+	  	pkg         (nullable:true)
+	  	sub         (nullable:true)
+	  	tipp        (nullable:true)
+        instanceOf  (nullable: true)
 
 		// Nullable is true, because values are already in the database
         dateCreated (nullable: true)
@@ -54,20 +57,30 @@ class Identifier implements CalculatedLastUpdated, Comparable {
   	}
 
     static mapping = {
-       id   column:'id_id'
-    value   column:'id_value', index:'id_value_idx'
-       ns   column:'id_ns_fk', index:'id_value_idx'
-       note column:'id_note',  type: 'text'
+        id    column:'id_id'
+        value column:'id_value', index:'id_value_idx'
+        ns    column:'id_ns_fk', index:'id_value_idx'
+        note  column:'id_note',  type: 'text'
 
-       lic  column:'id_lic_fk'
-       org  column:'id_org_fk'
-       pkg  column:'id_pkg_fk'
-       sub  column:'id_sub_fk'
-       tipp column:'id_tipp_fk'
+        lic   column:'id_lic_fk'
+        org   column:'id_org_fk'
+        pkg   column:'id_pkg_fk'
+        sub   column:'id_sub_fk'
+        tipp  column:'id_tipp_fk'
+        instanceOf column: 'id_instance_of_fk'
 
         dateCreated column: 'id_date_created'
         lastUpdated column: 'id_last_updated'
         lastUpdatedCascading column: 'id_last_updated_cascading'
+    }
+
+    @Override
+    Collection<String> getLogIncluded() {
+        [ 'value' ]
+    }
+    @Override
+    Collection<String> getLogExcluded() {
+        [ 'version', 'lastUpdated', 'lastUpdatedCascading' ]
     }
 
     @Override
@@ -101,6 +114,7 @@ class Identifier implements CalculatedLastUpdated, Comparable {
         def namespace    = map.get('namespace')
         String name_de   = map.get('name_de')
         String nsType    = map.get('nsType')
+        Identifier parent = map.get('parent')
         boolean isUnique = true
         if(map.containsKey('isUnique') && map.get('isUnique') == false)
             isUnique = false
@@ -125,7 +139,7 @@ class Identifier implements CalculatedLastUpdated, Comparable {
                 ns.save()
             }
             else {
-                if(ns.name_de != name_de) {
+                if(ns.name_de != name_de && name_de != null) {
                     ns.name_de = name_de
                     ns.save()
                 }
@@ -160,6 +174,8 @@ class Identifier implements CalculatedLastUpdated, Comparable {
 			} else {
                 static_logger.debug("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
 				ident = new Identifier(ns: ns, value: value)
+                if(parent)
+                    ident.instanceOf = parent
 				ident.setReference(reference)
 				boolean success = ident.save()
                 if (success){

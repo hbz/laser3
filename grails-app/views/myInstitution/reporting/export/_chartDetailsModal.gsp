@@ -8,54 +8,89 @@
     <g:set var="filterLabels" value="${ExportHelper.getCachedFilterLabels( token )}" />
     <g:set var="queryLabels" value="${ExportHelper.getCachedQueryLabels( token )}" />
 
-    <semui:modal id="${modalID}" text="CSV-Export" hideSubmitButton="true">
+    <semui:modal id="${modalID}" text="CSV-${message(code: 'reporting.export.key.' + export.KEY)}" hideSubmitButton="true">
 
-        <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterLabels, tmplSize: 'tiny', tmplShowLabel: true]}" />
+        <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterLabels, tmplSize: 'tiny']}" />
 
-        <g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: queryLabels, tmplSize: 'tiny', tmplShowLabel: true]}" />
+        <g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: queryLabels, tmplSize: 'tiny']}" />
 
         <p><span class="ui label red">DEMO : in Entwicklung</span></p>
 
         <g:form controller="ajaxHtml" action="chartDetailsExport" method="POST" target="_blank">
             <div class="ui form">
-                <div class="ui grid">
-                    <div class="eight wide column">
-                        <div class="ui field">
-                            <label>Zu exportierende Felder</label>
-                            <g:each in="${formFields}" var="field">
+                <div class="field">
+                    <label>Zu exportierende Felder</label>
+                </div>
+
+                <div class="fields">
+                    <g:each in="${ExportHelper.reorderFieldsForUI( formFields.findAll { !ExportHelper.isFieldMultiple( it.key ) } )}" var="field" status="fc">
+                        <div class="wide eight field">
+
+                            <g:if test="${field.key == 'globalUID'}">
                                 <div class="ui checkbox">
-                                    <g:if test="${field.key == 'globalUID'}">
-                                        <input type="checkbox" name="cde:${field.key}" id="cde:${field.key}">
-                                    </g:if>
-                                    <g:else>
-                                        <input type="checkbox" name="cde:${field.key}" id="cde:${field.key}" checked="checked">
-                                    </g:else>
+                                    <input type="checkbox" name="cde:${field.key}" id="cde:${field.key}">
                                     <label for="cde:${field.key}">${export.getFieldLabel(field.key as String)}</label>
                                 </div>
-                                <br />
-                            </g:each>
-                        </div>
+                            </g:if>
+                            <g:else>
+                                <div class="ui checkbox">
+                                    <input type="checkbox" name="cde:${field.key}" id="cde:${field.key}" checked="checked">
+                                    <label for="cde:${field.key}">${export.getFieldLabel(field.key as String)}</label>
+                                </div>
+                            </g:else>
+
+                        </div><!-- .field -->
+
+                        <g:if test="${fc%2 == 1}">
+                            </div>
+                            <div class="fields">
+                        </g:if>
+                    </g:each>
+
+                </div>
+                <div class="fields">
+
+                    <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-readerNumber'].contains( it.key ) }}" var="field" status="fc"> %{-- TODO --}%
+                        <div class="wide eight field">
+
+                            <g:set var="multiList" value="${ExportHelper.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
+
+                            <g:select name="cde:${field.key}" class="ui selection dropdown"
+                                      from="${multiList}" multiple="true"
+                                      optionKey="${{it[0]}}" optionValue="${{it[1]}}"
+                                      noSelection="${['': 'Bitte auswählen: ' + export.getFieldLabel(field.key as String)]}"
+                            />
+
+                        </div><!-- .field -->
+
+                        <g:if test="${fc%2 == 1}">
+                            </div>
+                            <div class="fields">
+                        </g:if>
+                    </g:each>
+                </div><!-- .fields -->
+
+                <br />
+
+                <div class="fields">
+
+                    <div class="wide eight field">
+                        <label>Konfiguration</label>
+                        <p>
+                            Feldtrenner: <span class="ui circular label">${AbstractExport.CSV_FIELD_SEPARATOR}</span> <br />
+                            Zeichenkettentrenner: <span class="ui circular label">${AbstractExport.CSV_FIELD_QUOTATION}</span> <br />
+                            Trenner für mehrfache Werte: <span class="ui circular label">${AbstractExport.CSV_VALUE_SEPARATOR}</span>
+                        </p>
+                    </div>
+                    <div class="wide eight field">
+                        <label for="filename">Dateiname</label>
+                        <input name="filename" id="filename" value="${ExportHelper.getFileName(queryLabels)}" />
+                        <br />
+                        <br />
+                        <button class="ui button positive right floated" id="export-chart-details-as-csv">Als CSV-Datei exportieren</button>
                     </div>
 
-                    <div class="eight wide column">
-                        <div class="ui field">
-                            <label for="filename">Dateiname</label>
-                            <input name="filename" id="filename" value="${ExportHelper.getFileName(queryLabels)}" />
-                        </div>
-                        <div class="ui field">
-                            <label>Konfiguration</label>
-                            <p>
-                                Feldtrenner: <span class="ui circular label">${AbstractExport.CSV_FIELD_SEPARATOR}</span> <br />
-                                Zeichenkettentrenner: <span class="ui circular label">${AbstractExport.CSV_FIELD_QUOTATION}</span> <br />
-                                Trenner für mehrfache Werte: <span class="ui circular label">${AbstractExport.CSV_VALUE_SEPARATOR}</span>
-                            </p>
-                        </div>
-                        <div class="ui field">
-                            <label>&nbsp;</label>
-                            <button class="ui button positive" id="export-chart-details-as-csv">Als CSV-Datei exportieren</button>
-                        </div>
-                    </div>
-                </div><!-- .grid -->
+                </div><!-- .fields -->
             </div><!-- .form -->
 
             <input type="hidden" name="token" value="${token}" />

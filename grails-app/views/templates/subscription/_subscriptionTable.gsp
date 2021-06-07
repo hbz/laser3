@@ -228,8 +228,8 @@
                         <td class="x">
                             <g:if test="${'showActions' in tableConfig}">
                                 <g:if test="${institution.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && s.instanceOf}">
-                                    <g:set var="surveysSub" value="${SurveyConfig.executeQuery("select surConfig.id from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
-                                            [sub: s.instanceOf, org: institution, invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]])}" />
+                                    <g:set var="surveysSub" value="${SurveyConfig.executeQuery("select surConfig.id from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and surConfig.surveyInfo.type = :type and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
+                                            [sub: s.instanceOf, org: institution, invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY], type: [RDStore.SURVEY_TYPE_RENEWAL]])}" />
                                     <g:if test="${surveysSub}">
                                         <g:link controller="subscription" action="surveys" id="${s.id}"
                                                 class="ui icon button">

@@ -83,16 +83,16 @@
                         person                 : prs,
                         personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, prs),
                         personContext          : orgInstance,
-                        tmplShowDeleteButton   : (isProviderOrAgency && (accessService.checkConstraint_ORG_COM_EDITOR())),
+                        tmplShowDeleteButton   : (isProviderOrAgency && (accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))),
                         tmplShowFunctions      : false,
                         tmplShowPositions      : true,
                         tmplShowResponsiblities: true,
-                        showContacts           :true,
+                        showContacts           : true,
                         tmplConfigShow         : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax'],
                         controller             : 'organisation',
                         action                 : 'show',
                         id                     : orgInstance.id,
-                        overwriteEditable      : (isProviderOrAgency && (accessService.checkConstraint_ORG_COM_EDITOR())),
+                        overwriteEditable      : (isProviderOrAgency && (accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))),
                         noSelection            : true
                 ]}"/>
             </g:each>

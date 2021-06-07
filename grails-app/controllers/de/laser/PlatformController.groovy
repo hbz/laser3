@@ -15,8 +15,8 @@ import org.springframework.dao.DataIntegrityViolationException
 class PlatformController  {
 
     def contextService
-    def orgTypeService
     def accessService
+    GokbService gokbService
     PlatformControllerService platformControllerService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
@@ -28,14 +28,29 @@ class PlatformController  {
 
     @Secured(['ROLE_USER'])
     def list() {
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        Map<String, Object> result = [user: contextService.getUser(), editUrl: apiSource.editUrl]
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
+        String esQuery = "?componentType=Platform"
+
+        if(params.q) {
+            result.filterSet = true
+            esQuery += "&q=${params.q}"
+        }
+
+        if(params.provider) {
+            result.filterSet = true
+            esQuery += "&provider=${params.provider}"
+        }
+
+        result.putAll(gokbService.doQuery(result, params.clone(), esQuery))
+
+        /* to translate to ES query
         RefdataValue deleted_platform_status = RefdataValue.getByValueAndCategory( 'Deleted', RDConstants.PLATFORM_STATUS)
         Map<String, Object> qry_params = [delStatus: deleted_platform_status]
 
-        String base_qry = " from Platform as p left join p.org o where ((p.status is null) OR (p.status = :delStatus)) "
+        String base_qry = " from Platform as p left join p.org o where ((p.status is null) OR (p.status != :delStatus)) "
 
         if ( params.q?.length() > 0 ) {
 
@@ -59,7 +74,9 @@ class PlatformController  {
         log.debug(qry_params.toMapString())
 
         result.platformInstanceTotal = Subscription.executeQuery( "select p.id " + base_qry, qry_params ).size()
-        result.platformInstanceList = Subscription.executeQuery( "select p " + base_qry, qry_params, [max:result.max, offset:result.offset] )
+        result.platformInstanceList = Subscription.executeQuery( "select p " + base_qry, qry_params, [max:result.max, offset:result.offset] )*/
+
+
 
       result
     }
@@ -67,7 +84,12 @@ class PlatformController  {
     @Secured(['ROLE_USER'])
     def show() {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
-        Platform platformInstance = Platform.get(params.id)
+        Platform platformInstance
+        if(params.id.isLong())
+            platformInstance = Platform.get(params.id)
+        else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
+            platformInstance = Platform.findByGokbId(params.id)
+        else platformInstance = Platform.findByGlobalUID(params.id)
 
         if (!platformInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id])
@@ -76,6 +98,17 @@ class PlatformController  {
         }
 
         result.platformInstance = platformInstance
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
+
+        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+        if (queryResult.error && queryResult.error == 404) {
+            flash.error = message(code:'wekb.error.404')
+        }
+        else if (queryResult.warning) {
+            List records = queryResult.warning.records
+            result.platformInstanceRecord = records ? records[0] : [:]
+        }
         result.editable = accessService.checkPermAffiliationX('ORG_BASIC_MEMBER,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
 
         /*

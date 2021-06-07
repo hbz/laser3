@@ -1,13 +1,11 @@
-package de.laser.reporting.myInstitution
+package de.laser.reporting.myInstitution.config
 
 import de.laser.finance.CostItem
 import de.laser.reporting.myInstitution.base.BaseConfig
 
-class CostItemConfig extends BaseConfig {
+class CostItemXCfg extends BaseConfig {
 
-    static String KEY = 'costItem'
-
-    static Map<String, Object> CONFIG_X = [
+    static Map<String, Object> CONFIG = [
 
             base : [
                     meta : [
@@ -39,13 +37,10 @@ class CostItemConfig extends BaseConfig {
                                             'costItem-costItemElement'              : 'costItemElement',
                                             'costItem-costItemElementConfiguration' : 'costItemElementConfiguration',
                                             'costItem-billingCurrency'              : 'billingCurrency',
+                                            'costItem-*'                            : 'Alle'
                                     ]
                             ]
                     ]
             ]
     ]
-
-    static Map<String, Object> getCurrentConfig() {
-        CostItemConfig.CONFIG_X
-    }
 }

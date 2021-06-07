@@ -46,8 +46,9 @@ class BaseQuery {
 
         List<String> meta = []
 
-        //println 'BaseQuery.getQueryLabels()'
-        //println params
+//        println 'BaseQuery.getQueryLabels()'
+//        println params
+//        println config
 
         config.each {it ->
             it.value.get('query')?.default.each { it2 ->  // TODO ???
@@ -91,6 +92,23 @@ class BaseQuery {
             ])
         }
         handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
+    }
+
+    static void handleGenericAllQuery(String query, String dataHql, String dataDetailsHql, List idList, Map<String, Object> result) {
+
+        result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
+
+        result.data.each { d ->
+            d[0] = Math.abs(d[0].hashCode())
+            d[1] = d[1].replaceAll("'", '"')
+
+            result.dataDetails.add([
+                    query : query,
+                    id    : d[0],
+                    label : d[1],
+                    idList: Org.executeQuery( dataDetailsHql, [idList: idList, d: d[1]] )
+            ])
+        }
     }
 
     static void handleGenericRefdataQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List idList, Map<String, Object> result) {
@@ -164,7 +182,7 @@ class BaseQuery {
         handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
     }
 
-    static void handleGenericIdentifierAssignmentQuery(String query, String dataHqlPart, String dataDetailsHqlPart, String nonMatchingHql, List idList, Map<String, Object> result) {
+    static void handleGenericIdentifierXQuery(String query, String dataHqlPart, String dataDetailsHqlPart, String nonMatchingHql, List idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery(
                 dataHqlPart + " and ident.value is not null and trim(ident.value) != '' group by ns.id order by ns.ns",
@@ -203,7 +221,7 @@ class BaseQuery {
         }
     }
 
-    static void handleGenericPropertyAssignmentQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List idList, Org ctxOrg, Map<String, Object> result) {
+    static void handleGenericPropertyXQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List idList, Org ctxOrg, Map<String, Object> result) {
 
         String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
@@ -230,7 +248,7 @@ class BaseQuery {
         }
     }
 
-    static void handleGenericAnnualAssignmentQuery(String query, String domainClass, List idList, Map<String, Object> result) {
+    static void handleGenericAnnualXQuery(String query, String domainClass, List idList, Map<String, Object> result) {
 
         List years = Org.executeQuery( 'select distinct YEAR(dc.startDate) from ' + domainClass + ' dc' )
         years.addAll( Org.executeQuery( 'select distinct YEAR(dc.endDate) from ' + domainClass + ' dc' ) )
@@ -259,13 +277,15 @@ class BaseQuery {
                 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate is null',
                 [idList: idList]
         )
-        result.data.add( [null, BaseQuery.NO_DATA_LABEL, noDataList.size()] )
+        if (noDataList) {
+            result.data.add([null, BaseQuery.NO_DATA_LABEL, noDataList.size()])
 
-        result.dataDetails.add( [
-                query:  query,
-                id:     null,
-                label:  BaseQuery.NO_DATA_LABEL,
-                idList: noDataList
-        ])
+            result.dataDetails.add([
+                    query : query,
+                    id    : null,
+                    label : BaseQuery.NO_DATA_LABEL,
+                    idList: noDataList
+            ])
+        }
     }
 }

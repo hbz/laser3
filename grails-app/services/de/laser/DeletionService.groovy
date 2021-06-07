@@ -51,7 +51,7 @@ class DeletionService {
         List docContexts    = new ArrayList(lic.documents)
         List oRoles         = new ArrayList(lic.orgRelations)
         List pRoles         = new ArrayList(lic.prsLinks)
-        List packages       = new ArrayList(lic.pkgs)  // Package
+        //List packages       = new ArrayList(lic.pkgs)  // Package
         List pendingChanges = new ArrayList(lic.pendingChanges)
         List privateProps   = new ArrayList(lic.propertySet.findAll { LicenseProperty lp -> lp.type.tenant != null })
         List customProps    = new ArrayList(lic.propertySet.findAll { LicenseProperty lp -> lp.type.tenant == null })
@@ -73,7 +73,7 @@ class DeletionService {
         result.info << ['Dokumente', docContexts]  // delete ? docContext->doc
         result.info << ['Organisationen', oRoles]
         result.info << ['Personen', pRoles]     // delete ? personRole->person
-        result.info << ['Pakete', packages]
+        //result.info << ['Pakete', packages]
         result.info << ['Anstehende Änderungen', pendingChanges]
         result.info << ['Private Merkmale', lic.propertySet.findAll { it.type.tenant != null }]
         result.info << ['Allgemeine Merkmale', lic.propertySet.findAll { it.type.tenant == null }]
@@ -127,11 +127,11 @@ class DeletionService {
                             tmp2.save()
                         }
                     }
-                    // packages
+                    /* packages
                     packages.each{ tmp ->
                         tmp.license = null
                         tmp.save()
-                    }
+                    }*/
 
                     // ----- delete foreign objects
                     // ----- delete foreign objects
@@ -155,7 +155,11 @@ class DeletionService {
 
                     // identifiers
                     lic.ids.clear()
-                    ids.each{ tmp -> tmp.delete() }
+                    ids.each{ tmp ->
+                        Identifier.executeUpdate('delete from Identifier id where id.instanceOf = :tmp',[tmp: tmp])
+                        AuditConfig.removeConfig(tmp)
+                        tmp.delete()
+                    }
 
                     // documents
                     lic.documents.clear()

@@ -22,6 +22,7 @@ class OrganisationControllerService {
     FormService formService
     MessageSource messageSource
     GenericOIDService genericOIDService
+    GokbService gokbService
 
     //--------------------------------------------- member section -------------------------------------------------
 
@@ -138,7 +139,23 @@ class OrganisationControllerService {
         }
 
         if (params.id) {
-            result.orgInstance = Org.get(params.id)
+            if(params.id.isLong())
+                result.orgInstance = Org.get(params.id)
+            else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
+                result.orgInstance = Org.findByGokbId(params.id)
+            else result.orgInstance = Org.findByGlobalUID(params.id)
+            if(result.orgInstance.gokbId) {
+                ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
+                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${result.orgInstance.gokbId}")
+                if (queryResult.error && queryResult.error == 404) {
+                    result.error = messageSource.getMessage('wekb.error.404', null, LocaleContextHolder.getLocale())
+                }
+                else if (queryResult.warning) {
+                    List records = queryResult.warning.records
+                    result.orgInstanceRecord = records ? records[0] : [:]
+                }
+            }
             result.editable = controller.checkIsEditable(user, result.orgInstance)
             result.inContextOrg = result.orgInstance.id == org.id
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member

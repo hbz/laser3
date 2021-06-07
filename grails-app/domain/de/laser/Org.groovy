@@ -43,6 +43,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     String legalPatronName
     String url
     String urlGov
+    String linkResolverBaseURL
     SortedSet subjectGroup
 
     String importSource         // "nationallizenzen.de", "edb des hbz"
@@ -97,6 +98,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     RefdataValue eInvoicePortal
 
     SortedSet ids
+    SortedSet altnames
 
     static transients = [
             'deleted', 'customerType', 'customerTypeI10n', 'designation',
@@ -113,7 +115,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         addresses:          'org',
         affiliations:       'org',
         propertySet:        'owner',
-        //privateProperties:  'owner',
+        altnames:           'org',
         documents:          'org',
         hasCreated:         'createdBy',
         hasLegallyObliged:  'legallyObligedBy'
@@ -130,7 +132,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         addresses:          Address,
         affiliations:       UserOrg,
         propertySet:        OrgProperty,
-        //privateProperties:  OrgPrivateProperty,
+        altnames:           AlternativeName,
         orgType:            RefdataValue,
         documents:          DocContext,
         platforms:          Platform,
@@ -151,7 +153,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
    legalPatronName          column:'org_legal_patronname'
                url          column:'org_url'
             urlGov          column:'org_url_gov'
-    //subjectGroup          column:'org_subject_group'
+      linkResolverBaseURL   column:'org_link_resolver_base_url', type: 'text'
    //originEditUrl          column:'org_origin_edit_url'
            comment          column:'org_comment'
            ipRange          column:'org_ip_range'
@@ -207,7 +209,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      legalPatronName(nullable:true, blank:true, maxSize:255)
                  url(nullable:true, blank:true, maxSize:512)
               urlGov(nullable:true, blank:true, maxSize:512)
-      //subjectGroup(nullable:true)
+ linkResolverBaseURL(nullable:true, blank:false)
      //originEditUrl(nullable:true, blank:false)
              comment(nullable:true, blank:true, maxSize:2048)
              ipRange(nullable:true, blank:true, maxSize:1024)
@@ -215,7 +217,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
            shortcode(nullable:true, blank:true, maxSize:128)
                scope(nullable:true, blank:true, maxSize:128)
           categoryId(nullable:true, blank:true, maxSize:128)
-              status(nullable:true)
           membership(nullable:true)
              country(nullable:true)
               region(nullable:true)

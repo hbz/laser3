@@ -24,17 +24,23 @@
 
         <semui:messages data="${flash}" />
 
+        <semui:tabs actionName="settings">
+            <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'general']" tab="general" text="${message(code: 'org.setting.tab.general')}"/>
+            <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'api']" tab="api" text="${message(code: 'org.setting.tab.api')}"/>
+            </g:if>
+            <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'natstat']" tab="natstat" text="${message(code: 'org.setting.tab.natstat')}"/>
+            <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'oamonitor']" tab="oamonitor" text="${message(code: 'org.setting.tab.oamonitor')}"/>
+            </g:if>
+        </semui:tabs>
 
-        <div class="ui stackable grid">
-            <div class="sixteen wide column">
+        <div class="ui bottom attached tab active segment">
 
                 <div class="la-inline-lists">
 
                     <div class="ui card la-dl-no-table la-js-hideable">
                         <div class="content">
-                            <h2 class="ui header">
-                                ${message(code:'org.orgSettings')}
-                            </h2>
 
                             <table class="ui la-table table">
                                 <thead>
@@ -132,30 +138,31 @@
                         </div><!-- .content -->
                     </div>
 
+                    <g:if test="${params.tab == 'general'}">
+                        <div class="ui card la-dl-no-table la-js-hideable">
+                            <div class="content">
+                                <h2 class="ui header">
+                                    ${message(code:'org.confProperties')}
+                                </h2>
 
-                    <div class="ui card la-dl-no-table la-js-hideable">
-                        <div class="content">
-                            <h2 class="ui header">
-                                ${message(code:'org.confProperties')}
-                            </h2>
+                                <div id="custom_props_div_1">
+                                    <g:render template="/templates/properties/custom" model="${[
+                                            prop_desc: PropertyDefinition.ORG_CONF,
+                                            ownobj: orgInstance,
+                                            orphanedProperties: orgInstance.propertySet,
+                                            custom_props_div: "custom_props_div_1" ]}"/>
+                                </div>
+                            </div><!-- .content -->
+                        </div><!-- .card -->
 
-                            <div id="custom_props_div_1">
-                                <g:render template="/templates/properties/custom" model="${[
-                                        prop_desc: PropertyDefinition.ORG_CONF,
-                                        ownobj: orgInstance,
-                                        orphanedProperties: orgInstance.propertySet,
-                                        custom_props_div: "custom_props_div_1" ]}"/>
-                            </div>
-                        </div><!-- .content -->
-                    </div><!-- .card -->
+                        <laser:script file="${this.getGroovyPageFileName()}">
+                            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
+                        </laser:script>
+                    </g:if>
 
-                    <laser:script file="${this.getGroovyPageFileName()}">
-                        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
-                    </laser:script>
 
                 </div><!-- .la-inline-lists -->
 
-            </div><!-- .twelve -->
         </div><!-- .grid -->
 
     </body>

@@ -9,6 +9,7 @@
             text: '${labels.tooltip}',
             show: false
         },
+        toolbox: JSPC.app.reporting.helper.toolbox,
         dataset: {
             source: [
                 ['id', 'name', 'value'],
@@ -25,7 +26,10 @@
         },
         legend: {
             orient: 'vertical',
-            left: 'left'
+            left: 'left',
+            formatter: function (value) {
+                return value.replace(/\s\(ID:[0-9]*\)/,'')
+            }
         },
         series: [
             {
@@ -39,7 +43,12 @@
                     value: 'value',
                     id: 'id'
                 },
-                emphasis: JSPC.app.reporting.helper.series.pie.emphasis
+                emphasis: JSPC.app.reporting.helper.series.pie.emphasis,
+                label: {
+                    formatter: function (obj) {
+                        return obj.name.replace(/\s\(ID:[0-9]*\)/,'')
+                    }
+                }
             }
         ]
     };
@@ -50,6 +59,7 @@
             text: '${labels.tooltip}',
             show: false
         },
+        toolbox: JSPC.app.reporting.helper.toolbox,
         dataset: {
             source: [
                 ['id', 'name', 'value'],
@@ -71,8 +81,20 @@
             left: '5%',
             containLabel: true
         },
-        xAxis: { },
-        yAxis: { type: 'category' },
+        xAxis: {
+            offset: 5,
+            minInterval: 1
+        },
+        yAxis: {
+            type: 'category',
+            offset: 5,
+            minInterval: 1,
+            axisLabel: {
+                formatter: function (value) {
+                    return value.replace(/\s\(ID:[0-9]*\)/,'')
+                }
+            }
+        },
         series: [
             {
                 type: 'bar',

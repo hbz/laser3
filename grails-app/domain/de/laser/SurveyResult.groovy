@@ -145,6 +145,20 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         }
     }
 
+    String getValue() {
+        return toString()
+    }
+
+    @Override
+    String toString(){
+        if (stringValue)      { return stringValue }
+        if (intValue != null) { return intValue.toString() }
+        if (decValue != null) { return decValue.toString() }
+        if (refValue)         { return refValue.toString() }
+        if (dateValue)        { return dateValue.getDateString() }
+        if (urlValue)         { return urlValue.toString() }
+    }
+
     @Override
     def beforeInsert() {
         super.beforeInsertHandler()
@@ -168,5 +182,17 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
     @Override
     def afterDelete() {
         super.afterDeleteHandler()
+    }
+
+    Subscription getParticipantSubscription(){
+        Subscription subscription
+        if (surveyConfig.subscription){
+            subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                    [parentSub  : surveyConfig.subscription,
+                     participant: participant
+                    ])[0]
+        }
+
+        return subscription
     }
 }

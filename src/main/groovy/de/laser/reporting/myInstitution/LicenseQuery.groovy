@@ -1,8 +1,6 @@
 package de.laser.reporting.myInstitution
 
 import de.laser.ContextService
-import de.laser.License
-import de.laser.Subscription
 import de.laser.reporting.myInstitution.base.BaseFilter
 import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.util.Holders
@@ -19,10 +17,20 @@ class LicenseQuery extends BaseQuery {
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
         String prefix = params.query.split('-')[0]
-        String suffix = params.query.split('-')[1]
+        String suffix = params.query.split('-')[1] // only simply cfg.query
         List idList   = BaseFilter.getCachedFilterIdList(prefix, params)
 
         if (! idList) {
+        }
+        else if ( suffix in ['*']) {
+
+            handleGenericAllQuery(
+                    params.query,
+                    'select l.reference, l.reference, count(l.reference) from License l where l.id in (:idList) group by l.reference',
+                    'select l.id from License l where l.id in (:idList) and l.reference = :d order by l.id',
+                    idList,
+                    result
+            )
         }
         else if ( suffix in ['licenseCategory']) {
 
@@ -36,31 +44,34 @@ class LicenseQuery extends BaseQuery {
 
             processSimpleRefdataQuery(params.query,'status', idList, result)
         }
-        else if ( params.query in ['license-annual-assignment']) {
+        else if ( suffix in ['x']) {
 
-            handleGenericAnnualAssignmentQuery(params.query, 'License', idList, result)
-        }
-        else if ( params.query in ['license-property-assignment']) {
+            if (params.query in ['license-x-annual']) {
 
-            handleGenericPropertyAssignmentQuery(
-                    params.query,
-                    'select pd.id, pd.name, count(*) from License lic join lic.propertySet prop join prop.type pd where lic.id in (:idList)',
-                    'select lic.id from License lic join lic.propertySet prop join prop.type pd where lic.id in (:idList)',
-                    idList,
-                    contextService.getOrg(),
-                    result
-            )
-        }
-        else if ( params.query in ['license-identifier-assignment']) {
+                handleGenericAnnualXQuery(params.query, 'License', idList, result)
+            }
+            else if (params.query in ['license-x-property']) {
 
-            handleGenericIdentifierAssignmentQuery(
-                    params.query,
-                    'select ns.id, ns.ns, count(*) from License lic join lic.ids ident join ident.ns ns where lic.id in (:idList)',
-                    'select lic.id from License lic join lic.ids ident join ident.ns ns where lic.id in (:idList)',
-                    'select lic.id from License lic where lic.id in (:idList)', // modified idList
-                    idList,
-                    result
-            )
+                handleGenericPropertyXQuery(
+                        params.query,
+                        'select pd.id, pd.name, count(*) from License lic join lic.propertySet prop join prop.type pd where lic.id in (:idList)',
+                        'select lic.id from License lic join lic.propertySet prop join prop.type pd where lic.id in (:idList)',
+                        idList,
+                        contextService.getOrg(),
+                        result
+                )
+            }
+            else if (params.query in ['license-x-identifier']) {
+
+                handleGenericIdentifierXQuery(
+                        params.query,
+                        'select ns.id, ns.ns, count(*) from License lic join lic.ids ident join ident.ns ns where lic.id in (:idList)',
+                        'select lic.id from License lic join lic.ids ident join ident.ns ns where lic.id in (:idList)',
+                        'select lic.id from License lic where lic.id in (:idList)', // modified idList
+                        idList,
+                        result
+                )
+            }
         }
 
         result

@@ -64,7 +64,7 @@
     <br />
 
     <h2 class="ui header left aligned aligned"><g:message
-            code="renewEntitlementsWithSurvey.currentEntitlements"/> (${ies.size() ?: 0})</h2>
+            code="renewEntitlementsWithSurvey.currentEntitlements"/> (${ies.size()})</h2>
 
     <div class="ui grid">
         <div class="sixteen wide column">

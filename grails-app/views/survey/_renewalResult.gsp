@@ -19,7 +19,7 @@
         </th>
         <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey}">
             <th>
-                <g:message code="renewalWithSurvey.period"/>
+                <g:message code="renewalEvaluation.period"/>
             </th>
         </g:if>
 
@@ -36,7 +36,7 @@
                 </g:if>
             </th>
         </g:each>
-        <th>${message(code: 'renewalWithSurvey.costItem.label')}</th>
+        <th>${message(code: 'renewalEvaluation.costItem.label')}</th>
         <th>${message(code: 'default.actions.label')}</th>
     </tr>
     </thead>
@@ -89,6 +89,13 @@
                                 <i class="x red icon"></i>
                             </span>
                         </g:else>
+
+                        <g:if test="${participantResult.participant in propertiesChangedByParticipant}">
+                            <span data-position="top right" class="la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
+                                <i class="exclamation triangle yellow large icon"></i>
+                            </span>
+                        </g:if>
                     </div>
                 </div>
             </td>

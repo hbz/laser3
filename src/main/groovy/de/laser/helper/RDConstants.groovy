@@ -58,10 +58,12 @@ class RDConstants {
     public static final String ILL_CODE               = 'ill.code'
     public static final String INDEMNIFICATION        = 'indemnification'
     public static final String INVOICING              = 'invoicing'
+    public static final String IP_AUTHENTICATION      = 'ip.authentication'
     public static final String IPV4_ADDRESS_FORMAT    = 'ipv4.address.format'
     public static final String IPV6_ADDRESS_FORMAT    = 'ipv6.address.format'
 
     public static final String LANGUAGE               = 'language'
+    public static final String LANGUAGE_ISO           = 'language.iso'
     public static final String LIBRARY_NETWORK        = 'library.network'
     public static final String LIBRARY_TYPE           = 'library.type'
     public static final String LICENSE_CATEGORY       = 'license.category'
@@ -105,10 +107,11 @@ class RDConstants {
     public static final String PACKAGE_STATUS                 = 'package.status'
     public static final String PACKAGE_BREAKABLE              = 'package.breakable'
     public static final String PACKAGE_CONSISTENT             = 'package.consistent'
-    public static final String PACKAGE_FIXED                  = 'package.fixed'
+    public static final String PACKAGE_FILE                   = 'package.file'
     public static final String PACKAGE_LIST_STATUS            = 'package.list.status'
     public static final String PACKAGE_SCOPE                  = 'package.scope'
     public static final String PACKAGE_CONTENT_TYPE           = 'package.content.type'
+    public static final String PAYMENT_TYPE                   = 'payment.type'
     public static final String PENDING_CHANGE_STATUS          = 'pending.change.status'
     public static final String PENDING_CHANGE_CONFIG_SETTING  = 'pending.change.configuration.setting'
     public static final String PERMISSIONS                    = 'permissions'
@@ -116,6 +119,8 @@ class RDConstants {
     public static final String PERSON_FUNCTION                = 'person.function'
     public static final String PERSON_POSITION                = 'person.position'
     public static final String PERSON_RESPONSIBILITY          = 'person.responsibility'
+    public static final String PLATFORM_STATISTICS_FORMAT     = "platform.statistics.format"
+    public static final String PLATFORM_STATISTICS_FREQUENCY  = "platform.statistics.frequency"
     public static final String PLATFORM_STATUS                = 'platform.status'
 
     public static final String REGIONS_DE             = 'regions.de'

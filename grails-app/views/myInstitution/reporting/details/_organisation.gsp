@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.myInstitution.base.BaseDetails; de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.reporting.myInstitution.OrganisationConfig;" %>
+<%@ page import="de.laser.reporting.myInstitution.base.BaseDetails; de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition;" %>
 <laser:serviceInjection />
 
 <g:render template="/myInstitution/reporting/details/base.part1" />
@@ -10,10 +10,10 @@
             <th></th>
             <th>${message(code:'org.sortname.label')}</th>
             %{-- TODO --}%<th>${(labels.first().trim() != 'Verteilung') ? labels.first().trim() : 'Name'}</th>%{-- TODO --}%
-            <g:if test="${query == 'org-property-assignment'}">
+            <g:if test="${query == 'org-x-property'}">
                 <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
-            <g:elseif test="${query == 'org-identifier-assignment'}">
+            <g:elseif test="${query == 'org-x-identifier'}">
                 <th>${message(code:'identifier.label')}</th>
             </g:elseif>
             <g:if test="${query.startsWith('provider-')}">
@@ -30,7 +30,7 @@
                     <td>
                         <g:link controller="organisation" action="show" id="${org.id}" target="_blank">${org.name}</g:link>
                     </td>
-                    <g:if test="${query == 'org-property-assignment'}">
+                    <g:if test="${query == 'org-x-property'}">
                         <td>
                             <%
                                 List<OrgProperty> properties = BaseDetails.getPropertiesGeneric(org, id as Long, contextService.getOrg()) as List<OrgProperty>
@@ -48,7 +48,7 @@
                             %>
                         </td>
                     </g:if>
-                    <g:elseif test="${query == 'org-identifier-assignment'}">
+                    <g:elseif test="${query == 'org-x-identifier'}">
                         <td>
                             <%
                                 List<Identifier> identList = Identifier.findAllByOrgAndNs(org, IdentifierNamespace.get(id))

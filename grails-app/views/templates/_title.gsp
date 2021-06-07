@@ -201,13 +201,34 @@
         </div>
     </g:if>
 
-    <g:if test="${(tipp.payment || showEmptyFields)}">
+    <g:if test="${(tipp.ddcs || showEmptyFields)}">
         <div class="item">
-            <i class="grey money icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.paymentType')}"></i>
+            <i class="grey sort numeric down icon la-popup-tooltip la-delay"
+               data-content="${message(code: 'tipp.ddc')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'tipp.paymentType') + ':'} ${tipp.payment?.getI10n("value")}
+                ${showCompact ? '' : message(code: 'tipp.ddc') + ':'}
+                <ul>
+                    <g:each in="${tipp.ddcs}" var="ddc">
+                        <li>${ddc.ddc.value} - ${ddc.ddc.getI10n("value")}</li>
+                    </g:each>
+                </ul>
+            </div>
+        </div>
+    </g:if>
+
+    <g:if test="${(tipp.languages || showEmptyFields)}">
+        <div class="item">
+            <i class="grey language icon la-popup-tooltip la-delay"
+               data-content="${message(code: 'tipp.language')}"></i>
+
+            <div class="content">
+                ${showCompact ? '' : message(code: 'tipp.language') + ':'}
+                <ul>
+                    <g:each in="${tipp.languages}" var="language">
+                        <li>${language.language.getI10n("value")}</li>
+                    </g:each>
+                </ul>
             </div>
         </div>
     </g:if>

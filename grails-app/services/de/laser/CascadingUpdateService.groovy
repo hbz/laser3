@@ -46,6 +46,32 @@ class CascadingUpdateService {
         //        tipp:   TitleInstancePackagePlatform
     }
 
+    void update(Language obj, Date luc) {
+        log(obj, luc)
+
+        Language.executeUpdate("update Language lang set lang.lastUpdatedCascading = :luc where lang = :obj", [
+                luc: luc, obj: obj
+        ])
+
+        if (obj.pkg) { update(obj.pkg, luc) }
+        //if (obj.ti)  { update(obj.ti,  luc) }
+
+        //        tipp:   TitleInstancePackagePlatform
+    }
+
+    void update(AlternativeName obj, Date luc) {
+        log(obj, luc)
+
+        AlternativeName.executeUpdate("update AlternativeName altName set altName.lastUpdatedCascading = :luc where altName = :obj", [
+                luc: luc, obj: obj
+        ])
+
+        if (obj.pkg)      { update(obj.pkg, luc) }
+      //if (obj.tipp)     { update(obj.tipp, luc) }
+        if (obj.platform) { update(obj.platform, luc) }
+        if (obj.org)      { update(obj.org, luc) }
+    }
+
     void update(AbstractPropertyWithCalculatedLastUpdated obj, Date luc) {
         log(obj, luc)
 
@@ -112,13 +138,12 @@ class CascadingUpdateService {
         ])
     }
 
-    void update(TitleInstance obj, Date luc) {
+    /*void update(TitleInstancePackagePlatform obj, Date luc) {
         log(obj, luc)
-
-        TitleInstance.executeUpdate("update TitleInstance ti set ti.lastUpdatedCascading = :luc where ti = :obj", [
+        TitleInstancePackagePlatform.executeUpdate("update TitleInstancePackagePlatform tipp set tipp.lastUpdatedCascading = :luc where tipp = :obj", [
                 luc: luc, obj: obj
         ])
-    }
+    }*/
 
     private void log(Object obj, Date luc) {
         log.debug ('cascading update for ' + obj.class.simpleName + ':' + obj.id + ' -> [' + obj.lastUpdatedCascading + '] set to [' + luc + ']')

@@ -34,7 +34,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   RefdataValue type
 
   @RefdataAnnotation(cat = RDConstants.PLATFORM_STATUS)
-  RefdataValue status // TODO: not in Bootstrap
+  RefdataValue status
 
   @RefdataAnnotation(cat = RDConstants.Y_N)
   RefdataValue serviceProvider
@@ -48,12 +48,15 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
 
   Org org
 
-  static mappedBy = [tipps: 'platform']
+  SortedSet altnames
+
+  static mappedBy = [tipps: 'platform', altnames: 'platform']
 
   static hasMany = [
           tipps      : TitleInstancePackagePlatform,
           oapp       : OrgAccessPointLink,
-          propertySet:   PlatformProperty,
+          propertySet: PlatformProperty,
+          altnames   : AlternativeName
   ]
 
   static transients = ['currentTipps', 'calculatedPropDefGroups'] // mark read-only accessor methods
@@ -83,7 +86,6 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     primaryUrl(nullable:true, blank:false)
     provenance(nullable:true, blank:false)
     type            (nullable:true)
-    status          (nullable:true)
     serviceProvider (nullable:true)
     softwareProvider(nullable:true)
     gokbId (blank:false, unique: true, maxSize:511)

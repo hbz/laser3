@@ -5,6 +5,10 @@
            value="${packageInstance ? controlledListService.getAllPossibleSeriesByPackage(packageInstance,actionName) : []}"/>
     <g:set var="subjects"
            value="${packageInstance ? controlledListService.getAllPossibleSubjectsByPackage(packageInstance,actionName) : []}"/>
+    <g:set var="ddcs"
+           value="${packageInstance ? controlledListService.getAllPossibleDdcsByPackage(packageInstance,actionName) : []}"/>
+    <g:set var="languages"
+           value="${packageInstance ? controlledListService.getAllPossibleLanguagesByPackage(packageInstance,actionName) : []}"/>
     <g:set var="yearsFirstOnline"
            value="${packageInstance ? controlledListService.getAllPossibleDateFirstOnlineYearByPackage(packageInstance,actionName) : []}"/>
     <g:set var="publishers"
@@ -16,6 +20,10 @@
            value="${subscription ? controlledListService.getAllPossibleSeriesBySub(subscription) : []}"/>
     <g:set var="subjects"
            value="${subscription ? controlledListService.getAllPossibleSubjectsBySub(subscription) : []}"/>
+    <g:set var="ddcs"
+           value="${subscription ? controlledListService.getAllPossibleDdcsBySub(subscription) : []}"/>
+    <g:set var="languages"
+           value="${subscription ? controlledListService.getAllPossibleLanguagesBySub(subscription) : []}"/>
     <g:set var="yearsFirstOnline"
            value="${subscription ? controlledListService.getAllPossibleDateFirstOnlineYearBySub(subscription) : []}"/>
     <g:set var="publishers"
@@ -29,7 +37,7 @@
         <input type="hidden" name="sort" value="${params.sort}">
         <input type="hidden" name="order" value="${params.order}">
 
-        <div class="three fields">
+        <div class="two fields">
             <div class="field">
                 <label for="filter">${message(code: 'default.search.text')}
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay"
@@ -60,7 +68,7 @@
             </g:if>
         </div>
 
-        <div class="two fields">
+        <div class="four fields">
             <div class="field">
                 <label for="series_names">${message(code: 'titleInstance.seriesName.label')}</label>
 
@@ -92,9 +100,58 @@
                     </g:each>
                 </select>
             </div>
+
+            <div class="field">
+                <label for="ddc">${message(code: 'titleInstance.ddc.label')}</label>
+
+                <select name="ddcs" id="ddc" multiple=""
+                        class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${ddcs}" var="ddc">
+                        <option <%=(params.list('ddcs')?.contains(ddc.ddc.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${ddc.ddc.id}">
+                            ${ddc.ddc.value} - ${ddc.ddc.getI10n("value")}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="language">${message(code: 'titleInstance.language.label')}</label>
+
+                <select name="languages" id="language" multiple=""
+                        class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${languages}" var="language">
+                        <option <%=(params.list('languages')?.contains(language.language.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${language.language.id}">
+                            ${language.language.getI10n("value")}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
         </div>
 
-        <div class="three fields">
+        <div class="four fields">
+            <div class="field">
+                <label for="yearsFirstOnline">${message(code: 'tipp.YearFirstOnline')}
+                </label>
+                <select name="yearsFirstOnline" id="yearsFirstOnline" multiple=""
+                        class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <g:each in="${yearsFirstOnline}"
+                            var="yearFirstOnline">
+                        <option <%=(params.list('yearsFirstOnline')?.contains(yearFirstOnline.toString())) ? 'selected="selected"' : ''%>
+                                value="${yearFirstOnline}">
+                            ${yearFirstOnline}
+                        </option>
+                    </g:each>
+                </select>
+
+            </div>
+
             <div class="field">
                 <label for="identifier">${message(code: 'default.search.identifier')}
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay"
@@ -144,23 +201,7 @@
         </div>
 
         <div class="two fields">
-
-            <div class="field">
-                <label for="yearsFirstOnline">${message(code: 'tipp.YearFirstOnline')}
-                </label>
-                <select name="yearsFirstOnline" id="yearsFirstOnline" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${yearsFirstOnline}"
-                            var="yearFirstOnline">
-                        <option <%=(params.list('yearsFirstOnline')?.contains(yearFirstOnline.toString())) ? 'selected="selected"' : ''%>
-                                value="${yearFirstOnline}">
-                            ${yearFirstOnline}
-                        </option>
-                    </g:each>
-                </select>
-
-            </div>
+            <div class="field"></div>
 
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}"

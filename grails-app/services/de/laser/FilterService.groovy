@@ -208,6 +208,12 @@ class FilterService {
             queryParams << [orgIdentifier: "%${params.orgIdentifier}%"]
         }
 
+        if (params.filterPropDef?.size() > 0) {
+            def psq = propertyService.evalFilterQuery(params, '', 'o', queryParams)
+            query << psq.query.split(' and', 2)[1]
+            queryParams << psq.queryParams
+        }
+
          queryParams << [org : org]
          queryParams << [comboType : params.comboType]
 
@@ -1096,6 +1102,18 @@ class FilterService {
             qry_params.titleGroup = Long.parseLong(params.titleGroup)
         }
 
+        if (params.ddcs && params.ddcs != "" && params.list('ddcs')) {
+            base_qry += " and exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = ie.tipp and ddc.ddc.id in (:ddcs) ) "
+            qry_params.ddcs = params.list('ddcs').collect { String key -> Long.parseLong(key) }
+            filterSet = true
+        }
+
+        if (params.languages && params.languages != "" && params.list('languages')) {
+            base_qry += " and exists ( select lang.id from Language lang where lang.tipp = ie.tipp and lang.language.id in (:languages) ) "
+            qry_params.languages = params.list('languages').collect { String key -> Long.parseLong(key) }
+            filterSet = true
+        }
+
         if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
             base_qry += " and lower(ie.tipp.subjectReference) in (:subject_references)"
             qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
@@ -1240,6 +1258,18 @@ class FilterService {
             base_qry += " and ( tipp.accessEndDate <= :date ) "
             qry_params.date = new Date()
         }*/
+
+        if (params.ddcs && params.ddcs != "" && params.list('ddcs')) {
+            base_qry += " and exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = tipp and ddc.ddc.id in (:ddcs) ) "
+            qry_params.ddcs = params.list('ddcs').collect { String key -> Long.parseLong(key) }
+            filterSet = true
+        }
+
+        if (params.languages && params.languages != "" && params.list('languages')) {
+            base_qry += " and exists ( select lang.id from Language lang where lang.tipp = tipp and lang.language.id in (:languages) ) "
+            qry_params.languages = params.list('languages').collect { String key -> Long.parseLong(key) }
+            filterSet = true
+        }
 
         if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
             base_qry += ' and ( '

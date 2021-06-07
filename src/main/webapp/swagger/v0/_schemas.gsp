@@ -498,13 +498,13 @@
           endDate:
             type: string
             format: <% print ApiToolkit.DATE_TIME_PATTERN %>
-          listVerifiedDate:
+<%--      listVerifiedDate:
             type: string
-            format: <% print ApiToolkit.DATE_TIME_PATTERN %>
-          fixed:
+            format: <% print ApiToolkit.DATE_TIME_PATTERN %>--%>
+          file:
             type: string
-            description: Mapping RefdataCategory "${RDConstants.Y_N}"
-            enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
+            description: Mapping RefdataCategory "${RDConstants.PACKAGE_FILE}"
+            enum: <% printRefdataEnum(RDConstants.PACKAGE_FILE, 12) %>
           isPublic:
             type: string #mapped to boolean
             description: Mapping RefdataCategory "${RDConstants.Y_N}"
@@ -520,15 +520,14 @@
             type: array
             items:
               $ref: "#/components/schemas/OrganisationRole_Virtual"
-          packageListStatus:
+<%--          packageListStatus:
             type: string
             description: Mapping RefdataCategory "${RDConstants.PACKAGE_LIST_STATUS}"
-            enum: <% printRefdataEnum(RDConstants.PACKAGE_LIST_STATUS, 12) %>
-          packageScope:
+            enum: <% printRefdataEnum(RDConstants.PACKAGE_LIST_STATUS, 12) --%>
+          scope:
             type: string
-            description: Mapping RefdataCategory
-            enum:
-              [""]
+            description: Mapping RefdataCategory "${RDConstants.PACKAGE_SCOPE}"
+            enum: <% printRefdataEnum(RDConstants.PACKAGE_SCOPE, 12) %>
           packageStatus:
             type: string
             description: Mapping RefdataCategory "${RDConstants.PACKAGE_STATUS}"

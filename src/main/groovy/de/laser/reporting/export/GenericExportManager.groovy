@@ -12,15 +12,15 @@ class GenericExportManager {
 
     static AbstractExport createExport(String token, Map<String, Object> selectedFields) {
 
-        String prefix = ExportHelper.getCachedQueryPrefix( token )
+        String tmpl = ExportHelper.getCachedExportStrategy( token )
 
-        if (prefix == 'license') {
+        if (tmpl == LicenseExport.KEY) {
             return new LicenseExport( token, selectedFields )
         }
-        if (prefix in ['org', 'member', 'consortium', 'licensor', 'provider']) {
+        else if (tmpl == OrgExport.KEY) {
             return new OrgExport( token, selectedFields )
         }
-        if (prefix == 'subscription') {
+        else if (tmpl == SubscriptionExport.KEY) {
             return new SubscriptionExport( token, selectedFields )
         }
     }
