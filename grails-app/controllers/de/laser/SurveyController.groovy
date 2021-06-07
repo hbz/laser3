@@ -1174,8 +1174,8 @@ class SurveyController {
                 params.participantsFinish = true
             }
 
-            result.participantsNotFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).participant.flatten().unique { a, b -> a.id <=> b.id }.size()
-            result.participantsFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).participant.flatten().unique { a, b -> a.id <=> b.id }.size()
+            result.participantsNotFinishTotal = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).size()
+            result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
             result.participantsTotal = result.surveyConfig.orgs.size()
 
              Map<String,Object> fsq = filterService.getSurveyResultQuery(params, result.surveyConfig)
@@ -1326,8 +1326,8 @@ class SurveyController {
 
         result.surveyResult = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
 
-        result.participantsNotFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).participant.flatten().unique { a, b -> a.id <=> b.id }.size()
-        result.participantsFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).participant.flatten().unique { a, b -> a.id <=> b.id }.size()
+        result.participantsNotFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).size()
+        result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
 
         result.propList    = result.surveyConfig.surveyProperties.surveyProperty
 
@@ -1365,8 +1365,8 @@ class SurveyController {
 
                 if(openAndSendMail || open) {
                     SurveyOrg.withTransaction { TransactionStatus ts ->
+                        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
                         if (result.surveyConfig.pickAndChoose) {
-                            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
 
                             result.subscription = result.surveyConfig.subscription
 
@@ -1377,16 +1377,11 @@ class SurveyController {
                                 ie.save()
                             }
 
-                            surveyOrg.finishDate = null
-                            surveyOrg.save()
+
                         }
 
-                        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(org, result.surveyConfig)
-
-                        surveyResults.each {
-                            it.finishDate = null
-                            it.save()
-                        }
+                        surveyOrg.finishDate = null
+                        surveyOrg.save()
                         countOpenParticipants++
                     }
                 }
@@ -1430,10 +1425,10 @@ class SurveyController {
         def orgs = result.surveyConfig.orgs.org.flatten().unique { a, b -> a.id <=> b.id }
         result.participants = orgs.sort { it.sortname }
 
-        result.participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).org.flatten().unique { a, b -> a.id <=> b.id }.sort {
+        result.participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).org.sort {
             it.sortname
         }
-        result.participantsFinish = SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(result.surveyConfig).org.flatten().unique { a, b -> a.id <=> b.id }.sort {
+        result.participantsFinish = SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(result.surveyConfig).org.sort {
             it.sortname
         }
 
@@ -1650,12 +1645,11 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        SurveyResult.withTransaction { TransactionStatus ts ->
-            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
-            surveyResults.each {
-                it.finishDate = null
-                it.save()
-            }
+        SurveyOrg.withTransaction { TransactionStatus ts ->
+            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
+
+            surveyOrg.finishDate = null
+            surveyOrg.save()
         }
 
         redirect(action: 'evaluationParticipant', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
@@ -1682,12 +1676,11 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        SurveyResult.withTransaction { TransactionStatus ts ->
-            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
-            surveyResults.each {
-                it.finishDate = new Date()
-                it.save()
-            }
+        SurveyOrg.withTransaction { TransactionStatus ts ->
+            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
+
+            surveyOrg.finishDate = new Date()
+            surveyOrg.save()
         }
 
         redirect(action: 'evaluationParticipant', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])

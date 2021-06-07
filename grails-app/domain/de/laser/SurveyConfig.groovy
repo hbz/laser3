@@ -249,7 +249,7 @@ class SurveyConfig {
 
                 /*if (!noParticipation) {*/
 
-                    List surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
+                    /*List surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
 
                     if (pickAndChoose) {
                         boolean finish = false
@@ -266,7 +266,9 @@ class SurveyConfig {
                         } else {
                             return true
                         }
-                    }
+                    }*/
+
+                    surveyOrg.finishDate ? true : false
                 /*} else {
                     return true
                 }*/
