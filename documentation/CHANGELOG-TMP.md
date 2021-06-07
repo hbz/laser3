@@ -13,8 +13,6 @@
 
 3222    01.06.2021  dev     2.1         Andreas Feature     Unterteilung der Einrichtungseinstellungen in Reiter
 
-3260    31.05.2021  dev     2.1         Moe     Feature     Teilnehmersicht Meine Umfragen vorfiltern
-
 3476    01.06.2021  dev     2.1         Andreas Bug         Zeichenbegrenzung auch im Kostenhinzufügemodal nachgereicht
 
 3462    01.06.2021  dev     2.1         Andreas Bug         Typ Umfrage ist für Vollnutzer jetzt auch beim neuen Merkmalstyp entfernt
@@ -22,6 +20,8 @@
 3309    01.06.2021  dev     2.1         Andreas Feature     Bemerkungsfeld für Nutzerzahlen eingefügt
 
 3492    01.06.2021  dev     2.1         Andreas Feature     "Alle Plattformen" werden per ES-Index bespeist, Detailansicht um we:kb-Eigenschaften erweitert 
+
+3260    31.05.2021  dev     2.1         Moe     Feature     Teilnehmersicht Meine Umfragen vorfiltern
 
 3519    28.05.2021  dev     2.1         Andreas Feature     Linkresolver-Base-URL für Einrichtungen hinzugefügt
 

@@ -46,12 +46,12 @@ class ExportClickMeService {
                             'participant.funderType'        : [field: 'participant.funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'participant.funderHskType'     : [field: 'participant.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'participant.libraryType'       : [field: 'participant.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
-                            'participant.exportIPs'         : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateCheat: 'true'],
-                            'participant.exportProxys'      : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateCheat: 'true'],
-                            'participant.exportEZProxys'    : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateCheat: 'true'],
-                            'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateCheat: 'true'],
-                            'participant.generalContact'    : [field: null, label: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')],
-                            'participant.billingContact'    : [field: null, label: RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS.getI10n('value')],
+                            'participant.exportIPs'         : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateSheet: 'true'],
+                            'participant.exportProxys'      : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
+                            'participant.exportEZProxys'    : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
+                            'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
+                            'participant.generalContact'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
+                            'participant.billingContact'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
                             'participant.ISIL'              : [field: null, label: 'ISIL'],
                             'participant.WIBID'              : [field: null, label: 'WIB-ID'],
                             'participant.EZBID'              : [field: null, label: 'EZB-ID'],
@@ -122,7 +122,7 @@ class ExportClickMeService {
         selectedExportFields.keySet().each {String fieldKey ->
             Map fields = selectedExportFields.get(fieldKey)
 
-            if(!fields.separateCheat) {
+            if(!fields.separateSheet) {
                 if (fieldKey == 'participant.generalContact') {
                     titles << generalContact.getI10n('value')
                 }else if (fieldKey == 'participant.billingContact') {
@@ -265,7 +265,7 @@ class ExportClickMeService {
         selectedFields.keySet().each { String fieldKey ->
             Map mapSelecetedFields = selectedFields.get(fieldKey)
             String field = mapSelecetedFields.field
-            if(!mapSelecetedFields.separateCheat) {
+            if(!mapSelecetedFields.separateSheet) {
                 if (fieldKey == 'survey.allOtherProperties') {
                     renewalResult.properties?.sort { it.type.name }.each { participantResultProperty ->
                         if (onlySubscription) {
@@ -362,34 +362,34 @@ class ExportClickMeService {
     Map exportAccessPoints(Map renewalResult, Map sheetData, LinkedHashMap selectedExportFields, Locale locale) {
 
         Map export = [:]
-        String cheatName = ''
+        String sheetName = ''
 
         if ('participant.exportIPs' in selectedExportFields.keySet()) {
             if (renewalResult.orgsContinuetoSubscription) {
 
                 export = accessPointService.exportIPsOfOrgs(renewalResult.orgsContinuetoSubscription.participant, true)
-                cheatName = messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName.short', null, locale) + " (${renewalResult.orgsContinuetoSubscription.size()})"
-                sheetData[cheatName] = export
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName.short', null, locale) + " (${renewalResult.orgsContinuetoSubscription.size()})"
+                sheetData[sheetName] = export
             }
 
             if (renewalResult.orgsWithMultiYearTermSub) {
 
                 export = accessPointService.exportIPsOfOrgs(renewalResult.orgsWithMultiYearTermSub.collect { it.getAllSubscribers() }, true)
-                cheatName = messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName.short', null, locale) + " (${renewalResult.orgsWithMultiYearTermSub.size()})"
-                sheetData[cheatName] = export
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName.short', null, locale) + " (${renewalResult.orgsWithMultiYearTermSub.size()})"
+                sheetData[sheetName] = export
             }
 
             if (renewalResult.orgsWithParticipationInParentSuccessor) {
                 export = accessPointService.exportIPsOfOrgs(renewalResult.orgsWithParticipationInParentSuccessor.collect { it.getAllSubscribers() }, true)
-                cheatName = messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName.short', null, locale) + " (${renewalResult.orgsWithParticipationInParentSuccessor.size()})"
-                sheetData[cheatName] = export
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName.short', null, locale) + " (${renewalResult.orgsWithParticipationInParentSuccessor.size()})"
+                sheetData[sheetName] = export
             }
 
             if (renewalResult.newOrgsContinuetoSubscription) {
 
                 export = accessPointService.exportIPsOfOrgs(renewalResult.newOrgsContinuetoSubscription.participant, true)
-                cheatName = messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName.short', null, locale) + " (${renewalResult.newOrgsContinuetoSubscription.size()})"
-                sheetData[cheatName] = export
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName.short', null, locale) + " (${renewalResult.newOrgsContinuetoSubscription.size()})"
+                sheetData[sheetName] = export
             }
 
         }
@@ -398,28 +398,28 @@ class ExportClickMeService {
             if (renewalResult.orgsContinuetoSubscription) {
 
                 export = accessPointService.exportProxysOfOrgs(renewalResult.orgsContinuetoSubscription.participant, true)
-                cheatName = messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName.short', null, locale) + " (${renewalResult.orgsContinuetoSubscription.size()})"
-                sheetData[cheatName] = export
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName.short', null, locale) + " (${renewalResult.orgsContinuetoSubscription.size()})"
+                sheetData[sheetName] = export
             }
 
             if (renewalResult.orgsWithMultiYearTermSub) {
 
                 export = accessPointService.exportProxysOfOrgs(renewalResult.orgsWithMultiYearTermSub.collect { it.getAllSubscribers() }, true)
-                cheatName = messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName.short', null, locale) + " (${renewalResult.orgsWithMultiYearTermSub.size()})"
-                sheetData[cheatName] = export
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName.short', null, locale) + " (${renewalResult.orgsWithMultiYearTermSub.size()})"
+                sheetData[sheetName] = export
             }
 
             if (renewalResult.orgsWithParticipationInParentSuccessor) {
                 export = accessPointService.exportProxysOfOrgs(renewalResult.orgsWithParticipationInParentSuccessor.collect { it.getAllSubscribers() }, true)
-                cheatName = messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName.short', null, locale) + " (${renewalResult.orgsWithParticipationInParentSuccessor.size()})"
-                sheetData[cheatName] = export
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName.short', null, locale) + " (${renewalResult.orgsWithParticipationInParentSuccessor.size()})"
+                sheetData[sheetName] = export
             }
 
             if (renewalResult.newOrgsContinuetoSubscription) {
 
                 export = accessPointService.exportProxysOfOrgs(renewalResult.newOrgsContinuetoSubscription.participant, true)
-                cheatName = messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName.short', null, locale) + " (${renewalResult.newOrgsContinuetoSubscription.size()})"
-                sheetData[cheatName] = export
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName.short', null, locale) + " (${renewalResult.newOrgsContinuetoSubscription.size()})"
+                sheetData[sheetName] = export
             }
 
         }
@@ -428,28 +428,28 @@ class ExportClickMeService {
             if (renewalResult.orgsContinuetoSubscription) {
 
                 export = accessPointService.exportEZProxysOfOrgs(renewalResult.orgsContinuetoSubscription.participant, true)
-                cheatName = messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName.short', null, locale) + " (${renewalResult.orgsContinuetoSubscription.size()})"
-                sheetData[cheatName] = export
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName.short', null, locale) + " (${renewalResult.orgsContinuetoSubscription.size()})"
+                sheetData[sheetName] = export
             }
 
             if (renewalResult.orgsWithMultiYearTermSub) {
 
                 export = accessPointService.exportEZProxysOfOrgs(renewalResult.orgsWithMultiYearTermSub.collect { it.getAllSubscribers() }, true)
-                cheatName = messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName.short', null, locale) + " (${renewalResult.orgsWithMultiYearTermSub.size()})"
-                sheetData[cheatName] = export
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName.short', null, locale) + " (${renewalResult.orgsWithMultiYearTermSub.size()})"
+                sheetData[sheetName] = export
             }
 
             if (renewalResult.orgsWithParticipationInParentSuccessor) {
                 export = accessPointService.exportEZProxysOfOrgs(renewalResult.orgsWithParticipationInParentSuccessor.collect { it.getAllSubscribers() }, true)
-                cheatName = messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName.short', null, locale) + " (${renewalResult.orgsWithParticipationInParentSuccessor.size()})"
-                sheetData[cheatName] = export
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName.short', null, locale) + " (${renewalResult.orgsWithParticipationInParentSuccessor.size()})"
+                sheetData[sheetName] = export
             }
 
             if (renewalResult.newOrgsContinuetoSubscription) {
 
                 export = accessPointService.exportEZProxysOfOrgs(renewalResult.newOrgsContinuetoSubscription.participant, true)
-                cheatName = messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName.short', null, locale) + " (${renewalResult.newOrgsContinuetoSubscription.size()})"
-                sheetData[cheatName] = export
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName.short', null, locale) + " (${renewalResult.newOrgsContinuetoSubscription.size()})"
+                sheetData[sheetName] = export
             }
 
         }
@@ -458,28 +458,28 @@ class ExportClickMeService {
             if (renewalResult.orgsContinuetoSubscription) {
 
                 export = accessPointService.exportShibbolethsOfOrgs(renewalResult.orgsContinuetoSubscription.participant, true)
-                cheatName = messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName.short', null, locale) + " (${renewalResult.orgsContinuetoSubscription.size()})"
-                sheetData[cheatName] = export
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName.short', null, locale) + " (${renewalResult.orgsContinuetoSubscription.size()})"
+                sheetData[sheetName] = export
             }
 
             if (renewalResult.orgsWithMultiYearTermSub) {
 
                 export = accessPointService.exportShibbolethsOfOrgs(renewalResult.orgsWithMultiYearTermSub.collect { it.getAllSubscribers() }, true)
-                cheatName = messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName.short', null, locale) + " (${renewalResult.orgsWithMultiYearTermSub.size()})"
-                sheetData[cheatName] = export
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName.short', null, locale) + " (${renewalResult.orgsWithMultiYearTermSub.size()})"
+                sheetData[sheetName] = export
             }
 
             if (renewalResult.orgsWithParticipationInParentSuccessor) {
                 export = accessPointService.exportShibbolethsOfOrgs(renewalResult.orgsWithParticipationInParentSuccessor.collect { it.getAllSubscribers() }, true)
-                cheatName = messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName.short', null, locale) + " (${renewalResult.orgsWithParticipationInParentSuccessor.size()})"
-                sheetData[cheatName] = export
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName.short', null, locale) + " (${renewalResult.orgsWithParticipationInParentSuccessor.size()})"
+                sheetData[sheetName] = export
             }
 
             if (renewalResult.newOrgsContinuetoSubscription) {
 
                 export = accessPointService.exportShibbolethsOfOrgs(renewalResult.newOrgsContinuetoSubscription.participant, true)
-                cheatName = messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName.short', null, locale) + " (${renewalResult.newOrgsContinuetoSubscription.size()})"
-                sheetData[cheatName] = export
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName.short', null, locale) + " (${renewalResult.newOrgsContinuetoSubscription.size()})"
+                sheetData[sheetName] = export
             }
 
         }

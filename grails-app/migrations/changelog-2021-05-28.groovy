@@ -45,5 +45,6 @@ databaseChangeLog = {
 
     changeSet(author: "djebeniani (generated)", id: "1622209756718-7") {
         dropTable(tableName: "survey_property")
+    }
 
 }
