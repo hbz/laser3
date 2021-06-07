@@ -27,14 +27,10 @@ import grails.web.servlet.mvc.GrailsParameterMap
 class Org extends AbstractBaseWithCalculatedLastUpdated
         implements DeleteFlag {
 
-    def sessionFactory // TODO: ugliest HOTFIX ever
     def contextService
-    def organisationService
     def accessService
 	def propertyService
     def deletionService
-
-    static Log static_logger = LogFactory.getLog(Org)
 
     String name
     String shortname
@@ -60,6 +56,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     boolean eInvoice = false
 
+    Date retirementDate
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
@@ -165,6 +162,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         gokbId              column:'org_gokb_id', type:'text'
             sector          column:'org_sector_rv_fk', lazy: false
             status          column:'org_status_rv_fk'
+    retirementDate          column:'org_retirement_date'
         membership          column:'org_membership'
            country          column:'org_country_rv_fk'
             region          column:'org_region_rv_fk'
@@ -210,7 +208,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
                  url(nullable:true, blank:true, maxSize:512)
               urlGov(nullable:true, blank:true, maxSize:512)
  linkResolverBaseURL(nullable:true, blank:false)
-     //originEditUrl(nullable:true, blank:false)
+      retirementDate(nullable:true)
              comment(nullable:true, blank:true, maxSize:2048)
              ipRange(nullable:true, blank:true, maxSize:1024)
               sector(nullable:true)

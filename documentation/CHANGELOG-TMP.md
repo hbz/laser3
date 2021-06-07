@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3332    07.06.2021  dev     2.1         Andreas Bug         Abfragen zu Änderungen und Benachrichtigungen angepasst
+
+3151    07.06.2021  dev     2.1         Andreas Feature     Schaltpult aufgespalten und Festfrieren von Beständen zum Jahresende implementiert
+
+3108    07.06.2021  dev     2.1         Andreas Feature     Vererbung für Titelverhalten und Benachrichtigung aufgeteilt
+
 3532    02.06.2021  dev     2.1         Andreas Feature     Metadaten-Download- und KBART-Download-URL für Anbieter aus der we:kb übernommen
 
 3421    02.06.2021  dev     2.1         Andreas Feature     Filter für Einrichtungsmerkmale bei Teilnehmer hinzufügen angelegt

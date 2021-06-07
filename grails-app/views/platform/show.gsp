@@ -165,7 +165,7 @@
                                     ${platformInstanceRecord.counterR4SushiServerUrl} <a href="${platformInstanceRecord.counterR4SushiServerUrl}"><i title="${message(code: 'platform.stats.counter.r4serverURL')} Link" class="external alternate icon"></i></a>
                                 </g:if>
                                 <g:else>
-                                    <g:message code="default.url.invalid"/>
+                                    ${platformInstanceRecord.counterR4SushiServerUrl}
                                 </g:else>
                             </g:if>
                             <g:else>
@@ -181,7 +181,7 @@
                                     ${platformInstanceRecord.counterR5SushiServerUrl} <a href="${platformInstanceRecord.counterR5SushiServerUrl}"><i title="${message(code: 'platform.stats.counter.r5serverURL')} Link" class="external alternate icon"></i></a>
                                 </g:if>
                                 <g:else>
-                                    <g:message code="default.url.invalid"/>
+                                    ${platformInstanceRecord.counterR5SushiServerUrl}
                                 </g:else>
                             </g:if>
                             <g:else>

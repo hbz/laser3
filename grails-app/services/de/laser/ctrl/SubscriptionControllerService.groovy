@@ -645,9 +645,9 @@ class SubscriptionControllerService {
 
                             packagesToProcess.each { Package pkg ->
                                 if(params.linkWithEntitlements)
-                                    pkg.addToSubscriptionCurrentStock(memberSub, result.subscription)
+                                    subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
                                 else
-                                    pkg.addToSubscription(memberSub, false)
+                                    subscriptionService.addToSubscription(memberSub, pkg, false)
                             }
 
                             licensesToProcess.each { License lic ->
@@ -807,10 +807,10 @@ class SubscriptionControllerService {
                         if (params.processOption == 'linkwithIE' || params.processOption == 'linkwithoutIE') {
                             if (!(pkg_to_link in subChild.packages.pkg)) {
                                 if (params.processOption == 'linkwithIE') {
-                                    pkg_to_link.addToSubscriptionCurrentStock(subChild, result.subscription)
+                                    subscriptionService.addToSubscriptionCurrentStock(subChild, result.subscription, pkg_to_link)
 
                                 } else {
-                                    pkg_to_link.addToSubscription(subChild, false)
+                                    subscriptionService.addToSubscription(subChild, pkg_to_link, false)
                                 }
                             }
                         }
@@ -1358,16 +1358,17 @@ class SubscriptionControllerService {
                     result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
                 }
             }
-            //to be deployed in parallel thread
             if(params.addUUID) {
                 String pkgUUID = params.addUUID
                 String addType = params.addType
+                String addTypeChildren = params.addTypeChildren
                 if(!Package.findByGokbId(pkgUUID)) {
                     ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                     result.source = apiSource.baseUrl
                     GlobalRecordSource source = GlobalRecordSource.findByUriLike(result.source+'%')
                     log.debug("linkPackage. Global Record Source URL: " +source.uri)
                     globalSourceSyncService.source = source
+                    //to be deployed in parallel thread
                     executorService.execute({
                         Thread.currentThread().setName("PackageSync_"+result.subscription.id)
                         try {
@@ -1386,13 +1387,11 @@ class SubscriptionControllerService {
                                 Package pkgToLink = Package.findByGokbId(pkgUUID)
                                 result.packageName = pkgToLink.name
                                 log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                                if (addType == 'With') {
-                                    pkgToLink.addToSubscription(result.subscription, true)
+                                subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
+                                Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
+                                    subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'With')
                                 }
-                                else if (addType == 'Without') {
-                                    pkgToLink.addToSubscription(result.subscription, false)
-                                }
-                                pkgToLink.addPendingChangeConfiguration(result.subscription, params)
+                                subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                             }
                         }
                         catch (Exception e) {
@@ -1404,13 +1403,8 @@ class SubscriptionControllerService {
                 else {
                     Package pkgToLink = Package.findByGokbId(pkgUUID)
                     log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                    if (addType == 'With') {
-                        pkgToLink.addToSubscription(result.subscription, true)
-                    }
-                    else if (addType == 'Without') {
-                        pkgToLink.addToSubscription(result.subscription, false)
-                    }
-                    pkgToLink.addPendingChangeConfiguration(result.subscription, params)
+                    subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
+                    subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                 }
             }
 
@@ -1568,11 +1562,11 @@ class SubscriptionControllerService {
 
             if(pkgList && pendingOrWithNotification) {
                 String query = 'select pc.id from PendingChange pc where pc.pkg in (:packages) and pc.oid = null and pc.status = :history ',
-                       query1a = 'select pc.id,pc.tipp from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
-                       query2a = 'select pc.id,pc.tippCoverage from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
+                       query1a = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = :subOid and pc.status in (:pendingStatus)',
+                       query2a = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = :subOid and pc.status in (:pendingStatus)',
                        //query3a = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
-                       query1b = 'select pc.id,pc.tipp from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status not in (:pendingStatus)',
-                       query2b = 'select pc.id,pc.tippCoverage from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status not in (:pendingStatus)',
+                       query1b = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = :subOid and pc.status not in (:pendingStatus)',
+                       query2b = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = :subOid and pc.status not in (:pendingStatus)',
                        //query3b = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status not in (:pendingStatus)',
                        query1c = 'select pc.id from PendingChange pc where pc.subscription = :subscription and pc.status not in (:pendingStatus)'
                 subscriptionHistory.addAll(PendingChange.executeQuery(query,[packages: pkgList, history: RDStore.PENDING_CHANGE_HISTORY]))
@@ -1583,29 +1577,25 @@ class SubscriptionControllerService {
                 changesOfPage.addAll(PendingChange.executeQuery(query2b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
                 //changesOfPage.addAll(PendingChange.executeQuery(query3b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
                 changesOfPage.addAll(PendingChange.executeQuery(query1c,[pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subscription: result.subscription]))
-
-
             }
 
             params.tab = params.tab ?: 'changes'
-            params.sort = params.sort ?: 'msgToken, ts'
+            params.sort = params.sort ?: 'msgToken'
             params.order = params.order ?: 'desc'
             params.max = result.max
             params.offset = result.offset
 
-            result.countPendingChanges = changesOfPage ? PendingChange.countByIdInList(changesOfPage) : 0
-            result.countAcceptedChanges = subscriptionHistory ? PendingChange.countByIdInList(subscriptionHistory) : 0
+            result.countPendingChanges = changesOfPage.size()
+            result.countAcceptedChanges = subscriptionHistory.size()
 
             if(params.tab == 'changes') {
-                result.changes = changesOfPage ? PendingChange.findAllByIdInList(changesOfPage, params) : []
-                result.num_change_rows = result.countPendingChanges
-                result.accepted = accepted
+                result.changes = changesOfPage ? PendingChange.executeQuery('select pc from PendingChange pc where pc.id in (:changesOfPage) order by '+params.sort+' '+params.order+', pc.ts desc', [changesOfPage: changesOfPage], [max: result.max, offset: result.offset]) : []
+                result.num_change_rows = changesOfPage.size()
             }
 
             if(params.tab == 'acceptedChanges') {
-                result.changes = subscriptionHistory ? PendingChange.findAllByIdInList(subscriptionHistory, params) : []
-                result.num_change_rows = result.countAcceptedChanges
-                result.accepted = accepted
+                result.changes = subscriptionHistory ? PendingChange.executeQuery('select pc from PendingChange pc where pc.id in (:subscriptionHistory) order by '+params.sort+' '+params.order+', pc.ts desc', [subscriptionHistory: subscriptionHistory], [max: result.max, offset: result.offset]) : []
+                result.num_change_rows = subscriptionHistory.size()
             }
 
             result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
