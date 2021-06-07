@@ -8,6 +8,7 @@ buildscript {
         classpath "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
         classpath 'org.grails.plugins:database-migration:3.0.3'
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:2.15.1'
+        classpath 'gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.2.4'
     }
 }
 
@@ -20,6 +21,7 @@ apply plugin:'war'
 apply plugin:'org.grails.grails-web'
 apply plugin:'asset-pipeline'
 apply plugin:'org.grails.grails-gsp'
+apply plugin:'com.gorylenko.gradle-git-properties'
 
 repositories {
     mavenLocal()
@@ -104,6 +106,14 @@ bootRun {
     addResources = true
     String springProfilesActive = 'spring.profiles.active'
     systemProperty springProfilesActive, System.getProperty(springProfilesActive)
+}
+
+// gradle-git-properties
+gitProperties {
+    //keys = ['git.branch','git.commit.id','git.commit.time']
+    dateFormat = "dd-MM-yyyy'T'HH:mm:ssZ"
+    //dateFormatTimeZone = "PST"
+    gitPropertiesDir = new File("${project.rootDir}/")
 }
 
 // war-file creation
