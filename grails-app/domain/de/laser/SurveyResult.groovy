@@ -145,6 +145,20 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         }
     }
 
+    String getValue() {
+        return toString()
+    }
+
+    @Override
+    String toString(){
+        if (stringValue)      { return stringValue }
+        if (intValue != null) { return intValue.toString() }
+        if (decValue != null) { return decValue.toString() }
+        if (refValue)         { return refValue.toString() }
+        if (dateValue)        { return dateValue.getDateString() }
+        if (urlValue)         { return urlValue.toString() }
+    }
+
     @Override
     def beforeInsert() {
         super.beforeInsertHandler()

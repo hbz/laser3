@@ -23,7 +23,7 @@
                     <div class="wide eight field">
 
                         <div class="ui checkbox">
-                            <input type="checkbox" name="iex:${field.key}" id="iex:${field.key}" checked="checked">
+                            <input type="checkbox" name="iex:${field.key}" id="iex:${field.key}" ${field.value.defaultChecked ? 'checked="checked"' : ''}>
                             <label for="iex:${field.key}">${field.value.message ? message(code: field.value.message) : field.value.label}</label>
                         </div>
 
@@ -45,7 +45,7 @@
             <div class="fields">
 
                 <div class="wide eight field">
-                    <label for="filename">Dateiname</label>
+                    <label for="filename"><g:message code="default.fileName.label"/></label>
                     <input name="filename" id="filename" value="${message(code: 'renewalexport.renewals')}"/>
                 </div>
                 <div class="wide eight field">

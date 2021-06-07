@@ -134,7 +134,7 @@ class AccessPointService {
         }
         return exportService.generateXLSXWorkbook(sheetData)
     }
-    def exportIPsOfOrgs(List<Org> orgs) {
+    def exportIPsOfOrgs(List<Org> orgs, boolean onlyMap = false) {
 
         List titles = []
         Locale locale = LocaleContextHolder.getLocale()
@@ -192,10 +192,14 @@ class AccessPointService {
 
         }
 
-        return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
+        if(onlyMap){
+            return [titleRow: titles, columnData: accessPointData]
+        }else {
+            return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportIPs.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
+        }
     }
 
-    def exportProxysOfOrgs(List<Org> orgs) {
+    def exportProxysOfOrgs(List<Org> orgs, boolean onlyMap = false) {
 
         List titles = []
         Locale locale = LocaleContextHolder.getLocale()
@@ -252,10 +256,13 @@ class AccessPointService {
             accessPointData.add([[field: '', style: null]])
 
         }
-
-        return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
+        if(onlyMap){
+            return [titleRow: titles, columnData: accessPointData]
+        }else {
+            return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
+        }
     }
-    def exportEZProxysOfOrgs(List<Org> orgs) {
+    def exportEZProxysOfOrgs(List<Org> orgs, boolean onlyMap = false) {
 
         List titles = []
         Locale locale = LocaleContextHolder.getLocale()
@@ -316,9 +323,13 @@ class AccessPointService {
 
         }
 
-        return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
+        if(onlyMap){
+            return [titleRow: titles, columnData: accessPointData]
+        }else {
+            return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
+        }
     }
-    def exportShibbolethsOfOrgs(List<Org> orgs) {
+    def exportShibbolethsOfOrgs(List<Org> orgs, boolean onlyMap = false) {
 
         List titles = []
         Locale locale = LocaleContextHolder.getLocale()
@@ -354,7 +365,12 @@ class AccessPointService {
 
         }
 
-        return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
+        if(onlyMap){
+            return [titleRow: titles, columnData: accessPointData]
+        }else {
+            return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
+        }
+
     }
 
     /**
