@@ -119,7 +119,7 @@ class LaserReportingTagLib {
 
         out << laser.select([
                 class      : "ui fluid dropdown",
-                name       : filterName,
+                name       : filterName.endsWith('region') ? filterName + '_virtualFF' : filterName,
                 id         : getUniqueId(filterName),
                 from       : RefdataCategory.getAllRefdataValues(rdCat),
                 optionKey  : "id",
@@ -127,6 +127,10 @@ class LaserReportingTagLib {
                 value      : filterValue,
                 noSelection: ['': message(code: 'default.select.choose.label')]
         ])
+
+        if (filterName.endsWith('region')) {
+            out << '<input type="hidden" name="' + filterName + '" value="' + (filterValue ?: '') + '" />'
+        }
         out << '</div>'
     }
 
