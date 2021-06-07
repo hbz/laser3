@@ -188,15 +188,16 @@ class AjaxController {
                         }
                         if (target instanceof SurveyResult) {
                             Org org = contextService.getOrg()
+                            SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(target.surveyConfig, target.participant)
 
                             //If Survey Owner set Value then set FinishDate
-                            if (org?.id == target.owner?.id && target.finishDate == null) {
+                            if (org?.id == target.owner.id && (target.type == RDStore.SURVEY_PROPERTY_PARTICIPATION) && surveyOrg.finishDate == null) {
                                 String property = target.type.getImplClassValueProperty()
 
                                 if (target[property] != null) {
-                                    log.debug("Set/Save FinishDate of SurveyResult (${target.id})")
-                                    target.finishDate = new Date()
-                                    target.save()
+                                    log.debug("Set/Save FinishDate of SurveyOrg (${surveyOrg.id})")
+                                    surveyOrg.finishDate = new Date()
+                                    surveyOrg.save()
                                 }
                             }
                         }
@@ -1712,14 +1713,16 @@ class AjaxController {
                 if (target_object instanceof SurveyResult) {
 
                     Org org = contextService.getOrg()
+                    SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(target_object.surveyConfig, target_object.participant)
+
                     //If Survey Owner set Value then set FinishDate
-                    if (org?.id == target_object.owner?.id && target_object.finishDate == null) {
+                    if (org?.id == target_object.owner.id && (target_object.type == RDStore.SURVEY_PROPERTY_PARTICIPATION) && surveyOrg.finishDate == null) {
                         String property = target_object.type.getImplClassValueProperty()
 
                         if (target_object[property] != null) {
-                            log.debug("Set/Save FinishDate of SurveyResult (${target_object.id})")
-                            target_object.finishDate = new Date()
-                            target_object.save()
+                            log.debug("Set/Save FinishDate of SurveyOrg (${surveyOrg.id})")
+                            surveyOrg.finishDate = new Date()
+                            surveyOrg.save()
                         }
                     }
                 }

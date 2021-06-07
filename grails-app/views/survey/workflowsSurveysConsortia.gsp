@@ -249,7 +249,7 @@
 
 
                     <g:set var="participantsFinish"
-                           value="${SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
+                           value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)}"/>
 
                     <g:set var="participantsTotal"
                            value="${surveyConfig?.orgs}"/>
