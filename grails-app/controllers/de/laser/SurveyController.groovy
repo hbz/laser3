@@ -559,10 +559,14 @@ class SurveyController {
                 //Wenn es eine Umfrage schon gibt, die als Übertrag dient. Dann ist es auch keine Lizenz Umfrage mit einem Teilnahme-Merkmal abfragt!
                 if (subSurveyUseForTransfer) {
                     SurveyConfigProperties configProperty = new SurveyConfigProperties(
-                            surveyProperty: PropertyDefinition.getByNameAndDescr('Participation', PropertyDefinition.SVY_PROP),
+                            surveyProperty: RDStore.SURVEY_PROPERTY_PARTICIPATION,
                             surveyConfig: surveyConfig)
 
-                    if (configProperty.save()) {
+                    SurveyConfigProperties configProperty2 = new SurveyConfigProperties(
+                            surveyProperty: RDStore.SURVEY_PROPERTY_ORDER_NUMBER,
+                            surveyConfig: surveyConfig)
+
+                    if (configProperty.save() && configProperty2.save()) {
                         surveyService.addSubMembers(surveyConfig)
                     }
                 } else {

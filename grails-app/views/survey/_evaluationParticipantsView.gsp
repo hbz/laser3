@@ -200,7 +200,7 @@
                             </div>
                         </div>
                     </td>
-                    <g:set var="resultPropertyParticipation"/>
+
                     <g:each in="${result.value.sort { it.type.name }}" var="resultProperty">
                         <td>
                             <g:set var="surveyOrg"
@@ -218,10 +218,6 @@
                                 </g:if>
                             </g:if>
                             <g:else>
-
-                                <g:if test="${resultProperty.type.name == "Participation"}">
-                                    <g:set var="resultPropertyParticipation" value="${resultProperty}"/>
-                                </g:if>
 
                                 <g:if test="${resultProperty.type.isIntegerType()}">
                                     <semui:xEditable owner="${resultProperty}" type="text" field="intValue"/>
@@ -401,7 +397,7 @@
                             </div>
                         </div>
                     </td>
-                    <g:set var="resultPropertyParticipation"/>
+
                     <g:each in="${result.value.sort { it.type.name }}" var="resultProperty">
                         <td>
                             <g:set var="surveyOrg"
@@ -419,10 +415,6 @@
                                 </g:if>
                             </g:if>
                             <g:else>
-
-                                <g:if test="${resultProperty.type.name == "Participation"}">
-                                    <g:set var="resultPropertyParticipation" value="${resultProperty}"/>
-                                </g:if>
 
                                 <g:if test="${resultProperty.type.isIntegerType()}">
                                     <semui:xEditable owner="${resultProperty}" type="text" field="intValue"/>

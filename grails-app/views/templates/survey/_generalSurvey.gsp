@@ -454,7 +454,7 @@
                         </g:elseif>
                         <g:elseif test="${surveyResult.type.isRefdataValueType()}">
 
-                            <g:if test="${surveyResult.type.name in ["Participation"] && surveyResult.owner.id != contextOrg.id}">
+                            <g:if test="${surveyResult.type == RDStore.SURVEY_PROPERTY_PARTICIPATION && surveyResult.owner.id != contextOrg.id}">
                                 <semui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"
                                                         id="participation"
                                                         config="${surveyResult.type.refdataCategory}"/>
