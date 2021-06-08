@@ -7,7 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
 2424    08.06.2021  dev     2.1         Moe     Feature     Filterset UmfrageKosten und Umfrageteilnehmer einfügen 
+
+3492    08.06.2021  dev     2.1         Andreas Feature     Last Audit Date bei Plattformdetailsicht eingefügt
+
+3488    08.06.2021  dev     2.1         Andreas Bug         Menüpunkt "Neue Merkmalsgruppe erstellen" entfettet
+
+3178    08.06.2021  dev     2.1         Andreas Bug         Fallback-Berechnung bei Kostenausschüttung für fehlenden Steuersatz implementiert
 
 3535    08.06.2021  dev     2.1         Moe     Feature     ClickMe Excel für Teilnehmer Reiter
 
