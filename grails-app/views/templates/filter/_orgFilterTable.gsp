@@ -134,16 +134,13 @@
                     <g:set var="costItemElements"
                            value="${RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org', [org: institution])}"/>
 
-                    <g:form action="surveyCostItems" method="post"
-                            params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]}">
                         <laser:select name="selectedCostItemElement"
                                       from="${costItemElements}"
                                       optionKey="id"
                                       optionValue="value"
                                       value="${selectedCostItemElement}"
                                       class="ui dropdown"
-                                      onchange="this.form.submit()"/>
-                    </g:form>
+                                      id="selectedCostItemElement"/>
                 </th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
@@ -840,4 +837,12 @@
 
     </laser:script>
 </g:if>
-
+<g:if test="${tmplConfigShow?.contains('surveySubCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $('#selectedCostItemElement').on('change', function() {
+            var selectedCostItemElement = $("#selectedCostItemElement").val()
+            var url = "<g:createLink controller="survey" action="surveyCostItems" params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]}"/>&selectedCostItemElement="+selectedCostItemElement;
+            location.href = url;
+         });
+    </laser:script>
+</g:if>

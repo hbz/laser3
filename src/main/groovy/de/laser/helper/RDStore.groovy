@@ -244,6 +244,7 @@ class RDStore {
     //Properties
 
     public static final SURVEY_PROPERTY_PARTICIPATION   = getSurveyProperty('Participation')
+    public static final SURVEY_PROPERTY_ORDER_NUMBER    = getSurveyProperty('Order number')
     public static final SURVEY_PROPERTY_MULTI_YEAR_3    = getSurveyProperty('Multi-year term 3 years')
     public static final SURVEY_PROPERTY_MULTI_YEAR_2    = getSurveyProperty('Multi-year term 2 years')
 

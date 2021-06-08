@@ -8,6 +8,7 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.SurveyControllerService
+import de.laser.finance.Order
 import de.laser.finance.PriceItem
 import de.laser.properties.SubscriptionProperty
 import de.laser.auth.User
@@ -559,10 +560,14 @@ class SurveyController {
                 //Wenn es eine Umfrage schon gibt, die als Übertrag dient. Dann ist es auch keine Lizenz Umfrage mit einem Teilnahme-Merkmal abfragt!
                 if (subSurveyUseForTransfer) {
                     SurveyConfigProperties configProperty = new SurveyConfigProperties(
-                            surveyProperty: PropertyDefinition.getByNameAndDescr('Participation', PropertyDefinition.SVY_PROP),
+                            surveyProperty: RDStore.SURVEY_PROPERTY_PARTICIPATION,
                             surveyConfig: surveyConfig)
 
-                    if (configProperty.save()) {
+                    SurveyConfigProperties configProperty2 = new SurveyConfigProperties(
+                            surveyProperty: RDStore.SURVEY_PROPERTY_ORDER_NUMBER,
+                            surveyConfig: surveyConfig)
+
+                    if (configProperty.save() && configProperty2.save()) {
                         surveyService.addSubMembers(surveyConfig)
                     }
                 } else {
@@ -889,7 +894,7 @@ class SurveyController {
         result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
-        result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT).id.toString()
+        result.selectedCostItemElement = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT).id.toString()
 
         if (params.selectedCostItemElement) {
             params.remove('selectedCostItemElement')
@@ -3454,6 +3459,17 @@ class SurveyController {
                         copyCostItem.currencyRate = 1.0
                         copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
                     }
+                    Org org = participantSub.getSubscriber()
+                    SurveyResult surveyResult = org ? SurveyResult.findBySurveyConfigAndParticipantAndType(result.surveyConfig, org, RDStore.SURVEY_PROPERTY_ORDER_NUMBER) : null
+
+                    if(surveyResult){
+                        Order order = new Order(orderNumber: surveyResult.getValue(), owner: result.institution)
+                        if(order.save()) {
+                            copyCostItem.order = order
+                        }
+                        else log.error(order.errors)
+                    }
+
                     if(copyCostItem.save()) {
                         countNewCostItems++
                     }else {

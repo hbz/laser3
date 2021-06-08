@@ -55,6 +55,7 @@ class ExportClickMeService {
                             'participant.ISIL'              : [field: null, label: 'ISIL'],
                             'participant.WIBID'              : [field: null, label: 'WIB-ID'],
                             'participant.EZBID'              : [field: null, label: 'EZB-ID'],
+                            'participant.customerIdentifier' : [field: null, label: 'customerIdentifier', message: 'org.customerIdentifier.plural'],
                                     ]
                     ],
 
@@ -313,6 +314,9 @@ class ExportClickMeService {
                 }
                 else if (fieldKey == 'participant.EZBID') {
                     setOrgFurtherInformation(renewalResult.participant, row, fieldKey)
+                }
+                else if (fieldKey == 'participant.customerIdentifier') {
+                    setOrgFurtherInformation(renewalResult.participant, row, fieldKey, renewalResult.sub)
                 }else {
                     if (onlySubscription) {
                         if (fieldKey.startsWith('subscription.') || fieldKey.startsWith('participant.')) {
@@ -487,7 +491,7 @@ class ExportClickMeService {
         return sheetData
     }
 
-    void setOrgFurtherInformation(Org org, List row, String fieldKey){
+    void setOrgFurtherInformation(Org org, List row, String fieldKey, Subscription subscription = null){
 
         if (fieldKey == 'participant.generalContact') {
             RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
@@ -531,6 +535,20 @@ class ExportClickMeService {
             if(identifierList){
                 row.add([field:  identifierList.value.join(";") , style: null])
             }else{
+                row.add([field:  '' , style: null])
+            }
+        }
+        else if (fieldKey == 'participant.customerIdentifier') {
+            if(subscription && subscription.packages){
+                List<Platform> platformList = Platform.executeQuery('select distinct tipp.platform from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg: subscription.packages.pkg])
+                List<CustomerIdentifier> customerIdentifierList = CustomerIdentifier.findAllByCustomerAndIsPublicAndPlatformInList(org, false, platformList)
+                if(customerIdentifierList){
+                    row.add([field:  customerIdentifierList.value.join(";") , style: null])
+                }else {
+                    row.add([field:  '' , style: null])
+                }
+            }
+            else{
                 row.add([field:  '' , style: null])
             }
         }
