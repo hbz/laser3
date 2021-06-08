@@ -119,7 +119,7 @@ class LaserReportingTagLib {
 
         out << laser.select([
                 class      : "ui fluid dropdown",
-                name       : filterName.endsWith('region') ? filterName + '_virtualFF' : filterName,
+                name       : GenericHelper.isFieldVirtual(attrs.refdata) ? filterName + '_virtualFF' : filterName,
                 id         : getUniqueId(filterName),
                 from       : RefdataCategory.getAllRefdataValues(rdCat),
                 optionKey  : "id",
@@ -128,7 +128,7 @@ class LaserReportingTagLib {
                 noSelection: ['': message(code: 'default.select.choose.label')]
         ])
 
-        if (filterName.endsWith('region')) {
+        if ( GenericHelper.isFieldVirtual(attrs.refdata) ) {
             out << '<input type="hidden" name="' + filterName + '" value="' + (filterValue ?: '') + '" />'
         }
         out << '</div>'
