@@ -51,7 +51,9 @@
 
 <semui:form>
 
-    <semui:filter>
+    <g:render template="/templates/filter/javascript" />
+
+    <semui:filter showFilterButton="true">
         <g:form action="${actionName}" method="post" class="ui form"
                 params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
             <g:render template="/templates/filter/orgFilter"
@@ -62,7 +64,7 @@
         </g:form>
     </semui:filter>
 
-    <br>
+    <br><br>
     <g:form action="processTransferParticipants" controller="survey" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
 

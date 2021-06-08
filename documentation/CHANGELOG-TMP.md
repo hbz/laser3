@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2424    08.06.2021  dev     2.1         Moe     Feature     Filterset UmfrageKosten und Umfrageteilnehmer einfügen 
+
 3535    08.06.2021  dev     2.1         Moe     Feature     ClickMe Excel für Teilnehmer Reiter
 
 3533    08.06.2021  dev     2.1         Moe     Feature     Auswahl Kostenelemente in Umfragekosten funktionslos

@@ -124,18 +124,20 @@
             <br />
             <br />
 
-            <semui:filter>
-            <g:form action="surveyCostItems" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
-            <g:render template="/templates/filter/orgFilter"
-            model="[
-                              tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value']],
-                              tmplConfigFormFilter: true
-                      ]"/>
-            </g:form>
+            <g:render template="/templates/filter/javascript" />
+
+            <semui:filter showFilterButton="true">
+                <g:form action="surveyCostItems" method="post" class="ui form"
+                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
+                <g:render template="/templates/filter/orgFilter"
+                model="[
+                                  tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value']],
+                                  tmplConfigFormFilter: true
+                          ]"/>
+                </g:form>
             </semui:filter>
 
-            <br>
+            <br><br>
 
             <g:form action="processSurveyCostItemsBulk" name="surveyCostItemsBulk" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">

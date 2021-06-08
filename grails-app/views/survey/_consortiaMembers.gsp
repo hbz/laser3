@@ -1,7 +1,9 @@
 <%@ page import="de.laser.SurveyConfig; de.laser.helper.RDStore;" %>
 <br />
 
-<semui:filter>
+<g:render template="/templates/filter/javascript" />
+
+<semui:filter showFilterButton="true">
     <g:form action="surveyParticipants" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
         <g:render template="/templates/filter/orgFilter"
