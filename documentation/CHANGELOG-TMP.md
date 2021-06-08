@@ -9,6 +9,12 @@
 
 3406    07.06.2021  dev     2.1         David   Feature     Reporting - Filter erweitern: Länder > Bundesländer
 
+3332    07.06.2021  dev     2.1         Andreas Bug         Abfragen zu Änderungen und Benachrichtigungen angepasst
+
+3151    07.06.2021  dev     2.1         Andreas Feature     Schaltpult aufgespalten und Festfrieren von Beständen zum Jahresende implementiert
+
+3108    07.06.2021  dev     2.1         Andreas Feature     Vererbung für Titelverhalten und Benachrichtigung aufgeteilt
+
 3532    02.06.2021  dev     2.1         Andreas Feature     Metadaten-Download- und KBART-Download-URL für Anbieter aus der we:kb übernommen
 
 3421    02.06.2021  dev     2.1         Andreas Feature     Filter für Einrichtungsmerkmale bei Teilnehmer hinzufügen angelegt
@@ -100,6 +106,8 @@
 3469    10.05.2021  rc2.0   2.0.10      David   Feature     Reporting-Export: Konfiguration erweitern
 
 3463    07.05.2021  rc2.0   2.0.10      David   Feature     Reporting: Interne Routing-Komponente für Queries erweitern
+
+3423    06.05.2021  dev     2.1         Andreas Bug         Anzeigefehler und Ladezeit behoben
 
 3452    04.05.2021  rc2.0   2.0.8       David   Feature     Filterspez. Query-Formulare ermöglichen
 

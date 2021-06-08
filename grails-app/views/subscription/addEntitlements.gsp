@@ -265,6 +265,9 @@
                 data: {
                     sub: ${subscription.id},
                     index: index,
+                    <g:if test="${params.pkgfilter}">
+                        packages: ${params.pkgfilter},
+                    </g:if>
                     referer: "${actionName}",
                     checked: checked
                 }

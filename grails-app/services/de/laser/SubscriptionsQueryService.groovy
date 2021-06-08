@@ -155,18 +155,17 @@ class SubscriptionsQueryService {
         }
 
         if (params.q?.length() > 0) {
-
             base_qry += (
-                    " and ( genfunc_filter_matcher(s.name, :name_filter) = true " // filter by subscription
-                            + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and genfunc_filter_matcher(sp.pkg.name, :name_filter) = true ) " // filter by pkg
-                            + " or exists ( select li.sourceLicense from Links li where li.destinationSubscription = s and li.linkType = :linkType and genfunc_filter_matcher(li.sourceLicense.reference, :name_filter) = true ) " // filter by license
-                            + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and" +
-                            "   orgR.roleType in (:subRoleTypes) and ( "
-                                + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
-                                + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
-                                + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
-                            + " ) ) " // filter by Anbieter, Konsortium, Agency
-                        +  " ) "
+                    " and ( genfunc_filter_matcher(s.name, :name_filter) = true " + // filter by subscription
+                            " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and genfunc_filter_matcher(sp.pkg.name, :name_filter) = true ) " + // filter by pkg
+                            " or exists ( select li.sourceLicense from Links li where li.destinationSubscription = s and li.linkType = :linkType and genfunc_filter_matcher(li.sourceLicense.reference, :name_filter) = true ) " + // filter by license
+                            " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and" +
+                            "   orgR.roleType in (:subRoleTypes) and ( " +
+                                " genfunc_filter_matcher(orgR.org.name, :name_filter) = true " +
+                                " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true " +
+                                " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true " +
+                            " ) ) " + // filter by Anbieter, Konsortium, Agency
+                         " ) "
             )
             qry_params.put('name_filter', params.q)
             qry_params.put('linkType', RDStore.LINKTYPE_LICENSE)

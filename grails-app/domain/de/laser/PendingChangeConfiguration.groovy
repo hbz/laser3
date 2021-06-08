@@ -21,8 +21,8 @@ class PendingChangeConfiguration {
     static final String PACKAGE_TIPP_COUNT_CHANGED = "pendingChange.message_PK03"
     static final String BILLING_SUM_UPDATED = "pendingChange.message_CI01"
     static final String LOCAL_SUM_UPDATED = "pendingChange.message_CI02"
-    static final String NOTIFICATION_SUFFIX = "_N" //TODO is for making the notification itself inheritable, not just the behavior
-    static final Set<String> SETTING_KEYS = [NEW_TITLE, TITLE_UPDATED, TITLE_DELETED, NEW_COVERAGE, COVERAGE_UPDATED, COVERAGE_DELETED, NEW_PRICE, PRICE_UPDATED, PRICE_DELETED, PACKAGE_PROP, PACKAGE_DELETED]
+    static final String NOTIFICATION_SUFFIX = "_N"
+    static final Set<String> SETTING_KEYS = [NEW_TITLE, TITLE_UPDATED, TITLE_DELETED, NEW_COVERAGE, COVERAGE_UPDATED, COVERAGE_DELETED, PACKAGE_PROP, PACKAGE_DELETED]
 
     String settingKey
     @RefdataAnnotation(cat = RDConstants.PENDING_CHANGE_CONFIG_SETTING)

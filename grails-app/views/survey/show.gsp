@@ -151,9 +151,9 @@
             </g:if>
             <g:else>
                 <g:set var="finish"
-                       value="${SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()}"/>
+                       value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()}"/>
                 <g:set var="total"
-                       value="${SurveyResult.findAllBySurveyConfig(surveyConfig).size()}"/>
+                       value="${SurveyOrg.findAllBySurveyConfig(surveyConfig).size()}"/>
 
                 <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
                 <g:if test="${finishProcess > 0 || surveyInfo.status?.id == RDStore.SURVEY_SURVEY_STARTED.id}">

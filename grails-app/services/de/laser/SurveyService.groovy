@@ -59,10 +59,10 @@ class SurveyService {
         }
 
         if (accessService.checkPermAffiliationX('ORG_BASIC_MEMBER', 'INST_EDITOR', 'ROLE_ADMIN')) {
-            def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
+            def surveyOrg = SurveyOrg.findByOrgAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
-            if (surveyResults) {
-                return surveyResults.finishDate.contains(null) ? true : false
+            if (surveyOrg.finishDate) {
+                return true
             } else {
                 return false
             }
@@ -324,7 +324,7 @@ class SurveyService {
                         row.add([field: value ?: '', style: null])
                         row.add([field: surResult.comment ?: '', style: null])
                         row.add([field: surResult.ownerComment ?: '', style: null])
-                        row.add([field: surResult.finishDate ? sdf.format(surResult.finishDate) : '', style: null])
+                        row.add([field: surveyOrg.finishDate ? sdf.format(surveyOrg.finishDate) : '', style: null])
 
 
                     }
@@ -400,7 +400,7 @@ class SurveyService {
                              [field: messageSource.getMessage('surveyResult.finishDate', null, LocaleContextHolder.getLocale()), style: 'bold']]
                 surveyData.add(row2)
 
-
+                SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextOrg, surveyConfig)
                 SurveyResult.findAllBySurveyConfigAndParticipant(surveyConfig, contextOrg).sort{it.type.name}.each { surResult ->
                     List row3 = []
                     row3.add([field: surResult.type?.getI10n('name') ?: '', style: null])
@@ -425,7 +425,7 @@ class SurveyService {
                     row3.add([field: value ?: '', style: null])
                     row3.add([field: surResult.comment ?: '', style: null])
                     row3.add([field: surResult.participantComment ?: '', style: null])
-                    row3.add([field: surResult.finishDate ? sdf.format(surResult.finishDate) : '', style: null])
+                    row3.add([field: surveyOrg.finishDate ? sdf.format(surveyOrg.finishDate) : '', style: null])
 
                     surveyData.add(row3)
                 }
@@ -787,8 +787,9 @@ class SurveyService {
                            messageSource.getMessage('surveyResult.finishDate', null, LocaleContextHolder.getLocale())])
 
             List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(participant, surveyConfigs)
-            surveyResults.each { surveyResult ->
 
+            surveyResults.each { surveyResult ->
+                    SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, participant)
                     Subscription subscription
                     String surveyName = surveyResult.surveyConfig.getConfigNameShort()
                         List row = []
@@ -837,7 +838,7 @@ class SurveyService {
                             row.add([field: subscription?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
                             row.add([field: subscription?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
 
-                                CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, participant), RDStore.COST_ITEM_DELETED)
+                                CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)
 
                                 row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
                                 row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
@@ -878,7 +879,7 @@ class SurveyService {
                             row.add([field: value ?: '', style: null])
                             row.add([field: surveyResult.comment ?: '', style: null])
                             row.add([field: surveyResult.ownerComment ?: '', style: null])
-                            row.add([field: surveyResult.finishDate ? sdf.format(surveyResult.finishDate) : '', style: null])
+                            row.add([field: surveyOrg.finishDate ? sdf.format(surveyOrg.finishDate) : '', style: null])
 
 
 
@@ -1295,18 +1296,18 @@ class SurveyService {
     private def getSurveyParticipantCounts(Org participant){
         Map<String, Object> result = [:]
 
-        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and sr.finishDate is null))",
+        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg left join surConfig.propertySet surResult where surOrg.org = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and surOrg.finishDate is null))",
                 [status: RDStore.SURVEY_SURVEY_STARTED,
                  participant: participant]).groupBy {it.id[1]}.size()
 
-        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and sr.finishDate is null))",
+        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg left join surConfig.propertySet surResult where surOrg.org = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and surOrg.finishDate is null))",
                 [status: RDStore.SURVEY_SURVEY_STARTED,
                  participant: participant]).groupBy {it.id[1]}.size()
 
-        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and (surResult.finishDate is not null)",
+        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surOrg.org = :participant and (surOrg.finishDate is not null)",
                 [participant: participant]).groupBy {it.id[1]}.size()
 
-        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where surResult.participant = :participant and surResult.finishDate is null and (surResult.surveyConfig.surveyInfo.status in (:status))",
+        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg  where surOrg.org = :participant and surOrg.finishDate is null and (surInfo.status in (:status))",
                 [status: [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED],
                  participant: participant]).groupBy {it.id[1]}.size()
         return result

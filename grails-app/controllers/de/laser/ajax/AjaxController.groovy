@@ -188,15 +188,16 @@ class AjaxController {
                         }
                         if (target instanceof SurveyResult) {
                             Org org = contextService.getOrg()
+                            SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(target.surveyConfig, target.participant)
 
                             //If Survey Owner set Value then set FinishDate
-                            if (org?.id == target.owner?.id && target.finishDate == null) {
+                            if (org?.id == target.owner.id && (target.type == RDStore.SURVEY_PROPERTY_PARTICIPATION) && surveyOrg.finishDate == null) {
                                 String property = target.type.getImplClassValueProperty()
 
                                 if (target[property] != null) {
-                                    log.debug("Set/Save FinishDate of SurveyResult (${target.id})")
-                                    target.finishDate = new Date()
-                                    target.save()
+                                    log.debug("Set/Save FinishDate of SurveyOrg (${surveyOrg.id})")
+                                    surveyOrg.finishDate = new Date()
+                                    surveyOrg.save()
                                 }
                             }
                         }
@@ -430,11 +431,16 @@ class AjaxController {
       EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}", contextService.USER_SCOPE)
       Map checked = cache.get('checked')
       if(params.index == 'all') {
-		  def newChecked = [:]
-		  checked.eachWithIndex { e, int idx ->
-			  newChecked[e.key] = params.checked == 'true' ? 'checked' : null
-			  cache.put('checked',newChecked)
+		  Map<String, String> newChecked = [:]
+          Set<Long> pkgFilter = []
+          if(params.pkgFilter)
+              pkgFilter << params.long('pkgFilter')
+          else pkgFilter.addAll(SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp where sp.subscription.id = :sub',[sub:params.long("sub")]))
+          Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg.id in (:pkgFilter)',[pkgFilter:pkgFilter])
+		  tippUUIDs.each { String e ->
+			  newChecked[e] = params.checked == 'true' ? 'checked' : null
 		  }
+          cache.put('checked',newChecked)
 	  }
 	  else {
 		  checked[params.index] = params.checked == 'true' ? 'checked' : null
@@ -1707,14 +1713,16 @@ class AjaxController {
                 if (target_object instanceof SurveyResult) {
 
                     Org org = contextService.getOrg()
+                    SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(target_object.surveyConfig, target_object.participant)
+
                     //If Survey Owner set Value then set FinishDate
-                    if (org?.id == target_object.owner?.id && target_object.finishDate == null) {
+                    if (org?.id == target_object.owner.id && (target_object.type == RDStore.SURVEY_PROPERTY_PARTICIPATION) && surveyOrg.finishDate == null) {
                         String property = target_object.type.getImplClassValueProperty()
 
                         if (target_object[property] != null) {
-                            log.debug("Set/Save FinishDate of SurveyResult (${target_object.id})")
-                            target_object.finishDate = new Date()
-                            target_object.save()
+                            log.debug("Set/Save FinishDate of SurveyOrg (${surveyOrg.id})")
+                            surveyOrg.finishDate = new Date()
+                            surveyOrg.save()
                         }
                     }
                 }

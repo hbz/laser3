@@ -135,7 +135,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 else {
                     if(result) {
-                        processScrollPage(result, componentType)
+                        processScrollPage(result, componentType, sdf.format(oldDate))
                     }
                     else {
                         log.info("no records updated - leaving everything as is ...")
@@ -197,7 +197,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         log.error("we:kb server currently down")
                     }
                     else
-                        processScrollPage(result, componentType)
+                        processScrollPage(result, componentType, null)
                 }
             }
             catch (Exception e) {
@@ -207,18 +207,21 @@ class GlobalSourceSyncService extends AbstractLockableService {
         })
     }
 
-    void processScrollPage(Map<String, Object> result, String componentType) throws SyncException {
+    void processScrollPage(Map<String, Object> result, String componentType, String changedSince) throws SyncException {
         if(result.count >= 5000) {
+            Map<String, Object> queryParams = [component_type: componentType, max: 5000]
+            if(changedSince)
+                queryParams.changedSince = changedSince
             String scrollId
             boolean more = true
             while(more) {
                 //actually, scrollId alone should do the trick but tests revealed that other parameters are necessary, too, because of current workaround solution
                 log.debug("using scrollId ${scrollId}")
                 if(scrollId) {
-                    result = fetchRecordJSON(true, [component_type: componentType, scrollId: scrollId, max: 5000])
+                    result = fetchRecordJSON(true, queryParams+[scrollId: scrollId])
                 }
                 else {
-                    result = fetchRecordJSON(true, [component_type: componentType, max: 5000])
+                    result = fetchRecordJSON(true, queryParams)
                 }
                 if(result.error && result.error == 404) {
                     more = false
@@ -691,21 +694,29 @@ class GlobalSourceSyncService extends AbstractLockableService {
             providerRecord = providerJSON.records[0]
         else providerRecord = providerJSON
         log.info("provider record loaded, reconciling provider record for UUID ${providerRecord.uuid}")
+        //first attempt
         Org provider = Org.findByGokbId(providerRecord.uuid)
+        //attempt succeeded
         if(provider) {
             provider.name = providerRecord.name
-            provider.status = orgStatus.get(providerRecord.status)
-            if(!provider.sector)
-                provider.sector = RDStore.O_SECTOR_PUBLISHER
         }
-        else {
+        //second attempt
+        else if(!provider) {
+            provider = Org.findByNameAndGokbIdIsNull(providerRecord.name)
+            //second attempt succeeded - map gokbId to provider who already exists
+            if(provider)
+                provider.gokbId = providerRecord.uuid
+        }
+        //second attempt failed - create new org
+        if(!provider) {
             provider = new Org(
                     name: providerRecord.name,
-                    sector: RDStore.O_SECTOR_PUBLISHER,
-                    status: orgStatus.get(providerRecord.status),
                     gokbId: providerRecord.uuid
             )
         }
+        provider.status = orgStatus.get(providerRecord.status)
+        if(!provider.sector)
+            provider.sector = RDStore.O_SECTOR_PUBLISHER
         if(provider.orgType)
             provider.orgType.clear()
         if(provider.save()) {
@@ -839,33 +850,32 @@ class GlobalSourceSyncService extends AbstractLockableService {
         if(platformJSON.records) {
             Map platformRecord = platformJSON.records[0]
             //Platform.withTransaction { TransactionStatus ts ->
-                Platform platform = Platform.findByGokbId(platformUUID)
-                RefdataValue platformStatus = RefdataValue.getByValueAndCategory(platformRecord.status, RDConstants.PLATFORM_STATUS)
-                if(platform) {
-                    platform.name = platformRecord.name
-                    platform.status = platformStatus
+            Platform platform = Platform.findByGokbId(platformUUID)
+            if(platform) {
+                platform.name = platformRecord.name
+            }
+            else {
+                platform = new Platform(name: platformRecord.name, gokbId: platformRecord.uuid)
+            }
+            platform.status = RefdataValue.getByValueAndCategory(platformRecord.status, RDConstants.PLATFORM_STATUS)
+            platform.normname = platformRecord.name.toLowerCase()
+            if(platformRecord.primaryUrl)
+                platform.primaryUrl = new URL(platformRecord.primaryUrl)
+            if(platformRecord.providerUuid) {
+                Map<String, Object> providerData = fetchRecordJSON(false,[uuid: platformRecord.providerUuid])
+                if(providerData && !providerData.error)
+                    platform.org = createOrUpdateOrgJSON(providerData)
+                else if(providerData && providerData.error == 404) {
+                    throw new SyncException("we:kb server is currently down")
                 }
                 else {
-                    platform = new Platform(name: platformRecord.name, gokbId: platformRecord.uuid, status: platformStatus)
+                    throw new SyncException("Provider loading failed for ${platformRecord.providerUuid}")
                 }
-                platform.normname = platformRecord.name.toLowerCase()
-                if(platformRecord.primaryUrl)
-                    platform.primaryUrl = new URL(platformRecord.primaryUrl)
-                if(platformRecord.providerUuid) {
-                    Map<String, Object> providerData = fetchRecordJSON(false,[uuid: platformRecord.providerUuid])
-                    if(providerData && !providerData.error)
-                        platform.org = createOrUpdateOrgJSON(providerData)
-                    else if(providerData && providerData.error == 404) {
-                        throw new SyncException("we:kb server is currently down")
-                    }
-                    else {
-                        throw new SyncException("Provider loading failed for ${platformRecord.providerUuid}")
-                    }
-                }
-                if(platform.save()) {
-                   platform
-                }
-                else throw new SyncException("Error on saving platform: ${platform.errors}")
+            }
+            if(platform.save()) {
+                platform
+            }
+            else throw new SyncException("Error on saving platform: ${platform.errors}")
             //}
         }
         else if(platformJSON && platformJSON.error == 404) {
@@ -1428,6 +1438,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
         HTTPBuilder http
         if(useScroll) {
             http = new HTTPBuilder(source.uri + '/scroll')
+            String debugString = source.uri+'/scroll?'
+            queryParams.each { String k, v ->
+                debugString += k + '=' + v
+            }
+            log.debug(debugString)
         }
         else http = new HTTPBuilder(source.uri+'/find')
         Map<String,Object> result = [:]

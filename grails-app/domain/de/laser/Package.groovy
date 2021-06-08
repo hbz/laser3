@@ -140,8 +140,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     @Override
     def afterDelete() {
         super.afterDeleteHandler()
-
-        //deletionService.deleteDocumentFromIndex(this.globalUID) ES not connected, reactivate as soon as ES works again
     }
     @Override
     def afterInsert() {
@@ -152,32 +150,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         super.afterUpdateHandler()
     }
 
-    boolean checkSharePreconditions(ShareableTrait sharedObject) {
-        false // NO SHARES
-    }
-
-    boolean showUIShareButton() {
-        false // NO SHARES
-    }
-
-    void updateShare(ShareableTrait sharedObject) {
-        false // NO SHARES
-    }
-
-    void syncAllShares(List<ShareSupport> targets) {
-        false // NO SHARES
-    }
-
-  @Deprecated
-  Org getConsortia() {
-    Org result
-    orgs.each { OrgRole or ->
-      if ( or.roleType in [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_PACKAGE_CONSORTIA] )
-        result = or.org
-    }
-    result
-  }
-
   @Transient
   Org getContentProvider() {
     Org result
@@ -187,122 +159,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
     result
   }
-
-  @Transient
-  void addToSubscription(subscription, createEntitlements) {
-    // Add this package to the specified subscription
-    // Step 1 - Make sure this package is not already attached to the sub
-    // Step 2 - Connect
-    List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
-            "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: subscription, pkg: this])
-
-    if (!dupe){
-        new SubscriptionPackage(subscription:subscription, pkg:this).save()
-      // Step 3 - If createEntitlements ...
-
-      if ( createEntitlements ) {
-          //explicit loading needed because of refreshing - after sync, GORM may be a bit behind
-        TitleInstancePackagePlatform.findAllByPkg(this).each { TitleInstancePackagePlatform tipp ->
-              IssueEntitlement new_ie = new IssueEntitlement(
-                                              status: tipp.status,
-                                              subscription: subscription,
-                                              tipp: tipp,
-                                              accessStartDate:tipp.accessStartDate,
-                                              accessEndDate:tipp.accessEndDate,
-                                              acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED)
-              if(new_ie.save()) {
-                  log.debug("${new_ie} saved")
-                  TIPPCoverage.findAllByTipp(tipp).each { TIPPCoverage covStmt ->
-                      IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
-                              startDate:covStmt.startDate,
-                              startVolume:covStmt.startVolume,
-                              startIssue:covStmt.startIssue,
-                              endDate:covStmt.endDate,
-                              endVolume:covStmt.endVolume,
-                              endIssue:covStmt.endIssue,
-                              embargo:covStmt.embargo,
-                              coverageDepth:covStmt.coverageDepth,
-                              coverageNote:covStmt.coverageNote,
-                              issueEntitlement: new_ie
-                      )
-                      ieCoverage.save()
-                  }
-                  PriceItem.findAllByTipp(tipp).each { PriceItem pi ->
-                      PriceItem localPrice = new PriceItem()
-                      InvokerHelper.setProperties(localPrice, pi.properties)
-                      localPrice.tipp = null
-                      localPrice.globalUID = null
-                      localPrice.issueEntitlement = new_ie
-                      localPrice.setGlobalUID()
-                      if(!localPrice.save())
-                          log.error(localPrice.errors)
-                  }
-            }
-        }
-      }
-
-    }
-  }
-
-    @Transient
-    void addToSubscriptionCurrentStock(Subscription target, Subscription consortia) {
-
-        // copy from: addToSubscription(subscription, createEntitlements) { .. }
-
-        List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
-                "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: target, pkg: this])
-
-        if (! dupe){
-
-            RefdataValue statusCurrent = RDStore.TIPP_STATUS_CURRENT
-
-            new SubscriptionPackage(subscription:target, pkg:this).save()
-
-            IssueEntitlement.executeQuery(
-                "select ie from IssueEntitlement ie join ie.tipp tipp " +
-                "where tipp.pkg = :pkg and ie.status = :current and ie.subscription = :consortia ", [
-                      pkg: this, current: statusCurrent, consortia: consortia
-            ]).each { IssueEntitlement ie ->
-                IssueEntitlement newIe = new IssueEntitlement(
-                        status: statusCurrent,
-                        subscription: target,
-                        tipp: ie.tipp,
-                        accessStartDate: ie.tipp.accessStartDate,
-                        accessEndDate: ie.tipp.accessEndDate,
-                        acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED
-                )
-                if(newIe.save()) {
-                    ie.tipp.coverages.each { TIPPCoverage covStmt ->
-                        IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
-                                startDate: covStmt.startDate,
-                                startVolume: covStmt.startVolume,
-                                startIssue: covStmt.startIssue,
-                                endDate: covStmt.endDate,
-                                endVolume: covStmt.endVolume,
-                                endIssue: covStmt.endIssue,
-                                embargo: covStmt.embargo,
-                                coverageDepth: covStmt.coverageDepth,
-                                coverageNote: covStmt.coverageNote,
-                                issueEntitlement: newIe
-                        )
-                        ieCoverage.save()
-                    }
-                    ie.priceItems.each { PriceItem pi ->
-                        PriceItem priceItem = new PriceItem(
-                                startDate: pi.startDate,
-                                endDate: pi.endDate,
-                                listPrice: pi.listPrice,
-                                listCurrency: pi.listCurrency,
-                                localPrice: pi.localPrice,
-                                localCurrency: pi.localCurrency,
-                                issueEntitlement: newIe
-                        )
-                        priceItem.save()
-                    }
-                }
-            }
-        }
-    }
 
     @Transient
     boolean unlinkFromSubscription(Subscription subscription, Org contextOrg, deleteEntitlements) {
@@ -411,32 +267,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   String toString() {
     name ? "${name}" : "Package ${id}"
   }
-
-    /*
- @Transient
-  def onSave = {
-    log.debug("onSave")
-    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-
-    changeNotificationService.fireEvent([
-                                                 OID:"${Package.class.name}:${id}",
-                                                 event:'Package.created'
-                                                ])
-
-  }
-    */
-  /**
-  * OPTIONS: startDate, endDate, hideIdent, inclPkgStartDate, hideDeleted
-  */
-    /*
-  @Transient
-  def notifyDependencies(changeDocument) {
-    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-    if ( changeDocument.event=='Package.created' ) {
-      changeNotificationService.broadcastEvent("${SystemObject.class.name}:1", changeDocument);
-    }
-  }
-     */
 
   @Transient
   static def refdataFind(GrailsParameterMap params) {
@@ -580,35 +410,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         super.beforeDeleteHandler()
     }
 
-  def checkAndAddMissingIdentifier(ns,value) {
-    boolean found = false
-    println "processing identifier ${value}"
-    this.ids.each {
-        println "processing identifier occurrence ${it}"
-      if ( it.ns?.ns == ns && it.value == value ) {
-          println "occurrence found"
-        found = true
-      }
-    }
-
-    if ( ! found && ns.toLowerCase() != 'originediturl' ) {
-        // TODO [ticket=1789]
-      //def id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value)
-      //  println "before execute query"
-      //def id_occ = IdentifierOccurrence.executeQuery("select io from IdentifierOccurrence as io where io.identifier = ? and io.pkg = ?", [id,this])
-      //  println "id_occ query executed"
-
-      //if ( !id_occ || id_occ.size() == 0 ){
-      //  println "Create new identifier occurrence for pid:${getId()} ns:${ns} value:${value}"
-      //  new IdentifierOccurrence(identifier:id, pkg:this).save()
-      //}
-        Identifier.construct([value:value, reference:this, namespace:ns])
-    }
-    else if(ns.toLowerCase() == 'originediturl') {
-        println "package identifier namespace for ${value} is deprecated originEditUrl ... ignoring."
-    }
-  }
-
   static String generateSortName(String input_title) {
     if (!input_title) return null
     String s1 = Normalizer.normalize(input_title, Normalizer.Form.NFKD).trim().toLowerCase()
@@ -639,40 +440,4 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         result
     }
 
-    @Transient
-    void addPendingChangeConfiguration(Subscription subscription, GrailsParameterMap grailsParameterMap) {
-
-        SubscriptionPackage subscriptionPackage = SubscriptionPackage.findBySubscriptionAndPkg(subscription, this)
-        if(subscriptionPackage) {
-            PendingChangeConfiguration.SETTING_KEYS.each { String settingKey ->
-                Map<String, Object> configMap = [subscriptionPackage: subscriptionPackage, settingKey: settingKey, withNotification: false]
-                boolean auditable = false
-                //Set because we have up to three keys in params with the settingKey
-                Set<String> keySettings = grailsParameterMap.keySet().findAll { k -> k.contains(settingKey) }
-                keySettings.each { key ->
-                    List<String> settingData = key.split('!§!')
-                    switch (settingData[1]) {
-                        case 'setting': configMap.settingValue = RefdataValue.get(grailsParameterMap[key])
-                            break
-                        case 'notification': configMap.withNotification = grailsParameterMap[key] != null
-                            break
-                        case 'auditable': auditable = grailsParameterMap[key] != null
-                            break
-                    }
-                }
-                try {
-                    PendingChangeConfiguration.construct(configMap)
-                    boolean hasConfig = AuditConfig.getConfig(subscriptionPackage.subscription, settingKey) != null
-                    if (auditable && !hasConfig) {
-                        AuditConfig.addConfig(subscriptionPackage.subscription, settingKey)
-                    } else if (!auditable && hasConfig) {
-                        AuditConfig.removeConfig(subscriptionPackage.subscription, settingKey)
-                    }
-                }
-                catch (CreationException e) {
-                    log.error("ProcessLinkPackage -> PendingChangeConfiguration: " + e.message)
-                }
-            }
-        }
-    }
 }

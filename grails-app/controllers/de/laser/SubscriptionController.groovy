@@ -1083,37 +1083,7 @@ class SubscriptionController {
             response.sendError(403)
         }
         log.debug("Received params: ${params}")
-        SubscriptionPackage subscriptionPackage = SubscriptionPackage.get(params.subscriptionPackage)
-        PendingChangeConfiguration.SETTING_KEYS.each { String settingKey ->
-            Map<String,Object> configMap = [subscriptionPackage:subscriptionPackage,settingKey:settingKey,withNotification:false]
-            boolean auditable = false
-            //Set because we have up to three keys in params with the settingKey
-            Set<String> keySettings = params.keySet().findAll { k -> k.contains(settingKey) }
-            keySettings.each { key ->
-                List<String> settingData = key.split('!§!')
-                switch(settingData[1]) {
-                    case 'setting': configMap.settingValue = RefdataValue.get(params[key])
-                        break
-                    case 'notification': configMap.withNotification = params[key] != null
-                        break
-                    case 'auditable': auditable = params[key] != null
-                        break
-                }
-            }
-            try {
-                PendingChangeConfiguration.construct(configMap)
-                boolean hasConfig = AuditConfig.getConfig(subscriptionPackage.subscription,settingKey) != null
-                if(auditable && !hasConfig) {
-                    AuditConfig.addConfig(subscriptionPackage.subscription,settingKey)
-                }
-                else if(!auditable && hasConfig) {
-                    AuditConfig.removeConfig(subscriptionPackage.subscription,settingKey)
-                }
-            }
-            catch (CreationException e) {
-                flash.error = e.message
-            }
-        }
+        subscriptionService.addPendingChangeConfiguration(result.subscription, Package.get(params.pkg), params.clone())
         redirect(action:'show', params:[id:params.id])
     }
 

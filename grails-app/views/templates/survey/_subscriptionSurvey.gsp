@@ -1070,7 +1070,7 @@
                             </g:elseif>
                             <g:elseif test="${surveyResult.type.isRefdataValueType()}">
 
-                                <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyResult.type.name in ["Participation"] && surveyResult.owner?.id != contextService.getOrg().id}">
+                                <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyResult.type == RDStore.SURVEY_PROPERTY_PARTICIPATION && surveyResult.owner?.id != contextService.getOrg().id}">
                                     <semui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"
                                                             id="participation"
                                                             config="${surveyResult.type.refdataCategory}"/>
