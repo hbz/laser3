@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ApiSource; de.laser.helper.RDConstants; de.laser.Platform; de.laser.RefdataValue; de.laser.helper.RDConstants" %>
+<%@ page import="de.laser.ApiSource; de.laser.helper.RDConstants; de.laser.Platform; de.laser.RefdataValue; de.laser.helper.RDConstants; de.laser.helper.DateUtils" %>
 <!doctype html>
 <html>
 <head>
@@ -120,6 +120,10 @@
                     <dl>
                         <dt><g:message code="platform.stats.counter.certified"/></dt>
                         <dd>${platformInstanceRecord.counterCertified ? RefdataValue.getByValueAndCategory(platformInstanceRecord.counterCertified, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.stats.counter.lastAudit"/></dt>
+                        <dd>${platformInstanceRecord.lastAuditDate ? formatDate(date: DateUtils.parseDateGeneric(platformInstanceRecord.lastAuditDate), format: message(code: 'default.date.format.notime')) : message(code: 'default.not.available')}</dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.stats.counter.registryURL"/></dt>
