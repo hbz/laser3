@@ -54,23 +54,6 @@ class ReaderNumberController  {
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
-	def editNote() {
-		ReaderNumber.withTransaction { TransactionStatus ts ->
-			Org org = Org.get(params.orgid)
-			if(params.dateGroup.isLong()) {
-				RefdataValue dateGroup = RefdataValue.get(params.dateGroup)
-				ReaderNumber.executeUpdate('update ReaderNumber rn set rn.dateGroupNote = :note where rn.org = :org and rn.semester = :dateGroup',[org: org, dateGroup: dateGroup, note: params.note])
-			}
-			else if(DateUtils.getSDF_ymd().parse(params.dateGroup)) {
-				Date dateGroup = DateUtils.getSDF_ymd().parse(params.dateGroup)
-				ReaderNumber.executeUpdate('update ReaderNumber rn set rn.dateGroupNote = :note where rn.org = :org and rn.dueDate = :dateGroup',[org: org, dateGroup: dateGroup, note: params.note])
-			}
-		}
-		redirect(url: request.getHeader('referer'))
-	}
-
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
 			List<Long> numbersToDelete = []

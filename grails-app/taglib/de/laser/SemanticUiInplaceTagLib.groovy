@@ -54,7 +54,11 @@ class SemanticUiInplaceTagLib {
 
                 default_empty = message(code:'default.date.format.notime.normal')
 
-            } else {
+            }
+            else if(attrs.type == "readerNumber") {
+                out << " data-type=\"text\""
+            }
+            else {
                 out << " data-type=\"${attrs.type?:'text'}\""
             }
             out << " data-pk=\"${oid}\""
@@ -73,6 +77,9 @@ class SemanticUiInplaceTagLib {
                 break
                 case 'url':
                     data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'url']).encodeAsHTML()
+                break
+                case 'readerNumber':
+                    data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'readerNumber']).encodeAsHTML()
                 break
                 default:
                     data_link = createLink(controller:'ajax', action: 'editableSetValue').encodeAsHTML()
