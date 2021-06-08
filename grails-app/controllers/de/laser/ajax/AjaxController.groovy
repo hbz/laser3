@@ -1637,77 +1637,88 @@ class AjaxController {
 
         try {
             if (target_object) {
-                if (params.type == 'date') {
-                    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                    def backup = target_object."${params.name}"
+                switch(params.type) {
+                    case 'date':
+                        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                        def backup = target_object."${params.name}"
 
-                    try {
-                        if (params.value && params.value.size() > 0) {
-                            // parse new date
-                            def parsed_date = sdf.parse(params.value)
-                            target_object."${params.name}" = parsed_date
-                        } else {
-                            // delete existing date
-                            target_object."${params.name}" = null
+                        try {
+                            if (params.value && params.value.size() > 0) {
+                                // parse new date
+                                def parsed_date = sdf.parse(params.value)
+                                target_object."${params.name}" = parsed_date
+                            } else {
+                                // delete existing date
+                                target_object."${params.name}" = null
+                            }
+                            target_object.save(failOnError: true)
                         }
-                        target_object.save(failOnError: true)
-                    }
-                    catch (Exception e) {
-                        target_object."${params.name}" = backup
-                        log.error(e.toString())
-                    }
-                    finally {
-                        if (target_object."${params.name}") {
-                            result = (target_object."${params.name}").format(message(code: 'default.date.format.notime'))
+                        catch (Exception e) {
+                            target_object."${params.name}" = backup
+                            log.error(e.toString())
                         }
-                    }
-                } else if (params.type == 'url') {
-                    def backup = target_object."${params.name}"
+                        finally {
+                            if (target_object."${params.name}") {
+                                result = (target_object."${params.name}").format(message(code: 'default.date.format.notime'))
+                            }
+                        }
+                        break
+                    case 'url':
+                        def backup = target_object."${params.name}"
 
-                    try {
-                        if (params.value && params.value.size() > 0) {
-                            target_object."${params.name}" = new URL(params.value)
-                        } else {
-                            // delete existing url
-                            target_object."${params.name}" = null
+                        try {
+                            if (params.value && params.value.size() > 0) {
+                                target_object."${params.name}" = new URL(params.value)
+                            } else {
+                                // delete existing url
+                                target_object."${params.name}" = null
+                            }
+                            target_object.save(failOnError: true)
                         }
+                        catch (Exception e) {
+                            target_object."${params.name}" = backup
+                            log.error(e.toString())
+                        }
+                        finally {
+                            if (target_object."${params.name}") {
+                                result = target_object."${params.name}"
+                            }
+                        }
+                        break
+                    case 'readerNumber':
+                        if(target_object.semester)
+                            ReaderNumber.executeUpdate('update ReaderNumber rn set rn.dateGroupNote = :note where rn.org = :org and rn.semester = :semester',[org: target_object.org, semester: target_object.semester, note: params.value])
+                        else if(target_object.dueDate)
+                            ReaderNumber.executeUpdate('update ReaderNumber rn set rn.dateGroupNote = :note where rn.org = :org and rn.dueDate = :dueDate',[org: target_object.org, dueDate: target_object.dueDate, note: params.value])
+                        result = params.value
+                        break
+                    default:
+                        Map binding_properties = [:]
+
+                        if (target_object."${params.name}" instanceof BigDecimal) {
+                            params.value = escapeService.parseFinancialValue(params.value)
+                        }
+                        if (target_object."${params.name}" instanceof Boolean) {
+                            params.value = params.value?.equals("1")
+                        }
+                        if (params.value instanceof String) {
+                            String value = params.value.startsWith('www.') ? ('http://' + params.value) : params.value
+                            binding_properties[params.name] = value
+                        } else {
+                            binding_properties[params.name] = params.value
+                        }
+                        bindData(target_object, binding_properties)
+
                         target_object.save(failOnError: true)
-                    }
-                    catch (Exception e) {
-                        target_object."${params.name}" = backup
-                        log.error(e.toString())
-                    }
-                    finally {
-                        if (target_object."${params.name}") {
+
+
+                        if (target_object."${params.name}" instanceof BigDecimal) {
+                            result = NumberFormat.getInstance(LocaleContextHolder.getLocale()).format(target_object."${params.name}")
+                            //is for that German users do not cry about comma-dot-change
+                        } else {
                             result = target_object."${params.name}"
                         }
-                    }
-                } else {
-                    Map binding_properties = [:]
-
-                    if (target_object."${params.name}" instanceof BigDecimal) {
-                        params.value = escapeService.parseFinancialValue(params.value)
-                    }
-                    if (target_object."${params.name}" instanceof Boolean) {
-                        params.value = params.value?.equals("1")
-                    }
-                    if (params.value instanceof String) {
-                        String value = params.value.startsWith('www.') ? ('http://' + params.value) : params.value
-                        binding_properties[params.name] = value
-                    } else {
-                        binding_properties[params.name] = params.value
-                    }
-                    bindData(target_object, binding_properties)
-
-                    target_object.save(failOnError: true)
-
-
-                    if (target_object."${params.name}" instanceof BigDecimal) {
-                        result = NumberFormat.getInstance(LocaleContextHolder.getLocale()).format(target_object."${params.name}")
-                        //is for that German users do not cry about comma-dot-change
-                    } else {
-                        result = target_object."${params.name}"
-                    }
+                        break
                 }
 
                 if (target_object instanceof SurveyResult) {
