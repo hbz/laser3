@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3406    07.06.2021  dev     2.1         David   Feature     Reporting - Filter erweitern: Länder > Bundesländer
+
 3332    07.06.2021  dev     2.1         Andreas Bug         Abfragen zu Änderungen und Benachrichtigungen angepasst
 
 3151    07.06.2021  dev     2.1         Andreas Feature     Schaltpult aufgespalten und Festfrieren von Beständen zum Jahresende implementiert

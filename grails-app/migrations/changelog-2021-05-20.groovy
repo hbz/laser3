@@ -1,3 +1,6 @@
+import de.laser.helper.ConfigUtils
+import de.laser.helper.ServerUtils
+
 databaseChangeLog = {
 
     changeSet(author: "galffy (generated)", id: "1621490825895-1") {
@@ -49,7 +52,8 @@ databaseChangeLog = {
     changeSet(author: "galffy (hand-coded)", id: "1621490825895-6") {
         grailsChange {
             change {
-                sql.execute("insert into alternative_name (altname_version, altname_org_fk, altname_name, altname_date_created, altname_last_updated, altname_last_updated_cascading) values " +
+                if(ConfigUtils.getLaserSystemId() != ServerUtils.SERVER_QA) {
+                    sql.execute("insert into alternative_name (altname_version, altname_org_fk, altname_name, altname_date_created, altname_last_updated, altname_last_updated_cascading) values " +
                         "(1,(select org_id from org where org_guid = 'org:e63b09c4-67c2-4eb7-879c-132b58f6f2c0'),(select org_name from org where org_guid = 'org:17da6850-f1d3-46f7-9047-6c0c74b554c7'),now(),now(),now()), " +
                         "(1,(select org_id from org where org_guid = 'org:d6c20e58-36ba-4f6f-b4c6-acbb081cbec9'),(select org_name from org where org_guid = 'org:7b8f92b0-d823-4025-8e86-fa03982d6c13'),now(),now(),now()), " +
                         "(1,(select org_id from org where org_guid = 'org:a1f7c0ee-90fe-42c2-b677-be74d29410fb'),(select org_name from org where org_guid = 'org:b846cfa0-c181-4d24-bf60-2019c73cb6ce'),now(),now(),now()), " +
@@ -139,6 +143,7 @@ databaseChangeLog = {
                         "(1,(select org_id from org where org_guid = 'org:b71b57e4-1603-48a2-978c-4096ceacd35a'),(select org_name from org where org_guid = 'org:230c9d71-3815-485f-9830-6e9add677730'),now(),now(),now()), " +
                         "(1,(select org_id from org where org_guid = 'org:4b4162bc-33d8-4e87-bd1c-037691a68f30'),(select org_name from org where org_guid = 'org:d7fbbc69-b4c0-4abd-8a94-9462386a00c5'),now(),now(),now()), " +
                         "(1,(select org_id from org where org_guid = 'org:e92f86bd-2b89-467c-a9c3-9cf15e157be7'),(select org_name from org where org_guid = 'org:c7d77572-8ab3-44b4-bc03-5bacad864209'),now(),now(),now())")
+                }
             }
             rollback {}
         }
@@ -258,7 +263,9 @@ databaseChangeLog = {
     changeSet(author: "galffy (hand-coded)", id: "1621490825895-20") {
         grailsChange {
             change {
-                sql.execute("delete from org as o where not exists (select org_id from org_type where org_id = o.org_id) and not exists (select us_id from user_setting where o.org_id = us_org_fk);")
+                if(ConfigUtils.getLaserSystemId() != ServerUtils.SERVER_QA) {
+                    sql.execute("delete from org as o where not exists (select org_id from org_type where org_id = o.org_id) and not exists (select us_id from user_setting where o.org_id = us_org_fk);")
+                }
             }
             rollback {}
         }

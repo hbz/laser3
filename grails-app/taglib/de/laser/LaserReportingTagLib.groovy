@@ -119,7 +119,7 @@ class LaserReportingTagLib {
 
         out << laser.select([
                 class      : "ui fluid dropdown",
-                name       : filterName,
+                name       : GenericHelper.isFieldVirtual(attrs.refdata) ? filterName + '_virtualFF' : filterName,
                 id         : getUniqueId(filterName),
                 from       : RefdataCategory.getAllRefdataValues(rdCat),
                 optionKey  : "id",
@@ -127,6 +127,10 @@ class LaserReportingTagLib {
                 value      : filterValue,
                 noSelection: ['': message(code: 'default.select.choose.label')]
         ])
+
+        if ( GenericHelper.isFieldVirtual(attrs.refdata) ) {
+            out << '<input type="hidden" name="' + filterName + '" value="' + (filterValue ?: '') + '" />'
+        }
         out << '</div>'
     }
 
