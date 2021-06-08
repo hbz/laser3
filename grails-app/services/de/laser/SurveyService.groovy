@@ -705,6 +705,16 @@ class SurveyService {
 
                     String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + subjectText)
 
+                    List generalContactsEMails = []
+
+                    surveyInfo.owner.getGeneralContactPersons(true)?.each { person ->
+                        person.contacts.each { contact ->
+                            if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
+                                generalContactsEMails << contact.content
+                            }
+                        }
+                    }
+
                     try {
                         if (emailReceiver == null || emailReceiver.isEmpty()) {
                             log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
@@ -723,14 +733,14 @@ class SurveyService {
                                     from    from
                                     cc      ccAddress
                                     subject mailSubject
-                                    html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults])
+                                    html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
                                 }
                             } else {
                                 mailService.sendMail {
                                     to      emailReceiver
                                     from from
                                     subject mailSubject
-                                    html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults])
+                                    html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
                                 }
                             }
 
