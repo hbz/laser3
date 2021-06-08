@@ -8,6 +8,7 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.SurveyControllerService
+import de.laser.finance.Order
 import de.laser.finance.PriceItem
 import de.laser.properties.SubscriptionProperty
 import de.laser.auth.User
@@ -559,10 +560,14 @@ class SurveyController {
                 //Wenn es eine Umfrage schon gibt, die als Übertrag dient. Dann ist es auch keine Lizenz Umfrage mit einem Teilnahme-Merkmal abfragt!
                 if (subSurveyUseForTransfer) {
                     SurveyConfigProperties configProperty = new SurveyConfigProperties(
-                            surveyProperty: PropertyDefinition.getByNameAndDescr('Participation', PropertyDefinition.SVY_PROP),
+                            surveyProperty: RDStore.SURVEY_PROPERTY_PARTICIPATION,
                             surveyConfig: surveyConfig)
 
-                    if (configProperty.save()) {
+                    SurveyConfigProperties configProperty2 = new SurveyConfigProperties(
+                            surveyProperty: RDStore.SURVEY_PROPERTY_ORDER_NUMBER,
+                            surveyConfig: surveyConfig)
+
+                    if (configProperty.save() && configProperty2.save()) {
                         surveyService.addSubMembers(surveyConfig)
                     }
                 } else {
@@ -889,7 +894,7 @@ class SurveyController {
         result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
-        result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT).id.toString()
+        result.selectedCostItemElement = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT).id.toString()
 
         if (params.selectedCostItemElement) {
             params.remove('selectedCostItemElement')
@@ -1174,8 +1179,8 @@ class SurveyController {
                 params.participantsFinish = true
             }
 
-            result.participantsNotFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).participant.flatten().unique { a, b -> a.id <=> b.id }.size()
-            result.participantsFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).participant.flatten().unique { a, b -> a.id <=> b.id }.size()
+            result.participantsNotFinishTotal = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).size()
+            result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
             result.participantsTotal = result.surveyConfig.orgs.size()
 
              Map<String,Object> fsq = filterService.getSurveyResultQuery(params, result.surveyConfig)
@@ -1326,8 +1331,8 @@ class SurveyController {
 
         result.surveyResult = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
 
-        result.participantsNotFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).participant.flatten().unique { a, b -> a.id <=> b.id }.size()
-        result.participantsFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).participant.flatten().unique { a, b -> a.id <=> b.id }.size()
+        result.participantsNotFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).size()
+        result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
 
         result.propList    = result.surveyConfig.surveyProperties.surveyProperty
 
@@ -1365,8 +1370,8 @@ class SurveyController {
 
                 if(openAndSendMail || open) {
                     SurveyOrg.withTransaction { TransactionStatus ts ->
+                        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
                         if (result.surveyConfig.pickAndChoose) {
-                            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
 
                             result.subscription = result.surveyConfig.subscription
 
@@ -1377,16 +1382,11 @@ class SurveyController {
                                 ie.save()
                             }
 
-                            surveyOrg.finishDate = null
-                            surveyOrg.save()
+
                         }
 
-                        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(org, result.surveyConfig)
-
-                        surveyResults.each {
-                            it.finishDate = null
-                            it.save()
-                        }
+                        surveyOrg.finishDate = null
+                        surveyOrg.save()
                         countOpenParticipants++
                     }
                 }
@@ -1430,10 +1430,10 @@ class SurveyController {
         def orgs = result.surveyConfig.orgs.org.flatten().unique { a, b -> a.id <=> b.id }
         result.participants = orgs.sort { it.sortname }
 
-        result.participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).org.flatten().unique { a, b -> a.id <=> b.id }.sort {
+        result.participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).org.sort {
             it.sortname
         }
-        result.participantsFinish = SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(result.surveyConfig).org.flatten().unique { a, b -> a.id <=> b.id }.sort {
+        result.participantsFinish = SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(result.surveyConfig).org.sort {
             it.sortname
         }
 
@@ -1650,12 +1650,11 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        SurveyResult.withTransaction { TransactionStatus ts ->
-            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
-            surveyResults.each {
-                it.finishDate = null
-                it.save()
-            }
+        SurveyOrg.withTransaction { TransactionStatus ts ->
+            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
+
+            surveyOrg.finishDate = null
+            surveyOrg.save()
         }
 
         redirect(action: 'evaluationParticipant', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
@@ -1682,12 +1681,11 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        SurveyResult.withTransaction { TransactionStatus ts ->
-            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
-            surveyResults.each {
-                it.finishDate = new Date()
-                it.save()
-            }
+        SurveyOrg.withTransaction { TransactionStatus ts ->
+            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
+
+            surveyOrg.finishDate = new Date()
+            surveyOrg.save()
         }
 
         redirect(action: 'evaluationParticipant', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
@@ -3461,6 +3459,17 @@ class SurveyController {
                         copyCostItem.currencyRate = 1.0
                         copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
                     }
+                    Org org = participantSub.getSubscriber()
+                    SurveyResult surveyResult = org ? SurveyResult.findBySurveyConfigAndParticipantAndType(result.surveyConfig, org, RDStore.SURVEY_PROPERTY_ORDER_NUMBER) : null
+
+                    if(surveyResult){
+                        Order order = new Order(orderNumber: surveyResult.getValue(), owner: result.institution)
+                        if(order.save()) {
+                            copyCostItem.order = order
+                        }
+                        else log.error(order.errors)
+                    }
+
                     if(copyCostItem.save()) {
                         countNewCostItems++
                     }else {
@@ -4063,9 +4072,9 @@ class SurveyController {
 
                     packagesToProcess.each { pkg ->
                         if(params.linkWithEntitlements)
-                            pkg.addToSubscriptionCurrentStock(memberSub, newParentSub)
+                            subscriptionService.addToSubscriptionCurrentStock(memberSub, newParentSub, pkg)
                         else
-                            pkg.addToSubscription(memberSub, false)
+                            subscriptionService.addToSubscription(memberSub, pkg, false)
                     }
 
                     licensesToProcess.each { License lic ->

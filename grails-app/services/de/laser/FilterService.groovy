@@ -581,21 +581,21 @@ class FilterService {
 
 
         if(params.tab == "new"){
-            query << "(surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and sr.finishDate is null))"
+            query << "(surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and surOrg.finishDate is null))"
             queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
         }
 
         if(params.tab == "processed"){
-            query << "(surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and sr.finishDate is null))"
+            query << "(surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and surOrg.finishDate is null))"
             queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
         }
 
         if(params.tab == "finish"){
-            query << "(surResult.finishDate is not null)"
+            query << "(surOrg.finishDate is not null)"
         }
 
         if(params.tab == "notFinish"){
-            query << "((surResult.surveyConfig.surveyInfo.status in (:status)) and surResult.finishDate is null)"
+            query << "((surInfo.status in (:status)) and surOrg.finishDate is null)"
             queryParams << [status: [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]]
         }
 
@@ -608,9 +608,9 @@ class FilterService {
         String defaultOrder = " order by " + (params.sort ?: " LOWER(surResult.surveyConfig.surveyInfo.name)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
-            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult  where (surResult.participant = :org)  and " + query.join(" and ") + defaultOrder
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg left join surConfig.propertySet surResult  where (surOrg.org = :org)  and " + query.join(" and ") + defaultOrder
         } else {
-            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.propertySet surResult where (surResult.participant = :org) " + defaultOrder
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg left join surConfig.propertySet surResult where (surOrg.org = :org) " + defaultOrder
         }
         queryParams << [org : org]
 
@@ -721,32 +721,31 @@ class FilterService {
         }
 
         if(params.tab == "new"){
-            query << "(exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
-                    "or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surResult.finishDate is null and surResult.participant = :org))"
+            query << "((surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
+                    "or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surOrg.finishDate is null and surOrg.org = :org))"
             queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
             queryParams << [org : org]
         }
 
         if(params.tab == "processed"){
-            query << "(surInfo.status = :status and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.dateCreated < surResult.lastUpdated and surResult.finishDate is null))"
+            query << "(surInfo.status = :status and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.dateCreated < surResult.lastUpdated and surOrg.finishDate is null and surOrg.org = :org))"
             queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
             queryParams << [org : org]
         }
 
         if(params.tab == "finish"){
-            query << "(exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is not null) " +
-                    "or exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is not null and surConfig.pickAndChoose = true))"
+            query << "surOrg.org = :org and surOrg.finishDate is not null"
             queryParams << [org : org]
         }
 
         if(params.tab == "notFinish"){
-            query << "surConfig.subSurveyUseForTransfer = false and ((surInfo.status in (:status)) and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is null))"
+            query << "surConfig.subSurveyUseForTransfer = false and (surInfo.status in (:status) and surOrg.finishDate is null and surOrg.org = :org)"
             queryParams << [status: [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]]
             queryParams << [org : org]
         }
 
         if(params.tab == "termination"){
-            query << "surConfig.subSurveyUseForTransfer = true and ((surInfo.status in (:status)) and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.participant = :org and surResult.finishDate is null))"
+            query << "surConfig.subSurveyUseForTransfer = true and (surInfo.status in (:status) and surOrg.finishDate is null and surOrg.org = :org)"
             queryParams << [status: [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]]
             queryParams << [org : org]
         }
@@ -760,9 +759,9 @@ class FilterService {
         String defaultOrder = " order by " + (params.sort ?: " surInfo.endDate ASC, LOWER(surInfo.name) ") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
-            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where " + query.join(" and ") + defaultOrder
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where " + query.join(" and ") + defaultOrder
         } else {
-            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig " + defaultOrder
+            result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg " + defaultOrder
         }
 
 
@@ -860,11 +859,11 @@ class FilterService {
         }
 
         if(params.participantsNotFinish) {
-            base_qry += " and surResult.finishDate is null"
+            base_qry += " and exists (select surOrg from SurveyOrg as surOrg where surOrg.surveyConfig = surResult.surveyConfig and surOrg.org = surResult.participant and surOrg.finishDate is null)"
         }
 
         if(params.participantsFinish) {
-            base_qry += " and surResult.finishDate is not null"
+            base_qry += " and exists (select surOrg from SurveyOrg as surOrg where surOrg.surveyConfig = surResult.surveyConfig and surOrg.org = surResult.participant and surOrg.finishDate is not null)"
         }
 
         if (params.filterPropDef) {

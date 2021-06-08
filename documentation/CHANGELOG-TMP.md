@@ -7,7 +7,44 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
+2424    08.06.2021  dev     2.1         Moe     Feature     Filterset UmfrageKosten und Umfrageteilnehmer einfügen 
+
+3492    08.06.2021  dev     2.1         Andreas Feature     Last Audit Date bei Plattformdetailsicht eingefügt
+
+3488    08.06.2021  dev     2.1         Andreas Bug         Menüpunkt "Neue Merkmalsgruppe erstellen" entfettet
+
+3178    08.06.2021  dev     2.1         Andreas Bug         Fallback-Berechnung bei Kostenausschüttung für fehlenden Steuersatz implementiert
+
+3535    08.06.2021  dev     2.1         Moe     Feature     ClickMe Excel für Teilnehmer Reiter
+
+3533    08.06.2021  dev     2.1         Moe     Feature     Auswahl Kostenelemente in Umfragekosten funktionslos
+
+3438    08.06.2021  dev     2.1         Moe     Feature     Abfrage Auftragsnummer in Umfrage einbinden
+
+2975    08.06.2021  dev     2.1         Moe     Feature     Umfrage: SurveyEvaluation Results werden nicht richtig angezeigt
+
+3097    08.06.2021  dev     2.1         Moe     Feature     Alte SurveyProperty Domain Klasse entfernen
+
+3522    08.06.2021  dev     2.1         Moe     Feature     ClickMe Excel für Verlängerung
+
+3428    08.06.2021  dev     2.1         Moe     Feature     Umfrage Renewal Reiter
+
+3346    08.06.2021  dev     2.1         Moe     Feature     Umfragemails Teilnehmer
+
+3464    08.06.2021  dev     2.1         Moe     Feature     Icon für wechsel zwischen den Umfrage Varianten
+
+3422    08.06.2021  dev     2.1         Moe     Feature     Statistikdokument Umfrage
+
+3272    08.06.2021  dev     2.1         Moe     Feature     Umfrage Icon auf "meine lizenzen"
+
 3406    07.06.2021  dev     2.1         David   Feature     Reporting - Filter erweitern: Länder > Bundesländer
+
+3332    07.06.2021  dev     2.1         Andreas Bug         Abfragen zu Änderungen und Benachrichtigungen angepasst
+
+3151    07.06.2021  dev     2.1         Andreas Feature     Schaltpult aufgespalten und Festfrieren von Beständen zum Jahresende implementiert
+
+3108    07.06.2021  dev     2.1         Andreas Feature     Vererbung für Titelverhalten und Benachrichtigung aufgeteilt
 
 3532    02.06.2021  dev     2.1         Andreas Feature     Metadaten-Download- und KBART-Download-URL für Anbieter aus der we:kb übernommen
 
@@ -100,6 +137,8 @@
 3469    10.05.2021  rc2.0   2.0.10      David   Feature     Reporting-Export: Konfiguration erweitern
 
 3463    07.05.2021  rc2.0   2.0.10      David   Feature     Reporting: Interne Routing-Komponente für Queries erweitern
+
+3423    06.05.2021  dev     2.1         Andreas Bug         Anzeigefehler und Ladezeit behoben
 
 3452    04.05.2021  rc2.0   2.0.8       David   Feature     Filterspez. Query-Formulare ermöglichen
 

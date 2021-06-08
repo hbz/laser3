@@ -1802,10 +1802,10 @@ join sub.orgRelations or_sub where
         SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
         boolean sendMailToSurveyOwner = false
 
+        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
+
         IssueEntitlement.withTransaction { TransactionStatus ts ->
             if(surveyConfig && surveyConfig.pickAndChoose){
-
-                def surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
 
                 def ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
                 ies.each { ie ->
@@ -1846,21 +1846,19 @@ join sub.orgRelations or_sub where
 
                 if(!noParticipation) {
                     surveyResults.each { SurveyResult surre ->
-                        SurveyOrg surorg = SurveyOrg.findBySurveyConfigAndOrg(surre.surveyConfig, result.institution)
-
-                        if (!surre.isResultProcessed() && !surorg.existsMultiYearTerm())
+                        if (!surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm())
                             allResultHaveValue = false
                     }
                 }
             }
             if (allResultHaveValue) {
-                SurveyResult.withTransaction { TransactionStatus ts ->
-                    surveyResults.each { SurveyResult sr ->
-                        sr.finishDate = new Date()
-                        sr.save()
-                    }
+                surveyOrg.finishDate = new Date()
+                if (!surveyOrg.save()) {
+                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
+                } else {
+                    flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
+                    sendMailToSurveyOwner = true
                 }
-                sendMailToSurveyOwner = true
                 // flash.message = message(code: "surveyResult.finish.info")
             } else {
                 if(!surveyConfig.pickAndChoose && surveyInfo.isMandatory) {

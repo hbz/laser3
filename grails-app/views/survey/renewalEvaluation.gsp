@@ -388,7 +388,7 @@ ${surveyInfo.name}
 
     </g:form>
 
-    <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal', token: token]" />
+    <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
 
 
     <laser:script file="${this.getGroovyPageFileName()}">

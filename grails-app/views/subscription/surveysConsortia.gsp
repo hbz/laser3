@@ -77,10 +77,10 @@
 
 
             <g:set var="participantsFinish"
-                   value="${surveyConfig.pickAndChoose ? SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig) : SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
+                   value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)}"/>
 
             <g:set var="participantsTotal"
-                   value="${surveyConfig.pickAndChoose ? SurveyOrg.findAllBySurveyConfig(surveyConfig) : SurveyResult.findAllBySurveyConfig(surveyConfig)?.participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
+                   value="${SurveyOrg.findAllBySurveyConfig(surveyConfig)}"/>
 
             <tr>
                 <td class="center aligned">
