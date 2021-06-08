@@ -7,6 +7,28 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3535    08.06.2021  dev     2.1         Moe     Feature     ClickMe Excel für Teilnehmer Reiter
+
+3533    08.06.2021  dev     2.1         Moe     Feature     Auswahl Kostenelemente in Umfragekosten funktionslos
+
+3438    08.06.2021  dev     2.1         Moe     Feature     Abfrage Auftragsnummer in Umfrage einbinden
+
+2975    08.06.2021  dev     2.1         Moe     Feature     Umfrage: SurveyEvaluation Results werden nicht richtig angezeigt
+
+3097    08.06.2021  dev     2.1         Moe     Feature     Alte SurveyProperty Domain Klasse entfernen
+
+3522    08.06.2021  dev     2.1         Moe     Feature     ClickMe Excel für Verlängerung
+
+3428    08.06.2021  dev     2.1         Moe     Feature     Umfrage Renewal Reiter
+
+3346    08.06.2021  dev     2.1         Moe     Feature     Umfragemails Teilnehmer
+
+3464    08.06.2021  dev     2.1         Moe     Feature     Icon für wechsel zwischen den Umfrage Varianten
+
+3422    08.06.2021  dev     2.1         Moe     Feature     Statistikdokument Umfrage
+
+3272    08.06.2021  dev     2.1         Moe     Feature     Umfrage Icon auf "meine lizenzen"
+
 3406    07.06.2021  dev     2.1         David   Feature     Reporting - Filter erweitern: Länder > Bundesländer
 
 3332    07.06.2021  dev     2.1         Andreas Bug         Abfragen zu Änderungen und Benachrichtigungen angepasst
