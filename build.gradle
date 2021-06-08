@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         mavenLocal()
-        maven { url 'https://repo.grails.org/grails/core' }
+        maven { url 'https://repo.grails.org/core' }
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
@@ -25,7 +25,7 @@ apply plugin:'com.gorylenko.gradle-git-properties'
 
 repositories {
     mavenLocal()
-    maven { url 'https://repo.grails.org/grails/core' }
+    maven { url 'https://repo.grails.org/core' }
 }
 
 dependencies {
@@ -63,7 +63,6 @@ dependencies {
 
     // legacy
     // --------------------------------------------------
-
     compile 'org.grails:grails-docs:3.3.11'
 
     // https://mvnrepository.com/artifact/org.elasticsearch.client/elasticsearch-rest-high-level-client
@@ -81,6 +80,7 @@ dependencies {
     compile 'org.grails.plugins:grails-executor:0.4'
     compile 'org.grails.plugins:mail:2.0.0'
     compile 'org.grails.plugins:quartz:2.0.13'
+    compile "org.grails.plugins:rendering:2.0.3"
     compile 'org.hibernate:hibernate-ehcache:5.1.16.Final'
 
     // apache stuff
@@ -98,7 +98,9 @@ dependencies {
     compile 'org.codehaus.gpars:gpars:1.2.1'
     compile 'org.liquibase:liquibase-core:3.5.5' // org.grails.plugins:database-migration:3.0.3
 
+    // runtime only
     runtime 'org.postgresql:postgresql:42.2.5.jre6'
+    runtime "org.springframework:spring-test:4.2.1.RELEASE" // org.grails.plugins:rendering:2.0.3"
 }
 
 bootRun {

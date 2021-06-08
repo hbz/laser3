@@ -412,22 +412,33 @@ class AjaxHtmlController {
 
         SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
         String filename
+
         if (params.filename) {
-            filename = sdf.format(new Date()) + '_' + params.filename + '.csv'
+            filename = sdf.format(new Date()) + '_' + params.filename
         }
         else {
-            filename = sdf.format(new Date()) + '_reporting.csv'
+            filename = sdf.format(new Date()) + '_reporting'
         }
 
-        response.setHeader('Content-disposition', 'attachment; filename="' + filename + '"')
-        response.contentType = 'text/csv'
+        if (params.fileformat == 'csv') {
+            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
+            response.contentType = 'text/csv'
 
-        ServletOutputStream out = response.outputStream
-        out.withWriter { w ->
-            rows.each { r ->
-                w.write( r + '\n')
+            ServletOutputStream out = response.outputStream
+            out.withWriter { w ->
+                rows.each { r ->
+                    w.write( r + '\n')
+                }
             }
+            out.close()
         }
-        out.close()
+        else if (params.fileformat == 'pdf') {
+            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
+            response.contentType = 'application/pdf'
+
+            // TODO
+            //def pdfRenderingService = grails.util.Holders.grailsApplication.mainContext.getBean('pdfRenderingService')
+            //pdfRenderingService.render( controller: controller, template: template, model: model )
+        }
     }
 }
