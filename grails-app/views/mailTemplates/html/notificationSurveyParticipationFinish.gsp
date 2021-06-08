@@ -93,12 +93,12 @@ ${message(code: 'email.text.title', locale: language)} ${userName},
 <br />
 <br />
 <g:if test="${survey.type.id == RDStore.SURVEY_TYPE_RENEWAL.id}">
-    ${message(code: 'email.survey.participation.finish.renewal.text4', locale: language, args: [formatDate(format: message(code: 'default.date.format.notime'), date: survey.endDate) , "Test"])}
+    ${message(code: 'email.survey.participation.finish.renewal.text4', locale: language, args: [formatDate(format: message(code: 'default.date.format.notime'), date: survey.endDate) , generalContactsEMails.join(';')])}
 </g:if>
 <g:elseif test="${survey.type.id == RDStore.SURVEY_TYPE_SUBSCRIPTION.id}">
     ${message(code: 'email.survey.participation.finish.subscriptionSurvey.text3', locale: language)}
     <br />
-    ${message(code: 'email.survey.participation.finish.renewal.text4', locale: language, args: ["Test"])}
+    ${message(code: 'email.survey.participation.finish.renewal.text4', locale: language, args: [generalContactsEMails.join(';')])}
 </g:elseif>
 
 ${message(code: 'email.text.end', locale: language)}
