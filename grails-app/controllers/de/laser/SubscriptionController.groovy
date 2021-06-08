@@ -31,6 +31,7 @@ class SubscriptionController {
     def surveyService
     AccessPointService accessPointService
     CopyElementsService copyElementsService
+    ExportClickMeService exportClickMeService
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
@@ -220,10 +221,21 @@ class SubscriptionController {
             SimpleDateFormat sdf = DateUtils.SDF_ymd
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             String filename = escapeService.escapeString(ctrlResult.result.subscription.name) + "_" + message(code:'subscriptionDetails.members.members') + "_" + datetoday
-            if(params.exportXLS || params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs) {
+            if(params.exportXLS || params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs || params.exportClickMeExcel) {
                 SXSSFWorkbook wb
                 if(params.exportXLS) {
                     wb = (SXSSFWorkbook) exportService.exportOrg(ctrlResult.result.orgs, filename, true, 'xlsx')
+                }
+                if(params.exportClickMeExcel) {
+                    if (params.filename) {
+                        filename =params.filename
+                    }
+
+                    Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                    Map<String, Object> selectedFields = [:]
+                    selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+
+                    wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(ctrlResult.result.filteredSubChilds, selectedFields)
                 }
                 else if (params.exportIPs) {
                     filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportIPs.fileName'))

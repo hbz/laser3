@@ -31,6 +31,9 @@
                 </g:else>
             </semui:exportDropdownItem>
             <semui:exportDropdownItem>
+                <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+            </semui:exportDropdownItem>
+            <semui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
                             data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
@@ -330,6 +333,7 @@
         </tbody>
         </table>
                 <g:render template="/templates/copyEmailaddresses" model="[orgList: filteredSubChilds?.collect {it.orgs}?:[]]"/>
+                <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
             </g:if>
             <g:else>
                 <g:if test="${filterSet}">
