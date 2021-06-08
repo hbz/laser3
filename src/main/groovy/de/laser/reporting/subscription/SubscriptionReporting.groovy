@@ -50,7 +50,7 @@ class SubscriptionReporting {
                                             ]
                                     ]
                             ],
-                            consAtcons: [
+                            consAtcons: [ // TODO
                                     'Entwicklung' : [
                                             'timeline-member' : [
                                                     label : 'Teilnehmer',
@@ -96,6 +96,8 @@ class SubscriptionReporting {
 
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Subscription sub = Subscription.get(params.id)
+
+        // TODO
 
         CONFIG.base.query2.each { it ->
             if (it.value.containsKey(params.query)) {
