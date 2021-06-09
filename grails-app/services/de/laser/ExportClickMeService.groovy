@@ -46,17 +46,30 @@ class ExportClickMeService {
                             'participant.funderType'        : [field: 'participant.funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'participant.funderHskType'     : [field: 'participant.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'participant.libraryType'       : [field: 'participant.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
-                            'participant.exportIPs'         : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateSheet: 'true'],
-                            'participant.exportProxys'      : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
-                            'participant.exportEZProxys'    : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
-                            'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
                             'participant.generalContact'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'participant.billingContact'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
-                            'participant.ISIL'              : [field: null, label: 'ISIL'],
-                            'participant.WIBID'              : [field: null, label: 'WIB-ID'],
-                            'participant.EZBID'              : [field: null, label: 'EZB-ID'],
-                            'participant.customerIdentifier' : [field: null, label: 'customerIdentifier', message: 'org.customerIdentifier.plural'],
+                            'participant.eInvoice'          : [field: 'participant.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                            'participant.eInvoicePortal'    : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                            'participant.linkResolverBaseURL'    : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
                                     ]
+                    ],
+                    participantAccessPoints : [
+                            label: 'Participants Access Points',
+                            message: 'exportClickMe.participantAccessPoints',
+                            fields: [
+                                    'participant.exportIPs'         : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateSheet: 'true'],
+                                    'participant.exportProxys'      : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
+                                    'participant.exportEZProxys'    : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
+                                    'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
+                            ]
+                    ],
+                    participantIdentifiersCustomerIdentifier : [
+                            label: 'Identifiers/Customer Identifier',
+                            message: 'exportClickMe.participantIdentifiersCustomerIdentifier',
+                            fields: [
+                                    'participant.customerIdentifier' : [field: null, label: 'customerIdentifier', message: 'org.customerIdentifier.plural'],
+                            ],
+
                     ],
 
                     subscription: [
@@ -106,18 +119,30 @@ class ExportClickMeService {
                             'participant.funderType'        : [field: 'orgs.funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'participant.funderHskType'     : [field: 'orgs.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'participant.libraryType'       : [field: 'orgs.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            'participant.generalContact'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
+                            'participant.billingContact'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+                            'participant.eInvoice'          : [field: 'participant.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                            'participant.eInvoicePortal'    : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                            'participant.linkResolverBaseURL'    : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                    ]
+            ],
+            participantAccessPoints : [
+                    label: 'Participants Access Points',
+                    message: 'exportClickMe.participantAccessPoints',
+                    fields: [
                             'participant.exportIPs'         : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateSheet: 'true'],
                             'participant.exportProxys'      : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
                             'participant.exportEZProxys'    : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
                             'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
-                            'participant.generalContact'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
-                            'participant.billingContact'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
-                            'participant.ISIL'              : [field: null, label: 'ISIL'],
-                            'participant.WIBID'              : [field: null, label: 'WIB-ID'],
-                            'participant.EZBID'              : [field: null, label: 'EZB-ID'],
+                    ]
+            ],
+            participantIdentifiersCustomerIdentifier : [
+                    label: 'Identifiers/Customer Identifier',
+                    message: 'exportClickMe.participantIdentifiersCustomerIdentifier',
+                    fields: [
                             'participant.customerIdentifier' : [field: null, label: 'customerIdentifier', message: 'org.customerIdentifier.plural'],
                     ]
-            ]
+            ],
 
     ]
 
@@ -131,12 +156,22 @@ class ExportClickMeService {
             }
         }
 
+        IdentifierNamespace.where{(nsType == Org.class.name)}
+                .list(sort: 'ns').each {
+            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
+        }
+
         exportFields
     }
 
     Map<String, Object> getExportRenewalFieldsForUI() {
 
         Map<String, Object> fields = EXPORT_RENEWAL_CONFIG as Map
+
+        IdentifierNamespace.where{(nsType == Org.class.name)}
+                .list(sort: 'ns').each {
+            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
+        }
 
         fields
     }
@@ -151,12 +186,22 @@ class ExportClickMeService {
             }
         }
 
+        IdentifierNamespace.where{(nsType == Org.class.name)}
+                .list(sort: 'ns').each {
+            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
+        }
+
         exportFields
     }
 
     Map<String, Object> getExportSubscriptionFieldsForUI() {
 
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_CONFIG as Map
+
+        IdentifierNamespace.where{(nsType == Org.class.name)}
+                .list(sort: 'ns').each {
+            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
+        }
 
         fields
     }
@@ -295,7 +340,7 @@ class ExportClickMeService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
-    private void setRenewalRow(Map renewalResult, Map<String, Object> selectedFields, List renewalData, boolean onlySubscription, PropertyDefinition multiYearTermTwoSurvey, PropertyDefinition multiYearTermThreeSurvey){
+    private void setRenewalRow(Map participantResult, Map<String, Object> selectedFields, List renewalData, boolean onlySubscription, PropertyDefinition multiYearTermTwoSurvey, PropertyDefinition multiYearTermThreeSurvey){
         List row = []
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         selectedFields.keySet().each { String fieldKey ->
@@ -303,66 +348,61 @@ class ExportClickMeService {
             String field = mapSelecetedFields.field
             if(!mapSelecetedFields.separateSheet) {
                 if (fieldKey == 'survey.allOtherProperties') {
-                    renewalResult.properties?.sort { it.type.name }.each { participantResultProperty ->
                         if (onlySubscription) {
-                            row.add([field: '', style: null])
-                            row.add([field: '', style: null])
+                            participantResult.properties?.sort { it.name }.each { PropertyDefinition propertyDefinition ->
+                                row.add([field: '', style: null])
+                                row.add([field: '', style: null])
+                            }
                         } else {
-                            row.add([field: participantResultProperty.getResult() ?: "", style: null])
-                            row.add([field: participantResultProperty.comment ?: "", style: null])
+                            participantResult.properties?.sort { it.type.name }.each { SurveyResult participantResultProperty ->
+                                row.add([field: participantResultProperty.getResult() ?: "", style: null])
+                                row.add([field: participantResultProperty.comment ?: "", style: null])
+                            }
                         }
-
-                    }
                 } else if (fieldKey == 'survey.period') {
                     String period = ""
                     if (multiYearTermTwoSurvey) {
-                        period = renewalResult.newSubPeriodTwoStartDate ? sdf.format(renewalResult.newSubPeriodTwoStartDate) : ""
-                        period = renewalResult.newSubPeriodTwoEndDate ? period + " - " + sdf.format(renewalResult.newSubPeriodTwoEndDate) : ""
+                        period = participantResult.newSubPeriodTwoStartDate ? sdf.format(participantResult.newSubPeriodTwoStartDate) : ""
+                        period = participantResult.newSubPeriodTwoEndDate ? period + " - " + sdf.format(participantResult.newSubPeriodTwoEndDate) : ""
                     }
 
                     if (multiYearTermThreeSurvey) {
-                        period = renewalResult.newSubPeriodThreeStartDate ? sdf.format(renewalResult.newSubPeriodThreeStartDate) : ""
-                        period = renewalResult.newSubPeriodThreeEndDate ? period + " - " + sdf.format(renewalResult.newSubPeriodThreeEndDate) : ""
+                        period = participantResult.newSubPeriodThreeStartDate ? sdf.format(participantResult.newSubPeriodThreeStartDate) : ""
+                        period = participantResult.newSubPeriodThreeEndDate ? period + " - " + sdf.format(participantResult.newSubPeriodThreeEndDate) : ""
                     }
                     row.add([field: period ?: '', style: null])
                 } else if (fieldKey == 'survey.periodComment') {
                     if (multiYearTermTwoSurvey) {
-                        row.add([field: renewalResult.participantPropertyTwoComment ?: '', style: null])
+                        row.add([field: participantResult.participantPropertyTwoComment ?: '', style: null])
                     }
 
                     if (multiYearTermThreeSurvey) {
-                        row.add([field: renewalResult.participantPropertyThreeComment ?: '', style: null])
+                        row.add([field: participantResult.participantPropertyThreeComment ?: '', style: null])
                     }
 
                     if (!multiYearTermTwoSurvey && !multiYearTermThreeSurvey) {
                         row.add([field: '', style: null])
                     }
                 }else if (fieldKey == 'participant.generalContact') {
-                    setOrgFurtherInformation(renewalResult.participant, row, fieldKey)
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
                 }else if (fieldKey == 'participant.billingContact') {
-                    setOrgFurtherInformation(renewalResult.participant, row, fieldKey)
-                }else if (fieldKey == 'participant.ISIL') {
-                    setOrgFurtherInformation(renewalResult.participant, row, fieldKey)
-                }
-                else if (fieldKey == 'participant.WIBID') {
-                    setOrgFurtherInformation(renewalResult.participant, row, fieldKey)
-                }
-                else if (fieldKey == 'participant.EZBID') {
-                    setOrgFurtherInformation(renewalResult.participant, row, fieldKey)
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
                 }
                 else if (fieldKey == 'participant.customerIdentifier') {
-                    setOrgFurtherInformation(renewalResult.participant, row, fieldKey, renewalResult.sub)
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey, participantResult.sub)
+                }else if (fieldKey.startsWith('participantIdentifiers.')) {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
                 }else {
                     if (onlySubscription) {
                         if (fieldKey.startsWith('subscription.') || fieldKey.startsWith('participant.')) {
-                            def fieldValue = getFieldValue(renewalResult, field, sdf)
+                            def fieldValue = getFieldValue(participantResult, field, sdf)
                             row.add([field: fieldValue ?: '', style: null])
                         } else {
                             row.add([field: '', style: null])
                         }
 
                     } else {
-                        def fieldValue = getFieldValue(renewalResult, field, sdf)
+                        def fieldValue = getFieldValue(participantResult, field, sdf)
                         row.add([field: fieldValue ?: '', style: null])
                     }
                 }
@@ -383,17 +423,12 @@ class ExportClickMeService {
                     setOrgFurtherInformation(result.orgs, row, fieldKey)
                 }else if (fieldKey == 'participant.billingContact') {
                     setOrgFurtherInformation(result.orgs, row, fieldKey)
-                }else if (fieldKey == 'participant.ISIL') {
-                    setOrgFurtherInformation(result.orgs, row, fieldKey)
-                }
-                else if (fieldKey == 'participant.WIBID') {
-                    setOrgFurtherInformation(result.orgs, row, fieldKey)
-                }
-                else if (fieldKey == 'participant.EZBID') {
-                    setOrgFurtherInformation(result.orgs, row, fieldKey)
                 }
                 else if (fieldKey == 'participant.customerIdentifier') {
                     setOrgFurtherInformation(result.orgs, row, fieldKey, result.sub)
+                }
+                else if (fieldKey.startsWith('participantIdentifiers.')) {
+                    setOrgFurtherInformation(result.orgs, row, fieldKey)
                 }else {
                         def fieldValue = getFieldValue(result, field, sdf)
                         row.add([field: fieldValue ?: '', style: null])
@@ -498,25 +533,10 @@ class ExportClickMeService {
                 row.add([field:  '' , style: null])
             }
 
-        }else if (fieldKey == 'participant.ISIL') {
-            List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.org = :org and ident.ns.ns in (:namespaces)",[org:org,namespaces:['ISIL']])
-
-            if(identifierList){
-                row.add([field:  identifierList.value.join(";") , style: null])
-            }else{
-                row.add([field:  '' , style: null])
-            }
         }
-        else if (fieldKey == 'participant.WIBID') {
-            List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.org = :org and ident.ns.ns in (:namespaces)",[org:org,namespaces:['wibid']])
-            if(identifierList){
-                row.add([field:  identifierList.value.join(";") , style: null])
-            }else{
-                row.add([field:  '' , style: null])
-            }
-        }
-        else if (fieldKey == 'participant.EZBID') {
-            List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.org = :org and ident.ns.ns in (:namespaces)",[org:org,namespaces:['ezb']])
+        else if (fieldKey.startsWith('participantIdentifiers.')) {
+            Long id = Long.parseLong(fieldKey.split("\\.")[1])
+            List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.org = :org and ident.ns.id in (:namespaces)",[org:org,namespaces:[id]])
             if(identifierList){
                 row.add([field:  identifierList.value.join(";") , style: null])
             }else{
@@ -546,20 +566,11 @@ class ExportClickMeService {
 
         selectedExportFields.keySet().each {String fieldKey ->
             Map fields = selectedExportFields.get(fieldKey)
-
             if(!fields.separateSheet) {
                 if (fieldKey == 'participant.generalContact') {
                     titles << generalContact.getI10n('value')
                 }else if (fieldKey == 'participant.billingContact') {
                     titles << billingContact.getI10n('value')
-                }else if (fieldKey == 'participant.ISIL') {
-                    titles << 'ISIL'
-                }
-                else if (fieldKey == 'participant.WIBID') {
-                    titles << 'WIB-ID'
-                }
-                else if (fieldKey == 'participant.EZBID') {
-                    titles << 'EZB-ID'
                 }
                 else if (fieldKey != 'survey.allOtherProperties') {
                     titles << (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label)
