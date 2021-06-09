@@ -158,7 +158,7 @@ class ExportClickMeService {
 
         IdentifierNamespace.where{(nsType == Org.class.name)}
                 .list(sort: 'ns').each {
-            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.name_de ?: it.ns])
+            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
         }
 
         exportFields
@@ -170,7 +170,7 @@ class ExportClickMeService {
 
         IdentifierNamespace.where{(nsType == Org.class.name)}
                 .list(sort: 'ns').each {
-            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.name_de ?: it.ns]]
+            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
         }
 
         fields
@@ -188,7 +188,7 @@ class ExportClickMeService {
 
         IdentifierNamespace.where{(nsType == Org.class.name)}
                 .list(sort: 'ns').each {
-            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.name_de ?: it.ns])
+            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
         }
 
         exportFields
@@ -200,7 +200,7 @@ class ExportClickMeService {
 
         IdentifierNamespace.where{(nsType == Org.class.name)}
                 .list(sort: 'ns').each {
-            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.name_de ?: it.ns]]
+            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
         }
 
         fields
