@@ -7,6 +7,7 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3544    09.06.2021  rc2.1   2.1         Moe     Bug         "Lizenzen vergleichen" - "Titel vergleichen" erfolgt Fehlermeldung
 
 2424    08.06.2021  dev     2.1         Moe     Feature     Filterset UmfrageKosten und Umfrageteilnehmer einfügen 
 
