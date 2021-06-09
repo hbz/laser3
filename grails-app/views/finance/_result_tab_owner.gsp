@@ -98,7 +98,7 @@
                     </td>
                     <td>
                         <g:if test="${editable}">
-                            <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" validation="maxlength" maxlength="5"/>
+                            <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" validation="maxlength" maxlength="255"/>
                         </g:if>
                         <g:else>
                             ${ci.costTitle}
