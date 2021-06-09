@@ -185,7 +185,7 @@
 </g:if>
 <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
     <g:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>
-    <g:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
+    <g:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription', validResponsibleUsers: taskService.getUserDropdown(institution)]}"/>
 </g:if>
 <g:if test="${accessService.checkMinUserOrgRole(user,contextOrg,'INST_EDITOR')}">
     <g:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>

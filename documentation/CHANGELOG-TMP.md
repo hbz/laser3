@@ -7,7 +7,18 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
 3544    09.06.2021  rc2.1   2.1         Moe     Bug         "Lizenzen vergleichen" - "Titel vergleichen" erfolgt Fehlermeldung
+
+3540    09.06.2021  rc2.1   2.1-RC      Andreas Feature     neuer Typ Einrichtung für Nutzerzahlen hinzugefügt
+
+3539    09.06.2021  rc2.1   2.1-RC      Andreas Feature     fehlende Anzeige der verlängerten Lizenz auf Dashboard nachgereicht
+
+3538    09.06.2021  rc2.1   2.1-RC      Andreas Feature     auskommentierte Spalte des Erstellers wieder eingefügt
+
+3482    09.06.2021  rc2.1   2.1-RC      Andreas Bug         Vertragsfilter umstrukturiert
+
+3476    09.06.2021  rc2.1   2.1-RC      Andreas Bug         Zeichenbegrenzug auf 255 Zeichen angehoben      
 
 2424    08.06.2021  dev     2.1         Moe     Feature     Filterset UmfrageKosten und Umfrageteilnehmer einfügen 
 

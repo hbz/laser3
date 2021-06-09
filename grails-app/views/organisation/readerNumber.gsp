@@ -32,6 +32,7 @@
         <g:render template="/readerNumber/formModal" model="[formId: 'newForUni',withSemester: true,title:message(code: 'readerNumber.createForUni.label')]"/>
         <g:render template="/readerNumber/formModal" model="[formId: 'newForPublic',withDueDate: true,title:message(code: 'readerNumber.createForPublic.label')]"/>
         <g:render template="/readerNumber/formModal" model="[formId: 'newForState',withDueDate: true,title:message(code: 'readerNumber.createForState.label')]"/>
+        <g:render template="/readerNumber/formModal" model="[formId: 'newForResearchInstitute',withDueDate: true,title:message(code: 'readerNumber.createForResearchInstitute.label')]"/>
 
         <g:if test="${numbersWithSemester || numbersWithDueDate}">
             <g:if test="${numbersWithSemester}">
@@ -143,10 +144,6 @@
                                 <td><semui:xEditable type="readerNumber" owner="${number}" field="dateGroupNote"/></td>
                                 <td class="x">
                                     <g:if test="${editable}">
-                                        <a role="button" class="ui icon button" data-semui="modal" href="#note${DateUtils.getSDF_ymd().format(numbersInstance.getKey())}"
-                                           data-position="left center" data-tooltip="${message(code: 'readerNumber.notes.edit', args: [DateUtils.getSDF_NoTime().format(numbersInstance.getKey())])}" aria-label="${message(code: 'readerNumber.notes.edit', args: [DateUtils.getSDF_NoTime().format(numbersInstance.getKey())])}">
-                                            <i aria-hidden="true" class="write icon"></i>
-                                        </a>
                                         <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
                                                 data-confirm-tokenMsg="${message(code: 'readerNumber.confirmRow.delete')}"
                                                 data-confirm-term-how="ok" params="${[dueDate:numbersInstance.getKey(),org:params.id]}"

@@ -561,7 +561,7 @@ class PendingChangeService extends AbstractLockableService {
                     if(packageSettingMap.get(sp)?.get(row[0]) == "prompt") {
                         //List<PendingChange> pendingChange1 = PendingChange.executeQuery('select pc.id from PendingChange pc where pc.'+row[3]+' = :package and pc.oid = :oid and pc.status != :accepted',[package:sp.pkg,oid:genericOIDService.getOID(sp.subscription),accepted:RDStore.PENDING_CHANGE_ACCEPTED])
                         List newerCount = PendingChange.executeQuery('select count(distinct pc.'+row[4]+') from PendingChange pc where pc.'+row[3]+' = :package and pc.oid = null and pc.ts >= :entryDate and pc.msgToken = :token',[package: sp.pkg, entryDate: sp.dateCreated, token: row[0]])
-                        if(!PendingChange.executeQuery('select pc.id from PendingChange pc where pc.'+row[3]+' = :package and pc.oid = :oid and pc.status in (:acceptedStatus)',[package:sp.pkg,oid:genericOIDService.getOID(sp.subscription),acceptedStatus:[RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED]]) && newerCount){
+                        if(!PendingChange.executeQuery('select pc.id from PendingChange pc where pc.'+row[3]+' = :package and pc.oid = :oid and pc.status in (:acceptedStatus)',[package:sp.pkg,oid:genericOIDService.getOID(sp.subscription),acceptedStatus:[RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED]]) && newerCount && newerCount[0] > 0){
                             Object[] args = [newerCount[0]]
                             Map<String,Object> eventRow = [subPkg:sp,eventString:messageSource.getMessage(row[0],args,locale)]
                             //eventRow.changeId = pendingChange1 ? pendingChange1[0] : null
