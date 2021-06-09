@@ -165,6 +165,13 @@
                                 <g:elseif test="${entry.costItem}">
                                     <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.costItem.sub.id]}">${entry.costItem.sub.dropdownNamingConvention()}</g:link>
                                 </g:elseif>
+                                <g:elseif test="${entry.subscription}">
+                                    <div class="right aligned wide column">
+                                        <g:link controller="subscription" action="show" id="${entry.subscription._getCalculatedPrevious().id}">
+                                            ${entry.subscription._getCalculatedPrevious().dropdownNamingConvention(institution)}
+                                        </g:link>
+                                    </div>
+                                </g:elseif>
                             </div><!-- .column -->
                             <div class="seven wide column">
                                 <g:if test="${entry.subPkg}">
