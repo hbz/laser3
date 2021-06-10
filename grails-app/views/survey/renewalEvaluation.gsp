@@ -64,28 +64,6 @@ ${surveyInfo.name}
 
     <semui:form>
 
-        <div style="text-align: right">
-            <semui:controlButtons>
-                <semui:exportDropdown>
-                %{--<semui:exportDropdownItem>
-                    <g:link class="item" action="renewalEvaluation" id="${surveyInfo.id}"
-                            params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'renewalEvaluation.exportRenewal')}</g:link>
-                    </semui:exportDropdownItem>--}%
-
-                    <semui:actionsDropdownItem data-semui="modal" href="#individuallyExportModal"
-                                               message="renewalEvaluation.exportRenewal"/>
-
-                </semui:exportDropdown>
-                %{--<semui:actionsDropdown>
-                    <g:if test="${parentSuccessorSubscription}">
-                                              <semui:actionsDropdownItem controller="survey" action="compareMembersOfTwoSubs"
-                                                   params="[id: params.id, surveyConfigID: surveyConfig.id]"
-                                                   message="surveyInfo.transferOverView"/>
-                    </g:if>
-                </semui:actionsDropdown>--}%
-            </semui:controlButtons>
-        </div>
-
         %{--<h3 class="ui header">
         <g:message code="renewalEvaluation.parentSubscription"/>:
         <g:if test="${parentSubscription}">
