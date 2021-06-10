@@ -27,18 +27,14 @@ import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.reporting.export.AbstractExport
+import de.laser.reporting.export.ExportHelper
 import de.laser.reporting.export.GenericExportManager
-import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.helper.SessionCacheWrapper
-import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.reporting.myInstitution.base.BaseDetails
-import de.laser.reporting.myInstitution.base.BaseQuery
-import de.laser.reporting.subscription.SubscriptionReporting
+import de.laser.reporting.myInstitution.base.BaseFilter
 import grails.plugin.springsecurity.annotation.Secured
-import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -403,13 +399,6 @@ class AjaxHtmlController {
         Map<String, Object> selectedFields = [:]
         selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('cde:', ''), it.value ) }
 
-        AbstractExport export = GenericExportManager.createExport( params.token, selectedFields )
-
-        Map<String, Object> detailsCache = BaseDetails.getDetailsCache( params.token )
-        List<Long> idList = detailsCache.idList
-
-        List<String> rows = GenericExportManager.export( export, idList )
-
         SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
         String filename
 
@@ -420,9 +409,14 @@ class AjaxHtmlController {
             filename = sdf.format(new Date()) + '_reporting'
         }
 
+        Map<String, Object> detailsCache = BaseDetails.getDetailsCache( params.token )
+        AbstractExport export = GenericExportManager.createExport( params.token, selectedFields )
+
         if (params.fileformat == 'csv') {
             response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
             response.contentType = 'text/csv'
+
+            List<String> rows = GenericExportManager.export( export, 'csv', detailsCache.idList )
 
             ServletOutputStream out = response.outputStream
             out.withWriter { w ->
@@ -436,9 +430,39 @@ class AjaxHtmlController {
             response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
             response.contentType = 'application/pdf'
 
-            // TODO
-            //def pdfRenderingService = grails.util.Holders.grailsApplication.mainContext.getBean('pdfRenderingService')
-            //pdfRenderingService.render( controller: controller, template: template, model: model )
+            List<List<String>> content = GenericExportManager.export( export, 'pdf', detailsCache.idList )
+            Map<String, List> struct = [width: [], height: []]
+
+            if (content.isEmpty()) {
+                content = [['Keine Daten vorhanden']]
+            }
+            else {
+                content.eachWithIndex{ List row, int i ->
+                    row.eachWithIndex { List cell, int j ->
+                        if (!struct.height[i] || struct.height[i]  < cell.size()) {
+                            struct.height[i] = cell.size()
+                        }
+                        cell.eachWithIndex{ String entry, int k ->
+                            if (!struct.width[j] || struct.width[j]  < entry.length()) {
+                                struct.width[j] = entry.length()
+                            }
+                        }
+                    }
+                }
+            }
+
+            renderPdf(
+                    template: '/myInstitution/reporting/export/pdf/generic',
+                    model: [
+                            filterLabels: ExportHelper.getCachedFilterLabels( params.token ),
+                            filterResult: ExportHelper.getCachedFilterResult( params.token ),
+                            queryLabels:  ExportHelper.getCachedQueryLabels( params.token ),
+                            header: content.remove(0),
+                            content: content,
+                            struct: [struct.width.sum(), struct.height.sum(), struct]
+                    ],
+                    filename: filename + '.pdf'
+            )
         }
     }
 }

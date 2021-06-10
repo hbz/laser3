@@ -89,9 +89,10 @@
                         </p>
                     </div>
                     <div id="fileformat-pdf" class="wide eight field">
-                        <label>CSV-Konfiguration</label>
+                        <label>PDF-Konfiguration</label>
                         <p>
-                            ..
+                            Seitenformat: <span class="ui circular label">auto</span> <br />
+                            Suchinformationen: <span class="ui circular label">anzeigen</span> <br />
                         </p>
                     </div>
                     <div class="wide eight field">
