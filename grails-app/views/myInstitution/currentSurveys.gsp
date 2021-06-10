@@ -57,6 +57,9 @@
                 <label>${message(code: 'default.valid_onYear.label')}</label>
                 <select id="validOnYear" name="validOnYear" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <option value="all" <%=("all" in params.list('validOnYear')) ? 'selected="selected"' : ''%>>
+                        ${message(code: 'default.select.all.label')}
+                    </option>
 
                     <g:each in="${surveyYears}" var="surveyYear">
                         <option <%=(params.list('validOnYear').contains(surveyYear.toString())) ? 'selected="selected"' : ''%>
