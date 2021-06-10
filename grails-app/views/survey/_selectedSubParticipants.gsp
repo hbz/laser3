@@ -91,8 +91,13 @@
     <br />
 
     <g:if test="${selectedSubParticipants && editable}">
-        <input type="submit" class="ui negative button"
-               value="${message(code: 'default.button.delete.label')}"/>
+        <button type="submit" class="ui icon negative button js-open-confirm-modal"
+                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyParticipants")}"
+                        data-confirm-term-how="delete"
+                        role="button"
+                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+        <i class="trash alternate icon"></i> ${message(code: 'default.button.delete.label')}
+        </button>
     </g:if>
 
 </g:form>

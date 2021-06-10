@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3557    10.06.2021  rc2.1   2.1         Moe     Bug         Fehlende Sicherheitsabfragen in Umfragenerstellung (Sammelticket)
+
 3553    10.06.2021  rc2.1   2.1         Andreas Bug         inkonsistentes Verhalten bei Paket verknüpfen behoben
 
 3551    10.06.2021  rc2.1   2.1         Andreas Bug         Pakete ohne Titel wurden nicht unter "Meine Pakete" aufgeführt

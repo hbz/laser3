@@ -7,7 +7,7 @@
     <g:each in="${tasks}" var="tsk">
         <div class="ui grid">
             <div class="twelve wide column summary">
-                <a onclick="JSPC.app.taskedit(${tsk?.id});">${tsk?.title}</a>
+                <a onclick="JSPC.app.taskedit(${tsk.id});">${tsk.title}</a>
                 <br />
                 <div class="content">
                     ${message(code:'task.endDate.label')}
@@ -15,8 +15,11 @@
                 </div>
             </div>
             <div class="right aligned four wide column la-column-left-lessPadding">
-                <g:link action="tasks" class="ui mini icon negative button"
-                        params='[deleteId:tsk?.id, id: params.id, returnToShow: true]'
+                <g:link action="tasks"
+                        class="ui mini icon negative button js-open-confirm-modal"
+                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
+                        data-confirm-term-how="delete"
+                        params='[deleteId:tsk.id, id: params.id, returnToShow: true]'
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                     <i class="trash alternate icon"></i>
