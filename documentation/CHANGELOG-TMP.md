@@ -11,6 +11,8 @@
 
 1496    10.06.2021  rc2.1   2.1-RC      Andreas Feature     Filter für "Meine Einrichtungen" sowie Ausgabe für "Alle Einrichtungen" erweitert
 
+3544    09.06.2021  rc2.1   2.1         Moe     Bug         "Lizenzen vergleichen" - "Titel vergleichen" erfolgt Fehlermeldung
+
 3540    09.06.2021  rc2.1   2.1-RC      Andreas Feature     neuer Typ Einrichtung für Nutzerzahlen hinzugefügt
 
 3539    09.06.2021  rc2.1   2.1-RC      Andreas Feature     fehlende Anzeige der verlängerten Lizenz auf Dashboard nachgereicht

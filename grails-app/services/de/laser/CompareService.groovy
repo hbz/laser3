@@ -202,9 +202,17 @@ class CompareService {
 
     Map compareEntitlements(GrailsParameterMap grailsParameterMap, List objects) {
         LinkedHashMap result = [ies: [:]]
+        GrailsParameterMap newMap = grailsParameterMap.clone()
+        for (Iterator<Integer> iterator = newMap.iterator(); iterator.hasNext();) {
+            if(iterator.next()) {
+                iterator.remove()
+            }
+        }
+        newMap.max = 5000
+        newMap.offset = 0
         objects.each { object ->
             Map ies = result.ies
-            Map query = filterService.getIssueEntitlementQuery(grailsParameterMap, object)
+            Map query = filterService.getIssueEntitlementQuery(newMap, object)
             ies = comparisonService.buildComparisonTreeIEs(ies, object, IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams+[max:5000,offset:0]))
             result.ies = ies
         }
