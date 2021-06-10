@@ -60,12 +60,19 @@
 
             <div class="field">
                 <label>${message(code: 'default.valid_onYear.label')}</label>
-                <g:select name="validOnYear"
-                          from="${surveyYears}"
-                          class="ui fluid search selection dropdown"
-                          value="${params.validOnYear}"
-                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                <select id="validOnYear" name="validOnYear" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <option value="all" <%=("all" in params.list('validOnYear')) ? 'selected="selected"' : ''%>>
+                        ${message(code: 'default.select.all.label')}
+                    </option>
 
+                    <g:each in="${surveyYears}" var="surveyYear">
+                        <option <%=(params.list('validOnYear').contains(surveyYear.toString())) ? 'selected="selected"' : ''%>
+                                value="${surveyYear}" title="${surveyYear}">
+                            ${surveyYear}
+                        </option>
+                    </g:each>
+                </select>
             </div>
 
             <div class="field">
@@ -94,7 +101,7 @@
 
                     <g:each in="${providers.sort { it.name }}" var="provider">
                         <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>
-                        value="${provider.id}" ">
+                        value="${provider.id}" >
                         ${provider.name}
                         </option>
                     </g:each>
@@ -109,7 +116,7 @@
 
                     <g:each in="${subscriptions}" var="sub">
                         <option <%=(params.list('filterSub').contains(sub)) ? 'selected="selected"' : ''%>
-                        value="${sub}" ">
+                        value="${sub}">
                         ${sub}
                         </option>
                     </g:each>

@@ -413,9 +413,16 @@ class FilterService {
         }
 
         if (params.validOnYear) {
-            query += " and Year(surInfo.startDate) = :validOnYear "
-            queryParams.put('validOnYear', Integer.parseInt(params.validOnYear))
-            params.filterSet = true
+            if (params.validOnYear && params.validOnYear != "" && params.list('validOnYear')) {
+                if('all' in params.list('validOnYear')) {
+                    params.filterSet = true
+                    params.validOnYear = ['all']
+                }else{
+                    query += " and Year(surInfo.startDate) in (:validOnYear) "
+                    queryParams << [validOnYear : params.list('validOnYear').collect { Integer.parseInt(it) }]
+                    params.filterSet = true
+                }
+            }
         }
 
         if(params.name) {
@@ -652,9 +659,16 @@ class FilterService {
         }
 
         if (params.validOnYear) {
-            query += " Year(surInfo.startDate) = :validOnYear "
-            queryParams.put('validOnYear', Integer.parseInt(params.validOnYear))
-            params.filterSet = true
+            if (params.validOnYear && params.validOnYear != "" && params.list('validOnYear')) {
+                if('all' in params.list('validOnYear')) {
+                    params.filterSet = true
+                    params.validOnYear = ['all']
+                }else{
+                    query += " and Year(surInfo.startDate) in (:validOnYear) "
+                    queryParams << [validOnYear : params.list('validOnYear').collect { Integer.parseInt(it) }]
+                    params.filterSet = true
+                }
+            }
         }
 
         if(params.name) {
