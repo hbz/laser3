@@ -151,6 +151,30 @@
                     </select>
                 </div>
             </g:if>
+            <g:if test="${field.equalsIgnoreCase('subStatus')}">
+                <div class="field">
+                    <label for="subStatus">${message(code:'subscription.status.label')}</label>
+                    <laser:select id="subStatus" name="subStatus"
+                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  value="${params.subStatus}"
+                                  class="ui dropdown"
+                                  noSelection="${['':message(code:'default.select.choose.label')]}"
+                    />
+                    <%--<select id="subscriptionStatus" name="subscription" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${subscriptions}" var="sub">
+                            <option <%=(params.list('subscription').contains(sub.id.toString())) ? 'selected="selected"' : '' %> value="${sub.id}">${sub.dropdownNamingConvention()}</option>
+                        </g:each>
+                    </select>--%>
+                </div>
+            </g:if>
+            <g:if test="${field.equalsIgnoreCase('subValidOn')}">
+                <div class="field">
+                    <semui:datepicker label="default.valid_on.label" id="subValidOn" name="subValidOn" placeholder="filter.placeholder" value="${params.subValidOn}" />
+                </div>
+            </g:if>
             <g:if test="${field.equalsIgnoreCase('subRunTimeMultiYear')}">
                 <div class="field">
                     <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>

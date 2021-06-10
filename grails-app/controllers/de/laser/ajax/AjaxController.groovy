@@ -180,12 +180,18 @@ class AjaxController {
                             def binding_properties = ["${params.name}": value]
                             bindData(target, binding_properties)
                         }
+                        if (target instanceof Org) {
+                            if(params.name == "status" && value == RDStore.ORG_STATUS_RETIRED) {
+                                target.retirementDate = new Date()
+                            }
+                        }
 
                         if (!target.save()) {
                             Map r = [status: "error", msg: message(code: 'default.save.error.general.message')]
                             render r as JSON
                             return
                         }
+
                         if (target instanceof SurveyResult) {
                             Org org = contextService.getOrg()
                             SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(target.surveyConfig, target.participant)

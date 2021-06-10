@@ -714,6 +714,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     gokbId: providerRecord.uuid
             )
         }
+        if((provider.status == RDStore.ORG_STATUS_CURRENT || !provider.status) && providerRecord.status == RDStore.ORG_STATUS_RETIRED.value) {
+            //value is not implemented in we:kb yet
+            if(providerRecord.retirementDate) {
+                provider.retirementDate = DateUtils.parseDateGeneric(providerRecord.retirementDate)
+            }
+            else provider.retirementDate = new Date()
+        }
         provider.status = orgStatus.get(providerRecord.status)
         if(!provider.sector)
             provider.sector = RDStore.O_SECTOR_PUBLISHER
@@ -1497,9 +1504,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
         RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS).each { RefdataValue rdv ->
             packageStatus.put(rdv.value,rdv)
         }
-        RefdataCategory.getAllRefdataValues(RDConstants.ORG_STATUS).each { RefdataValue rdv ->
-            orgStatus.put(rdv.value,rdv)
-        }
+        orgStatus.put(RDStore.ORG_STATUS_CURRENT.value,RDStore.ORG_STATUS_CURRENT)
+        orgStatus.put(RDStore.ORG_STATUS_DELETED.value,RDStore.ORG_STATUS_DELETED)
+        orgStatus.put(RDStore.ORG_STATUS_RETIRED.value,RDStore.ORG_STATUS_RETIRED)
         RefdataCategory.getAllRefdataValues(RDConstants.CURRENCY).each { RefdataValue rdv ->
             currency.put(rdv.value,rdv)
         }
