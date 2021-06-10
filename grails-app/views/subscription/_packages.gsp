@@ -77,7 +77,7 @@
                 <g:if test="${editmode}">
                     <tr>
                         <td style="border-top: none" colspan="3">
-                            <div id="pendingChangeConfiguration${sp.id}" class="hidden">
+                            <div id="pendingChangeConfiguration${sp.id}" class="ui segment hidden">
                                 <h5 class="ui header">
                                     <g:message code="subscription.packages.config.label" args="${[sp.pkg.name]}"/>
                                 </h5>
@@ -156,8 +156,8 @@
                                         </dl>
                                     </g:each>
                                     <dl>
-                                        <dt class="control-label">
-                                            <g:message code="subscription.packages.freezeHolding"/>
+                                        <dt class="ui header">
+                                            <g:message code="subscription.packages.freezeHolding"/> <span data-tooltip="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span>
                                         </dt>
                                         <dd>
                                             <g:if test="${editmode}">

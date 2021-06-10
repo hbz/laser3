@@ -1256,17 +1256,14 @@ join sub.orgRelations or_sub where
 
         if(currentSubIds) {
 
-            String qry3 = "select distinct pkg, s from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
-                    "TitleInstancePackagePlatform tipp " +
-                    "where tipp.pkg = pkg and s.id in (:currentSubIds) "
+            String qry3 = "select distinct pkg, s from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
+                    "where s.id in (:currentSubIds) "
 
             qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
-            qry3 += " and ((tipp.status is null) or (tipp.status != :tippDeleted))"
 
             def qryParams3 = [
                     currentSubIds  : currentSubIds,
-                    pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED,
-                    tippDeleted    : RDStore.TIPP_STATUS_DELETED
+                    pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED
             ]
 
             if (params.pkg_q?.length() > 0) {

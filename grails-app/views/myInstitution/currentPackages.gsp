@@ -90,7 +90,7 @@
             </th>
 
             <td>
-                ${pkg.getCurrentTipps().size() ?: 0}
+                ${pkg.getCurrentTipps().size()}
             </td>
 
             <td>
