@@ -94,7 +94,9 @@ class RDStore {
     public static final LINKTYPE_FOLLOWS           = getRefdataValue('follows', RDConstants.LINK_TYPE)
     public static final LINKTYPE_LICENSE           = getRefdataValue('license', RDConstants.LINK_TYPE)
 
+    public static final ORG_STATUS_CURRENT         = getRefdataValue('Current', RDConstants.ORG_STATUS)
     public static final ORG_STATUS_DELETED         = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
+    public static final ORG_STATUS_RETIRED         = getRefdataValue('Retired', RDConstants.ORG_STATUS)
 
     public static final PACKAGE_STATUS_DELETED         = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
     public static final PLATFORM_STATUS_DELETED        = getRefdataValue('Deleted', RDConstants.PLATFORM_STATUS)

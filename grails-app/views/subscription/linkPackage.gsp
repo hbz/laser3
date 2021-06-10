@@ -210,7 +210,7 @@
             <label for="pkgName">${message(code: 'package.label')}</label>
             <input type="text" id="pkgName" name="pkgName" value="" readonly/>
         </div>
-        <div class="ui grid">
+        <div class="ui internally celled grid">
             <g:set var="colCount" value="${institution.getCustomerType() == 'ORG_CONSORTIUM' ? 'eight' : 'sixteen'}"/>
             <div class="${colCount} wide column">
                 <div class="grouped required fields">
@@ -283,15 +283,11 @@
                                 </td>
                             </tr>
                         </g:each>
-                        <tr>
-                            <td class="control-label">
-                                <g:message code="subscription.packages.freezeHolding"/>
-                            </td>
-                            <td colspan="2">
-                                <g:checkBox class="ui checkbox" name="freezeHolding" checked="${false}"/>
-                            </td>
-                        </tr>
                     </table>
+                </div>
+                <div class="inline field">
+                    <label for="freezeHolding"><g:message code="subscription.packages.freezeHolding"/> <span data-tooltip="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span></label>
+                    <g:checkBox class="ui checkbox" name="freezeHolding" checked="${false}"/>
                 </div>
             </div>
             <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
@@ -357,15 +353,11 @@
                                     </td>
                                 </tr>
                             </g:each>
-                            <tr>
-                                <td class="control-label">
-                                    <g:message code="subscription.packages.freezeHolding"/>
-                                </td>
-                                <td colspan="2">
-                                    <g:checkBox class="ui checkbox" name="freezeHoldingAudit" checked="${false}"/>
-                                </td>
-                            </tr>
                         </table>
+                    </div>
+                    <div class="inline field">
+                        <label for="freezeHoldingAudit"><g:message code="subscription.packages.freezeHolding"/> <span data-tooltip="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span></label>
+                        <g:checkBox class="ui checkbox" name="freezeHoldingAudit" checked="${false}"/>
                     </div>
                 </div>
             </g:if>
