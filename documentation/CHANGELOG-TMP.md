@@ -7,6 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2967/3532   10.06.2021  rc2.1   2.1-RC  Andreas Bug         Technischer Support unvollständig dargestellt
+
+1496    10.06.2021  rc2.1   2.1-RC      Andreas Feature     Filter für "Meine Einrichtungen" sowie Ausgabe für "Alle Einrichtungen" erweitert
 
 3544    09.06.2021  rc2.1   2.1         Moe     Bug         "Lizenzen vergleichen" - "Titel vergleichen" erfolgt Fehlermeldung
 

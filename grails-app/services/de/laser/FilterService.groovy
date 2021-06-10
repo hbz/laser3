@@ -25,7 +25,7 @@ class FilterService {
 
     Map<String, Object> getOrgQuery(GrailsParameterMap params) {
         Map<String, Object> result = [:]
-        ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
+        ArrayList<String> query = ["o.status != :orgStatus"]
         Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
 
         if (params.orgNameContains?.length() > 0) {
@@ -194,6 +194,20 @@ class FilterService {
                 libraryTypes << Long.parseLong(sel)
             }
             queryParams << [libraryType : libraryTypes]
+        }
+
+        if (params.subStatus || params.subValidOn) {
+            String subQuery = "exists (select oo.id from OrgRole oo join oo.sub sub where oo.org.id = o.id and oo.roleType in (:subscrRoles)"
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
+            if(params.subStatus) {
+                subQuery +=  " and sub.status = :subStatus"
+                queryParams << [subStatus: RefdataValue.get(params.subStatus)]
+            }
+            if(params.subValidOn) {
+                subQuery += " and (sub.startDate <= :validOn or sub.startDate is null) and (sub.endDate >= :validOn or sub.endDate is null)"
+                queryParams << [validOn: DateUtils.parseDateGeneric(params.subValidOn)]
+            }
+            query << subQuery+")"
         }
 
         if (params.customerType?.length() > 0) {

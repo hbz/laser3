@@ -2215,7 +2215,13 @@ join sub.orgRelations or_sub where
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        result.filterSet    = params.filterSet ? true : false
+        if(!params.subStatus) {
+            if(!params.filterSet) {
+                params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
+                result.filterSet = true
+            }
+        }
+        else result.filterSet    = params.filterSet ? true : false
 
         params.comboType = result.comboType.value
         def fsq = filterService.getOrgComboQuery(params, result.institution)
@@ -2229,7 +2235,7 @@ join sub.orgRelations or_sub where
         }
 
         List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams)
-        result.totalMembers    = totalMembers.clone()
+        result.totalMembers    = totalMembers
         result.membersCount    = totalMembers.size()
         result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
         String header
