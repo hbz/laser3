@@ -55,12 +55,16 @@
 
             <div class="field">
                 <label>${message(code: 'default.valid_onYear.label')}</label>
-                <g:select name="validOnYear"
-                          from="${surveyYears}"
-                          class="ui fluid search selection dropdown"
-                          value="${params.validOnYear}"
-                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                <select id="validOnYear" name="validOnYear" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
 
+                    <g:each in="${surveyYears}" var="surveyYear">
+                        <option <%=(params.list('validOnYear').contains(surveyYear.toString())) ? 'selected="selected"' : ''%>
+                                value="${surveyYear}" title="${surveyYear}">
+                            ${surveyYear}
+                        </option>
+                    </g:each>
+                </select>
             </div>
 
         </div>

@@ -90,7 +90,7 @@ class SurveyController {
         pu.setBenchmark("after properties")
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = DateUtils.getSimpleDateFormatByToken('default.date.format.onlyYear')
-            params.validOnYear = sdfyear.format(new Date())
+            params.validOnYear = [sdfyear.format(new Date())]
         }
         pu.setBenchmark("before surveyYears")
         result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
