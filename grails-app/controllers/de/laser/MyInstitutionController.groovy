@@ -254,9 +254,7 @@ class MyInstitutionController  {
         Set<String> licenseFilterTable = []
 
         if (accessService.checkPerm("ORG_INST")) {
-            base_qry = """from License as l where (
-                exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
-            )"""
+            base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) )"
             qry_params = [roleType1:RDStore.OR_LICENSEE, roleType2:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
             if(result.editable)
                 licenseFilterTable << "action"
@@ -334,26 +332,24 @@ class MyInstitutionController  {
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
             // filter by license
-            base_qry += " and ( genfunc_filter_matcher(l.reference, :name_filter) = true "
-                    + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
-                    + "   orgR.roleType in (:licRoleTypes) and ( "
-                    + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
-                    + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
-                    + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
-                    + " ) ) ) ) or ( exists ( select li from Links li join li.destinationSubscription s where li.sourceLicense = l and genfunc_filter_matcher(s.name, :name_filter) = true ) ) "
+            base_qry += " and ( genfunc_filter_matcher(l.reference, :name_filter) = true "+
+                    " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and "+
+                    "   orgR.roleType in (:licRoleTypes) and ( "+
+                    " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "+
+                    " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "+
+                    " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "+
+                    " ) ) " +
+                    " or exists ( select li.id from Links li where li.sourceLicense = l and li.linkType = :linkType and genfunc_filter_matcher(li.destinationSubscription.name, :name_filter) = true ) " +
+                    " ) "
             qry_params.name_filter = params['keyword-search']
             qry_params.licRoleTypes = [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]
+            qry_params.linkType = RDStore.LINKTYPE_LICENSE //map key will be overwritten if set twice
             result.keyWord = params['keyword-search']
         }
 
-        if(params.subKind || params.subStatus || ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) || !params.filterSubmit) {
+        if(params.subKind || params.subStatus || !params.filterSubmit) {
             Set<String> subscrQueryFilter = ["oo.org = :context"]
             qry_params.context = result.institution
-
-            //the if needs to be done twice, here is the second case because the keyword may occur in subscriptions but also in licenses!
-            if(params['keyword-search'] != null && params['keyword-search'].trim().length() > 0) {
-                subscrQueryFilter << "genfunc_filter_matcher(s.name, :name_filter) = true"
-            }
 
             if(params.subStatus || !params.filterSubmit) {
                 subscrQueryFilter <<  "s.status.id = :subStatus"
@@ -378,7 +374,7 @@ class MyInstitutionController  {
                 subscrQueryFilter << "s.instanceOf is null"
             }
 
-            base_qry += " and ( exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" ) or ( not exists ( select li from Links li where li.sourceLicense = l and li.linkType = :linkType ) ) )"
+            base_qry += " and ( exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" ) )" //or ( not exists ( select li from Links li where li.sourceLicense = l and li.linkType = :linkType ) )
             qry_params.linkType = RDStore.LINKTYPE_LICENSE
         }
 
@@ -392,6 +388,7 @@ class MyInstitutionController  {
         //log.debug("query = ${base_qry}");
         //log.debug("params = ${qry_params}");
         pu.setBenchmark('execute query')
+        log.debug("select l ${base_qry}")
         List<License> totalLicenses = License.executeQuery( "select l " + base_qry, qry_params )
         result.licenseCount = totalLicenses.size()
         pu.setBenchmark('get subscriptions')
