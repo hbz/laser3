@@ -2020,9 +2020,9 @@ class SubscriptionService {
     //-------------------------------------- cronjob section ----------------------------------------
     boolean freezeSubscriptionHoldings() {
         boolean done, doneChild
-        Calendar cal = GregorianCalendar.getInstance()
+        Date now = new Date()
         //on parent level
-        Set<SubscriptionPackage> subPkgs = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp join sp.subscription s where s.endDate != null and s.endDate <= :endOfYear and sp.freezeHolding = true', [endOfYear: cal.getTime()])
+        Set<SubscriptionPackage> subPkgs = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp join sp.subscription s where s.endDate != null and s.endDate <= :end and sp.freezeHolding = true', [end: now])
         //log.debug(subPkgs.toListString())
         if(subPkgs)
             done = PendingChangeConfiguration.executeUpdate('update PendingChangeConfiguration pcc set pcc.settingValue = :reject where pcc.subscriptionPackage in (:subPkgs)', [reject: RDStore.PENDING_CHANGE_CONFIG_REJECT, subPkgs: subPkgs]) > 0
