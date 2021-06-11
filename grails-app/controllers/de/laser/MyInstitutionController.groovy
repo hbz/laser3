@@ -1547,6 +1547,7 @@ join sub.orgRelations or_sub where
                     if(subscriptionData.globalErrors) {
                         flash.error = "<h3>${message([code:'myinst.subscriptionImport.post.globalErrors.header'])}</h3><p>${subscriptionData.globalErrors.join('</p><p>')}</p>"
                         redirect(action: 'subscriptionImport')
+                        return
                     }
                     result.candidates = subscriptionData.candidates
                     result.parentSubType = subscriptionData.parentSubType
