@@ -160,10 +160,12 @@ class PlatformController  {
             platformInstance.delete()
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'platform.label'), params.id])
             redirect action: 'list'
+            return
         }
         catch (DataIntegrityViolationException e) {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'platform.label'), params.id])
             redirect action: 'show', id: params.id
+            return
         }
     }
 
@@ -287,6 +289,7 @@ class PlatformController  {
             if (!apInstance) {
                 flash.error = 'No valid Accesspoint id given'
                 redirect action: 'link', params: [id:params.id]
+                return
             }
             else {
                 Map<String,Object> ctrlResult = platformControllerService.linkAccessPoint(params, apInstance)
@@ -294,6 +297,7 @@ class PlatformController  {
                     flash.error = ctrlResult.result.error
                 }
                 redirect(url: request.getHeader('referer'))
+                return
             }
         }
     }

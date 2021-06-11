@@ -42,6 +42,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
         }
         else ctrlResult.result
@@ -52,8 +53,10 @@ class SubscriptionController {
     def tasks() {
         Map<String,Object> ctrlResult = subscriptionControllerService.tasks(this,params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result)
+            if(!ctrlResult.result) {
                 response.sendError(401)
+                return
+            }
             else {
                 flash.error = ctrlResult.result.error
                 ctrlResult.result
@@ -77,6 +80,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
         }
         else ctrlResult.result
@@ -89,6 +93,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
         }
         else ctrlResult.result
@@ -111,6 +116,7 @@ class SubscriptionController {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
             response.sendError(401)
+            return
         }
         else {
             subscriptionService.setOrgLicRole(result.subscription,License.get(params.license),true)
@@ -127,6 +133,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             flash.error = message(code: ctrlResult.messageToken)
             redirect action: 'currentSubscriptions'
+            return
         }
         else
             ctrlResult.result
@@ -139,8 +146,10 @@ class SubscriptionController {
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             flash.error = ctrlResult.result.errorMessage
             redirect controller: 'myInstitution', action: 'currentSubscriptions' //temp
+            return
         } else {
             redirect action: 'show', id: ctrlResult.result.newSub.id
+            return
         }
     }
 
@@ -174,6 +183,7 @@ class SubscriptionController {
         Map<String,Object> ctrlResult = subscriptionControllerService.notes(this, params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             response.sendError(401)
+            return
         }
         else ctrlResult.result
     }
@@ -186,6 +196,7 @@ class SubscriptionController {
         Map<String,Object> ctrlResult = subscriptionControllerService.documents(this, params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             response.sendError(401)
+            return
         }
         else ctrlResult.result
     }
@@ -219,6 +230,7 @@ class SubscriptionController {
         Map<String,Object> ctrlResult = subscriptionControllerService.members(this,params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             response.sendError(401)
+            return
         }
         else {
             SimpleDateFormat sdf = DateUtils.SDF_ymd
@@ -289,6 +301,7 @@ class SubscriptionController {
 
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             response.sendError(401)
+            return
         }
         else {
             ctrlResult.result
@@ -300,13 +313,17 @@ class SubscriptionController {
     def processAddMembers() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processAddMembers(this,params)
         if (ctrlResult.error == SubscriptionControllerService.STATUS_ERROR) {
-            if(ctrlResult.result)
+            if (ctrlResult.result) {
                 redirect controller: 'subscription', action: 'show', params: [id: ctrlResult.result.subscription.id]
-            else
-                response.sendError(401)
+                return
+            } else {
+            response.sendError(401)
+                return
+            }
         }
         else {
             redirect controller: 'subscription', action: 'members', params: [id: ctrlResult.result.subscription.id]
+            return
         }
     }
 
@@ -319,6 +336,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
             else redirect(url: request.getHeader('referer'))
         }
@@ -336,6 +354,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
         }
         else {
@@ -352,6 +371,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
         }
         else {
@@ -369,6 +389,7 @@ class SubscriptionController {
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
         }
         else {
@@ -386,6 +407,7 @@ class SubscriptionController {
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
         }
         else
@@ -401,6 +423,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
             else {
                 flash.error = ctrlResult.result.error
@@ -421,6 +444,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
         }
         else {
@@ -439,6 +463,7 @@ class SubscriptionController {
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
         }
         else {
@@ -455,6 +480,7 @@ class SubscriptionController {
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
             else {
                 flash.error = ctrlResult.result.error
@@ -475,6 +501,7 @@ class SubscriptionController {
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
         }
         else {
@@ -493,6 +520,7 @@ class SubscriptionController {
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
         }
         else {
@@ -509,6 +537,7 @@ class SubscriptionController {
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
         }
         else {
@@ -530,6 +559,7 @@ class SubscriptionController {
         Map<String,Object> ctrlResult = subscriptionControllerService.surveys(this, params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             response.sendError(401)
+            return
         }
         else ctrlResult.result
     }
@@ -542,6 +572,7 @@ class SubscriptionController {
         Map<String,Object> ctrlResult = subscriptionControllerService.surveysConsortia(this, params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             response.sendError(401)
+            return
         }
         else ctrlResult.result
     }
@@ -555,6 +586,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
             else {
                 flash.error = ctrlResult.result.error
@@ -566,9 +598,11 @@ class SubscriptionController {
                 switch(params.addType) {
                     case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
                         redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
+                        return
                         break
                     case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
                         redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: ctrlResult.result.packageName]
+                        return
                         break
                 }
             }
@@ -586,6 +620,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
         }
         else {
@@ -612,6 +647,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
             else {
                 flash.error = ctrlResult.result.error
@@ -637,8 +673,10 @@ class SubscriptionController {
     def index() {
         Map<String,Object> ctrlResult = subscriptionControllerService.index(this,params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result)
+            if(!ctrlResult.result) {
                 response.sendError(401)
+                return
+            }
             else {
                 flash.error = ctrlResult.result.error
                 ctrlResult.result
@@ -697,6 +735,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
         }
         else {
@@ -711,6 +750,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
         }
         else {
@@ -792,6 +832,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
         }
         else {
@@ -807,6 +848,7 @@ class SubscriptionController {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if (!result) {
             response.sendError(401)
+            return
         }
         if(subscriptionService.deleteEntitlement(result.subscription,params.singleTitle))
             log.debug("Deleted tipp ${params.singleTitle} from sub ${result.subscription.id}")
@@ -854,15 +896,19 @@ class SubscriptionController {
     def subscriptionBatchUpdate() {
         Map<String,Object> ctrlResult = subscriptionControllerService.subscriptionBatchUpdate(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result)
+            if(!ctrlResult.result) {
                 response.sendError(401)
+                return
+            }
             else {
                 flash.error = message(code:'default.save.error.general.message')
                 redirect action: 'index', params: [id: ctrlResult.result.subscription.id, sort: params.sort, order: params.order, offset: params.offset, max: params.max]
+                return
             }
         }
         else {
             redirect action: 'index', params: [id: ctrlResult.result.subscription.id, sort: params.sort, order: params.order, offset: params.offset, max: params.max]
+            return
         }
     }
 
@@ -930,11 +976,16 @@ class SubscriptionController {
         Map<String,Object> ctrlResult = subscriptionControllerService.editEntitlementGroupItem(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             redirect action: 'index', id: params.id
+            return
         }
         else {
-            if(params.cmd == 'edit')
+            if(params.cmd == 'edit') {
                 render template: 'editEntitlementGroupItem', model: ctrlResult.result
-            else redirect action: 'index', id: params.id
+            }
+            else {
+                redirect action: 'index', id: params.id
+                return
+            }
         }
     }
 
@@ -979,6 +1030,7 @@ class SubscriptionController {
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
             else {
                 flash.error = ctrlResult.result.error
@@ -1038,8 +1090,10 @@ class SubscriptionController {
     def renewEntitlementsWithSurvey() {
         Map<String, Object> ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this,params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result)
+            if(!ctrlResult.result) {
                 response.sendError(401)
+                return
+            }
             else {
                 flash.error = ctrlResult.result.error
                 ctrlResult.result
@@ -1081,6 +1135,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
             else flash.error = ctrlResult.result.error
         }
@@ -1096,6 +1151,7 @@ class SubscriptionController {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(!result) {
             response.sendError(403)
+                return
         }
         log.debug("Received params: ${params}")
         subscriptionService.addPendingChangeConfiguration(result.subscription, Package.get(params.pkg), params.clone())
@@ -1197,6 +1253,7 @@ class SubscriptionController {
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
             else {
                 flash.error = ctrlResult.result.error
@@ -1208,6 +1265,7 @@ class SubscriptionController {
             redirect controller: 'subscription',
                     action: 'copyElementsIntoSubscription',
                     params: [sourceObjectId: genericOIDService.getOID(ctrlResult.result.subscription), targetObjectId: genericOIDService.getOID(ctrlResult.result.newSub), isRenewSub: true]
+            return
         }
     }
 
@@ -1222,6 +1280,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
             else flash.error = ctrlResult.result.error
         }
@@ -1248,6 +1307,7 @@ class SubscriptionController {
                     ctrlResult.result << copyElementsService.copyObjectElements_Properties(params)
                     if (ctrlResult.result.targetObject){
                         redirect controller: 'subscription', action: 'show', params: [id: ctrlResult.result.targetObject.id]
+                        return
                     }
                     break
                 default:
@@ -1268,6 +1328,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
             else flash.error = ctrlResult.result.error
         }
@@ -1336,9 +1397,11 @@ class SubscriptionController {
                 SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(ctrlResult.result.sourceObject, true)
                 if (surveyConfig && ctrlResult.result.fromSurvey) {
                     redirect controller: 'survey', action: 'renewalEvaluation', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
+                    return
                 }
                 else {
                     redirect controller: 'subscription', action: 'show', params: [id: ctrlResult.result.targetObject.id]
+                    return
                 }
             }
             else ctrlResult.result
@@ -1353,6 +1416,7 @@ class SubscriptionController {
         Map<String, Object> result = subscriptionControllerService.setCopyResultGenerics(params+[copyMyElements: true])
         if (!result) {
             response.sendError(401)
+                return
         }
         else {
             result.allObjects_readRights = subscriptionService.getMySubscriptionsWithMyElements_readRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
@@ -1372,6 +1436,7 @@ class SubscriptionController {
                         flash.error = ""
                         flash.message = ""
                         redirect controller: 'subscription', action: 'show', params: [id: result.targetObject.id]
+                        return
                     }
                     break
                 default:
@@ -1399,8 +1464,12 @@ class SubscriptionController {
         if(errors.size() > 0) {
             flash.errors = errors.join("<br/>")
             redirect(url: request.getHeader("referer"))
+            return
         }
-        else redirect controller: 'myInstitution', action: 'currentSubscriptions'
+        else {
+            redirect controller: 'myInstitution', action: 'currentSubscriptions'
+            return
+        }
     }
 
     //--------------------------------------------- admin section -------------------------------------------------
@@ -1410,8 +1479,10 @@ class SubscriptionController {
     def pendingChanges() {
         Map<String,Object> ctrlResult = subscriptionControllerService.pendingChanges(this, params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result)
+            if(!ctrlResult.result) {
                 response.sendError(401)
+                return
+            }
         }
         else
             ctrlResult.result
@@ -1426,6 +1497,7 @@ class SubscriptionController {
 
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             response.sendError(401)
+                return
         }
         else {
             render view: 'reporting/index', model: ctrlResult.result

@@ -49,9 +49,11 @@ class AccessMethodController  {
 
         if (params.redirect) {
             redirect(url: request.getHeader('referer'), params: params)
+            return
         }
         else {
             redirect controller: 'platform', action: 'AccessMethods', id: params.platfId
+            return
         }
         
         //[personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
@@ -69,10 +71,12 @@ class AccessMethodController  {
             accessMethod.delete()
 			flash.message = message(code: 'accessMethod.deleted', args: [accessMethod.accessMethod.getI10n('value')])
             redirect controller: 'platform', action: 'AccessMethods', id: platformId
+            return
         }
         catch (DataIntegrityViolationException e) {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label'), params.id])
             redirect action: 'show', id: params.id
+            return
         }
     }
 
@@ -108,6 +112,7 @@ class AccessMethodController  {
         if (params.validTo == "" || params.validTo && params.validFrom && params.validTo.before(params.validFrom)) {
             flash.error = message(code: 'accessMethod.dateValidationError', args: [message(code: 'accessMethod.label'), accessMethod.accessMethod])
             redirect controller: 'accessMethod', action: 'edit', id: accessMethod.id
+            return
         } else {
             accessMethod.validTo = params.validTo
             accessMethod.lastUpdated = new Date()
@@ -118,6 +123,7 @@ class AccessMethodController  {
             flash.message = message(code: 'accessMethod.create.message', args: [accessMethod.accessMethod.getI10n('value')])
             flash.message = message(code: 'accessMethod.updated', args: [accessMethod.accessMethod.getI10n('value')])
             redirect controller: 'platform', action: 'accessMethods', id: platf.id
+            return
         }
     }
 }

@@ -1032,9 +1032,11 @@ class PackageController {
         if (params.doIt == "true") {
             yodaService.executePackageCleanup(toDelete)
             redirect action: 'index'
+            return
         } else {
             flash.message = "Betroffene Paket-IDs wären gelöscht worden: ${toDelete.join(", ")}"
             redirect action: 'getDuplicatePackages'
+            return
         }
     }
 }

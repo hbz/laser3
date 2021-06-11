@@ -67,6 +67,7 @@ class OrganisationController  {
         // forbidden access
         if (! hasAccess) {
             redirect controller: 'organisation', action: 'show', id: org.id
+            return
         }
 
         // adding default settings
@@ -171,6 +172,7 @@ class OrganisationController  {
             catch (Exception e) {
                 log.error("Problem",e);
                 response.sendError(500)
+                return
             }
         }
         else {
@@ -260,6 +262,7 @@ class OrganisationController  {
             catch (Exception e) {
                 log.error("Problem",e);
                 response.sendError(500)
+                return
             }
         }
         withFormat {
@@ -543,11 +546,13 @@ class OrganisationController  {
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.label'), orgInstance.name])
                 redirect action: 'show', id: orgInstance.id
+                return
             }
             else {
                 log.error("Problem creating org: ${orgInstance.errors}");
                 flash.message = message(code: 'org.error.createProviderError', args: [orgInstance.errors])
                 redirect(action: 'findProviderMatches')
+                return
             }
         }
     }
@@ -573,9 +578,11 @@ class OrganisationController  {
         Map<String,Object> ctrlResult = organisationControllerService.createMember(this,params)
         if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR) {
             redirect action:'findOrganisationMatches', params:params
+            return
         }
         else {
             redirect action: 'show', id: ctrlResult.result.orgInstance.id
+            return
         }
     }
 
@@ -946,6 +953,7 @@ class OrganisationController  {
 
         if (! result.editable) {
             redirect controller: 'organisation', action: 'show', id: result.orgInstance.id
+            return
         }
 
         Map filterParams = params
@@ -1053,10 +1061,12 @@ class OrganisationController  {
         if(success instanceof User) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'user.label'), success.id]) as String
             redirect action: 'editUser', params: [uoid: genericOIDService.getOID(success), id: params.id]
+            return
         }
         else if(success instanceof List) {
             flash.error = success.join('<br>')
             redirect action: 'createUser'
+            return
         }
     }
 
@@ -1382,8 +1392,10 @@ class OrganisationController  {
     def toggleCombo() {
         Map<String,Object> ctrlResult = organisationControllerService.toggleCombo(this,params)
         if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result)
+            if(!ctrlResult.result) {
                 response.sendError(401)
+                return
+            }
             else {
                 flash.error = ctrlResult.result.error
             }
