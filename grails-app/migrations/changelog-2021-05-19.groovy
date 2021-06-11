@@ -45,13 +45,4 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "galffy (hand-coded)", id: "1621414115224-6") {
-        grailsChange {
-            change {
-                sql.execute("update identifier_namespace set idns_ns = 'dbis_org_id' where idns_ns = 'DBS-ID'")
-            }
-            rollback {}
-        }
-    }
-
 }
