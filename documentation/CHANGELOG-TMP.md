@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3563    11.06.2021  rc2.1   2.1         Moe     Bug         WEkb Sysmbol Verlagebene
+
 3559    11.06.2021  rc2.1   2.1         Andreas Bug         Identifier-Inkonsistenzen behoben
 
 3546    11.06.2021  rc2.1   2.1         Andreas Bug         Titelauswahl-Cache wurde nicht geladen
