@@ -250,8 +250,10 @@ class LicenseController {
     def tasks() {
         Map<String,Object> ctrlResult = licenseControllerService.tasks(this,params)
         if(ctrlResult.error == LicenseControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result)
+            if(!ctrlResult.result) {
                 response.sendError(401)
+                return
+            }
             else {
                 flash.error = ctrlResult.result.error
             }
@@ -357,9 +359,14 @@ class LicenseController {
                 --*/
 
             }
-        if(licenseCopy)
+        if(licenseCopy) {
             redirect action: 'show', params: [id: licenseCopy.id]
-        else redirect action: 'show', params: [id: result.license?.id]
+            return
+        }
+        else {
+            redirect action: 'show', params: [id: result.license?.id]
+            return
+        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -844,6 +851,7 @@ class LicenseController {
                 result << copyElementsService.copyObjectElements_Properties(params)
                 if (result.targetObject){
                     redirect controller: 'license', action: 'show', params: [id: result.targetObject.id]
+                    return
                 }
                 break
             default:
@@ -919,6 +927,7 @@ class LicenseController {
                     flash.error = ""
                     flash.message = ""
                     redirect controller: 'license', action: 'show', params: [id: genericOIDService.resolveOID(params.targetObjectId).id]
+                    return
                 }
                 break
             default:

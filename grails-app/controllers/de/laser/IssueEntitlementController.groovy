@@ -144,15 +144,18 @@ class IssueEntitlementController  {
             if (!issueEntitlementInstance) {
                 flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label'), params.id])
                 redirect action: 'list'
+                return
             }
             try {
                 issueEntitlementInstance.delete()
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'issueEntitlement.label'), params.id])
                 redirect action: 'list'
+                return
             }
             catch (DataIntegrityViolationException e) {
                 flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'issueEntitlement.label'), params.id])
                 redirect action: 'show', id: params.id
+                return
             }
         }
 

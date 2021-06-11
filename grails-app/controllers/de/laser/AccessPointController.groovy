@@ -35,8 +35,10 @@ class AccessPointController  {
         Map<String,Object> ctrlResult = accessPointControllerService.addIpRange(params)
         if (ctrlResult.status == AccessPointControllerService.STATUS_ERROR) {
             redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id, params: [ip: ctrlResult.result.invalidRanges.join(' ')]
+            return
         } else {
             redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id, params: [autofocus: true]
+            return
         }
     }
 
@@ -118,9 +120,11 @@ class AccessPointController  {
         if (ctrlResult.status == AccessPointControllerService.STATUS_ERROR) {
             flash.message = ctrlResult.result.error
             redirect(controller: "accessPoint", action: "create", params: params)
+            return
         }
         else {
             redirect controller: 'accessPoint', action: 'edit_'+ctrlResult.result.accessPoint.accessMethod.value, id: ctrlResult.result.accessPoint.id
+            return
         }
     }
 
@@ -133,15 +137,18 @@ class AccessPointController  {
         if(ctrlResult.status == AccessPointControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
                 response.sendError(401)
+                return
             }
             else {
                 flash.error = ctrlResult.result.error
                 redirect(url: request.getHeader("referer"))
+                return
             }
         }
         else {
             flash.message = ctrlResult.result.message
             redirect controller: 'organisation', action: 'accessPoints', id: ctrlResult.result.orgId
+            return
         }
     }
 

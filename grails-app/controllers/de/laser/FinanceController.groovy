@@ -46,6 +46,7 @@ class FinanceController  {
         catch(FinancialDataException e) {
             flash.error = e.getMessage()
             redirect controller: "home"
+            return
         }
     }
 
@@ -65,6 +66,7 @@ class FinanceController  {
         catch (FinancialDataException e) {
             flash.error = e.getMessage()
             redirect controller: 'myInstitution', action: 'currentSubscriptions'
+            return
         }
     }
 
@@ -434,9 +436,14 @@ class FinanceController  {
     })
     def importCostItems() {
         Map<String,Object> ctrlResult = financeService.importCostItems(params)
-        if(ctrlResult.status == FinanceService.STATUS_ERROR)
+        if(ctrlResult.status == FinanceService.STATUS_ERROR) {
             redirect controller: 'myInstitution', action: 'financeImport'
-        else redirect action: 'index'
+            return
+        }
+        else {
+            redirect action: 'index'
+            return
+        }
     }
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)

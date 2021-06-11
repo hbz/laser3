@@ -646,6 +646,7 @@ join sub.orgRelations or_sub where
             catch (Exception e) {
                 log.error("Problem",e);
                 response.sendError(500)
+                return
             }
         }
 
@@ -914,6 +915,7 @@ join sub.orgRelations or_sub where
                     log.debug("return 401....")
                     flash.error = message(code: 'myinst.newLicense.error')
                     response.sendError(401)
+                    return
                 }
                 else {
                     def copyLicense = institutionsService.copyLicense(baseLicense, params, InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD)
@@ -954,6 +956,7 @@ join sub.orgRelations or_sub where
                 log.error(licenseInstance.errors.toString())
                 flash.error = message(code:'license.create.error')
                 redirect action: 'emptyLicense'
+                return
             }
             else {
                 log.debug("Save ok")
@@ -971,6 +974,7 @@ join sub.orgRelations or_sub where
                 }
 
                 redirect controller: 'license', action: 'show', params: params, id: licenseInstance.id
+                return
             }
         }
     }
@@ -1326,6 +1330,7 @@ join sub.orgRelations or_sub where
         if (ctrlResult.status == MyInstitutionControllerService.STATUS_ERROR) {
             flash.error = "You do not have permission to access ${ctrlResult.result.institution.name} pages. Please request access on the profile page"
             response.sendError(401)
+                return
         }
 
         return ctrlResult.result
@@ -1554,6 +1559,7 @@ join sub.orgRelations or_sub where
                     if(subscriptionData.globalErrors) {
                         flash.error = "<h3>${message([code:'myinst.subscriptionImport.post.globalErrors.header'])}</h3><p>${subscriptionData.globalErrors.join('</p><p>')}</p>"
                         redirect(action: 'subscriptionImport')
+                        return
                     }
                     result.candidates = subscriptionData.candidates
                     result.parentSubType = subscriptionData.parentSubType
@@ -1992,10 +1998,12 @@ join sub.orgRelations or_sub where
         if(success instanceof User) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'user.label'), success.id]) as String
             redirect action: 'editUser', params: [uoid: genericOIDService.getOID(success)]
+            return
         }
         else if(success instanceof List) {
             flash.error = success.join('<br>')
             redirect action: 'createUser'
+            return
         }
     }
 
@@ -2177,6 +2185,7 @@ join sub.orgRelations or_sub where
 
                 }
                 redirect action: 'manageMembers'
+                return
             }
             result.filterSet = params.filterSet ? true : false
 
@@ -2984,6 +2993,7 @@ join sub.orgRelations or_sub where
                 }
             }
             redirect action: 'manageProperties', params: [filterPropDef: params.filterPropDef]
+            return
         }
     }
 
@@ -3224,6 +3234,7 @@ join sub.orgRelations or_sub where
 
             if(isEditable){
                 redirect controller: 'license', action: 'copyLicense', params: [sourceObjectId: genericOIDService.getOID(license), copyObject: true]
+                return
             }else {
                 flash.error = message(code:'license.permissionInfo.noPerms')
                 response.sendError(401)

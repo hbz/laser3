@@ -1341,6 +1341,8 @@ class SubscriptionService {
             if(colMap.licenses != null) {
                 List<String> licenseKeys = cols[colMap.licenses].split(',')
                 candidate.licenses = []
+                mappingErrorBag.multipleLicenseError = []
+                mappingErrorBag.noValidLicense = []
                 licenseKeys.each { String licenseKey ->
                     List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg",[idCandidate:licenseKey,roleTypes:[RDStore.OR_LICENSEE_CONS,RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE],contextOrg:contextOrg])
                     if(licCandidates.size() == 1) {
