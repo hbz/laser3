@@ -676,7 +676,7 @@ class OrganisationController  {
 
         pu.setBenchmark('identifier')
 
-        if(result.isProviderOrAgency){
+        if(!result.isProviderOrAgency){
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
