@@ -21,19 +21,20 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final NS_PACKAGE      = Package.class.name
     public static final NS_TITLE        = TitleInstance.class.name
 
-    public static final String ISIL       = "ISIL"
-    public static final String WIBID      = "wibid"
-    public static final String GND_ORG_NR = "gnd_org_nr"
-    public static final String EZB_ORG_ID = "ezb_org_id"
-    public static final String GRID_ID    = "GRID ID"
-    public static final String DBS_ID     = "dbis_org_id"
-    public static final String VAT        = "VAT"
-    public static final String LEIT_ID   = "Leitweg-ID"
-    public static final String LEIT_KR   = "Leitkriterium (intern)"
+    public static final String ISIL        = "ISIL"
+    public static final String WIBID       = "wibid"
+    public static final String GND_ORG_NR  = "gnd_org_nr"
+    public static final String EZB_ORG_ID  = "ezb_org_id"
+    public static final String GRID_ID     = "GRID ID"
+    public static final String DBS_ID      = "DBS-ID"
+    public static final String DBIS_ORG_ID = "dbis_org_id"
+    public static final String VAT         = "VAT"
+    public static final String LEIT_ID     = "Leitweg-ID"
+    public static final String LEIT_KR     = "Leitkriterium (intern)"
 
     //title identifier namespaces
     public static final String ZDB        = 'zdb'
-    public static final String EZB       = 'ezb'
+    public static final String EZB        = 'ezb'
     public static final String ZDB_PPN    = 'zdb_ppn'
     public static final String DOI        = 'doi'
     public static final String ISSN       = 'issn'
@@ -57,6 +58,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
             EZB_ORG_ID,
             GRID_ID,
             DBS_ID,
+            DBIS_ORG_ID,
             VAT,
             LEIT_ID,
             LEIT_KR

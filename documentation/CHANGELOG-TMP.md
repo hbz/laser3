@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3559    11.06.2021  rc2.1   2.1         Andreas Bug         Identifier-Inkonsistenzen behoben
+
+3546    11.06.2021  rc2.1   2.1         Andreas Bug         Titelauswahl-Cache wurde nicht geladen
+
 3557    10.06.2021  rc2.1   2.1         Moe     Bug         Fehlende Sicherheitsabfragen in Umfragenerstellung (Sammelticket)
 
 3553    10.06.2021  rc2.1   2.1         Andreas Bug         inkonsistentes Verhalten bei Paket verknüpfen behoben
