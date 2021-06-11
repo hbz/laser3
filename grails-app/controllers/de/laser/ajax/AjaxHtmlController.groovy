@@ -453,20 +453,24 @@ class AjaxHtmlController {
                 }
             }
 
-            int width = struct.width.sum() as int
-            String pageSize = 'A4'
+            int w = struct.width.sum() as int
+            int h = struct.width.sum() as int
 
-            if (width > 320)        { pageSize = 'A0' }
-            else if (width > 240)   { pageSize = 'A1' }
-            else if (width > 160)   { pageSize = 'A2' }
-            else if (width > 80)    { pageSize = 'A3' }
+            String pageSize = 'A4'
+            String orientation = 'Portrait'
+
+            if (w > 320)        { pageSize = 'A0' }
+            else if (w > 240)   { pageSize = 'A1' }
+            else if (w > 160)   { pageSize = 'A2' }
+            else if (w > 80)    { pageSize = 'A3' }
 
             def pdf = wkhtmltoxService.makePdf (
-                    view:       '/myInstitution/reporting/export/pdf/generic',
+                    view:       '/myInstitution/reporting/export/pdf/generic_details',
                     model: [
                             filterLabels: ExportHelper.getCachedFilterLabels(params.token),
                             filterResult: ExportHelper.getCachedFilterResult(params.token),
                             queryLabels : ExportHelper.getCachedQueryLabels(params.token),
+                            title       : filename,
                             header      : content.remove(0),
                             content     : content,
                             struct      : [struct.width.sum(), struct.height.sum(), pageSize]
@@ -474,6 +478,7 @@ class AjaxHtmlController {
                    // header: '',
                    // footer: '',
                     pageSize: pageSize,
+                    orientation: orientation,
                     marginLeft: 10,
                     marginTop: 15,
                     marginBottom: 15,
