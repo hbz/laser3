@@ -104,7 +104,7 @@
 
     </g:form>
 </g:if>
-<g:if test="${sourceObject instanceof Subscription || sourceObject instanceof License}">
+<g:if test="${!(sourceObject && targetObject) && (sourceObject instanceof Subscription || sourceObject instanceof License)}">
     <laser:script file="${this.getGroovyPageFileName()}">
 
     JSPC.app.adjustDropdown = function () {

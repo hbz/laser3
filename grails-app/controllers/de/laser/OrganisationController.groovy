@@ -897,7 +897,7 @@ class OrganisationController  {
 
         docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'organisation', action: 'documents', id: params.instanceId /*, fragment: 'docstab' */
+        redirect controller: 'organisation', action:params.redirectAction, id:params.instanceId /*, fragment: 'docstab' */
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
