@@ -4311,7 +4311,13 @@ class SurveyController {
         else {
             flash.message = ctrlResult.result.message
         }
-        ctrlResult.result
+        if(params.returnToShow) {
+            redirect action: 'show', id: params.id
+            return
+        }
+        else {
+            ctrlResult.result
+        }
     }
 
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = 2)

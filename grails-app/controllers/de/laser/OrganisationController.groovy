@@ -828,8 +828,10 @@ class OrganisationController  {
                 try {
                     flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
                     dTask.delete()
-                    if(params.returnToShow)
+                    if(params.returnToShow) {
                         redirect action: 'show', id: params.id
+                        return
+                    }
                 }
                 catch (Exception e) {
                     flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])

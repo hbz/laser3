@@ -93,7 +93,7 @@ class SurveyControllerService {
             result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.surveyConfig)
             result.taskInstanceCount = result.taskInstanceList.size()
             result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
-            result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.license)
+            result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.surveyConfig)
             result.myTaskInstanceCount = result.myTaskInstanceList.size()
             result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
             [result:result,status:STATUS_OK]
