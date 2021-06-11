@@ -39,6 +39,10 @@ grails {
     }
 }
 
+// wkhtmltopdf plugin
+
+grails.plugin.wkhtmltopdf.binary = "/usr/bin/wkhtmltopdf"
+
 // spring security plugin
 
 grails.plugin.springsecurity.userLookup.userDomainClassName 	    = 'de.laser.auth.User'

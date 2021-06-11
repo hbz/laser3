@@ -10,8 +10,8 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
 
     boolean before() {
         response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
-        response.setHeader("Pragma","no-cache")
-        response.setHeader("Expires","0")
+        response.setHeader("Pragma", "no-cache")
+        response.setHeader("Expires", "0")
 
         if (params.id?.contains(':')) {
             try {

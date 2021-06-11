@@ -46,6 +46,12 @@ class ExportHelper {
         filterCache.labels as Map<String, Object>
     }
 
+    static String getCachedFilterResult(String token) {
+
+        Map<String, Object> filterCache = BaseFilter.getFilterCache(token)
+        filterCache.result
+    }
+
     static List<String> getCachedQueryLabels(String token) {
 
         Map<String, Object> queryCache = BaseQuery.getQueryCache(token)

@@ -8,7 +8,7 @@
 
         <div class="ui message success">
             <p>
-                ${message(code: 'reporting.filterResult.costItem', args: [filterResult.data.costItemIdList.size()])}
+                <g:render template="/myInstitution/reporting/query/filterResult" model="${[filter: filter, filterResult: filterResult]}" />
             </p>
         </div>
 
