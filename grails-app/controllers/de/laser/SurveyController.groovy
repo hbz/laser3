@@ -4327,7 +4327,6 @@ class SurveyController {
             flash.message = ctrlResult.result.message
         }
         if(params.returnToShow) {
-            println("Mow")
             redirect action: 'show', id: params.id
             return
         }

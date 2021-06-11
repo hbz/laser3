@@ -437,7 +437,7 @@ class AjaxController {
       EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}", contextService.USER_SCOPE)
       Map checked = cache.get('checked')
       if(params.index == 'all') {
-		  Map<String, String> newChecked = [:]
+		  Map<String, String> newChecked = checked ?: [:]
           Set<Long> pkgFilter = []
           if(params.pkgFilter)
               pkgFilter << params.long('pkgFilter')
@@ -449,8 +449,9 @@ class AjaxController {
           cache.put('checked',newChecked)
 	  }
 	  else {
-		  checked[params.index] = params.checked == 'true' ? 'checked' : null
-		  if(cache.put('checked',checked))
+          Map<String, String> newChecked = checked ?: [:]
+		  newChecked[params.index] = params.checked == 'true' ? 'checked' : null
+		  if(cache.put('checked',newChecked))
 			  success.success = true
 	  }
 
