@@ -165,6 +165,7 @@ class YodaController {
             params.remove('cache')
 
             redirect controller: 'yoda', action: 'cacheInfo', params: params
+            return
         }
 
         result
@@ -502,10 +503,12 @@ class YodaController {
         if(params.doIt == "true") {
             yodaService.purgeTIPPsWihtoutGOKBId(toDelete,toUUIDfy)
             redirect(url: request.getHeader('referer'))
+            return
         }
         else {
             flash.message = "Betroffene TIPP-IDs wären vereinigt worden: ${toDelete} und folgende hätten einen fehlenden Wert erhalten: ${toUUIDfy}"
             redirect action: 'getTIPPsWithoutGOKBId'
+            return
         }
     }
 
