@@ -4,7 +4,7 @@
 	<div class="ui js-copyTriggerParent item contact-details">
         <div style="display: flex">
             <semui:contactIcon type="${contact.contentType.('value')}" />
-
+            ${contact.language?.getI10n("value")}
             <div class="content la-space-right">
                 <semui:xEditable class="js-copyTopic" owner="${contact}" field="content" overwriteEditable="${overwriteEditable}" />
             </div>

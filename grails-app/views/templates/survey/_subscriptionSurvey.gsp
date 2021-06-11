@@ -908,7 +908,9 @@
                         <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
                                 SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
                                 && (RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id)}">
-                            <g:link class="ui icon negative button"
+                            <g:link class="ui icon negative button js-open-confirm-modal"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [surveyProperty.surveyProperty.getI10n('name')])}"
+                                    data-confirm-term-how="delete"
                                     controller="survey" action="deleteSurveyPropFromConfig"
                                     id="${surveyProperty.id}"
                                     role="button"

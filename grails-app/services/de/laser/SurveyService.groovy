@@ -62,9 +62,9 @@ class SurveyService {
             def surveyOrg = SurveyOrg.findByOrgAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
             if (surveyOrg.finishDate) {
-                return true
-            } else {
                 return false
+            } else {
+                return true
             }
         }else{
             return false

@@ -60,10 +60,13 @@ class SubscriptionController {
             }
         }
         else {
-            if(params.returnToShow)
+            if(params.returnToShow) {
                 redirect action: 'show', id: params.id
-            else
+                return
+            }
+            else {
                 ctrlResult.result
+            }
         }
     }
 

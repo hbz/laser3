@@ -573,7 +573,7 @@ class SubscriptionControllerService {
                             licensesToProcess << genericOIDService.resolveOID(licenseKey)
                         }
                     }
-                    Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, PendingChangeConfiguration.SETTING_KEYS)
+                    Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, PendingChangeConfiguration.SETTING_KEYS+PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
                     members.each { Org cm ->
                         log.debug("Generating separate slaved instances for members")
                         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -1388,8 +1388,10 @@ class SubscriptionControllerService {
                                 result.packageName = pkgToLink.name
                                 log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
                                 subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
-                                Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
-                                    subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'With')
+                                if(addTypeChildren) {
+                                    Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
+                                        subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'With')
+                                    }
                                 }
                                 subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                             }
@@ -1404,6 +1406,11 @@ class SubscriptionControllerService {
                     Package pkgToLink = Package.findByGokbId(pkgUUID)
                     log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
                     subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
+                    if(addTypeChildren) {
+                        Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
+                            subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'With')
+                        }
+                    }
                     subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                 }
             }

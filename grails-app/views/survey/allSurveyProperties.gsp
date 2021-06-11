@@ -111,7 +111,9 @@
                 <td class="x">
                     <g:if test="${property.countUsages() == 0 && property?.tenant?.id == institution?.id}">
                         <g:link action="deleteSurveyProperty" id="${params.id}" params="[deleteId: property?.id]"
-                                class="ui icon negative button"
+                                class="ui icon negative button js-open-confirm-modal"
+                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [property.getI10n('name')])}"
+                                data-confirm-term-how="delete"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                             <i class="trash alternate icon"></i>

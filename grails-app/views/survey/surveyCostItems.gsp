@@ -361,7 +361,10 @@
 
                 <br />
                 <br />
-                <button name="deleteCostItems" value="true" type="submit" class="ui icon negative button" onclick="return confirm('${message(code:'confirm.dialog.delete.surveyCostItems')}')"
+                <button name="deleteCostItems" value="true" type="submit"
+                        class="ui icon negative button js-open-confirm-modal"
+                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyCostItems")}"
+                        data-confirm-term-how="delete"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                     <i class="trash alternate icon"></i> ${message(code: "surveyCostItems.bulkOption.delete")}

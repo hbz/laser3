@@ -21,7 +21,7 @@
                 <th>
                     ${message(code: 'task.assignedTo.label')}
                 </th>
-                <%--<g:sortableColumn property="lower(t.creator.username)" title="${message(code: 'task.creator.label')}"/>--%>
+                <g:sortableColumn property="lower(t.creator.username)" title="${message(code: 'task.creator.label')}"/>
                 <g:sortableColumn property="t.createDate" title="${message(code: 'task.createDate.label')}"/>
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
@@ -54,13 +54,13 @@
                     </g:if>
 
                     <td>
-                        <g:if test="${taskInstance.responsibleOrg}">${taskInstance.responsibleOrg?.name} <br /></g:if>
-                        <g:if test="${taskInstance.responsibleUser}">${taskInstance.responsibleUser?.display}</g:if>
+                        <g:if test="${taskInstance.responsibleOrg}">${taskInstance.responsibleOrg.name} <br /></g:if>
+                        <g:if test="${taskInstance.responsibleUser}">${taskInstance.responsibleUser.display}</g:if>
                     </td>
 
-                    <%--<td>${fieldValue(bean: taskInstance, field: "creator")}</td>--%>
+                    <td>${taskInstance.creator.display}</td>
 
-                    <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance?.createDate}"/></td>
+                    <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance.createDate}"/></td>
 
                     <td class="x">
                         <g:if test="${overwriteEditable}">
