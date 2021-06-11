@@ -695,7 +695,8 @@
     }
     JSPC.app.finance${idSuffix}.init();
     JSPC.app.setupCalendar = function () {
-        $("[name='newFinancialYear']").parents(".datepicker").calendar({
+        console.log($("#newFinancialYear_${idSuffix}").parents(".datepicker").calendar());
+        $("#newFinancialYear_${idSuffix}").parents(".datepicker").calendar({
             type: 'year',
             minDate: new Date('1582-10-15'),
             maxDate: new Date('2099-12-31')
