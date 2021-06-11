@@ -429,15 +429,16 @@ class AjaxHtmlController {
             out.close()
         }
         else if (params.fileformat == 'pdf') {
-            //response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
-            //response.contentType = 'application/pdf'
+            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
+            response.contentType = 'application/pdf'
 
             List<List<String>> content = GenericExportManager.export(export, 'pdf', detailsCache.idList)
             Map<String, List> struct = [width: [], height: []]
 
             if (content.isEmpty()) {
                 content = [['Keine Daten vorhanden']]
-            } else {
+            }
+            else {
                 content.eachWithIndex { List row, int i ->
                     row.eachWithIndex { List cell, int j ->
                         if (!struct.height[i] || struct.height[i] < cell.size()) {
@@ -452,23 +453,13 @@ class AjaxHtmlController {
                 }
             }
 
-            // org.grails.plugins:rendering:2.0.3
+            int width = struct.width.sum() as int
+            String pageSize = 'A4'
 
-            /*renderPdf(
-                    template: '/myInstitution/reporting/export/pdf/generic',
-                    model: [
-                            filterLabels: ExportHelper.getCachedFilterLabels( params.token ),
-                            filterResult: ExportHelper.getCachedFilterResult( params.token ),
-                            queryLabels:  ExportHelper.getCachedQueryLabels( params.token ),
-                            header: content.remove(0),
-                            content: content,
-                            struct: [struct.width.sum(), struct.height.sum(), struct]
-                    ],
-                    filename: filename + '.pdf'
-            )
-            */
-
-            // org.grails.plugins:wkhtmltopdf:1.0.0.RC9
+            if (width > 320)        { pageSize = 'A0' }
+            else if (width > 240)   { pageSize = 'A1' }
+            else if (width > 160)   { pageSize = 'A2' }
+            else if (width > 80)    { pageSize = 'A3' }
 
             def pdf = wkhtmltoxService.makePdf (
                     view:       '/myInstitution/reporting/export/pdf/generic',
@@ -478,16 +469,15 @@ class AjaxHtmlController {
                             queryLabels : ExportHelper.getCachedQueryLabels(params.token),
                             header      : content.remove(0),
                             content     : content,
-                            struct      : [struct.width.sum(), struct.height.sum(), struct]
+                            struct      : [struct.width.sum(), struct.height.sum(), pageSize]
                     ],
                    // header: '',
                    // footer: '',
-                    pageSize: 'A0',
+                    pageSize: pageSize,
                     marginLeft: 10,
                     marginTop: 15,
                     marginBottom: 15,
-                    marginRight: 10,
-                    headerSpacing: 10
+                    marginRight: 10
             )
 
             response.outputStream.withStream{ it << pdf }
