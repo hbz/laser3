@@ -206,7 +206,7 @@ class FinanceService {
             selectedCostItems << Long.parseLong(id)
         }
         if(selectedCostItems) {
-            if(params.delete) {
+            if(Boolean.valueOf(params.delete)) {
                 CostItem.executeUpdate('update CostItem ci set ci.costItemStatus = :deleted where ci.id in (:ids)',[deleted:RDStore.COST_ITEM_DELETED,ids:selectedCostItems])
             }
             else if(params.percentOnOldPrice) {
