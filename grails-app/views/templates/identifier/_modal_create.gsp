@@ -41,7 +41,7 @@
                 </div>
             </g:if>
             <g:else>
-                <input type="text" id="value" name="value" value="${identifier?.value}" required/>
+                <input type="text" id="value" name="value" value="${identifier?.value == IdentifierNamespace.UNKNOWN ? '' : identifier?.value}" required/>
             </g:else>
         </div>
 

@@ -59,6 +59,7 @@ class IdentifierService {
         if (owner && target) {
             if (target.ns.ns in IdentifierNamespace.CORE_ORG_NS) {
                 target.value = ''
+                target.note = ''
                 target.save()
             }
             else {

@@ -233,7 +233,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
     }
 
     String getURL() {
-        if (ns.urlPrefix && value) {
+        if (ns.urlPrefix && value && value != IdentifierNamespace.UNKNOWN) {
             if (ns.urlPrefix.endsWith('=')) {
                 return "${ns.urlPrefix}${value}"
             }
@@ -254,7 +254,9 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         if (this.ns?.ns in IdentifierNamespace.CORE_ORG_NS) {
             if (this.value == IdentifierNamespace.UNKNOWN) {
                 this.value = ''
-                this.save()
+                if(!this.save()) {
+                    log.error(this.getErrors().getAllErrors().toListString())
+                }
             }
         }
 
