@@ -26,6 +26,7 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
+import de.laser.helper.Constants
 import de.laser.reporting.export.AbstractExport
 import de.laser.reporting.export.ExportHelper
 import de.laser.reporting.export.GenericExportManager
@@ -60,6 +61,7 @@ class AjaxHtmlController {
     ReportingService reportingService
     SubscriptionService subscriptionService
     LicenseControllerService licenseControllerService
+    def wkhtmltoxService
 
     @Secured(['ROLE_USER'])
     def test() {
@@ -427,23 +429,22 @@ class AjaxHtmlController {
             out.close()
         }
         else if (params.fileformat == 'pdf') {
-            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
-            response.contentType = 'application/pdf'
+            //response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
+            //response.contentType = 'application/pdf'
 
-            List<List<String>> content = GenericExportManager.export( export, 'pdf', detailsCache.idList )
+            List<List<String>> content = GenericExportManager.export(export, 'pdf', detailsCache.idList)
             Map<String, List> struct = [width: [], height: []]
 
             if (content.isEmpty()) {
                 content = [['Keine Daten vorhanden']]
-            }
-            else {
-                content.eachWithIndex{ List row, int i ->
+            } else {
+                content.eachWithIndex { List row, int i ->
                     row.eachWithIndex { List cell, int j ->
-                        if (!struct.height[i] || struct.height[i]  < cell.size()) {
+                        if (!struct.height[i] || struct.height[i] < cell.size()) {
                             struct.height[i] = cell.size()
                         }
-                        cell.eachWithIndex{ String entry, int k ->
-                            if (!struct.width[j] || struct.width[j]  < entry.length()) {
+                        cell.eachWithIndex { String entry, int k ->
+                            if (!struct.width[j] || struct.width[j] < entry.length()) {
                                 struct.width[j] = entry.length()
                             }
                         }
@@ -451,7 +452,9 @@ class AjaxHtmlController {
                 }
             }
 
-            renderPdf(
+            // org.grails.plugins:rendering:2.0.3
+
+            /*renderPdf(
                     template: '/myInstitution/reporting/export/pdf/generic',
                     model: [
                             filterLabels: ExportHelper.getCachedFilterLabels( params.token ),
@@ -463,6 +466,31 @@ class AjaxHtmlController {
                     ],
                     filename: filename + '.pdf'
             )
+            */
+
+            // org.grails.plugins:wkhtmltopdf:1.0.0.RC9
+
+            def pdf = wkhtmltoxService.makePdf (
+                    view:       '/myInstitution/reporting/export/pdf/generic',
+                    model: [
+                            filterLabels: ExportHelper.getCachedFilterLabels(params.token),
+                            filterResult: ExportHelper.getCachedFilterResult(params.token),
+                            queryLabels : ExportHelper.getCachedQueryLabels(params.token),
+                            header      : content.remove(0),
+                            content     : content,
+                            struct      : [struct.width.sum(), struct.height.sum(), struct]
+                    ],
+                   // header: '',
+                   // footer: '',
+                    pageSize: 'A0',
+                    marginLeft: 10,
+                    marginTop: 15,
+                    marginBottom: 15,
+                    marginRight: 10,
+                    headerSpacing: 10
+            )
+
+            response.outputStream.withStream{ it << pdf }
         }
     }
 }

@@ -3,10 +3,10 @@
 <html>
 <head>
     <title>LAS:eR Reporting</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <style type="text/css">
-    @page {
-        size: ${struct[0] > 60 ? struct[0] * 0.55 + 'em' : '210mm'} ${struct[1] > 30 ? struct[1] * 1.5 + (20) + 'em' : '297mm'};
-        /* size: 210mm 297mm; */
+    body {
+        font-size: 16px;
     }
     table {
         margin-top: 2em;
