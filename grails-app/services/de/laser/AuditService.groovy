@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.properties.LicenseProperty
 import de.laser.properties.SubscriptionProperty
@@ -110,7 +111,7 @@ class AuditService {
 
                         log.debug("notifyChangeEvent() " + obj + " : " + clazz)
 
-                        if (obj instanceof AbstractPropertyWithCalculatedLastUpdated && !obj.type.tenant && obj.isPublic == true) {
+                        if ((obj instanceof AbstractPropertyWithCalculatedLastUpdated && !obj.type.tenant && obj.isPublic == true) || obj instanceof Identifier) {
 
                             if (getAuditConfig(obj)) {
 
@@ -126,7 +127,7 @@ class AuditService {
                                         //OID        : "${obj.owner.class.name}:${obj.owner.id}",
                                         event   : "${obj.class.simpleName}.updated",
                                         prop    : cp,
-                                        name    : obj.type.name,
+                                        name    : obj instanceof AbstractBaseWithCalculatedLastUpdated ? obj.type.name : obj.ns.getI10n("name"),
                                         type    : obj."${cp}".class.name,
                                         old     : old_oid ?: oldMap[cp], // Backward Compatibility
                                         oldLabel: oldMap[cp] instanceof RefdataValue ? oldMap[cp].toString() : oldMap[cp],

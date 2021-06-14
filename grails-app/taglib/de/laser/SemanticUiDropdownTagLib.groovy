@@ -105,6 +105,12 @@ class SemanticUiDropdownTagLib {
         if (!attrs.containsKey('from')) {
             throwTagError("Tag [semui:dropdownWithI18nExplanations] is missing required attribute [from]")
         }
+        if (!attrs.containsKey('optionExpl')) {
+            throwTagError("Tag [semui:dropdownWithI18nExplanations] is missing required attribute [optionExpl]")
+        }
+        def optionKey = attrs.remove('optionKey')
+        def optionValue = attrs.remove('optionValue')
+        def optionExpl = attrs.remove('optionExpl')
 
         out << "<div class='ui dropdown selection ${attrs.class}' id='${attrs.id}'>"
         out << "<input type='hidden' name='${attrs.name}' "
@@ -116,11 +122,18 @@ class SemanticUiDropdownTagLib {
         out << '<div class="menu">'
         attrs.from?.each { el ->
             out << '<div class="item" data-value="'
-            if(attrs.optionKey)
-                out << el[attrs.optionKey]
+            if(optionKey) {
+                if(optionKey instanceof Closure)
+                    out << optionKey(el)
+                else out << el[optionKey]
+            }
             out << '">'
-            out << '<span class="description">'+el[attrs.optionExpl]+'</span>'
-            out << '<span class="text">'+el[attrs.optionValue].toString().encodeAsHTML()+'</span>'
+            if(optionExpl instanceof Closure)
+                out << '<span class="description">'+optionExpl(el)+'</span>'
+            else out << el[optionExpl]
+            if(optionValue instanceof Closure)
+                out << '<span class="text">'+optionValue(el).toString().encodeAsHTML()+'</span>'
+            else out << '<span class="text">'+el[optionValue].toString().encodeAsHTML()+'</span>'
             out << '</div>'
         }
         out << '</div>'
