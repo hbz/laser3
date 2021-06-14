@@ -22,7 +22,7 @@
                             tmplShowFunctions      : false,
                             tmplShowPositions      : true,
                             tmplShowResponsiblities: true,
-                            tmplConfigShow         : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                            tmplConfigShow         : ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax', 'address'],
                             controller             : 'organisation',
                             action                 : 'show',
                             id                     : orgInstance.id,
@@ -54,7 +54,7 @@
                             tmplShowFunctions      : false,
                             tmplShowPositions      : true,
                             tmplShowResponsiblities: true,
-                            tmplConfigShow         : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                            tmplConfigShow         : ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax', 'address'],
                             controller             : 'organisation',
                             action                 : 'show',
                             id                     : orgInstance.id,
@@ -77,18 +77,18 @@
         <div class="description">
 
             <g:set var="persons"
-                   value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_TECHNICAL_SUPPORT)}"/>
+                   value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_TECHNICAL_SUPPORT)+orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_SERVICE_SUPPORT)}"/>
             <g:each in="${persons}" var="prs">
                 <g:render template="/templates/cpa/person_full_details" model="${[
                         person                 : prs,
-                        personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, prs),
+                        personRole             : PersonRole.findByOrgAndFunctionTypeInListAndPrs(orgInstance, [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT], prs),
                         personContext          : orgInstance,
                         tmplShowDeleteButton   : (isProviderOrAgency && (accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))),
                         tmplShowFunctions      : false,
                         tmplShowPositions      : true,
                         tmplShowResponsiblities: true,
                         showContacts           : true,
-                        tmplConfigShow         : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax'],
+                        tmplConfigShow         : ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax'],
                         controller             : 'organisation',
                         action                 : 'show',
                         id                     : orgInstance.id,

@@ -5,7 +5,7 @@
 
 <div class="ui negative message">
     <div class="header">
-        <g:message code="myinst.message.attention" />:
+        <g:message code="myinst.message.attention" />
         <g:message code="myinst.subscriptionDetails.message.ChildView" />
         <g:each in="${subscription.getAllSubscribers()?.collect{itOrg -> itOrg.getDesignation()}}" var="subscr">
             <span class="ui label">${subscr}</span>.

@@ -32,6 +32,7 @@
         <g:render template="/readerNumber/formModal" model="[formId: 'newForUni',withSemester: true,title:message(code: 'readerNumber.createForUni.label')]"/>
         <g:render template="/readerNumber/formModal" model="[formId: 'newForPublic',withDueDate: true,title:message(code: 'readerNumber.createForPublic.label')]"/>
         <g:render template="/readerNumber/formModal" model="[formId: 'newForState',withDueDate: true,title:message(code: 'readerNumber.createForState.label')]"/>
+        <g:render template="/readerNumber/formModal" model="[formId: 'newForResearchInstitute',withDueDate: true,title:message(code: 'readerNumber.createForResearchInstitute.label')]"/>
 
         <g:if test="${numbersWithSemester || numbersWithDueDate}">
             <g:if test="${numbersWithSemester}">
@@ -66,7 +67,6 @@
                                 <td>
                                     <g:set var="number" value="${numbersInstance.getValue().get(column)}"/>
                                     <g:if test="${number}">
-                                        <g:set var="notes" value="${number.dateGroupNote}"/>
                                         <semui:xEditable owner="${number}" field="value" format="number"/>
                                     </g:if>
                                 </td>
@@ -89,7 +89,7 @@
                                 </g:if>
                             </td>
                             <td>
-                                ${notes}
+                                <semui:xEditable type="readerNumber" owner="${number}" field="dateGroupNote"/>
                             </td>
                             <td class="x">
                                 <g:if test="${editable}">
@@ -99,11 +99,6 @@
                                             <i aria-hidden="true" class="write icon"></i>
                                         </a>
                                     </g:if>
-                                    <g:render template="/readerNumber/notesModal" model="[formId: 'note'+numbersInstance.getKey().id, title: ''+message(code:'readerNumber.notes.edit', args: [numbersInstance.getKey().getI10n('value')]), note: notes, dateGroup: numbersInstance.getKey().id]"/>
-                                    <a role="button" class="ui icon button" data-semui="modal" href="#note${numbersInstance.getKey().id}" data-position="left center"
-                                       data-tooltip="${message(code: 'readerNumber.notes.edit', args: [numbersInstance.getKey().getI10n('value')])}" aria-label="${message(code: 'readerNumber.notes.edit', args: [numbersInstance.getKey().getI10n('value')])}">
-                                        <i aria-hidden="true" class="write icon"></i>
-                                    </a>
                                     <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
                                             data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
                                             data-confirm-term-how="ok" params="${[semester:numbersInstance.getKey().id,org:params.id]}"
@@ -141,20 +136,14 @@
                                     <td>
                                         <g:set var="number" value="${numbersInstance.getValue().get(column)}"/>
                                         <g:if test="${number}">
-                                            <g:set var="notes" value="${number.dateGroupNote}"/>
                                             <semui:xEditable owner="${number}" field="value" type="number"/>
                                         </g:if>
                                     </td>
                                 </g:each>
                                 <td><g:formatNumber number="${dueDateSums.get(numbersInstance.getKey())}"/></td>
-                                <td>${notes}</td>
+                                <td><semui:xEditable type="readerNumber" owner="${number}" field="dateGroupNote"/></td>
                                 <td class="x">
                                     <g:if test="${editable}">
-                                        <g:render template="/readerNumber/notesModal" model="[formId: 'note'+DateUtils.getSDF_ymd().format(numbersInstance.getKey()), title: ''+message(code:'readerNumber.notes.edit', args: [DateUtils.getSDF_NoTime().format(numbersInstance.getKey())]), note: notes, dateGroup: DateUtils.getSDF_ymd().format(numbersInstance.getKey())]"/>
-                                        <a role="button" class="ui icon button" data-semui="modal" href="#note${DateUtils.getSDF_ymd().format(numbersInstance.getKey())}"
-                                           data-position="left center" data-tooltip="${message(code: 'readerNumber.notes.edit', args: [DateUtils.getSDF_NoTime().format(numbersInstance.getKey())])}" aria-label="${message(code: 'readerNumber.notes.edit', args: [DateUtils.getSDF_NoTime().format(numbersInstance.getKey())])}">
-                                            <i aria-hidden="true" class="write icon"></i>
-                                        </a>
                                         <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
                                                 data-confirm-tokenMsg="${message(code: 'readerNumber.confirmRow.delete')}"
                                                 data-confirm-term-how="ok" params="${[dueDate:numbersInstance.getKey(),org:params.id]}"

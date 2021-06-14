@@ -7,6 +7,88 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3562    11.06.2021  rc2.1   2.1         Andreas Bug         falsches Verhalten durch Dummy-Wert für Identifier
+
+3558    11.06.2021  rc2.1   2.1         Moe     Bug         Dokument / Anmerkung löschen verursacht Sprung
+
+3563    11.06.2021  rc2.1   2.1         Moe     Bug         WEkb Sysmbol Verlagebene
+
+3559    11.06.2021  rc2.1   2.1         Andreas Bug         Identifier-Inkonsistenzen behoben
+
+3552    11.06.2021  rc2.1   2.1         Andreas Bug         Massenverarbeitungsformular umstrukturiert
+
+3549    11.06.2021  rc2.1   2.1         Andreas Bug         Haushaltsjahrkalender nicht korrekt initialisiert
+
+3546    11.06.2021  rc2.1   2.1         Andreas Bug         Titelauswahl-Cache wurde nicht geladen
+
+3557    10.06.2021  rc2.1   2.1         Moe     Bug         Fehlende Sicherheitsabfragen in Umfragenerstellung (Sammelticket)
+
+3553    10.06.2021  rc2.1   2.1         Andreas Bug         inkonsistentes Verhalten bei Paket verknüpfen behoben
+
+3551    10.06.2021  rc2.1   2.1         Andreas Bug         Pakete ohne Titel wurden nicht unter "Meine Pakete" aufgeführt
+
+3108    10.06.2021  rc2.1   2.1         Andreas Feature     Hervorhebungen und Darstellungen des Schaltpultes
+
+2967/3532   10.06.2021  rc2.1   2.1-RC  Andreas Bug         Technischer Support unvollständig dargestellt
+
+1496    10.06.2021  rc2.1   2.1-RC      Andreas Feature     Filter für "Meine Einrichtungen" sowie Ausgabe für "Alle Einrichtungen" erweitert
+
+3554    10.06.2021  rc2.1   2.1         Moe     Feature     Verlängerungsumfrage - Export Renewal Button
+
+3544    09.06.2021  rc2.1   2.1         Moe     Bug         "Lizenzen vergleichen" - "Titel vergleichen" erfolgt Fehlermeldung
+
+3540    09.06.2021  rc2.1   2.1-RC      Andreas Feature     neuer Typ Einrichtung für Nutzerzahlen hinzugefügt
+
+3539    09.06.2021  rc2.1   2.1-RC      Andreas Feature     fehlende Anzeige der verlängerten Lizenz auf Dashboard nachgereicht
+
+3538    09.06.2021  rc2.1   2.1-RC      Andreas Feature     auskommentierte Spalte des Erstellers wieder eingefügt
+
+3482    09.06.2021  rc2.1   2.1-RC      Andreas Bug         Vertragsfilter umstrukturiert
+
+3476    09.06.2021  rc2.1   2.1-RC      Andreas Bug         Zeichenbegrenzug auf 255 Zeichen angehoben      
+
+2424    08.06.2021  dev     2.1         Moe     Feature     Filterset UmfrageKosten und Umfrageteilnehmer einfügen 
+
+3492    08.06.2021  dev     2.1         Andreas Feature     Last Audit Date bei Plattformdetailsicht eingefügt
+
+3488    08.06.2021  dev     2.1         Andreas Bug         Menüpunkt "Neue Merkmalsgruppe erstellen" entfettet
+
+3178    08.06.2021  dev     2.1         Andreas Bug         Fallback-Berechnung bei Kostenausschüttung für fehlenden Steuersatz implementiert
+
+3535    08.06.2021  dev     2.1         Moe     Feature     ClickMe Excel für Teilnehmer Reiter
+
+3533    08.06.2021  dev     2.1         Moe     Feature     Auswahl Kostenelemente in Umfragekosten funktionslos
+
+3438    08.06.2021  dev     2.1         Moe     Feature     Abfrage Auftragsnummer in Umfrage einbinden
+
+2975    08.06.2021  dev     2.1         Moe     Feature     Umfrage: SurveyEvaluation Results werden nicht richtig angezeigt
+
+3097    08.06.2021  dev     2.1         Moe     Feature     Alte SurveyProperty Domain Klasse entfernen
+
+3522    08.06.2021  dev     2.1         Moe     Feature     ClickMe Excel für Verlängerung
+
+3428    08.06.2021  dev     2.1         Moe     Feature     Umfrage Renewal Reiter
+
+3346    08.06.2021  dev     2.1         Moe     Feature     Umfragemails Teilnehmer
+
+3464    08.06.2021  dev     2.1         Moe     Feature     Icon für wechsel zwischen den Umfrage Varianten
+
+3422    08.06.2021  dev     2.1         Moe     Feature     Statistikdokument Umfrage
+
+3272    08.06.2021  dev     2.1         Moe     Feature     Umfrage Icon auf "meine lizenzen"
+
+3406    07.06.2021  dev     2.1         David   Feature     Reporting - Filter erweitern: Länder > Bundesländer
+
+3332    07.06.2021  dev     2.1         Andreas Bug         Abfragen zu Änderungen und Benachrichtigungen angepasst
+
+3151    07.06.2021  dev     2.1         Andreas Feature     Schaltpult aufgespalten und Festfrieren von Beständen zum Jahresende implementiert
+
+3108    07.06.2021  dev     2.1         Andreas Feature     Vererbung für Titelverhalten und Benachrichtigung aufgeteilt
+
+3532    02.06.2021  dev     2.1         Andreas Feature     Metadaten-Download- und KBART-Download-URL für Anbieter aus der we:kb übernommen
+
+3421    02.06.2021  dev     2.1         Andreas Feature     Filter für Einrichtungsmerkmale bei Teilnehmer hinzufügen angelegt
+
 3222    01.06.2021  dev     2.1         Andreas Feature     Unterteilung der Einrichtungseinstellungen in Reiter
 
 3476    01.06.2021  dev     2.1         Andreas Bug         Zeichenbegrenzung auch im Kostenhinzufügemodal nachgereicht
@@ -16,6 +98,8 @@
 3309    01.06.2021  dev     2.1         Andreas Feature     Bemerkungsfeld für Nutzerzahlen eingefügt
 
 3492    01.06.2021  dev     2.1         Andreas Feature     "Alle Plattformen" werden per ES-Index bespeist, Detailansicht um we:kb-Eigenschaften erweitert 
+
+3260    31.05.2021  dev     2.1         Moe     Feature     Teilnehmersicht Meine Umfragen vorfiltern
 
 3519    28.05.2021  dev     2.1         Andreas Feature     Linkresolver-Base-URL für Einrichtungen hinzugefügt
 
@@ -92,6 +176,8 @@
 3469    10.05.2021  rc2.0   2.0.10      David   Feature     Reporting-Export: Konfiguration erweitern
 
 3463    07.05.2021  rc2.0   2.0.10      David   Feature     Reporting: Interne Routing-Komponente für Queries erweitern
+
+3423    06.05.2021  dev     2.1         Andreas Bug         Anzeigefehler und Ladezeit behoben
 
 3452    04.05.2021  rc2.0   2.0.8       David   Feature     Filterspez. Query-Formulare ermöglichen
 

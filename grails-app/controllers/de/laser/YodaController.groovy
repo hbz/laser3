@@ -165,6 +165,7 @@ class YodaController {
             params.remove('cache')
 
             redirect controller: 'yoda', action: 'cacheInfo', params: params
+            return
         }
 
         result
@@ -502,10 +503,12 @@ class YodaController {
         if(params.doIt == "true") {
             yodaService.purgeTIPPsWihtoutGOKBId(toDelete,toUUIDfy)
             redirect(url: request.getHeader('referer'))
+            return
         }
         else {
             flash.message = "Betroffene TIPP-IDs wären vereinigt worden: ${toDelete} und folgende hätten einen fehlenden Wert erhalten: ${toUUIDfy}"
             redirect action: 'getTIPPsWithoutGOKBId'
+            return
         }
     }
 
@@ -947,11 +950,11 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def startDateCheck(){
-        if(statusUpdateService.startDateCheck())
-            flash.message = "Lizenzen ohne Startdatum verlieren ihren Status ..."
+    def freezeSubscriptionHoldings(){
+        if(subscriptionService.freezeSubscriptionHoldings())
+            flash.message = "Bestände werden festgefroren ..."
         else
-            flash.message = "Lizenzen ohne Startdatum haben bereits ihren Status verloren!"
+            flash.message = "Bestände sind bereits festgefroren!"
         redirect(url: request.getHeader('referer'))
     }
 
@@ -1738,29 +1741,6 @@ class YodaController {
 
         result
 
-        redirect action: 'dashboard'
-    }
-
-    @Secured(['ROLE_YODA'])
-    @Transactional
-    def cleanUpSurveyOrgFinishDate() {
-
-        Integer changes = 0
-        List<SurveyOrg> surveyOrgs = SurveyOrg.findAllByFinishDateIsNull()
-
-        surveyOrgs.each { surveyOrg ->
-
-            List<SurveyResult> surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(surveyOrg.surveyConfig, surveyOrg.org)
-            List<SurveyResult> surveyResultsFinish = SurveyResult.findAllBySurveyConfigAndParticipantAndFinishDateIsNotNull(surveyOrg.surveyConfig, surveyOrg.org)
-
-            if(surveyResults.size() == surveyResultsFinish.size()){
-                surveyOrg.finishDate = surveyResultsFinish[0].finishDate
-                surveyOrg.save()
-                changes++
-            }
-
-        }
-        flash.message = "Es wurden ${changes} FinishDate in SurveyOrg geändert!"
         redirect action: 'dashboard'
     }
 

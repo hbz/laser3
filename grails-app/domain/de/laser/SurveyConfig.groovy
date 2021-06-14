@@ -239,17 +239,17 @@ class SurveyConfig {
             return true
         } else {
 
-            int countFinish = 0
+           /* int countFinish = 0
             int countNotFinish = 0
 
             boolean noParticipation = false
             if(subSurveyUseForTransfer) {
                 noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
-            }
+            }*/
 
                 /*if (!noParticipation) {*/
 
-                    List surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
+                    /*List surveyResults = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
 
                     if (pickAndChoose) {
                         boolean finish = false
@@ -266,7 +266,9 @@ class SurveyConfig {
                         } else {
                             return true
                         }
-                    }
+                    }*/
+
+                    surveyOrg.finishDate ? true : false
                 /*} else {
                     return true
                 }*/

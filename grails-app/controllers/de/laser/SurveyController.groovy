@@ -8,6 +8,7 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.SurveyControllerService
+import de.laser.finance.Order
 import de.laser.finance.PriceItem
 import de.laser.properties.SubscriptionProperty
 import de.laser.auth.User
@@ -89,7 +90,7 @@ class SurveyController {
         pu.setBenchmark("after properties")
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = DateUtils.getSimpleDateFormatByToken('default.date.format.onlyYear')
-            params.validOnYear = sdfyear.format(new Date())
+            params.validOnYear = [sdfyear.format(new Date())]
         }
         pu.setBenchmark("before surveyYears")
         result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
@@ -190,7 +191,7 @@ class SurveyController {
 
         }else {
             result.surveysCount = SurveyInfo.executeQuery(fsq.query, fsq.queryParams).size()
-            result.countSurveyConfigs = surveyService.getSurveyConfigCounts()
+            result.countSurveyConfigs = surveyService.getSurveyConfigCounts(params)
 
             result.filterSet = params.filterSet ? true : false
 
@@ -463,6 +464,7 @@ class SurveyController {
         result.subscription = Subscription.get(Long.parseLong(params.sub))
         if (!result.subscription) {
             redirect action: 'createSubscriptionSurvey'
+            return
         }
 
         result
@@ -489,6 +491,7 @@ class SurveyController {
         result.pickAndChoose = true
         if (!result.subscription) {
             redirect action: 'createIssueEntitlementsSurvey'
+            return
         }
 
         result
@@ -559,10 +562,14 @@ class SurveyController {
                 //Wenn es eine Umfrage schon gibt, die als Übertrag dient. Dann ist es auch keine Lizenz Umfrage mit einem Teilnahme-Merkmal abfragt!
                 if (subSurveyUseForTransfer) {
                     SurveyConfigProperties configProperty = new SurveyConfigProperties(
-                            surveyProperty: PropertyDefinition.getByNameAndDescr('Participation', PropertyDefinition.SVY_PROP),
+                            surveyProperty: RDStore.SURVEY_PROPERTY_PARTICIPATION,
                             surveyConfig: surveyConfig)
 
-                    if (configProperty.save()) {
+                    SurveyConfigProperties configProperty2 = new SurveyConfigProperties(
+                            surveyProperty: RDStore.SURVEY_PROPERTY_ORDER_NUMBER,
+                            surveyConfig: surveyConfig)
+
+                    if (configProperty.save() && configProperty2.save()) {
                         surveyService.addSubMembers(surveyConfig)
                     }
                 } else {
@@ -889,7 +896,7 @@ class SurveyController {
         result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
-        result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT).id.toString()
+        result.selectedCostItemElement = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT).id.toString()
 
         if (params.selectedCostItemElement) {
             params.remove('selectedCostItemElement')
@@ -1174,8 +1181,8 @@ class SurveyController {
                 params.participantsFinish = true
             }
 
-            result.participantsNotFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).participant.flatten().unique { a, b -> a.id <=> b.id }.size()
-            result.participantsFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).participant.flatten().unique { a, b -> a.id <=> b.id }.size()
+            result.participantsNotFinishTotal = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).size()
+            result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
             result.participantsTotal = result.surveyConfig.orgs.size()
 
              Map<String,Object> fsq = filterService.getSurveyResultQuery(params, result.surveyConfig)
@@ -1326,8 +1333,8 @@ class SurveyController {
 
         result.surveyResult = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
 
-        result.participantsNotFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).participant.flatten().unique { a, b -> a.id <=> b.id }.size()
-        result.participantsFinishTotal = SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).participant.flatten().unique { a, b -> a.id <=> b.id }.size()
+        result.participantsNotFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).size()
+        result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
 
         result.propList    = result.surveyConfig.surveyProperties.surveyProperty
 
@@ -1365,8 +1372,8 @@ class SurveyController {
 
                 if(openAndSendMail || open) {
                     SurveyOrg.withTransaction { TransactionStatus ts ->
+                        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
                         if (result.surveyConfig.pickAndChoose) {
-                            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
 
                             result.subscription = result.surveyConfig.subscription
 
@@ -1377,16 +1384,11 @@ class SurveyController {
                                 ie.save()
                             }
 
-                            surveyOrg.finishDate = null
-                            surveyOrg.save()
+
                         }
 
-                        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(org, result.surveyConfig)
-
-                        surveyResults.each {
-                            it.finishDate = null
-                            it.save()
-                        }
+                        surveyOrg.finishDate = null
+                        surveyOrg.save()
                         countOpenParticipants++
                     }
                 }
@@ -1430,10 +1432,10 @@ class SurveyController {
         def orgs = result.surveyConfig.orgs.org.flatten().unique { a, b -> a.id <=> b.id }
         result.participants = orgs.sort { it.sortname }
 
-        result.participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).org.flatten().unique { a, b -> a.id <=> b.id }.sort {
+        result.participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).org.sort {
             it.sortname
         }
-        result.participantsFinish = SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(result.surveyConfig).org.flatten().unique { a, b -> a.id <=> b.id }.sort {
+        result.participantsFinish = SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(result.surveyConfig).org.sort {
             it.sortname
         }
 
@@ -1650,12 +1652,11 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        SurveyResult.withTransaction { TransactionStatus ts ->
-            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
-            surveyResults.each {
-                it.finishDate = null
-                it.save()
-            }
+        SurveyOrg.withTransaction { TransactionStatus ts ->
+            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
+
+            surveyOrg.finishDate = null
+            surveyOrg.save()
         }
 
         redirect(action: 'evaluationParticipant', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
@@ -1682,12 +1683,11 @@ class SurveyController {
             redirect(url: request.getHeader('referer'))
         }
 
-        SurveyResult.withTransaction { TransactionStatus ts ->
-            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
-            surveyResults.each {
-                it.finishDate = new Date()
-                it.save()
-            }
+        SurveyOrg.withTransaction { TransactionStatus ts ->
+            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
+
+            surveyOrg.finishDate = new Date()
+            surveyOrg.save()
         }
 
         redirect(action: 'evaluationParticipant', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
@@ -2250,8 +2250,10 @@ class SurveyController {
 
         if(result.surveyConfig && result.surveyConfig.subSurveyUseForTransfer) {
             redirect action: 'renewalEvaluation', params: [surveyConfigID: result.surveyConfig.id, id: result.surveyInfo.id]
+            return
         }else{
             redirect(uri: request.getHeader('referer'))
+            return
         }
     }
 
@@ -2470,11 +2472,13 @@ class SurveyController {
                 flash.message = message(code: 'surveyInfo.delete.successfully')
 
                 redirect action: 'currentSurveysConsortia'
+                return
             }
             catch (DataIntegrityViolationException e) {
                 flash.error = message(code: 'surveyInfo.delete.fail')
 
                 redirect(uri: request.getHeader('referer'))
+                return
             }
         }
 
@@ -2637,6 +2641,7 @@ class SurveyController {
         Map<String,Object> ctrlResult = surveyControllerService.renewalEvaluation(params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             response.sendError(401)
+                return
         }
         else {
 
@@ -2671,11 +2676,56 @@ class SurveyController {
                 catch (Exception e) {
                     log.error("Problem", e);
                     response.sendError(500)
+                    return
                 }
             }
 
             ctrlResult.result
         }
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 2)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    Map<String,Object> showPropertiesChanged() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.changedProperties = []
+        result.propertyDefinition = PropertyDefinition.findById(params.propertyDefinitionId)
+        PropertyDefinition subPropDef = PropertyDefinition.getByNameAndDescr(result.propertyDefinition.name, PropertyDefinition.SUB_PROP)
+        if(subPropDef){
+            result.surveyConfig.orgs.sort{it.org.sortname}.each{ SurveyOrg surveyOrg ->
+                Subscription subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                        [parentSub  : result.surveyConfig.subscription,
+                         participant: surveyOrg.org
+                        ])[0]
+                SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, result.propertyDefinition, result.surveyConfig, result.contextOrg)
+                SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, result.contextOrg)
+
+                if(surveyResult && subscriptionProperty){
+                    String surveyValue = surveyResult.getValue()
+                    String subValue = subscriptionProperty.getValue()
+                    if (surveyValue != subValue) {
+                        Map changedMap = [:]
+                        changedMap.surveyResult = surveyResult
+                        changedMap.subscriptionProperty = subscriptionProperty
+                        changedMap.surveyValue = surveyValue
+                        changedMap.subValue = subValue
+                        changedMap.participant = surveyOrg.org
+                        result.changedProperties << changedMap
+                    }
+                }
+
+            }
+
+        }
+
+        render template: "/survey/modal_PropertiesChanged", model: result
+
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 0)
@@ -2837,6 +2887,7 @@ class SurveyController {
                     }
                 }
                 redirect controller: 'survey', action: 'currentSurveysConsortia', params: [ids: newSurveyIds]
+                return
             }else{
                 SurveyInfo.withTransaction { TransactionStatus ts ->
                     SurveyInfo newSurveyInfo = new SurveyInfo(
@@ -2864,6 +2915,7 @@ class SurveyController {
                     ).save()
                     surveyService.copySurveyConfigCharacteristic(baseSurveyConfig, newSurveyConfig, params)
                     redirect controller: 'survey', action: 'show', params: [id: newSurveyInfo.id, surveyConfigID: newSurveyConfig.id]
+                    return
                 }
             }
         }
@@ -3005,6 +3057,7 @@ class SurveyController {
                     result.isRenewSub = true
 
                     redirect controller: 'subscription', action: 'copyElementsIntoSubscription', params: [sourceObjectId: genericOIDService.getOID(Subscription.get(old_subOID)), targetObjectId: genericOIDService.getOID(newSub), isRenewSub: true, fromSurvey: true]
+                    return
 
                 }
             }
@@ -3079,6 +3132,7 @@ class SurveyController {
             if (!accessService.checkMinUserOrgRole(user, result.institution, "INST_EDITOR")) {
                 result.error = message(code: 'financials.permission.unauthorised', args: [result.institution ? result.institution.name : 'N/A'])
                 response.sendError(403)
+                return
             }
 
 
@@ -3417,6 +3471,17 @@ class SurveyController {
                         copyCostItem.currencyRate = 1.0
                         copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
                     }
+                    Org org = participantSub.getSubscriber()
+                    SurveyResult surveyResult = org ? SurveyResult.findBySurveyConfigAndParticipantAndType(result.surveyConfig, org, RDStore.SURVEY_PROPERTY_ORDER_NUMBER) : null
+
+                    if(surveyResult){
+                        Order order = new Order(orderNumber: surveyResult.getValue(), owner: result.institution)
+                        if(order.save()) {
+                            copyCostItem.order = order
+                        }
+                        else log.error(order.errors)
+                    }
+
                     if(copyCostItem.save()) {
                         countNewCostItems++
                     }else {
@@ -4019,9 +4084,9 @@ class SurveyController {
 
                     packagesToProcess.each { pkg ->
                         if(params.linkWithEntitlements)
-                            pkg.addToSubscriptionCurrentStock(memberSub, newParentSub)
+                            subscriptionService.addToSubscriptionCurrentStock(memberSub, newParentSub, pkg)
                         else
-                            pkg.addToSubscription(memberSub, false)
+                            subscriptionService.addToSubscription(memberSub, pkg, false)
                     }
 
                     licensesToProcess.each { License lic ->
@@ -4103,7 +4168,7 @@ class SurveyController {
             }
         }
 
-        SurveyProperty.withTransaction { TransactionStatus ts ->
+        PropertyDefinition.withTransaction { TransactionStatus ts ->
             if (value == '' && field) {
                 // Allow user to set a rel to null be calling set rel ''
                 property[field] = null
@@ -4228,6 +4293,7 @@ class SurveyController {
                     flash.error = ""
                     flash.message = ""
                     redirect controller: 'survey', action: 'show', params: [id: result.targetObject.surveyInfo.id, surveyConfigID: result.targetObject.id]
+                    return
                 }
                 break
             default:
@@ -4249,8 +4315,10 @@ class SurveyController {
     def tasks() {
         Map<String,Object> ctrlResult = surveyControllerService.tasks(this,params)
         if(ctrlResult.error == SurveyControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result)
+            if(!ctrlResult.result) {
                 response.sendError(401)
+                return
+            }
             else {
                 flash.error = ctrlResult.result.error
             }
@@ -4258,7 +4326,13 @@ class SurveyController {
         else {
             flash.message = ctrlResult.result.message
         }
-        ctrlResult.result
+        if(params.returnToShow) {
+            redirect action: 'show', id: params.id
+            return
+        }
+        else {
+            ctrlResult.result
+        }
     }
 
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = 2)

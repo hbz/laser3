@@ -18,6 +18,13 @@ class GenericHelper {
         return false
     }
 
+    static boolean isFieldVirtual(String fieldName) {
+        if (fieldName in [ 'region' ]) {
+            return true
+        }
+        return false
+    }
+
     static String getFieldType(Map<String, Object> objConfig, String fieldName) {
         objConfig.fields.get(fieldName)
     }

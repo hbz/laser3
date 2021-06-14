@@ -124,18 +124,20 @@
             <br />
             <br />
 
-            <semui:filter>
-            <g:form action="surveyCostItems" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
-            <g:render template="/templates/filter/orgFilter"
-            model="[
-                              tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value']],
-                              tmplConfigFormFilter: true
-                      ]"/>
-            </g:form>
+            <g:render template="/templates/filter/javascript" />
+
+            <semui:filter showFilterButton="true">
+                <g:form action="surveyCostItems" method="post" class="ui form"
+                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
+                <g:render template="/templates/filter/orgFilter"
+                model="[
+                                  tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value']],
+                                  tmplConfigFormFilter: true
+                          ]"/>
+                </g:form>
             </semui:filter>
 
-            <br>
+            <br><br>
 
             <g:form action="processSurveyCostItemsBulk" name="surveyCostItemsBulk" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
@@ -359,7 +361,10 @@
 
                 <br />
                 <br />
-                <button name="deleteCostItems" value="true" type="submit" class="ui icon negative button" onclick="return confirm('${message(code:'confirm.dialog.delete.surveyCostItems')}')"
+                <button name="deleteCostItems" value="true" type="submit"
+                        class="ui icon negative button js-open-confirm-modal"
+                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyCostItems")}"
+                        data-confirm-term-how="delete"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                     <i class="trash alternate icon"></i> ${message(code: "surveyCostItems.bulkOption.delete")}

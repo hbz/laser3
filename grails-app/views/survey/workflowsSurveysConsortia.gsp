@@ -177,16 +177,16 @@
     <semui:tabs actionName="${actionName}">
         <semui:tabsItem controller="survey" action="workflowsSurveysConsortia"
                         params="${tmpParams + [tab: 'created']}" text="Erstellt" tab="created"
-                        counts="${countSurveyConfigs?.created}"/>
+                        counts="${countSurveyConfigs.created}"/>
         <semui:tabsItem controller="survey" action="workflowsSurveysConsortia"
                         params="${tmpParams + [tab: 'active']}" text="Aktiv" tab="active"
-                        counts="${countSurveyConfigs?.active}"/>
+                        counts="${countSurveyConfigs.active}"/>
         <semui:tabsItem controller="survey" action="workflowsSurveysConsortia"
                         params="${tmpParams + [tab: 'finish']}" text="Beendet" tab="finish"
-                        counts="${countSurveyConfigs?.finish}"/>
+                        counts="${countSurveyConfigs.finish}"/>
         <semui:tabsItem controller="survey" action="workflowsSurveysConsortia"
                         params="${tmpParams + [tab: 'inEvaluation']}" text="In Auswertung" tab="inEvaluation"
-                        counts="${countSurveyConfigs?.inEvaluation}"/>
+                        counts="${countSurveyConfigs.inEvaluation}"/>
     </semui:tabs>
 
     <div class="ui bottom attached tab segment active">
@@ -249,7 +249,7 @@
 
 
                     <g:set var="participantsFinish"
-                           value="${SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
+                           value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)}"/>
 
                     <g:set var="participantsTotal"
                            value="${surveyConfig?.orgs}"/>

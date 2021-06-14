@@ -170,7 +170,7 @@ class OrgExport extends AbstractExport {
                 else if (key == 'legalInfo') {
                     content.add(
                             ( org.createdBy != null ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value') ) +
-                            CSV_VALUE_SEPARATOR +
+                            ' / ' +
                             ( org.legallyObligedBy != null? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value') )
                     )
                 }

@@ -168,47 +168,24 @@
 
             $('#chart-chooser').dropdown('set selected', 'bar');
 
-            JSPC.app.reporting.countryRegionParams = {
-                'filter\\:member' : ${raw(params.list('filter:member_region'))},
-                'filter\\:org' : ${raw(params.list('filter:org_region'))}
-            }
-
             JSPC.app.reporting.countryRegionUpdate = function( selectorPart ) {
-                var $region  = $('select[name=' + selectorPart + '_region]');
-                var $country = $('select[name=' + selectorPart + '_country]');
+                var $country     = $('select[name=' + selectorPart + '_country]');
+                var $region      = $('select[name=' + selectorPart + '_region_virtualFF]');
+                var $regionValue = $('input[name=' + selectorPart + '_region]');
 
-                /* - TODO
-                $region.dropdown('change values', []);
-                $region.dropdown('restore placeholder text');
-                */
-                var url = '<g:createLink controller="ajaxJson" action="getRegions"/>?simple=true&country=';
+                var url = '<g:createLink controller="ajaxJson" action="getRegions"/>?simple=true';
                 if ($country.val()) {
-                    url = url + $country.val()
+                    url = url + '&country=' + $country.val()
                 }
-
-                $region.empty();
-                $region.append($('<option value="" selected="selected">${message(code: 'default.select.choose.label')}</option>'));
-                $region.dropdown('clear').dropdown('set selected', '');
+                $region.dropdown('change values', []);
 
                 $.ajax({
                     url: url,
                     success: function (data) {
-                        $.each(data, function (key, entry) {
-                            var $elem = $('<option></option>').attr('value', entry.id).text( entry['value_' + JSPC.currLanguage] );
-                            if (JSPC.helper.contains( JSPC.app.reporting.countryRegionParams[ selectorPart ], entry.id )) {
-                                $elem.attr('selected', 'selected');
-                            }
-                            $region.append($elem);
-                        });
-
-                        /* - TODO
                         $region.dropdown('change values', data.map( function(e){
                             return { value: e.id, name: e.value_de, text: e.value_de }
                         }))
-                        $region.dropdown('set selected', JSPC.app.reporting.countryRegionParams[ selectorPart ]);
-
-                        $region.dropdown('refresh');
-                        */
+                        $region.dropdown('set selected', $regionValue.attr('value'));
                     }
                 });
             }
@@ -220,6 +197,16 @@
             $("select[name=filter\\:org_country]").on( 'change', function() {
                 JSPC.app.reporting.countryRegionUpdate( 'filter\\:org' );
             }).trigger( 'change' );
+
+            $("select[name=filter\\:member_region_virtualFF]").dropdown(
+                'setting', 'onChange', function(value, text, $choice) {
+                    $("input[name=filter\\:member_region]").attr('value', value);
+            });
+
+            $("select[name=filter\\:org_region_virtualFF]").dropdown(
+                'setting', 'onChange', function(value, text, $choice) {
+                    $("input[name=filter\\:org_region]").attr('value', value);
+            });
         </laser:script>
 
         <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">

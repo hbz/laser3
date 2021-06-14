@@ -139,6 +139,7 @@ class UserController  {
             if (!result.editable) {
                 flash.error = message(code: 'default.noPermissions') as String
                 redirect url: request.getHeader('referer'), id: params.id
+                return
             }
             if (result.user) {
                 String newPassword = PasswordUtils.getRandomUserPassword()
@@ -156,6 +157,7 @@ class UserController  {
 
             flash.error = message(code: 'user.newPassword.fail') as String
             redirect url: request.getHeader('referer'), id: params.id
+            return
         }
     }
 
@@ -202,10 +204,12 @@ class UserController  {
         if(success instanceof User) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'user.label'), success.id]) as String
             redirect action: 'edit', id: success.id
+            return
         }
         else if(success instanceof List) {
             flash.error = success.join('<br>')
             redirect action: 'create'
+            return
         }
     }
 }

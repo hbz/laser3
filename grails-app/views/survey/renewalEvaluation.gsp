@@ -64,28 +64,6 @@ ${surveyInfo.name}
 
     <semui:form>
 
-        <div style="text-align: right">
-            <semui:controlButtons>
-                <semui:exportDropdown>
-                %{--<semui:exportDropdownItem>
-                    <g:link class="item" action="renewalEvaluation" id="${surveyInfo.id}"
-                            params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'renewalEvaluation.exportRenewal')}</g:link>
-                    </semui:exportDropdownItem>--}%
-
-                    <semui:actionsDropdownItem data-semui="modal" href="#individuallyExportModal"
-                                               message="renewalEvaluation.exportRenewal"/>
-
-                </semui:exportDropdown>
-                %{--<semui:actionsDropdown>
-                    <g:if test="${parentSuccessorSubscription}">
-                                              <semui:actionsDropdownItem controller="survey" action="compareMembersOfTwoSubs"
-                                                   params="[id: params.id, surveyConfigID: surveyConfig.id]"
-                                                   message="surveyInfo.transferOverView"/>
-                    </g:if>
-                </semui:actionsDropdown>--}%
-            </semui:controlButtons>
-        </div>
-
         %{--<h3 class="ui header">
         <g:message code="renewalEvaluation.parentSubscription"/>:
         <g:if test="${parentSubscription}">
@@ -156,21 +134,49 @@ ${surveyInfo.name}
 
     </semui:form>
 
-    <g:if test="${memberProperties}">%{-- check for content --}%
-        <g:if test="${parentSubscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_ADMINISTRATIVE]}">
-            <div class="ui card la-dl-no-table">
+    <div class="la-inline-lists">
+            <div class="ui card">
                 <div class="content">
-                    <h2 class="ui header">${message(code:'subscription.properties.consortium')}</h2>
-                    <div id="member_props_div">
-                        <g:render template="/templates/properties/members" model="${[
-                                prop_desc: PropertyDefinition.SUB_PROP,
-                                ownobj: parentSubscription,
-                                custom_props_div: "member_props_div"]}"/>
+                    <h2 class="ui header">${message(code:'renewalEvaluation.propertiesChanged')}</h2>
+                    <div>
+                        <table class="ui la-table table">
+                            <thead>
+                            <tr>
+                                <th class="center aligned">${message(code: 'sidewide.number')}</th>
+                                <th>${message(code: 'propertyDefinition.label')}</th>
+                                <th>${message(code:'renewalEvaluation.propertiesChanged')}</th>
+                                <th>${message(code: 'default.actions.label')}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <g:each in="${propertiesChanged}" var="property" status="i">
+                                <g:set var="propertyDefinition"
+                                       value="${PropertyDefinition.findById(property.key)}"/>
+                                <tr>
+                                    <td class="center aligned">
+                                        ${i + 1}
+                                    </td>
+                                    <td>
+                                        ${propertyDefinition.getI10n('name')}
+                                    </td>
+                                    <td>${property.value.size()}</td>
+                                    <td>
+                                        <a class="ui button" onclick="JSPC.app.propertiesChanged(${surveyInfo.id}, ${params.surveyConfigID}, ${property.key});">
+                                            <g:message code="default.button.show.label"/>
+                                        </a>
+                                    </td>
+                                </tr>
+
+                            </g:each>
+                            </tbody>
+                        </table>
+
                     </div>
                 </div>
             </div>
-        </g:if>
-    </g:if>
+    </div>
+
 
     <semui:form>
 
@@ -200,10 +206,10 @@ ${surveyInfo.name}
                         total="${orgsWithTermination.size()}"/>
             </a>
 
-           %{-- <a class="item" data-tab="orgsWithoutResult">
+           <a class="item" data-tab="orgsWithoutResult">
                 ${message(code: 'renewalEvaluation.orgsWithoutResult.label')} <semui:totalNumber
                         total="${orgsWithoutResult.size()}"/>
-            </a>--}%
+            </a>
         </div>
 
         <div class="ui bottom attached active tab segment" data-tab="orgsContinuetoSubscription">
@@ -229,12 +235,12 @@ ${surveyInfo.name}
         </div>
 
 
-        %{--<div class="ui bottom attached tab segment" data-tab="orgsWithoutResult">
+        <div class="ui bottom attached tab segment" data-tab="orgsWithoutResult">
             <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.orgsWithoutResult.label')} (${message(code: 'surveys.tabs.termination')})<semui:totalNumber
                     total="${orgsWithoutResult.size()}"/></h4>
 
             <g:render template="renewalResult" model="[participantResults: orgsWithoutResult]"/>
-        </div>--}%
+        </div>
 
 
         <div class="ui bottom attached tab segment" data-tab="orgsWithMultiYearTermSub">
@@ -360,7 +366,24 @@ ${surveyInfo.name}
 
     </g:form>
 
-    <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal', token: token]" />
+    <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
+
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.app.propertiesChanged = function (id, surveyConfigID, propertyDefinitionId) {
+            $.ajax({
+                url: '<g:createLink controller="survey" action="showPropertiesChanged"/>?id='+id+'&surveyConfigID='+surveyConfigID+'&propertyDefinitionId='+propertyDefinitionId,
+                success: function(result){
+                    $("#dynamicModalContainer").empty();
+                    $("#modalPropertiesChanged").remove();
+
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal('show');
+                }
+            });
+        }
+    </laser:script>
+
 
 </g:else>
 

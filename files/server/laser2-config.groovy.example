@@ -25,6 +25,8 @@ notifications.email.from    = 'laser@local'
 notifications.email.replyTo = 'laser@local'
 notifications.email.genericTemplate = true // if enabled, no customisation in email ..  else, customised template will be sent
 
+//wkhtmltopdf.xvfbRunner = '/usr/bin/xvfb-run' // pdf generation; only for remote server
+
 financials.currency = "EUR|GBP|USD|CHF" // priority of order
 
 activateTestJob                     = false

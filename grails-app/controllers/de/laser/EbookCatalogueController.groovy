@@ -154,6 +154,7 @@ class EbookCatalogueController {
             }
             else {
                 redirect controller: 'public', action: 'gasco'
+                return
             }
         }
         result

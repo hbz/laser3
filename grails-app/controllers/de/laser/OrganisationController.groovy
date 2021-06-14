@@ -67,6 +67,7 @@ class OrganisationController  {
         // forbidden access
         if (! hasAccess) {
             redirect controller: 'organisation', action: 'show', id: org.id
+            return
         }
 
         // adding default settings
@@ -171,6 +172,7 @@ class OrganisationController  {
             catch (Exception e) {
                 log.error("Problem",e);
                 response.sendError(500)
+                return
             }
         }
         else {
@@ -260,6 +262,7 @@ class OrganisationController  {
             catch (Exception e) {
                 log.error("Problem",e);
                 response.sendError(500)
+                return
             }
         }
         withFormat {
@@ -543,11 +546,13 @@ class OrganisationController  {
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'org.label'), orgInstance.name])
                 redirect action: 'show', id: orgInstance.id
+                return
             }
             else {
                 log.error("Problem creating org: ${orgInstance.errors}");
                 flash.message = message(code: 'org.error.createProviderError', args: [orgInstance.errors])
                 redirect(action: 'findProviderMatches')
+                return
             }
         }
     }
@@ -573,9 +578,11 @@ class OrganisationController  {
         Map<String,Object> ctrlResult = organisationControllerService.createMember(this,params)
         if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR) {
             redirect action:'findOrganisationMatches', params:params
+            return
         }
         else {
             redirect action: 'show', id: ctrlResult.result.orgInstance.id
+            return
         }
     }
 
@@ -621,12 +628,15 @@ class OrganisationController  {
             return
         }
         if (! result.orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
             redirect action: 'list'
             return
         }
 
         result.availableOrgTypes = RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)-RDStore.OT_CONSORTIUM
         result.missing = [:]
+        if(result.error)
+            flash.error = result.error //to display we:kb's eventual 404
 
         if(result.inContextOrg && result.institution.eInvoice) {
             if(!result.institution.eInvoicePortal)
@@ -636,12 +646,6 @@ class OrganisationController  {
         }
 
         pu.setBenchmark('orgRoles & editable')
-
-      if (!result.orgInstance) {
-        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
-        redirect action: 'list'
-        return
-      }
 
         pu.setBenchmark('tasks')
 
@@ -672,7 +676,7 @@ class OrganisationController  {
 
         pu.setBenchmark('identifier')
 
-        if(result.isProviderOrAgency){
+        if(!result.isProviderOrAgency){
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
@@ -831,8 +835,10 @@ class OrganisationController  {
                 try {
                     flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
                     dTask.delete()
-                    if(params.returnToShow)
+                    if(params.returnToShow) {
                         redirect action: 'show', id: params.id
+                        return
+                    }
                 }
                 catch (Exception e) {
                     flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
@@ -891,7 +897,7 @@ class OrganisationController  {
 
         docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'organisation', action: 'documents', id: params.instanceId /*, fragment: 'docstab' */
+        redirect controller: 'organisation', action:params.redirectAction, id:params.instanceId /*, fragment: 'docstab' */
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
@@ -947,6 +953,7 @@ class OrganisationController  {
 
         if (! result.editable) {
             redirect controller: 'organisation', action: 'show', id: result.orgInstance.id
+            return
         }
 
         Map filterParams = params
@@ -1054,10 +1061,12 @@ class OrganisationController  {
         if(success instanceof User) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'user.label'), success.id]) as String
             redirect action: 'editUser', params: [uoid: genericOIDService.getOID(success), id: params.id]
+            return
         }
         else if(success instanceof List) {
             flash.error = success.join('<br>')
             redirect action: 'createUser'
+            return
         }
     }
 
@@ -1383,8 +1392,10 @@ class OrganisationController  {
     def toggleCombo() {
         Map<String,Object> ctrlResult = organisationControllerService.toggleCombo(this,params)
         if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result)
+            if(!ctrlResult.result) {
                 response.sendError(401)
+                return
+            }
             else {
                 flash.error = ctrlResult.result.error
             }

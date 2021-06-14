@@ -55,12 +55,19 @@
 
             <div class="field">
                 <label>${message(code: 'default.valid_onYear.label')}</label>
-                <g:select name="validOnYear"
-                          from="${surveyYears}"
-                          class="ui fluid search selection dropdown"
-                          value="${params.validOnYear}"
-                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                <select id="validOnYear" name="validOnYear" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <option value="all" <%=("all" in params.list('validOnYear')) ? 'selected="selected"' : ''%>>
+                        ${message(code: 'default.select.all.label')}
+                    </option>
 
+                    <g:each in="${surveyYears}" var="surveyYear">
+                        <option <%=(params.list('validOnYear').contains(surveyYear.toString())) ? 'selected="selected"' : ''%>
+                                value="${surveyYear}" title="${surveyYear}">
+                            ${surveyYear}
+                        </option>
+                    </g:each>
+                </select>
             </div>
 
         </div>
@@ -172,22 +179,27 @@
 
 <semui:form>
 
+    <%
+        def tmpParams = params.clone()
+        tmpParams.remove("tab")
+    %>
+
     <semui:tabs actionName="${actionName}">
         <semui:tabsItem controller="myInstitution" action="currentSurveys"
-                        params="${[id: params.id, tab: 'new']}" text="${message(code: "surveys.tabs.new")}" tab="new"
-                        counts="${countSurveys?.new}"/>
+                        params="${tmpParams+[id: params.id, tab: 'new']}" text="${message(code: "surveys.tabs.new")}" tab="new"
+                        counts="${countSurveys.new}"/>
         <semui:tabsItem controller="myInstitution" action="currentSurveys"
-                        params="${[id: params.id, tab: 'processed']}" text="${message(code: "surveys.tabs.processed")}" tab="processed"
-                        counts="${countSurveys?.processed}"/>
+                        params="${tmpParams+[id: params.id, tab: 'processed']}" text="${message(code: "surveys.tabs.processed")}" tab="processed"
+                        counts="${countSurveys.processed}"/>
         <semui:tabsItem controller="myInstitution" action="currentSurveys"
-                        params="${[id: params.id, tab: 'finish']}" text="${message(code: "surveys.tabs.finish")}" tab="finish"
-                        counts="${countSurveys?.finish}"/>
+                        params="${tmpParams+[id: params.id, tab: 'finish']}" text="${message(code: "surveys.tabs.finish")}" tab="finish"
+                        counts="${countSurveys.finish}"/>
         <semui:tabsItem controller="myInstitution" action="currentSurveys" class="ui red" countsClass="red"
-                        params="${[id: params.id, tab: 'termination']}" text="${message(code: "surveys.tabs.termination")}" tab="termination"
-                        counts="${countSurveys?.termination}"/>
+                        params="${tmpParams+[id: params.id, tab: 'termination']}" text="${message(code: "surveys.tabs.termination")}" tab="termination"
+                        counts="${countSurveys.termination}"/>
         <semui:tabsItem controller="myInstitution" action="currentSurveys" class="ui orange" countsClass="orange"
-                        params="${[id: params.id, tab: 'notFinish']}" text="${message(code: "surveys.tabs.notFinish")}" tab="notFinish"
-                        counts="${countSurveys?.notFinish}"/>
+                        params="${tmpParams+[id: params.id, tab: 'notFinish']}" text="${message(code: "surveys.tabs.notFinish")}" tab="notFinish"
+                        counts="${countSurveys.notFinish}"/>
 
     </semui:tabs>
 

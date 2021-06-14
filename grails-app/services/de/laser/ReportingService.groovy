@@ -14,6 +14,7 @@ import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.reporting.myInstitution.base.BaseQuery
 import de.laser.reporting.subscription.SubscriptionReporting
 import grails.gorm.transactions.Transactional
+import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.commons.lang3.RandomStringUtils
 

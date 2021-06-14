@@ -14,11 +14,13 @@ import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
 import grails.util.Holders
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 @Transactional
@@ -34,6 +36,7 @@ class SurveyService {
     String replyTo
     GenericOIDService genericOIDService
     SubscriptionService subscriptionService
+    FilterService filterService
 
     SimpleDateFormat formatter = DateUtils.getSDF_dmy()
     String from
@@ -56,12 +59,12 @@ class SurveyService {
         }
 
         if (accessService.checkPermAffiliationX('ORG_BASIC_MEMBER', 'INST_EDITOR', 'ROLE_ADMIN')) {
-            def surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
+            def surveyOrg = SurveyOrg.findByOrgAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
-            if (surveyResults) {
-                return surveyResults.finishDate.contains(null) ? true : false
-            } else {
+            if (surveyOrg.finishDate) {
                 return false
+            } else {
+                return true
             }
         }else{
             return false
@@ -321,7 +324,7 @@ class SurveyService {
                         row.add([field: value ?: '', style: null])
                         row.add([field: surResult.comment ?: '', style: null])
                         row.add([field: surResult.ownerComment ?: '', style: null])
-                        row.add([field: surResult.finishDate ? sdf.format(surResult.finishDate) : '', style: null])
+                        row.add([field: surveyOrg.finishDate ? sdf.format(surveyOrg.finishDate) : '', style: null])
 
 
                     }
@@ -397,7 +400,7 @@ class SurveyService {
                              [field: messageSource.getMessage('surveyResult.finishDate', null, LocaleContextHolder.getLocale()), style: 'bold']]
                 surveyData.add(row2)
 
-
+                SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextOrg, surveyConfig)
                 SurveyResult.findAllBySurveyConfigAndParticipant(surveyConfig, contextOrg).sort{it.type.name}.each { surResult ->
                     List row3 = []
                     row3.add([field: surResult.type?.getI10n('name') ?: '', style: null])
@@ -422,7 +425,7 @@ class SurveyService {
                     row3.add([field: value ?: '', style: null])
                     row3.add([field: surResult.comment ?: '', style: null])
                     row3.add([field: surResult.participantComment ?: '', style: null])
-                    row3.add([field: surResult.finishDate ? sdf.format(surResult.finishDate) : '', style: null])
+                    row3.add([field: surveyOrg.finishDate ? sdf.format(surveyOrg.finishDate) : '', style: null])
 
                     surveyData.add(row3)
                 }
@@ -702,6 +705,16 @@ class SurveyService {
 
                     String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + subjectText)
 
+                    List generalContactsEMails = []
+
+                    surveyInfo.owner.getGeneralContactPersons(true)?.each { person ->
+                        person.contacts.each { contact ->
+                            if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
+                                generalContactsEMails << contact.content
+                            }
+                        }
+                    }
+
                     try {
                         if (emailReceiver == null || emailReceiver.isEmpty()) {
                             log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
@@ -720,14 +733,14 @@ class SurveyService {
                                     from    from
                                     cc      ccAddress
                                     subject mailSubject
-                                    html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults])
+                                    html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
                                 }
                             } else {
                                 mailService.sendMail {
                                     to      emailReceiver
                                     from from
                                     subject mailSubject
-                                    html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults])
+                                    html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
                                 }
                             }
 
@@ -784,8 +797,9 @@ class SurveyService {
                            messageSource.getMessage('surveyResult.finishDate', null, LocaleContextHolder.getLocale())])
 
             List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(participant, surveyConfigs)
-            surveyResults.each { surveyResult ->
 
+            surveyResults.each { surveyResult ->
+                    SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, participant)
                     Subscription subscription
                     String surveyName = surveyResult.surveyConfig.getConfigNameShort()
                         List row = []
@@ -834,7 +848,7 @@ class SurveyService {
                             row.add([field: subscription?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
                             row.add([field: subscription?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
 
-                                CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, participant), RDStore.COST_ITEM_DELETED)
+                                CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)
 
                                 row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
                                 row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
@@ -875,7 +889,7 @@ class SurveyService {
                             row.add([field: value ?: '', style: null])
                             row.add([field: surveyResult.comment ?: '', style: null])
                             row.add([field: surveyResult.ownerComment ?: '', style: null])
-                            row.add([field: surveyResult.finishDate ? sdf.format(surveyResult.finishDate) : '', style: null])
+                            row.add([field: surveyOrg.finishDate ? sdf.format(surveyOrg.finishDate) : '', style: null])
 
 
 
@@ -1022,25 +1036,34 @@ class SurveyService {
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }
 
-    Map<String,Object> getSurveyConfigCounts() {
+    Map<String,Object> getSurveyConfigCounts(GrailsParameterMap parameterMap) {
         Map<String, Object> result = [:]
 
         Org contextOrg = contextService.getOrg()
 
-        result.created = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and (surInfo.status = :status or surInfo.status = :status2)",
-                [contextOrg: contextOrg, status: RDStore.SURVEY_READY, status2: RDStore.SURVEY_IN_PROCESSING]).size()
+        GrailsParameterMap tmpParams = (GrailsParameterMap) parameterMap.clone()
 
-        result.active = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
-                [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_STARTED]).size()
+        result = setSurveyConfigCounts(result, 'created', tmpParams, contextOrg)
 
-        result.finish = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
-                [contextOrg: contextOrg, status: RDStore.SURVEY_SURVEY_COMPLETED]).size()
+        result = setSurveyConfigCounts(result, 'active', tmpParams, contextOrg)
 
-        result.inEvaluation = SurveyConfig.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig where surInfo.owner = :contextOrg and surInfo.status = :status",
-                [contextOrg: contextOrg, status: RDStore.SURVEY_IN_EVALUATION]).size()
+        result = setSurveyConfigCounts(result, 'finish', tmpParams, contextOrg)
 
+        result = setSurveyConfigCounts(result, 'inEvaluation', tmpParams, contextOrg)
 
         return result
+    }
+
+    private Map setSurveyConfigCounts(Map result, String tab, GrailsParameterMap parameterMap, Org owner){
+        SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
+        Map<String,Object> fsq = [:]
+
+        parameterMap.tab = tab
+        fsq = filterService.getSurveyConfigQueryConsortia(parameterMap, sdFormat, owner)
+        result."${tab}" =  SurveyInfo.executeQuery(fsq.query, fsq.queryParams, parameterMap).size()
+
+        return result
+
     }
 
     List getSurveyProperties(Org contextOrg) {
@@ -1229,6 +1252,75 @@ class SurveyService {
                         surveyConfig: newSurveyConfig).save()
             }
         }
+    }
+
+    private def getSurveyParticipantCounts_New(Org participant, GrailsParameterMap parameterMap){
+        Map<String, Object> result = [:]
+
+        Org contextOrg = contextService.getOrg()
+
+        GrailsParameterMap tmpParams = (GrailsParameterMap) parameterMap.clone()
+        if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM') {
+
+            result = setSurveyParticipantCounts(result, 'new', tmpParams, participant, contextOrg)
+
+            result = setSurveyParticipantCounts(result, 'processed', tmpParams, participant, contextOrg)
+
+            result = setSurveyParticipantCounts(result, 'finish', tmpParams, participant, contextOrg)
+
+            result = setSurveyParticipantCounts(result, 'notFinish', tmpParams, participant, contextOrg)
+
+            result = setSurveyParticipantCounts(result, 'termination', tmpParams, participant, contextOrg)
+
+
+        }else {
+
+            result = setSurveyParticipantCounts(result, 'new', tmpParams, participant, null)
+
+            result = setSurveyParticipantCounts(result, 'processed', tmpParams, participant, null)
+
+            result = setSurveyParticipantCounts(result, 'finish', tmpParams, participant, null)
+
+            result = setSurveyParticipantCounts(result, 'notFinish', tmpParams, participant, null)
+
+            result = setSurveyParticipantCounts(result, 'termination', tmpParams, participant, null)
+        }
+        return result
+    }
+
+    private Map setSurveyParticipantCounts(Map result, String tab, GrailsParameterMap parameterMap, Org participant, Org owner = null){
+        SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
+        Map fsq = [:]
+
+        if(owner){
+            parameterMap.owner = owner
+        }
+        parameterMap.tab = tab
+        fsq = filterService.getParticipantSurveyQuery_New(parameterMap, sdFormat, participant)
+        result."${tab}" = SurveyResult.executeQuery(fsq.query, fsq.queryParams, parameterMap).groupBy { it.id[1] }.size()
+
+        return result
+
+    }
+
+    private def getSurveyParticipantCounts(Org participant){
+        Map<String, Object> result = [:]
+
+        result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg left join surConfig.propertySet surResult where surOrg.org = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and surOrg.finishDate is null))",
+                [status: RDStore.SURVEY_SURVEY_STARTED,
+                 participant: participant]).groupBy {it.id[1]}.size()
+
+        result.processed = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg left join surConfig.propertySet surResult where surOrg.org = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated < sr.lastUpdated and surOrg.finishDate is null))",
+                [status: RDStore.SURVEY_SURVEY_STARTED,
+                 participant: participant]).groupBy {it.id[1]}.size()
+
+        result.finish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surOrg.org = :participant and (surOrg.finishDate is not null)",
+                [participant: participant]).groupBy {it.id[1]}.size()
+
+        result.notFinish = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg  where surOrg.org = :participant and surOrg.finishDate is null and (surInfo.status in (:status))",
+                [status: [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED],
+                 participant: participant]).groupBy {it.id[1]}.size()
+        return result
     }
 
 }

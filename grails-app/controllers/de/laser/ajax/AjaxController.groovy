@@ -180,23 +180,30 @@ class AjaxController {
                             def binding_properties = ["${params.name}": value]
                             bindData(target, binding_properties)
                         }
+                        if (target instanceof Org) {
+                            if(params.name == "status" && value == RDStore.ORG_STATUS_RETIRED) {
+                                target.retirementDate = new Date()
+                            }
+                        }
 
                         if (!target.save()) {
                             Map r = [status: "error", msg: message(code: 'default.save.error.general.message')]
                             render r as JSON
                             return
                         }
+
                         if (target instanceof SurveyResult) {
                             Org org = contextService.getOrg()
+                            SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(target.surveyConfig, target.participant)
 
                             //If Survey Owner set Value then set FinishDate
-                            if (org?.id == target.owner?.id && target.finishDate == null) {
+                            if (org?.id == target.owner.id && (target.type == RDStore.SURVEY_PROPERTY_PARTICIPATION) && surveyOrg.finishDate == null) {
                                 String property = target.type.getImplClassValueProperty()
 
                                 if (target[property] != null) {
-                                    log.debug("Set/Save FinishDate of SurveyResult (${target.id})")
-                                    target.finishDate = new Date()
-                                    target.save()
+                                    log.debug("Set/Save FinishDate of SurveyOrg (${surveyOrg.id})")
+                                    surveyOrg.finishDate = new Date()
+                                    surveyOrg.save()
                                 }
                             }
                         }
@@ -430,15 +437,21 @@ class AjaxController {
       EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}", contextService.USER_SCOPE)
       Map checked = cache.get('checked')
       if(params.index == 'all') {
-		  def newChecked = [:]
-		  checked.eachWithIndex { e, int idx ->
-			  newChecked[e.key] = params.checked == 'true' ? 'checked' : null
-			  cache.put('checked',newChecked)
+		  Map<String, String> newChecked = checked ?: [:]
+          Set<Long> pkgFilter = []
+          if(params.pkgFilter)
+              pkgFilter << params.long('pkgFilter')
+          else pkgFilter.addAll(SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp where sp.subscription.id = :sub',[sub:params.long("sub")]))
+          Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg.id in (:pkgFilter)',[pkgFilter:pkgFilter])
+		  tippUUIDs.each { String e ->
+			  newChecked[e] = params.checked == 'true' ? 'checked' : null
 		  }
+          cache.put('checked',newChecked)
 	  }
 	  else {
-		  checked[params.index] = params.checked == 'true' ? 'checked' : null
-		  if(cache.put('checked',checked))
+          Map<String, String> newChecked = checked ?: [:]
+		  newChecked[params.index] = params.checked == 'true' ? 'checked' : null
+		  if(cache.put('checked',newChecked))
 			  success.success = true
 	  }
 
@@ -1631,90 +1644,103 @@ class AjaxController {
 
         try {
             if (target_object) {
-                if (params.type == 'date') {
-                    SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                    def backup = target_object."${params.name}"
+                switch(params.type) {
+                    case 'date':
+                        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                        def backup = target_object."${params.name}"
 
-                    try {
-                        if (params.value && params.value.size() > 0) {
-                            // parse new date
-                            def parsed_date = sdf.parse(params.value)
-                            target_object."${params.name}" = parsed_date
-                        } else {
-                            // delete existing date
-                            target_object."${params.name}" = null
+                        try {
+                            if (params.value && params.value.size() > 0) {
+                                // parse new date
+                                def parsed_date = sdf.parse(params.value)
+                                target_object."${params.name}" = parsed_date
+                            } else {
+                                // delete existing date
+                                target_object."${params.name}" = null
+                            }
+                            target_object.save(failOnError: true)
                         }
-                        target_object.save(failOnError: true)
-                    }
-                    catch (Exception e) {
-                        target_object."${params.name}" = backup
-                        log.error(e.toString())
-                    }
-                    finally {
-                        if (target_object."${params.name}") {
-                            result = (target_object."${params.name}").format(message(code: 'default.date.format.notime'))
+                        catch (Exception e) {
+                            target_object."${params.name}" = backup
+                            log.error(e.toString())
                         }
-                    }
-                } else if (params.type == 'url') {
-                    def backup = target_object."${params.name}"
+                        finally {
+                            if (target_object."${params.name}") {
+                                result = (target_object."${params.name}").format(message(code: 'default.date.format.notime'))
+                            }
+                        }
+                        break
+                    case 'url':
+                        def backup = target_object."${params.name}"
 
-                    try {
-                        if (params.value && params.value.size() > 0) {
-                            target_object."${params.name}" = new URL(params.value)
-                        } else {
-                            // delete existing url
-                            target_object."${params.name}" = null
+                        try {
+                            if (params.value && params.value.size() > 0) {
+                                target_object."${params.name}" = new URL(params.value)
+                            } else {
+                                // delete existing url
+                                target_object."${params.name}" = null
+                            }
+                            target_object.save(failOnError: true)
                         }
+                        catch (Exception e) {
+                            target_object."${params.name}" = backup
+                            log.error(e.toString())
+                        }
+                        finally {
+                            if (target_object."${params.name}") {
+                                result = target_object."${params.name}"
+                            }
+                        }
+                        break
+                    case 'readerNumber':
+                        if(target_object.semester)
+                            ReaderNumber.executeUpdate('update ReaderNumber rn set rn.dateGroupNote = :note where rn.org = :org and rn.semester = :semester',[org: target_object.org, semester: target_object.semester, note: params.value])
+                        else if(target_object.dueDate)
+                            ReaderNumber.executeUpdate('update ReaderNumber rn set rn.dateGroupNote = :note where rn.org = :org and rn.dueDate = :dueDate',[org: target_object.org, dueDate: target_object.dueDate, note: params.value])
+                        result = params.value
+                        break
+                    default:
+                        Map binding_properties = [:]
+
+                        if (target_object."${params.name}" instanceof BigDecimal) {
+                            params.value = escapeService.parseFinancialValue(params.value)
+                        }
+                        if (target_object."${params.name}" instanceof Boolean) {
+                            params.value = params.value?.equals("1")
+                        }
+                        if (params.value instanceof String) {
+                            String value = params.value.startsWith('www.') ? ('http://' + params.value) : params.value
+                            binding_properties[params.name] = value
+                        } else {
+                            binding_properties[params.name] = params.value
+                        }
+                        bindData(target_object, binding_properties)
+
                         target_object.save(failOnError: true)
-                    }
-                    catch (Exception e) {
-                        target_object."${params.name}" = backup
-                        log.error(e.toString())
-                    }
-                    finally {
-                        if (target_object."${params.name}") {
+
+
+                        if (target_object."${params.name}" instanceof BigDecimal) {
+                            result = NumberFormat.getInstance(LocaleContextHolder.getLocale()).format(target_object."${params.name}")
+                            //is for that German users do not cry about comma-dot-change
+                        } else {
                             result = target_object."${params.name}"
                         }
-                    }
-                } else {
-                    Map binding_properties = [:]
-
-                    if (target_object."${params.name}" instanceof BigDecimal) {
-                        params.value = escapeService.parseFinancialValue(params.value)
-                    }
-                    if (target_object."${params.name}" instanceof Boolean) {
-                        params.value = params.value?.equals("1")
-                    }
-                    if (params.value instanceof String) {
-                        String value = params.value.startsWith('www.') ? ('http://' + params.value) : params.value
-                        binding_properties[params.name] = value
-                    } else {
-                        binding_properties[params.name] = params.value
-                    }
-                    bindData(target_object, binding_properties)
-
-                    target_object.save(failOnError: true)
-
-
-                    if (target_object."${params.name}" instanceof BigDecimal) {
-                        result = NumberFormat.getInstance(LocaleContextHolder.getLocale()).format(target_object."${params.name}")
-                        //is for that German users do not cry about comma-dot-change
-                    } else {
-                        result = target_object."${params.name}"
-                    }
+                        break
                 }
 
                 if (target_object instanceof SurveyResult) {
 
                     Org org = contextService.getOrg()
+                    SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(target_object.surveyConfig, target_object.participant)
+
                     //If Survey Owner set Value then set FinishDate
-                    if (org?.id == target_object.owner?.id && target_object.finishDate == null) {
+                    if (org?.id == target_object.owner.id && (target_object.type == RDStore.SURVEY_PROPERTY_PARTICIPATION) && surveyOrg.finishDate == null) {
                         String property = target_object.type.getImplClassValueProperty()
 
                         if (target_object[property] != null) {
-                            log.debug("Set/Save FinishDate of SurveyResult (${target_object.id})")
-                            target_object.finishDate = new Date()
-                            target_object.save()
+                            log.debug("Set/Save FinishDate of SurveyOrg (${surveyOrg.id})")
+                            surveyOrg.finishDate = new Date()
+                            surveyOrg.save()
                         }
                     }
                 }

@@ -189,25 +189,58 @@
                     </div>
                 </div><!-- .card -->
             </g:if>
+            <g:elseif test="${isProviderOrAgency && orgInstanceRecord}">
+                <div class="ui card">
+                    <div class="content">
+                        <dl>
+                            <dt>
+                                <g:message code="org.metadataDownloaderURL.label" />
+                            </dt>
+                            <dd>
+                                <g:if test="${orgInstanceRecord.metadataDownloaderURL}">
+                                    ${orgInstanceRecord.metadataDownloaderURL} <a href="${orgInstanceRecord.metadataDownloaderURL}"><i title="${message(code: 'org.metadataDownloaderURL.label')} Link" class="external alternate icon"></i></a>
+                                </g:if>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>
+                                <g:message code="org.KBARTDownloaderURL.label" />
+                            </dt>
+                            <dd>
+                                <g:if test="${orgInstanceRecord.kbartDownloaderURL}">
+                                    ${orgInstanceRecord.kbartDownloaderURL} <a href="${orgInstanceRecord.kbartDownloaderURL}"><i title="${message(code: 'org.KBARTDownloaderURL.label')} Link" class="external alternate icon"></i></a>
+                                </g:if>
+                            </dd>
+                        </dl>
+                    </div>
+                </div><!-- .card -->
+            </g:elseif>
 
-            <g:if test="${isGrantedOrgRoleAdmin}">
+            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
                             <dt><g:message code="org.sector.label" /></dt>
                             <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>
+                                <semui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}"/>
                             </dd>
                         </dl>
                         <dl>
                             <dt>${message(code: 'default.status.label')}</dt>
 
                             <dd>
-                                <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
-                                    <semui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}"/>
-                                </g:if>
+                                <semui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}"/>
                             </dd>
                         </dl>
+                        <g:if test="${orgInstance.status == RDStore.ORG_STATUS_RETIRED}">
+                            <dl>
+                                <dt>${message(code: 'org.retirementDate.label')}</dt>
+
+                                <dd>
+                                    <g:formatDate date="${orgInstance.retirementDate}" format="${message(code: 'default.date.format.notime')}"/>
+                                </dd>
+                            </dl>
+                        </g:if>
                     </div>
                 </div><!-- .card -->
             </g:if>

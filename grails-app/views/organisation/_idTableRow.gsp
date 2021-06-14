@@ -1,4 +1,4 @@
-<%@page import="de.laser.ApiSource"%>
+<%@page import="de.laser.ApiSource; de.laser.IdentifierNamespace"%>
 <tr>
     <td>${tableRowNr}</td>
     <td>
@@ -30,10 +30,10 @@
         </g:if>
         <g:elseif test="${showWekbId}">
             ${orgInstance.gokbId}
-            <semui:linkIcon href="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)?.editUrl}/resource/show/${orgInstance.gokbId}" />
+            <semui:linkIcon href="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)?.editUrl}/public/orgContent/${orgInstance.gokbId}" />
         </g:elseif>
         <g:else>
-            ${id.value}
+            ${id.value == IdentifierNamespace.UNKNOWN ? "" : id.value}
                 <g:if test="${id.getURL()}">
                     <semui:linkIcon href="${id.getURL()}" />
                 </g:if>

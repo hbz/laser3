@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.PendingChangeConfiguration; de.laser.Platform" %>
+<%@page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.PendingChangeConfiguration; de.laser.Platform; de.laser.SubscriptionPackage" %>
 <laser:serviceInjection />
 
 <div class="ui card">
@@ -43,14 +43,14 @@
                         </div>
                     </td>
                     <td style="border-top: none" class="right aligned">
-                        <button id="pendingChangeConfigurationToggle${sp.id}"
-                                class="ui icon button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
-                                data-content="${message(code:'subscription.packages.config.header')}">
-                            <i class="ui angle double down icon"></i>
-                        </button>
-
-                        <laser:script file="${this.getGroovyPageFileName()}">
-                            $("#pendingChangeConfigurationToggle${sp.id}").on('click', function() {
+                        <g:if test="${editmode}">
+                            <button id="pendingChangeConfigurationToggle${sp.id}"
+                                    class="ui icon button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
+                                    data-content="${message(code:'subscription.packages.config.header')}">
+                                <i class="ui angle double down icon"></i>
+                            </button>
+                            <laser:script file="${this.getGroovyPageFileName()}">
+                                $("#pendingChangeConfigurationToggle${sp.id}").on('click', function() {
                                 $("#pendingChangeConfiguration${sp.id}").transition('slide down');
                                 if ($("#pendingChangeConfiguration${sp.id}").hasClass('visible')) {
                                     $(this).html('<i class="ui angle double down icon"></i>');
@@ -58,8 +58,7 @@
                                     $(this).html('<i class="ui angle double up icon"></i>');
                                 }
                             })
-                        </laser:script>
-                        <g:if test="${editmode}">
+                            </laser:script>
                             <g:link controller="subscription"
                                     action="unlinkPackage"
                                     extaContentFlag="false"
@@ -75,85 +74,122 @@
                         </g:if>
                     </td>
                 </tr>
-                <tr>
-                    <td style="border-top: none" colspan="3">
-                        <div id="pendingChangeConfiguration${sp.id}" class="hidden">
-                            <h5 class="ui header">
-                                <g:message code="subscription.packages.config.label" args="${[sp.pkg.name]}"/>
-                            </h5>
-                            <g:form controller="subscription" action="setupPendingChangeConfiguration" params="[id:sp.subscription.id,subscriptionPackage:sp.id]">
-                                <dl>
-                                    <dt class="control-label"><g:message code="subscription.packages.changeType.label"/></dt>
-                                    <dt class="control-label">
-                                        <g:message code="subscription.packages.setting.label"/>
-                                    </dt>
-                                    <dt class="control-label" data-tooltip="${message(code:"subscription.packages.notification.label")}">
-                                        <i class="ui large icon bullhorn"></i>
-                                    </dt>
-                                    <g:if test="${contextCustomerType == 'ORG_CONSORTIUM'}">
-                                        <dt class="control-label" data-tooltip="${message(code:'subscription.packages.auditable')}">
-                                            <i class="ui large icon thumbtack"></i>
-                                        </dt>
-                                    </g:if>
-                                </dl>
-                                <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,
-                                                                PendingChangeConfiguration.PACKAGE_DELETED,
-                                                                PendingChangeConfiguration.NEW_PRICE,
-                                                                PendingChangeConfiguration.PRICE_UPDATED,
-                                                                PendingChangeConfiguration.PRICE_DELETED]}"/>
-                                <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
-                                    <%
-                                        PendingChangeConfiguration pcc = sp.getPendingChangeConfig(settingKey)
-                                    %>
+                <g:if test="${editmode}">
+                    <tr>
+                        <td style="border-top: none" colspan="3">
+                            <div id="pendingChangeConfiguration${sp.id}" class="ui segment hidden">
+                                <h5 class="ui header">
+                                    <g:message code="subscription.packages.config.label" args="${[sp.pkg.name]}"/>
+                                </h5>
+                                <g:form controller="subscription" action="setupPendingChangeConfiguration" params="[id:sp.subscription.id,pkg:sp.pkg.id]">
                                     <dl>
+                                        <dt class="control-label"><g:message code="subscription.packages.changeType.label"/></dt>
                                         <dt class="control-label">
-                                            <g:message code="subscription.packages.${settingKey}"/>
+                                            <g:message code="subscription.packages.setting.label"/>
                                         </dt>
-                                        <dd>
-                                            <g:if test="${!(settingKey in excludes)}">
-                                                <g:if test="${editmode}">
-                                                    <laser:select class="ui dropdown"
-                                                                  name="${settingKey}!§!setting" from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
-                                                                  optionKey="id" optionValue="value"
-                                                                  value="${(pcc && pcc.settingValue) ? pcc.settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"
-                                                    />
-                                                </g:if>
-                                                <g:else>
-                                                    ${(pcc && pcc.settingValue) ? pcc.settingValue.getI10n("value") : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n("value")}
-                                                </g:else>
-                                            </g:if>
-                                        </dd>
-                                        <dd>
-                                            <g:if test="${editmode}">
-                                                <g:checkBox class="ui checkbox" name="${settingKey}!§!notification" checked="${pcc?.withNotification}"/>
-                                            </g:if>
-                                            <g:else>
-                                                ${(pcc && pcc.withNotification) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
-                                            </g:else>
-                                        </dd>
+                                        <dt class="control-label" data-tooltip="${message(code:"subscription.packages.notification.label")}">
+                                            <i class="ui large icon bullhorn"></i>
+                                        </dt>
                                         <g:if test="${contextCustomerType == 'ORG_CONSORTIUM'}">
+                                            <dt class="control-label" data-tooltip="${message(code:'subscription.packages.auditable')}">
+                                                <i class="ui large icon thumbtack"></i>
+                                            </dt>
+                                            <dt class="control-label" data-tooltip="${message(code:'subscription.packages.notification.auditable')}">
+                                                <i class="ui large icon bullhorn"></i><i class="ui large icon plus"></i><i class="ui large icon thumbtack"></i>
+                                            </dt>
+                                        </g:if>
+                                    </dl>
+                                    <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,
+                                                                    PendingChangeConfiguration.PACKAGE_DELETED]}"/>
+                                    <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
+                                        <%
+                                            PendingChangeConfiguration pcc = sp.getPendingChangeConfig(settingKey)
+                                        %>
+                                        <dl>
+                                            <dt class="control-label">
+                                                <g:message code="subscription.packages.${settingKey}"/>
+                                            </dt>
                                             <dd>
                                                 <g:if test="${!(settingKey in excludes)}">
                                                     <g:if test="${editmode}">
-                                                        <g:checkBox class="ui checkbox" name="${settingKey}!§!auditable" checked="${pcc ? auditService.getAuditConfig(subscription, settingKey) : false}"/>
+                                                        <laser:select class="ui dropdown"
+                                                                      name="${settingKey}!§!setting" from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
+                                                                      optionKey="id" optionValue="value"
+                                                                      value="${(pcc && pcc.settingValue) ? pcc.settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"
+                                                        />
                                                     </g:if>
                                                     <g:else>
-                                                        ${pcc ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
+                                                        ${(pcc && pcc.settingValue) ? pcc.settingValue.getI10n("value") : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n("value")}
                                                     </g:else>
                                                 </g:if>
                                             </dd>
+                                            <dd>
+                                                <g:if test="${editmode}">
+                                                    <g:checkBox class="ui checkbox" name="${settingKey}!§!notification" checked="${pcc?.withNotification}"/>
+                                                </g:if>
+                                                <g:else>
+                                                    ${(pcc && pcc.withNotification) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
+                                                </g:else>
+                                            </dd>
+                                            <g:if test="${contextCustomerType == 'ORG_CONSORTIUM'}">
+                                                <dd>
+                                                    <g:if test="${!(settingKey in excludes)}">
+                                                        <g:if test="${editmode}">
+                                                            <g:checkBox class="ui checkbox" name="${settingKey}!§!auditable" checked="${pcc ? auditService.getAuditConfig(subscription, settingKey) : false}"/>
+                                                        </g:if>
+                                                        <g:else>
+                                                            ${pcc && auditService.getAuditConfig(subscription, settingKey) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
+                                                        </g:else>
+                                                    </g:if>
+                                                </dd>
+                                                <dd>
+                                                    <g:if test="${!(settingKey in excludes)}">
+                                                        <g:if test="${editmode}">
+                                                            <g:checkBox class="ui checkbox" name="${settingKey}!§!notificationAudit" checked="${pcc ? auditService.getAuditConfig(subscription, settingKey+PendingChangeConfiguration.NOTIFICATION_SUFFIX) : false}"/>
+                                                        </g:if>
+                                                        <g:else>
+                                                            ${pcc && auditService.getAuditConfig(subscription, settingKey+PendingChangeConfiguration.NOTIFICATION_SUFFIX) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
+                                                        </g:else>
+                                                    </g:if>
+                                                </dd>
+                                            </g:if>
+                                        </dl>
+                                    </g:each>
+                                    <dl>
+                                        <dt class="ui header">
+                                            <g:message code="subscription.packages.freezeHolding"/> <span data-tooltip="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span>
+                                        </dt>
+                                        <dd>
+                                            <g:if test="${editmode}">
+                                                <g:checkBox class="ui checkbox" name="freezeHolding" checked="${sp.freezeHolding}"/>
+                                            </g:if>
+                                            <g:else>
+                                                ${sp.freezeHolding ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
+                                            </g:else>
+                                        </dd>
+                                        <dd></dd>
+                                        <g:if test="${contextCustomerType == 'ORG_CONSORTIUM'}">
+                                            <dd>
+                                                <g:if test="${editmode}">
+                                                    <g:checkBox class="ui checkbox" name="freezeHoldingAudit" checked="${auditService.getAuditConfig(subscription, SubscriptionPackage.FREEZE_HOLDING)}"/>
+                                                </g:if>
+                                                <g:else>
+                                                    ${auditService.getAuditConfig(subscription, SubscriptionPackage.FREEZE_HOLDING) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
+                                                </g:else>
+                                            </dd>
+                                            <dd></dd>
                                         </g:if>
                                     </dl>
-                                </g:each>
-                                <g:if test="${editmode}">
-                                    <dl>
-                                        <dt class="control-label"><g:submitButton class="ui button btn-primary" name="${message(code:'subscription.packages.submit.label')}"/></dt>
-                                    </dl>
-                                </g:if>
-                            </g:form>
-                        </div><!-- .content -->
-                    </td>
-                </tr>
+                                    <g:if test="${editmode}">
+                                        <dl>
+                                            <dt class="control-label"><g:submitButton class="ui button btn-primary" name="${message(code:'subscription.packages.submit.label')}"/></dt>
+                                        </dl>
+                                    </g:if>
+                                </g:form>
+                            </div><!-- .content -->
+                        </td>
+                    </tr>
+                </g:if>
             </g:each>
         </table>
     </div><!-- .content -->

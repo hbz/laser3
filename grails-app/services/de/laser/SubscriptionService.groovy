@@ -766,8 +766,169 @@ class SubscriptionService {
     }
 
 
+    void addToSubscription(Subscription subscription, Package pkg, boolean createEntitlements) {
+        // Add this package to the specified subscription
+        // Step 1 - Make sure this package is not already attached to the sub
+        // Step 2 - Connect
+        List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
+                "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: subscription, pkg: pkg])
 
+        if (!dupe){
+            new SubscriptionPackage(subscription:subscription, pkg:pkg).save()
+            // Step 3 - If createEntitlements ...
 
+            if ( createEntitlements ) {
+                //explicit loading needed because of refreshing - after sync, GORM may be a bit behind
+                TitleInstancePackagePlatform.findAllByPkg(pkg).each { TitleInstancePackagePlatform tipp ->
+                    IssueEntitlement new_ie = new IssueEntitlement(
+                            status: tipp.status,
+                            subscription: subscription,
+                            tipp: tipp,
+                            accessStartDate:tipp.accessStartDate,
+                            accessEndDate:tipp.accessEndDate,
+                            acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED)
+                    if(new_ie.save()) {
+                        log.debug("${new_ie} saved")
+                        TIPPCoverage.findAllByTipp(tipp).each { TIPPCoverage covStmt ->
+                            IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
+                                    startDate:covStmt.startDate,
+                                    startVolume:covStmt.startVolume,
+                                    startIssue:covStmt.startIssue,
+                                    endDate:covStmt.endDate,
+                                    endVolume:covStmt.endVolume,
+                                    endIssue:covStmt.endIssue,
+                                    embargo:covStmt.embargo,
+                                    coverageDepth:covStmt.coverageDepth,
+                                    coverageNote:covStmt.coverageNote,
+                                    issueEntitlement: new_ie
+                            )
+                            ieCoverage.save()
+                        }
+                        PriceItem.findAllByTipp(tipp).each { PriceItem pi ->
+                            PriceItem localPrice = new PriceItem()
+                            InvokerHelper.setProperties(localPrice, pi.properties)
+                            localPrice.tipp = null
+                            localPrice.globalUID = null
+                            localPrice.issueEntitlement = new_ie
+                            localPrice.setGlobalUID()
+                            if(!localPrice.save())
+                                log.error(localPrice.errors)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void addToSubscriptionCurrentStock(Subscription target, Subscription consortia, Package pkg) {
+
+        // copy from: addToSubscription(subscription, createEntitlements) { .. }
+
+        List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
+                "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: target, pkg: pkg])
+
+        if (! dupe){
+
+            RefdataValue statusCurrent = RDStore.TIPP_STATUS_CURRENT
+
+            new SubscriptionPackage(subscription:target, pkg: pkg).save()
+
+            IssueEntitlement.executeQuery(
+                    "select ie from IssueEntitlement ie join ie.tipp tipp " +
+                            "where tipp.pkg = :pkg and ie.status = :current and ie.subscription = :consortia ", [
+                    pkg: pkg, current: statusCurrent, consortia: consortia
+            ]).each { IssueEntitlement ie ->
+                IssueEntitlement newIe = new IssueEntitlement(
+                        status: statusCurrent,
+                        subscription: target,
+                        tipp: ie.tipp,
+                        accessStartDate: ie.tipp.accessStartDate,
+                        accessEndDate: ie.tipp.accessEndDate,
+                        acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED
+                )
+                if(newIe.save()) {
+                    ie.tipp.coverages.each { TIPPCoverage covStmt ->
+                        IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
+                                startDate: covStmt.startDate,
+                                startVolume: covStmt.startVolume,
+                                startIssue: covStmt.startIssue,
+                                endDate: covStmt.endDate,
+                                endVolume: covStmt.endVolume,
+                                endIssue: covStmt.endIssue,
+                                embargo: covStmt.embargo,
+                                coverageDepth: covStmt.coverageDepth,
+                                coverageNote: covStmt.coverageNote,
+                                issueEntitlement: newIe
+                        )
+                        ieCoverage.save()
+                    }
+                    ie.priceItems.each { PriceItem pi ->
+                        PriceItem priceItem = new PriceItem(
+                                startDate: pi.startDate,
+                                endDate: pi.endDate,
+                                listPrice: pi.listPrice,
+                                listCurrency: pi.listCurrency,
+                                localPrice: pi.localPrice,
+                                localCurrency: pi.localCurrency,
+                                issueEntitlement: newIe
+                        )
+                        priceItem.save()
+                    }
+                }
+            }
+        }
+    }
+
+    void addPendingChangeConfiguration(Subscription subscription, Package pkg, Map<String, Object> params) {
+
+        SubscriptionPackage subscriptionPackage = SubscriptionPackage.findBySubscriptionAndPkg(subscription, pkg)
+        if(subscriptionPackage) {
+            PendingChangeConfiguration.SETTING_KEYS.each { String settingKey ->
+                Map<String, Object> configMap = [subscriptionPackage: subscriptionPackage, settingKey: settingKey, withNotification: false]
+                boolean auditable = false, memberNotification = false
+                //Set because we have up to three keys in params with the settingKey
+                Set<String> keySettings = params.keySet().findAll { k -> k.contains(settingKey) }
+                keySettings.each { key ->
+                    List<String> settingData = key.split('!§!')
+                    switch (settingData[1]) {
+                        case 'setting': configMap.settingValue = RefdataValue.get(params[key])
+                            break
+                        case 'auditable': auditable = true
+                            break
+                        case 'notificationAudit': memberNotification = true
+                            break
+                        case 'notification': configMap.withNotification = params[key] != null
+                            break
+                    }
+                }
+                try {
+                    boolean hasConfig = AuditConfig.getConfig(subscriptionPackage.subscription, settingKey) != null
+                    boolean hasNotificationConfig = AuditConfig.getConfig(subscriptionPackage.subscription, settingKey+PendingChangeConfiguration.NOTIFICATION_SUFFIX) != null
+                    PendingChangeConfiguration.construct(configMap) //create or update
+                    if(!auditable && hasConfig) {
+                        AuditConfig.removeConfig(subscriptionPackage.subscription, settingKey)
+                    }
+                    else if(auditable && !hasConfig) {
+                        AuditConfig.addConfig(subscriptionPackage.subscription, settingKey)
+                    }
+                    if(!memberNotification && hasNotificationConfig) {
+                        AuditConfig.removeConfig(subscriptionPackage.subscription, settingKey+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
+                    }
+                    else if(memberNotification && !hasNotificationConfig) {
+                        AuditConfig.addConfig(subscriptionPackage.subscription, settingKey+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
+                    }
+                }
+                catch (CreationException e) {
+                    log.error("ProcessLinkPackage -> PendingChangeConfiguration: " + e.message)
+                }
+            }
+            subscriptionPackage.freezeHolding = params.freezeHolding == 'on'
+            if(params.freezeHoldingAudit == 'on' && !AuditConfig.getConfig(subscriptionPackage.subscription, SubscriptionPackage.FREEZE_HOLDING))
+                AuditConfig.addConfig(subscriptionPackage.subscription, SubscriptionPackage.FREEZE_HOLDING)
+            else if(params.freezeHoldingAudit != 'on' && AuditConfig.getConfig(subscriptionPackage.subscription, SubscriptionPackage.FREEZE_HOLDING))
+                AuditConfig.removeConfig(subscriptionPackage.subscription, SubscriptionPackage.FREEZE_HOLDING)
+        }
+    }
 
     Map regroupSubscriptionProperties(List<Subscription> subsToCompare, Org org) {
         LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:],privateProperties:[:]]
@@ -1180,6 +1341,8 @@ class SubscriptionService {
             if(colMap.licenses != null) {
                 List<String> licenseKeys = cols[colMap.licenses].split(',')
                 candidate.licenses = []
+                mappingErrorBag.multipleLicenseError = []
+                mappingErrorBag.noValidLicense = []
                 licenseKeys.each { String licenseKey ->
                     List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg",[idCandidate:licenseKey,roleTypes:[RDStore.OR_LICENSEE_CONS,RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE],contextOrg:contextOrg])
                     if(licCandidates.size() == 1) {
@@ -1854,6 +2017,24 @@ class SubscriptionService {
             }
         }
 
+    }
+
+    //-------------------------------------- cronjob section ----------------------------------------
+    boolean freezeSubscriptionHoldings() {
+        boolean done, doneChild
+        Date now = new Date()
+        //on parent level
+        Set<SubscriptionPackage> subPkgs = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp join sp.subscription s where s.endDate != null and s.endDate <= :end and sp.freezeHolding = true', [end: now])
+        //log.debug(subPkgs.toListString())
+        if(subPkgs)
+            done = PendingChangeConfiguration.executeUpdate('update PendingChangeConfiguration pcc set pcc.settingValue = :reject where pcc.subscriptionPackage in (:subPkgs)', [reject: RDStore.PENDING_CHANGE_CONFIG_REJECT, subPkgs: subPkgs]) > 0
+        else done = false
+        //on child level
+        //Set<Subscription> subsWithFreezeAudit = AuditConfig.executeQuery('select ac.referenceId from AuditConfig ac where ac.referenceField = :freezeHoldingAudit', [freezeHoldingAudit: SubscriptionPackage.FREEZE_HOLDING]).collect { row -> Subscription.get(row) }
+        //log.debug(subsWithFreezeAudit.toListString())
+        Set<String> settingKeysAndNots = PendingChangeConfiguration.SETTING_KEYS+PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX }
+        doneChild = AuditConfig.executeUpdate('delete from AuditConfig ac where ac.referenceId in (select ac.referenceId from AuditConfig ac where ac.referenceField = :freezeHoldingAudit) and ac.referenceField in (:settingKeysAndNots)', [freezeHoldingAudit: SubscriptionPackage.FREEZE_HOLDING, settingKeysAndNots: settingKeysAndNots]) > 0
+        done || doneChild
     }
 
 }

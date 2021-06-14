@@ -310,7 +310,9 @@
                         <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
                                 SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
                                 && (RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id)}">
-                            <g:link class="ui icon negative button"
+                            <g:link class="ui icon negative button js-open-confirm-modal"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [surveyProperty.surveyProperty.getI10n('name')])}"
+                                    data-confirm-term-how="delete"
                                     controller="survey" action="deleteSurveyPropFromConfig"
                                     id="${surveyProperty.id}"
                                     role="button"
@@ -454,7 +456,7 @@
                         </g:elseif>
                         <g:elseif test="${surveyResult.type.isRefdataValueType()}">
 
-                            <g:if test="${surveyResult.type.name in ["Participation"] && surveyResult.owner.id != contextOrg.id}">
+                            <g:if test="${surveyResult.type == RDStore.SURVEY_PROPERTY_PARTICIPATION && surveyResult.owner.id != contextOrg.id}">
                                 <semui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"
                                                         id="participation"
                                                         config="${surveyResult.type.refdataCategory}"/>

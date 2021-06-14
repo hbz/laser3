@@ -8,21 +8,25 @@
     <g:set var="filterLabels" value="${ExportHelper.getCachedFilterLabels( token )}" />
     <g:set var="queryLabels" value="${ExportHelper.getCachedQueryLabels( token )}" />
 
-    <semui:modal id="${modalID}" text="CSV-${message(code: 'reporting.export.key.' + export.KEY)}" hideSubmitButton="true">
-
-        <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterLabels, tmplSize: 'tiny']}" />
-
-        <g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: queryLabels, tmplSize: 'tiny']}" />
+    <semui:modal id="${modalID}" text="${message(code: 'reporting.export.key.' + export.KEY)}" msgSave="Exportieren">
 
         <p><span class="ui label red">DEMO : in Entwicklung</span></p>
 
+        <div class="ui segments">
+            <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterLabels, stacked: true]}" />
+            <g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: queryLabels, stacked: true]}" />
+        </div>
+
         <g:form controller="ajaxHtml" action="chartDetailsExport" method="POST" target="_blank">
+
             <div class="ui form">
+
+            <div class="ui vertical segment">
                 <div class="field">
                     <label>Zu exportierende Felder</label>
                 </div>
-
                 <div class="fields">
+
                     <g:each in="${ExportHelper.reorderFieldsForUI( formFields.findAll { !ExportHelper.isFieldMultiple( it.key ) } )}" var="field" status="fc">
                         <div class="wide eight field">
 
@@ -47,7 +51,8 @@
                         </g:if>
                     </g:each>
 
-                </div>
+                </div><!-- .fields -->
+
                 <div class="fields">
 
                     <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-readerNumber'].contains( it.key ) }}" var="field" status="fc"> %{-- TODO --}%
@@ -58,7 +63,7 @@
                             <g:select name="cde:${field.key}" class="ui selection dropdown"
                                       from="${multiList}" multiple="true"
                                       optionKey="${{it[0]}}" optionValue="${{it[1]}}"
-                                      noSelection="${['': 'Bitte auswählen: ' + export.getFieldLabel(field.key as String)]}"
+                                      noSelection="${['': export.getFieldLabel(field.key as String)]}"
                             />
 
                         </div><!-- .field -->
@@ -68,35 +73,59 @@
                             <div class="fields">
                         </g:if>
                     </g:each>
+
                 </div><!-- .fields -->
+            </div><!-- .segment -->
 
-                <br />
-
+            <div class="ui vertical segment">
                 <div class="fields">
 
-                    <div class="wide eight field">
-                        <label>Konfiguration</label>
+                    <div id="fileformat-csv" class="wide eight field">
+                        <label>CSV-Konfiguration</label>
                         <p>
                             Feldtrenner: <span class="ui circular label">${AbstractExport.CSV_FIELD_SEPARATOR}</span> <br />
                             Zeichenkettentrenner: <span class="ui circular label">${AbstractExport.CSV_FIELD_QUOTATION}</span> <br />
                             Trenner für mehrfache Werte: <span class="ui circular label">${AbstractExport.CSV_VALUE_SEPARATOR}</span>
                         </p>
                     </div>
+                    <div id="fileformat-pdf" class="wide eight field">
+                        <label>PDF-Konfiguration</label>
+                        <p>
+                            Seitenformat: <span class="ui circular label">auto</span> <br />
+                            Suchinformationen: <span class="ui circular label">anzeigen</span> <br />
+                        </p>
+                    </div>
                     <div class="wide eight field">
-                        <label for="filename">Dateiname</label>
-                        <input name="filename" id="filename" value="${ExportHelper.getFileName(queryLabels)}" />
-                        <br />
-                        <br />
-                        <button class="ui button positive right floated" id="export-chart-details-as-csv">Als CSV-Datei exportieren</button>
+                        <div class="field" style="margin-bottom: 1em !important;">
+                            <label for="fileformat">Dateiformat</label>
+                            <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
+                                      optionKey="key" optionValue="value"
+                                      from="${[csv:'CSV', pdf: 'PDF']}"
+                            />
+                        </div>
+                        <div class="field">
+                            <label for="filename">Dateiname</label>
+                            <input name="filename" id="filename" value="${ExportHelper.getFileName(queryLabels)}" />
+                        </div>
                     </div>
 
                 </div><!-- .fields -->
+            </div><!-- .segment -->
+
             </div><!-- .form -->
 
             <input type="hidden" name="token" value="${token}" />
         </g:form>
 
     </semui:modal>
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+
+        $('select[name=fileformat]').on( 'change', function() {
+            $('*[id^=fileformat-').addClass('hidden')
+            $('*[id^=fileformat-' + $('select[name=fileformat]').val()).removeClass('hidden')
+        }).trigger('change');
+    </laser:script>
 </g:if>
 <!-- _chartDetailsModal.gsp -->
 

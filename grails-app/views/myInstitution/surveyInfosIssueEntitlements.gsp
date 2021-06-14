@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue;de.laser.Org" %>
+<%@ page import="de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue;de.laser.Org; de.laser.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -37,7 +37,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyInfo.name}
 
 <br />
 
-<g:if test="${de.laser.SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)?.finishDate != null}">
+<g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)?.finishDate != null}">
     <div class="ui icon positive message">
         <i class="info icon"></i>
 

@@ -81,7 +81,8 @@
                                 </div>
 
                                 <div class="field la-field-right-aligned">
-                                    <input name="delete" class="ui negative button" value="${message(code: 'financials.bulkCostItems.delete')}" type="submit"/>
+                                    <input name="delete" type="hidden" value="false"/>
+                                    <button id="deleteButton" class="ui negative button" type="submit">${message(code: 'financials.bulkCostItems.delete')}</button>
                                 </div>
                                 <g:render template="result_tab_cons" model="[tmplShowCheckbox: true, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
                             </g:form>
@@ -144,7 +145,7 @@
                                     r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
                                     r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
                                     JSPC.app['finance'+idSuffix].updateTitleDropdowns();
-                                    //JSPC.app.setupCalendar();
+                                    JSPC.app.setupCalendar();
                                     JSPC.app['finance'+idSuffix].preselectMembers();
                                 },
                                 detachable: true,
@@ -162,6 +163,12 @@
                     }
                 });
 
+                $('#deleteButton').on('click', function(e) {
+                    e.preventDefault();
+                    $('[name="delete"]').val('true');
+                    $('#editCost_${idSuffix}').unbind('submit').submit();
+                });
+
                 $('table[id^=costTable] .x .trigger-modal').on('click', function(e) {
                     e.preventDefault();
                     let idSuffix = $(this).attr("data-id_suffix");
@@ -177,7 +184,7 @@
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
                                 JSPC.app['finance'+idSuffix].updateTitleDropdowns();
-                                //JSPC.app.setupCalendar();
+                                JSPC.app.setupCalendar();
                             },
                             detachable: true,
                             closable: false,

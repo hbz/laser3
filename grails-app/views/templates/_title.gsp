@@ -258,7 +258,7 @@
 
                                 <g:link controller="organisation" action="show" id="${provider.id}">${provider.name}</g:link>
 
-                                <g:each in="${apisources}" var="gokbAPI">
+                                %{--<g:each in="${apisources}" var="gokbAPI">
                                     <g:if test="${provider.gokbId}">
                                         <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
                                            data-content="${message(code: 'wekb')}"
@@ -266,7 +266,7 @@
                                            target="_blank"><i class="la-gokb  icon"></i>
                                         </a>
                                     </g:if>
-                                </g:each>
+                                </g:each>--}%
 
                         </g:each>
                     </div>

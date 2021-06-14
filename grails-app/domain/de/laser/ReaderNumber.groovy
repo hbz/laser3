@@ -29,6 +29,7 @@ class ReaderNumber {
     final static Set<String> CONSTANTS_HIGH_SCHOOL = [READER_NUMBER_STUDENTS, READER_NUMBER_SCIENTIFIC_STAFF, READER_NUMBER_FTE]
     final static Set<String> CONSTANTS_STATE_LIBRARY = [READER_NUMBER_USER] //for further extension
     final static Set<String> CONSTANTS_PUBLIC_LIBRARY = [READER_NUMBER_PEOPLE] //for further extension
+    final static Set<String> CONSTANTS_RESEARCH_INSTITUTE = [READER_NUMBER_FTE] //for further extension
 
     static constraints = {
         //type            (blank:false)

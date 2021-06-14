@@ -58,6 +58,7 @@ class RDConstants {
     public static final String ILL_CODE               = 'ill.code'
     public static final String INDEMNIFICATION        = 'indemnification'
     public static final String INVOICING              = 'invoicing'
+    public static final String IP_AUTHENTICATION      = 'ip.authentication'
     public static final String IPV4_ADDRESS_FORMAT    = 'ipv4.address.format'
     public static final String IPV6_ADDRESS_FORMAT    = 'ipv6.address.format'
 
@@ -118,6 +119,8 @@ class RDConstants {
     public static final String PERSON_FUNCTION                = 'person.function'
     public static final String PERSON_POSITION                = 'person.position'
     public static final String PERSON_RESPONSIBILITY          = 'person.responsibility'
+    public static final String PLATFORM_STATISTICS_FORMAT     = "platform.statistics.format"
+    public static final String PLATFORM_STATISTICS_FREQUENCY  = "platform.statistics.frequency"
     public static final String PLATFORM_STATUS                = 'platform.status'
 
     public static final String REGIONS_DE             = 'regions.de'

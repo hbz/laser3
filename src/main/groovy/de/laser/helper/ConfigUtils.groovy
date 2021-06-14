@@ -102,6 +102,9 @@ class ConfigUtils {
     static String getSystemEmail(boolean validate = false) {
         readConfig('systemEmail', validate)
     }
+    static String getWkhtmltopdfXvfbRunner(boolean validate = false) {
+        readConfig('wkhtmltopdf.xvfbRunner', validate)
+    }
 
     // -- check --
 
@@ -138,6 +141,7 @@ class ConfigUtils {
         getStatsApiUrl(true)
         getStatsSyncJobActiv(true)
         getSystemEmail(true)
+        getWkhtmltopdfXvfbRunner(true)
 
         println ": --------------------------------------------->"
     }

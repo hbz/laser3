@@ -26,19 +26,17 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
+import de.laser.helper.Constants
 import de.laser.reporting.export.AbstractExport
+import de.laser.reporting.export.ExportHelper
 import de.laser.reporting.export.GenericExportManager
-import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.helper.SessionCacheWrapper
-import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.reporting.myInstitution.base.BaseDetails
-import de.laser.reporting.myInstitution.base.BaseQuery
-import de.laser.reporting.subscription.SubscriptionReporting
+import de.laser.reporting.myInstitution.base.BaseFilter
 import grails.plugin.springsecurity.annotation.Secured
-import grails.web.servlet.mvc.GrailsParameterMap
+import grails.util.Holders
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -403,31 +401,105 @@ class AjaxHtmlController {
         Map<String, Object> selectedFields = [:]
         selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('cde:', ''), it.value ) }
 
-        AbstractExport export = GenericExportManager.createExport( params.token, selectedFields )
-
-        Map<String, Object> detailsCache = BaseDetails.getDetailsCache( params.token )
-        List<Long> idList = detailsCache.idList
-
-        List<String> rows = GenericExportManager.export( export, idList )
-
         SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
         String filename
+
         if (params.filename) {
-            filename = sdf.format(new Date()) + '_' + params.filename + '.csv'
+            filename = sdf.format(new Date()) + '_' + params.filename
         }
         else {
-            filename = sdf.format(new Date()) + '_reporting.csv'
+            filename = sdf.format(new Date()) + '_reporting'
         }
 
-        response.setHeader('Content-disposition', 'attachment; filename="' + filename + '"')
-        response.contentType = 'text/csv'
+        Map<String, Object> detailsCache = BaseDetails.getDetailsCache( params.token )
+        AbstractExport export = GenericExportManager.createExport( params.token, selectedFields )
 
-        ServletOutputStream out = response.outputStream
-        out.withWriter { w ->
-            rows.each { r ->
-                w.write( r + '\n')
+        if (params.fileformat == 'csv') {
+            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
+            response.contentType = 'text/csv'
+
+            List<String> rows = GenericExportManager.export( export, 'csv', detailsCache.idList )
+
+            ServletOutputStream out = response.outputStream
+            out.withWriter { w ->
+                rows.each { r ->
+                    w.write( r + '\n')
+                }
             }
+            out.close()
         }
-        out.close()
+        else if (params.fileformat == 'pdf') {
+            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
+            response.contentType = 'application/pdf'
+
+            List<List<String>> content = GenericExportManager.export(export, 'pdf', detailsCache.idList)
+            Map<String, List> struct = [width: [], height: []]
+
+            if (content.isEmpty()) {
+                content = [['Keine Daten vorhanden']]
+            }
+            else {
+                content.eachWithIndex { List row, int i ->
+                    row.eachWithIndex { List cell, int j ->
+                        if (!struct.height[i] || struct.height[i] < cell.size()) {
+                            struct.height[i] = cell.size()
+                        }
+                        cell.eachWithIndex { String entry, int k ->
+                            if (!struct.width[j] || struct.width[j] < entry.length()) {
+                                struct.width[j] = entry.length()
+                            }
+                        }
+                    }
+                }
+            }
+
+            int w = struct.width.sum() as int // 80
+            int h = struct.width.sum() as int // 90 - x
+
+            String pageSize = 'A4'
+            String orientation = 'Portrait'
+
+            /* if (w > 400)        {
+                pageSize = 'A0'; orientation = 'Landscape'
+            }
+            else */
+            if (w > 320)   {
+                pageSize = 'A0'
+            }
+            else if (w > 240)   {
+                pageSize = 'A1'
+            }
+            else if (w > 160)   {
+                pageSize = 'A2'
+            }
+            else if (w > 80)    {
+                pageSize = 'A3'
+            }
+
+            def customWkhtmltoxService = Holders.grailsApplication.mainContext.getBean('wkhtmltoxService')
+
+            def pdf = customWkhtmltoxService.makePdf (
+                    view:       '/myInstitution/reporting/export/pdf/generic_details',
+                    model: [
+                            filterLabels: ExportHelper.getCachedFilterLabels(params.token),
+                            filterResult: ExportHelper.getCachedFilterResult(params.token),
+                            queryLabels : ExportHelper.getCachedQueryLabels(params.token),
+                            title       : filename,
+                            header      : content.remove(0),
+                            content     : content,
+                            struct      : [struct.width.sum(), struct.height.sum(), pageSize + ' ' + orientation]
+                    ],
+                   // header: '',
+                   // footer: '',
+                    pageSize: pageSize,
+                    orientation: orientation,
+                    marginLeft: 10,
+                    marginTop: 15,
+                    marginBottom: 15,
+                    marginRight: 10
+            )
+
+            response.outputStream.withStream{ it << pdf }
+        }
     }
 }

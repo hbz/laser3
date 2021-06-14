@@ -129,6 +129,7 @@ class DocController  {
 					flash.message = message(code: 'default.updated.message', args: [message(code: 'default.note.label'), docInstance.title])
 					//redirect action: 'show', id: docInstance.id
 					redirect(url: request.getHeader('referer'))
+					return
 					break
 			}
 		}
@@ -149,10 +150,12 @@ class DocController  {
 				docInstance.delete()
 				flash.message = message(code: 'default.deleted.message', args: [message(code: 'doc.label'), params.id])
 				redirect action: 'list'
+				return
 			}
 			catch (DataIntegrityViolationException e) {
 				flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'doc.label'), params.id])
 				redirect action: 'show', id: params.id
+				return
 			}
 		}
     }

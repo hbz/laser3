@@ -41,6 +41,7 @@ class PackageController {
     def filterService
     EscapeService escapeService
     MessageSource messageSource
+    SubscriptionService subscriptionService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -62,7 +63,7 @@ class PackageController {
         String esQuery = "?componentType=Package"
         if (params.q) {
             result.filterSet = true
-            esQuery += "&q=${params.q}"
+            esQuery += "&name=${params.q}"
             esQuery += "&ids=Anbieter_Produkt_ID,*${params.q}*"
             esQuery += "&ids=isil,*${params.q}*"
         }
@@ -841,44 +842,13 @@ class PackageController {
                 String addType = params.addType
                 log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
                 if (addType == 'With') {
-                    result.pkg.addToSubscription(result.subscription, true)
+                    subscriptionService.addToSubscription(result.subscription, result.pkg, true)
                 } else if (addType == 'Without') {
-                    result.pkg.addToSubscription(result.subscription, false)
+                    subscriptionService.addToSubscription(result.subscription, result.pkg, false)
                 }
 
                 if (addType != null && addType != '') {
-                    SubscriptionPackage subscriptionPackage = SubscriptionPackage.findBySubscriptionAndPkg(result.subscription, result.pkg)
-                    if (subscriptionPackage) {
-                        PendingChangeConfiguration.SETTING_KEYS.each { String settingKey ->
-                            Map<String, Object> configMap = [subscriptionPackage: subscriptionPackage, settingKey: settingKey, withNotification: false]
-                            boolean auditable = false
-                            //Set because we have up to three keys in params with the settingKey
-                            Set<String> keySettings = params.keySet().findAll { k -> k.contains(settingKey) }
-                            keySettings.each { key ->
-                                List<String> settingData = key.split('!§!')
-                                switch (settingData[1]) {
-                                    case 'setting': configMap.settingValue = RefdataValue.get(params[key])
-                                        break
-                                    case 'notification': configMap.withNotification = params[key] != null
-                                        break
-                                    case 'auditable': auditable = params[key] != null
-                                        break
-                                }
-                            }
-                            try {
-                                PendingChangeConfiguration.construct(configMap)
-                                boolean hasConfig = AuditConfig.getConfig(subscriptionPackage.subscription, settingKey) != null
-                                if (auditable && !hasConfig) {
-                                    AuditConfig.addConfig(subscriptionPackage.subscription, settingKey)
-                                } else if (!auditable && hasConfig) {
-                                    AuditConfig.removeConfig(subscriptionPackage.subscription, settingKey)
-                                }
-                            }
-                            catch (CreationException e) {
-                                log.error("ProcessLinkPackage -> PendingChangeConfiguration: " + e.message)
-                            }
-                        }
-                    }
+                    subscriptionService.addPendingChangeConfiguration(result.subscription, result.pkg, params.clone())
                 }
             }
             switch (params.addType) {
@@ -1062,9 +1032,11 @@ class PackageController {
         if (params.doIt == "true") {
             yodaService.executePackageCleanup(toDelete)
             redirect action: 'index'
+            return
         } else {
             flash.message = "Betroffene Paket-IDs wären gelöscht worden: ${toDelete.join(", ")}"
             redirect action: 'getDuplicatePackages'
+            return
         }
     }
 }

@@ -50,8 +50,10 @@ class ContactController  {
 					flash.message = message(code: 'default.created.message', args: [message(code: 'contact.label'), contactInstance.id])
 					if (params.redirect) {
 						redirect(url: request.getHeader('referer'), params: params)
+						return
 					} else {
 						redirect action: 'show', id: contactInstance.id
+						return
 					}
 					break
 			}
@@ -100,10 +102,12 @@ class ContactController  {
 				contactInstance.delete()
 				flash.message = message(code: 'default.deleted.message', args: [message(code: 'contact.label'), params.id])
 				redirect action: 'list'
+				return
 			}
 			catch (DataIntegrityViolationException e) {
 				flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'contact.label'), params.id])
 				redirect action: 'show', id: params.id
+				return 
 			}
 		}
     }

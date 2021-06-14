@@ -25,6 +25,9 @@
 </h1>
 <h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.addEntitlements.label')}</h2>
 <%-- <g:render template="nav"/> --%>
+<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+    <g:render template="message"/>
+</g:if>
 
 <g:set var="counter" value="${offset + 1}"/>
 
@@ -265,6 +268,9 @@
                 data: {
                     sub: ${subscription.id},
                     index: index,
+                    <g:if test="${params.pkgfilter}">
+                        packages: ${params.pkgfilter},
+                    </g:if>
                     referer: "${actionName}",
                     checked: checked
                 }

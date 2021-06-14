@@ -556,6 +556,7 @@ class AdminController  {
             params.remove('objId')
 
             redirect controller: 'admin', action: 'dataConsistency'
+            return
         }
 
         result.titles    = dataConsistencyService.checkTitles()
