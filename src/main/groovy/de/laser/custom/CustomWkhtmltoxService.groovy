@@ -1,5 +1,6 @@
 package de.laser.custom
 
+import de.laser.helper.ConfigUtils
 import org.grails.plugins.wkhtmltopdf.PartialView
 import org.grails.plugins.wkhtmltopdf.WkhtmltoxException
 import org.grails.plugins.wkhtmltopdf.WkhtmltoxWrapper
@@ -58,14 +59,14 @@ class CustomWkhtmltoxService /* extends WkhtmltoxService */ {
         }
 
         def wkhtmltopdfConfig = grailsApplication.config.grails.plugin.wkhtmltopdf
-        def xcvbRunCmd = grailsApplication.config.wkhtmltopdf.xcvbRunCmd
+        def xcvbRunCmd = ConfigUtils.getWkhtmltopdfXcvbRunCmd()
 
         String binaryFilePath = wkhtmltopdfConfig.binary.toString()
         if (!(new File(binaryFilePath)).exists()) {
             throw new WkhtmltoxException("Cannot find wkhtmltopdf executable at $binaryFilePath")
         }
         xcvbRunCmd = xcvbRunCmd ? xcvbRunCmd.toString() : null
-        xcvbRunCmd = null
+
         byte[] pdfData = new CustomWkhtmltoxExecutor(binaryFilePath, xcvbRunCmd, wrapper).generatePdf(htmlBodyContent)
         try {
             if (headerFile) {

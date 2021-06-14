@@ -37,7 +37,7 @@ class CustomWkhtmltoxExecutor /* extends WkhtmltoxExecutor */ {
                 commandList.add(0, xvfbRunCmd)
             }
 
-            log.debug("Invoking wkhtml2pdf with command $commandList")
+            log.info("Invoking wkhtml2pdf with command $commandList")
             log.trace "Following html will be converted to PDF: $html"
             def process = (commandList as String[]).execute()
             def stdout = new ByteArrayOutputStream()
