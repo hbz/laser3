@@ -42,7 +42,7 @@ grails {
 // wkhtmltopdf plugin
 // https://plugins.grails.org/plugin/rlovtangen/wkhtmltopdf
 
-grails.plugin.wkhtmltopdf.binary = "/usr/bin/wkhtmltopdf"
+grails.plugin.wkhtmltopdf.binary = '/usr/bin/wkhtmltopdf'
 
 // spring security plugin
 

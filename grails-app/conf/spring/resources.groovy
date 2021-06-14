@@ -4,7 +4,7 @@ import de.laser.custom.CustomMigrationCallbacks
 import de.laser.custom.CustomUserDetailsService
 import de.laser.custom.CustomAuthSuccessHandler
 import de.laser.custom.CustomAuditRequestResolver
-
+import de.laser.custom.CustomWkhtmltoxService
 import org.springframework.security.core.session.SessionRegistryImpl
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider
@@ -77,4 +77,12 @@ beans = {
     }
 
     securityContextPersistenceFilter( SecurityContextPersistenceFilter )
+
+    // [ wkhtmltopdf ..
+
+    wkhtmltoxService( CustomWkhtmltoxService ) {
+        grailsApplication = ref('grailsApplication')
+        mailMessageContentRenderer = ref('mailMessageContentRenderer')
+    }
+    // .. ]
 }
