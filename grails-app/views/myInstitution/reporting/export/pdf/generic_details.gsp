@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
-    <title>LAS:eR Reporting</title>
+    <title>${title}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <style type="text/css">
     body {
@@ -63,7 +63,7 @@
 <body>
     <h1>
         LAS:eR Reporting
-        <span class="warning">DEMO : in Entwicklung - [${struct[2]}]</span>
+        <span class="warning">DEMO : in Entwicklung - [${struct[2]} / ${struct[0]} x ${struct[1]}]</span>
     </h1>
 
     <div class="filterInfo">

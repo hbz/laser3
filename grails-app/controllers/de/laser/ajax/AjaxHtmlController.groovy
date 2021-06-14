@@ -36,6 +36,7 @@ import de.laser.helper.RDStore
 import de.laser.reporting.myInstitution.base.BaseDetails
 import de.laser.reporting.myInstitution.base.BaseFilter
 import grails.plugin.springsecurity.annotation.Secured
+import grails.util.Holders
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -61,7 +62,6 @@ class AjaxHtmlController {
     ReportingService reportingService
     SubscriptionService subscriptionService
     LicenseControllerService licenseControllerService
-    def wkhtmltoxService
 
     @Secured(['ROLE_USER'])
     def test() {
@@ -453,27 +453,46 @@ class AjaxHtmlController {
                 }
             }
 
-            int width = struct.width.sum() as int
+            int w = struct.width.sum() as int // 80
+            int h = struct.width.sum() as int // 90 - x
+
             String pageSize = 'A4'
+            String orientation = 'Portrait'
 
-            if (width > 320)        { pageSize = 'A0' }
-            else if (width > 240)   { pageSize = 'A1' }
-            else if (width > 160)   { pageSize = 'A2' }
-            else if (width > 80)    { pageSize = 'A3' }
+            /* if (w > 400)        {
+                pageSize = 'A0'; orientation = 'Landscape'
+            }
+            else */
+            if (w > 320)   {
+                pageSize = 'A0'
+            }
+            else if (w > 240)   {
+                pageSize = 'A1'
+            }
+            else if (w > 160)   {
+                pageSize = 'A2'
+            }
+            else if (w > 80)    {
+                pageSize = 'A3'
+            }
 
-            def pdf = wkhtmltoxService.makePdf (
-                    view:       '/myInstitution/reporting/export/pdf/generic',
+            def customWkhtmltoxService = Holders.grailsApplication.mainContext.getBean('wkhtmltoxService')
+
+            def pdf = customWkhtmltoxService.makePdf (
+                    view:       '/myInstitution/reporting/export/pdf/generic_details',
                     model: [
                             filterLabels: ExportHelper.getCachedFilterLabels(params.token),
                             filterResult: ExportHelper.getCachedFilterResult(params.token),
                             queryLabels : ExportHelper.getCachedQueryLabels(params.token),
+                            title       : filename,
                             header      : content.remove(0),
                             content     : content,
-                            struct      : [struct.width.sum(), struct.height.sum(), pageSize]
+                            struct      : [struct.width.sum(), struct.height.sum(), pageSize + ' ' + orientation]
                     ],
                    // header: '',
                    // footer: '',
                     pageSize: pageSize,
+                    orientation: orientation,
                     marginLeft: 10,
                     marginTop: 15,
                     marginBottom: 15,
