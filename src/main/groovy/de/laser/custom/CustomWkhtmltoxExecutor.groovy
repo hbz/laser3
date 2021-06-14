@@ -8,21 +8,23 @@ import org.grails.plugins.wkhtmltopdf.WkhtmltoxWrapper
 class CustomWkhtmltoxExecutor /* extends WkhtmltoxExecutor */ {
 
     String binaryPath
-    String xvfbRunCmd
+    String xvfbRunner
     WkhtmltoxWrapper wrapper
 
-    CustomWkhtmltoxExecutor(String binaryPath, String xvfbRunCmd, WkhtmltoxWrapper wrapper) {
+    CustomWkhtmltoxExecutor(String binaryPath, String xvfbRunner, WkhtmltoxWrapper wrapper) {
 
         if (!(new File(binaryPath)).exists()) {
             throw new WkhtmltoxException("Could not locate Wkhtmltox binary.")
         }
-
+        if (xvfbRunner && !(new File(xvfbRunner)).exists()) {
+            throw new WkhtmltoxException("Could not locate xvfb-run binary.")
+        }
         if (!wrapper) {
             throw new WkhtmltoxException("Wrapper must be set.")
         }
 
         this.binaryPath = binaryPath
-        this.xvfbRunCmd = xvfbRunCmd
+        this.xvfbRunner = xvfbRunner
         this.wrapper = wrapper
     }
 
@@ -33,13 +35,14 @@ class CustomWkhtmltoxExecutor /* extends WkhtmltoxExecutor */ {
             commandList.add(0, binaryPath)
             commandList << "-q" << "-" << "-"
 
-            if (xvfbRunCmd) {
-                commandList.add(0, xvfbRunCmd)
+            if (xvfbRunner) {
+               commandList.add(0, xvfbRunner)
             }
 
             log.info("Invoking wkhtml2pdf with command $commandList")
             log.trace "Following html will be converted to PDF: $html"
-            def process = (commandList as String[]).execute()
+            //def process = (commandList as String[]).execute()
+            def process = (commandList.join(' ')).execute()
             def stdout = new ByteArrayOutputStream()
             stderr = new ByteArrayOutputStream()
             OutputStreamWriter os = new OutputStreamWriter(process.outputStream, "UTF8")
