@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3566    14.06.2021  rc2.1   2.1         Moe     Bug         Aufgaben löschen in Lizenz: Refresh nötig
+
 3561    14.06.2021  rc2.1   2.1         Andreas Bug/Feature Identifier-Einkaufsliste abgearbeitet
 
 3409    14.06.2021  rc2.1   2.1         Moe     Feature     Überarbeitung Lizenzuplaod
