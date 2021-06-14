@@ -58,16 +58,17 @@ class CustomWkhtmltoxService /* extends WkhtmltoxService */ {
             wrapper.footerHtml = footerFile.absolutePath
         }
 
-        def wkhtmltopdfConfig = grailsApplication.config.grails.plugin.wkhtmltopdf
-        def xcvbRunCmd = ConfigUtils.getWkhtmltopdfXcvbRunCmd()
+        String binaryFilePath = grailsApplication.config.grails.plugin.wkhtmltopdf.binary.toString()
+        String xvfbRunner = ConfigUtils.getWkhtmltopdfXvfbRunner()
 
-        String binaryFilePath = wkhtmltopdfConfig.binary.toString()
         if (!(new File(binaryFilePath)).exists()) {
             throw new WkhtmltoxException("Cannot find wkhtmltopdf executable at $binaryFilePath")
         }
-        xcvbRunCmd = xcvbRunCmd ? xcvbRunCmd.toString() : null
+        if (xvfbRunner && !(new File(xvfbRunner)).exists()) {
+            throw new WkhtmltoxException("Cannot find xvfb-run executable at $xvfbRunner")
+        }
 
-        byte[] pdfData = new CustomWkhtmltoxExecutor(binaryFilePath, xcvbRunCmd, wrapper).generatePdf(htmlBodyContent)
+        byte[] pdfData = new CustomWkhtmltoxExecutor(binaryFilePath, xvfbRunner, wrapper).generatePdf(htmlBodyContent)
         try {
             if (headerFile) {
                 headerFile.delete()
