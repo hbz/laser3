@@ -1531,8 +1531,9 @@ join sub.orgRelations or_sub where
     })
     def subscriptionImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        result.mappingCols = ["name","owner","status","type","form","resource","provider","agency","startDate","endDate","instanceOf",
-                              "manualCancellationDate","member","customProperties","privateProperties","notes"]
+        result.mappingCols = ["name", "owner", "status", "type", "form", "resource", "provider", "agency", "startDate", "endDate",
+                              "manualCancellationDate", "hasPerpetualAccess", "hasPublishComponent", "isPublicForApi",
+                              "customProperties", "privateProperties", "notes"]
         result
     }
 
