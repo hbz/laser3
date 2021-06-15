@@ -2,9 +2,9 @@ package de.laser.reporting.myInstitution.base
 
 import de.laser.ContextService
 import de.laser.I10nTranslation
+import de.laser.IdentifierNamespace
 import de.laser.Org
 import de.laser.RefdataValue
-import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.SessionCacheWrapper
 import de.laser.properties.PropertyDefinition
@@ -194,6 +194,8 @@ class BaseQuery {
                     dataDetailsHqlPart + " and ns.id = :d and ident.value is not null and trim(ident.value) != ''",
                     [idList: idList, d: d[0]]
             )
+            d[1] = IdentifierNamespace.get(d[0]).getI10n('name') ?: d[1] + ' *'
+
             result.dataDetails.add([
                     query : query,
                     id    : d[0],
