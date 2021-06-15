@@ -261,13 +261,7 @@ class LicenseController {
         else {
             flash.message = ctrlResult.result.message
         }
-        if(params.returnToShow) {
-            redirect action: 'show', id: params.id
-            return
-        }
-        else {
-            ctrlResult.result
-        }
+        ctrlResult.result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
