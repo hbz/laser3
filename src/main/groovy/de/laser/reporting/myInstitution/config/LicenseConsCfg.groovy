@@ -22,21 +22,21 @@ class LicenseConsCfg extends BaseConfig {
                             //'openEnded'             : FIELD_TYPE_REFDATA,
                             'startDate'             : BaseConfig.FIELD_TYPE_PROPERTY,
                             'status'                : BaseConfig.FIELD_TYPE_REFDATA,
-                            'type'                  : BaseConfig.FIELD_TYPE_REFDATA
+                            //'type'                  : BaseConfig.FIELD_TYPE_REFDATA
                     ],
                     filter : [
                             default : [
-                                    [ 'licenseCategory', 'type', 'status', 'annual' ],
+                                    [ 'licenseCategory', 'status', 'annual' ],
                                     [ 'startDate', 'endDate' /*, 'openEnded' */ ]
                             ]
                     ],
                     query : [
                             default : [
                                     'Vertrag' : [ // TODO ..
-                                            'license-licenseCategory'   : 'Lizenzkategorie',
-                                            'license-type'              : 'Lizenztyp',
+                                            'license-licenseCategory'   : 'Vertragskategorie',
+                                            //'license-type'              : 'Lizenztyp',
                                             //'license-openEnded'         : 'Unbefristet',
-                                            'license-status'            : 'Lizenzstatus',
+                                            'license-status'            : 'Vertragstatus',
                                             'license-*'                 : 'Alle'
                                     ]
                             ]

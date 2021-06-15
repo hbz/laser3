@@ -1375,7 +1375,7 @@ class SubscriptionControllerService {
                                 subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
                                 if(addTypeChildren) {
                                     Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
-                                        subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'With')
+                                        subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'WithForChildren')
                                     }
                                 }
                                 subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
@@ -1393,7 +1393,7 @@ class SubscriptionControllerService {
                     subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
                     if(addTypeChildren) {
                         Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
-                            subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'With')
+                            subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'WithForChildren')
                         }
                     }
                     subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())

@@ -2,6 +2,13 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.126
+
+- removed attribute: `License.type`
+- updated schema:
+  - `License.calculatedType`
+  - `Subscription.calculatedType`
+  
 #### 0.125
 
 - added new attribute: `Package.scope`  

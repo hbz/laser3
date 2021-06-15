@@ -334,8 +334,6 @@ class DataloadService {
                     break
             }
 
-            result.type = lic.type?.getMapForES()
-
             result.identifiers = []
             lic.ids?.each { ident ->
                 try {
@@ -549,7 +547,6 @@ class DataloadService {
             if(task.license){
                 result.objectId = task.license.id
                 result.objectName = task.license.reference
-                result.objectTypeId = task.license.type?.id
                 result.objectClassName = task.license.getClass().getSimpleName().toLowerCase()
             }
 
@@ -596,7 +593,6 @@ class DataloadService {
             if(docCon.license){
                 result.objectId = docCon.license.id
                 result.objectName = docCon.license.reference
-                result.objectTypeId = docCon.license.type?.id
                 result.objectClassName = docCon.license.getClass().getSimpleName().toLowerCase()
             }
 
@@ -821,7 +817,6 @@ class DataloadService {
             if(licProp.owner){
                 result.objectId = licProp.owner.id
                 result.objectName = licProp.owner.reference
-                result.objectTypeId = licProp.owner.type?.id
                 result.objectClassName = licProp.owner.getClass().getSimpleName().toLowerCase()
             }
 
