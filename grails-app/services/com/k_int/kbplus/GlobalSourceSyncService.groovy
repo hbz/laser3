@@ -140,13 +140,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     else {
                         log.info("no records updated - leaving everything as is ...")
                     }
-                    if(maxTimestamp+1000 > source.haveUpTo.getTime()) {
-                        log.debug("old ${sdf.format(source.haveUpTo)}")
-                        source.haveUpTo = new Date(maxTimestamp + 1000)
-                        log.debug("new ${sdf.format(source.haveUpTo)}")
-                        if (!source.save())
-                            log.error(source.getErrors().getAllErrors().toListString())
-                    }
                     if(source.rectype == RECTYPE_TIPP) {
                         if(packagesToNotify.keySet().size() > 0) {
                             log.info("notifying subscriptions ...")
@@ -158,16 +151,25 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     'where s.instanceOf = null and pkg.gokbId in (:packages) ' +
                                     'and oo.roleType in (:roleTypes)'
                             List subPkgHolders = SubscriptionPackage.executeQuery(query,[packages:packagesToNotify.keySet(),roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+                            log.info("getting subscription package holders: ${subPkgHolders.toListString()}")
                             subPkgHolders.each { row ->
                                 Org org = (Org) row[0]
                                 SubscriptionPackage sp = (SubscriptionPackage) row[1]
                                 autoAcceptPendingChanges(org,sp)
                                 //nonAutoAcceptPendingChanges(org, sp)
                             }
+                            log.info("end notifying subscriptions")
                         }
                         else {
                             log.info("no diffs recorded ...")
                         }
+                    }
+                    if(maxTimestamp+1000 > source.haveUpTo.getTime()) {
+                        log.debug("old ${sdf.format(source.haveUpTo)}")
+                        source.haveUpTo = new Date(maxTimestamp + 1000)
+                        log.debug("new ${sdf.format(source.haveUpTo)}")
+                        if (!source.save())
+                            log.error(source.getErrors().getAllErrors().toListString())
                     }
                     log.info("sync job finished")
                     SystemEvent.createEvent('GSSS_JSON_COMPLETE',['jobId':source.id])
@@ -483,6 +485,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 //sess.flush()
             }
         //}
+        log.info("end tracking package changes")
     }
 
     void autoAcceptPendingChanges(Org contextOrg, SubscriptionPackage subPkg) {
