@@ -118,6 +118,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                 endDate column: 'lic_end_date',     index: 'lic_dates_idx'
       lastUpdatedCascading column: 'lic_last_updated_cascading'
 
+       propertySet sort:'type', order:'desc', batchSize: 10
     //privateProperties sort:'type', order:'desc', batchSize: 10
          pendingChanges sort: 'ts', order: 'asc', batchSize: 10
 
