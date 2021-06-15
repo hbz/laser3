@@ -15,7 +15,7 @@
                 </div>
             </div>
             <div class="right aligned four wide column la-column-left-lessPadding">
-                <g:link action="deleteTask" controller="ajaxHtml"
+                <g:link action="deleteTask" controller="ajax"
                         class="ui mini icon negative button js-open-confirm-modal"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                         data-confirm-term-how="delete"
