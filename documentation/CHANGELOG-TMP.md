@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3568    15.06.2021  rc2.1   2.1         David   Feature     Reporting: Attribut Typ bei Vertrag aufgetaucht
+
+3569    15.06.2021  rc2.1   2.1         David   Bug         Reporting: Falsche Termini bei Verträge in 2. Ergebnis
+
 3564    15.06.2021  rc2.1   2.1         David   Feature     Reporting: IDs unterschiedlich angesetzt
 
 3566    14.06.2021  rc2.1   2.1         Moe     Bug         Aufgaben löschen in Lizenz: Refresh nötig
