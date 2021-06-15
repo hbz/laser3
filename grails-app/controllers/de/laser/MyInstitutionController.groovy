@@ -1531,8 +1531,9 @@ join sub.orgRelations or_sub where
     })
     def subscriptionImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        result.mappingCols = ["name","owner","status","type","form","resource","provider","agency","startDate","endDate","instanceOf",
-                              "manualCancellationDate","member","customProperties","privateProperties","notes"]
+        result.mappingCols = ["name", "owner", "status", "type", "form", "resource", "provider", "agency", "startDate", "endDate",
+                              "manualCancellationDate", "hasPerpetualAccess", "hasPublishComponent", "isPublicForApi",
+                              "customProperties", "privateProperties", "notes"]
         result
     }
 
@@ -2106,25 +2107,6 @@ join sub.orgRelations or_sub where
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-
-        if (params.deleteId) {
-            Task.withTransaction { TransactionStatus ts ->
-                Task dTask = Task.get(params.deleteId)
-                if (dTask && (dTask.creator.id == result.user.id || contextService.getUser().hasAffiliation("INST_ADM"))) {
-                    try {
-                        dTask.delete()
-                        flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), params.deleteId])
-                    }
-                    catch (Exception e) {
-                        flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
-                    }
-                }
-                else {
-                    flash.message = message(code: 'default.not.deleted.notAutorized.message', args: [message(code: 'task.label'), params.deleteId])
-                }
-            }
-
-        }
 
         if ( ! params.sort) {
             params.sort = "t.endDate"

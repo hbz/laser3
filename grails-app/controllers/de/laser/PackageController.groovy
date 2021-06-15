@@ -892,19 +892,6 @@ class PackageController {
         result.packageInstance = Package.get(params.id)
         result.editable = isEditable()
 
-        if (params.deleteId) {
-            Task dTask = Task.get(params.deleteId)
-            if (dTask && dTask.creator.id == result.user.id) {
-                try {
-                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
-                    dTask.delete()
-                }
-                catch (Exception e) {
-                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
-                }
-            }
-        }
-
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.packageInstance)
         result.taskInstanceCount = result.taskInstanceList.size()

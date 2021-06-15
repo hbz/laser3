@@ -9,6 +9,16 @@
 
 3564    15.06.2021  rc2.1   2.1         David   Feature     Reporting: IDs unterschiedlich angesetzt
 
+3566    14.06.2021  rc2.1   2.1         Moe     Bug         Aufgaben löschen in Lizenz: Refresh nötig
+
+3561    14.06.2021  rc2.1   2.1         Andreas Bug/Feature Identifier-Einkaufsliste abgearbeitet
+
+3409    14.06.2021  rc2.1   2.1         Moe     Feature     Überarbeitung Lizenzuplaod
+
+3555    14.06.2021  rc2.1   2.1         Moe     Bug         Lizenzupload
+
+3561    14.06.2021  rc2.1   2.1         Andreas Bug/Feature Identifier-Einkaufsliste abgearbeitet
+
 3562    11.06.2021  rc2.1   2.1         Andreas Bug         falsches Verhalten durch Dummy-Wert für Identifier
 
 3558    11.06.2021  rc2.1   2.1         Moe     Bug         Dokument / Anmerkung löschen verursacht Sprung
