@@ -7,6 +7,7 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3511    15.06.2021  ?       ?           David   Feature     Reporting: PDF-Export
 
 2424    08.06.2021  dev     2.1         Moe     Feature     Filterset UmfrageKosten und Umfrageteilnehmer einfügen 
 
