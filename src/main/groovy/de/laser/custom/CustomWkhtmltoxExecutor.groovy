@@ -25,6 +25,10 @@ class CustomWkhtmltoxExecutor /* extends WkhtmltoxExecutor */ {
 
         this.binaryPath = binaryPath
         this.xvfbRunner = xvfbRunner
+
+        wrapper.disableJavascript = true
+        wrapper.disableLocalFileAccess = true
+
         this.wrapper = wrapper
     }
 
