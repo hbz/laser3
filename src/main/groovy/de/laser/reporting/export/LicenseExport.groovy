@@ -146,7 +146,7 @@ class LicenseExport extends AbstractExport {
                         ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.lic = :lic and i.ns.id in (:idnsList)",
                                 [lic: lic, idnsList: f.value] )
                     }
-                    content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
+                    content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
                 else if (key == '@ae-license-subscription') { // TODO: query
                     Long count = License.executeQuery(

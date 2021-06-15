@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -30,7 +30,7 @@
                     <g:message code="myinst.subscriptionImport.headline"/>
                     <br>
                     <br>
-                    <a href="${resource(dir: 'files', file: 'bulk_load_subscription_records_template_01.csv')}"
+                    <a href="${resource(dir: 'files', file: 'LizenzImportVollnutzerBeispiel.csv')}"
                        download="template_bulk_load_subscription_records.csv">
                         <p><g:message code="myinst.subscriptionImport.template"/></p>
                     </a>
@@ -65,6 +65,12 @@
                                     case 'form': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM).collect { it -> it.getI10n('value') })
                                         break
                                     case 'resource': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE).collect { it -> it.getI10n('value') })
+                                        break
+                                    case 'hasPerpetualAccess': args.addAll(RDStore.YN_YES.getI10n('value'), RDStore.YN_NO.getI10n('value'))
+                                        break
+                                    case 'hasPublishComponent': args.addAll(RDStore.YN_YES.getI10n('value'), RDStore.YN_NO.getI10n('value'))
+                                        break
+                                    case 'isPublicForApi': args.addAll(RDStore.YN_YES.getI10n('value'), RDStore.YN_NO.getI10n('value'))
                                         break
                                 }
                             %>

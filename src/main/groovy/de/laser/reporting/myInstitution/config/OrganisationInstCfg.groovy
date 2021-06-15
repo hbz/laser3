@@ -37,9 +37,9 @@ class OrganisationInstCfg extends BaseConfig {
                     ],
                     filter : [
                             default : [
-                                    [ 'country', 'region', 'libraryNetwork', 'subjectGroup' ],
-                                    [ 'orgType', 'funderType', 'funderHskType' ] ,
-                                    [ 'libraryType', 'eInvoice' ],
+                                    [ 'country', 'region', 'subjectGroup', 'libraryType' ],
+                                    [ 'libraryNetwork', 'funderType', 'funderHskType' ] ,
+                                    [ 'orgType', 'eInvoice' ],
                                     [ 'customerType', 'legalInfo' ]
                             ],
                             provider : [ // TODO : provider != agency

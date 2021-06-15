@@ -37,6 +37,8 @@ import de.laser.reporting.myInstitution.base.BaseDetails
 import de.laser.reporting.myInstitution.base.BaseFilter
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
+import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
