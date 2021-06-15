@@ -408,16 +408,23 @@
                     <dl>
                         <dt>
                             <dd>
-                            <g:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency]"/>
+                            <g:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency, existsWekbRecord: orgInstanceRecord != null]"/>
 
-                            <g:if test="${isProviderOrAgency && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')}">
+                            <g:if test="${isProviderOrAgency && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN') && !orgInstanceRecord}">
                                 <div class="ui list">
 
                                     <div class="item">
 
                                         <a href="#createPersonModal" class="ui button" size="35" data-semui="modal"
-                                           onclick="JSPC.app.personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id});"><g:message
+                                           onclick="JSPC.app.personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id}, '&supportType=${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.id}');"><g:message
                                                 code="personFormModalTechnichalSupport"/></a>
+
+                                    </div>
+                                    <div class="item">
+
+                                        <a href="#createPersonModal" class="ui button" size="35" data-semui="modal"
+                                           onclick="JSPC.app.personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id}, '&supportType=${RDStore.PRS_FUNC_SERVICE_SUPPORT.id}');"><g:message
+                                                code="personFormModalServiceSupport"/></a>
 
                                     </div>
                                 </div>
@@ -589,8 +596,8 @@
 
 <g:if test="${isProviderOrAgency}">
 
-    JSPC.app.personCreate = function (contactFor, org) {
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&org=' + org + '&showAddresses=false&showContacts=true';
+    JSPC.app.personCreate = function (contactFor, org, supportType = "") {
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&org=' + org + '&showAddresses=false&showContacts=true' + supportType;
         var func = bb8.ajax4SimpleModalFunction("#personModal", url, false);
         func();
     }
