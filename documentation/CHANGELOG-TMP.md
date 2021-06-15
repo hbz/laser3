@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3560    15.06.2021  rc2.1   2.1         Moe     Bug         Fehlermeldung bei "Meine Umfragen"
+
 3564    15.06.2021  rc2.1   2.1         David   Feature     Reporting: IDs unterschiedlich angesetzt
 
 3566    14.06.2021  rc2.1   2.1         Moe     Bug         Aufgaben löschen in Lizenz: Refresh nötig
