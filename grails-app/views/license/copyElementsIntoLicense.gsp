@@ -38,7 +38,6 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
                 <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
                 <i class="ellipsis vertical icon"></i>${message(code: 'license.status.label')}
                 <br />
-                <i class="image outline icon"></i>${message(code: 'license.type.label')}
                 <i class="cloud icon"></i>${message(code: 'license.licenseUrl.label')}
                 <i class="clipboard list icon"></i>${message(code: 'license.licenseCategory.label')}
                 <br />

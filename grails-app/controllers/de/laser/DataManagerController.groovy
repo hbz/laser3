@@ -188,8 +188,7 @@ class DataManagerController  {
           case License.class.name:
             License license_object = License.get(hl.persistedObjectId);
             if (license_object) {
-                def license_name = license_object.type ? license_object.type.value+': ' : ''
-                license_name += license_object.reference ?: '**No reference**'
+                String license_name = license_object.reference ?: '**No reference**'
                 line_to_add.link = createLink(controller:'license', action: 'show', id:hl.persistedObjectId)
                 line_to_add.name = license_name
             }

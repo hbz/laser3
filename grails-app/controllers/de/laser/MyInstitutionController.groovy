@@ -938,7 +938,8 @@ join sub.orgRelations or_sub where
                 }
             }
 
-            License licenseInstance = new License(type: RDStore.LICENSE_TYPE_ACTUAL, reference: params.licenseName,
+            License licenseInstance = new License(
+                    reference: params.licenseName,
                     startDate:params.licenseStartDate ? DateUtils.parseDateGeneric(params.licenseStartDate) : null,
                     endDate: params.licenseEndDate ? DateUtils.parseDateGeneric(params.licenseEndDate) : null,
                     status: RefdataValue.get(params.status),
