@@ -255,22 +255,7 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            if (params.deleteId) {
-                Locale locale = LocaleContextHolder.getLocale()
-                Task dTask = Task.get(params.deleteId)
-                if (dTask && dTask.creator.id == result.user.id) {
-                    try {
-                        Object[] args = [messageSource.getMessage('task.label',null,locale), dTask.title]
-                        result.message = messageSource.getMessage('default.deleted.message',args,locale)
-                        dTask.delete()
-                    }
-                    catch (Exception e) {
-                        log.error(e)
-                        Object[] args = [messageSource.getMessage('task.label',null,locale), params.deleteId]
-                        result.error = messageSource.getMessage('default.not.deleted.message', args, locale)
-                    }
-                }
-            }
+
             int offset = params.offset ? Integer.parseInt(params.offset) : 0
             result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
             result.taskInstanceCount = result.taskInstanceList.size()
@@ -573,7 +558,7 @@ class SubscriptionControllerService {
                             licensesToProcess << genericOIDService.resolveOID(licenseKey)
                         }
                     }
-                    Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, PendingChangeConfiguration.SETTING_KEYS)
+                    Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, PendingChangeConfiguration.SETTING_KEYS+PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
                     members.each { Org cm ->
                         log.debug("Generating separate slaved instances for members")
                         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -1388,8 +1373,10 @@ class SubscriptionControllerService {
                                 result.packageName = pkgToLink.name
                                 log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
                                 subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
-                                Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
-                                    subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'With')
+                                if(addTypeChildren) {
+                                    Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
+                                        subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'With')
+                                    }
                                 }
                                 subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                             }
@@ -1404,6 +1391,11 @@ class SubscriptionControllerService {
                     Package pkgToLink = Package.findByGokbId(pkgUUID)
                     log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
                     subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
+                    if(addTypeChildren) {
+                        Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
+                            subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'With')
+                        }
+                    }
                     subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                 }
             }

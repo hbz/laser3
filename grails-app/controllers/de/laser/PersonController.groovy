@@ -411,14 +411,17 @@ class PersonController  {
                     }
                     else {
                         redirect controller: 'myInstitution', action: 'addressbook'
+                        return
                     }
                 } else {
                     redirect(url: referer)
+                    return
                 }
             }
             catch (DataIntegrityViolationException e) {
                 flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label'), params.id])
                 redirect action: 'show', id: params.id
+                return
             }
         }
     }
@@ -564,9 +567,11 @@ class PersonController  {
 
         if (params.redirect) {
             redirect(url: request.getHeader('referer'), params: params)
+            return
         }
         else {
             redirect action: 'show', id: params.id
+            return
         }
     }
 

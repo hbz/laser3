@@ -1,6 +1,6 @@
 package de.laser.ajax
 
-
+import de.laser.annotations.DebugAnnotation
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserRole
@@ -180,12 +180,18 @@ class AjaxController {
                             def binding_properties = ["${params.name}": value]
                             bindData(target, binding_properties)
                         }
+                        if (target instanceof Org) {
+                            if(params.name == "status" && value == RDStore.ORG_STATUS_RETIRED) {
+                                target.retirementDate = new Date()
+                            }
+                        }
 
                         if (!target.save()) {
                             Map r = [status: "error", msg: message(code: 'default.save.error.general.message')]
                             render r as JSON
                             return
                         }
+
                         if (target instanceof SurveyResult) {
                             Org org = contextService.getOrg()
                             SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(target.surveyConfig, target.participant)
@@ -431,7 +437,7 @@ class AjaxController {
       EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}", contextService.USER_SCOPE)
       Map checked = cache.get('checked')
       if(params.index == 'all') {
-		  Map<String, String> newChecked = [:]
+		  Map<String, String> newChecked = checked ?: [:]
           Set<Long> pkgFilter = []
           if(params.pkgFilter)
               pkgFilter << params.long('pkgFilter')
@@ -443,8 +449,9 @@ class AjaxController {
           cache.put('checked',newChecked)
 	  }
 	  else {
-		  checked[params.index] = params.checked == 'true' ? 'checked' : null
-		  if(cache.put('checked',checked))
+          Map<String, String> newChecked = checked ?: [:]
+		  newChecked[params.index] = params.checked == 'true' ? 'checked' : null
+		  if(cache.put('checked',newChecked))
 			  success.success = true
 	  }
 
@@ -1816,5 +1823,42 @@ class AjaxController {
         }
 
         render result as JSON
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def deleteTask() {
+
+        if (params.deleteId) {
+            Task.withTransaction {
+                Task dTask = Task.get(params.deleteId)
+                if (dTask && dTask.creator.id == contextService.getUser().id) {
+                    try {
+                        flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
+                        dTask.delete()
+                    }
+                    catch (Exception e) {
+                        log.error(e)
+                        flash.error = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), dTask.title])
+                    }
+                } else {
+                    if (!dTask) {
+                        flash.error = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.deleteId])
+                    } else {
+                        flash.error = message(code: 'default.noPermissions')
+                    }
+                }
+            }
+        }
+        if(params.returnToShow) {
+            redirect action: 'show', id: params.id, controller: params.returnToShow
+            return
+        }
+        else {
+            redirect(url: request.getHeader('referer'))
+            return
+        }
     }
 }

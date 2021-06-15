@@ -261,9 +261,7 @@ class MyInstitutionController  {
         Set<String> licenseFilterTable = []
 
         if (accessService.checkPerm("ORG_INST")) {
-            base_qry = """from License as l where (
-                exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
-            )"""
+            base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) )"
             qry_params = [roleType1:RDStore.OR_LICENSEE, roleType2:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
             if(result.editable)
                 licenseFilterTable << "action"
@@ -341,26 +339,24 @@ class MyInstitutionController  {
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
             // filter by license
-            base_qry += " and ( genfunc_filter_matcher(l.reference, :name_filter) = true "
-                    + " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and ( "
-                    + "   orgR.roleType in (:licRoleTypes) and ( "
-                    + " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "
-                    + " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "
-                    + " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "
-                    + " ) ) ) ) or ( exists ( select li from Links li join li.destinationSubscription s where li.sourceLicense = l and genfunc_filter_matcher(s.name, :name_filter) = true ) ) "
+            base_qry += " and ( genfunc_filter_matcher(l.reference, :name_filter) = true "+
+                    " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and "+
+                    "   orgR.roleType in (:licRoleTypes) and ( "+
+                    " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "+
+                    " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "+
+                    " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "+
+                    " ) ) " +
+                    " or exists ( select li.id from Links li where li.sourceLicense = l and li.linkType = :linkType and genfunc_filter_matcher(li.destinationSubscription.name, :name_filter) = true ) " +
+                    " ) "
             qry_params.name_filter = params['keyword-search']
             qry_params.licRoleTypes = [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM]
+            qry_params.linkType = RDStore.LINKTYPE_LICENSE //map key will be overwritten if set twice
             result.keyWord = params['keyword-search']
         }
 
-        if(params.subKind || params.subStatus || ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) || !params.filterSubmit) {
+        if(params.subKind || params.subStatus || !params.filterSubmit) {
             Set<String> subscrQueryFilter = ["oo.org = :context"]
             qry_params.context = result.institution
-
-            //the if needs to be done twice, here is the second case because the keyword may occur in subscriptions but also in licenses!
-            if(params['keyword-search'] != null && params['keyword-search'].trim().length() > 0) {
-                subscrQueryFilter << "genfunc_filter_matcher(s.name, :name_filter) = true"
-            }
 
             if(params.subStatus || !params.filterSubmit) {
                 subscrQueryFilter <<  "s.status.id = :subStatus"
@@ -385,7 +381,7 @@ class MyInstitutionController  {
                 subscrQueryFilter << "s.instanceOf is null"
             }
 
-            base_qry += " and ( exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" ) or ( not exists ( select li from Links li where li.sourceLicense = l and li.linkType = :linkType ) ) )"
+            base_qry += " and ( exists ( select li from Links li join li.destinationSubscription s left join s.orgRelations oo where li.sourceLicense = l and li.linkType = :linkType and "+subscrQueryFilter.join(" and ")+" ) )" //or ( not exists ( select li from Links li where li.sourceLicense = l and li.linkType = :linkType ) )
             qry_params.linkType = RDStore.LINKTYPE_LICENSE
         }
 
@@ -399,6 +395,7 @@ class MyInstitutionController  {
         //log.debug("query = ${base_qry}");
         //log.debug("params = ${qry_params}");
         pu.setBenchmark('execute query')
+        log.debug("select l ${base_qry}")
         List<License> totalLicenses = License.executeQuery( "select l " + base_qry, qry_params )
         result.licenseCount = totalLicenses.size()
         pu.setBenchmark('get subscriptions')
@@ -649,6 +646,7 @@ join sub.orgRelations or_sub where
             catch (Exception e) {
                 log.error("Problem",e);
                 response.sendError(500)
+                return
             }
         }
 
@@ -917,6 +915,7 @@ join sub.orgRelations or_sub where
                     log.debug("return 401....")
                     flash.error = message(code: 'myinst.newLicense.error')
                     response.sendError(401)
+                    return
                 }
                 else {
                     def copyLicense = institutionsService.copyLicense(baseLicense, params, InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD)
@@ -957,6 +956,7 @@ join sub.orgRelations or_sub where
                 log.error(licenseInstance.errors.toString())
                 flash.error = message(code:'license.create.error')
                 redirect action: 'emptyLicense'
+                return
             }
             else {
                 log.debug("Save ok")
@@ -974,6 +974,7 @@ join sub.orgRelations or_sub where
                 }
 
                 redirect controller: 'license', action: 'show', params: params, id: licenseInstance.id
+                return
             }
         }
     }
@@ -1266,17 +1267,14 @@ join sub.orgRelations or_sub where
 
         if(currentSubIds) {
 
-            String qry3 = "select distinct pkg, s from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
-                    "TitleInstancePackagePlatform tipp " +
-                    "where tipp.pkg = pkg and s.id in (:currentSubIds) "
+            String qry3 = "select distinct pkg, s from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
+                    "where s.id in (:currentSubIds) "
 
             qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
-            qry3 += " and ((tipp.status is null) or (tipp.status != :tippDeleted))"
 
             def qryParams3 = [
                     currentSubIds  : currentSubIds,
-                    pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED,
-                    tippDeleted    : RDStore.TIPP_STATUS_DELETED
+                    pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED
             ]
 
             if (params.pkg_q?.length() > 0) {
@@ -1332,6 +1330,7 @@ join sub.orgRelations or_sub where
         if (ctrlResult.status == MyInstitutionControllerService.STATUS_ERROR) {
             flash.error = "You do not have permission to access ${ctrlResult.result.institution.name} pages. Please request access on the profile page"
             response.sendError(401)
+                return
         }
 
         return ctrlResult.result
@@ -1539,8 +1538,9 @@ join sub.orgRelations or_sub where
     })
     def subscriptionImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        result.mappingCols = ["name","owner","status","type","form","resource","provider","agency","startDate","endDate","instanceOf",
-                              "manualCancellationDate","member","customProperties","privateProperties","notes"]
+        result.mappingCols = ["name", "owner", "status", "type", "form", "resource", "provider", "agency", "startDate", "endDate",
+                              "manualCancellationDate", "hasPerpetualAccess", "hasPublishComponent", "isPublicForApi",
+                              "customProperties", "privateProperties", "notes"]
         result
     }
 
@@ -1560,6 +1560,7 @@ join sub.orgRelations or_sub where
                     if(subscriptionData.globalErrors) {
                         flash.error = "<h3>${message([code:'myinst.subscriptionImport.post.globalErrors.header'])}</h3><p>${subscriptionData.globalErrors.join('</p><p>')}</p>"
                         redirect(action: 'subscriptionImport')
+                        return
                     }
                     result.candidates = subscriptionData.candidates
                     result.parentSubType = subscriptionData.parentSubType
@@ -1596,7 +1597,7 @@ join sub.orgRelations or_sub where
 
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = DateUtils.getSimpleDateFormatByToken('default.date.format.onlyYear')
-            params.validOnYear = sdfyear.format(new Date())
+            params.validOnYear = [sdfyear.format(new Date())]
         }
 
         result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org and surorg.surveyConfig.surveyInfo.startDate != null group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.institution]) ?: []
@@ -1998,10 +1999,12 @@ join sub.orgRelations or_sub where
         if(success instanceof User) {
             flash.message = message(code: 'default.created.message', args: [message(code: 'user.label'), success.id]) as String
             redirect action: 'editUser', params: [uoid: genericOIDService.getOID(success)]
+            return
         }
         else if(success instanceof List) {
             flash.error = success.join('<br>')
             redirect action: 'createUser'
+            return
         }
     }
 
@@ -2112,25 +2115,6 @@ join sub.orgRelations or_sub where
     def tasks() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        if (params.deleteId) {
-            Task.withTransaction { TransactionStatus ts ->
-                Task dTask = Task.get(params.deleteId)
-                if (dTask && (dTask.creator.id == result.user.id || contextService.getUser().hasAffiliation("INST_ADM"))) {
-                    try {
-                        dTask.delete()
-                        flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), params.deleteId])
-                    }
-                    catch (Exception e) {
-                        flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), params.deleteId])
-                    }
-                }
-                else {
-                    flash.message = message(code: 'default.not.deleted.notAutorized.message', args: [message(code: 'task.label'), params.deleteId])
-                }
-            }
-
-        }
-
         if ( ! params.sort) {
             params.sort = "t.endDate"
             params.order = "asc"
@@ -2183,6 +2167,7 @@ join sub.orgRelations or_sub where
 
                 }
                 redirect action: 'manageMembers'
+                return
             }
             result.filterSet = params.filterSet ? true : false
 
@@ -2225,7 +2210,13 @@ join sub.orgRelations or_sub where
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        result.filterSet    = params.filterSet ? true : false
+        if(!params.subStatus) {
+            if(!params.filterSet) {
+                params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
+                result.filterSet = true
+            }
+        }
+        else result.filterSet    = params.filterSet ? true : false
 
         params.comboType = result.comboType.value
         def fsq = filterService.getOrgComboQuery(params, result.institution)
@@ -2239,7 +2230,7 @@ join sub.orgRelations or_sub where
         }
 
         List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams)
-        result.totalMembers    = totalMembers.clone()
+        result.totalMembers    = totalMembers
         result.membersCount    = totalMembers.size()
         result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
         String header
@@ -2984,6 +2975,7 @@ join sub.orgRelations or_sub where
                 }
             }
             redirect action: 'manageProperties', params: [filterPropDef: params.filterPropDef]
+            return
         }
     }
 
@@ -3224,6 +3216,7 @@ join sub.orgRelations or_sub where
 
             if(isEditable){
                 redirect controller: 'license', action: 'copyLicense', params: [sourceObjectId: genericOIDService.getOID(license), copyObject: true]
+                return
             }else {
                 flash.error = message(code:'license.permissionInfo.noPerms')
                 response.sendError(401)

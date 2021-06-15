@@ -239,13 +239,13 @@ class SurveyConfig {
             return true
         } else {
 
-            int countFinish = 0
+           /* int countFinish = 0
             int countNotFinish = 0
 
             boolean noParticipation = false
             if(subSurveyUseForTransfer) {
                 noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
-            }
+            }*/
 
                 /*if (!noParticipation) {*/
 

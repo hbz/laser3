@@ -84,7 +84,6 @@ class TitleController  {
         if (! result.ti) {
             flash.error = message(code:'titleInstance.error.notFound.es')
             redirect action: 'list'
-
             return
         }
 

@@ -33,7 +33,7 @@
                 <th>${message(code: 'financials.budgetCode.description')}</th>
                 <th>${message(code: 'financials.budgetCode.usage')}</th>
                 <g:if test="${editable}">
-                    <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                    <th class="la-action-info one wide">${message(code:'default.actions.label')}</th>
                 </g:if>
             </tr>
         </thead>

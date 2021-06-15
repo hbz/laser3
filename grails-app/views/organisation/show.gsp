@@ -222,7 +222,7 @@
                         <dl>
                             <dt><g:message code="org.sector.label" /></dt>
                             <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>
+                                <semui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}"/>
                             </dd>
                         </dl>
                         <dl>
@@ -232,6 +232,15 @@
                                 <semui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}"/>
                             </dd>
                         </dl>
+                        <g:if test="${orgInstance.status == RDStore.ORG_STATUS_RETIRED}">
+                            <dl>
+                                <dt>${message(code: 'org.retirementDate.label')}</dt>
+
+                                <dd>
+                                    <g:formatDate date="${orgInstance.retirementDate}" format="${message(code: 'default.date.format.notime')}"/>
+                                </dd>
+                            </dl>
+                        </g:if>
                     </div>
                 </div><!-- .card -->
             </g:if>

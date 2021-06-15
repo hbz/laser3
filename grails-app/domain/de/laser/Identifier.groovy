@@ -1,17 +1,23 @@
 package de.laser
 
-
+import com.k_int.kbplus.PendingChangeService
 import de.laser.titles.TitleInstance
 import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
+import grails.converters.JSON
 import grails.plugins.orm.auditable.Auditable
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.web.json.JSONElement
 
 class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
     def cascadingUpdateService
+    def pendingChangeService
+    def changeNotificationService
+    def auditService
+    def messageSource
 
     static Log static_logger = LogFactory.getLog(Identifier)
 
@@ -233,7 +239,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
     }
 
     String getURL() {
-        if (ns.urlPrefix && value) {
+        if (ns.urlPrefix && value && value != IdentifierNamespace.UNKNOWN) {
             if (ns.urlPrefix.endsWith('=')) {
                 return "${ns.urlPrefix}${value}"
             }
@@ -254,7 +260,9 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         if (this.ns?.ns in IdentifierNamespace.CORE_ORG_NS) {
             if (this.value == IdentifierNamespace.UNKNOWN) {
                 this.value = ''
-                this.save()
+                if(!this.save()) {
+                    log.error(this.getErrors().getAllErrors().toListString())
+                }
             }
         }
 
@@ -300,6 +308,97 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
               }
           }
       }
+        Map<String, Object> changes = [
+                oldMap: [:],
+                newMap: [:]
+        ]
+        this.getDirtyPropertyNames().each { prop ->
+            changes.oldMap.put( prop, this.getPersistentValue(prop) )
+            changes.newMap.put( prop, this.getProperty(prop) )
+        }
+        auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
+    }
+
+    void notifyDependencies(changeDocument) {
+        log.debug("notifyDependencies(${changeDocument})")
+        if (changeDocument.event.equalsIgnoreCase('Identifier.updated')) {
+
+            // legacy ++
+
+            Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+            ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
+            String description = messageSource.getMessage('default.accept.placeholder',null, locale)
+            if (contentItemDesc) {
+                description = contentItemDesc.content
+            }
+            else {
+                ContentItem defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.subscription.default", locale.toString())
+                if( defaultMsg)
+                    description = defaultMsg.content
+            }
+
+            // legacy ++
+
+            List<PendingChange> slavedPendingChanges = []
+
+            List<Identifier> depedingProps = Identifier.findAllByInstanceOf( this )
+            depedingProps.each{ Identifier childId ->
+
+                String definedType = 'text'
+
+                // overwrite specials ..
+                if (changeDocument.prop == 'note') {
+                    definedType = 'text'
+                    description = '(NOTE)'
+                }
+
+                def msgParams = [
+                        definedType,
+                        "${childId.ns.class.name}:${childId.ns.id}",
+                        (changeDocument.prop in ['note'] ? "${changeDocument.oldLabel}" : "${changeDocument.old}"),
+                        (changeDocument.prop in ['note'] ? "${changeDocument.newLabel}" : "${changeDocument.new}"),
+                        "${description}"
+                ]
+
+                PendingChange newPendingChange = changeNotificationService.registerPendingChange(
+                        PendingChange.PROP_SUBSCRIPTION,
+                        childId.sub,
+                        childId.sub.getSubscriber(),
+                        [
+                                changeTarget:"${Subscription.class.name}:${childId.sub.id}",
+                                changeType: PendingChangeService.EVENT_PROPERTY_CHANGE,
+                                changeDoc:changeDocument
+                        ],
+                        PendingChange.MSG_SU02,
+                        msgParams,
+                        "Der Identifikator <strong>${childId.ns.getI10n("name")}</strong> hat sich von <strong>\"${changeDocument.oldLabel?:changeDocument.old}\"</strong> zu <strong>\"${changeDocument.newLabel?:changeDocument.new}\"</strong> von der Lizenzvorlage geändert. " + description
+                )
+                if (newPendingChange && childId.sub.isSlaved) {
+                    slavedPendingChanges << newPendingChange
+                }
+            }
+
+            slavedPendingChanges.each { spc ->
+                log.debug('autoAccept! performing: ' + spc)
+                pendingChangeService.performAccept(spc)
+            }
+        }
+        else if (changeDocument.event.equalsIgnoreCase('Identifier.deleted')) {
+
+            List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.payload is not null and pc.oid = :objectID",
+                    [objectID: "${this.class.name}:${this.id}"] )
+            openPD.each { pc ->
+                if (pc.payload) {
+                    JSONElement payload = JSON.parse(pc.payload)
+                    if (payload.changeDoc) {
+                        def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
+                        if (scp?.id == id) {
+                            pc.delete()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Deprecated

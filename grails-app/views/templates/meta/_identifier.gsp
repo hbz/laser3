@@ -22,15 +22,16 @@
             <g:if test="${editable && nsList}">
                 <g:form controller="ajax" action="addIdentifier" class="ui form">
                     <hr/>
-                    <div class="three fields">
+                    <div class="field">
+                        <label for="namespace">${message(code:'identifier.namespace.label')}</label>
+                        <semui:dropdownWithI18nExplanations name="namespace" id="namespace" class="ui search dropdown"
+                                                            from="${nsList}" noSelection=""
+                                                            optionKey="${{ IdentifierNamespace.class.name + ':' + it.id }}"
+                                                            optionValue="${{ it.getI10n('name') ?: it.ns }}"
+                                                            optionExpl="${{ it.getI10n('description') }}"/>
+                    </div>
+                    <div class="two fields">
                         <input name="owner" type="hidden" value="${object.class.name}:${object.id}" />
-                        <div class="field">
-                            <label for="namespace">${message(code:'identifier.namespace.label')}</label>
-                            <g:select name="namespace" id="namespace" class="ui search dropdown"
-                                      from="${nsList}"
-                                      optionKey="${{ IdentifierNamespace.class.name + ':' + it.id }}"
-                                      optionValue="${{ it.getI10n('name') ?: it.ns }}" />
-                        </div>
                         <div class="field">
                             <label for="value">${message(code:'default.identifier.label')}</label>
                             <input name="value" id="value" type="text" class="ui" />

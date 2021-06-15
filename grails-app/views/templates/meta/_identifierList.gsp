@@ -33,7 +33,10 @@
                 </div>
                 <div class="column">
                     <g:if test="${ident instanceof Identifier}">
-                        ${ident.value}
+                        <g:if test="${!ident.instanceOf}">
+                            <semui:xEditable owner="${ident}" field="value"/>
+                        </g:if>
+                        <g:else>${ident.value}</g:else>
                         <g:if test="${ident.ns.urlPrefix}"><a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="external alternate icon"></i></a></g:if>
                     </g:if>
                     <g:else>
@@ -60,52 +63,65 @@
                 <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
                     <div class="column">
                         <g:if test="${editable && ident instanceof Identifier}">
-                            <g:if test="${(object instanceof Subscription || object instanceof License) && showConsortiaFunctions}">
-                                <g:if test="${!ident.instanceOf}">
-                                    <g:if test="${! AuditConfig.getConfig(ident)}">
-                                        <laser:remoteLink class="ui mini icon button la-popup-tooltip la-delay js-open-confirm-modal"
-                                                          controller="ajax"
-                                                          action="toggleIdentifierAuditConfig"
-                                                          params='[ownerId: "${object.id}",
-                                                                   ownerClass: "${object.class}",
-                                                                   showConsortiaFunctions: true,
-                                                                   (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
-                                                          ]'
-                                                          data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.identifier", args: [ident.value])}"
-                                                          data-confirm-term-how="inherit"
-                                                          id="${ident.id}"
-                                                          data-content="${message(code:'property.audit.off.tooltip')}"
-                                                          data-update="objIdentifierPanel"
-                                                          role="button"
-                                        >
-                                            <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
-                                        </laser:remoteLink>
+                            <g:if test="${(object instanceof Subscription || object instanceof License)}">
+                                <g:if test="${showConsortiaFunctions}">
+                                    <g:if test="${!ident.instanceOf}">
+                                        <g:if test="${! AuditConfig.getConfig(ident)}">
+                                            <laser:remoteLink class="ui mini icon button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                              controller="ajax"
+                                                              action="toggleIdentifierAuditConfig"
+                                                              params='[ownerId: "${object.id}",
+                                                                       ownerClass: "${object.class}",
+                                                                       showConsortiaFunctions: true,
+                                                                       (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                              ]'
+                                                              data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.identifier", args: [ident.value])}"
+                                                              data-confirm-term-how="inherit"
+                                                              id="${ident.id}"
+                                                              data-content="${message(code:'property.audit.off.tooltip')}"
+                                                              data-update="objIdentifierPanel"
+                                                              role="button"
+                                            >
+                                                <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
+                                            </laser:remoteLink>
+                                            <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative mini button"
+                                                    params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                                <i class="icon trash alternate"></i>
+                                            </g:link>
+                                        </g:if>
+                                        <g:else>
+                                            <laser:remoteLink class="ui mini icon green button la-popup-tooltip la-delay js-open-confirm-modal"
+                                                              controller="ajax" action="toggleIdentifierAuditConfig"
+                                                              params='[ownerId: "${object.id}",
+                                                                       ownerClass: "${object.class}",
+                                                                       showConsortiaFunctions: true,
+                                                                       (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                              ]'
+                                                              id="${ident.id}"
+                                                              data-content="${message(code:'property.audit.on.tooltip')}"
+                                                              data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.identifier", args: [ident.value])}"
+                                                              data-confirm-term-how="inherit"
+                                                              data-update="objIdentifierPanel"
+                                                              role="button"
+                                            >
+                                                <i class="thumbtack icon la-js-editmode-icon"></i>
+                                            </laser:remoteLink>
+                                        </g:else>
+                                    </g:if>
+                                    <g:else>
                                         <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative mini button"
                                                 params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                             <i class="icon trash alternate"></i>
                                         </g:link>
-                                    </g:if>
-                                    <g:else>
-                                        <laser:remoteLink class="ui mini icon green button la-popup-tooltip la-delay js-open-confirm-modal"
-                                                          controller="ajax" action="toggleIdentifierAuditConfig"
-                                                          params='[ownerId: "${object.id}",
-                                                                   ownerClass: "${object.class}",
-                                                                   showConsortiaFunctions: true,
-                                                                   (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
-                                                          ]'
-                                                          id="${ident.id}"
-                                                          data-content="${message(code:'property.audit.on.tooltip')}"
-                                                          data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.identifier", args: [ident.value])}"
-                                                          data-confirm-term-how="inherit"
-                                                          data-update="objIdentifierPanel"
-                                                          role="button"
-                                        >
-                                            <i class="thumbtack icon la-js-editmode-icon"></i>
-                                        </laser:remoteLink>
                                     </g:else>
                                 </g:if>
+                                <g:elseif test="${ident.instanceOf}">
+                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon thumbtack blue"></i></span>
+                                </g:elseif>
                                 <g:else>
                                     <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative mini button"
                                             params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
@@ -115,9 +131,6 @@
                                     </g:link>
                                 </g:else>
                             </g:if>
-                            <g:elseif test="${ident.instanceOf}">
-                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon thumbtack blue"></i></span>
-                            </g:elseif>
                         </g:if>
                         <g:elseif test="${ident instanceof Identifier && ident.instanceOf}">
                             <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon thumbtack blue"></i></span>

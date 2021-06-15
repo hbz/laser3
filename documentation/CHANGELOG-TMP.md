@@ -9,6 +9,58 @@
 
 3511    15.06.2021  ?       ?           David   Feature     Reporting: PDF-Export
 
+3564    15.06.2021  rc2.1   2.1         David   Feature     Reporting: IDs unterschiedlich angesetzt
+
+3566    14.06.2021  rc2.1   2.1         Moe     Bug         Aufgaben löschen in Lizenz: Refresh nötig
+
+3561    14.06.2021  rc2.1   2.1         Andreas Bug/Feature Identifier-Einkaufsliste abgearbeitet
+
+3409    14.06.2021  rc2.1   2.1         Moe     Feature     Überarbeitung Lizenzuplaod
+
+3555    14.06.2021  rc2.1   2.1         Moe     Bug         Lizenzupload
+
+3561    14.06.2021  rc2.1   2.1         Andreas Bug/Feature Identifier-Einkaufsliste abgearbeitet
+
+3562    11.06.2021  rc2.1   2.1         Andreas Bug         falsches Verhalten durch Dummy-Wert für Identifier
+
+3558    11.06.2021  rc2.1   2.1         Moe     Bug         Dokument / Anmerkung löschen verursacht Sprung
+
+3563    11.06.2021  rc2.1   2.1         Moe     Bug         WEkb Sysmbol Verlagebene
+
+3559    11.06.2021  rc2.1   2.1         Andreas Bug         Identifier-Inkonsistenzen behoben
+
+3552    11.06.2021  rc2.1   2.1         Andreas Bug         Massenverarbeitungsformular umstrukturiert
+
+3549    11.06.2021  rc2.1   2.1         Andreas Bug         Haushaltsjahrkalender nicht korrekt initialisiert
+
+3546    11.06.2021  rc2.1   2.1         Andreas Bug         Titelauswahl-Cache wurde nicht geladen
+
+3557    10.06.2021  rc2.1   2.1         Moe     Bug         Fehlende Sicherheitsabfragen in Umfragenerstellung (Sammelticket)
+
+3553    10.06.2021  rc2.1   2.1         Andreas Bug         inkonsistentes Verhalten bei Paket verknüpfen behoben
+
+3551    10.06.2021  rc2.1   2.1         Andreas Bug         Pakete ohne Titel wurden nicht unter "Meine Pakete" aufgeführt
+
+3108    10.06.2021  rc2.1   2.1         Andreas Feature     Hervorhebungen und Darstellungen des Schaltpultes
+
+2967/3532   10.06.2021  rc2.1   2.1-RC  Andreas Bug         Technischer Support unvollständig dargestellt
+
+1496    10.06.2021  rc2.1   2.1-RC      Andreas Feature     Filter für "Meine Einrichtungen" sowie Ausgabe für "Alle Einrichtungen" erweitert
+
+3554    10.06.2021  rc2.1   2.1         Moe     Feature     Verlängerungsumfrage - Export Renewal Button
+
+3544    09.06.2021  rc2.1   2.1         Moe     Bug         "Lizenzen vergleichen" - "Titel vergleichen" erfolgt Fehlermeldung
+
+3540    09.06.2021  rc2.1   2.1-RC      Andreas Feature     neuer Typ Einrichtung für Nutzerzahlen hinzugefügt
+
+3539    09.06.2021  rc2.1   2.1-RC      Andreas Feature     fehlende Anzeige der verlängerten Lizenz auf Dashboard nachgereicht
+
+3538    09.06.2021  rc2.1   2.1-RC      Andreas Feature     auskommentierte Spalte des Erstellers wieder eingefügt
+
+3482    09.06.2021  rc2.1   2.1-RC      Andreas Bug         Vertragsfilter umstrukturiert
+
+3476    09.06.2021  rc2.1   2.1-RC      Andreas Bug         Zeichenbegrenzug auf 255 Zeichen angehoben      
+
 2424    08.06.2021  dev     2.1         Moe     Feature     Filterset UmfrageKosten und Umfrageteilnehmer einfügen 
 
 3492    08.06.2021  dev     2.1         Andreas Feature     Last Audit Date bei Plattformdetailsicht eingefügt

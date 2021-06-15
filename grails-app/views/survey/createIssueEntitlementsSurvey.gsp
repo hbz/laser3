@@ -171,6 +171,7 @@
             </thead>
             <g:each in="${subscriptions}" var="s" status="i">
                 <g:if test="${!s.instanceOf}">
+                    <g:set var="childSubIds" value="${Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :parent',[parent:s])}"/>
                     <tr>
                         <td class="center aligned">
                             ${(params.int('offset') ?: 0) + i + 1}
@@ -238,13 +239,13 @@
                         </td>
                             <td>
                                 <g:link controller="subscription" action="members" params="${[id: s.id]}">
-                                    ${Subscription.findAllByInstanceOf(s).size()}
+                                    ${childSubIds.size()}
                                 </g:link>
                             </td>
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index"
                                         params="${[sub: s.id]}">
-                                    ${CostItem.findAllBySubInListAndOwnerAndCostItemStatusNotEqual(Subscription.findAllByInstanceOf(s), institution, RDStore.COST_ITEM_DELETED).size()}
+                                    ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
                                 </g:link>
                             </td>
 

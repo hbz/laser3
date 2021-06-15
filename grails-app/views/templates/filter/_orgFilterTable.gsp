@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.helper.RDConstants; de.laser.helper.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.SurveyOrg; de.laser.SurveyResult; de.laser.OrgSetting" %>
+<%@ page import="de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.helper.RDConstants; de.laser.helper.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.SurveyOrg; de.laser.SurveyResult; de.laser.OrgSetting; de.laser.helper.DateUtils" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -49,6 +49,9 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('hasInstAdmin')}">
                 <th>${message(code: 'org.hasInstAdmin.label')}</th>
+            </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">
+                <th>${message(code: 'default.status.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('legalInformation')}">
                 <th class="la-no-uppercase">
@@ -299,6 +302,20 @@
                     </g:else>
                 </td>
             </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">
+                <td>
+                    <g:if test="${org.status == RDStore.ORG_STATUS_CURRENT}">
+                        <span class="la-popup-tooltip la-delay" data-position="top right">
+                            <i class="ui icon green circle"></i>
+                        </span>
+                    </g:if>
+                    <g:if test="${org.status == RDStore.ORG_STATUS_RETIRED}">
+                        <span class="la-popup-tooltip la-delay" data-position="top right" <g:if test="${org.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${org.retirementDate}"/>"</g:if>>
+                            <i class="ui icon yellow circle"></i>
+                        </span>
+                    </g:if>
+                </td>
+            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('legalInformation')}">
                 <td>
                     <g:if test="${org.createdBy && org.legallyObligedBy}">
@@ -393,12 +410,12 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSubscriptions')}">
                 <td class="center aligned">
                     <div class="la-flexbox">
-                        <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id], contextService.getOrg())
+                        <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: params.subStatus ?: null, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null], contextService.getOrg())
                         def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
                         %>
                         <g:if test="${actionName == 'manageMembers'}">
                             <g:link controller="myInstitution" action="manageConsortiaSubscriptions"
-                                    params="${[member: org.id, status: RDStore.SUBSCRIPTION_CURRENT.id]}">
+                                    params="${[member: org.id, status: params.subStatus ?: null, validOn: params.subValidOn]}">
                                 <div class="ui circular label">
                                     ${numberOfSubscriptions}
                                 </div>

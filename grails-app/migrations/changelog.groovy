@@ -144,4 +144,5 @@ databaseChangeLog = {
 	include file: 'changelog-2021-05-28.groovy'
 	include file: 'changelog-2021-06-07.groovy' //has to be done before June 1st because of domain model using
 	include file: 'changelog-2021-06-01.groovy'
+	include file: 'changelog-2021-06-11.groovy'
 }

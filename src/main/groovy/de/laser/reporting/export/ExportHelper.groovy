@@ -65,7 +65,10 @@ class ExportHelper {
 
             if (fieldName == 'x-identifier') {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
-                label += (selList ? ': ' + selList.collect{it -> IdentifierNamespace.get(it).ns }.join(', ') : '') // TODO - export
+                label += (selList ? ': ' + selList.collect{it ->
+                    IdentifierNamespace idns = IdentifierNamespace.get(it)
+                    idns.getI10n('name') ?: idns.ns + ' *'
+                }.join(', ') : '')
             }
             else if (fieldName == '@ae-org-accessPoint') {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
@@ -105,7 +108,9 @@ class ExportHelper {
 
     static String getFileName(List<String> labels) {
 
-        labels.collect{ it.replaceAll('→', '_').replaceAll(' ', '') }.join('_')
+        labels.collect{
+            it.replaceAll('[^\\wäöüÄÖÜ!"§$%&()=?\'{},.\\-+~#;:]', '').replaceAll(' ', '')
+        }.join('_')
     }
 
     // -----  -----
@@ -180,7 +185,7 @@ class ExportHelper {
         }
 
         idnsList.collect{ it ->
-            [ it.id, it.ns ]
+            [ it.id, it.getI10n('name') ?: it.ns + ' *' ]
         }
     }
 
