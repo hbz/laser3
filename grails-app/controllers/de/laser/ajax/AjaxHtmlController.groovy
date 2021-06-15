@@ -21,12 +21,10 @@ import de.laser.PersonRole
 import de.laser.SubscriptionService
 import de.laser.Task
 import de.laser.TaskService
-import de.laser.TitleInstancePackagePlatform
 import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
-import de.laser.helper.Constants
 import de.laser.reporting.export.AbstractExport
 import de.laser.reporting.export.ExportHelper
 import de.laser.reporting.export.GenericExportManager
@@ -34,11 +32,8 @@ import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.myInstitution.base.BaseDetails
-import de.laser.reporting.myInstitution.base.BaseFilter
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
-import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat

@@ -58,7 +58,7 @@ class CustomWkhtmltoxService /* extends WkhtmltoxService */ {
             wrapper.footerHtml = footerFile.absolutePath
         }
 
-        String binaryFilePath = grailsApplication.config.grails.plugin.wkhtmltopdf.binary.toString()
+        String binaryFilePath = ConfigUtils.getWkhtmltopdfBinary()
         String xvfbRunner = ConfigUtils.getWkhtmltopdfXvfbRunner()
 
         if (!(new File(binaryFilePath)).exists()) {
