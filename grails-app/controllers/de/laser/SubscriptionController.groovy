@@ -63,14 +63,8 @@ class SubscriptionController {
             }
         }
         else {
-            if(params.returnToShow) {
-                redirect action: 'show', id: params.id
-                return
-            }
-            else {
                 ctrlResult.result
             }
-        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
