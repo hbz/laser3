@@ -239,7 +239,7 @@
                         <g:message code="subscription.packages.config.label" args="${[""]}"/>
                     </h5>
 
-                    <table class="ui table compact">
+                    <table class="ui table compact la-table-height53px">
                         <tr>
                             <th class="control-label"><g:message code="subscription.packages.changeType.label"/></th>
                             <th class="control-label">
@@ -318,7 +318,7 @@
                             <g:message code="subscription.packages.config.children.label" args="${[""]}"/>
                         </h5>
 
-                        <table class="ui table compact">
+                        <table class="ui table compact la-table-height53px">
                             <tr>
                                 <th class="control-label" data-tooltip="${message(code: "subscription.packages.auditable")}">
                                     <i class="ui large icon thumbtack"></i>
