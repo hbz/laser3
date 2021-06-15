@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3532    15.06.2021  rc2.1   2.1         Andreas Feature     Formatierungen des technischen Supports
+
 3568    15.06.2021  rc2.1   2.1         David   Feature     Reporting: Attribut Typ bei Vertrag aufgetaucht
 
 3569    15.06.2021  rc2.1   2.1         David   Bug         Reporting: Falsche Termini bei Verträge in 2. Ergebnis
