@@ -88,6 +88,8 @@
                             Trenner für mehrfache Werte: <span class="ui circular label">${AbstractExport.CSV_VALUE_SEPARATOR}</span>
                         </p>
                     </div>
+                    <%-- // TODO -- ERMS-3511
+
                     <div id="fileformat-pdf" class="wide eight field">
                         <label>PDF-Konfiguration</label>
                         <p>
@@ -95,12 +97,20 @@
                             Suchinformationen: <span class="ui circular label">anzeigen</span> <br />
                         </p>
                     </div>
+
+                    --%>
                     <div class="wide eight field">
                         <div class="field" style="margin-bottom: 1em !important;">
                             <label for="fileformat">Dateiformat</label>
+                            <%-- // TODO -- ERMS-3511
                             <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
                                       optionKey="key" optionValue="value"
                                       from="${[csv:'CSV', pdf: 'PDF']}"
+                            />
+                            --%>
+                            <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
+                                      optionKey="key" optionValue="value"
+                                      from="${[csv:'CSV']}"
                             />
                         </div>
                         <div class="field">
