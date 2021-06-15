@@ -798,7 +798,6 @@ class LicenseController {
             License.withTransaction {
                 Object targetObject = new License(
                         reference: lic_name,
-                        type: result.sourceObject.type,
                         status: RDStore.LICENSE_NO_STATUS,
                         openEnded: result.sourceObject.openEnded)
 

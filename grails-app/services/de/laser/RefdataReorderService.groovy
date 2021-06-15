@@ -78,7 +78,6 @@ class RefdataReorderService {
         list.add([owner: 'license.oa.type',         sortToEnd: ['No Open Access']])
         list.add([owner: 'license.remote.access',   sortToEnd: ['No']])
         list.add([owner: 'license.status',          sortToEnd: ['Unknown']])
-        list.add([owner: 'license.type',            sortToEnd: ['Unknown']])
         list.add([owner: 'org.type',                sortToEnd: ['Other']])
         list.add([owner: 'package.breakable',       sortToEnd: ['Yes', 'No', 'Unknown']])
         list.add([owner: 'package.consistent',      sortToEnd: ['Yes', 'No', 'Unknown']])
