@@ -7,7 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3586    16.06.2021  rc2.1   2.1         Moe     Bug         Filter Alle Titel 
+
+3565    16.06.2021  rc2.1   2.1         Moe     Bug         "Alle Titel" Sortierfunktion sagt: keine Titel vorhanden
+
 3585    16.06.2021  rc2.1   2.1         David   Bug         Reporting Einstiegspunkt Verträge: Schritt 3 scheitert "unbekannter Fehler"
+
+3576    15.06.2021  rc2.1   2.1         Moe     Bug         Zugangskonfigurationen: mehrere kleine Unstimmigkeiten
 
 3511    15.06.2021  rc2.1   2.1         David   Feature     Reporting: PDF-Export
 
