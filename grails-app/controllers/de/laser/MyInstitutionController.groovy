@@ -28,6 +28,7 @@ import de.laser.properties.PropertyDefinitionGroupItem
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import grails.util.Holders
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
 import org.apache.poi.POIXMLProperties
@@ -116,6 +117,12 @@ class MyInstitutionController  {
             }
             cacheMap.filterCache.labels.putAll( result.filterResult.labels )
             cacheMap.filterCache.data.putAll( result.filterResult.data )
+
+            def groovyPageRenderer = Holders.grailsApplication.mainContext.getBean('groovyPageRenderer')
+            cacheMap.filterCache.result = groovyPageRenderer.render(
+                    template: '/myInstitution/reporting/query/filterResult',
+                    model: [ filter: params.filter, filterResult: result.filterResult ]
+            ).replaceAll('\\s+', ' ').trim()
 
             sessionCache.put("MyInstitutionController/reporting/" + result.token, cacheMap)
         }

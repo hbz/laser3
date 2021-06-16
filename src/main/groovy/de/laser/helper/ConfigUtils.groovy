@@ -102,6 +102,12 @@ class ConfigUtils {
     static String getSystemEmail(boolean validate = false) {
         readConfig('systemEmail', validate)
     }
+    static String getWkhtmltopdfBinary(boolean validate = false) {
+        readConfig('grails.plugin.wkhtmltopdf.binary', validate)
+    }
+    static String getWkhtmltopdfXvfbRunner(boolean validate = false) {
+        readConfig('grails.plugin.wkhtmltopdf.xvfbRunner', validate)
+    }
 
     // -- check --
 
@@ -138,6 +144,8 @@ class ConfigUtils {
         getStatsApiUrl(true)
         getStatsSyncJobActiv(true)
         getSystemEmail(true)
+        getWkhtmltopdfBinary(true)
+        getWkhtmltopdfXvfbRunner(true)
 
         println ": --------------------------------------------->"
     }

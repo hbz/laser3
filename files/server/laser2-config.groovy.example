@@ -25,6 +25,9 @@ notifications.email.from    = 'laser@local'
 notifications.email.replyTo = 'laser@local'
 notifications.email.genericTemplate = true // if enabled, no customisation in email ..  else, customised template will be sent
 
+//grails.plugin.wkhtmltopdf.binary      = '/usr/bin/wkhtmltopdf' // pdf generation; default value .. not required for servers
+//grails.plugin.wkhtmltopdf.xvfbRunner  = '/usr/bin/xvfb-run'    // pdf generation; required for servers
+
 financials.currency = "EUR|GBP|USD|CHF" // priority of order
 
 activateTestJob                     = false
