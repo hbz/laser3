@@ -84,8 +84,9 @@
                                             >
                                                 <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
                                             </laser:remoteLink>
-                                            <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative mini button"
+                                            <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative mini button js-open-confirm-modal"
                                                     params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
+                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                 <i class="icon trash alternate"></i>
@@ -111,8 +112,9 @@
                                         </g:else>
                                     </g:if>
                                     <g:else>
-                                        <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative mini button"
+                                        <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative mini button js-open-confirm-modal"
                                                 params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
+                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                             <i class="icon trash alternate"></i>
@@ -123,8 +125,9 @@
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon thumbtack blue"></i></span>
                                 </g:elseif>
                                 <g:else>
-                                    <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative mini button"
+                                    <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative mini button js-open-confirm-modal"
                                             params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
+                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="icon trash alternate"></i>
