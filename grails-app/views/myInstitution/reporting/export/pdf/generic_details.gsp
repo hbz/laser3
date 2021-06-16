@@ -63,7 +63,7 @@
 <body>
     <h1>
         LAS:eR Reporting
-        <span class="warning">DEMO : in Entwicklung - [${struct[2]}]</span>
+        <span class="warning">DEMO : in Entwicklung - [${struct[0]} x ${struct[1]} - ${struct[2]}]</span>
     </h1>
 
     <div class="filterInfo">

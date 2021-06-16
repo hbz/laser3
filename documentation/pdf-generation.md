@@ -30,3 +30,15 @@
     response.setHeader( 'Content-disposition', 'attachment; filename="test.pdf"' )
     response.setContentType( 'application/pdf' )
     response.outputStream.withStream{ it << pdf }
+
+#### NOT SUPPORTED YET
+
+    class SomeController {
+        def someAction() {
+            render( 
+                filename: 'test.pdf',
+                view:     '/path/pdf',
+                model:    []
+            )
+        }
+    }
