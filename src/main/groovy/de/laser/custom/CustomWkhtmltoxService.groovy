@@ -1,18 +1,24 @@
 package de.laser.custom
 
 import de.laser.helper.ConfigUtils
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.grails.plugins.wkhtmltopdf.PartialView
 import org.grails.plugins.wkhtmltopdf.WkhtmltoxException
+import org.grails.plugins.wkhtmltopdf.WkhtmltoxService
 import org.grails.plugins.wkhtmltopdf.WkhtmltoxWrapper
 
 class CustomWkhtmltoxService /* extends WkhtmltoxService */ {
 
     static transactional = false
+    static Log log = LogFactory.getLog( CustomWkhtmltoxService )
 
     def mailMessageContentRenderer
     def grailsApplication
 
     byte[] makePdf(config) {
+
+        log.debug('Overriding WkhtmltoxService ..')
 
         WkhtmltoxWrapper wrapper = new WkhtmltoxWrapper()
 

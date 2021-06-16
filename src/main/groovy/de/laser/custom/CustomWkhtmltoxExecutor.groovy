@@ -23,12 +23,11 @@ class CustomWkhtmltoxExecutor /* extends WkhtmltoxExecutor */ {
             throw new WkhtmltoxException("Wrapper must be set.")
         }
 
-        this.binaryPath = binaryPath
-        this.xvfbRunner = xvfbRunner
-
         wrapper.disableJavascript = true
         wrapper.disableLocalFileAccess = true
 
+        this.binaryPath = binaryPath
+        this.xvfbRunner = xvfbRunner
         this.wrapper = wrapper
     }
 
@@ -45,6 +44,7 @@ class CustomWkhtmltoxExecutor /* extends WkhtmltoxExecutor */ {
 
             log.info("Invoking wkhtml2pdf with command $commandList")
             log.trace "Following html will be converted to PDF: $html"
+
             //def process = (commandList as String[]).execute()
             def process = (commandList.join(' ')).execute()
             def stdout = new ByteArrayOutputStream()

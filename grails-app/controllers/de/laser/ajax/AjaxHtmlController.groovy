@@ -25,6 +25,7 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
+import de.laser.custom.CustomWkhtmltoxService
 import de.laser.reporting.export.AbstractExport
 import de.laser.reporting.export.ExportHelper
 import de.laser.reporting.export.GenericExportManager
@@ -59,6 +60,7 @@ class AjaxHtmlController {
     ReportingService reportingService
     SubscriptionService subscriptionService
     LicenseControllerService licenseControllerService
+    CustomWkhtmltoxService wkhtmltoxService // custom
 
     @Secured(['ROLE_USER'])
     def test() {
@@ -473,9 +475,7 @@ class AjaxHtmlController {
                 pageSize = 'A3'
             }
 
-            def customWkhtmltoxService = Holders.grailsApplication.mainContext.getBean('wkhtmltoxService')
-
-            def pdf = customWkhtmltoxService.makePdf (
+            def pdf = wkhtmltoxService.makePdf (
                     view:       '/myInstitution/reporting/export/pdf/generic_details',
                     model: [
                             filterLabels: ExportHelper.getCachedFilterLabels(params.token),
