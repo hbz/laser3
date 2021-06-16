@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3585    16.06.2021  rc2.1   2.1         David   Bug         Reporting Einstiegspunkt Verträge: Schritt 3 scheitert "unbekannter Fehler"
+
 3511    15.06.2021  rc2.1   2.1         David   Feature     Reporting: PDF-Export
 
 3577    15.06.2021  rc2.1   2.1         Moe     Bug         500er Fehler bei Preis einer Bestandangabe

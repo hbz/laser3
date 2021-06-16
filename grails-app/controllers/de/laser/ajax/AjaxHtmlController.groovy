@@ -427,9 +427,6 @@ class AjaxHtmlController {
             out.close()
         }
         else if (params.fileformat == 'pdf') {
-            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
-            response.contentType = 'application/pdf'
-
             List<List<String>> content = GenericExportManager.export(export, 'pdf', detailsCache.idList)
             Map<String, List> struct = [width: [], height: []]
 
@@ -451,31 +448,24 @@ class AjaxHtmlController {
                 }
             }
 
-            int w = struct.width.sum() as int // 80
-            int h = struct.width.sum() as int // 90 - x
-
             String pageSize = 'A4'
             String orientation = 'Portrait'
 
-            /* if (w > 400)        {
-                pageSize = 'A0'; orientation = 'Landscape'
-            }
-            else */
-            if (w > 320)   {
-                pageSize = 'A0'
-            }
-            else if (w > 240)   {
-                pageSize = 'A1'
-            }
-            else if (w > 160)   {
-                pageSize = 'A2'
-            }
-            else if (w > 80)    {
-                pageSize = 'A3'
+            int wx = 80, w = struct.width.sum() as int
+            int hx = 90, h = struct.height.sum() as int
+            def whr = (w * 0.75) / (h + 15)
+
+            if (w > 360) { pageSize = 'A0' }
+            else if (w > 270) { pageSize = 'A1' }
+            else if (w > 180) { pageSize = 'A2' }
+            else if (w > 80) { pageSize = 'A3' }
+
+            if (whr > 7) {
+                orientation = 'Landscape'
             }
 
-            def pdf = wkhtmltoxService.makePdf (
-                    view:       '/myInstitution/reporting/export/pdf/generic_details',
+            def pdf = wkhtmltoxService.makePdf(
+                    view: '/myInstitution/reporting/export/pdf/generic_details',
                     model: [
                             filterLabels: ExportHelper.getCachedFilterLabels(params.token),
                             filterResult: ExportHelper.getCachedFilterResult(params.token),
@@ -485,8 +475,8 @@ class AjaxHtmlController {
                             content     : content,
                             struct      : [struct.width.sum(), struct.height.sum(), pageSize + ' ' + orientation]
                     ],
-                   // header: '',
-                   // footer: '',
+                    // header: '',
+                    // footer: '',
                     pageSize: pageSize,
                     orientation: orientation,
                     marginLeft: 10,
@@ -495,7 +485,9 @@ class AjaxHtmlController {
                     marginRight: 10
             )
 
-            response.outputStream.withStream{ it << pdf }
+            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
+            response.setContentType('application/pdf')
+            response.outputStream.withStream { it << pdf }
         }
     }
 }
