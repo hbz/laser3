@@ -7,13 +7,23 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+    ERMS-3565
+
+    "Alle Titel" Sortierfunktion sagt: keine Titel vorhanden
+
+3585    16.06.2021  rc2.1   2.1         David   Bug         Reporting Einstiegspunkt Verträge: Schritt 3 scheitert "unbekannter Fehler"
+
 3576    15.06.2021  rc2.1   2.1         Moe     Bug         Zugangskonfigurationen: mehrere kleine Unstimmigkeiten
+
+3511    15.06.2021  rc2.1   2.1         David   Feature     Reporting: PDF-Export
 
 3577    15.06.2021  rc2.1   2.1         Moe     Bug         500er Fehler bei Preis einer Bestandangabe
 
 3578    15.06.2021  rc2.1   2.1         Moe     Bug         Lizenzumfrage: "Bemerkungen" sind nicht löschbar
 
 3560    15.06.2021  rc2.1   2.1         Moe     Bug         Fehlermeldung bei "Meine Umfragen"
+
+3532    15.06.2021  rc2.1   2.1         Andreas Feature     Formatierungen des technischen Supports
 
 3568    15.06.2021  rc2.1   2.1         David   Feature     Reporting: Attribut Typ bei Vertrag aufgetaucht
 

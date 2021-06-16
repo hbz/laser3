@@ -1,7 +1,5 @@
 package de.laser
 
-
- 
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])

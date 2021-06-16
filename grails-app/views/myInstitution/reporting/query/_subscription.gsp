@@ -8,24 +8,7 @@
 
         <div class="ui message success">
             <p>
-                ${message(code: 'reporting.filterResult.subscription.part', args: [filterResult.data.subscriptionIdList.size()])}
-
-                <g:if test="${filterResult.data.memberSubscriptionIdList}">
-                    ${message(code: 'reporting.filterResult.and.memberSubscription', args: [filterResult.data.memberSubscriptionIdList.size()])}
-                </g:if>
-                <g:if test="${filterResult.data.memberIdList}">
-                    ${message(code: 'reporting.filterResult.and.member', args: [filterResult.data.memberIdList.size()])}
-                </g:if>
-                <g:if test="${filterResult.data.consortiumIdList}">
-                    ${message(code: 'reporting.filterResult.and.consortium', args: [filterResult.data.consortiumIdList.size()])}
-                </g:if>
-                <g:if test="${filterResult.data.providerIdList}">
-                    ${message(code: 'reporting.filterResult.and.provider', args: [filterResult.data.providerIdList.size()])}
-                </g:if>
-                <g:if test="${filterResult.data.agencyIdList}">
-                    ${message(code: 'reporting.filterResult.and.agency', args: [filterResult.data.agencyIdList.size()])}
-                </g:if>
-                ${message(code: 'reporting.filterResult.end')}
+                <g:render template="/myInstitution/reporting/query/filterResult" model="${[filter: filter, filterResult: filterResult]}" />
             </p>
         </div>
 

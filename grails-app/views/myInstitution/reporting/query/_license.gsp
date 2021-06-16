@@ -8,12 +8,7 @@
 
         <div class="ui message success">
             <p>
-                ${message(code: 'reporting.filterResult.license.part', args: [filterResult.data.licenseIdList.size()])}
-
-                <g:if test="${filterResult.data.licensorIdList.size()}">
-                    ${message(code: 'reporting.filterResult.and.licensor', args: [filterResult.data.licensorIdList.size()])}
-                </g:if>
-                ${message(code: 'reporting.filterResult.end')}
+                <g:render template="/myInstitution/reporting/query/filterResult" model="${[filter: filter, filterResult: filterResult]}" />
             </p>
         </div>
 
