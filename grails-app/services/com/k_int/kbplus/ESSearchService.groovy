@@ -25,6 +25,7 @@ class ESSearchService{
                     'isPublic':'isPublic',
                     'status':'status',
                     'publisher':'publisher',
+                    'publishers':'publishers.name',
                     'name':'name']
 
   def ESWrapperService
@@ -155,7 +156,7 @@ class ESSearchService{
             }
 
             result.hits = searchResponse.getHits()
-            result.resultsTotal = searchResponse.getHits().getTotalHits().value ?: "0"
+            result.resultsTotal = searchResponse.getHits().getTotalHits().value ?: 0
             result.index = esSettings.indexName
 
           }

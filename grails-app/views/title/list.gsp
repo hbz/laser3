@@ -26,7 +26,7 @@
           </div>
           <div class="field">
             <label for="filter">${message(code: 'title.search_in')}</label>
-            <g:select class="ui dropdown" id="filter" name="filter" from="${[[key:'name',value:"${message(code: 'title.title.label')}"],[key:'publisher.name',value:"${message(code:'tipp.publisher')}"],[key:'',value:"${message(code: 'title.all.label')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
+            <g:select class="ui dropdown" id="filter" name="filter" from="${[[key:'name',value:"${message(code: 'title.title.label')}"],[key:'publishers',value:"${message(code:'tipp.publisher')}"],[key:'',value:"${message(code: 'title.all.label')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
           </div>
             <div class="field la-field-right-aligned">
               <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
@@ -39,7 +39,7 @@
     <div class="ui grid la-clear-before">
         <div class="sixteen wide column">
 
-             <g:if test="${hits}" >
+             <g:if test="${hits && resultsTotal > 0}" >
                <semui:messages data="${flash}" />
 
                <div class="ui icon info message">
