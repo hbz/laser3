@@ -1543,7 +1543,6 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processSubscriptionImport() {
-        Subscription.withTransaction { TransactionStatus ts ->
             Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
             MultipartFile tsvFile = request.getFile("tsvFile") //this makes the transaction closure necessary
             if(tsvFile && tsvFile.size > 0) {
@@ -1570,8 +1569,6 @@ join sub.orgRelations or_sub where
                 flash.error = message(code:'default.import.error.noFileProvided')
                 redirect(url: request.getHeader('referer'))
             }
-        }
-
     }
 
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
