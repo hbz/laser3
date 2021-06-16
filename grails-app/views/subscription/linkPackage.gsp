@@ -210,7 +210,7 @@
             <label for="pkgName">${message(code: 'package.label')}</label>
             <input type="text" id="pkgName" name="pkgName" value="" readonly/>
         </div>
-        <div class="ui internally celled grid">
+        <div class="ui divided grid">
             <g:set var="colCount" value="${institution.getCustomerType() == 'ORG_CONSORTIUM' ? 'eight' : 'sixteen'}"/>
             <div class="${colCount} wide column">
                 <div class="grouped required fields">
@@ -239,7 +239,7 @@
                         <g:message code="subscription.packages.config.label" args="${[""]}"/>
                     </h5>
 
-                    <table class="ui table compact">
+                    <table class="ui table compact la-table-height53px">
                         <tr>
                             <th class="control-label"><g:message code="subscription.packages.changeType.label"/></th>
                             <th class="control-label">
@@ -318,14 +318,13 @@
                             <g:message code="subscription.packages.config.children.label" args="${[""]}"/>
                         </h5>
 
-                        <table class="ui table compact">
+                        <table class="ui table compact la-table-height53px">
                             <tr>
-                                <th class="control-label"><g:message code="subscription.packages.changeType.label"/></th>
                                 <th class="control-label" data-tooltip="${message(code: "subscription.packages.auditable")}">
                                     <i class="ui large icon thumbtack"></i>
                                 </th>
                                 <th class="control-label" data-tooltip="${message(code: "subscription.packages.notification.auditable")}">
-                                    <i class="ui large icon thumbtack"></i><i class="ui large icon plus"></i><i class="ui large icon bullhorn"></i>
+                                    <i class="ui large icon bullhorn"></i>
                                 </th>
                             </tr>
                             <g:set var="excludes"
@@ -333,9 +332,6 @@
                                              PendingChangeConfiguration.PACKAGE_DELETED]}"/>
                             <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
                                 <tr>
-                                    <td class="control-label">
-                                        <g:message code="subscription.packages.${settingKey}"/>
-                                    </td>
                                     <td>
                                         <g:if test="${!(settingKey in excludes)}">
                                             <g:checkBox class="ui checkbox" name="${settingKey}!§!auditable"

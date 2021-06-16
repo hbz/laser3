@@ -77,7 +77,7 @@
                 <g:if test="${editmode}">
                     <tr>
                         <td style="border-top: none" colspan="3">
-                            <div id="pendingChangeConfiguration${sp.id}" class="ui segment hidden">
+                            <div id="pendingChangeConfiguration${sp.id}" class="ui hidden">
                                 <h5 class="ui header">
                                     <g:message code="subscription.packages.config.label" args="${[sp.pkg.name]}"/>
                                 </h5>
@@ -95,7 +95,7 @@
                                                 <i class="ui large icon thumbtack"></i>
                                             </dt>
                                             <dt class="control-label" data-tooltip="${message(code:'subscription.packages.notification.auditable')}">
-                                                <i class="ui large icon bullhorn"></i><i class="ui large icon plus"></i><i class="ui large icon thumbtack"></i>
+                                                <i class="ui large icon bullhorn"></i>
                                             </dt>
                                         </g:if>
                                     </dl>

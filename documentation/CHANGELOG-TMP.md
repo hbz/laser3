@@ -7,7 +7,23 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-3511    15.06.2021  ?       ?           David   Feature     Reporting: PDF-Export
+3511    15.06.2021  rc2.1   2.1         David   Feature     Reporting: PDF-Export
+
+3577    15.06.2021  rc2.1   2.1         Moe     Bug         500er Fehler bei Preis einer Bestandangabe
+
+3578    15.06.2021  rc2.1   2.1         Moe     Bug         Lizenzumfrage: "Bemerkungen" sind nicht löschbar
+
+3560    15.06.2021  rc2.1   2.1         Moe     Bug         Fehlermeldung bei "Meine Umfragen"
+
+3532    15.06.2021  rc2.1   2.1         Andreas Feature     Formatierungen des technischen Supports
+
+3568    15.06.2021  rc2.1   2.1         David   Feature     Reporting: Attribut Typ bei Vertrag aufgetaucht
+
+3569    15.06.2021  rc2.1   2.1         David   Bug         Reporting: Falsche Termini bei Verträge in 2. Ergebnis
+
+3580    15.06.2021  rc2.1   2.1         Andreas Bug         Abfragefehler im Dashboard behoben
+
+3553    15.06.2021  rc2.1   2.1         Andreas Bug         Hinzufügeparameter nicht verarbeitet
 
 3564    15.06.2021  rc2.1   2.1         David   Feature     Reporting: IDs unterschiedlich angesetzt
 

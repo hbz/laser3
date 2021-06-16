@@ -922,11 +922,11 @@ class SubscriptionController {
         Map<String,Object> ctrlResult = subscriptionControllerService.removePriceItem(params)
         Object[] args = [message(code:'tipp.price'), params.priceItem]
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            flash.error = message(code: 'default.not.found.message', args)
+            flash.error = message(code: 'default.not.found.message', args: args)
         }
         else
         {
-            flash.message = message(code:'default.deleted.message',args)
+            flash.message = message(code:'default.deleted.message', args: args)
         }
         redirect action: 'index', id: params.id
     }
@@ -947,11 +947,11 @@ class SubscriptionController {
         Map<String,Object> ctrlResult = subscriptionControllerService.removeCoverage(params)
         Object[] args = [message(code:'tipp.coverage'), params.ieCoverage]
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            flash.error = message(code: 'default.not.found.message', args)
+            flash.error = message(code: 'default.not.found.message', args: args)
         }
         else
         {
-            flash.message = message(code:'default.deleted.message',args)
+            flash.message = message(code:'default.deleted.message', args: args)
         }
         redirect action: 'index', id: params.id, params: params
     }
