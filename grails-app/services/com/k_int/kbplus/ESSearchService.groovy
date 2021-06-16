@@ -74,7 +74,15 @@ class ESSearchService{
               }
 
               //searchRequestBuilder = searchRequestBuilder.addSort("${params.sort}".toString()+".keyword", order)
-              searchSourceBuilder.sort(new FieldSortBuilder("${params.sort}").order(order))
+              if(params.sort == "type.value"){
+                searchSourceBuilder.sort(new FieldSortBuilder("${params.sort}").order(order).setNestedPath("type"))
+              }
+              else if(params.sort == "publishers.name"){
+                searchSourceBuilder.sort(new FieldSortBuilder("${params.sort}").order(order).setNestedPath("publishers"))
+              }
+              else {
+                searchSourceBuilder.sort(new FieldSortBuilder("${params.sort}").order(order))
+              }
             }
 
             //searchRequestBuilder = searchRequestBuilder.addSort("priority", SortOrder.DESC)

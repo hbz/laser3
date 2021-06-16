@@ -58,9 +58,9 @@
                     <thead>
                       <tr>
                           <th>${message(code:'sidewide.number')}</th>
-                      <g:sortableColumn property="sortTitle" title="${message(code: 'title.title.label')}" params="${params}" />
-                      <g:sortableColumn property="typTitle" title="${message(code: 'title.type.label')}" params="${params}" />
-                      <g:sortableColumn property="publisher" style="white-space:nowrap" title="${message(code: 'tipp.publisher')}" params="${params}" />
+                      <g:sortableColumn property="sortName" title="${message(code: 'title.title.label')}" params="${params}" />
+                      <g:sortableColumn property="type.value" title="${message(code: 'title.type.label')}" params="${params}" />
+                      <g:sortableColumn property="publishers.name" style="white-space:nowrap" title="${message(code: 'tipp.publisher')}" params="${params}" />
                       <th style="white-space:nowrap"><g:message code="title.identifiers.label" /></th>
                       </tr>
                     </thead>
