@@ -37,7 +37,7 @@ class AccessPointController  {
             redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id, params: [ip: ctrlResult.result.invalidRanges.join(' ')]
             return
         } else {
-            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id, params: [autofocus: true]
+            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id, params: [autofocus: true, tab: params.tab]
             return
         }
     }
@@ -338,7 +338,8 @@ class AccessPointController  {
                     inContextOrg                      : inContextOrg,
                     contextCustomerType               : contextOrg.getCustomerType(),
                     activeSubsOnly                    : activeChecksOnly,
-                    institution                       : contextOrg
+                    institution                       : contextOrg,
+                    tab                               : (params.tab ?: "IPv4")
             ]
         }
     }
