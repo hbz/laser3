@@ -110,17 +110,20 @@
                                     </td>
                                     <td>${message(code: 'profile.notification.for.SurveysStart')}</td>
                                 </tr>
-                                <g:if test="${contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM'}">
-                                    <tr>
-                                        <td>
-                                            <div class="ui checkbox">
-                                                <g:set var="isNotificationForSurveysParticipationFinish" value="${user.getSetting(KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_NO).rdValue==RDStore.YN_YES}"/>
-                                                <input type="checkbox" name="isNotificationForSurveysParticipationFinish" class="hidden" value="Y" ${isNotificationForSurveysParticipationFinish?'checked':''}/>
-                                            </div>
-                                        </td>
-                                        <td>${message(code: 'profile.notification.for.SurveysParticipationFinish')}</td>
-                                    </tr>
-                                </g:if>
+
+                                <tr>
+                                    <td>
+                                        <div class="ui checkbox">
+                                            <g:set var="isNotificationForSurveysParticipationFinish"
+                                                   value="${user.getSetting(KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_NO).rdValue == RDStore.YN_YES}"/>
+                                            <input type="checkbox" name="isNotificationForSurveysParticipationFinish"
+                                                   class="hidden"
+                                                   value="Y" ${isNotificationForSurveysParticipationFinish ? 'checked' : ''}/>
+                                        </div>
+                                    </td>
+                                    <td>${contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM' ? message(code: 'profile.notification.for.SurveysParticipationFinish') : message(code: 'profile.notification.for.SurveysParticipationFinish2')}</td>
+                                </tr>
+
                                 <tr>
                                     <td>
                                         <div class="ui checkbox">

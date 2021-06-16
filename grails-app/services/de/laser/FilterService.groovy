@@ -664,7 +664,7 @@ class FilterService {
                     params.filterSet = true
                     params.validOnYear = ['all']
                 }else{
-                    query += " and Year(surInfo.startDate) in (:validOnYear) "
+                    query += " Year(surInfo.startDate) in (:validOnYear) "
                     queryParams << [validOnYear : params.list('validOnYear').collect { Integer.parseInt(it) }]
                     params.filterSet = true
                 }

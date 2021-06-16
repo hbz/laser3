@@ -21,12 +21,11 @@ import de.laser.PersonRole
 import de.laser.SubscriptionService
 import de.laser.Task
 import de.laser.TaskService
-import de.laser.TitleInstancePackagePlatform
 import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
-import de.laser.helper.Constants
+import de.laser.custom.CustomWkhtmltoxService
 import de.laser.reporting.export.AbstractExport
 import de.laser.reporting.export.ExportHelper
 import de.laser.reporting.export.GenericExportManager
@@ -34,11 +33,7 @@ import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.myInstitution.base.BaseDetails
-import de.laser.reporting.myInstitution.base.BaseFilter
 import grails.plugin.springsecurity.annotation.Secured
-import grails.util.Holders
-import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -64,6 +59,7 @@ class AjaxHtmlController {
     ReportingService reportingService
     SubscriptionService subscriptionService
     LicenseControllerService licenseControllerService
+    CustomWkhtmltoxService wkhtmltoxService // custom
 
     @Secured(['ROLE_USER'])
     def test() {
@@ -288,7 +284,7 @@ class AjaxHtmlController {
             case 'contactPersonForProviderAgencyPublic':
                 result.contactPersonForProviderAgencyPublic = true
                 result.isPublic    = true
-                result.presetFunctionType = RDStore.PRS_FUNC_TECHNICAL_SUPPORT
+                result.presetFunctionType = RefdataValue.get(params.supportType)
                 //result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FUNC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FUNC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FUNC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_FUNC_DELIVERY_ADDRESS]
                 //result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
                 if(result.org){
@@ -298,7 +294,6 @@ class AjaxHtmlController {
                     result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label")
                     result.orgList = result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
                 }
-
                 break
             case 'contactPersonForPublic':
                 result.isPublic    = true
@@ -478,9 +473,7 @@ class AjaxHtmlController {
                 pageSize = 'A3'
             }
 
-            def customWkhtmltoxService = Holders.grailsApplication.mainContext.getBean('wkhtmltoxService')
-
-            def pdf = customWkhtmltoxService.makePdf (
+            def pdf = wkhtmltoxService.makePdf (
                     view:       '/myInstitution/reporting/export/pdf/generic_details',
                     model: [
                             filterLabels: ExportHelper.getCachedFilterLabels(params.token),

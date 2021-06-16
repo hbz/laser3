@@ -1268,7 +1268,7 @@
           type: string
           description: Calculated object type
           enum:
-            ["Template", "Local", "Consortial", "Participation", "Unkown"]
+            ["Administrative", "Consortial", "Local", "Participation", "Unkown"]
 
 
     PackageStub:
@@ -1327,7 +1327,7 @@
           type: string
           description: Calculated object type
           enum:
-            ["Template", "Local", "Consortial", "Participation", "Unkown"]
+            ["Administrative", "Consortial", "Local", "Participation", "Unkown"]
 
 
     TitleInstancePackagePlatformStub:

@@ -46,9 +46,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     @RefdataAnnotation(cat = RDConstants.LICENSE_STATUS, i18n = 'license.status.label')
     RefdataValue status
 
-    @RefdataAnnotation(cat = RDConstants.LICENSE_TYPE, i18n = 'license.type.label')
-    RefdataValue type
-
     @RefdataAnnotation(cat = RDConstants.LICENSE_CATEGORY, i18n = 'license.category.label')
     RefdataValue licenseCategory
 
@@ -107,7 +104,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                 version column:'lic_version'
               globalUID column:'lic_guid'
                  status column:'lic_status_rv_fk'
-                   type column:'lic_type_rv_fk'
               reference column:'lic_ref'
       sortableReference column:'lic_sortable_ref'
            noticePeriod column:'lic_notice_period'
@@ -136,7 +132,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        type        (nullable:true)
         reference(blank:false)
         sortableReference(nullable:true, blank:true) // !! because otherwise, the beforeInsert() method which generates a value is not executed
         noticePeriod(nullable:true, blank:true)
@@ -159,7 +154,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     @Override
     Collection<String> getLogIncluded() {
-        [ 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'type', 'openEnded', 'isPublicForApi' ]
+        [ 'startDate', 'endDate', 'licenseUrl', 'licenseCategory', 'status', 'openEnded', 'isPublicForApi' ]
     }
     @Override
     Collection<String> getLogExcluded() {

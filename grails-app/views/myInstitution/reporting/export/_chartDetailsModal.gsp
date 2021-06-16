@@ -88,20 +88,34 @@
                             Trenner für mehrfache Werte: <span class="ui circular label">${AbstractExport.CSV_VALUE_SEPARATOR}</span>
                         </p>
                     </div>
-                    <div id="fileformat-pdf" class="wide eight field">
-                        <label>PDF-Konfiguration</label>
-                        <p>
-                            Seitenformat: <span class="ui circular label">auto</span> <br />
-                            Suchinformationen: <span class="ui circular label">anzeigen</span> <br />
-                        </p>
-                    </div>
+
+                    <sec:ifAnyGranted roles="ROLE_YODA"><%-- // TODO -- ERMS-3511 --%>
+
+                        <div id="fileformat-pdf" class="wide eight field">
+                            <label>PDF-Konfiguration</label>
+                            <p>
+                                Seitenformat: <span class="ui circular label">auto</span> <br />
+                                Suchinformationen: <span class="ui circular label">anzeigen</span> <br />
+                            </p>
+                        </div>
+                    </sec:ifAnyGranted>
+
                     <div class="wide eight field">
                         <div class="field" style="margin-bottom: 1em !important;">
                             <label for="fileformat">Dateiformat</label>
-                            <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
-                                      optionKey="key" optionValue="value"
-                                      from="${[csv:'CSV', pdf: 'PDF']}"
-                            />
+
+                            <sec:ifAnyGranted roles="ROLE_YODA"><%-- // TODO -- ERMS-3511 --%>
+                                <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
+                                          optionKey="key" optionValue="value"
+                                          from="${[csv:'CSV', pdf: 'PDF']}"
+                                />
+                            </sec:ifAnyGranted>
+                            <sec:ifNotGranted roles="ROLE_YODA"><%-- // TODO -- ERMS-3511 --%>
+                                <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
+                                          optionKey="key" optionValue="value"
+                                          from="${[csv:'CSV']}"
+                                />
+                            </sec:ifNotGranted>
                         </div>
                         <div class="field">
                             <label for="filename">Dateiname</label>

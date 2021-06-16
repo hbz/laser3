@@ -48,7 +48,6 @@ class ApiWriter {
                 // RefdataValues
                 license.licenseCategory  = RefdataValue.getByValueAndCategory(data.licenseCategory, RDConstants.LICENSE_CATEGORY)
                 license.status           = RefdataValue.getByValueAndCategory(data.status, RDConstants.LICENSE_STATUS)
-                license.type             = RefdataValue.getByValueAndCategory(data.type, RDConstants.LICENSE_TYPE)
                 license.ids              = ApiWriterHelper.getIdentifiers(data.identifiers, license) // implicit creation of identifier and namespace
 
                 // References
