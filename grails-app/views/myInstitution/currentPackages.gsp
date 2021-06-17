@@ -1,4 +1,5 @@
 <%@ page import="de.laser.RefdataCategory; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.Package; de.laser.RefdataValue;" %>
+<laser:serviceInjection/>
 <!doctype html>
 <html>
 <head>
@@ -91,7 +92,7 @@
             </th>
 
             <td>
-                ${pkg.getCurrentTipps().size()}
+                ${packageService.getCurrentTippIDs(pkg).size()}
             </td>
 
             <td>
