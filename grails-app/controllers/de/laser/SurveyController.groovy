@@ -8,6 +8,7 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.SurveyControllerService
+import de.laser.custom.CustomWkhtmltoxService
 import de.laser.finance.Order
 import de.laser.finance.PriceItem
 import de.laser.properties.SubscriptionProperty
@@ -17,11 +18,13 @@ import de.laser.finance.CostItem
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
+import de.laser.reporting.export.ExportHelper
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.grails.plugins.wkhtmltopdf.WkhtmltoxService
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.transaction.TransactionStatus
@@ -54,6 +57,7 @@ class SurveyController {
     CopyElementsService copyElementsService
     SurveyControllerService surveyControllerService
     ExportClickMeService exportClickMeService
+    CustomWkhtmltoxService wkhtmltoxService
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
@@ -298,7 +302,7 @@ class SurveyController {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-
+        def date_restriction
         if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
         } else {
@@ -378,6 +382,7 @@ class SurveyController {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        def date_restriction
 
         if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
@@ -1925,6 +1930,97 @@ class SurveyController {
         result
 
     }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+    })
+    Map<String,Object> generatePdfForParticipant() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        result.participant = Org.get(params.participant)
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+
+        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
+
+        result.ownerId = result.surveyResults[0].owner.id
+
+        if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
+            result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
+            result.visibleOrgRelations = []
+            result.costItemSums = [:]
+            if(result.subscription) {
+                result.subscription.orgRelations.each { OrgRole or ->
+                    if (!(or.org.id == result.institution.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
+                        result.visibleOrgRelations << or
+                    }
+                }
+                result.visibleOrgRelations.sort { it.org.sortname }
+
+                result.dataToDisplay = ['subscr']
+                result.offsets = [subscrOffset:0]
+                result.sortConfig = [subscrSort:'sub.name',subscrOrder:'asc']
+
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+
+                LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
+                result.costItemSums = [:]
+
+                if (costItems?.subscr) {
+                    result.costItemSums.subscrCosts = costItems.subscr.costItems
+                }
+                result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
+            }
+
+            if(result.surveyConfig.subSurveyUseForTransfer) {
+                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessor()
+
+                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
+            }
+            result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
+        }
+
+        result.institution = result.participant
+
+        String pageSize = 'A4'
+        String orientation = 'Portrait'
+
+        SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
+        String filename
+
+        if (params.filename) {
+            filename = sdf.format(new Date()) + '_' + params.filename
+        }
+        else {
+            filename = sdf.format(new Date()) + '_reporting'
+        }
+
+
+        def pdf = wkhtmltoxService.makePdf(
+                view: '/survey/export/pdf/participantResult',
+                model: [title: "Test"],
+                // header: '',
+                // footer: '',
+                pageSize: pageSize,
+                orientation: orientation,
+                marginLeft: 10,
+                marginTop: 15,
+                marginBottom: 15,
+                marginRight: 10
+        )
+
+        response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
+        response.setContentType('application/pdf')
+        response.outputStream.withStream { it << pdf }
+
+    }
+
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
