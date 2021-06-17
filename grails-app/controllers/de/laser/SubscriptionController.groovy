@@ -1456,8 +1456,8 @@ class SubscriptionController {
         def candidates = JSON.parse(params.candidates)
         List errors = subscriptionService.addSubscriptions(candidates,params)
         if(errors.size() > 0) {
-            flash.errors = errors.join("<br/>")
-            redirect(url: request.getHeader("referer"))
+            flash.error = errors.join("<br/>")
+            redirect controller: 'myInstitution', action: 'subscriptionImport'
             return
         }
         else {

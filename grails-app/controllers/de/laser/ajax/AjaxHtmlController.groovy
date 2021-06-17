@@ -426,9 +426,6 @@ class AjaxHtmlController {
             out.close()
         }
         else if (params.fileformat == 'pdf') {
-            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
-            response.contentType = 'application/pdf'
-
             List<List<String>> content = GenericExportManager.export(export, 'pdf', detailsCache.idList)
             Map<String, List> struct = [width: [], height: []]
 
@@ -442,39 +439,43 @@ class AjaxHtmlController {
                             struct.height[i] = cell.size()
                         }
                         cell.eachWithIndex { String entry, int k ->
-                            if (!struct.width[j] || struct.width[j] < entry.length()) {
-                                struct.width[j] = entry.length()
+                            if (i == 0) {
+                                struct.width[j] = entry.length() < 15 ? 15 : entry.length() > 35 ? 35 : entry.length()
+                            }
+                            else {
+                                if (!struct.width[j] || struct.width[j] < entry.length()) {
+                                    struct.width[j] = entry.length()
+                                }
                             }
                         }
                     }
                 }
             }
 
-            int w = struct.width.sum() as int // 80
-            int h = struct.width.sum() as int // 90 - x
-
-            String pageSize = 'A4'
+            String[] sizes = [ 'A0', 'A1', 'A2', 'A3', 'A4' ]
+            int pageSize = 0
             String orientation = 'Portrait'
 
-            /* if (w > 400)        {
-                pageSize = 'A0'; orientation = 'Landscape'
-            }
-            else */
-            if (w > 320)   {
-                pageSize = 'A0'
-            }
-            else if (w > 240)   {
-                pageSize = 'A1'
-            }
-            else if (w > 160)   {
-                pageSize = 'A2'
-            }
-            else if (w > 80)    {
-                pageSize = 'A3'
+            int wx = 85, w = struct.width.sum() as int
+            int hx = 35, h = struct.height.sum() as int
+
+            if (w > wx*4)       { pageSize = 0 }
+            else if (w > wx*3)  { pageSize = 1 }
+            else if (w > wx*2)  { pageSize = 2 }
+            else if (w > wx)    { pageSize = 3 }
+
+            def whr = (w * 0.75) / (h + 15)
+            if (whr > 5) {
+                if (w < wx*7) {
+                    if (pageSize < sizes.length - 1) {
+                        pageSize++
+                    }
+                }
+                orientation = 'Landscape'
             }
 
-            def pdf = wkhtmltoxService.makePdf (
-                    view:       '/myInstitution/reporting/export/pdf/generic_details',
+            def pdf = wkhtmltoxService.makePdf(
+                    view: '/myInstitution/reporting/export/pdf/generic_details',
                     model: [
                             filterLabels: ExportHelper.getCachedFilterLabels(params.token),
                             filterResult: ExportHelper.getCachedFilterResult(params.token),
@@ -482,11 +483,11 @@ class AjaxHtmlController {
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
-                            struct      : [struct.width.sum(), struct.height.sum(), pageSize + ' ' + orientation]
+                            struct      : [struct.width.sum(), struct.height.sum(), sizes[ pageSize ] + ' ' + orientation]
                     ],
-                   // header: '',
-                   // footer: '',
-                    pageSize: pageSize,
+                    // header: '',
+                    // footer: '',
+                    pageSize: sizes[ pageSize ],
                     orientation: orientation,
                     marginLeft: 10,
                     marginTop: 15,
@@ -494,7 +495,9 @@ class AjaxHtmlController {
                     marginRight: 10
             )
 
-            response.outputStream.withStream{ it << pdf }
+            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
+            response.setContentType('application/pdf')
+            response.outputStream.withStream { it << pdf }
         }
     }
 }

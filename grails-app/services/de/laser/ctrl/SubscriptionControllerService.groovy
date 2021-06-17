@@ -1496,7 +1496,7 @@ class SubscriptionControllerService {
                     else
                         orderClause = "order by ${params.sort} ${params.order} "
                 }
-                result.entitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp left join ie.coverages ic where ie.id in (:entIDs) '+orderClause,[entIDs:entitlements],[offset:result.offset,max:result.max])
+                result.entitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp left join ie.coverages ic where ie.id in (:entIDs) '+orderClause,[entIDs:entitlements.drop(result.offset).take(result.max)])
             }
             else result.entitlements = []
             Set<SubscriptionPackage> deletedSPs = result.subscription.packages.findAll { SubscriptionPackage sp -> sp.pkg.packageStatus == RDStore.PACKAGE_STATUS_DELETED}

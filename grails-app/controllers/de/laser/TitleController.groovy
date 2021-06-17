@@ -47,14 +47,14 @@ class TitleController  {
             def old_q = params.q
             def old_sort = params.sort
 
-            params.q = params.q ?: null
+
             params.sort = params.sort ?: "name.keyword"
 
-            if (params.filter) {
+            if (params.filter != null && params.filter != '') {
                 params.put(params.filter, params.q)
-                params.q = null
+            }else{
+                params.q = params.q ?: null
             }
-
 
             result =  ESSearchService.search(params)
             //Double-Quoted search strings wont display without this
@@ -67,9 +67,12 @@ class TitleController  {
                 params.remove('sort')
             }
 
-        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        if (old_q) {
+            result.filterSet = true
+        }
 
-        //log.debug(result)
+
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         result
     }
