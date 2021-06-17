@@ -36,9 +36,5 @@
             <button id="chart-export" class="ui icon button" disabled><i class="ui icon download"></i></button>
         </div>--}%
 
-        <div class="field">
-            <label>&nbsp;</label>
-            <span class="ui label red">DEMO : in Entwicklung</span>
-        </div>
     </div>
 </div>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.AbstractExport; de.laser.reporting.export.ExportHelper; de.laser.reporting.export.GenericExportManager" %>
+<%@ page import=" de.laser.reporting.myInstitution.base.BaseDetails; de.laser.reporting.export.AbstractExport; de.laser.reporting.export.ExportHelper; de.laser.reporting.export.GenericExportManager;" %>
 <laser:serviceInjection />
 <!-- _chartDetailsModal.gsp -->
 <g:set var="export" value="${GenericExportManager.createExport( token )}" />
@@ -10,11 +10,22 @@
 
     <semui:modal id="${modalID}" text="${message(code: 'reporting.export.key.' + export.KEY)}" msgSave="Exportieren">
 
-        <p><span class="ui label red">DEMO : in Entwicklung</span></p>
+        <g:set var="dcSize" value="${BaseDetails.getDetailsCache(token).idList.size()}" />
+        <g:if test="${dcSize > 50}">
+            <div class="ui info message">
+                <i class="info circle icon"></i>
+                Bei größeren Datenmengen kann der Export einige Sekunden dauern.
+            </div>
+        </g:if>
 
-        <div class="ui segments">
-            <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterLabels, stacked: true]}" />
-            <g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: queryLabels, stacked: true]}" />
+        <div class="ui form">
+            <div class="field">
+                <label>Zu exportierende Datensätze</label>
+            </div>
+            <div class="ui segments">
+                <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterLabels, stacked: true]}" />
+                <g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: queryLabels, stacked: true]}" />
+            </div>
         </div>
 
         <g:form controller="ajaxHtml" action="chartDetailsExport" method="POST" target="_blank">
