@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3594    17.06.2021  rc2.1   2.1         Andreas Bug         Ladefehler bei Nutzerzahlen behoben
+
 --      17.06.2021  rc2.1   2.1         Andreas Feature     Bestätigungsdialoge für Massenlöschung von Posten
 
 3572    17.06.2021  rc2.1   2.1         David   Feature     Reporting: Layouter für PDF-Export verbessern
