@@ -48,6 +48,8 @@ class ExportClickMeService {
                             'participant.libraryType'       : [field: 'participant.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
                             'participant.generalContact'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'participant.billingContact'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+                            'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
+                            'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
                             'participant.eInvoice'          : [field: 'participant.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
@@ -121,6 +123,8 @@ class ExportClickMeService {
                             'participant.libraryType'       : [field: 'orgs.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
                             'participant.generalContact'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'participant.billingContact'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+                            'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
+                            'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
                             'participant.eInvoice'          : [field: 'participant.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
@@ -387,6 +391,10 @@ class ExportClickMeService {
                     setOrgFurtherInformation(participantResult.participant, row, fieldKey)
                 }else if (fieldKey == 'participant.billingContact') {
                     setOrgFurtherInformation(participantResult.participant, row, fieldKey)
+                }else if (fieldKey == 'participant.billingAdress') {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
+                }else if (fieldKey == 'participant.postAdress') {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
                 }
                 else if (fieldKey == 'participant.customerIdentifier') {
                     setOrgFurtherInformation(participantResult.participant, row, fieldKey, participantResult.sub)
@@ -422,6 +430,12 @@ class ExportClickMeService {
                 if (fieldKey == 'participant.generalContact') {
                     setOrgFurtherInformation(result.orgs, row, fieldKey)
                 }else if (fieldKey == 'participant.billingContact') {
+                    setOrgFurtherInformation(result.orgs, row, fieldKey)
+                }
+                else if (fieldKey == 'participant.billingAdress') {
+                    setOrgFurtherInformation(result.orgs, row, fieldKey)
+                }
+                else if (fieldKey == 'participant.postAdress') {
                     setOrgFurtherInformation(result.orgs, row, fieldKey)
                 }
                 else if (fieldKey == 'participant.customerIdentifier') {
@@ -533,6 +547,26 @@ class ExportClickMeService {
                 row.add([field:  '' , style: null])
             }
 
+        }else if (fieldKey == 'participant.billingAdress') {
+            RefdataValue billingAdress = RDStore.ADRESS_TYPE_BILLING
+            LinkedHashSet<Address> adressList = org.addresses.findAll {Address adress -> adress.type.findAll {it == billingAdress}}
+
+            if(adressList){
+                row.add([field:  adressList.collect {Address address -> address.zipcode + ' ' + address.city + ', ' + address.street_1 + ' ' + address.street_2}.join(";") , style: null])
+            }else{
+                row.add([field:  '' , style: null])
+            }
+
+        }else if (fieldKey == 'participant.postAdress') {
+            RefdataValue postAdress = RDStore.ADRESS_TYPE_POSTAL
+            LinkedHashSet<Address> adressList = org.addresses.findAll {Address adress -> adress.type.findAll {it == postAdress}}
+
+            if(adressList){
+                row.add([field:  adressList.collect {it.zipcode + ' ' + it.city + ', ' + it.street_1 + ' ' + it.street_2}.join(";") , style: null])
+            }else{
+                row.add([field:  '' , style: null])
+            }
+
         }
         else if (fieldKey.startsWith('participantIdentifiers.')) {
             Long id = Long.parseLong(fieldKey.split("\\.")[1])
@@ -564,6 +598,9 @@ class ExportClickMeService {
         RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         RefdataValue billingContact = RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS
 
+        RefdataValue billingAdress =RDStore.ADRESS_TYPE_BILLING
+        RefdataValue postAdress =RDStore.ADRESS_TYPE_POSTAL
+
         selectedExportFields.keySet().each {String fieldKey ->
             Map fields = selectedExportFields.get(fieldKey)
             if(!fields.separateSheet) {
@@ -571,6 +608,11 @@ class ExportClickMeService {
                     titles << generalContact.getI10n('value')
                 }else if (fieldKey == 'participant.billingContact') {
                     titles << billingContact.getI10n('value')
+                }
+                else if (fieldKey == 'participant.billingAdress') {
+                    titles << billingAdress.getI10n('value')
+                }else if (fieldKey == 'participant.postAdress') {
+                    titles << postAdress.getI10n('value')
                 }
                 else if (fieldKey != 'survey.allOtherProperties') {
                     titles << (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label)
