@@ -25,6 +25,7 @@ class ESSearchService{
                     'isPublic':'isPublic',
                     'status':'status',
                     'publisher':'publisher',
+                    'publishers':'publishers.name',
                     'name':'name']
 
   def ESWrapperService
@@ -74,7 +75,15 @@ class ESSearchService{
               }
 
               //searchRequestBuilder = searchRequestBuilder.addSort("${params.sort}".toString()+".keyword", order)
-              searchSourceBuilder.sort(new FieldSortBuilder("${params.sort}").order(order))
+              if(params.sort == "type.value"){
+                searchSourceBuilder.sort(new FieldSortBuilder("${params.sort}").order(order).setNestedPath("type"))
+              }
+              else if(params.sort == "publishers.name"){
+                searchSourceBuilder.sort(new FieldSortBuilder("${params.sort}").order(order).setNestedPath("publishers"))
+              }
+              else {
+                searchSourceBuilder.sort(new FieldSortBuilder("${params.sort}").order(order))
+              }
             }
 
             //searchRequestBuilder = searchRequestBuilder.addSort("priority", SortOrder.DESC)
@@ -147,7 +156,7 @@ class ESSearchService{
             }
 
             result.hits = searchResponse.getHits()
-            result.resultsTotal = searchResponse.getHits().getTotalHits().value ?: "0"
+            result.resultsTotal = searchResponse.getHits().getTotalHits().value ?: 0
             result.index = esSettings.indexName
 
           }

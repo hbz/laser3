@@ -1,4 +1,4 @@
-<%@ page import="grails.converters.JSON;de.laser.OrgRole" contentType="text/html;charset=UTF-8" %>
+<%@ page import="de.laser.helper.RDStore; grails.converters.JSON;de.laser.OrgRole" contentType="text/html;charset=UTF-8" %>
 <laser:serviceInjection/>
 <html>
     <head>
@@ -57,6 +57,9 @@
                                     <li><g:message code="myinst.subscriptionImport.startDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}"/></li>
                                     <li><g:message code="myinst.subscriptionImport.endDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.endDate}"/></li>
                                     <li><g:message code="myinst.subscriptionImport.manualCancellationDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.manualCancellationDate}"/></li>
+                                    <li><g:message code="myinst.subscriptionImport.hasPerpetualAccess"/>: ${sub.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</li>
+                                    <li><g:message code="myinst.subscriptionImport.hasPublishComponent"/>: ${sub.hasPublishComponent ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</li>
+                                    <li><g:message code="myinst.subscriptionImport.isPublicForApi"/>: ${sub.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</li>
                                     <li>
                                         <g:message code="properties"/>:
                                         <ul>
@@ -77,6 +80,7 @@
                                     </li>
                                 </ul>
 
+                                <g:if test="${errors}">
                                 <div class="item red">
                                     <i class="bug icon red"></i><g:message code="default.error"/>:
                                     <div class="content">
@@ -98,6 +102,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                </g:if>
                             </td>
                             <td class="center aligned">
                                 <g:if test="${!withCriticalErrors}">

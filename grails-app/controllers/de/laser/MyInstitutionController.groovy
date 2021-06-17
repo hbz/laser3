@@ -1145,9 +1145,11 @@ join sub.orgRelations or_sub where
                 institution: result.institution,
                 current: RDStore.SUBSCRIPTION_CURRENT,
                 orgRoles: orgRoles]).toSet()
-        Set<Long> allIssueEntitlements = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription in (:currentSubs)',[currentSubs:result.subscriptions])
-        result.providers = Org.executeQuery('select org.id,org.name from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo join oo.org org where ie.id in (:currentIEs) group by org.id order by org.name asc',[currentIEs:allIssueEntitlements])
-        result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.id in (:currentIEs) group by plat.id order by plat.name asc',[currentIEs:allIssueEntitlements])
+        if(result.subscriptions.size() > 0) {
+            Set<Long> allIssueEntitlements = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription in (:currentSubs)',[currentSubs:result.subscriptions])
+            result.providers = Org.executeQuery('select org.id,org.name from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo join oo.org org where ie.id in (:currentIEs) group by org.id order by org.name asc',[currentIEs:allIssueEntitlements])
+            result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.id in (:currentIEs) group by plat.id order by plat.name asc',[currentIEs:allIssueEntitlements])
+        }
         result.num_ti_rows = currentIssueEntitlements.size()
         result.titles = allTitles
 
@@ -1267,7 +1269,7 @@ join sub.orgRelations or_sub where
         result.packageListTotal = 0
 
         if(currentSubIds) {
-
+            long start = System.currentTimeMillis()
             String qry3 = "select distinct pkg, s from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
                     "where s.id in (:currentSubIds) "
 
@@ -1292,11 +1294,12 @@ join sub.orgRelations or_sub where
 
             qry3 += " group by pkg, s"
             qry3 += " order by pkg.name " + (params.order ?: 'asc')
-
+            log.debug("before query: ${System.currentTimeMillis()-start}")
             List packageSubscriptionList = Subscription.executeQuery(qry3, qryParams3)
             /*, [max:result.max, offset:result.offset])) */
-
-            packageSubscriptionList.each { entry ->
+            log.debug("after query: ${System.currentTimeMillis()-start}")
+            packageSubscriptionList.eachWithIndex { entry, int i ->
+                log.debug("processing entry ${i} at: ${System.currentTimeMillis()-start}")
                 String key = 'package_' + entry[0].id
 
                 if (! result.subscriptionMap.containsKey(key)) {
@@ -1312,9 +1315,9 @@ join sub.orgRelations or_sub where
                     }
                 }
             }
-
+            log.debug("after collect: ${System.currentTimeMillis()-start}")
             List tmp = (packageSubscriptionList.collect { it[0] }).unique()
-
+            log.debug("after filter: ${System.currentTimeMillis()-start}")
             result.packageListTotal = tmp.size()
             result.packageList = tmp.drop(result.offset).take(result.max)
         }
@@ -1550,7 +1553,6 @@ join sub.orgRelations or_sub where
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processSubscriptionImport() {
-        Subscription.withTransaction { TransactionStatus ts ->
             Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
             MultipartFile tsvFile = request.getFile("tsvFile") //this makes the transaction closure necessary
             if(tsvFile && tsvFile.size > 0) {
@@ -1577,8 +1579,6 @@ join sub.orgRelations or_sub where
                 flash.error = message(code:'default.import.error.noFileProvided')
                 redirect(url: request.getHeader('referer'))
             }
-        }
-
     }
 
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
@@ -2213,7 +2213,14 @@ join sub.orgRelations or_sub where
         result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         if(!params.subStatus) {
             if(!params.filterSet) {
-                params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id
+                params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+                result.filterSet = true
+            }
+        }
+        else result.filterSet    = params.filterSet ? true : false
+        if(!params.subPerpetual) {
+            if(!params.filterSet) {
+                params.subPerpetual = "on"
                 result.filterSet = true
             }
         }

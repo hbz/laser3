@@ -341,62 +341,6 @@
                         total="${num_ti_rows}"/>
     </g:if>
 
-    <g:if env="development">
-        <!-- For Test Only -->
-        <div class="accordion" id="accordions">
-            <div class="accordion-group">
-                <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordions"
-                       href="#collapse-full-table">
-                        For Test Only: Full Table (show/hide)
-                    </a>
-                </div>
-
-                <div id="collapse-full-table" class="accordion-body collapse out">
-                    <div class="accordion-inner">
-                        <table class="ui sortable celled la-table table">
-                            <tr>
-                                <g:sortableColumn params="${params}" property="tipp.sortName"
-                                                  title="${message(code: 'title.label')}"/>
-                                <th>ISSN</th>
-                                <th>eISSN</th>
-                                <th>${message(code: 'subscription.details.startDate')}</th>
-                                <th>${message(code: 'subscription.details.endDate')}</th>
-                                <th>${message(code: 'default.subscription.label')}</th>
-                                <th>${message(code: 'package.content_provider')}</th>
-                                <th>${message(code: 'tipp.host_platform')}</th>
-                                <th>${message(code: 'tipp.additionalPlatforms')}</th>
-                            </tr>
-                            <g:each in="${entitlements}" var="ie">
-                                <tr>
-                                    <td>${ie.tipp.name}</td>
-                                    <td>${ie.tipp.getIdentifierValue('ISSN')}</td>
-                                    <td>${ie.tipp.getIdentifierValue('eISSN')}</td>
-                                    <td><g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${ie.startDate}"/></td>
-                                    <td><g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                      date="${ie.endDate}"/></td>
-                                    <td>${ie.subscription.name}</td>
-                                    <td>
-                                        <g:each in="${ie.tipp.pkg.orgs}" var="role">
-                                            <g:if test="${role.roleType?.value?.equals('Content Provider')}">${role.org.name}</g:if>
-                                        </g:each>
-                                    </td>
-                                    <td><div><i class="icon-globe"></i><span>${ie.tipp.platform.name}</span></div></td>
-                                    <td>
-                                        <g:each in="${ie.tipp.additionalPlatforms}" var="p">
-                                            <div><i class="icon-globe"></i><span>${p.platform.name}</span></div>
-                                        </g:each>
-                                    </td>
-                                </tr>
-                            </g:each>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End - For Test Only -->
-    </g:if>
 </div>
 
 <semui:debugInfo>
