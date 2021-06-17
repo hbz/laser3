@@ -38,6 +38,7 @@ databaseChangeLog = {
                         "update org_role set or_org_fk = (select org_id from org where org_guid = 'org:916f7a03-8c31-4c9b-afe2-4db21c2d54f8') where or_org_fk = (select org_id from org where org_guid = 'org:3e661689-0f9e-4ef0-9a2e-6a81c7b4482e');" +
                         "update org_role set or_org_fk = (select org_id from org where org_guid = 'org:4ca1727e-43d4-4f38-a284-ab2f5cc5ee48') where or_org_fk = (select org_id from org where org_guid = 'org:c60c5ef3-5487-4290-844b-387db0057cec');" +
                         "update org_role set or_org_fk = (select org_id from org where org_guid = 'org:8e029661-fe36-4766-842c-a1fa0a098854') where or_org_fk = (select org_id from org where org_guid = 'org:8f8f13e3-bf0d-4e7c-992e-aafbf01848f4');" +
+                        "update org_role set or_org_fk = (select org_id from org where org_guid = 'org:e63b09c4-67c2-4eb7-879c-132b58f6f2c0') where or_org_fk = (select org_id from org where org_guid = 'org:17da6850-f1d3-46f7-9047-6c0c74b554c7');" +
                         "update org_role set or_org_fk = (select org_id from org where org_guid = 'org:b05aa631-4e79-49ac-9298-b355f5ce8d98') where or_org_fk = (select org_id from org where org_guid = 'org:07bd80eb-af27-4d28-a04b-ec7061e459e3');")
             }
             rollback {}
@@ -57,6 +58,7 @@ databaseChangeLog = {
                         "update org_property set op_owner_fk = (select org_id from org where org_guid = 'org:916f7a03-8c31-4c9b-afe2-4db21c2d54f8') where op_owner_fk = (select org_id from org where org_guid = 'org:3e661689-0f9e-4ef0-9a2e-6a81c7b4482e');" +
                         "update org_property set op_owner_fk = (select org_id from org where org_guid = 'org:4ca1727e-43d4-4f38-a284-ab2f5cc5ee48') where op_owner_fk = (select org_id from org where org_guid = 'org:c60c5ef3-5487-4290-844b-387db0057cec');" +
                         "update org_property set op_owner_fk = (select org_id from org where org_guid = 'org:8e029661-fe36-4766-842c-a1fa0a098854') where op_owner_fk = (select org_id from org where org_guid = 'org:8f8f13e3-bf0d-4e7c-992e-aafbf01848f4');" +
+                        "update org_property set op_owner_fk = (select org_id from org where org_guid = 'org:e63b09c4-67c2-4eb7-879c-132b58f6f2c0') where op_owner_fk = (select org_id from org where org_guid = 'org:17da6850-f1d3-46f7-9047-6c0c74b554c7');" +
                         "update org_property set op_owner_fk = (select org_id from org where org_guid = 'org:b05aa631-4e79-49ac-9298-b355f5ce8d98') where op_owner_fk = (select org_id from org where org_guid = 'org:07bd80eb-af27-4d28-a04b-ec7061e459e3');")
             }
             rollback {}
@@ -76,6 +78,7 @@ databaseChangeLog = {
                         "update platform set plat_org_fk = (select org_id from org where org_guid = 'org:916f7a03-8c31-4c9b-afe2-4db21c2d54f8') where plat_org_fk = (select org_id from org where org_guid = 'org:3e661689-0f9e-4ef0-9a2e-6a81c7b4482e');" +
                         "update platform set plat_org_fk = (select org_id from org where org_guid = 'org:4ca1727e-43d4-4f38-a284-ab2f5cc5ee48') where plat_org_fk = (select org_id from org where org_guid = 'org:c60c5ef3-5487-4290-844b-387db0057cec');" +
                         "update platform set plat_org_fk = (select org_id from org where org_guid = 'org:8e029661-fe36-4766-842c-a1fa0a098854') where plat_org_fk = (select org_id from org where org_guid = 'org:8f8f13e3-bf0d-4e7c-992e-aafbf01848f4');" +
+                        "update platform set plat_org_fk = (select org_id from org where org_guid = 'org:e63b09c4-67c2-4eb7-879c-132b58f6f2c0') where plat_org_fk = (select org_id from org where org_guid = 'org:17da6850-f1d3-46f7-9047-6c0c74b554c7');" +
                         "update platform set plat_org_fk = (select org_id from org where org_guid = 'org:b05aa631-4e79-49ac-9298-b355f5ce8d98') where plat_org_fk = (select org_id from org where org_guid = 'org:07bd80eb-af27-4d28-a04b-ec7061e459e3');")
             }
             rollback {}
@@ -95,6 +98,7 @@ databaseChangeLog = {
                         "update doc_context set dc_target_org_fk = (select org_id from org where org_guid = 'org:916f7a03-8c31-4c9b-afe2-4db21c2d54f8') where dc_target_org_fk = (select org_id from org where org_guid = 'org:3e661689-0f9e-4ef0-9a2e-6a81c7b4482e');" +
                         "update doc_context set dc_target_org_fk = (select org_id from org where org_guid = 'org:4ca1727e-43d4-4f38-a284-ab2f5cc5ee48') where dc_target_org_fk = (select org_id from org where org_guid = 'org:c60c5ef3-5487-4290-844b-387db0057cec');" +
                         "update doc_context set dc_target_org_fk = (select org_id from org where org_guid = 'org:8e029661-fe36-4766-842c-a1fa0a098854') where dc_target_org_fk = (select org_id from org where org_guid = 'org:8f8f13e3-bf0d-4e7c-992e-aafbf01848f4');" +
+                        "update doc_context set dc_target_org_fk = (select org_id from org where org_guid = 'org:e63b09c4-67c2-4eb7-879c-132b58f6f2c0') where dc_target_org_fk = (select org_id from org where org_guid = 'org:17da6850-f1d3-46f7-9047-6c0c74b554c7');" +
                         "update doc_context set dc_target_org_fk = (select org_id from org where org_guid = 'org:b05aa631-4e79-49ac-9298-b355f5ce8d98') where dc_target_org_fk = (select org_id from org where org_guid = 'org:07bd80eb-af27-4d28-a04b-ec7061e459e3');")
             }
             rollback {}
@@ -114,6 +118,7 @@ databaseChangeLog = {
                         "update doc_context set dc_org_fk = (select org_id from org where org_guid = 'org:916f7a03-8c31-4c9b-afe2-4db21c2d54f8') where dc_org_fk = (select org_id from org where org_guid = 'org:3e661689-0f9e-4ef0-9a2e-6a81c7b4482e');" +
                         "update doc_context set dc_org_fk = (select org_id from org where org_guid = 'org:4ca1727e-43d4-4f38-a284-ab2f5cc5ee48') where dc_org_fk = (select org_id from org where org_guid = 'org:c60c5ef3-5487-4290-844b-387db0057cec');" +
                         "update doc_context set dc_org_fk = (select org_id from org where org_guid = 'org:8e029661-fe36-4766-842c-a1fa0a098854') where dc_org_fk = (select org_id from org where org_guid = 'org:8f8f13e3-bf0d-4e7c-992e-aafbf01848f4');" +
+                        "update doc_context set dc_org_fk = (select org_id from org where org_guid = 'org:e63b09c4-67c2-4eb7-879c-132b58f6f2c0') where dc_org_fk = (select org_id from org where org_guid = 'org:17da6850-f1d3-46f7-9047-6c0c74b554c7');" +
                         "update doc_context set dc_org_fk = (select org_id from org where org_guid = 'org:b05aa631-4e79-49ac-9298-b355f5ce8d98') where dc_org_fk = (select org_id from org where org_guid = 'org:07bd80eb-af27-4d28-a04b-ec7061e459e3');")
             }
             rollback {}
@@ -133,6 +138,7 @@ databaseChangeLog = {
                         "update person_role set pr_org_fk = (select org_id from org where org_guid = 'org:916f7a03-8c31-4c9b-afe2-4db21c2d54f8') where pr_org_fk = (select org_id from org where org_guid = 'org:3e661689-0f9e-4ef0-9a2e-6a81c7b4482e');" +
                         "update person_role set pr_org_fk = (select org_id from org where org_guid = 'org:4ca1727e-43d4-4f38-a284-ab2f5cc5ee48') where pr_org_fk = (select org_id from org where org_guid = 'org:c60c5ef3-5487-4290-844b-387db0057cec');" +
                         "update person_role set pr_org_fk = (select org_id from org where org_guid = 'org:8e029661-fe36-4766-842c-a1fa0a098854') where pr_org_fk = (select org_id from org where org_guid = 'org:8f8f13e3-bf0d-4e7c-992e-aafbf01848f4');" +
+                        "update person_role set pr_org_fk = (select org_id from org where org_guid = 'org:e63b09c4-67c2-4eb7-879c-132b58f6f2c0') where pr_org_fk = (select org_id from org where org_guid = 'org:17da6850-f1d3-46f7-9047-6c0c74b554c7');" +
                         "update person_role set pr_org_fk = (select org_id from org where org_guid = 'org:b05aa631-4e79-49ac-9298-b355f5ce8d98') where pr_org_fk = (select org_id from org where org_guid = 'org:07bd80eb-af27-4d28-a04b-ec7061e459e3');")
             }
             rollback {}
@@ -152,6 +158,7 @@ databaseChangeLog = {
                         "update identifier set id_org_fk = (select org_id from org where org_guid = 'org:916f7a03-8c31-4c9b-afe2-4db21c2d54f8') where id_org_fk = (select org_id from org where org_guid = 'org:3e661689-0f9e-4ef0-9a2e-6a81c7b4482e');" +
                         "update identifier set id_org_fk = (select org_id from org where org_guid = 'org:4ca1727e-43d4-4f38-a284-ab2f5cc5ee48') where id_org_fk = (select org_id from org where org_guid = 'org:c60c5ef3-5487-4290-844b-387db0057cec');" +
                         "update identifier set id_org_fk = (select org_id from org where org_guid = 'org:8e029661-fe36-4766-842c-a1fa0a098854') where id_org_fk = (select org_id from org where org_guid = 'org:8f8f13e3-bf0d-4e7c-992e-aafbf01848f4');" +
+                        "update identifier set id_org_fk = (select org_id from org where org_guid = 'org:e63b09c4-67c2-4eb7-879c-132b58f6f2c0') where id_org_fk = (select org_id from org where org_guid = 'org:17da6850-f1d3-46f7-9047-6c0c74b554c7');" +
                         "update identifier set id_org_fk = (select org_id from org where org_guid = 'org:b05aa631-4e79-49ac-9298-b355f5ce8d98') where id_org_fk = (select org_id from org where org_guid = 'org:07bd80eb-af27-4d28-a04b-ec7061e459e3');")
             }
             rollback {}
