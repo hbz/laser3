@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3572    17.06.2021  rc2.1   2.1         David   Feature     Reporting: Layouter für PDF-Export verbessern
+
 3550    17.06.2021  rc2.1   2.1         Andreas Bug         Performanz bei "Meine Pakete" verbessert
 
 3588    16.06.2021  rc2.1   2.1         Andreas Bug         Schreibweise im Paketfilter angepasst
