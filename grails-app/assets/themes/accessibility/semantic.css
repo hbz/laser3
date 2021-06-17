@@ -28711,6 +28711,15 @@ Floated Menu / Item
 .la-table-height53px td {
   height: 53px;
 }
+
+.la-border-left {
+  border-left: 1px solid #d3dae3 !important;
+}
+
+.ui.table.la-noSticky thead tr:first-child > th,
+.ui.table.la-noSticky thead tr:nth-child(2) > th {
+  position: static!important;
+}
 /*!
  * # Semantic UI 2.4.2 - Ad
  * http://github.com/semantic-org/semantic-ui/
