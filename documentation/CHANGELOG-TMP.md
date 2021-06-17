@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3550    17.06.2021  rc2.1   2.1         Andreas Bug         Performanz bei "Meine Pakete" verbessert
+
 3588    16.06.2021  rc2.1   2.1         Andreas Bug         Schreibweise im Paketfilter angepasst
 
 3587    16.06.2021  rc2.1   2.1         Andreas Bug         Absturz bei Titelliste behoben, wenn keine Lizenzen vorlagen

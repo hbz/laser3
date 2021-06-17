@@ -1269,7 +1269,7 @@ join sub.orgRelations or_sub where
         result.packageListTotal = 0
 
         if(currentSubIds) {
-
+            long start = System.currentTimeMillis()
             String qry3 = "select distinct pkg, s from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
                     "where s.id in (:currentSubIds) "
 
@@ -1294,11 +1294,12 @@ join sub.orgRelations or_sub where
 
             qry3 += " group by pkg, s"
             qry3 += " order by pkg.name " + (params.order ?: 'asc')
-
+            log.debug("before query: ${System.currentTimeMillis()-start}")
             List packageSubscriptionList = Subscription.executeQuery(qry3, qryParams3)
             /*, [max:result.max, offset:result.offset])) */
-
-            packageSubscriptionList.each { entry ->
+            log.debug("after query: ${System.currentTimeMillis()-start}")
+            packageSubscriptionList.eachWithIndex { entry, int i ->
+                log.debug("processing entry ${i} at: ${System.currentTimeMillis()-start}")
                 String key = 'package_' + entry[0].id
 
                 if (! result.subscriptionMap.containsKey(key)) {
@@ -1314,9 +1315,9 @@ join sub.orgRelations or_sub where
                     }
                 }
             }
-
+            log.debug("after collect: ${System.currentTimeMillis()-start}")
             List tmp = (packageSubscriptionList.collect { it[0] }).unique()
-
+            log.debug("after filter: ${System.currentTimeMillis()-start}")
             result.packageListTotal = tmp.size()
             result.packageList = tmp.drop(result.offset).take(result.max)
         }

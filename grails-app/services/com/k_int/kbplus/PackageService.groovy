@@ -2,6 +2,8 @@ package com.k_int.kbplus
 
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
+import de.laser.TitleInstancePackagePlatform
+import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import org.springframework.context.MessageSource
@@ -56,6 +58,10 @@ class PackageService {
             }
         }
         conflicts_list
+    }
+
+    Set<Long> getCurrentTippIDs(de.laser.Package pkg) {
+        TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.status = :current and tipp.pkg = :pkg',[current: RDStore.TIPP_STATUS_CURRENT, pkg: pkg])
     }
 
 }
