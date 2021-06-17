@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.AbstractExport; de.laser.reporting.export.ExportHelper; de.laser.reporting.export.GenericExportManager" %>
+<%@ page import=" de.laser.reporting.myInstitution.base.BaseDetails; de.laser.reporting.export.AbstractExport; de.laser.reporting.export.ExportHelper; de.laser.reporting.export.GenericExportManager;" %>
 <laser:serviceInjection />
 <!-- _chartDetailsModal.gsp -->
 <g:set var="export" value="${GenericExportManager.createExport( token )}" />
@@ -10,12 +10,23 @@
 
     <semui:modal id="${modalID}" text="${message(code: 'reporting.export.key.' + export.KEY)}" msgSave="Exportieren">
 
-        <p><span class="ui label red">DEMO : in Entwicklung</span></p>
-
-        <div class="ui segments">
-            <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterLabels, stacked: true]}" />
-            <g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: queryLabels, stacked: true]}" />
+        <div class="ui form">
+            <div class="field">
+                <label>Zu exportierende Datensätze</label>
+            </div>
+            <div class="ui segments">
+                <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterLabels, stacked: true]}" />
+                <g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: queryLabels, stacked: true]}" />
+            </div>
         </div>
+
+        <g:set var="dcSize" value="${BaseDetails.getDetailsCache(token).idList.size()}" />
+        <g:if test="${dcSize > 50}">
+            <div class="ui info message">
+                <i class="info circle icon"></i>
+                Bei größeren Datenmengen kann der Export einige Sekunden dauern.
+            </div>
+        </g:if>
 
         <g:form controller="ajaxHtml" action="chartDetailsExport" method="POST" target="_blank">
 
@@ -89,33 +100,21 @@
                         </p>
                     </div>
 
-                    <sec:ifAnyGranted roles="ROLE_YODA"><%-- // TODO -- ERMS-3511 --%>
-
-                        <div id="fileformat-pdf" class="wide eight field">
-                            <label>PDF-Konfiguration</label>
-                            <p>
-                                Seitenformat: <span class="ui circular label">auto</span> <br />
-                                Suchinformationen: <span class="ui circular label">anzeigen</span> <br />
-                            </p>
-                        </div>
-                    </sec:ifAnyGranted>
+                    <div id="fileformat-pdf" class="wide eight field">
+                        <label>PDF-Konfiguration</label>
+                        <p>
+                            Seitenformat: <span class="ui circular label">auto</span> <br />
+                            Suchinformationen: <span class="ui circular label">anzeigen</span> <br />
+                        </p>
+                    </div>
 
                     <div class="wide eight field">
                         <div class="field" style="margin-bottom: 1em !important;">
                             <label for="fileformat">Dateiformat</label>
-
-                            <sec:ifAnyGranted roles="ROLE_YODA"><%-- // TODO -- ERMS-3511 --%>
-                                <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
-                                          optionKey="key" optionValue="value"
-                                          from="${[csv:'CSV', pdf: 'PDF']}"
-                                />
-                            </sec:ifAnyGranted>
-                            <sec:ifNotGranted roles="ROLE_YODA"><%-- // TODO -- ERMS-3511 --%>
-                                <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
-                                          optionKey="key" optionValue="value"
-                                          from="${[csv:'CSV']}"
-                                />
-                            </sec:ifNotGranted>
+                            <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
+                                      optionKey="key" optionValue="value"
+                                      from="${[csv:'CSV', pdf: 'PDF']}"
+                            />
                         </div>
                         <div class="field">
                             <label for="filename">Dateiname</label>

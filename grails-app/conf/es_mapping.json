@@ -251,6 +251,7 @@
       }
     },
     "publishers": {
+      "type": "nested",
       "properties": {
         "id": { "type": "long" },
         "name": { "type": "keyword" }

@@ -54,12 +54,12 @@
     </div>
 
     <div class="ui top attached tabular menu">
-        <a class="active item" data-tab="IPv4">IPv4 <semui:totalNumber total="${accessPointDataList.ipv4Ranges.size()}"/></a>
-        <a class="item" data-tab="IPv6">IPv6 <semui:totalNumber total="${accessPointDataList.ipv6Ranges.size()}"/></a>
+        <a class="${tab == 'IPv4' ? 'active': ''} item" data-tab="IPv4">IPv4 <semui:totalNumber total="${accessPointDataList.ipv4Ranges.size()}"/></a>
+        <a class="${tab == 'IPv6' ? 'active': ''} item" data-tab="IPv6">IPv6 <semui:totalNumber total="${accessPointDataList.ipv6Ranges.size()}"/></a>
     </div>
 
 
-    <div class="ui bottom attached active tab segment" data-tab="IPv4">
+    <div class="ui bottom attached ${tab == 'IPv4' ? 'active': ''} tab segment" data-tab="IPv4">
 
         <h3 class="ui header">${message(code: 'accessPoint.ip.configuration')}
         %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-html='${message(code:'accessPoint.permittedIpRanges')}'>
@@ -84,8 +84,10 @@
                     <td>${accessPointData.ipCidr}</td>
                     <td class="center aligned">
                         <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
-                            <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}"
-                                    class="ui negative icon button"
+                            <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}" params="[tab: 'IPv4']"
+                                    class="ui negative icon button js-open-confirm-modal"
+                                    data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint.ip', args: [accessPointData.ipInput])}"
+                                    data-confirm-term-how="delete"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash very alternate icon"></i>
@@ -101,7 +103,7 @@
             <div class="ui divider"></div>
 
             <div class="content">
-                <g:form class="ui form" url="[controller: 'accessPoint', action: 'addIpRange']" method="POST">
+                <g:form class="ui form" url="[controller: 'accessPoint', action: 'addIpRange', params: [tab: 'IPv4']]" method="POST">
                     <g:hiddenField name="id" id="ipv4_id" value="${accessPoint.id}"/>
                     <g:hiddenField name="accessMethod" id="ipv4_accessMethod" value="${accessPoint.accessMethod}"/>
 
@@ -129,7 +131,7 @@
 
     </div>
 
-<div class="ui bottom attached tab segment" data-tab="IPv6">
+<div class="ui bottom attached tab ${tab == 'IPv6' ? 'active': ''} segment" data-tab="IPv6">
     <h3 class="ui header">${message(code: 'accessPoint.ip.configuration')}
     %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-html='${message(code:'accessPoint.permittedIpRanges')}'>
         <i class="question circle icon la-popup"></i>
@@ -149,13 +151,18 @@
         <g:each in="${accessPointDataList.ipv6Ranges}" var="accessPointData">
             <tr>
                 <td>${accessPointData.ipInput}</td>
-                <td>${accessPointData.ipRange}</td>
+                <td>
+                    <g:set var="ipv6AdressRange" value="${accessPointData.ipRange.split('-')}"/>
+                    ${ipv6AdressRange[0]} -<br>
+                    ${ipv6AdressRange.size() > 1 ? ipv6AdressRange[1] : ""}
+                </td>
                 <td>${accessPointData.ipCidr}</td>
                 <td class="center aligned">
                     <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
-                        <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}"
-                                class="ui negative icon button"
-                                role="button"
+                        <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}" params="[tab: 'IPv6']"
+                                class="ui negative icon button js-open-confirm-modal"
+                                data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint.ip', args: [accessPointData.ipInput])}"
+                                data-confirm-term-how="delete"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                             <i class="trash very alternate icon"></i>
                         </g:link>
@@ -170,7 +177,7 @@
         <div class="ui divider"></div>
 
         <div class="content">
-            <g:form class="ui form" url="[controller: 'accessPoint', action: 'addIpRange']" method="POST">
+            <g:form class="ui form" url="[controller: 'accessPoint', action: 'addIpRange', params: [tab: 'IPv6']]" method="POST">
                 <g:hiddenField name="id" id="ipv6_id" value="${accessPoint.id}"/>
                 <g:hiddenField name="accessMethod" id="ipv6_accessMethod" value="${accessPoint.accessMethod}"/>
 

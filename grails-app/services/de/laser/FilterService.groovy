@@ -196,16 +196,26 @@ class FilterService {
             queryParams << [libraryType : libraryTypes]
         }
 
-        if (params.subStatus || params.subValidOn) {
-            String subQuery = "exists (select oo.id from OrgRole oo join oo.sub sub where oo.org.id = o.id and oo.roleType in (:subscrRoles)"
-            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
-            if(params.subStatus) {
-                subQuery +=  " and sub.status = :subStatus"
-                queryParams << [subStatus: RefdataValue.get(params.subStatus)]
+        if (params.subStatus || params.subValidOn || params.subPerpetual) {
+            String subQuery = "exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType"
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg()]
+            if (params.subStatus) {
+                subQuery +=  " and (sub.status = :subStatus" // ( closed in line 208; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
+                RefdataValue subStatus = RefdataValue.get(params.subStatus)
+                queryParams << [subStatus: subStatus]
+                if (!params.subValidOn && params.subPerpetual && subStatus == RDStore.SUBSCRIPTION_CURRENT)
+                    subQuery += " or sub.hasPerpetualAccess = true"
+                subQuery += ")"
             }
-            if(params.subValidOn) {
-                subQuery += " and (sub.startDate <= :validOn or sub.startDate is null) and (sub.endDate >= :validOn or sub.endDate is null)"
-                queryParams << [validOn: DateUtils.parseDateGeneric(params.subValidOn)]
+            if (params.subValidOn || params.subPerpetual) {
+                if (params.subValidOn && !params.subPerpetual) {
+                    subQuery += " and (sub.startDate <= :validOn or sub.startDate is null) and (sub.endDate >= :validOn or sub.endDate is null)"
+                    queryParams << [validOn: DateUtils.parseDateGeneric(params.subValidOn)]
+                }
+                else if (params.subValidOn && params.subPerpetual) {
+                    subQuery += " and ((sub.startDate <= :validOn or sub.startDate is null) and (sub.endDate >= :validOn or sub.endDate is null or sub.hasPerpetualAccess = true))"
+                    queryParams << [validOn: DateUtils.parseDateGeneric(params.subValidOn)]
+                }
             }
             query << subQuery+")"
         }

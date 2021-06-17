@@ -1349,22 +1349,21 @@ class SubscriptionService {
                     candidate.name = name
             }
             //licenses
-            if(colMap.licenses != null) {
+            if(colMap.licenses != null && cols[colMap.licenses]?.trim()) {
                 List<String> licenseKeys = cols[colMap.licenses].split(',')
-                candidate.licenses = []
-                mappingErrorBag.multipleLicError = []
-                mappingErrorBag.noValidLicense = []
-                licenseKeys.each { String licenseKey ->
-                    List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg",[idCandidate:licenseKey,roleTypes:[RDStore.OR_LICENSEE_CONS,RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE],contextOrg:contextOrg])
-                    if(licCandidates.size() == 1) {
-                        License license = licCandidates[0]
-                        candidate.licenses << genericOIDService.getOID(license)
+                    candidate.licenses = []
+                    mappingErrorBag.multipleLicError = []
+                    mappingErrorBag.noValidLicense = []
+                    licenseKeys.each { String licenseKey ->
+                        List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg", [idCandidate: licenseKey, roleTypes: [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE], contextOrg: contextOrg])
+                        if (licCandidates.size() == 1) {
+                            License license = licCandidates[0]
+                            candidate.licenses << genericOIDService.getOID(license)
+                        } else if (licCandidates.size() > 1)
+                            mappingErrorBag.multipleLicError << licenseKey
+                        else
+                            mappingErrorBag.noValidLicense << licenseKey
                     }
-                    else if(licCandidates.size() > 1)
-                        mappingErrorBag.multipleLicError << licenseKey
-                    else
-                        mappingErrorBag.noValidLicense << licenseKey
-                }
             }
             //type(nullable:true, blank:false) -> to type
             if(colMap.kind != null) {
@@ -1520,7 +1519,7 @@ class SubscriptionService {
                 if(hasPerpetualAccessKey) {
                     String yesNo = refdataService.retrieveRefdataValueOID(hasPerpetualAccessKey, RDConstants.Y_N)
                     if(yesNo) {
-                        candidate.hasPerpetualAccess = yesNo
+                        candidate.hasPerpetualAccess = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}" ? true : false)
                     }
                     else {
                         mappingErrorBag.noPerpetualAccessType = hasPerpetualAccessKey
@@ -1532,7 +1531,7 @@ class SubscriptionService {
                 if(hasPublishComponentKey) {
                     String yesNo = refdataService.retrieveRefdataValueOID(hasPublishComponentKey, RDConstants.Y_N)
                     if(yesNo) {
-                        candidate.hasPublishComponent = yesNo
+                        candidate.hasPublishComponent = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}" ? true : false)
                     }
                     else {
                         mappingErrorBag.noPublishComponent = hasPublishComponentKey
@@ -1544,7 +1543,7 @@ class SubscriptionService {
                 if(isPublicForApiKey) {
                     String yesNo = refdataService.retrieveRefdataValueOID(isPublicForApiKey, RDConstants.Y_N)
                     if(yesNo) {
-                        candidate.isPublicForApi = yesNo
+                        candidate.isPublicForApi = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}" ? true : false)
                     }
                     else {
                         mappingErrorBag.noPublicForApi = isPublicForApiKey
@@ -1594,9 +1593,9 @@ class SubscriptionService {
                         form: genericOIDService.resolveOID(entry.form),
                         resource: genericOIDService.resolveOID(entry.resource),
                         type: genericOIDService.resolveOID(entry.type),
-                        isPublicForApi: genericOIDService.resolveOID(entry.type),
-                        hasPerpetualAccess: genericOIDService.resolveOID(entry.type),
-                        hasPublishComponent: genericOIDService.resolveOID(entry.type),
+                        isPublicForApi: entry.isPublicForApi,
+                        hasPerpetualAccess: entry.hasPerpetualAccess,
+                        hasPublishComponent: entry.hasPublishComponent,
                         identifier: UUID.randomUUID())
                 sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
                 sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.AbstractExport;de.laser.reporting.myInstitution.GenericHelper;" %>
+<%@ page import="de.laser.reporting.export.AbstractExport;de.laser.reporting.myInstitution.GenericHelper;de.laser.helper.DateUtils;" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
@@ -7,6 +7,10 @@
     <style type="text/css">
     body {
         font-size: 16px;
+    }
+    h1 > span {
+        font-size: 90%;
+        color: rgba(0,0,0, 0.35);
     }
     table {
         margin-top: 2em;
@@ -26,45 +30,31 @@
         padding: 0.35em 0.6em;
     }
     table tbody tr.even {
-        background-color: #F2F2F2;
+        background-color: #F6F7F7;
     }
-    /*table tbody tr td.even {
-        background-color: #FDFDFD;
-    }
-    table tbody tr.odd td.even {
-        background-color: #F2F2F2;
-    }*/
     .warning {
-        padding: 0.5em 1em;
-        float: right;
-        font-family: Courier Next, courier, monospace;
-        font-size: 50% !important;
-        background-color: #bb1600;
-        color: #fff;
-    }
-    .filterInfo {
         margin-bottom: 0.5em;
         padding: 0.5em 1em;
-        border-left: 5px solid #a9cce3;
+        border: 1px dashed #bb1600;
+        color: #bb1600;
+        font-weight: bold;
     }
-    .filterResult {
+    .filterInfo,
+    .filterResult,
+    .queryInfo {
         margin-bottom: 0.5em;
         padding: 0.5em 1em;
         border-left: 5px solid #a9cce3;
     }
     .queryInfo {
-        margin-bottom: 0.5em;
-        padding: 0.5em 1em;
-        border-left: 5px solid #a9cce3;
         font-weight: bold;
     }
     </style>
 </head>
 <body>
-    <h1>
-        LAS:eR Reporting
-        <span class="warning">DEMO : in Entwicklung - [${struct[2]}]</span>
-    </h1>
+    <p><span class="warning">DEMO : Funktionalität in Entwicklung</span></p>
+
+    <h1>LAS:eR Report <span>- ${DateUtils.getSDF_NoTime().format( new Date() )}</span></h1>
 
     <div class="filterInfo">
         <g:each in="${filterLabels}" var="lblGroup">
