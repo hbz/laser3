@@ -7,6 +7,58 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3572    17.06.2021  rc2.1   2.1         David   Feature     Reporting: Layouter für PDF-Export verbessern
+
+3550    17.06.2021  rc2.1   2.1         Andreas Bug         Performanz bei "Meine Pakete" verbessert
+
+3588    16.06.2021  rc2.1   2.1         Andreas Bug         Schreibweise im Paketfilter angepasst
+
+3587    16.06.2021  rc2.1   2.1         Andreas Bug         Absturz bei Titelliste behoben, wenn keine Lizenzen vorlagen
+
+3584    16.06.2021  rc2.1   2.1         Andreas Bug         fehlerhafte Ausgabe der Anzahlen
+
+3583    16.06.2021  rc2.1   2.1         Andreas Feature     neuer Referenzwert für Vertragskategorie und Dokomententyp aufgenommen
+
+3550    16.06.2021  rc2.1   2.1         Andreas Bug         Lizenzstatus setzte sich bei Paketfilter zurück
+
+3586    16.06.2021  rc2.1   2.1         Moe     Bug         Filter Alle Titel 
+
+3565    16.06.2021  rc2.1   2.1         Moe     Bug         "Alle Titel" Sortierfunktion sagt: keine Titel vorhanden
+
+3585    16.06.2021  rc2.1   2.1         David   Bug         Reporting Einstiegspunkt Verträge: Schritt 3 scheitert "unbekannter Fehler"
+
+3576    15.06.2021  rc2.1   2.1         Moe     Bug         Zugangskonfigurationen: mehrere kleine Unstimmigkeiten
+
+3511    15.06.2021  rc2.1   2.1         David   Feature     Reporting: PDF-Export
+
+3577    15.06.2021  rc2.1   2.1         Moe     Bug         500er Fehler bei Preis einer Bestandangabe
+
+3578    15.06.2021  rc2.1   2.1         Moe     Bug         Lizenzumfrage: "Bemerkungen" sind nicht löschbar
+
+3560    15.06.2021  rc2.1   2.1         Moe     Bug         Fehlermeldung bei "Meine Umfragen"
+
+3532    15.06.2021  rc2.1   2.1         Andreas Feature     Formatierungen des technischen Supports
+
+3568    15.06.2021  rc2.1   2.1         David   Feature     Reporting: Attribut Typ bei Vertrag aufgetaucht
+
+3569    15.06.2021  rc2.1   2.1         David   Bug         Reporting: Falsche Termini bei Verträge in 2. Ergebnis
+
+3580    15.06.2021  rc2.1   2.1         Andreas Bug         Abfragefehler im Dashboard behoben
+
+3553    15.06.2021  rc2.1   2.1         Andreas Bug         Hinzufügeparameter nicht verarbeitet
+
+3564    15.06.2021  rc2.1   2.1         David   Feature     Reporting: IDs unterschiedlich angesetzt
+
+3566    14.06.2021  rc2.1   2.1         Moe     Bug         Aufgaben löschen in Lizenz: Refresh nötig
+
+3561    14.06.2021  rc2.1   2.1         Andreas Bug/Feature Identifier-Einkaufsliste abgearbeitet
+
+3409    14.06.2021  rc2.1   2.1         Moe     Feature     Überarbeitung Lizenzuplaod
+
+3555    14.06.2021  rc2.1   2.1         Moe     Bug         Lizenzupload
+
+3561    14.06.2021  rc2.1   2.1         Andreas Bug/Feature Identifier-Einkaufsliste abgearbeitet
+
 3562    11.06.2021  rc2.1   2.1         Andreas Bug         falsches Verhalten durch Dummy-Wert für Identifier
 
 3558    11.06.2021  rc2.1   2.1         Moe     Bug         Dokument / Anmerkung löschen verursacht Sprung

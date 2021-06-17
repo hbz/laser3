@@ -2,6 +2,26 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.126
+
+- removed attribute: `License.type`
+- updated schema:
+  - `License.calculatedType`
+  - `Subscription.calculatedType`
+
+#### 0.125
+
+- added new attribute: `Package.scope`
+- added new attribute: `Package.file`
+- removed attribute: `Package.fixed`
+- removed attribute: `Package.packageScope`
+- removed attribute: `Package.listVerifiedDate`
+- removed attribute: `Package.listStatus`
+
+#### 0.124
+
+- internal refactoring
+
 #### 0.123
 
 - fixed attribute: `License.properties`

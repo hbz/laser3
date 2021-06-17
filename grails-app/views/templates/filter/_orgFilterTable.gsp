@@ -410,12 +410,20 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSubscriptions')}">
                 <td class="center aligned">
                     <div class="la-flexbox">
-                        <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: params.subStatus ?: null, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null], contextService.getOrg())
+                        <%
+                            String hasPerpetualAccess = ""
+                            if(params.subPerpetual == "on" && params.subStatus != RDStore.SUBSCRIPTION_CURRENT.id.toString())
+                                hasPerpetualAccess = RDStore.YN_YES.id.toString()
+                        (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: params.subStatus ?: null, hasPerpetualAccess: hasPerpetualAccess, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null], contextService.getOrg())
                         def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
+                        if(params.subPerpetual == "on" && params.subStatus == RDStore.SUBSCRIPTION_CURRENT.id.toString()) {
+                            (base_qry2, qry_params2) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_EXPIRED.id.toString(),hasPerpetualAccess: hasPerpetualAccess], contextService.getOrg())
+                            numberOfSubscriptions+=Subscription.executeQuery("select s.id " + base_qry2, qry_params2).size()
+                        }
                         %>
                         <g:if test="${actionName == 'manageMembers'}">
                             <g:link controller="myInstitution" action="manageConsortiaSubscriptions"
-                                    params="${[member: org.id, status: params.subStatus ?: null, validOn: params.subValidOn]}">
+                                    params="${[member: org.id, status: params.subStatus ?: null, validOn: params.subValidOn, filterSet: true]}">
                                 <div class="ui circular label">
                                     ${numberOfSubscriptions}
                                 </div>

@@ -1,4 +1,4 @@
-<%@ page import="grails.converters.JSON;de.laser.OrgRole" contentType="text/html;charset=UTF-8" %>
+<%@ page import="de.laser.helper.RDStore; grails.converters.JSON;de.laser.OrgRole" contentType="text/html;charset=UTF-8" %>
 <laser:serviceInjection/>
 <html>
     <head>
@@ -15,21 +15,24 @@
         <semui:messages data="${flash}" />
         <h2 class="ui header"><g:message code="myinst.subscriptionImport.post.header2"/></h2>
         <h3 class="ui header"><g:message code="myinst.subscriptionImport.post.header3"/></h3>
+    <semui:form>
         <g:form name="subscriptionParameter" action="addSubscriptions" controller="subscription" method="post">
             <g:hiddenField name="candidates" value="${candidates.keySet() as JSON}"/>
             <table class="ui striped table">
                 <thead>
                     <tr>
+                        <th rowspan="2"></th>
                         <th rowspan="2"><g:message code="default.subscription.label"/></th>
                         <th><g:message code="myinst.subscriptionImport.post.takeItem"/></th>
                     </tr>
                     <tr>
-                        <td><g:message code="myinst.subscriptionImport.post.takeAllItems"/> <g:checkBox name="takeAll"/></td>
+                        <th><g:message code="myinst.subscriptionImport.post.takeAllItems"/> <g:checkBox name="takeAll"/></th>
                     </tr>
                 </thead>
                 <tbody>
                     <g:each in="${candidates.entrySet()}" var="row" status="r">
                         <tr>
+                            <td>${r+1}</td>
                             <td>
                                 <ul>
                                     <g:set var="sub" value="${row.getKey()}"/>
@@ -54,6 +57,9 @@
                                     <li><g:message code="myinst.subscriptionImport.startDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}"/></li>
                                     <li><g:message code="myinst.subscriptionImport.endDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.endDate}"/></li>
                                     <li><g:message code="myinst.subscriptionImport.manualCancellationDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.manualCancellationDate}"/></li>
+                                    <li><g:message code="myinst.subscriptionImport.hasPerpetualAccess"/>: ${sub.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</li>
+                                    <li><g:message code="myinst.subscriptionImport.hasPublishComponent"/>: ${sub.hasPublishComponent ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</li>
+                                    <li><g:message code="myinst.subscriptionImport.isPublicForApi"/>: ${sub.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</li>
                                     <li>
                                         <g:message code="properties"/>:
                                         <ul>
@@ -72,28 +78,35 @@
                                     <li>
                                         <g:message code="myinst.subscriptionImport.notes"/>: ${sub.notes}
                                     </li>
-                                    <li>
-                                        <g:message code="default.error"/>:
-                                        <ul>
-                                            <g:each in="${errors}" var="error">
-                                                <g:if test="${error.getKey() in criticalErrors}">
-                                                    <g:set var="withCriticalErrors" value="true"/>
-                                                </g:if>
-                                                <%
-                                                    List args
-                                                    if(!(error.getValue() instanceof List))
-                                                        args = [error.getValue()]
-                                                    else args = error.getValue()
-                                                %>
-                                                <li>${message(code:"myinst.subscriptionImport.post.error.${error.getKey()}",args:args)}</li>
-                                            </g:each>
-                                        </ul>
-                                    </li>
                                 </ul>
+
+                                <g:if test="${errors}">
+                                <div class="item red">
+                                    <i class="bug icon red"></i><g:message code="default.error"/>:
+                                    <div class="content">
+                                        <div class="description">
+                                            <ul>
+                                                <g:each in="${errors}" var="error">
+                                                    <g:if test="${error.getKey() in criticalErrors}">
+                                                        <g:set var="withCriticalErrors" value="true"/>
+                                                    </g:if>
+                                                    <%
+                                                        List args
+                                                        if(!(error.getValue() instanceof List))
+                                                            args = [error.getValue()]
+                                                        else args = error.getValue()
+                                                    %>
+                                                    <li>${message(code:"myinst.subscriptionImport.post.error.${error.getKey()}",args:args)}</li>
+                                                </g:each>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                </g:if>
                             </td>
-                            <td>
+                            <td class="center aligned">
                                 <g:if test="${!withCriticalErrors}">
-                                    <g:checkBox name="take${r}" class="ciSelect"/>
+                                    <g:checkBox name="take${r}" class="ciSelect ui large checkbox"/>
                                 </g:if>
                             </td>
                         </tr>
@@ -109,6 +122,7 @@
                 </tfoot>
             </table>
         </g:form>
+    </semui:form>
     </body>
     <laser:script file="${this.getGroovyPageFileName()}">
             $("#takeAll").change(function(){

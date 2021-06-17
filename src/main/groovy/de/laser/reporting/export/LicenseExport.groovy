@@ -29,7 +29,6 @@ class LicenseExport extends AbstractExport {
                                     'endDate'           : FIELD_TYPE_PROPERTY,
                                     'status'            : FIELD_TYPE_REFDATA,
                                     'licenseCategory'   : FIELD_TYPE_REFDATA,
-                                    'type'              : FIELD_TYPE_REFDATA,
                                     '@ae-license-subscription' : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     '@ae-license-member'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
@@ -53,7 +52,6 @@ class LicenseExport extends AbstractExport {
                                     'endDate'           : FIELD_TYPE_PROPERTY,
                                     'status'            : FIELD_TYPE_REFDATA,
                                     'licenseCategory'   : FIELD_TYPE_REFDATA,
-                                    'type'              : FIELD_TYPE_REFDATA,
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                             ]
@@ -146,7 +144,7 @@ class LicenseExport extends AbstractExport {
                         ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.lic = :lic and i.ns.id in (:idnsList)",
                                 [lic: lic, idnsList: f.value] )
                     }
-                    content.add( ids.collect{ it.ns.ns + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
+                    content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
                 else if (key == '@ae-license-subscription') { // TODO: query
                     Long count = License.executeQuery(

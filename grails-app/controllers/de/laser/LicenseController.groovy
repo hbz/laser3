@@ -261,13 +261,7 @@ class LicenseController {
         else {
             flash.message = ctrlResult.result.message
         }
-        if(params.returnToShow) {
-            redirect action: 'show', id: params.id
-            return
-        }
-        else {
-            ctrlResult.result
-        }
+        ctrlResult.result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
@@ -804,7 +798,6 @@ class LicenseController {
             License.withTransaction {
                 Object targetObject = new License(
                         reference: lic_name,
-                        type: result.sourceObject.type,
                         status: RDStore.LICENSE_NO_STATUS,
                         openEnded: result.sourceObject.openEnded)
 

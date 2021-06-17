@@ -63,14 +63,8 @@ class SubscriptionController {
             }
         }
         else {
-            if(params.returnToShow) {
-                redirect action: 'show', id: params.id
-                return
-            }
-            else {
                 ctrlResult.result
             }
-        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
@@ -928,11 +922,11 @@ class SubscriptionController {
         Map<String,Object> ctrlResult = subscriptionControllerService.removePriceItem(params)
         Object[] args = [message(code:'tipp.price'), params.priceItem]
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            flash.error = message(code: 'default.not.found.message', args)
+            flash.error = message(code: 'default.not.found.message', args: args)
         }
         else
         {
-            flash.message = message(code:'default.deleted.message',args)
+            flash.message = message(code:'default.deleted.message', args: args)
         }
         redirect action: 'index', id: params.id
     }
@@ -953,11 +947,11 @@ class SubscriptionController {
         Map<String,Object> ctrlResult = subscriptionControllerService.removeCoverage(params)
         Object[] args = [message(code:'tipp.coverage'), params.ieCoverage]
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            flash.error = message(code: 'default.not.found.message', args)
+            flash.error = message(code: 'default.not.found.message', args: args)
         }
         else
         {
-            flash.message = message(code:'default.deleted.message',args)
+            flash.message = message(code:'default.deleted.message', args: args)
         }
         redirect action: 'index', id: params.id, params: params
     }
@@ -1462,8 +1456,8 @@ class SubscriptionController {
         def candidates = JSON.parse(params.candidates)
         List errors = subscriptionService.addSubscriptions(candidates,params)
         if(errors.size() > 0) {
-            flash.errors = errors.join("<br/>")
-            redirect(url: request.getHeader("referer"))
+            flash.error = errors.join("<br/>")
+            redirect controller: 'myInstitution', action: 'subscriptionImport'
             return
         }
         else {

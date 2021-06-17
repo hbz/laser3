@@ -1231,9 +1231,11 @@ class SubscriptionService {
                 case "status": colMap.status = c
                     break
                 case "startdatum":
+                case "laufzeit-beginn":
                 case "start date": colMap.startDate = c
                     break
                 case "enddatum":
+                case "laufzeit-ende":
                 case "end date": colMap.endDate = c
                     break
                 case "kündigungsdatum":
@@ -1260,6 +1262,15 @@ class SubscriptionService {
                     break
                 case "anmerkungen":
                 case "notes": colMap.notes = c
+                    break
+                case "perpetual access":
+                case "dauerhafter zugriff": colMap.hasPerpetualAccess = c
+                    break
+                case "publish component":
+                case "publish-komponente": colMap.hasPublishComponent = c
+                    break
+                case "data exchange release":
+                case "freigabe datenaustausch": colMap.isPublicForApi = c
                     break
                 default:
                     //check if property definition
@@ -1338,22 +1349,21 @@ class SubscriptionService {
                     candidate.name = name
             }
             //licenses
-            if(colMap.licenses != null) {
+            if(colMap.licenses != null && cols[colMap.licenses]?.trim()) {
                 List<String> licenseKeys = cols[colMap.licenses].split(',')
-                candidate.licenses = []
-                mappingErrorBag.multipleLicenseError = []
-                mappingErrorBag.noValidLicense = []
-                licenseKeys.each { String licenseKey ->
-                    List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg",[idCandidate:licenseKey,roleTypes:[RDStore.OR_LICENSEE_CONS,RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE],contextOrg:contextOrg])
-                    if(licCandidates.size() == 1) {
-                        License license = licCandidates[0]
-                        candidate.licenses << genericOIDService.getOID(license)
+                    candidate.licenses = []
+                    mappingErrorBag.multipleLicError = []
+                    mappingErrorBag.noValidLicense = []
+                    licenseKeys.each { String licenseKey ->
+                        List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg", [idCandidate: licenseKey, roleTypes: [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE], contextOrg: contextOrg])
+                        if (licCandidates.size() == 1) {
+                            License license = licCandidates[0]
+                            candidate.licenses << genericOIDService.getOID(license)
+                        } else if (licCandidates.size() > 1)
+                            mappingErrorBag.multipleLicError << licenseKey
+                        else
+                            mappingErrorBag.noValidLicense << licenseKey
                     }
-                    else if(licCandidates.size() > 1)
-                        mappingErrorBag.multipleLicenseError << licenseKey
-                    else
-                        mappingErrorBag.noValidLicense << licenseKey
-                }
             }
             //type(nullable:true, blank:false) -> to type
             if(colMap.kind != null) {
@@ -1504,6 +1514,42 @@ class SubscriptionService {
                 if(colMap.instanceOf != null && colMap.member == null)
                     globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.instanceOfWithoutMember',null,locale)
             }
+            if(colMap.hasPerpetualAccess != null) {
+                String hasPerpetualAccessKey = cols[colMap.hasPerpetualAccess].trim()
+                if(hasPerpetualAccessKey) {
+                    String yesNo = refdataService.retrieveRefdataValueOID(hasPerpetualAccessKey, RDConstants.Y_N)
+                    if(yesNo) {
+                        candidate.hasPerpetualAccess = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}" ? true : false)
+                    }
+                    else {
+                        mappingErrorBag.noPerpetualAccessType = hasPerpetualAccessKey
+                    }
+                }
+            }
+            if(colMap.hasPublishComponent != null) {
+                String hasPublishComponentKey = cols[colMap.hasPublishComponent].trim()
+                if(hasPublishComponentKey) {
+                    String yesNo = refdataService.retrieveRefdataValueOID(hasPublishComponentKey, RDConstants.Y_N)
+                    if(yesNo) {
+                        candidate.hasPublishComponent = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}" ? true : false)
+                    }
+                    else {
+                        mappingErrorBag.noPublishComponent = hasPublishComponentKey
+                    }
+                }
+            }
+            if(colMap.isPublicForApi != null) {
+                String isPublicForApiKey = cols[colMap.isPublicForApi].trim()
+                if(isPublicForApiKey) {
+                    String yesNo = refdataService.retrieveRefdataValueOID(isPublicForApiKey, RDConstants.Y_N)
+                    if(yesNo) {
+                        candidate.isPublicForApi = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}" ? true : false)
+                    }
+                    else {
+                        mappingErrorBag.noPublicForApi = isPublicForApiKey
+                    }
+                }
+            }
             //properties -> propMap
             propMap.each { String k, Map propInput ->
                 Map defPair = propInput.definition
@@ -1524,7 +1570,7 @@ class SubscriptionService {
                 candidate.properties[k] = propData
             }
             //notes
-            if(colMap.notes != null && cols[colMap.notes].trim()) {
+            if(colMap.notes != null && cols[colMap.notes]?.trim()) {
                 candidate.notes = cols[colMap.notes].trim()
             }
             candidates.put(candidate,mappingErrorBag)
@@ -1547,6 +1593,9 @@ class SubscriptionService {
                         form: genericOIDService.resolveOID(entry.form),
                         resource: genericOIDService.resolveOID(entry.resource),
                         type: genericOIDService.resolveOID(entry.type),
+                        isPublicForApi: entry.isPublicForApi,
+                        hasPerpetualAccess: entry.hasPerpetualAccess,
+                        hasPublishComponent: entry.hasPublishComponent,
                         identifier: UUID.randomUUID())
                 sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
                 sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null

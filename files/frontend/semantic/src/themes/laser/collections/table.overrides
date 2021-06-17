@@ -242,3 +242,14 @@
 .ui.table.day thead tr:nth-child(2) > th {
   position: static !important;
 }
+.la-table-height53px td {
+    height: 53px;
+}
+.la-border-left {
+    border-left: 1px solid #d3dae3!important;
+}
+
+.ui.table.la-noSticky thead tr:first-child>th,
+.ui.table.la-noSticky thead tr:nth-child(2)>th {
+    position: static!important;
+}

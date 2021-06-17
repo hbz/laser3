@@ -21,12 +21,11 @@ import de.laser.PersonRole
 import de.laser.SubscriptionService
 import de.laser.Task
 import de.laser.TaskService
-import de.laser.TitleInstancePackagePlatform
 import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
-import de.laser.helper.Constants
+import de.laser.custom.CustomWkhtmltoxService
 import de.laser.reporting.export.AbstractExport
 import de.laser.reporting.export.ExportHelper
 import de.laser.reporting.export.GenericExportManager
@@ -34,9 +33,7 @@ import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.myInstitution.base.BaseDetails
-import de.laser.reporting.myInstitution.base.BaseFilter
 import grails.plugin.springsecurity.annotation.Secured
-import grails.util.Holders
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -62,6 +59,7 @@ class AjaxHtmlController {
     ReportingService reportingService
     SubscriptionService subscriptionService
     LicenseControllerService licenseControllerService
+    CustomWkhtmltoxService wkhtmltoxService // custom
 
     @Secured(['ROLE_USER'])
     def test() {
@@ -286,7 +284,7 @@ class AjaxHtmlController {
             case 'contactPersonForProviderAgencyPublic':
                 result.contactPersonForProviderAgencyPublic = true
                 result.isPublic    = true
-                result.presetFunctionType = RDStore.PRS_FUNC_TECHNICAL_SUPPORT
+                result.presetFunctionType = RefdataValue.get(params.supportType)
                 //result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FUNC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FUNC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FUNC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_FUNC_DELIVERY_ADDRESS]
                 //result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
                 if(result.org){
@@ -296,7 +294,6 @@ class AjaxHtmlController {
                     result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label")
                     result.orgList = result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
                 }
-
                 break
             case 'contactPersonForPublic':
                 result.isPublic    = true
@@ -429,9 +426,6 @@ class AjaxHtmlController {
             out.close()
         }
         else if (params.fileformat == 'pdf') {
-            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
-            response.contentType = 'application/pdf'
-
             List<List<String>> content = GenericExportManager.export(export, 'pdf', detailsCache.idList)
             Map<String, List> struct = [width: [], height: []]
 
@@ -445,41 +439,43 @@ class AjaxHtmlController {
                             struct.height[i] = cell.size()
                         }
                         cell.eachWithIndex { String entry, int k ->
-                            if (!struct.width[j] || struct.width[j] < entry.length()) {
-                                struct.width[j] = entry.length()
+                            if (i == 0) {
+                                struct.width[j] = entry.length() < 15 ? 15 : entry.length() > 35 ? 35 : entry.length()
+                            }
+                            else {
+                                if (!struct.width[j] || struct.width[j] < entry.length()) {
+                                    struct.width[j] = entry.length()
+                                }
                             }
                         }
                     }
                 }
             }
 
-            int w = struct.width.sum() as int // 80
-            int h = struct.width.sum() as int // 90 - x
-
-            String pageSize = 'A4'
+            String[] sizes = [ 'A0', 'A1', 'A2', 'A3', 'A4' ]
+            int pageSize = 0
             String orientation = 'Portrait'
 
-            /* if (w > 400)        {
-                pageSize = 'A0'; orientation = 'Landscape'
-            }
-            else */
-            if (w > 320)   {
-                pageSize = 'A0'
-            }
-            else if (w > 240)   {
-                pageSize = 'A1'
-            }
-            else if (w > 160)   {
-                pageSize = 'A2'
-            }
-            else if (w > 80)    {
-                pageSize = 'A3'
+            int wx = 85, w = struct.width.sum() as int
+            int hx = 35, h = struct.height.sum() as int
+
+            if (w > wx*4)       { pageSize = 0 }
+            else if (w > wx*3)  { pageSize = 1 }
+            else if (w > wx*2)  { pageSize = 2 }
+            else if (w > wx)    { pageSize = 3 }
+
+            def whr = (w * 0.75) / (h + 15)
+            if (whr > 5) {
+                if (w < wx*7) {
+                    if (pageSize < sizes.length - 1) {
+                        pageSize++
+                    }
+                }
+                orientation = 'Landscape'
             }
 
-            def customWkhtmltoxService = Holders.grailsApplication.mainContext.getBean('wkhtmltoxService')
-
-            def pdf = customWkhtmltoxService.makePdf (
-                    view:       '/myInstitution/reporting/export/pdf/generic_details',
+            def pdf = wkhtmltoxService.makePdf(
+                    view: '/myInstitution/reporting/export/pdf/generic_details',
                     model: [
                             filterLabels: ExportHelper.getCachedFilterLabels(params.token),
                             filterResult: ExportHelper.getCachedFilterResult(params.token),
@@ -487,11 +483,11 @@ class AjaxHtmlController {
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
-                            struct      : [struct.width.sum(), struct.height.sum(), pageSize + ' ' + orientation]
+                            struct      : [struct.width.sum(), struct.height.sum(), sizes[ pageSize ] + ' ' + orientation]
                     ],
-                   // header: '',
-                   // footer: '',
-                    pageSize: pageSize,
+                    // header: '',
+                    // footer: '',
+                    pageSize: sizes[ pageSize ],
                     orientation: orientation,
                     marginLeft: 10,
                     marginTop: 15,
@@ -499,7 +495,9 @@ class AjaxHtmlController {
                     marginRight: 10
             )
 
-            response.outputStream.withStream{ it << pdf }
+            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
+            response.setContentType('application/pdf')
+            response.outputStream.withStream { it << pdf }
         }
     }
 }

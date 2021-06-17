@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.AuditService
 import de.laser.EscapeService
+import de.laser.Identifier
 import de.laser.IssueEntitlement
 import de.laser.Org
 import de.laser.Package
@@ -133,9 +134,12 @@ class PendingChangeService extends AbstractLockableService {
                                 GrailsClass domain_class = AppUtils.getDomainClass( target_object.class.name )
                                 def prop_info = domain_class.getPersistentProperty(payload.changeDoc.prop)
                                 if(prop_info == null){
-                                    log.debug("We are dealing with custom properties: ${payload}")
+                                    log.debug("We are dealing with custom properties or identifiers: ${payload}")
                                     //processCustomPropertyChange(payload)
-                                    processCustomPropertyChange(pendingChange, payload) // TODO [ticket=1894]
+                                    if(payload.changeDoc.OID.contains(Identifier.class.name))
+                                        processIdentifierChange(pendingChange, payload)
+                                    else if(payload.changeDoc.OID.contains("Property"))
+                                        processCustomPropertyChange(pendingChange, payload) // TODO [ticket=1894]
                                 }
                                 else if ( prop_info.name == 'status' ) {
                                     RefdataValue oldStatus = (RefdataValue) genericOIDService.resolveOID(payload.changeDoc.old)
@@ -430,6 +434,81 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
+    private void processIdentifierChange(PendingChange pendingChange, JSONElement payload) {
+        def changeDoc = payload.changeDoc
+
+        // TODO [ticket=1894]
+        //if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
+        if (pendingChange.payloadChangeTargetOid?.length() > 0 || payload.changeTarget?.length() > 0) {
+            //def changeTarget = genericOIDService.resolveOID(payload.changeTarget)
+            String targetOID = pendingChange.payloadChangeTargetOid ?: payload.changeTarget
+            def changeTarget = genericOIDService.resolveOID(targetOID)
+
+            if (changeTarget) {
+                if(! changeTarget.hasProperty('ids')) {
+                    log.error("Identifier change, but owner doesnt have the identifiers: ${payload}")
+                    return
+                }
+
+                //def srcProperty = genericOIDService.resolveOID(changeDoc.propertyOID)
+                //def srcObject = genericOIDService.resolveOID(changeDoc.OID)
+                String srcOID = pendingChange.payloadChangeDocOid ?: payload.changeDoc.OID
+                Identifier srcObject = genericOIDService.resolveOID(srcOID)
+
+                // A: get existing targetProperty by instanceOf
+                List<Identifier> targetIdentifiers = srcObject.executeQuery('select id from Identifier id where (id.sub = :reference or id.lic = :reference) and id.instanceOf = :parent', [reference: changeTarget, parent: srcObject])
+                Identifier targetIdentifier = targetIdentifiers.size() > 0 ? targetIdentifiers[0] : null
+
+                boolean setInstanceOf
+
+                // B: get existing targetProperty by name if not multiple allowed
+                if (! targetIdentifier) {
+                    if (srcObject.ns.isUnique) {
+                        targetIdentifier = srcObject.executeQuery('select id from Identifier id where (id.sub = :reference or id.lic = :reference) and id.ns = :ns', [reference: changeTarget, ns: srcObject.ns])[0]
+                        setInstanceOf = true
+                    }
+                }
+                // C: create new targetProperty
+                if (! targetIdentifier) {
+                    targetIdentifier = Identifier.construct([reference: changeTarget, ns: srcObject.ns])
+                    //targetIdentifier = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, changeTarget, srcObject.type, srcObject.tenant)
+                    setInstanceOf = true
+                }
+
+                //def updateProp = target_object.customProperties.find{it.type.name == changeDoc.name}
+                if (targetIdentifier) {
+                    // in case of C or B set instanceOf
+                    if (setInstanceOf && targetIdentifier.hasProperty('instanceOf')) {
+                        targetIdentifier.instanceOf = srcObject
+                        targetIdentifier.save()
+                    }
+
+                    if (changeDoc.event.endsWith('Identifier.deleted')) {
+
+                        log.debug("Deleting identifier ${targetIdentifier.ns.getI10n("value")} from ${pendingChange.payloadChangeTargetOid}")
+                        changeTarget.ids.remove(targetIdentifier)
+                        targetIdentifier.delete()
+                    }
+                    else if (changeDoc.event.endsWith('Identifier.updated')) {
+
+                        log.debug("Update identifier ${targetIdentifier.ns.getI10n("name")}")
+
+                        targetIdentifier.value = changeDoc.new
+
+                        log.debug("Setting value for ${changeDoc.name}.${changeDoc.prop} to ${changeDoc.new}")
+                        targetIdentifier.save()
+                    }
+                    else {
+                        log.error("ChangeDoc event '${changeDoc.event}' not recognized.")
+                    }
+                }
+                else {
+                    log.error("Custom property changed, but no derived property found: ${payload}")
+                }
+            }
+        }
+    }
+
     Map<String,Object> getChanges(LinkedHashMap<String, Object> configMap) {
         Locale locale = LocaleContextHolder.getLocale()
         Date time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
@@ -486,8 +565,8 @@ class PendingChangeService extends AbstractLockableService {
         query5 = 'select pc.msgToken,pkg.id,count(distinct pkg.id),\'pkg\',\'pkg.id\' from PendingChange pc join pc.pkg pkg where pkg in (:packages) and pc.oid = null',
         query3 = 'select pc.msgToken,pkg.id,count(distinct tipp.id),\'tipp.pkg\',\'tipp.id\'  from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg in (:packages) and pc.oid is not null',
         query6 = 'select pc.msgToken,pkg.id,count(distinct tipp.id),\'tipp.pkg\',\'tipp.id\'  from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg in (:packages) and pc.oid = null',
-        query4 = 'select pc.msgToken,pkg.id,count(distinct tc.id),\'tc.tipp.pkg\',\'tippCoverage.id\'  from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg in (:packages) and pc.oid is not null',
-        query7 = 'select pc.msgToken,pkg.id,count(distinct tc.id),\'tc.tipp.pkg\',\'tippCoverage.id\'  from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg in (:packages) and pc.oid = null'
+        query4 = 'select pc.msgToken,pkg.id,count(distinct tc.id),\'tippCoverage.tipp.pkg\',\'tippCoverage.id\'  from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg in (:packages) and pc.oid is not null',
+        query7 = 'select pc.msgToken,pkg.id,count(distinct tc.id),\'tippCoverage.tipp.pkg\',\'tippCoverage.id\'  from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg in (:packages) and pc.oid = null'
         //query5 = 'select pc.msgToken,pkg.id,count(pc.msgToken),\'priceItem.tipp.pkg\' from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = null'
         Map<String,Object> query1Params = [contextOrg:configMap.contextOrg, status:[RDStore.PENDING_CHANGE_PENDING,RDStore.PENDING_CHANGE_ACCEPTED], newSubscription: "pendingChange.message_SU_NEW_01"],
         query2Params = [packages:subscribedPackages],

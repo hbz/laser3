@@ -74,21 +74,6 @@ class SurveyControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            if (params.deleteId) {
-                Task dTask = Task.get(params.deleteId)
-                if (dTask && dTask.creator.id == result.user.id) {
-                    try {
-                        Object[] args = [messageSource.getMessage('task.label',null,locale), dTask.title]
-                        result.message = messageSource.getMessage('default.deleted.message', args, locale)
-                        dTask.delete()
-                    }
-                    catch (Exception e) {
-                        Object[] args = [messageSource.getMessage('task.label',null,locale), params.deleteId]
-                        result.error = messageSource.getMessage('default.not.deleted.message', args, locale)
-                        [result:result,status:STATUS_ERROR]
-                    }
-                }
-            }
             int offset = params.offset ? Integer.parseInt(params.offset) : 0
             result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.surveyConfig)
             result.taskInstanceCount = result.taskInstanceList.size()

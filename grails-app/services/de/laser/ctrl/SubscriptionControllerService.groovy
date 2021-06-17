@@ -255,22 +255,7 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            if (params.deleteId) {
-                Locale locale = LocaleContextHolder.getLocale()
-                Task dTask = Task.get(params.deleteId)
-                if (dTask && dTask.creator.id == result.user.id) {
-                    try {
-                        Object[] args = [messageSource.getMessage('task.label',null,locale), dTask.title]
-                        result.message = messageSource.getMessage('default.deleted.message',args,locale)
-                        dTask.delete()
-                    }
-                    catch (Exception e) {
-                        log.error(e)
-                        Object[] args = [messageSource.getMessage('task.label',null,locale), params.deleteId]
-                        result.error = messageSource.getMessage('default.not.deleted.message', args, locale)
-                    }
-                }
-            }
+
             int offset = params.offset ? Integer.parseInt(params.offset) : 0
             result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
             result.taskInstanceCount = result.taskInstanceList.size()
@@ -1390,7 +1375,7 @@ class SubscriptionControllerService {
                                 subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
                                 if(addTypeChildren) {
                                     Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
-                                        subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'With')
+                                        subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'WithForChildren')
                                     }
                                 }
                                 subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
@@ -1408,7 +1393,7 @@ class SubscriptionControllerService {
                     subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
                     if(addTypeChildren) {
                         Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
-                            subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'With')
+                            subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'WithForChildren')
                         }
                     }
                     subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
@@ -1511,7 +1496,7 @@ class SubscriptionControllerService {
                     else
                         orderClause = "order by ${params.sort} ${params.order} "
                 }
-                result.entitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp left join ie.coverages ic where ie.id in (:entIDs) '+orderClause,[entIDs:entitlements],[offset:result.offset,max:result.max])
+                result.entitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp left join ie.coverages ic where ie.id in (:entIDs) '+orderClause,[entIDs:entitlements.drop(result.offset).take(result.max)])
             }
             else result.entitlements = []
             Set<SubscriptionPackage> deletedSPs = result.subscription.packages.findAll { SubscriptionPackage sp -> sp.pkg.packageStatus == RDStore.PACKAGE_STATUS_DELETED}
