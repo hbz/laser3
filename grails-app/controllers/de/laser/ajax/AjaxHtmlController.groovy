@@ -440,27 +440,38 @@ class AjaxHtmlController {
                             struct.height[i] = cell.size()
                         }
                         cell.eachWithIndex { String entry, int k ->
-                            if (!struct.width[j] || struct.width[j] < entry.length()) {
-                                struct.width[j] = entry.length()
+                            if (i == 0) {
+                                struct.width[j] = entry.length() < 15 ? 15 : entry.length() > 35 ? 35 : entry.length()
+                            }
+                            else {
+                                if (!struct.width[j] || struct.width[j] < entry.length()) {
+                                    struct.width[j] = entry.length()
+                                }
                             }
                         }
                     }
                 }
             }
 
-            String pageSize = 'A4'
+            String[] sizes = [ 'A0', 'A1', 'A2', 'A3', 'A4' ]
+            int pageSize = 0
             String orientation = 'Portrait'
 
-            int wx = 80, w = struct.width.sum() as int
-            int hx = 90, h = struct.height.sum() as int
+            int wx = 85, w = struct.width.sum() as int
+            int hx = 35, h = struct.height.sum() as int
+
+            if (w > wx*4)       { pageSize = 0 }
+            else if (w > wx*3)  { pageSize = 1 }
+            else if (w > wx*2)  { pageSize = 2 }
+            else if (w > wx)    { pageSize = 3 }
+
             def whr = (w * 0.75) / (h + 15)
-
-            if (w > 360) { pageSize = 'A0' }
-            else if (w > 270) { pageSize = 'A1' }
-            else if (w > 180) { pageSize = 'A2' }
-            else if (w > 80) { pageSize = 'A3' }
-
-            if (whr > 7) {
+            if (whr > 5) {
+                if (w < wx*7) {
+                    if (pageSize < sizes.length - 1) {
+                        pageSize++
+                    }
+                }
                 orientation = 'Landscape'
             }
 
@@ -473,11 +484,11 @@ class AjaxHtmlController {
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
-                            struct      : [struct.width.sum(), struct.height.sum(), pageSize + ' ' + orientation]
+                            struct      : [struct.width.sum(), struct.height.sum(), sizes[ pageSize ] + ' ' + orientation]
                     ],
                     // header: '',
                     // footer: '',
-                    pageSize: pageSize,
+                    pageSize: sizes[ pageSize ],
                     orientation: orientation,
                     marginLeft: 10,
                     marginTop: 15,

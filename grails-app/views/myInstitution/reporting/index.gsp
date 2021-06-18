@@ -15,10 +15,8 @@
         </semui:breadcrumbs>
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-            <g:message code="myinst.reporting"/> <span class="ui label red">DEMO : in Entwicklung</span>
+            <g:message code="myinst.reporting"/>
         </h1>
-
-        <h2 class="ui header hidden">Diese Funktionalität befindet sich in Entwicklung</h2>
 
         <div class="ui message info">
             <p>

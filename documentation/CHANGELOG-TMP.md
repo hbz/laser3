@@ -7,6 +7,20 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3572    17.06.2021  rc2.1   2.1         David   Feature     Reporting: Layouter für PDF-Export verbessern
+
+3550    17.06.2021  rc2.1   2.1         Andreas Bug         Performanz bei "Meine Pakete" verbessert
+
+3588    16.06.2021  rc2.1   2.1         Andreas Bug         Schreibweise im Paketfilter angepasst
+
+3587    16.06.2021  rc2.1   2.1         Andreas Bug         Absturz bei Titelliste behoben, wenn keine Lizenzen vorlagen
+
+3584    16.06.2021  rc2.1   2.1         Andreas Bug         fehlerhafte Ausgabe der Anzahlen
+
+3583    16.06.2021  rc2.1   2.1         Andreas Feature     neuer Referenzwert für Vertragskategorie und Dokomententyp aufgenommen
+
+3550    16.06.2021  rc2.1   2.1         Andreas Bug         Lizenzstatus setzte sich bei Paketfilter zurück
+
 3586    16.06.2021  rc2.1   2.1         Moe     Bug         Filter Alle Titel 
 
 3565    16.06.2021  rc2.1   2.1         Moe     Bug         "Alle Titel" Sortierfunktion sagt: keine Titel vorhanden

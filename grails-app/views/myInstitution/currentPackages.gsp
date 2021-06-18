@@ -1,4 +1,5 @@
 <%@ page import="de.laser.RefdataCategory; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.Package; de.laser.RefdataValue;" %>
+<laser:serviceInjection/>
 <!doctype html>
 <html>
 <head>
@@ -61,6 +62,7 @@
                 </select>
             </div>
             <div class="field la-field-right-aligned">
+                <input type="hidden" name="isSiteReloaded" value="yes"/>
                 <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                 <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
             </div>
@@ -90,7 +92,7 @@
             </th>
 
             <td>
-                ${pkg.getCurrentTipps().size()}
+                ${packageService.getCurrentTippIDs(pkg).size()}
             </td>
 
             <td>

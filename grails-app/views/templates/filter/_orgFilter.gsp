@@ -175,6 +175,19 @@
                     <semui:datepicker label="default.valid_on.label" id="subValidOn" name="subValidOn" placeholder="filter.placeholder" value="${params.subValidOn}" />
                 </div>
             </g:if>
+            <g:if test="${field.equalsIgnoreCase('subPerpetualAccess')}">
+                <div class="field">
+                    <div class="inline fields la-filter-inline">
+                        <div class="inline field">
+                            <div class="ui checkbox">
+                                <label for="checkSubPerpetual">${message(code: 'subscription.hasPerpetualAccess.label')}</label>
+                                <input id="checkSubPerpetual" name="subPerpetual" type="checkbox" <g:if test="${params.subPerpetual == "on"}">checked=""</g:if>
+                                       tabindex="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </g:if>
             <g:if test="${field.equalsIgnoreCase('subRunTimeMultiYear')}">
                 <div class="field">
                     <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
