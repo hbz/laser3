@@ -110,7 +110,11 @@
                     color: function(params) {
                         if (JSPC.helper.contains(['${BaseQuery.NO_DATA_LABEL}', '${BaseQuery.NO_PROVIDER_LABEL}'], params.name)) {
                             return JSPC.app.reporting.helper.series.color.redInactive
-                        } else {
+                        }
+                        else if (JSPC.helper.contains(['${BaseQuery.NO_STARTDATE_LABEL}', '${BaseQuery.NO_ENDDATE_LABEL}'], params.name)) {
+                            return JSPC.app.reporting.helper.series.color.ice
+                        }
+                        else {
                             return JSPC.app.reporting.helper.series.color.blue
                         }
                     }
