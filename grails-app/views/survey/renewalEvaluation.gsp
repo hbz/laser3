@@ -162,7 +162,7 @@ ${surveyInfo.name}
                                     </td>
                                     <td>${property.value.size()}</td>
                                     <td>
-                                        <a class="ui button" onclick="JSPC.app.propertiesChanged(${surveyInfo.id}, ${params.surveyConfigID}, ${property.key});">
+                                        <a class="ui button" onclick="JSPC.app.propertiesChanged(${property.key});">
                                             <g:message code="default.button.show.label"/>
                                         </a>
                                     </td>
@@ -370,9 +370,9 @@ ${surveyInfo.name}
 
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.app.propertiesChanged = function (id, surveyConfigID, propertyDefinitionId) {
+        JSPC.app.propertiesChanged = function (propertyDefinitionId) {
             $.ajax({
-                url: '<g:createLink controller="survey" action="showPropertiesChanged"/>?id='+id+'&surveyConfigID='+surveyConfigID+'&propertyDefinitionId='+propertyDefinitionId,
+                url: '<g:createLink controller="survey" action="showPropertiesChanged" params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]"/>&propertyDefinitionId='+propertyDefinitionId,
                 success: function(result){
                     $("#dynamicModalContainer").empty();
                     $("#modalPropertiesChanged").remove();

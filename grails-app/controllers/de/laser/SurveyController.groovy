@@ -1181,9 +1181,12 @@ class SurveyController {
 
             if(params.tab == 'participantsViewAllNotFinish'){
                 params.participantsNotFinish = true
-            }
-            if(params.tab == 'participantsViewAllFinish'){
+                result.participants = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig)
+            }else if(params.tab == 'participantsViewAllFinish'){
                 params.participantsFinish = true
+                result.participants = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)
+            }else{
+                result.participants = result.surveyConfig.orgs
             }
 
             result.participantsNotFinishTotal = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).size()
@@ -1196,6 +1199,42 @@ class SurveyController {
 
 
             result.propList    = result.surveyConfig.surveyProperties.surveyProperty
+
+            if(result.surveyInfo.type.id in [RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_RENEWAL.id] ) {
+                result.propertiesChanged = [:]
+                result.propertiesChangedByParticipant = []
+                result.propList.sort { it.getI10n('name') }.each { PropertyDefinition propertyDefinition ->
+
+                    PropertyDefinition subPropDef = PropertyDefinition.getByNameAndDescr(propertyDefinition.name, PropertyDefinition.SUB_PROP)
+                    if (subPropDef) {
+                        result.participants.each { SurveyOrg surveyOrg ->
+                            Subscription subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                                    [parentSub  : result.surveyConfig.subscription,
+                                     participant: surveyOrg.org
+                                    ])[0]
+                            SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, propertyDefinition, result.surveyConfig, result.contextOrg)
+                            SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, result.contextOrg)
+
+                            if (surveyResult && subscriptionProperty) {
+                                String surveyValue = surveyResult.getValue()
+                                String subValue = subscriptionProperty.getValue()
+                                if (surveyValue != subValue) {
+                                    Map changedMap = [:]
+                                    changedMap.participant = surveyOrg.org
+
+                                    result.propertiesChanged."${propertyDefinition.id}" = result.propertiesChanged."${propertyDefinition.id}" ?: []
+                                    result.propertiesChanged."${propertyDefinition.id}" << changedMap
+
+                                    result.propertiesChangedByParticipant << surveyOrg.org
+                                }
+                            }
+
+                        }
+
+                    }
+                }
+            }
+
             result
         }
 
@@ -1215,6 +1254,42 @@ class SurveyController {
         result.availableSubscriptions = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
 
         result.propList    = result.surveyConfig.surveyProperties.surveyProperty
+
+        if(result.surveyInfo.type.id in [RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_RENEWAL.id] ) {
+            result.propertiesChanged = [:]
+            result.propertiesChangedByParticipant = []
+            result.propList.sort { it.getI10n('name') }.each { PropertyDefinition propertyDefinition ->
+
+                PropertyDefinition subPropDef = PropertyDefinition.getByNameAndDescr(propertyDefinition.name, PropertyDefinition.SUB_PROP)
+                if (subPropDef) {
+                    result.surveyConfig.orgs.each { SurveyOrg surveyOrg ->
+                        Subscription subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                                [parentSub  : result.surveyConfig.subscription,
+                                 participant: surveyOrg.org
+                                ])[0]
+                        SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, propertyDefinition, result.surveyConfig, result.contextOrg)
+                        SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, result.contextOrg)
+
+                        if (surveyResult && subscriptionProperty) {
+                            String surveyValue = surveyResult.getValue()
+                            String subValue = subscriptionProperty.getValue()
+                            if (surveyValue != subValue) {
+                                Map changedMap = [:]
+                                changedMap.participant = surveyOrg.org
+
+                                result.propertiesChanged."${propertyDefinition.id}" = result.propertiesChanged."${propertyDefinition.id}" ?: []
+                                result.propertiesChanged."${propertyDefinition.id}" << changedMap
+
+                                result.propertiesChangedByParticipant << surveyOrg.org
+                            }
+                        }
+
+                    }
+
+                }
+            }
+        }
+
         result
 
     }
@@ -2790,11 +2865,21 @@ class SurveyController {
             response.sendError(401); return
         }
 
+
+        if(params.tab == 'participantsViewAllNotFinish'){
+            result.participants = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig)
+        }else if(params.tab == 'participantsViewAllFinish'){
+            result.participants = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)
+        }else{
+            result.participants = result.surveyConfig.orgs
+        }
+
+
         result.changedProperties = []
         result.propertyDefinition = PropertyDefinition.findById(params.propertyDefinitionId)
         PropertyDefinition subPropDef = PropertyDefinition.getByNameAndDescr(result.propertyDefinition.name, PropertyDefinition.SUB_PROP)
         if(subPropDef){
-            result.surveyConfig.orgs.sort{it.org.sortname}.each{ SurveyOrg surveyOrg ->
+            result.participants.sort{it.org.sortname}.each{ SurveyOrg surveyOrg ->
                 Subscription subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
                         [parentSub  : result.surveyConfig.subscription,
                          participant: surveyOrg.org

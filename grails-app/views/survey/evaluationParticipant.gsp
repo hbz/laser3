@@ -26,7 +26,7 @@
         <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link class="item" controller="survey" action="generatePdfForParticipant"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]">PDF
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]">PDF-Export
                 </g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>
