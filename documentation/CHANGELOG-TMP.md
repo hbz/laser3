@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3601    21.06.2021  rc2.1   2.1         Andreas Bug         falsche Sortierung (nach Namen statt Sortiernamen) bei Alle Plattformen korrigiert
+
+3598    21.06.2021  rc2.1   2.1         Andreas Bug         falschen Aufruf bei Lizenzkontakten behoben
+
+3561    21.06.2021  rc2.1   2.1         Andreas Bug         isFromLaser-Flag-Änderung löste keine Änderung aus
+
 3594    17.06.2021  rc2.1   2.1         Andreas Bug         Ladefehler bei Nutzerzahlen behoben
 
 --      17.06.2021  rc2.1   2.1         Andreas Feature     Bestätigungsdialoge für Massenlöschung von Posten

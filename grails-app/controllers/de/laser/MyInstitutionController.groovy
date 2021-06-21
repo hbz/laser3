@@ -153,7 +153,7 @@ class MyInstitutionController  {
         result.platformInstanceList = []
 
         if (idsCurrentSubscriptions) {
-            String qry3 = "select distinct p, s from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
+            String qry3 = "select distinct p, s, ${params.sort ?: 'p.normname'} from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
                     "TitleInstancePackagePlatform tipp join tipp.platform p left join p.org o " +
                     "where tipp.pkg = pkg and s.id in (:subIds) "
 
@@ -181,7 +181,9 @@ class MyInstitutionController  {
             }
             else {
                 qry3 += " group by p, s"
-                qry3 += " order by p.normname asc"
+                if(params.sort)
+                    qry3 += " order by ${params.sort} ${params.order}"
+                else qry3 += " order by p.normname asc"
             }
 
             pu.setBenchmark("before loading platforms")
