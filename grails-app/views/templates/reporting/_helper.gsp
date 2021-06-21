@@ -8,12 +8,14 @@ if (! JSPC.app.reporting) {
         helper: {
             series: {
                 color: {
-                    red:   'rgb(238,102,102)',
-                    green: 'rgb(144,202,117)',
-                    blue:  'rgb(58,111,196)',
-                    redInactive:   'rgba(238,102,102, 0.3)',
-                    greenInactive: 'rgba(144,202,117, 0.3)',
-                    blueInactive: 'rgba(58,111,196, 0.3)',
+                    red:    'rgb(238,102,102)',
+                    green:  'rgb(144,202,117)',
+                    blue:   'rgb(58,111,196)',
+                    ice:    'rgb(115,192,222)',
+                    redInactive:    'rgba(238,102,102, 0.3)',
+                    greenInactive:  'rgba(144,202,117, 0.3)',
+                    blueInactive:   'rgba(58,111,196, 0.3)',
+                    iceInactive:    'rgba(115,192,222, 0.3)',
                 },
                 pie: {
                     emphasis: {
@@ -57,6 +59,7 @@ if (! JSPC.app.reporting) {
                 beforeSend: function(xhr) {
                    $('#chartDetailsExportModal').remove()
                    $('#chartDetailsCopyEmailModal').remove()
+                   $('#loadingIndicator').show()
                 }
             })
             .done( function (data) {
@@ -66,6 +69,9 @@ if (! JSPC.app.reporting) {
             .fail( function (data) {
                 $("#reporting-modal-error").modal('show')
             })
+            .always(function() {
+                $('#loadingIndicator').hide()
+            });
         }
     }
 }
