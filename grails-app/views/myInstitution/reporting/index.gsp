@@ -126,41 +126,47 @@
                         data: JSPC.app.reporting.current.request,
                         beforeSend: function (xhr) {
                             //$('#chart-export').attr('disabled', 'disabled');
+                            $('#loadingIndicator').show();
                         }
                     })
                     .done( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
 
-                        if (JSPC.app.reporting.current.request.chart == 'bar') {
-                            $('#chart-wrapper').css('height', 150 + (19 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
-                        }
-                        else if (JSPC.app.reporting.current.request.chart == 'pie') {
-                            $('#chart-wrapper').css('height', 350 + (12 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
-                        }
-                        else if (JSPC.app.reporting.current.request.chart == 'radar') {
-                            $('#chart-wrapper').css('height', 400 + (8 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
-                        }
+                        if (JSPC.app.reporting.current.chart.option.dataset) {
+                            if (JSPC.app.reporting.current.request.chart == 'bar') {
+                                $('#chart-wrapper').css('height', 150 + (19 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                            }
+                            else if (JSPC.app.reporting.current.request.chart == 'pie') {
+                                $('#chart-wrapper').css('height', 350 + (12 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                            }
+                            else if (JSPC.app.reporting.current.request.chart == 'radar') {
+                                $('#chart-wrapper').css('height', 400 + (8 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                            }
 
-                        var echart = echarts.init($('#chart-wrapper')[0]);
-                        echart.setOption( JSPC.app.reporting.current.chart.option );
-                        echart.on( 'click', function (params) {
-                            var clone = {}
-                            Object.assign(clone, JSPC.app.reporting.current.request);
-                            clone.id = params.data[0];
-                            clone.label = params.data[1];
-                            clone.context = '${BaseConfig.KEY_MYINST}';
-                            JSPC.app.reporting.requestChartHtmlDetails(clone);
-                        });
-                        echart.on( 'legendselectchanged', function (params) { /* console.log(params); */ });
+                            var echart = echarts.init($('#chart-wrapper')[0]);
+                            echart.setOption( JSPC.app.reporting.current.chart.option );
+                            echart.on( 'click', function (params) {
+                                var clone = {}
+                                Object.assign(clone, JSPC.app.reporting.current.request);
+                                clone.id = params.data[0];
+                                clone.label = params.data[1];
+                                clone.context = '${BaseConfig.KEY_MYINST}';
+                                JSPC.app.reporting.requestChartHtmlDetails(clone);
+                            });
+                            echart.on( 'legendselectchanged', function (params) { /* console.log(params); */ });
 
-                        JSPC.app.reporting.current.chart.echart = echart;
-                        //$('#chart-export').removeAttr('disabled');
+                            JSPC.app.reporting.current.chart.echart = echart;
+                            //$('#chart-export').removeAttr('disabled');
+                        }
                     })
                     .fail( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
                     })
+                    .always(function() {
+                        $('#loadingIndicator').hide();
+                    });
                 }
             }
 
