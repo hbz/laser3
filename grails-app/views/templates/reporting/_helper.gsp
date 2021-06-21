@@ -59,6 +59,7 @@ if (! JSPC.app.reporting) {
                 beforeSend: function(xhr) {
                    $('#chartDetailsExportModal').remove()
                    $('#chartDetailsCopyEmailModal').remove()
+                   $('#loadingIndicator').show()
                 }
             })
             .done( function (data) {
@@ -68,6 +69,9 @@ if (! JSPC.app.reporting) {
             .fail( function (data) {
                 $("#reporting-modal-error").modal('show')
             })
+            .always(function() {
+                $('#loadingIndicator').hide()
+            });
         }
     }
 }

@@ -260,16 +260,16 @@ class BaseQuery {
 
     static void handleGenericAnnualXQuery(String query, String domainClass, List idList, Map<String, Object> result) {
 
-        List years = Org.executeQuery( 'select distinct YEAR(dc.startDate) from ' + domainClass + ' dc where dc.id in (:idList)', [idList: idList] )
-        years = years ? ( years.min()..Year.now().value ).toList() : [ Year.now().value ]
+        List dd = Org.executeQuery( 'select min(YEAR(dc.startDate)), max(YEAR(dc.endDate)) from ' + domainClass + ' dc where dc.id in (:idList)', [idList: idList] )
+        dd[0][1] = dd[0][1] ? Math.min( dd[0][1] as int, Year.now().value + 5 ) : Year.now().value
+        List years = ( (dd[0][0] ?: Year.now().value)..(dd[0][1]) ).toList()
 
-        years.addAll( Org.executeQuery( 'select distinct YEAR(dc.endDate) from ' + domainClass + ' dc where dc.id in (:idList)', [idList: idList] ) )
-
-        years.findAll().unique().sort().each { y ->
+        years.sort().each { y ->
             String hql = 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and ' +
-                    '( (YEAR(dc.startDate) <= ' + y + ' or dc.startDate is null) and (YEAR(dc.endDate) >= ' + y + ' or dc.endDate is null) ) and ' +
+                    '( (YEAR(dc.startDate) <= ' + y + ') and (YEAR(dc.endDate) >= ' + y + ' or dc.endDate is null) ) and ' +
                     'not (dc.startDate is null and dc.endDate is null)'
-            List<Long> annualList = Org.executeQuery( hql, [idList: idList /*, now: Year.now().value */ ] )
+
+            List<Long> annualList = Org.executeQuery( hql, [idList: idList] )
 
             if (annualList) {
                 result.data.add( [y, y, annualList.size()] )
