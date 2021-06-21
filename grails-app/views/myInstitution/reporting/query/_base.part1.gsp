@@ -43,10 +43,10 @@
         </div>
 
         <div class="field">
-            %{--
-            <label for="chart-export">Exportieren</label>
-            <button id="chart-export" class="ui icon button" disabled><i class="ui icon download"></i></button>
-            --}%
+            <label for="query-export-button">Exportieren</label>
+            <button id="query-export-button" class="ui icon button" href="#queryExportModal" data-semui="modal" disabled><i class="ui icon download"></i></button>
         </div>
     </div>
 </div>
+
+<g:render template="/myInstitution/reporting/export/queryModal" model="[modalID: 'queryExportModal', token: token]" />

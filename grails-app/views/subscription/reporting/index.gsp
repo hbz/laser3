@@ -62,30 +62,35 @@
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
 
-                        var echart = echarts.init($('#chart-wrapper')[0]);
-                        echart.setOption( JSPC.app.reporting.current.chart.option );
+                        if (! JSPC.app.reporting.current.chart.option) {
+                            $("#reporting-modal-nodata").modal('show');
+                        }
+                        else {
+                            var echart = echarts.init($('#chart-wrapper')[0]);
+                            echart.setOption( JSPC.app.reporting.current.chart.option );
 
-                        echart.on( 'click', function (params) {
-                            var valid = false;
-                            $.each( JSPC.app.reporting.current.chart.details, function(i, v) {
-                                if (params.data[0] == v.id) {
-                                    valid = true;
-                                    var clone = Object.assign({}, v); // ---- TODO !!!! ----
-                                    if (JSPC.helper.contains(clone.id, ':')) { // workaround XYZ
-                                        clone.id = clone.id.split(':')[0]
+                            echart.on( 'click', function (params) {
+                                var valid = false;
+                                $.each( JSPC.app.reporting.current.chart.details, function(i, v) {
+                                    if (params.data[0] == v.id) {
+                                        valid = true;
+                                        var clone = Object.assign({}, v); // ---- TODO !!!! ----
+                                        if (JSPC.helper.contains(clone.id, ':')) { // workaround XYZ
+                                            clone.id = clone.id.split(':')[0]
+                                        }
+                                        clone.context = '${BaseConfig.KEY_SUBSCRIPTION}';
+                                        JSPC.app.reporting.requestChartHtmlDetails(clone);
                                     }
-                                    clone.context = '${BaseConfig.KEY_SUBSCRIPTION}';
-                                    JSPC.app.reporting.requestChartHtmlDetails(clone);
+                                })
+                                if (! valid) {
+                                    $("#reporting-modal-nodetails").modal('show');
                                 }
-                            })
-                            if (! valid) {
-                                $("#reporting-modal-nodetails").modal('show');
-                            }
-                        });
-                        echart.on( 'legendselectchanged', function (params) { /* console.log(params); */ });
+                            });
+                            echart.on( 'legendselectchanged', function (params) { /* console.log(params); */ });
 
-                        JSPC.app.reporting.current.chart.echart = echart;
-                        //$('#chart-export').removeAttr('disabled');
+                            JSPC.app.reporting.current.chart.echart = echart;
+                            //$('#chart-export').removeAttr('disabled');
+                        }
                     })
                     .fail( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );

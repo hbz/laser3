@@ -4,10 +4,10 @@ import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
 
-class GenericExportManager {
+class DetailsExportManager {
 
     static AbstractExport createExport(String token) {
-        GenericExportManager.createExport( token, [:] )
+        DetailsExportManager.createExport( token, [:] )
     }
 
     static AbstractExport createExport(String token, Map<String, Object> selectedFields) {

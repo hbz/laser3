@@ -1,7 +1,7 @@
-<%@ page import=" de.laser.reporting.myInstitution.base.BaseDetails; de.laser.reporting.export.AbstractExport; de.laser.reporting.export.ExportHelper; de.laser.reporting.export.GenericExportManager;" %>
+<%@ page import="de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseDetails; de.laser.reporting.export.AbstractExport; de.laser.reporting.export.ExportHelper;" %>
 <laser:serviceInjection />
 <!-- _chartDetailsModal.gsp -->
-<g:set var="export" value="${GenericExportManager.createExport( token )}" />
+<g:set var="export" value="${DetailsExportManager.createExport( token )}" />
 
 <g:if test="${export}">
     <g:set var="formFields" value="${export.getAllFields()}" />

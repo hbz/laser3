@@ -27,14 +27,15 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.reporting.export.AbstractExport
+import de.laser.reporting.export.QueryExport
 import de.laser.reporting.export.ExportHelper
-import de.laser.reporting.export.GenericExportManager
+import de.laser.reporting.export.DetailsExportManager
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.reporting.export.QueryExportManager
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.plugin.springsecurity.annotation.Secured
-import grails.util.Holders
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -410,13 +411,13 @@ class AjaxHtmlController {
         }
 
         Map<String, Object> detailsCache = BaseDetails.getDetailsCache( params.token )
-        AbstractExport export = GenericExportManager.createExport( params.token, selectedFields )
+        AbstractExport export = DetailsExportManager.createExport( params.token, selectedFields )
 
         if (params.fileformat == 'csv') {
             response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
             response.contentType = 'text/csv'
 
-            List<String> rows = GenericExportManager.export( export, 'csv', detailsCache.idList )
+            List<String> rows = DetailsExportManager.export( export, 'csv', detailsCache.idList )
 
             ServletOutputStream out = response.outputStream
             out.withWriter { w ->
@@ -427,7 +428,7 @@ class AjaxHtmlController {
             out.close()
         }
         else if (params.fileformat == 'pdf') {
-            List<List<String>> content = GenericExportManager.export(export, 'pdf', detailsCache.idList)
+            List<List<String>> content = DetailsExportManager.export(export, 'pdf', detailsCache.idList)
             Map<String, List> struct = [width: [], height: []]
 
             if (content.isEmpty()) {
@@ -454,7 +455,7 @@ class AjaxHtmlController {
             }
 
             String[] sizes = [ 'A0', 'A1', 'A2', 'A3', 'A4' ]
-            int pageSize = 0
+            int pageSize = 4
             String orientation = 'Portrait'
 
             int wx = 85, w = struct.width.sum() as int
@@ -483,6 +484,102 @@ class AjaxHtmlController {
                             queryLabels : ExportHelper.getCachedQueryLabels(params.token),
                             title       : filename,
                             header      : content.remove(0),
+                            content     : content,
+                            struct      : [struct.width.sum(), struct.height.sum(), sizes[ pageSize ] + ' ' + orientation]
+                    ],
+                    // header: '',
+                    // footer: '',
+                    pageSize: sizes[ pageSize ],
+                    orientation: orientation,
+                    marginLeft: 10,
+                    marginTop: 15,
+                    marginBottom: 15,
+                    marginRight: 10
+            )
+
+            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
+            response.setContentType('application/pdf')
+            response.outputStream.withStream { it << pdf }
+        }
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+    })
+    def chartQueryExport() {
+
+        SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
+        String filename
+
+        if (params.filename) {
+            filename = sdf.format(new Date()) + '_' + params.filename
+        }
+        else {
+            filename = sdf.format(new Date()) + '_reporting'
+        }
+
+        QueryExport export = QueryExportManager.createExport( params.token )
+        List<String> rows = QueryExportManager.export( export, 'csv' )
+
+        if (params.fileformat == 'csv') {
+            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
+            response.contentType = 'text/csv'
+
+            ServletOutputStream out = response.outputStream
+            out.withWriter { w ->
+                rows.each { r ->
+                    w.write( r + '\n')
+                }
+            }
+            out.close()
+        }
+        else if (params.fileformat == 'pdf') {
+            List<List<String>> content = QueryExportManager.export(export, 'pdf')
+            Map<String, List> struct = [width: [], height: []]
+
+            if (content.isEmpty()) {
+                content = [['Keine Daten vorhanden']]
+            }
+            else {
+                content.eachWithIndex { List row, int i ->
+                    row.eachWithIndex { String cell, int j ->
+                        struct.height[i] = 1
+                        struct.width[j] = cell.length() < 15 ? 15 : cell.length() > 35 ? 35 : cell.length()
+                    }
+                }
+            }
+
+            String[] sizes = [ 'A0', 'A1', 'A2', 'A3', 'A4' ]
+            int pageSize = 4
+            String orientation = 'Portrait'
+
+            int wx = 85, w = struct.width.sum() as int
+            int hx = 35, h = struct.height.sum() as int
+
+            if (w > wx*4)       { pageSize = 0 }
+            else if (w > wx*3)  { pageSize = 1 }
+            else if (w > wx*2)  { pageSize = 2 }
+            else if (w > wx)    { pageSize = 3 }
+
+            def whr = (w * 0.75) / (h + 15)
+            if (whr > 5) {
+                if (w < wx*7) {
+                    if (pageSize < sizes.length - 1) {
+                        pageSize++
+                    }
+                }
+                orientation = 'Landscape'
+            }
+
+            def pdf = wkhtmltoxService.makePdf(
+                    view: '/myInstitution/reporting/export/pdf/generic_query',
+                    model: [
+                            //filterLabels: ExportHelper.getCachedFilterLabels(params.token),
+                            //filterResult: ExportHelper.getCachedFilterResult(params.token),
+                            //queryLabels : ExportHelper.getCachedQueryLabels(params.token),
+                            title       : filename,
+                            //header      : content.remove(0),
                             content     : content,
                             struct      : [struct.width.sum(), struct.height.sum(), sizes[ pageSize ] + ' ' + orientation]
                     ],
