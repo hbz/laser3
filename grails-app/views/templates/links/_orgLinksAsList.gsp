@@ -89,7 +89,7 @@
                                             <i class="address card icon"></i>
                                         </span>
                                         <div class="content">
-                                            <g:link controller="organisation" action="addressbook" id="${role.org}">${func}</g:link> (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
+                                            <g:link controller="organisation" action="addressbook" params="[id: role.org.id]">${func}</g:link> (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
                                             <g:each in="${Contact.findAllByPrsAndContentType(
                                                     func,
                                                     RDStore.CCT_EMAIL
@@ -111,7 +111,7 @@
                                             <i class="address card icon"></i>
                                         </span>
                                         <div class="content">
-                                            <g:link controller="organisation" action="addressbook" id="${role.org.id}">${resp}</g:link> (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
+                                            <g:link controller="organisation" action="addressbook" params="[id: role.org.id]">${resp}</g:link> (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
                                             <g:each in="${Contact.findAllByPrsAndContentType(
                                                     resp,
                                                     RDStore.CCT_EMAIL
@@ -151,7 +151,7 @@
                                             <i class="address card outline icon"></i>
                                         </span>
                                         <div class="content">
-                                            <g:link controller="organisation" action="addressbook" id="${role.org}">${func}</g:link> (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
+                                            <g:link controller="organisation" action="addressbook" params="[id: role.org.id]">${func}</g:link> (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
                                             <g:each in="${Contact.findAllByPrsAndContentType(
                                                     func,
                                                     RDStore.CCT_EMAIL
@@ -173,7 +173,7 @@
                                             <i class="address card outline icon"></i>
                                         </span>
                                         <div class="content">
-                                            <g:link controller="organisation" action="addressbook" id="${role.org.id}">${resp}</g:link> (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
+                                            <g:link controller="organisation" action="addressbook" params="[id: role.org.id]">${resp}</g:link> (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
                                             <g:each in="${Contact.findAllByPrsAndContentType(
                                                     resp,
                                                     RDStore.CCT_EMAIL
