@@ -43,24 +43,24 @@ class LicenseConsCfg extends BaseConfig {
                     ],
                     query2 : [
                             'Verteilung' : [ // TODO ..
+                                     'license-x-identifier' : [
+                                             label               : 'Vertrag → Identifikatoren',
+                                             detailsTemplate     : 'license',
+                                             chartTemplate       : '2axis2values_nonMatches',
+                                             chartLabels         : [ 'Verträge', 'Vergebene Identifikatoren' ]
+                                     ],
                                     'license-x-property' : [
                                             label               : 'Vertrag → Merkmale (eigene/allgemeine)',
                                             detailsTemplate     : 'license',
                                             chartTemplate       : '2axis2values',
                                             chartLabels         : [ 'Verträge', 'Vergebene Merkmale (eigene/allgemeine)' ]
                                     ],
-                                    'license-x-identifier' : [
-                                            label               : 'Vertrag → Identifikatoren',
-                                            detailsTemplate     : 'license',
-                                            chartTemplate       : '2axis2values_nonMatches',
-                                            chartLabels         : [ 'Verträge', 'Vergebene Identifikatoren' ]
-                                    ],
                                     'license-x-annual' : [
                                             label               : 'Vertrag → Jahresring',
                                             detailsTemplate     : 'license',
                                             chartTemplate       : 'generic',
                                             chartLabels         : []
-                                    ],
+                                    ]
                             ]
                     ]
             ],

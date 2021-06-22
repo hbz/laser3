@@ -19,18 +19,20 @@
         border-width: 0;
     }
     table thead tr {
+        text-align: left;
         color: #FFFFFF;
         background-color: #2471a3;
     }
     table thead tr th {
         padding: 1em 0.6em;
-        border-bottom: 1em solid #FFFFFF;
-    }
-    table tbody tr td {
-        padding: 0.35em 0.6em;
+        border-color: #2471a3;
+        border-bottom: 0.5em solid #FFFFFF;
     }
     table tbody tr.even {
         background-color: #F6F7F7;
+    }
+    table tbody tr td {
+        padding: 0.35em 0.6em;
     }
     .warning {
         margin-bottom: 0.5em;

@@ -48,7 +48,7 @@ class QueryExportManager {
             if (! it) {
                 return ''
             }
-            return it.trim() // ????
+            return it.trim()
         }
     }
 }

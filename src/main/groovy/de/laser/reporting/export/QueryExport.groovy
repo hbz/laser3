@@ -25,13 +25,13 @@ class QueryExport {
         if ( ! chart) {
             result.cols.add( 'Anzahl' )
             result.rows = data.collect{ e ->
-                [e.label, e.idList.size().toString()]
+                [e.label.toString(), e.idList.size().toString()]
             }
         }
         else {
             result.cols.addAll( chart )
             result.rows = data.collect{ e ->
-                [e.label, e.value2.toString(), e.value1.toString()] // changed order
+                [e.label.toString(), e.value2.toString(), e.value1.toString()] // changed order
             }
         }
         result

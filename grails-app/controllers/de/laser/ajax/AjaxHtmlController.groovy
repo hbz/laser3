@@ -431,52 +431,7 @@ class AjaxHtmlController {
         }
         else if (params.fileformat == 'pdf') {
             List<List<String>> content = DetailsExportManager.export(export, 'pdf', detailsCache.idList)
-            Map<String, List> struct = [width: [], height: []]
-
-            if (content.isEmpty()) {
-                content = [['Keine Daten vorhanden']]
-            }
-            else {
-                content.eachWithIndex { List row, int i ->
-                    row.eachWithIndex { List cell, int j ->
-                        if (!struct.height[i] || struct.height[i] < cell.size()) {
-                            struct.height[i] = cell.size()
-                        }
-                        cell.eachWithIndex { String entry, int k ->
-                            if (i == 0) {
-                                struct.width[j] = entry.length() < 15 ? 15 : entry.length() > 35 ? 35 : entry.length()
-                            }
-                            else {
-                                if (!struct.width[j] || struct.width[j] < entry.length()) {
-                                    struct.width[j] = entry.length()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            String[] sizes = [ 'A0', 'A1', 'A2', 'A3', 'A4' ]
-            int pageSize = 4
-            String orientation = 'Portrait'
-
-            int wx = 85, w = struct.width.sum() as int
-            int hx = 35, h = struct.height.sum() as int
-
-            if (w > wx*4)       { pageSize = 0 }
-            else if (w > wx*3)  { pageSize = 1 }
-            else if (w > wx*2)  { pageSize = 2 }
-            else if (w > wx)    { pageSize = 3 }
-
-            def whr = (w * 0.75) / (h + 15)
-            if (whr > 5) {
-                if (w < wx*7) {
-                    if (pageSize < sizes.length - 1) {
-                        pageSize++
-                    }
-                }
-                orientation = 'Landscape'
-            }
+            Map<String, Object> struct = ExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
 
             def pdf = wkhtmltoxService.makePdf(
                     view: '/myInstitution/reporting/export/pdf/generic_details',
@@ -487,12 +442,12 @@ class AjaxHtmlController {
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
-                            struct      : [struct.width.sum(), struct.height.sum(), sizes[ pageSize ] + ' ' + orientation]
+                            struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
                     ],
                     // header: '',
                     // footer: '',
-                    pageSize: sizes[ pageSize ],
-                    orientation: orientation,
+                    pageSize: struct.pageSize,
+                    orientation: struct.orientation,
                     marginLeft: 10,
                     marginTop: 15,
                     marginBottom: 15,
@@ -539,41 +494,7 @@ class AjaxHtmlController {
         }
         else if (params.fileformat == 'pdf') {
             List<List<String>> content = QueryExportManager.export(export, 'pdf')
-            Map<String, List> struct = [width: [], height: []]
-
-            if (content.isEmpty()) {
-                content = [['Keine Daten vorhanden']]
-            }
-            else {
-                content.eachWithIndex { List row, int i ->
-                    row.eachWithIndex { String cell, int j ->
-                        struct.height[i] = 1
-                        struct.width[j] = cell.length() < 15 ? 15 : cell.length() > 35 ? 35 : cell.length()
-                    }
-                }
-            }
-
-            String[] sizes = [ 'A0', 'A1', 'A2', 'A3', 'A4' ]
-            int pageSize = 4
-            String orientation = 'Portrait'
-
-            int wx = 85, w = struct.width.sum() as int
-            int hx = 35, h = struct.height.sum() as int
-
-            if (w > wx*4)       { pageSize = 0 }
-            else if (w > wx*3)  { pageSize = 1 }
-            else if (w > wx*2)  { pageSize = 2 }
-            else if (w > wx)    { pageSize = 3 }
-
-            def whr = (w * 0.75) / (h + 15)
-            if (whr > 5) {
-                if (w < wx*7) {
-                    if (pageSize < sizes.length - 1) {
-                        pageSize++
-                    }
-                }
-                orientation = 'Landscape'
-            }
+            Map<String, Object> struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport')
 
             Map<String, Object> queryCache = BaseQuery.getQueryCache( params.token )
             String prefix = queryCache.query.split('-')[0]
@@ -589,12 +510,12 @@ class AjaxHtmlController {
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
-                            struct      : [struct.width.sum(), struct.height.sum(), sizes[ pageSize ] + ' ' + orientation]
+                            struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
                     ],
                     // header: '',
                     // footer: '',
-                    pageSize: sizes[ pageSize ],
-                    orientation: orientation,
+                    pageSize: struct.pageSize,
+                    orientation: struct.orientation,
                     marginLeft: 10,
                     marginTop: 15,
                     marginBottom: 15,

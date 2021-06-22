@@ -78,17 +78,17 @@ class OrganisationInstCfg extends BaseConfig {
                     ],
                     query2 : [
                             'Verteilung' : [ // TODO ..
-                                     'org-x-property' : [
-                                             label              : 'Organisation → Merkmale (eigene/allgemeine)',
-                                             detailsTemplate    : 'organisation',
-                                             chartTemplate      : '2axis2values',
-                                             chartLabels        : [ 'Organisationen', 'Vergebene Merkmale (eigene/allgemeine)' ]
-                                     ],
                                      'org-x-identifier' : [
-                                             label              : 'Organisation → Identifikatoren',
+                                             label              : 'Identifikatoren → Organisation',
                                              detailsTemplate    : 'organisation',
                                              chartTemplate      : '2axis2values_nonMatches',
                                              chartLabels        : [ 'Organisationen', 'Vergebene Identifikatoren' ]
+                                     ],
+                                     'org-x-property' : [
+                                             label              : 'Merkmale (eigene/allgemeine) → Organisation',
+                                             detailsTemplate    : 'organisation',
+                                             chartTemplate      : '2axis2values',
+                                             chartLabels        : [ 'Organisationen', 'Vergebene Merkmale (eigene/allgemeine)' ]
                                      ]
                                      //'org-x-serverAccess' : 'Organisation nach Datenweitergabe',
                             ]
