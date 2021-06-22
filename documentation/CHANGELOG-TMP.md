@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3603    22.06.2021  rc2.1   2.1         Andreas Feature     neue Filter für Alle Plattformen/Meine Plattformen
+
 3601    21.06.2021  rc2.1   2.1         Andreas Bug         falsche Sortierung (nach Namen statt Sortiernamen) bei Alle Plattformen korrigiert
 
 3598    21.06.2021  rc2.1   2.1         Andreas Bug         falschen Aufruf bei Lizenzkontakten behoben

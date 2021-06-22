@@ -72,7 +72,7 @@
                     </h2>
                     <dl>
                         <dt><g:message code="platform.auth.ip.supported"/></dt>
-                        <dd>${platformInstanceRecord.ipAuthentication ? RefdataValue.getByValueAndCategory(platformInstanceRecord.ipAuthentication, RDConstants.IP_AUTHENTICATION).getI10n("value") : message(code: 'default.not.available')}</dd>
+                        <dd>${platformInstanceRecord.ipAuthentication && RefdataValue.getByValueAndCategory(platformInstanceRecord.ipAuthentication, RDConstants.IP_AUTHENTICATION) ? RefdataValue.getByValueAndCategory(platformInstanceRecord.ipAuthentication, RDConstants.IP_AUTHENTICATION).getI10n("value") : message(code: 'default.not.available')}</dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.auth.shibboleth.supported"/></dt>
