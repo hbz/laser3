@@ -250,13 +250,10 @@ class GokbService {
     Map doQuery(Map ctrlResult, Map params, String esQuery) {
         Map result = [:]
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        String sort = params.sort ? "&sort=" + params.sort : "&sort=sortname"
-        String order = params.order ? "&order=" + params.order : "&order=asc"
-        String max = params.max ? "&max=${params.max}" : "&max=${ctrlResult.max}"
-        String offset = params.offset ? "&offset=${params.offset}" : "&offset=${ctrlResult.offset}"
+        Map<String, String> pagination = setupPaginationParams(ctrlResult, params)
 
         Set records = []
-        Map queryResult = queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + sort + order + max + offset)
+        Map queryResult = queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + pagination.sort + pagination.order + pagination.max + pagination.offset)
         if (queryResult.warning) {
             records.addAll(queryResult.warning.records)
             result.recordsCount = queryResult.warning.count
@@ -267,6 +264,14 @@ class GokbService {
             result.records = records
         }
         result
+    }
+
+    Map<String, String> setupPaginationParams(Map ctrlResult, Map params) {
+        String sort = params.sort ? "&sort=" + params.sort : "&sort=sortname"
+        String order = params.order ? "&order=" + params.order : "&order=asc"
+        String max = params.max ? "&max=${params.max}" : "&max=${ctrlResult.max}"
+        String offset = params.offset ? "&offset=${params.offset}" : "&offset=${ctrlResult.offset}"
+        [sort: sort, order: order, max: max, offset: offset]
     }
 
     Map queryElasticsearch(String url){
