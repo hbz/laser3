@@ -57,7 +57,28 @@ class BaseConfig {
             pie   : 'Tortendiagramm'
     ]
 
+    static Map<String, Object> getCurrentConfigByPrefix(String prefix) {
+
+        Map<String, Object> cfg = [:]
+
+        if (prefix in ['license', 'licensor']) {
+            cfg = getCurrentConfig( BaseConfig.KEY_LICENSE )
+        }
+        else if (prefix in ['org']) {
+            cfg = getCurrentConfig( BaseConfig.KEY_ORGANISATION )
+        }
+        else if (prefix in ['subscription', 'memberSubscription', 'member', 'consortium', 'provider', 'agency']) {
+            cfg = getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
+        }
+        else if (prefix in ['costItem']) {
+            cfg = getCurrentConfig( BaseConfig.KEY_COSTITEM )
+        }
+
+        cfg
+    }
+
     static Map<String, Object> getCurrentConfig(String key) {
+
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
         if (key == KEY_COSTITEM) {

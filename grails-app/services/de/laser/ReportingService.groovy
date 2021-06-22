@@ -242,20 +242,7 @@ class ReportingService {
                 }
             }
 
-            Map<String, Object> cfg
-
-            if (prefix in ['license', 'licensor']) {
-                cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE )
-            }
-            else if (prefix in ['org']) {
-                cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION )
-            }
-            else if (prefix in ['subscription', 'memberSubscription', 'member', 'consortium', 'provider', 'agency']) {
-                cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION )
-            }
-            else if (prefix in ['costItem']) {
-                cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_COSTITEM )
-            }
+            Map<String, Object> cfg = BaseConfig.getCurrentConfigByPrefix( prefix )
 
             if (cfg) {
                 result.labels = BaseQuery.getQueryLabels( cfg, params )

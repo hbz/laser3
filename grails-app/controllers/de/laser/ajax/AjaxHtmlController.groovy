@@ -34,7 +34,9 @@ import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.export.QueryExportManager
+import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.reporting.myInstitution.base.BaseDetails
+import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.plugin.springsecurity.annotation.Secured
 
 import javax.servlet.ServletOutputStream
@@ -520,11 +522,12 @@ class AjaxHtmlController {
         }
 
         QueryExport export = QueryExportManager.createExport( params.token )
-        List<String> rows = QueryExportManager.export( export, 'csv' )
 
         if (params.fileformat == 'csv') {
             response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
             response.contentType = 'text/csv'
+
+            List<String> rows = QueryExportManager.export( export, 'csv' )
 
             ServletOutputStream out = response.outputStream
             out.withWriter { w ->
@@ -572,14 +575,19 @@ class AjaxHtmlController {
                 orientation = 'Landscape'
             }
 
+            Map<String, Object> queryCache = BaseQuery.getQueryCache( params.token )
+            String prefix = queryCache.query.split('-')[0]
+            Map<String, Object> cfg = BaseConfig.getCurrentConfigByPrefix( prefix )
+            List<String> queryLabels = BaseQuery.getQueryLabels(cfg, queryCache.query as String)
+
             def pdf = wkhtmltoxService.makePdf(
                     view: '/myInstitution/reporting/export/pdf/generic_query',
                     model: [
-                            //filterLabels: ExportHelper.getCachedFilterLabels(params.token),
-                            //filterResult: ExportHelper.getCachedFilterResult(params.token),
-                            //queryLabels : ExportHelper.getCachedQueryLabels(params.token),
+                            filterLabels: ExportHelper.getCachedFilterLabels(params.token),
+                            filterResult: ExportHelper.getCachedFilterResult(params.token),
+                            queryLabels : queryLabels,
                             title       : filename,
-                            //header      : content.remove(0),
+                            header      : content.remove(0),
                             content     : content,
                             struct      : [struct.width.sum(), struct.height.sum(), sizes[ pageSize ] + ' ' + orientation]
                     ],

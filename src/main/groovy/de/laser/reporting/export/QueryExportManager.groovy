@@ -9,24 +9,26 @@ class QueryExportManager {
     static List export(QueryExport export, String format) {
 
         List rows = []
+        Map<String, Object> data = export.getData()
 
         if (format == 'csv') {
-            export.getDataDetails().each { dd ->
-                rows.add( buildCsvRow( dd ) )
+            rows.add( data.cols.join( AbstractExport.CSV_FIELD_SEPARATOR ) )
+            data.rows.each { row ->
+                rows.add( buildCsvRow( row ) )
             }
         }
         else if (format == 'pdf') {
-            export.getDataDetails().each { dd ->
-                rows.add( buildPdfRow( dd ) )
+            rows.add( data.cols )
+            data.rows.each { row ->
+                rows.add( buildPdfRow( row ) )
             }
         }
-
         rows
     }
 
-    static String buildCsvRow(Map<String, Object> content) {
+    static String buildCsvRow(List<String> content) {
 
-        [ content.label, content.idList.size().toString() ].collect{ it ->
+        content.collect{ it ->
             if (! it) {
                 return ''
             }
@@ -40,9 +42,9 @@ class QueryExportManager {
         }.join( AbstractExport.CSV_FIELD_SEPARATOR )
     }
 
-    static List<String> buildPdfRow(Map<String, Object> content) {
+    static List<String> buildPdfRow(List<String> content) {
 
-        [ content.label, content.idList.size().toString() ].collect{ it ->
+        content.collect{ it ->
             if (! it) {
                 return ''
             }

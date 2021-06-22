@@ -56,7 +56,6 @@
 
     <h1>LAS:eR Report <span>- ${DateUtils.getSDF_NoTime().format( new Date() )}</span></h1>
 
-<%--
     <div class="filterInfo">
         <g:each in="${filterLabels}" var="lblGroup">
             ${lblGroup.value.source}
@@ -94,17 +93,16 @@
     <div class="queryInfo">
         ${queryLabels.join(' > ')}
     </div>
---%>
 
     <table>
-       <%-- <thead>
+       <thead>
             <tr>
                 <th></th>
                 <g:each in="${header}" var="cell">
-                    <th>${cell[0]}</th>
+                    <th>${cell}</th>
                 </g:each>
             </tr>
-        </thead> --%>
+        </thead>
         <tbody>
             <g:each in="${content}" var="row" status="i">
                 <tr <% if(i%2==0) { print 'class="odd"' } else { print 'class="even"' }%>>

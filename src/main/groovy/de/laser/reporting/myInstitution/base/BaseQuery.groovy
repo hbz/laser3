@@ -52,21 +52,27 @@ class BaseQuery {
 
     static List<String> getQueryLabels(Map<String, Object> config, GrailsParameterMap params) {
 
+        List<String> labels = getQueryLabels(config, params.query)
+
+        if (labels) {
+            labels.add( params.label ) // not set in step 2
+        }
+        labels
+    }
+
+    static List<String> getQueryLabels(Map<String, Object> config, String query) {
+
         List<String> meta = []
 
-//        println 'BaseQuery.getQueryLabels()'
-//        println params
-//        println config
-
         config.each {it ->
-            it.value.get('query')?.default.each { it2 ->  // TODO ???
-                if (it2.value.containsKey(params.query)) {
-                    meta = [ it2.key, it2.value.get(params.query), params.label ]
+            it.value.get('query')?.default?.each { it2 ->
+                if (it2.value.containsKey(query)) {
+                    meta = [ it2.key, it2.value.get(query) ]
                 }
             }
             it.value.get('query2')?.each { it2 ->
-                if (it2.value.containsKey(params.query)) {
-                    meta = [ it2.key, it2.value.get(params.query).label, params.label ]
+                if (it2.value.containsKey(query)) {
+                    meta = [ it2.key, it2.value.get(query).label ]
                 }
             }
         }
