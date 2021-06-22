@@ -9,11 +9,11 @@
         font-size: 16px;
     }
     h1 > span {
-        font-size: 90%;
+        font-size: 80%;
         color: rgba(0,0,0, 0.35);
     }
     table {
-        margin-top: 2em;
+        margin-top: 3em;
         border-spacing: 0;
         border-collapse: collapse;
         border-width: 0;
@@ -35,11 +35,17 @@
         padding: 0.35em 0.6em;
     }
     .warning {
-        margin-bottom: 0.5em;
+        position: absolute;
+        top: 0;
+        right: 0;
         padding: 0.5em 1em;
         border: 1px dashed #bb1600;
         color: #bb1600;
         font-weight: bold;
+    }
+    .filterInfo,
+    .filterResult {
+        font-size: 90%;
     }
     .filterInfo,
     .filterResult,

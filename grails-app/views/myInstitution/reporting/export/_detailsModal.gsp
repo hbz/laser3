@@ -113,7 +113,7 @@
                             <label for="fileformat">Dateiformat</label>
                             <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
                                       optionKey="key" optionValue="value"
-                                      from="${[csv:'CSV', pdf: 'PDF']}"
+                                      from="${[csv:'CSV', pdf:'PDF']}"
                             />
                         </div>
                         <div class="field">
@@ -134,9 +134,9 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
-        $('select[name=fileformat]').on( 'change', function() {
-            $('*[id^=fileformat-').addClass('hidden')
-            $('*[id^=fileformat-' + $('select[name=fileformat]').val()).removeClass('hidden')
+        $('#${modalID} select[name=fileformat]').on( 'change', function() {
+            $('#${modalID} *[id^=fileformat-').addClass('hidden')
+            $('#${modalID} *[id^=fileformat-' + $('#${modalID} select[name=fileformat]').val()).removeClass('hidden')
         }).trigger('change');
     </laser:script>
 </g:if>

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3605    22.06.2021  rc2.1   2.1         David   Feature     Reporting: Diagramme als PDF exportieren
+
 3467    22.06.2021  rc2.1   2.1         David   Feature     Reporting: CSV- und PDF-Export in Schritt 2
 
 3591    21.06.2021  rc2.1   2.1         David   Feature     Reporting: Verträge ohne Enddatum werden mit 9999 angezeigt

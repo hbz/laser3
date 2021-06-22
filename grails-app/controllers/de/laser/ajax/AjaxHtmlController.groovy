@@ -466,15 +466,14 @@ class AjaxHtmlController {
     })
     def chartQueryExport() {
 
-        SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
-        String filename
+        // filename - TODO
+        Map<String, Object> queryCache = BaseQuery.getQueryCache( params.token )
+        String prefix = queryCache.query.split('-')[0]
+        Map<String, Object> cfg = BaseConfig.getCurrentConfigByPrefix( prefix )
+        List<String> queryLabels = BaseQuery.getQueryLabels(cfg, queryCache.query as String)
 
-        if (params.filename) {
-            filename = sdf.format(new Date()) + '_' + params.filename
-        }
-        else {
-            filename = sdf.format(new Date()) + '_reporting'
-        }
+        SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
+        String filename = sdf.format(new Date()) + '_' + ExportHelper.getFileName( queryLabels )
 
         QueryExport export = QueryExportManager.createExport( params.token )
 
@@ -494,24 +493,43 @@ class AjaxHtmlController {
         }
         else if (params.fileformat == 'pdf') {
             List<List<String>> content = QueryExportManager.export(export, 'pdf')
-            Map<String, Object> struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport')
 
-            Map<String, Object> queryCache = BaseQuery.getQueryCache( params.token )
-            String prefix = queryCache.query.split('-')[0]
-            Map<String, Object> cfg = BaseConfig.getCurrentConfigByPrefix( prefix )
-            List<String> queryLabels = BaseQuery.getQueryLabels(cfg, queryCache.query as String)
+            Map<String, Object> struct = [:]
+
+            if (params.contentType == 'table') {
+                struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport')
+            }
+            if (params.contentType == 'image') {
+
+                struct = [
+                        width       : Float.parseFloat( params.imageSize.split(':')[0] ),
+                        height      : Float.parseFloat( params.imageSize.split(':')[1] ),
+                        pageSize    : 'A4',
+                        orientation : 'Portrait'
+                ] as Map<String, Object>
+
+                struct.whr = struct.width / struct.height
+                if (struct.height < 400 && struct.whr >= 2) {
+                    struct.orientation = 'Landscape'
+                }
+            }
+
+            println struct
+            Map<String, Object> model = [
+                    filterLabels: ExportHelper.getCachedFilterLabels(params.token),
+                    filterResult: ExportHelper.getCachedFilterResult(params.token),
+                    queryLabels : queryLabels,
+                    imageData   : params.imageData,
+                    contentType : params.contentType,
+                    title       : filename,
+                    header      : content.remove(0),
+                    content     : content,
+                    struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
+            ]
 
             def pdf = wkhtmltoxService.makePdf(
                     view: '/myInstitution/reporting/export/pdf/generic_query',
-                    model: [
-                            filterLabels: ExportHelper.getCachedFilterLabels(params.token),
-                            filterResult: ExportHelper.getCachedFilterResult(params.token),
-                            queryLabels : queryLabels,
-                            title       : filename,
-                            header      : content.remove(0),
-                            content     : content,
-                            struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
-                    ],
+                    model: model,
                     // header: '',
                     // footer: '',
                     pageSize: struct.pageSize,

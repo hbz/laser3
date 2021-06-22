@@ -109,7 +109,9 @@ class ExportHelper {
     static String getFileName(List<String> labels) {
 
         labels.collect{
-            it.replaceAll('[^\\wäöüÄÖÜ!"§$%&()=?\'{},.\\-+~#;:]', '').replaceAll(' ', '')
+            it.replaceAll('[→/]', '-')
+                .replaceAll('[^\\wäöüÄÖÜ!"§$%&()=?\'{},.\\-+~#;:]', '')
+                .replaceAll(' ', '')
         }.join('_')
     }
 
@@ -247,6 +249,11 @@ class ExportHelper {
                     struct.width[j] = cell.length() < 15 ? 15 : cell.length() > 35 ? 35 : cell.length()
                 }
             }
+        }
+        else if (pin == 'chartQueryExport_image') {
+
+            // TODO
+            // TODO
         }
         else {
             println ' ----- TODO: calculatePdfPageStruct( ' + pin + ' ) ----- '

@@ -1,4 +1,4 @@
-<%@ page import=" de.laser.reporting.myInstitution.base.BaseDetails; de.laser.reporting.export.AbstractExport; de.laser.reporting.export.ExportHelper;" %>
+<%@ page import="de.laser.reporting.export.AbstractExport; de.laser.reporting.export.ExportHelper;" %>
 <laser:serviceInjection />
 <!-- _queryChartModal.gsp -->
 
@@ -26,6 +26,12 @@
                                 Seitenformat: <span class="ui circular label">auto</span> <br />
                                 Suchinformationen: <span class="ui circular label">anzeigen</span> <br />
                             </p>
+                            <p>
+                                <g:select name="contentType" class="ui selection dropdown la-not-clearable"
+                                          optionKey="key" optionValue="value"
+                                          from="${[table:'Tabellarische Darstellung', image: 'Darstellung als Diagramm']}"
+                                />
+                            </p>
                         </div>
 
                         <div class="wide eight field">
@@ -33,12 +39,12 @@
                                 <label for="fileformat">Dateiformat</label>
                                 <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
                                           optionKey="key" optionValue="value"
-                                          from="${[csv:'CSV', pdf: 'PDF']}"
+                                          from="${[csv:'CSV', pdf:'PDF']}"
                                 />
                             </div>
                             <div class="field">
                                 <label for="filename">Dateiname</label>
-                                <input name="filename" id="filename" value="${ExportHelper.getFileName(queryLabels)}" />
+                                <input name="filename" id="filename" value="Wird automatisch generiert.." disabled/>
                             </div>
                         </div>
 
@@ -48,16 +54,31 @@
             </div><!-- .form -->
 
             <input type="hidden" name="token" value="${token}" />
+            <input type="hidden" name="imageData" value="" />
+            <input type="hidden" name="imageSize" value="" />
         </g:form>
 
     </semui:modal>
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
-        $('select[name=fileformat]').on( 'change', function() {
-            $('*[id^=fileformat-').addClass('hidden')
-            $('*[id^=fileformat-' + $('select[name=fileformat]').val()).removeClass('hidden')
+        $('#${modalID} select[name=fileformat]').on( 'change', function() {
+            $('#${modalID} *[id^=fileformat-').addClass('hidden')
+            $('#${modalID} *[id^=fileformat-' + $('#${modalID} select[name=fileformat]').val()).removeClass('hidden')
         }).trigger('change');
+
+        /* -- TODO -- */
+
+        $('#query-export-button').on( 'click', function() {
+            $('#${modalID} input[name=imageData]').attr( 'value',
+                JSPC.app.reporting.current.chart.echart.getDataURL({
+                    pixelRatio: 1
+                })
+            );
+            $('#${modalID} input[name=imageSize]').attr( 'value',
+                $('#chart-wrapper').width() + ':' + $('#chart-wrapper').height()
+            );
+        });
     </laser:script>
 
 <!-- _queryChartModal.gsp -->
