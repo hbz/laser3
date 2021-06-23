@@ -42,11 +42,15 @@
                       noSelection="${['': message(code: 'default.select.choose.label')]}" />
         </div>
 
-        <div class="field">
-            <label for="query-export-button">Exportieren</label>
-            <button id="query-export-button" class="ui icon button" href="#queryExportModal" data-semui="modal" disabled><i class="ui icon download"></i></button>
-        </div>
+        <sec:ifAnyGranted roles="ROLE_YODA"><%-- TODO --%>
+            <div class="field">
+                <label for="query-export-button">Exportieren</label>
+                <button id="query-export-button" class="ui icon button" href="#queryExportModal" data-semui="modal" disabled><i class="ui icon download"></i></button>
+            </div>
+        </sec:ifAnyGranted>
     </div>
 </div>
 
-<g:render template="/myInstitution/reporting/export/queryModal" model="[modalID: 'queryExportModal', token: token]" />
+<sec:ifAnyGranted roles="ROLE_YODA"><%-- TODO --%>
+    <g:render template="/myInstitution/reporting/export/queryModal" model="[modalID: 'queryExportModal', token: token]" />
+</sec:ifAnyGranted>
