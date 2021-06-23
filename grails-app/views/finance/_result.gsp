@@ -82,7 +82,9 @@
 
                                 <div class="field la-field-right-aligned">
                                     <input name="delete" type="hidden" value="false"/>
-                                    <button id="deleteButton" class="ui negative button" type="submit">${message(code: 'financials.bulkCostItems.delete')}</button>
+                                    <button type="submit" id="deleteButton" class="ui negative button js-open-confirm-modal" role="button"
+                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem.bulk")}"
+                                            data-confirm-term-how="delete">${message(code: 'financials.bulkCostItems.delete')}</button>
                                 </div>
                                 <g:render template="result_tab_cons" model="[tmplShowCheckbox: true, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
                             </g:form>
@@ -163,7 +165,7 @@
                     }
                 });
 
-                $('#deleteButton').on('click', function(e) {
+                $('#js-confirmation-button').on('click', function(e) {
                     e.preventDefault();
                     $('[name="delete"]').val('true');
                     $('#editCost_${idSuffix}').unbind('submit').submit();

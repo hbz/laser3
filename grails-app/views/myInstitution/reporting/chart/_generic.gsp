@@ -1,9 +1,5 @@
 <%@ page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.reporting.myInstitution.base.BaseQuery" %>
-<g:if test="${! data}">
-    JSPC.app.reporting.current.chart.option = {}
-    $("#reporting-modal-nodata").modal('show');
-</g:if>
-<g:elseif test="${chart == BaseConfig.CHART_PIE}">
+<g:if test="${data && chart == BaseConfig.CHART_PIE}">
     JSPC.app.reporting.current.chart.option = {
         title: {
             text: '${labels.tooltip}',
@@ -52,8 +48,8 @@
             }
         ]
     };
-</g:elseif>
-<g:elseif test="${chart == BaseConfig.CHART_BAR}">
+</g:if>
+<g:elseif test="${data && chart == BaseConfig.CHART_BAR}">
     JSPC.app.reporting.current.chart.option = {
         title: {
             text: '${labels.tooltip}',
@@ -108,9 +104,13 @@
                 },
                 itemStyle: {
                     color: function(params) {
-                        if (JSPC.helper.contains(['${BaseQuery.NO_DATA_LABEL}', '${BaseQuery.NO_PROVIDER_LABEL}'], params.name)) {
+                        if (JSPC.helper.contains(['${BaseQuery.NO_DATA_LABEL}', '${BaseQuery.NO_PROVIDER_LABEL}', '${BaseQuery.NO_STARTDATE_LABEL}'], params.name)) {
                             return JSPC.app.reporting.helper.series.color.redInactive
-                        } else {
+                        }
+                        else if (JSPC.helper.contains(['${BaseQuery.NO_ENDDATE_LABEL}'], params.name)) {
+                            return JSPC.app.reporting.helper.series.color.ice
+                        }
+                        else {
                             return JSPC.app.reporting.helper.series.color.blue
                         }
                     }

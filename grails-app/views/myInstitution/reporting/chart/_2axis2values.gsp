@@ -1,9 +1,5 @@
 <%@ page import="de.laser.reporting.myInstitution.base.BaseConfig;de.laser.reporting.myInstitution.base.BaseQuery" %>
-<g:if test="${! data}">
-    JSPC.app.reporting.current.chart.option = {}
-    $("#reporting-modal-nodata").modal('show');
-</g:if>
-<g:elseif test="${chart == BaseConfig.CHART_PIE}">
+<g:if test="${data && chart == BaseConfig.CHART_PIE}">
     JSPC.app.reporting.current.chart.option = {
         title: {
             text: '${labels.tooltip}',
@@ -46,8 +42,8 @@
             },
         ]
     };
-</g:elseif>
-<g:elseif test="${chart == BaseConfig.CHART_BAR}">
+</g:if>
+<g:elseif test="${data && chart == BaseConfig.CHART_BAR}">
     JSPC.app.reporting.current.chart.option = {
         title: {
             text: '${labels.tooltip}',

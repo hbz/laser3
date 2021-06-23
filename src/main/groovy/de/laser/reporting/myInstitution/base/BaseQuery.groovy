@@ -13,6 +13,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.sql.Timestamp
+import java.time.Year
 
 class BaseQuery {
 
@@ -20,6 +21,13 @@ class BaseQuery {
     static String NO_IDENTIFIER_LABEL   = '* ohne Identifikator'
     static String NO_PLATFORM_LABEL     = '* ohne Plattform'
     static String NO_PROVIDER_LABEL     = '* ohne Anbieter'
+    static String NO_STARTDATE_LABEL    = '* ohne Startdatum'
+    static String NO_ENDDATE_LABEL      = '* ohne Ablauf'
+
+    static int NO_DATA_ID       = 0
+    static int SPEC_DATA_ID_1   = 9990001
+    static int SPEC_DATA_ID_2   = 9990002
+    static int SPEC_DATA_ID_3   = 9990003
 
     static Map<String, Object> getQueryCache(String token) {
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
@@ -44,21 +52,27 @@ class BaseQuery {
 
     static List<String> getQueryLabels(Map<String, Object> config, GrailsParameterMap params) {
 
+        List<String> labels = getQueryLabels(config, params.query)
+
+        if (labels) {
+            labels.add( params.label ) // not set in step 2
+        }
+        labels
+    }
+
+    static List<String> getQueryLabels(Map<String, Object> config, String query) {
+
         List<String> meta = []
 
-//        println 'BaseQuery.getQueryLabels()'
-//        println params
-//        println config
-
         config.each {it ->
-            it.value.get('query')?.default.each { it2 ->  // TODO ???
-                if (it2.value.containsKey(params.query)) {
-                    meta = [ it2.key, it2.value.get(params.query), params.label ]
+            it.value.get('query')?.default?.each { it2 ->
+                if (it2.value.containsKey(query)) {
+                    meta = [ it2.key, it2.value.get(query) ]
                 }
             }
             it.value.get('query2')?.each { it2 ->
-                if (it2.value.containsKey(params.query)) {
-                    meta = [ it2.key, it2.value.get(params.query).label, params.label ]
+                if (it2.value.containsKey(query)) {
+                    meta = [ it2.key, it2.value.get(query).label ]
                 }
             }
         }
@@ -252,14 +266,13 @@ class BaseQuery {
 
     static void handleGenericAnnualXQuery(String query, String domainClass, List idList, Map<String, Object> result) {
 
-        List years = Org.executeQuery( 'select distinct YEAR(dc.startDate) from ' + domainClass + ' dc' )
-        years.addAll( Org.executeQuery( 'select distinct YEAR(dc.endDate) from ' + domainClass + ' dc' ) )
+        List dd = Org.executeQuery( 'select min(YEAR(dc.startDate)), max(YEAR(dc.endDate)) from ' + domainClass + ' dc where dc.id in (:idList)', [idList: idList] )
+        dd[0][1] = dd[0][1] ? Math.min( dd[0][1] as int, Year.now().value + 5 ) : Year.now().value
+        List years = ( (dd[0][0] ?: Year.now().value)..(dd[0][1]) ).toList()
 
-        years = years.findAll().unique().sort() // TODO hardcoded
-
-        years.each { y ->
+        years.sort().each { y ->
             String hql = 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and ' +
-                    '( (YEAR(dc.startDate) <= ' + y + ' or dc.startDate is null) and (YEAR(dc.endDate) >= ' + y + ' or dc.endDate is null) ) and ' +
+                    '( (YEAR(dc.startDate) <= ' + y + ') and (YEAR(dc.endDate) >= ' + y + ' or dc.endDate is null) ) and ' +
                     'not (dc.startDate is null and dc.endDate is null)'
 
             List<Long> annualList = Org.executeQuery( hql, [idList: idList] )
@@ -275,17 +288,38 @@ class BaseQuery {
             }
         }
 
-        List<Long> noDataList = Org.executeQuery(
-                'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate is null',
-                [idList: idList]
-        )
+        List<Long> sp1DataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate != null and dc.endDate is null', [idList: idList] )
+        if (sp1DataList) {
+            result.data.add([SPEC_DATA_ID_1, NO_ENDDATE_LABEL, sp1DataList.size()])
+
+            result.dataDetails.add([
+                    query : query,
+                    id    : SPEC_DATA_ID_1,
+                    label : NO_ENDDATE_LABEL,
+                    idList: sp1DataList
+            ])
+        }
+
+        List<Long> sp2DataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate != null', [idList: idList] )
+        if (sp2DataList) {
+            result.data.add([SPEC_DATA_ID_2, NO_STARTDATE_LABEL, sp2DataList.size()])
+
+            result.dataDetails.add([
+                    query : query,
+                    id    : SPEC_DATA_ID_2,
+                    label : NO_STARTDATE_LABEL,
+                    idList: sp2DataList
+            ])
+        }
+
+        List<Long> noDataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate is null', [idList: idList] )
         if (noDataList) {
-            result.data.add([null, BaseQuery.NO_DATA_LABEL, noDataList.size()])
+            result.data.add([null, NO_DATA_LABEL, noDataList.size()])
 
             result.dataDetails.add([
                     query : query,
                     id    : null,
-                    label : BaseQuery.NO_DATA_LABEL,
+                    label : NO_DATA_LABEL,
                     idList: noDataList
             ])
         }

@@ -80,6 +80,7 @@ class MyInstitutionController  {
     MyInstitutionControllerService myInstitutionControllerService
     PendingChangeService pendingChangeService
     UserControllerService userControllerService
+    GokbService gokbService
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
@@ -145,47 +146,96 @@ class MyInstitutionController  {
         pu.setBenchmark("before loading subscription ids")
 
         String instanceFilter = ""
+        Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg,roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA],current:RDStore.SUBSCRIPTION_CURRENT,expired:RDStore.SUBSCRIPTION_EXPIRED]
         if(result.contextOrg.getCustomerType() == "ORG_CONSORTIUM")
             instanceFilter += " and s.instanceOf = null "
-        Set<Long> idsCurrentSubscriptions = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and s.hasPerpetualAccess = true'+instanceFilter,[contextOrg:result.contextOrg,roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]])
+        Set<Long> idsCurrentSubscriptions = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))'+instanceFilter,subscriptionParams)
+
 
         result.subscriptionMap = [:]
         result.platformInstanceList = []
 
         if (idsCurrentSubscriptions) {
-            String qry3 = "select distinct p, s from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
+            String qry3 = "select distinct p, s, ${params.sort ?: 'p.normname'} from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
                     "TitleInstancePackagePlatform tipp join tipp.platform p left join p.org o " +
-                    "where tipp.pkg = pkg and s.id in (:subIds) "
+                    "where tipp.pkg = pkg and s.id in (:subIds) and p.gokbId in (:wekbIds)"
 
             qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
-            qry3 += " and ((p.status is null) or (p.status != :platformDeleted))"
             qry3 += " and ((tipp.status is null) or (tipp.status != :tippDeleted))"
 
             def qryParams3 = [
                     subIds         : idsCurrentSubscriptions,
                     pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED,
-                    platformDeleted: RDStore.PLATFORM_STATUS_DELETED,
                     tippDeleted    : RDStore.TIPP_STATUS_DELETED
             ]
 
+            String esQuery = "?componentType=Platform"
+
             if (params.q?.length() > 0) {
+                result.filterSet = true
+                esQuery += "&q=${params.q}"
                 qry3 += "and ("
-                qry3 += "   genfunc_filter_matcher(p.normname, :query) = true"
-                qry3 += "   or genfunc_filter_matcher(p.primaryUrl, :query) = true"
-                qry3 += "   or genfunc_filter_matcher(o.name, :query) = true"
+                qry3 += "   genfunc_filter_matcher(o.name, :query) = true"
                 qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
                 qry3 += "   or genfunc_filter_matcher(o.shortname, :query) = true "
                 qry3 += ")"
-                qry3 += " group by p, s"
                 qryParams3.put('query', "${params.q}")
             }
-            else {
-                qry3 += " group by p, s"
-                qry3 += " order by p.normname asc"
+
+            if(params.provider) {
+                result.filterSet = true
+                esQuery += "&provider=${params.provider}"
             }
 
+            if(params.status) {
+                result.filterSet = true
+                esQuery += "&status=${RefdataValue.get(params.status).value}"
+            }
+            else if(!params.filterSet) {
+                result.filterSet = true
+                esQuery += "&status=Current"
+                params.status = RDStore.PLATFORM_STATUS_CURRENT.id.toString()
+            }
+
+            if(params.ipSupport) {
+                result.filterSet = true
+                List<String> ipSupport = params.list("ipSupport")
+                ipSupport.each { String ip ->
+                    RefdataValue rdv = RefdataValue.get(ip)
+                    esQuery += "&ipAuthentication=${rdv.value}"
+                }
+            }
+
+            if(params.shibbolethSupport) {
+                result.filterSet = true
+                List<String> shibbolethSupport = params.list("shibbolethSupport")
+                shibbolethSupport.each { String shibboleth ->
+                    RefdataValue rdv = RefdataValue.get(shibboleth)
+                    esQuery += "&shibbolethAuthentication=${rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value}"
+                }
+            }
+
+            if(params.counterCertified) {
+                result.filterSet = true
+                List<String> counterCertified = params.list("counterCertified")
+                counterCertified.each { String counter ->
+                    RefdataValue rdv = RefdataValue.get(counter)
+                    esQuery += "&counterCertified=${rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value}"
+                }
+            }
+            List wekbIds = gokbService.doQuery([max:10000, offset:0], params.clone(), esQuery).records.collect { Map hit -> hit.uuid }
+
+            qryParams3.wekbIds = wekbIds
+
+            qry3 += " group by p, s"
+            if(params.sort)
+                qry3 += " order by ${params.sort} ${params.order}"
+            else qry3 += " order by p.normname asc"
+
             pu.setBenchmark("before loading platforms")
-            List platformSubscriptionList = Subscription.executeQuery(qry3, qryParams3)
+            List platformSubscriptionList = []
+            if(wekbIds)
+                platformSubscriptionList.addAll(Platform.executeQuery(qry3, qryParams3))
 
             log.debug("found ${platformSubscriptionList.size()} in list ..")
             /*, [max:result.max, offset:result.offset])) */
