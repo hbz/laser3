@@ -514,7 +514,6 @@ class AjaxHtmlController {
                 }
             }
 
-            println struct
             Map<String, Object> model = [
                     filterLabels: ExportHelper.getCachedFilterLabels(params.token),
                     filterResult: ExportHelper.getCachedFilterResult(params.token),
