@@ -18,23 +18,7 @@
 
 <semui:messages data="${flash}" />
 
-<%-- WORKAROUND
-<g:render template="/templates/filter/javascript" />
-<semui:filter showFilterButton="true">
-    <g:form action="currentPlatforms" method="get" class="ui form">
-        <div class="two fields">
-            <div class="field">
-                <label>${message(code:'default.search.text')}</label>
-                <input type="text" name="q" placeholder="${message(code:'default.search.ph')}" value="${params.q}" />
-            </div>
-            <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
-                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
-            </div>
-        </div>
-    </g:form>
-</semui:filter>
---%>
+<g:render template="/templates/filter/platformFilter"/>
 
 <table class="ui sortable celled la-table table">
     <thead>

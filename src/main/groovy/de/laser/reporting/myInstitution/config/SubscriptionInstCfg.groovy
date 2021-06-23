@@ -56,35 +56,35 @@ class SubscriptionInstCfg extends BaseConfig {
                     ],
                     query2 : [
                             'Verteilung' : [ // TODO ..
+                                     'subscription-x-identifier' : [
+                                             label              : 'Identifikatoren → Lizenz',
+                                             detailsTemplate    : 'subscription',
+                                             chartTemplate      : '2axis2values_nonMatches',
+                                             chartLabels        : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
+                                     ],
+                                     'subscription-x-property' : [
+                                             label              : 'Merkmale (eigene/allgemeine) → Lizenz',
+                                             detailsTemplate    : 'subscription',
+                                             chartTemplate      : '2axis2values',
+                                             chartLabels        : [ 'Lizenzen', 'Vergebene Merkmale (eigene/allgemeine)' ]
+                                     ],
+                                     'subscription-x-annual' : [
+                                             label              : 'Jahresring → Lizenz',
+                                             detailsTemplate    : 'subscription',
+                                             chartTemplate      : 'generic',
+                                             chartLabels        : []
+                                     ],
                                      'subscription-x-provider' : [
-                                             label              : 'Lizenz → Anbieter',
+                                             label              : 'Anbieter → Lizenz',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
                                      ],
                                      'subscription-x-platform' : [
-                                             label              : 'Lizenz → Anbieter → Plattform',
+                                             label              : 'Plattform → Anbieter → Lizenz',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : '2axis2values_nonMatches',
                                              chartLabels        : [ 'Ermittelt durch Bestand', 'Zuordnung über Anbieter' ]
-                                     ],
-                                     'subscription-x-property' : [
-                                             label              : 'Lizenz → Merkmale (eigene/allgemeine)',
-                                             detailsTemplate    : 'subscription',
-                                             chartTemplate      : '2axis2values',
-                                             chartLabels        : [ 'Lizenzen', 'Vergebene Merkmale (eigene/allgemeine)' ]
-                                     ],
-                                     'subscription-x-identifier' : [
-                                             label              : 'Lizenz → Identifikatoren',
-                                             detailsTemplate    : 'subscription',
-                                             chartTemplate      : '2axis2values_nonMatches',
-                                             chartLabels        : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
-                                     ],
-                                     'subscription-x-annual' : [
-                                             label              : 'Lizenz → Jahresring',
-                                             detailsTemplate    : 'subscription',
-                                             chartTemplate      : 'generic',
-                                             chartLabels        : []
                                      ]
                             ]
                     ]

@@ -1,9 +1,5 @@
 <%@ page import="de.laser.reporting.myInstitution.base.BaseQuery" %>
-<g:if test="${! data}">
-    JSPC.app.reporting.current.chart.option = {}
-    $("#reporting-modal-nodata").modal('show');
-</g:if>
-<g:else>
+<g:if test="${data}">
     JSPC.app.reporting.current.chart.option = {
         title: {
             text: '${labels.tooltip}',
@@ -70,4 +66,4 @@
             print dataDetails as grails.converters.JSON
         }
         %>
-</g:else>
+</g:if>

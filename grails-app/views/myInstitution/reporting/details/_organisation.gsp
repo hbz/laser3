@@ -111,6 +111,6 @@
     </table>
 </div>
 
-<g:render template="/templates/copyEmailaddresses" model="[modalID: 'chartDetailsCopyEmailModal', orgList: list]" />
+<g:render template="/templates/copyEmailaddresses" model="[modalID: 'detailsCopyEmailModal', orgList: list]" />
 
-<g:render template="/myInstitution/reporting/export/chartDetailsModal" model="[modalID: 'chartDetailsExportModal', token: token]" />
+<g:render template="/myInstitution/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />

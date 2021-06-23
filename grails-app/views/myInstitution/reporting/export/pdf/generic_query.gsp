@@ -13,6 +13,7 @@
         color: rgba(0,0,0, 0.35);
     }
     table {
+        min-width: 80%;
         margin-top: 3em;
         border-spacing: 0;
         border-collapse: collapse;
@@ -56,6 +57,11 @@
     }
     .queryInfo {
         font-weight: bold;
+    }
+    .queryChart {
+        margin: 4em 0 0 0;
+        width: 100%;
+        height: auto;
     }
     </style>
 </head>
@@ -102,30 +108,42 @@
         ${queryLabels.join(' > ')}
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th></th>
-                <g:each in="${header}" var="cell">
-                    <th>${cell[0]}</th>
-                </g:each>
-            </tr>
-        </thead>
-        <tbody>
-            <g:each in="${content}" var="row" status="i">
-                <tr <% if(i%2==0) { print 'class="odd"' } else { print 'class="even"' }%>>
-                    <td>${i+1}.</td>
-                    <g:each in="${row}" var="cell" status="j">
-                        <td <% if(j%2==0) { print 'class="odd"' } else { print 'class="even"' }%>>
-                            <g:each in="${cell}" var="cp">
-                                ${cp}<br/>
-                            </g:each>
-                        </td>
+    <g:if test="${contentType == 'image'}">
+
+        <g:if test="${imageData}">
+            <img class="queryChart" src="${imageData}" alt="[Platzhalter Diagramm]" />
+        </g:if>
+        <g:else>
+            <p>Hier sollte ein Diagramm sein :(</p>
+        </g:else>
+
+    </g:if>
+    <g:elseif test="${contentType == 'table'}">
+
+        <table>
+           <thead>
+                <tr>
+                    <th></th>
+                    <g:each in="${header}" var="cell">
+                        <th>${cell}</th>
                     </g:each>
                 </tr>
-            </g:each>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <g:each in="${content}" var="row" status="i">
+                    <tr <% if(i%2==0) { print 'class="odd"' } else { print 'class="even"' }%>>
+                        <td>${i+1}.</td>
+                        <g:each in="${row}" var="cell" status="j">
+                            <td <% if(j%2==0) { print 'class="odd"' } else { print 'class="even"' }%>>
+                                ${cell}
+                            </td>
+                        </g:each>
+                    </tr>
+                </g:each>
+            </tbody>
+        </table>
+
+    </g:elseif>
 </body>
 </html>
 

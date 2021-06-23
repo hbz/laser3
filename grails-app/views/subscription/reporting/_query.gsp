@@ -31,10 +31,5 @@
             </g:each>
         </g:each>
 
-        %{--<div class="field">
-            <label for="chart-export">Exportieren</label>
-            <button id="chart-export" class="ui icon button" disabled><i class="ui icon download"></i></button>
-        </div>--}%
-
     </div>
 </div>

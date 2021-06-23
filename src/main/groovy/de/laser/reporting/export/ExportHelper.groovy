@@ -109,7 +109,9 @@ class ExportHelper {
     static String getFileName(List<String> labels) {
 
         labels.collect{
-            it.replaceAll('[^\\wäöüÄÖÜ!"§$%&()=?\'{},.\\-+~#;:]', '').replaceAll(' ', '')
+            it.replaceAll('[→/]', '-')
+                .replaceAll('[^\\wäöüÄÖÜ!"§$%&()=?\'{},.\\-+~#;:]', '')
+                .replaceAll(' ', '')
         }.join('_')
     }
 
@@ -208,5 +210,80 @@ class ExportHelper {
         result.addAll( (y+2..y-4).collect{[ 'dd-' + it, 'Stichtage für ' + it ]} )
 
         result
+    }
+
+    static Map<String, Object> calculatePdfPageStruct(List<List<String>> content, String pin) {
+
+        Map<String, Object> struct = [
+            width       : [],
+            height      : [],
+            pageSize    : '',
+            orientation : 'Portrait'
+        ]
+
+        if (pin == 'chartDetailsExport') {
+
+            content.eachWithIndex { List row, int i ->
+                row.eachWithIndex { List cell, int j ->
+                    if (!struct.height[i] || struct.height[i] < cell.size()) {
+                        struct.height[i] = cell.size()
+                    }
+                    cell.eachWithIndex { String entry, int k ->
+                        if (i == 0) {
+                            struct.width[j] = entry.length() < 15 ? 15 : entry.length() > 35 ? 35 : entry.length()
+                        }
+                        else {
+                            if (!struct.width[j] || struct.width[j] < entry.length()) {
+                                struct.width[j] = entry.length()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if (pin == 'chartQueryExport') {
+
+            content.eachWithIndex { List row, int i ->
+                row.eachWithIndex { String cell, int j ->
+                    struct.height[i] = 1
+                    struct.width[j] = cell.length() < 15 ? 15 : cell.length() > 35 ? 35 : cell.length()
+                }
+            }
+        }
+        else if (pin == 'chartQueryExport_image') {
+
+            // TODO
+            // TODO
+        }
+        else {
+            println ' ----- TODO: calculatePdfPageStruct( ' + pin + ' ) ----- '
+        }
+
+        String[] sizes = [ 'A0', 'A1', 'A2', 'A3', 'A4' ]
+        int pageSize = 4
+
+        int wx = 85, w = struct.width.sum() as int
+        int hx = 35, h = struct.height.sum() as int
+
+        if (w > wx*4)       { pageSize = 0 }
+        else if (w > wx*3)  { pageSize = 1 }
+        else if (w > wx*2)  { pageSize = 2 }
+        else if (w > wx)    { pageSize = 3 }
+
+        struct.whr = (w * 0.75) / (h + 15)
+        if (struct.whr > 5) {
+            if (w < wx*7) {
+                if (pageSize < sizes.length - 1) {
+                    pageSize++
+                }
+            }
+            struct.orientation = 'Landscape'
+        }
+
+        struct.width = struct.width.sum()
+        struct.height = struct.height.sum()
+        struct.pageSize = sizes[ pageSize ]
+
+        struct
     }
 }
