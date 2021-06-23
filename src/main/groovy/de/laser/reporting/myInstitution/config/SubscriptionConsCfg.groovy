@@ -54,55 +54,55 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     query2 : [
                             'Verteilung' : [ // TODO ..
-                                    'subscription-x-provider' : [
-                                            label               : 'Lizenz → Anbieter',
-                                            detailsTemplate     : 'subscription',
-                                            chartTemplate       : 'generic',
-                                            chartLabels         : []
-                                    ],
-                                    'subscription-x-platform' : [
-                                            label               : 'Lizenz → Anbieter → Plattform',
-                                            detailsTemplate     : 'subscription',
-                                            chartTemplate       : '2axis2values_nonMatches',
-                                            chartLabels         : [ 'Ermittelt durch Bestand', 'Zuordnung über Anbieter' ]
-                                    ],
-                                    'subscription-x-property' : [
-                                            label               : 'Lizenz → Merkmale (eigene/allgemeine)',
+                                     'subscription-x-identifier' : [
+                                             label               : 'Identifikatoren → Lizenz',
+                                             detailsTemplate     : 'subscription',
+                                             chartTemplate       : '2axis2values_nonMatches',
+                                             chartLabels         : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
+                                     ],
+                                     'subscription-x-property' : [
+                                            label               : 'Merkmale (eigene/allgemeine) → Lizenz',
                                             detailsTemplate     : 'subscription',
                                             chartTemplate       : '2axis2values',
                                             chartLabels         : [ 'Lizenzen', 'Vergebene Merkmale (eigene/allgemeine)' ]
-                                    ],
-                                    'subscription-x-identifier' : [
-                                            label               : 'Lizenz → Identifikatoren',
-                                            detailsTemplate     : 'subscription',
-                                            chartTemplate       : '2axis2values_nonMatches',
-                                            chartLabels         : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
-                                    ],
-                                     'subscription-x-annual' : [
-                                             label              : 'Lizenz → Jahresring',
-                                             detailsTemplate    : 'subscription',
-                                             chartTemplate      : 'generic',
-                                             chartLabels        : []
                                      ],
-//                                     'subscription-x-subscription-provider' : [
-//                                            label : 'Teilnehmerlizenz → Anbieter',
-//                                            chartTemplate : 'generic',
-//                                            chartLabels : []
-//                                    ],
-                                     'subscription-x-memberSubscription' : [
-                                             label              : 'Teilnehmerlizenz → Lizenz',
+                                     'subscription-x-annual' : [
+                                             label              : 'Jahresring → Lizenz',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
                                      ],
                                      'subscription-x-memberAnnual' : [
-                                             label              : 'Teilnehmerlizenz → Jahresring',
+                                             label              : 'Jahresring → Teilnehmerlizenz',
+                                             detailsTemplate    : 'subscription',
+                                             chartTemplate      : 'generic',
+                                             chartLabels        : []
+                                     ],
+//                                     'subscription-x-subscription-provider' : [
+//                                            label : 'Anbieter → Teilnehmerlizenz',
+//                                            chartTemplate : 'generic',
+//                                            chartLabels : []
+//                                    ],
+                                     'subscription-x-provider' : [
+                                             label               : 'Anbieter → Lizenz',
+                                             detailsTemplate     : 'subscription',
+                                             chartTemplate       : 'generic',
+                                             chartLabels         : []
+                                     ],
+                                     'subscription-x-platform' : [
+                                             label               : 'Plattform → Anbieter → Lizenz',
+                                             detailsTemplate     : 'subscription',
+                                             chartTemplate       : '2axis2values_nonMatches',
+                                             chartLabels         : [ 'Ermittelt durch Bestand', 'Zuordnung über Anbieter' ]
+                                     ],
+                                     'subscription-x-memberSubscription' : [
+                                             label              : 'Lizenz → Teilnehmerlizenz',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
                                      ],
                                      'subscription-x-member' : [
-                                             label              : 'Teilnehmer → Teilnehmerlizenz → Lizenz',
+                                             label              : 'Lizenz → Teilnehmerlizenz → Teilnehmer',
                                              detailsTemplate    : 'organisation',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []

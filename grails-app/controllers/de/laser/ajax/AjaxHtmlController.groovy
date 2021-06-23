@@ -27,14 +27,17 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.reporting.export.AbstractExport
+import de.laser.reporting.export.QueryExport
 import de.laser.reporting.export.ExportHelper
-import de.laser.reporting.export.GenericExportManager
+import de.laser.reporting.export.DetailsExportManager
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.reporting.export.QueryExportManager
+import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.reporting.myInstitution.base.BaseDetails
+import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.plugin.springsecurity.annotation.Secured
-import grails.util.Holders
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -410,13 +413,13 @@ class AjaxHtmlController {
         }
 
         Map<String, Object> detailsCache = BaseDetails.getDetailsCache( params.token )
-        AbstractExport export = GenericExportManager.createExport( params.token, selectedFields )
+        AbstractExport export = DetailsExportManager.createExport( params.token, selectedFields )
 
         if (params.fileformat == 'csv') {
             response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
             response.contentType = 'text/csv'
 
-            List<String> rows = GenericExportManager.export( export, 'csv', detailsCache.idList )
+            List<String> rows = DetailsExportManager.export( export, 'csv', detailsCache.idList )
 
             ServletOutputStream out = response.outputStream
             out.withWriter { w ->
@@ -427,53 +430,8 @@ class AjaxHtmlController {
             out.close()
         }
         else if (params.fileformat == 'pdf') {
-            List<List<String>> content = GenericExportManager.export(export, 'pdf', detailsCache.idList)
-            Map<String, List> struct = [width: [], height: []]
-
-            if (content.isEmpty()) {
-                content = [['Keine Daten vorhanden']]
-            }
-            else {
-                content.eachWithIndex { List row, int i ->
-                    row.eachWithIndex { List cell, int j ->
-                        if (!struct.height[i] || struct.height[i] < cell.size()) {
-                            struct.height[i] = cell.size()
-                        }
-                        cell.eachWithIndex { String entry, int k ->
-                            if (i == 0) {
-                                struct.width[j] = entry.length() < 15 ? 15 : entry.length() > 35 ? 35 : entry.length()
-                            }
-                            else {
-                                if (!struct.width[j] || struct.width[j] < entry.length()) {
-                                    struct.width[j] = entry.length()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            String[] sizes = [ 'A0', 'A1', 'A2', 'A3', 'A4' ]
-            int pageSize = 0
-            String orientation = 'Portrait'
-
-            int wx = 85, w = struct.width.sum() as int
-            int hx = 35, h = struct.height.sum() as int
-
-            if (w > wx*4)       { pageSize = 0 }
-            else if (w > wx*3)  { pageSize = 1 }
-            else if (w > wx*2)  { pageSize = 2 }
-            else if (w > wx)    { pageSize = 3 }
-
-            def whr = (w * 0.75) / (h + 15)
-            if (whr > 5) {
-                if (w < wx*7) {
-                    if (pageSize < sizes.length - 1) {
-                        pageSize++
-                    }
-                }
-                orientation = 'Landscape'
-            }
+            List<List<String>> content = DetailsExportManager.export(export, 'pdf', detailsCache.idList)
+            Map<String, Object> struct = ExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
 
             def pdf = wkhtmltoxService.makePdf(
                     view: '/myInstitution/reporting/export/pdf/generic_details',
@@ -484,12 +442,98 @@ class AjaxHtmlController {
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
-                            struct      : [struct.width.sum(), struct.height.sum(), sizes[ pageSize ] + ' ' + orientation]
+                            struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
                     ],
                     // header: '',
                     // footer: '',
-                    pageSize: sizes[ pageSize ],
-                    orientation: orientation,
+                    pageSize: struct.pageSize,
+                    orientation: struct.orientation,
+                    marginLeft: 10,
+                    marginTop: 15,
+                    marginBottom: 15,
+                    marginRight: 10
+            )
+
+            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
+            response.setContentType('application/pdf')
+            response.outputStream.withStream { it << pdf }
+        }
+    }
+
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+    })
+    def chartQueryExport() {
+
+        // filename - TODO
+        Map<String, Object> queryCache = BaseQuery.getQueryCache( params.token )
+        String prefix = queryCache.query.split('-')[0]
+        Map<String, Object> cfg = BaseConfig.getCurrentConfigByPrefix( prefix )
+        List<String> queryLabels = BaseQuery.getQueryLabels(cfg, queryCache.query as String)
+
+        SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
+        String filename = sdf.format(new Date()) + '_' + ExportHelper.getFileName( queryLabels )
+
+        QueryExport export = QueryExportManager.createExport( params.token )
+
+        if (params.fileformat == 'csv') {
+            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
+            response.contentType = 'text/csv'
+
+            List<String> rows = QueryExportManager.export( export, 'csv' )
+
+            ServletOutputStream out = response.outputStream
+            out.withWriter { w ->
+                rows.each { r ->
+                    w.write( r + '\n')
+                }
+            }
+            out.close()
+        }
+        else if (params.fileformat == 'pdf') {
+            List<List<String>> content = QueryExportManager.export(export, 'pdf')
+
+            Map<String, Object> struct = [:]
+
+            if (params.contentType == 'table') {
+                struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport')
+            }
+            if (params.contentType == 'image') {
+
+                struct = [
+                        width       : Float.parseFloat( params.imageSize.split(':')[0] ),
+                        height      : Float.parseFloat( params.imageSize.split(':')[1] ),
+                        pageSize    : 'A4',
+                        orientation : 'Portrait'
+                ] as Map<String, Object>
+
+                struct.whr = struct.width / struct.height
+                if (struct.height < 400 && struct.whr >= 2) {
+                    struct.orientation = 'Landscape'
+                }
+            }
+
+            println struct
+            Map<String, Object> model = [
+                    filterLabels: ExportHelper.getCachedFilterLabels(params.token),
+                    filterResult: ExportHelper.getCachedFilterResult(params.token),
+                    queryLabels : queryLabels,
+                    imageData   : params.imageData,
+                    contentType : params.contentType,
+                    title       : filename,
+                    header      : content.remove(0),
+                    content     : content,
+                    struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
+            ]
+
+            def pdf = wkhtmltoxService.makePdf(
+                    view: '/myInstitution/reporting/export/pdf/generic_query',
+                    model: model,
+                    // header: '',
+                    // footer: '',
+                    pageSize: struct.pageSize,
+                    orientation: struct.orientation,
                     marginLeft: 10,
                     marginTop: 15,
                     marginBottom: 15,

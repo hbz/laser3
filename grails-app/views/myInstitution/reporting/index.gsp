@@ -109,12 +109,6 @@
                 JSPC.app.reporting.requestChartJsonData();
             })
 
-            $('#chart-export').on( 'click', function(e) {
-                if ( JSPC.app.reporting.current.request.query ) {
-                    alert('[msg:1] - Nicht implementiert');
-                }
-            })
-
             JSPC.app.reporting.requestChartJsonData = function() {
                 if ( JSPC.app.reporting.current.request.query && JSPC.app.reporting.current.request.chart ) {
                     JSPC.app.reporting.current.chart = {};
@@ -125,15 +119,18 @@
                         method: 'post',
                         data: JSPC.app.reporting.current.request,
                         beforeSend: function (xhr) {
-                            //$('#chart-export').attr('disabled', 'disabled');
                             $('#loadingIndicator').show();
+                            $('#query-export-button').attr('disabled', 'disabled');
                         }
                     })
                     .done( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
 
-                        if (JSPC.app.reporting.current.chart.option.dataset) {
+                        if (! JSPC.app.reporting.current.chart.option) {
+                            $("#reporting-modal-nodata").modal('show');
+                        }
+                        else {
                             if (JSPC.app.reporting.current.request.chart == 'bar') {
                                 $('#chart-wrapper').css('height', 150 + (19 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                             }
@@ -157,7 +154,7 @@
                             echart.on( 'legendselectchanged', function (params) { /* console.log(params); */ });
 
                             JSPC.app.reporting.current.chart.echart = echart;
-                            //$('#chart-export').removeAttr('disabled');
+                            $('#query-export-button').removeAttr('disabled');
                         }
                     })
                     .fail( function (data) {
