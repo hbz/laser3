@@ -207,7 +207,7 @@
                         </g:if>
                     </g:if>
                     <g:else>
-                        <g:link controller="organisation" action="show" id="${org.id}">
+                        <g:link controller="organisation" action="show" id="${org.id}" params="${actionName == "currentProviders" ? [my: true] : [:]}">
                             <g:if test="${org.shortname}">
                                 ${fieldValue(bean: org, field: "shortname")}
                             </g:if>
@@ -224,7 +224,7 @@
                         </g:if>
                     </g:if>
                     <g:else>
-                        <g:link controller="organisation" action="show" id="${org.id}">
+                        <g:link controller="organisation" action="show" id="${org.id}" params="${actionName == "currentProviders" ? [my: true] : [:]}">
                             ${fieldValue(bean: org, field: "name")}
                             <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
                                 <br />
@@ -411,13 +411,10 @@
                 <td class="center aligned">
                     <div class="la-flexbox">
                         <%
-                            String hasPerpetualAccess = ""
-                            if(params.subPerpetual == "on" && params.subStatus != RDStore.SUBSCRIPTION_CURRENT.id.toString())
-                                hasPerpetualAccess = RDStore.YN_YES.id.toString()
-                        (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: params.subStatus ?: null, hasPerpetualAccess: hasPerpetualAccess, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null], contextService.getOrg())
+                        (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: params.subStatus ?: null, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null], contextService.getOrg())
                         def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
-                        if(params.subPerpetual == "on" && params.subStatus == RDStore.SUBSCRIPTION_CURRENT.id.toString()) {
-                            (base_qry2, qry_params2) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_EXPIRED.id.toString(),hasPerpetualAccess: hasPerpetualAccess], contextService.getOrg())
+                        if(params.subPerpetual == "on") {
+                            (base_qry2, qry_params2) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, hasPerpetualAccess: RDStore.YN_YES.id.toString()], contextService.getOrg())
                             numberOfSubscriptions+=Subscription.executeQuery("select s.id " + base_qry2, qry_params2).size()
                         }
                         %>
