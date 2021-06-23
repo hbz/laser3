@@ -697,8 +697,10 @@ No Host Platform URL Content
                         updated = true
                     }
                 }
-                if(!current.isFromLaser)
+                if(!current.isFromLaser) {
                     current.isFromLaser = true
+                    updated = true
+                }
             }
             else {
                 current.isHardData = false

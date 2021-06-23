@@ -6,7 +6,7 @@
             <semui:contactIcon type="${contact.contentType.('value')}" />
             <div class="content la-space-right">
                 <semui:xEditable class="js-copyTopic" owner="${contact}" field="content" overwriteEditable="${overwriteEditable}" />
-                (${contact.language?.getI10n("value")})
+                <g:if test="${contact.language}">(${contact.language.getI10n("value")})</g:if>
             </div>
         </div>
 

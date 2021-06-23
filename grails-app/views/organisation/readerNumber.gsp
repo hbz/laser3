@@ -89,7 +89,7 @@
                                 </g:if>
                             </td>
                             <td>
-                                <semui:xEditable type="readerNumber" owner="${number}" field="dateGroupNote"/>
+                                <semui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/>
                             </td>
                             <td class="x">
                                 <g:if test="${editable}">
@@ -141,7 +141,7 @@
                                     </td>
                                 </g:each>
                                 <td><g:formatNumber number="${dueDateSums.get(numbersInstance.getKey())}"/></td>
-                                <td><semui:xEditable type="readerNumber" owner="${number}" field="dateGroupNote"/></td>
+                                <td><semui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/></td>
                                 <td class="x">
                                     <g:if test="${editable}">
                                         <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"

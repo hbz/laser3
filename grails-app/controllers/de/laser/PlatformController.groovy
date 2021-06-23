@@ -4,6 +4,7 @@ import de.laser.auth.User
 import de.laser.ctrl.PlatformControllerService
 import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 import de.laser.helper.SwissKnife
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
@@ -44,39 +45,44 @@ class PlatformController  {
             esQuery += "&provider=${params.provider}"
         }
 
+        if(params.status) {
+            result.filterSet = true
+            esQuery += "&status=${RefdataValue.get(params.status).value}"
+        }
+        else if(!params.filterSet) {
+            result.filterSet = true
+            esQuery += "&status=Current"
+            params.status = RDStore.PLATFORM_STATUS_CURRENT.id.toString()
+        }
+
+        if(params.ipSupport) {
+            result.filterSet = true
+            List<String> ipSupport = params.list("ipSupport")
+            ipSupport.each { String ip ->
+                RefdataValue rdv = RefdataValue.get(ip)
+                esQuery += "&ipAuthentication=${rdv.value}"
+            }
+        }
+
+        if(params.shibbolethSupport) {
+            result.filterSet = true
+            List<String> shibbolethSupport = params.list("shibbolethSupport")
+            shibbolethSupport.each { String shibboleth ->
+                RefdataValue rdv = RefdataValue.get(shibboleth)
+                esQuery += "&shibbolethAuthentication=${rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value}"
+            }
+        }
+
+        if(params.counterCertified) {
+            result.filterSet = true
+            List<String> counterCertified = params.list("counterCertified")
+            counterCertified.each { String counter ->
+                RefdataValue rdv = RefdataValue.get(counter)
+                esQuery += "&counterCertified=${rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value}"
+            }
+        }
+
         result.putAll(gokbService.doQuery(result, params.clone(), esQuery))
-
-        /* to translate to ES query
-        RefdataValue deleted_platform_status = RefdataValue.getByValueAndCategory( 'Deleted', RDConstants.PLATFORM_STATUS)
-        Map<String, Object> qry_params = [delStatus: deleted_platform_status]
-
-        String base_qry = " from Platform as p left join p.org o where ((p.status is null) OR (p.status != :delStatus)) "
-
-        if ( params.q?.length() > 0 ) {
-
-            base_qry += "and ("
-            base_qry += "  genfunc_filter_matcher(p.normname, :query ) = true or "
-            base_qry += "  genfunc_filter_matcher(p.primaryUrl, :query) = true or ( "
-            base_qry += "    genfunc_filter_matcher(o.name, :query) = true or "
-            base_qry += "    genfunc_filter_matcher(o.sortname, :query) = true or "
-            base_qry += "    genfunc_filter_matcher(o.shortname, :query) = true "
-            base_qry += "  ) "
-            base_qry += ")"
-
-            qry_params.put('query', "${params.q}")
-        }
-        else {
-            base_qry += "order by p.normname asc"
-            //qry_params.add("%");
-        }
-
-        log.debug(base_qry)
-        log.debug(qry_params.toMapString())
-
-        result.platformInstanceTotal = Subscription.executeQuery( "select p.id " + base_qry, qry_params ).size()
-        result.platformInstanceList = Subscription.executeQuery( "select p " + base_qry, qry_params, [max:result.max, offset:result.offset] )*/
-
-
 
       result
     }
