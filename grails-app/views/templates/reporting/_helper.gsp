@@ -42,14 +42,14 @@ if (! JSPC.app.reporting) {
                     return '<br/>' + marker + ' ' + text + '&nbsp;&nbsp;&nbsp;<strong style="float:right">' + value + '</strong>'
                 }
             },
-            toolbox: {
+            <%-- toolbox: {
                 showTitle: false,
                 feature: {
                     saveAsImage: {
                         title: 'Exportieren'
                     },
                 }
-            },
+            }, --%>
         },
         requestChartHtmlDetails: function(data) {
             $.ajax({

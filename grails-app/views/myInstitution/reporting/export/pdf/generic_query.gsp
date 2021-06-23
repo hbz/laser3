@@ -58,11 +58,13 @@
     .queryInfo {
         font-weight: bold;
     }
-    .queryChart {
-        margin: 4em 0 0 0;
-        width: 100%;
-        height: auto;
-    }
+    <g:if test="${contentType == 'image'}">
+        .queryChart {
+            margin: 4em 0 0 0;
+            background-image: url("${imageData}"); /* wkhtmltopdf 0.12.4 */
+            background-size: inherit;
+        }
+    </g:if>
     </style>
 </head>
 <body>
@@ -109,14 +111,8 @@
     </div>
 
     <g:if test="${contentType == 'image'}">
-
-        <g:if test="${imageData}">
-            <img class="queryChart" src="${imageData}" alt="[Platzhalter Diagramm]" />
-        </g:if>
-        <g:else>
-            <p>Hier sollte ein Diagramm sein :(</p>
-        </g:else>
-
+        <%-- <img class="queryChart" src="${imageData}" alt="placehoder" /> --%>
+        <div class="queryChart" style="width:${struct[0]}px;height:${struct[1]}px"></div>
     </g:if>
     <g:elseif test="${contentType == 'table'}">
 
