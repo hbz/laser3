@@ -1905,10 +1905,10 @@ join sub.orgRelations or_sub where
                 }
 
                 if(!noParticipation) {
-                    surveyResults.each { SurveyResult surre ->
+                   /* surveyResults.each { SurveyResult surre ->
                         if (!surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm())
                             allResultHaveValue = false
-                    }
+                    }*/
                 }
             }
             if (allResultHaveValue) {

@@ -63,7 +63,7 @@
     <br />
 
     <g:if test="${selectedParticipants && editable}">
-        <button type="submit" class="ui icon negative button js-open-confirm-modal"
+        <button type="submit" id="deleteButton" class="ui icon negative button js-open-confirm-modal"
                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyParticipants")}"
                 data-confirm-term-how="delete"
                 role="button"

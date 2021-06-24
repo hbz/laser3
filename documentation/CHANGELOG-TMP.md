@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3613    24.06.2021  rc2.1   2.1         Moe     Bug         Umfragemerkmale vom Typ Text müssen gefüllt sein um Umfrage abzuschließen
+
 3617    24.06.2021  rc2.1   2.1         Moe     Bug         click me auch auf meine einrichtungen
 
 3612    23.06.2021  rc2.1   2.1         Andreas Bug         falsche Zählung der Lizenzen korrigiert
