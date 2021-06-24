@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3612    23.06.2021  rc2.1   2.1         Andreas Bug         falsche Zählung der Lizenzen korrigiert
+
+3606    23.06.2021  rc2.1   2.1         Andreas Bug         Identifier-Namensraum-Angebot bei Anbietern korrigiert
+
+3599    23.06.2021  rc2.1   2.1         Andreas Bug         Lizenztyp unvollständig gesetzt bei Lizenzimport
+
 3605    22.06.2021  rc2.1   2.1         David   Feature     Reporting: Diagramme als PDF exportieren
 
 3467    22.06.2021  rc2.1   2.1         David   Feature     Reporting: CSV- und PDF-Export in Schritt 2
