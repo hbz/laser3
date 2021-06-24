@@ -2006,7 +2006,7 @@ class SurveyController {
 
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
+    /*@DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
@@ -2079,7 +2079,7 @@ class SurveyController {
 
         def pdf = wkhtmltoxService.makePdf(
                 view: '/survey/export/pdf/participantResult',
-                model: [title: "Test"],
+                model: result,
                 // header: '',
                 // footer: '',
                 pageSize: pageSize,
@@ -2094,7 +2094,7 @@ class SurveyController {
         response.setContentType('application/pdf')
         response.outputStream.withStream { it << pdf }
 
-    }
+    }*/
 
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)

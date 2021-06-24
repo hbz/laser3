@@ -23,13 +23,13 @@
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-        <semui:exportDropdown>
+        %{--<semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link class="item" controller="survey" action="generatePdfForParticipant"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]">PDF-Export
                 </g:link>
             </semui:exportDropdownItem>
-        </semui:exportDropdown>
+        </semui:exportDropdown>--}%
         <g:if test="${surveyInfo.status.id == RDStore.SURVEY_SURVEY_STARTED.id && surveyConfig.isResultsSetFinishByOrg(participant)}">
             <semui:actionsDropdown>
             <semui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant" params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
