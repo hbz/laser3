@@ -125,10 +125,12 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
 
 <g:if test="${editable}">
     <g:link class="ui button green js-open-confirm-modal"
-            data-confirm-tokenMsg="${message(code: "confirm.dialog.concludeBinding.survey")}"
+            data-confirm-messageUrl="${g.createLink(controller: 'ajaxHtml', action: 'getSurveyFinishMessage', params: [id: surveyInfo.id, surveyConfigID: surveyConfig.id])}"
             data-confirm-term-how="concludeBinding"
+            data-confirm-replaceHeader="true"
             controller="myInstitution"
             action="surveyInfoFinish"
+            data-targetElement="surveyInfoFinish"
             id="${surveyInfo.id}"
             params="[surveyConfigID: surveyConfig.id]">
         <g:message

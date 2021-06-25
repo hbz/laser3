@@ -380,7 +380,7 @@
         %>
         },
         selLinks: {
-            newSubscription: "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?query={query}",
+            newSubscription_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?query={query}",
         <g:if test="${costItem?.sub || subscription}">
             <%
                 String contextSub = ""
@@ -457,7 +457,7 @@
                 }
             }
             else if(JSPC.app.finance${idSuffix}.newLicenseeTarget.length === 0)
-                context = JSPC.app.finance${idSuffix}.val();
+                context = JSPC.app.finance${idSuffix}.newSubscription.dropdown('get value');
             JSPC.app.finance${idSuffix}.selLinks.newIE_${idSuffix} = "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub="+context;
             JSPC.app.finance${idSuffix}.selLinks.newTitleGroup_${idSuffix} = "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}&sub="+context;
             JSPC.app.finance${idSuffix}.selLinks.newPackage_${idSuffix} = "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}&ctx="+context;

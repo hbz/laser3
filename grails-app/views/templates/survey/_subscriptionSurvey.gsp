@@ -1104,38 +1104,33 @@
 </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-                                   $('body #participation').editable('destroy').editable({
-                                        validate: function (value) {
-                                            if (value == "${RefdataValue.class.name}:${RDStore.YN_NO.id}") {
-                                                var r = confirm("Wollen Sie wirklich im nächstem Jahr nicht mehr bei dieser Lizenz teilnehmen?  " );
-                                                if (r == false) {
-                                                   return "Sie haben die Nicht-Teilnahme an der Lizenz für das nächste Jahr nicht zugestimmt!"
-                                                }
-                                            }
-                                        },
-                                        tpl: '<select class="ui dropdown"></select>'
-                                    }).on('shown', function() {
-                                        $(".table").trigger('reflow');
-                                        $('.ui.dropdown')
-                                                .dropdown({
-                                            clearable: true
-                                        })
-                                        ;
-                                    }).on('hidden', function() {
-                                        $(".table").trigger('reflow')
-                                    });
+
+    $('body #participation').editable('destroy').editable({
+        validate: function (value) {
+            if (value == "${RefdataValue.class.name}:${RDStore.YN_NO.id}") {
+                var r = confirm("Wollen Sie wirklich im nächstem Jahr nicht mehr bei dieser Lizenz teilnehmen?  " );
+                if (r == false) {
+                    return "Sie haben der Nicht-Teilnahme an der Lizenz für das nächste Jahr nicht zugestimmt!"
+                }
+            }
+        },
+        tpl: '<select class="ui dropdown"></select>'}).on('shown', function() {
+            $(".table").trigger('reflow');
+            $('.ui.dropdown').dropdown({ clearable: true });
+        }).on('hidden', function() {
+            $(".table").trigger('reflow')
+    });
     <g:if test="${links}">
        <g:each in="${links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}" var="link">
-        $.ajax({
-            url: "<g:createLink controller="ajaxHtml" action="getLicensePropertiesForSubscription" />",
-                  data: {
-                       loadFor: "${link.sourceLicense.id}",
-                       linkId: ${link.id}
-        }
-       }).done(function(response) {
-        $("#${link.id}Properties").html(response);
-              }).fail();
-
+            $.ajax({
+                url: "<g:createLink controller="ajaxHtml" action="getLicensePropertiesForSubscription" />",
+                      data: {
+                           loadFor: "${link.sourceLicense.id}",
+                           linkId: ${link.id}
+                }
+            }).done(function(response) {
+                $("#${link.id}Properties").html(response);
+            }).fail();
        </g:each>
     </g:if>
 

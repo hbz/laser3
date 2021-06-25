@@ -7,6 +7,18 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3637    25.06.2021  rc2.1   2.1         Andreas Bug         Dropdown für Lizenz wurde nicht befüllt
+
+3634    25.06.2021  rc2.1   2.1         Andreas Bug         Lizenzen mit festgefrorenen Beständen konnten keine neuen Teilnehmer erhalten
+
+3631    25.06.2021  rc2.1   2.1         Andreas Bug         Umfrageteilnehmer konnten nicht gelöscht werden
+
+3627    25.06.2021  rc2.1   2.1         Andreas Feature     Mail-Einstellung "Umfrage abgeschlossen und versendet" defaultmäßig auf Ja setzen
+
+3613    25.06.2021  rc2.1   2.1         Andreas Feature     modifizierter Hinweistext bei bestimmten Umfragekonstellationen
+
+3609    25.06.2021  rc2.1   2.1         Andreas Feature     Tausch von Organisation und Name im "Mein Adressbuch"-Filter
+
 3613    24.06.2021  rc2.1   2.1         Moe     Bug         Umfragemerkmale vom Typ Text müssen gefüllt sein um Umfrage abzuschließen
 
 3617    24.06.2021  rc2.1   2.1         Moe     Bug         click me auch auf meine einrichtungen
