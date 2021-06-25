@@ -465,6 +465,7 @@ class SubscriptionControllerService {
                 Subscription subChild = (Subscription) row.sub
                 row.orgs.each { Org subscr ->
                     Map<String,Object> org = [:]
+                    org.sub = subChild
                     org.name = subscr.name
                     org.sortname = subscr.sortname
                     org.shortname = subscr.shortname

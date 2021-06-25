@@ -20,6 +20,9 @@
 
 <semui:controlButtons>
     <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+        </semui:exportDropdownItem>
         <g:if test="${filterSet}">
             <semui:exportDropdownItem>
                 <g:link class="item js-open-confirm-modal"
@@ -75,6 +78,7 @@
     </semui:filter>
 <div class="la-clear-before">
     <g:if test="${members}">
+        <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
         <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form la-clear-before">
             <g:render template="/templates/filter/orgFilterTable"
                       model="[orgList: members,

@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3613    24.06.2021  rc2.1   2.1         Moe     Bug         Umfragemerkmale vom Typ Text müssen gefüllt sein um Umfrage abzuschließen
+
+3617    24.06.2021  rc2.1   2.1         Moe     Bug         click me auch auf meine einrichtungen
+
 3612    23.06.2021  rc2.1   2.1         Andreas Bug         falsche Zählung der Lizenzen korrigiert
 
 3606    23.06.2021  rc2.1   2.1         Andreas Bug         Identifier-Namensraum-Angebot bei Anbietern korrigiert
@@ -18,6 +22,8 @@
 3467    22.06.2021  rc2.1   2.1         David   Feature     Reporting: CSV- und PDF-Export in Schritt 2
 
 3603    22.06.2021  rc2.1   2.1         Andreas Feature     neue Filter für Alle Plattformen/Meine Plattformen
+
+3592    21.06.2021  rc2.1   2.1         Moe     Bug         Paket verknüpfen: Pflichtangabe mit/ohne Bestand auch nicht ausfüllbar
 
 3601    21.06.2021  rc2.1   2.1         Andreas Bug         falsche Sortierung (nach Namen statt Sortiernamen) bei Alle Plattformen korrigiert
 
