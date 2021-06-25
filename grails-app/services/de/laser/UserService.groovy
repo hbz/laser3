@@ -29,12 +29,15 @@ class UserService {
 
         List<Long> userOrgMatches = user.getAuthorizedOrgsIds()
         if (userOrgMatches.size() > 0) {
+            Org firstOrg = Org.findById(userOrgMatches.first()) //we presume that (except my test ladies) no one can be simultaneously member of a consortia and of a single user
             if (uss == UserSetting.SETTING_NOT_FOUND) {
-                user.getSetting(UserSetting.KEYS.DASHBOARD, Org.findById(userOrgMatches.first()))
+                user.getSetting(UserSetting.KEYS.DASHBOARD, firstOrg)
             }
             else if (! uss.getValue()) {
-                uss.setValue(Org.findById(userOrgMatches.first()))
+                uss.setValue(firstOrg)
             }
+            if(firstOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST'])
+                user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_YES)
         }
 
         user.getSetting(UserSetting.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_YES)

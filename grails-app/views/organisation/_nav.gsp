@@ -1,7 +1,12 @@
 <laser:serviceInjection/>
 <semui:subNav actionName="${actionName}">
-    <semui:subNavItem controller="organisation" action="show" params="${[id: orgInstance.id]}" message="org.nav.details"/>
-    <semui:subNavItem controller="organisation" action="ids" params="${[id: orgInstance.id]}" message="org.nav.ids"/>
+    <%
+        Map<String, Object> breadcrumbParams = [id: orgInstance.id]
+        if(params.my)
+            breadcrumbParams.my = true
+    %>
+    <semui:subNavItem controller="organisation" action="show" params="${breadcrumbParams}" message="org.nav.details"/>
+    <semui:subNavItem controller="organisation" action="ids" params="${breadcrumbParams}" message="org.nav.ids"/>
     <g:if test="${inContextOrg}">
         <semui:subNavItem controller="organisation" action="myPublicContacts" params="${[id: institution.id]}" message="menu.institutions.publicContacts" />
     </g:if>
@@ -23,11 +28,11 @@
             <semui:securedSubNavItem affiliation="INST_USER" controller="organisation" action="accessPoints" params="${[id: orgInstance.id]}" message="org.nav.accessPoints"/>
         </g:else>
     </g:if>
-    <semui:securedSubNavItem controller="organisation" action="tasks" params="${[id: orgInstance.id]}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.institutions.tasks"/>
-    <semui:securedSubNavItem controller="organisation" action="documents" params="${[id: orgInstance.id]}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.my.documents" />
-    <semui:subNavItem controller="organisation" action="notes" params="${[id: orgInstance.id]}" message="default.notes.label"/>
+    <semui:securedSubNavItem controller="organisation" action="tasks" params="${breadcrumbParams}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.institutions.tasks"/>
+    <semui:securedSubNavItem controller="organisation" action="documents" params="${breadcrumbParams}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.my.documents" />
+    <semui:subNavItem controller="organisation" action="notes" params="${breadcrumbParams}" message="default.notes.label"/>
     <g:if test="${!inContextOrg}">
-        <semui:securedSubNavItem controller="organisation" action="addressbook" params="${[id: orgInstance.id]}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.institutions.myAddressbook"/>
+        <semui:securedSubNavItem controller="organisation" action="addressbook" params="${breadcrumbParams}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.institutions.myAddressbook"/>
     </g:if>
     <g:if test="${!isProviderOrAgency}">
         <g:if test="${inContextOrg}">

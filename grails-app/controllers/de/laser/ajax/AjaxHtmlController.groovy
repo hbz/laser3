@@ -19,6 +19,10 @@ import de.laser.Doc
 import de.laser.Person
 import de.laser.PersonRole
 import de.laser.SubscriptionService
+import de.laser.SurveyConfig
+import de.laser.SurveyInfo
+import de.laser.SurveyOrg
+import de.laser.SurveyResult
 import de.laser.Task
 import de.laser.TaskService
 import de.laser.annotations.DebugAnnotation
@@ -372,6 +376,32 @@ class AjaxHtmlController {
             Map<String, Object> derivedPropDefGroups = loadFor.getCalculatedPropDefGroups(contextService.org)
             render view: '/subscription/_licProp', model: [license: loadFor, derivedPropDefGroups: derivedPropDefGroups, linkId: params.linkId]
         }
+    }
+
+    // ----- surveyInfos -----
+
+    @Secured(['ROLE_USER'])
+    def getSurveyFinishMessage() {
+        Org contextOrg = contextService.getOrg()
+        SurveyInfo surveyInfo = SurveyInfo.get(params.id)
+        SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextOrg, surveyConfig)
+        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(contextOrg, surveyConfig)
+        boolean allResultHaveValue = true
+        surveyResults.each { SurveyResult surre ->
+            if (!surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm())
+                allResultHaveValue = false
+        }
+        boolean noParticipation = false
+        if(surveyInfo.isMandatory) {
+            if(surveyConfig && surveyConfig.subSurveyUseForTransfer){
+                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextOrg, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
+            }
+        }
+        if(noParticipation || allResultHaveValue)
+            render message(code: "confirm.dialog.concludeBinding.survey")
+        else if(!noParticipation && !allResultHaveValue)
+            render message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
     }
 
     // ----- reporting -----

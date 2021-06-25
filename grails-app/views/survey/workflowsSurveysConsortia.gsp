@@ -58,11 +58,20 @@
 
             <div class="field">
                 <label>${message(code: 'default.valid_onYear.label')}</label>
-                <g:select name="validOnYear"
-                          from="${surveyYears}"
-                          class="ui fluid search selection dropdown"
-                          value="${params.validOnYear}"
-                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+
+                <select id="validOnYear" name="validOnYear" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <option value="all" <%=("all" in params.list('validOnYear')) ? 'selected="selected"' : ''%>>
+                        ${message(code: 'default.select.all.label')}
+                    </option>
+
+                    <g:each in="${surveyYears}" var="surveyYear">
+                        <option <%=(params.list('validOnYear').contains(surveyYear.toString())) ? 'selected="selected"' : ''%>
+                                value="${surveyYear}" title="${surveyYear}">
+                            ${surveyYear}
+                        </option>
+                    </g:each>
+                </select>
 
             </div>
 
@@ -187,6 +196,10 @@
         <semui:tabsItem controller="survey" action="workflowsSurveysConsortia"
                         params="${tmpParams + [tab: 'inEvaluation']}" text="In Auswertung" tab="inEvaluation"
                         counts="${countSurveyConfigs.inEvaluation}"/>
+
+        <semui:tabsItem controller="survey" action="workflowsSurveysConsortia"
+                        params="${tmpParams + [tab: 'completed']}" text="Abgeschlossen" tab="completed"
+                        counts="${countSurveyConfigs.completed}"/>
     </semui:tabs>
 
     <div class="ui bottom attached tab segment active">

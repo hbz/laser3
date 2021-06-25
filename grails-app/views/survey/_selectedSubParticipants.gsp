@@ -38,7 +38,7 @@
 </semui:filter>
 
 <br><br>
-<g:form action="deleteSurveyParticipants" controller="survey" method="post" class="ui form"
+<g:form action="deleteSurveyParticipants" data-confirm-id="deleteSurveyParticipants_form" controller="survey" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
 
     <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
@@ -91,7 +91,7 @@
     <br />
 
     <g:if test="${selectedSubParticipants && editable}">
-        <button type="submit" class="ui icon negative button js-open-confirm-modal"
+        <button type="submit" data-confirm-id="deleteSurveyParticipants" class="ui icon negative button js-open-confirm-modal"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyParticipants")}"
                         data-confirm-term-how="delete"
                         role="button"

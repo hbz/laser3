@@ -94,6 +94,15 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         return toString()
     }
 
+    String getValueInI10n() {
+        if (stringValue)      { return stringValue }
+        if (intValue != null) { return intValue.toString() }
+        if (decValue != null) { return decValue.toString() }
+        if (refValue)         { return refValue.getI10n('value') }
+        if (dateValue)        { return dateValue.getDateString() }
+        if (urlValue)         { return urlValue.toString() }
+    }
+
     @Override
     String toString(){
         if (stringValue)      { return stringValue }

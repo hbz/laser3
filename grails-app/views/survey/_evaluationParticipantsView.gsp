@@ -47,6 +47,57 @@
         </div>
     </g:if>
 
+
+
+
+    <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_RENEWAL.id] }">
+        <br>
+        <br>
+        <br>
+        <div class="la-inline-lists">
+            <div class="ui card">
+                <div class="content">
+                    <h2 class="ui header">${message(code:'renewalEvaluation.propertiesChanged')}</h2>
+                    <div>
+                        <table class="ui la-table table">
+                            <thead>
+                            <tr>
+                                <th class="center aligned">${message(code: 'sidewide.number')}</th>
+                                <th>${message(code: 'propertyDefinition.label')}</th>
+                                <th>${message(code:'renewalEvaluation.propertiesChanged')}</th>
+                                <th>${message(code: 'default.actions.label')}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <g:each in="${propertiesChanged}" var="property" status="i">
+                                <g:set var="propertyDefinition"
+                                       value="${PropertyDefinition.findById(property.key)}"/>
+                                <tr>
+                                    <td class="center aligned">
+                                        ${i + 1}
+                                    </td>
+                                    <td>
+                                        ${propertyDefinition.getI10n('name')}
+                                    </td>
+                                    <td>${property.value.size()}</td>
+                                    <td>
+                                        <a class="ui button" onclick="JSPC.app.propertiesChanged(${property.key});">
+                                            <g:message code="default.button.show.label"/>
+                                        </a>
+                                    </td>
+                                </tr>
+
+                            </g:each>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </g:if>
+
 </g:if>
 
 <semui:form>
@@ -199,6 +250,13 @@
                                         <i class="x red icon"></i>
                                     </span>
                                 </g:else>
+
+                                <g:if test="${participant in propertiesChangedByParticipant}">
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
+                                        <i class="exclamation triangle yellow large icon"></i>
+                                    </span>
+                                </g:if>
                             </div>
                         </div>
                     </td>
@@ -396,6 +454,14 @@
                                         <i class="x red icon"></i>
                                     </span>
                                 </g:else>
+
+                                <g:if test="${participant in propertiesChangedByParticipant}">
+                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                          data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
+                                        <i class="exclamation triangle yellow large icon"></i>
+                                    </span>
+                                </g:if>
+
                             </div>
                         </div>
                     </td>
@@ -571,5 +637,18 @@
 
     JSPC.app.adjustDropdown()
 </g:if>
+    JSPC.app.propertiesChanged = function (propertyDefinitionId) {
+        $.ajax({
+            url: '<g:createLink controller="survey" action="showPropertiesChanged" params="[tab: params.tab, surveyConfigID: surveyConfig.id, id: surveyInfo.id]"/>&propertyDefinitionId='+propertyDefinitionId,
+                success: function(result){
+                    $("#dynamicModalContainer").empty();
+                    $("#modalPropertiesChanged").remove();
+
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal('show');
+                }
+            });
+        }
+
 </laser:script>
 
