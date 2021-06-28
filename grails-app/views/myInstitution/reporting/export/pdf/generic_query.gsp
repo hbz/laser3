@@ -109,14 +109,12 @@
     </div>
 
     <g:if test="${contentType == 'image'}">
-
         <g:if test="${imageData}">
-            <img class="queryChart" src="${imageData}" alt="[Platzhalter Diagramm]" />
+            <img class="queryChart" src="${imageData}" alt="[ Platzhalter ]" />
         </g:if>
         <g:else>
-            <p>Hier sollte ein Diagramm sein :(</p>
+            [ Platzhalter ]
         </g:else>
-
     </g:if>
     <g:elseif test="${contentType == 'table'}">
 
