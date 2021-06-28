@@ -37,6 +37,7 @@ import grails.gorm.transactions.Transactional
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
+import org.hibernate.Session
 
 import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorService
@@ -209,9 +210,120 @@ class GlobalSourceSyncService extends AbstractLockableService {
         })
     }
 
+    void updateIdentifiers() {
+        running = true
+        executorService.execute({
+            Thread.currentThread().setName("UpdateIdentifiers")
+            this.source = GlobalRecordSource.findByActiveAndRectype(true,RECTYPE_TIPP)
+            this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
+            try {
+                ['Package','Org','TitleInstancePackagePlatform'].each { String componentType ->
+                    GlobalRecordSource.withNewSession { Session sess ->
+                        int offset = 0, max = 1000
+                        Map<String, Object> queryParams = [component_type: componentType, max: max]
+                        Map<String,Object> result = fetchRecordJSON(true,queryParams)
+                        if(result) {
+                            if(result.error == 404) {
+                                log.error("we:kb server currently down")
+                            }
+                            else {
+                                boolean more = true
+                                while(more) {
+                                    log.debug("processing entries ${offset}-${offset+max} for ${componentType} ...")
+                                    Set<String> uuids = result.records.collect { Map entry -> entry.uuid } as Set<String>
+                                    switch(componentType) {
+                                        case 'Package': List<Package> packages = Package.findAllByGokbIdInList(uuids.toList())
+                                            log.debug("from current page, ${packages.size()} packages exist in LAS:eR")
+                                            packages.eachWithIndex { Package pkg, int idx ->
+                                                log.debug("now processing package ${idx}, total entry: ${offset+idx}")
+                                                List identifiers = result.records.find { record -> record.uuid == pkg.gokbId }.identifiers
+                                                if(identifiers) {
+                                                    if(pkg.ids) {
+                                                        Identifier.executeUpdate('delete from Identifier i where i.pkg = :pkg',[pkg:pkg]) //damn those wrestlers ...
+                                                    }
+                                                    identifiers.each { id ->
+                                                        if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
+                                                            Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: pkg, isUnique: false, nsType: Package.class.name])
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            break
+                                        case 'Org': List<Org> providers = Org.findAllByGokbIdInList(uuids.toList())
+                                            log.debug("from current page, ${providers.size()} providers exist in LAS:eR")
+                                            providers.eachWithIndex { Org provider, int idx ->
+                                                log.debug("now processing org ${idx}, total entry: ${offset+idx}")
+                                                List identifiers = result.records.find { record -> record.uuid == provider.gokbId }.identifiers
+                                                if(identifiers) {
+                                                    if(provider.ids) {
+                                                        Identifier.executeUpdate('delete from Identifier i where i.org = :org',[org:provider]) //damn those wrestlers ...
+                                                    }
+                                                    identifiers.each { id ->
+                                                        if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
+                                                            Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: provider, isUnique: false, nsType: Org.class.name])
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            break
+                                        case 'TitleInstancePackagePlatform': List<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByGokbIdInList(uuids.toList())
+                                            log.debug("from this page, ${tipps.size()} TIPPs do exist in LAS:eR")
+                                            tipps.eachWithIndex { TitleInstancePackagePlatform tipp, int idx ->
+                                                long start = System.currentTimeMillis()
+                                                log.debug("now processing tipp ${idx}, total entry: ${offset+idx}")
+                                                List identifiers = result.records.find { record -> record.uuid == tipp.gokbId }.identifiers
+                                                log.debug("after identifiers: ${System.currentTimeMillis()-start} msecs")
+                                                Set<String> oldIds = []
+                                                if(tipp.ids)
+                                                    oldIds.addAll(tipp.ids.collect { Identifier id -> id.value })
+                                                if(identifiers) {
+                                                    if(oldIds) {
+                                                        start = System.currentTimeMillis()
+                                                        Identifier.executeUpdate('delete from Identifier i where i.tipp = :tipp and i.value not in (:newValues)',[tipp: tipp, newValues: identifiers.collect { id -> id.values }]) //damn those wrestlers ...
+                                                        log.debug("deleting old: ${System.currentTimeMillis()-start} msecs")
+                                                    }
+                                                    start = System.currentTimeMillis()
+                                                    identifiers.each { id ->
+                                                        if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
+                                                            if(!(id.value in (oldIds)))
+                                                                Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: tipp, isUnique: false, nsType: TitleInstancePackagePlatform.class.name])
+                                                        }
+                                                    }
+                                                    log.debug("after creating new: ${System.currentTimeMillis()-start}")
+                                                }
+                                            }
+                                            log.debug("interim flush at end of load: ${offset}")
+                                            sess.flush()
+                                            break
+                                    }
+                                    if(result.hasMoreRecords) {
+                                        String scrollId = result.scrollId
+                                        offset += max
+                                        log.debug("using scrollId ${scrollId}")
+                                        result = fetchRecordJSON(true, queryParams+[scrollId: scrollId])
+                                    }
+                                    else {
+                                        more = false
+                                    }
+                                    sess.flush()
+                                    sess.clear()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e) {
+                log.error("package reloading has failed, please consult stacktrace as follows: ",e)
+            }
+            running = false
+        })
+    }
+
     void processScrollPage(Map<String, Object> result, String componentType, String changedSince) throws SyncException {
         if(result.count >= 5000) {
-            Map<String, Object> queryParams = [component_type: componentType, max: 5000]
+            int offset = 0, max = 5000
+            Map<String, Object> queryParams = [component_type: componentType, max: max]
             if(changedSince)
                 queryParams.changedSince = changedSince
             String scrollId
@@ -239,6 +351,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     if(result.hasMoreRecords) {
                         scrollId = result.scrollId
+                        offset += max
                     }
                     else {
                         more = false
@@ -263,7 +376,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     createOrUpdateOrgJSON(record)
                 }
                     break
-                case RECTYPE_TIPP: updateRecords(result.records)
+                case RECTYPE_TIPP: updateRecords(result.records, 0)
                     break
             }
         }
@@ -273,7 +386,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
     }
 
-    void updateRecords(List<Map> rawRecords) {
+    void updateRecords(List<Map> rawRecords, int offset) {
         //necessary filter for DEV database
         List<Map> records = rawRecords.findAll { Map tipp -> tipp.containsKey("hostPlatformUuid") && tipp.containsKey("tippPackageUuid") }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
@@ -318,7 +431,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
 
         records.eachWithIndex { Map tipp, int idx ->
-            log.debug("now processing entry #${idx} with uuid ${tipp.uuid}")
+            log.debug("now processing entry #${idx}, total entry #${offset+idx} with uuid ${tipp.uuid}")
             try {
                 Map<String,Object> updatedTIPP = [
                     titleType: tipp.titleType,
@@ -538,7 +651,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             else {
                 Package pkg = newPackages.get(tippB.packageUUID)
                 //Unbelievable! But package may miss at this point!
-                if(pkg && pkg?.packageStatus != RDStore.PACKAGE_STATUS_DELETED) {
+                if(pkg && pkg?.packageStatus != packageStatus.get("Deleted")) {
                     //new TIPP
                     TitleInstancePackagePlatform target = addNewTIPP(pkg, tippB, newPlatforms)
                     result.event = 'add'
@@ -568,7 +681,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             Date lastUpdatedDisplay = DateUtils.parseDateGeneric(packageRecord.lastUpdatedDisplay)
             if(!result || result?.lastUpdated < lastUpdatedDisplay) {
                 log.info("package record loaded, reconciling package record for UUID ${packageUUID}")
-                RefdataValue packageStatus = packageRecord.status ? RefdataValue.getByValueAndCategory(packageRecord.status, RDConstants.PACKAGE_STATUS) : null
+                RefdataValue packageStatus = packageRecord.status ? packageStatus.get(packageRecord.status) : null
                 RefdataValue contentType = packageRecord.contentType ? RefdataValue.getByValueAndCategory(packageRecord.contentType,RDConstants.PACKAGE_CONTENT_TYPE) : null
                 RefdataValue file = packageRecord.file ? RefdataValue.getByValueAndCategory(packageRecord.file,RDConstants.PACKAGE_FILE) : null
                 RefdataValue scope = packageRecord.scope ? RefdataValue.getByValueAndCategory(packageRecord.scope,RDConstants.PACKAGE_SCOPE) : null
@@ -581,7 +694,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     scope: scope
                 ]
                 if(result) {
-                    if(packageStatus == RDStore.PACKAGE_STATUS_DELETED && result.packageStatus != RDStore.PACKAGE_STATUS_DELETED) {
+                    if(packageStatus == packageStatus.get("Deleted") && result.packageStatus != packageStatus.get("Deleted")) {
                         log.info("package #${result.id}, with GOKb id ${result.gokbId} got deleted, mark as deleted and rapport!")
                         result.packageStatus = packageStatus
                     }
@@ -727,11 +840,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
         provider.status = orgStatus.get(providerRecord.status)
         if(!provider.sector)
             provider.sector = RDStore.O_SECTOR_PUBLISHER
-        if(provider.orgType)
-            provider.orgType.clear()
         if(provider.save()) {
-            provider.addToOrgType(orgTypes.get("Provider"))
-            provider.save()
+            if(!provider.getAllOrgTypeIds().contains(RDStore.OT_PROVIDER.id))
+                provider.addToOrgType(RDStore.OT_PROVIDER)
             //providedPlatforms are missing in ES output -> see GOKb-ticket #378! But maybe, it is wiser to not implement it at all
             if(providerRecord.contacts) {
                 List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :provider and p.isPublic = true and p.last_name in (:contactTypes)',[provider: provider, contactTypes: contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }])
@@ -1498,26 +1609,34 @@ class GlobalSourceSyncService extends AbstractLockableService {
         contactTypes.put(RDStore.PRS_FUNC_SERVICE_SUPPORT.value,RDStore.PRS_FUNC_SERVICE_SUPPORT)
         //this complicated way is necessary because of static in order to avoid a NonUniqueObjectException
         List<RefdataValue> staticMediumTypes = [RDStore.TITLE_TYPE_DATABASE,RDStore.TITLE_TYPE_EBOOK,RDStore.TITLE_TYPE_JOURNAL]
-        RefdataValue.findAllByIdNotInListAndOwner(staticMediumTypes.collect { RefdataValue rdv -> rdv.id },RefdataCategory.findByDesc(RDConstants.TITLE_MEDIUM)).each { RefdataValue rdv ->
-            titleMedium.put(rdv.value,rdv)
+        RefdataValue.findAllByIdNotInListAndOwner(staticMediumTypes.collect { RefdataValue rdv -> rdv.id }, RefdataCategory.findByDesc(RDConstants.TITLE_MEDIUM)).each { RefdataValue rdv ->
+            titleMedium.put(rdv.value, rdv)
         }
         staticMediumTypes.each { RefdataValue rdv ->
-            titleMedium.put(rdv.value,rdv)
+            titleMedium.put(rdv.value, rdv)
         }
-        RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS).each { RefdataValue rdv ->
-            packageStatus.put(rdv.value,rdv)
+        List<RefdataValue> staticPackageStatus = [RDStore.PACKAGE_STATUS_DELETED]
+        RefdataValue.findAllByIdNotInListAndOwner(staticPackageStatus.collect { RefdataValue rdv -> rdv.id }, RefdataCategory.findByDesc(RDConstants.PACKAGE_STATUS)).each { RefdataValue rdv ->
+            packageStatus.put(rdv.value, rdv)
+        }
+        staticPackageStatus.each { RefdataValue rdv ->
+            packageStatus.put(rdv.value, rdv)
         }
         orgStatus.put(RDStore.ORG_STATUS_CURRENT.value,RDStore.ORG_STATUS_CURRENT)
         orgStatus.put(RDStore.ORG_STATUS_DELETED.value,RDStore.ORG_STATUS_DELETED)
         orgStatus.put(RDStore.ORG_STATUS_RETIRED.value,RDStore.ORG_STATUS_RETIRED)
         RefdataCategory.getAllRefdataValues(RDConstants.CURRENCY).each { RefdataValue rdv ->
-            currency.put(rdv.value,rdv)
+            currency.put(rdv.value, rdv)
         }
-        RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE).each { RefdataValue rdv ->
-            orgTypes.put(rdv.value,rdv)
+        List<RefdataValue> staticOrgTypes = [RDStore.OT_AGENCY, RDStore.OT_CONSORTIUM, RDStore.OT_INSTITUTION, RDStore.OT_LICENSOR, RDStore.OT_PROVIDER, RDStore.OT_PUBLISHER]
+        RefdataValue.findAllByIdNotInListAndOwner(staticOrgTypes.collect { RefdataValue rdv -> rdv.id }, RefdataCategory.findByDesc(RDConstants.ORG_TYPE)).each { RefdataValue rdv ->
+            orgTypes.put(rdv.value, rdv)
+        }
+        staticOrgTypes.each { RefdataValue rdv ->
+            orgTypes.put(rdv.value, rdv)
         }
         RefdataCategory.getAllRefdataValues(RDConstants.DDC).each { RefdataValue rdv ->
-            ddc.put(rdv.value,rdv)
+            ddc.put(rdv.value, rdv)
         }
     }
 }
