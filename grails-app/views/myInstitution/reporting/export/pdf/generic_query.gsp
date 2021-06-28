@@ -58,12 +58,10 @@
     .queryInfo {
         font-weight: bold;
     }
-    <g:if test="${contentType == 'image'}">
-        .queryChart {
-            margin: 4em 0 0 0;
-            background-size: inherit;
-        }
-    </g:if>
+    .queryChart {
+        margin: 4em 0 0 0;
+        background-size: inherit;
+    }
     </style>
 </head>
 <body>
@@ -110,7 +108,12 @@
     </div>
 
     <g:if test="${contentType == 'image'}">
-        <img class="queryChart" src="${imageData}" alt="placehoder" />
+        <g:if test="${imageData}">
+            <img class="queryChart" src="${imageData}" alt="placehoder" />
+        </g:if>
+        <g:else>
+            [ ERROR ]
+        </g:else>
     </g:if>
     <g:elseif test="${contentType == 'table'}">
 
