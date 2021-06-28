@@ -8,6 +8,7 @@ import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
+import de.laser.reporting.myInstitution.base.BaseConfig
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
@@ -1494,6 +1495,10 @@ class SubscriptionController {
                 return
         }
         else {
+            SessionCacheWrapper sessionCache = contextService.getSessionCache()
+            Map<String, Object> cacheMap = [ queryCache: [:] ]
+            sessionCache.put("SubscriptionController/reporting/" + ctrlResult.result.token, cacheMap)
+
             render view: 'reporting/index', model: ctrlResult.result
         }
     }

@@ -94,4 +94,3 @@ JSPC.app.reporting.current.chart.option = {
         }
     ]
 };
-JSPC.app.reporting.current.chart.details = <%= dataDetails as grails.converters.JSON %>

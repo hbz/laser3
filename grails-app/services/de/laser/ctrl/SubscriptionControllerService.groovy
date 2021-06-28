@@ -19,6 +19,7 @@ import grails.doc.internal.StringEscapeCategory
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
+import org.apache.commons.lang3.RandomStringUtils
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
@@ -2662,6 +2663,7 @@ class SubscriptionControllerService {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription sub = Subscription.get(params.id)
 
+        result.token         = params.token ?: RandomStringUtils.randomAlphanumeric(16)
         result.cfgQueryList  = SubscriptionReporting.CONFIG.base.query.default
         result.cfgQueryList2 = SubscriptionReporting.getCurrentQuery2Config( sub )
 
