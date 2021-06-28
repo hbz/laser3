@@ -61,7 +61,6 @@
     <g:if test="${contentType == 'image'}">
         .queryChart {
             margin: 4em 0 0 0;
-            background-image: url("${imageData}"); /* wkhtmltopdf 0.12.4 */
             background-size: inherit;
         }
     </g:if>
@@ -111,8 +110,7 @@
     </div>
 
     <g:if test="${contentType == 'image'}">
-        <%-- <img class="queryChart" src="${imageData}" alt="placehoder" /> --%>
-        <div class="queryChart" style="width:${struct[0]}px;height:${struct[1]}px"></div>
+        <img class="queryChart" src="${imageData}" alt="placehoder" />
     </g:if>
     <g:elseif test="${contentType == 'table'}">
 

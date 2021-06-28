@@ -481,34 +481,34 @@ class AjaxHtmlController {
 
             Map<String, Object> struct = [:]
 
-            if (params.contentType == 'table') {
-                struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport')
-            }
-            if (params.contentType == 'image') {
+//            if (params.contentType == 'table') {
+//                struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport')
+//            }
+//            if (params.contentType == 'image') {
                 // struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport-image') // TODO
 
-                struct = [
-                        width       : Float.parseFloat( params.imageSize.split(':')[0] ),
-                        height      : Float.parseFloat( params.imageSize.split(':')[1] ),
-                        pageSize    : 'A4',
-                        orientation : 'Portrait'
-                ] as Map<String, Object>
-
-                struct.whr = struct.width / struct.height
-                if (struct.height < 400 && struct.whr >= 2) {
-                    struct.orientation = 'Landscape'
-                }
+//                struct = [
+//                        width       : Float.parseFloat( params.imageSize.split(':')[0] ),
+//                        height      : Float.parseFloat( params.imageSize.split(':')[1] ),
+//                        pageSize    : 'A4',
+//                        orientation : 'Portrait'
+//                ] as Map<String, Object>
+//
+//                struct.whr = struct.width / struct.height
+//                if (struct.height < 400 && struct.whr >= 2) {
+//                    struct.orientation = 'Landscape'
+//                }
 
                 //Map<String, Object> queryCache = BaseQuery.getQueryCache( params.token )
                 //queryCache.put( 'tmpBase64Data', params.imageData )
-            }
+//            }
 
             Map<String, Object> model = [
                     token:        params.token,
                     filterLabels: ExportHelper.getCachedFilterLabels(params.token),
                     filterResult: ExportHelper.getCachedFilterResult(params.token),
                     queryLabels : queryLabels,
-                    imageData   : params.imageData,
+                    //imageData   : params.imageData,
                     //tmpBase64Data : BaseQuery.getQueryCache( params.token ).get( 'tmpBase64Data' ),
                     contentType : params.contentType,
                     title       : filename,
