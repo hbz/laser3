@@ -61,9 +61,7 @@ class PendingChangeController  {
             pendingChangeService.performReject(pc)
         }
         else if (!pc.payload) {
-            if(pc.status != RDStore.PENDING_CHANGE_HISTORY) {
-                pendingChangeService.reject(pc)
-            }
+            pendingChangeService.reject(pc)
         }
         redirect(url: request.getHeader('referer'))
     }
@@ -80,39 +78,18 @@ class PendingChangeController  {
                 if(spID) {
                     SubscriptionPackage sp = SubscriptionPackage.get(Long.parseLong(spID))
                     Set<PendingChange> pendingChanges = []
-                    pendingChanges.addAll(PendingChange.executeQuery("select pc from PendingChange pc where pc.subscription = :sub and pc.owner = :context and pc.status = :pending", [context: contextService.getOrg(), sub: sp.subscription, pending: RDStore.PENDING_CHANGE_PENDING]))
-                    pendingChanges.addAll(PendingChange.executeQuery("select pc from PendingChange pc where pc.oid = :sub and pc.owner = :context and pc.status = :pending", [context: contextService.getOrg(),sub: genericOIDService.getOID(sp.subscription), pending: RDStore.PENDING_CHANGE_PENDING]))
+                    pendingChanges.addAll(PendingChange.executeQuery("select pc from PendingChange pc join pc.tipp tipp where tipp.pkg = :pkg and pc.ts >= :creationDate and pc.status = :history",[pkg: sp.pkg, creationDate: sp.dateCreated, history: RDStore.PENDING_CHANGE_HISTORY]))
+                    pendingChanges.addAll(PendingChange.executeQuery("select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp where tipp.pkg = :pkg and pc.ts >= :creationDate and pc.status = :history",[pkg: sp.pkg, creationDate: sp.dateCreated, history: RDStore.PENDING_CHANGE_HISTORY]))
 
                     pendingChanges.each { PendingChange pc ->
                         log.info("processing change ${pc}")
-                        def changedObject = genericOIDService.resolveOID(pc.oid)
-                        Package targetPkg
-                        List<Package> targetPkgs
-                        if(changedObject instanceof TitleInstancePackagePlatform) {
-                            targetPkg = changedObject.pkg
+                        if(acceptAll) {
+                            //log.info("is rejectAll simultaneously set? ${params.rejectAll}")
+                            pendingChangeService.accept(pc)
                         }
-                        else if(changedObject instanceof IssueEntitlement || changedObject instanceof TIPPCoverage) {
-                            targetPkg = changedObject.tipp.pkg
-                        }
-                        else if(changedObject instanceof IssueEntitlementCoverage) {
-                            targetPkg = changedObject.issueEntitlement.tipp.pkg
-                        }
-                        else if(changedObject instanceof Package) {
-                            targetPkg = changedObject
-                        }
-                        else if(changedObject instanceof Subscription) {
-                            targetPkgs = changedObject.packages?.pkg
-                        }
-
-                        if(targetPkg?.id == sp.pkg.id || (targetPkgs && sp.pkg.id in targetPkgs.id)) {
-                            if(acceptAll) {
-                                //log.info("is rejectAll simultaneously set? ${params.rejectAll}")
-                                pendingChangeService.accept(pc)
-                            }
-                            else if(rejectAll) {
-                                //log.info("is acceptAll simultaneously set? ${params.acceptAll}")
-                                pendingChangeService.reject(pc)
-                            }
+                        else if(rejectAll) {
+                            //log.info("is acceptAll simultaneously set? ${params.acceptAll}")
+                            pendingChangeService.reject(pc, params.subId)
                         }
                     }
                 }
