@@ -60,7 +60,8 @@
     }
     .queryChart {
         margin: 4em 0 0 0;
-        background-size: inherit;
+        width: 100%;
+        height: auto;
     }
     </style>
 </head>
@@ -109,10 +110,10 @@
 
     <g:if test="${contentType == 'image'}">
         <g:if test="${imageData}">
-            <img class="queryChart" src="${imageData}" alt="placehoder" />
+            <img class="queryChart" src="${imageData}" alt="[ Platzhalter ]" />
         </g:if>
         <g:else>
-            [ ERROR ]
+            [ Platzhalter ]
         </g:else>
     </g:if>
     <g:elseif test="${contentType == 'table'}">
