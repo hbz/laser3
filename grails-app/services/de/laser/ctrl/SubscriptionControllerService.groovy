@@ -1364,7 +1364,7 @@ class SubscriptionControllerService {
                             }
                             else {
                                 if(queryResult.records && queryResult.count > 0) {
-                                    globalSourceSyncService.updateRecords(queryResult.records)
+                                    globalSourceSyncService.updateRecords(queryResult.records, 0)
                                 }
                                 else {
                                     globalSourceSyncService.createOrUpdatePackage(pkgUUID)
