@@ -733,7 +733,7 @@ class PendingChangeService extends AbstractLockableService {
     }
 
     boolean accept(PendingChange pc) throws ChangeAcceptException {
-        println("accept:" +pc)
+        println("accept: ${pc.msgToken} for ${pc.pkg} or ${pc.tipp} or ${pc.tippCoverage}")
         boolean done = false
         def target
         if(pc.oid)
@@ -773,6 +773,7 @@ class PendingChangeService extends AbstractLockableService {
                 break
         //pendingChange.message_TP02 (titleUpdated)
             case PendingChangeConfiguration.TITLE_UPDATED:
+                log.debug("update title")
                 IssueEntitlement targetTitle
                 if(target instanceof IssueEntitlement) {
                     targetTitle = (IssueEntitlement) target
@@ -781,6 +782,7 @@ class PendingChangeService extends AbstractLockableService {
                     targetTitle = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:pc.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
                 }
                 if(targetTitle) {
+                    log.debug("set ${targetTitle} ${pc.targetProperty} to ${parsedNewValue}")
                     targetTitle[pc.targetProperty] = parsedNewValue
                     if(targetTitle.save()) {
                         done = true
@@ -799,6 +801,7 @@ class PendingChangeService extends AbstractLockableService {
                     targetTitle = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:pc.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
                 }
                 if(targetTitle) {
+                    log.debug("deleting ${targetTitle} from holding ...")
                     targetTitle.status = RDStore.TIPP_STATUS_DELETED
                     if(targetTitle.save()) {
                         done = true
@@ -1045,6 +1048,7 @@ class PendingChangeService extends AbstractLockableService {
             PendingChange toApply = PendingChange.construct([target: target, oid: genericOIDService.getOID(subPkg.subscription), newValue: newChange.newValue, oldValue: newChange.oldValue, prop: newChange.targetProperty, msgToken: newChange.msgToken, status: RDStore.PENDING_CHANGE_PENDING, owner: contextOrg])
             if(accept(toApply)) {
                 if(auditService.getAuditConfig(subPkg.subscription,newChange.msgToken)) {
+                    println("got audit config, processing ...")
                     applyPendingChangeForHolding(newChange, subPkg, contextOrg)
                 }
             }

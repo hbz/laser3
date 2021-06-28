@@ -69,9 +69,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
             ddc = [:],
             contactTypes = [:]
     Long maxTimestamp
-    Map<String,Integer> initialPackagesCounter = [:]
-    Map<String,Set<Map<String,Object>>> pkgPropDiffsContainer = [:]
-    Map<String,Set<Map<String,Object>>> packagesToNotify = [:]
+    Map<String,Integer> initialPackagesCounter
+    Map<String,Set<Map<String,Object>>> pkgPropDiffsContainer
+    Map<String,Set<Map<String,Object>>> packagesToNotify
 
     boolean running = false
 
@@ -144,20 +144,23 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if(source.rectype == RECTYPE_TIPP) {
                         if(packagesToNotify.keySet().size() > 0) {
                             log.info("notifying subscriptions ...")
-                            trackPackageHistory()
+                            Map<String, Set<PendingChange>> packagePendingChanges = trackPackageHistory()
                             //get subscription packages and their respective holders, parent level only!
-                            String query = 'select oo.org,sp from SubscriptionPackage sp join sp.pkg pkg ' +
-                                    'join sp.subscription s ' +
-                                    'join s.orgRelations oo ' +
-                                    'where s.instanceOf = null and pkg.gokbId in (:packages) ' +
-                                    'and oo.roleType in (:roleTypes)'
-                            List subPkgHolders = SubscriptionPackage.executeQuery(query,[packages:packagesToNotify.keySet(),roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
-                            log.info("getting subscription package holders: ${subPkgHolders.toListString()}")
-                            subPkgHolders.each { row ->
-                                Org org = (Org) row[0]
-                                SubscriptionPackage sp = (SubscriptionPackage) row[1]
-                                autoAcceptPendingChanges(org,sp)
-                                //nonAutoAcceptPendingChanges(org, sp)
+                            packagePendingChanges.each { String packageKey, Set<PendingChange> packageChanges ->
+                                String query = 'select oo.org,sp from SubscriptionPackage sp join sp.pkg pkg ' +
+                                        'join sp.subscription s ' +
+                                        'join s.orgRelations oo ' +
+                                        'where s.instanceOf = null and pkg.gokbId = :packageKey ' +
+                                        'and oo.roleType in (:roleTypes)'
+                                List subPkgHolders = SubscriptionPackage.executeQuery(query,[packageKey:packageKey,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+                                log.info("getting subscription package holders for ${packageKey}: ${subPkgHolders.toListString()}")
+                                subPkgHolders.each { row ->
+                                    log.debug("processing ${row[1]}")
+                                    Org org = (Org) row[0]
+                                    SubscriptionPackage sp = (SubscriptionPackage) row[1]
+                                    autoAcceptPendingChanges(org, sp, packageChanges)
+                                    //nonAutoAcceptPendingChanges(org, sp)
+                                }
                             }
                             log.info("end notifying subscriptions")
                         }
@@ -346,7 +349,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             createOrUpdateOrgJSON(record)
                         }
                             break
-                        case RECTYPE_TIPP: updateRecords(result.records)
+                        case RECTYPE_TIPP: updateRecords(result.records, offset)
                             break
                     }
                     if(result.hasMoreRecords) {
@@ -533,10 +536,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * This records the package changes so that subscription holders may decide whether they apply them or not
      * @param packagesToTrack
      */
-    void trackPackageHistory() {
+    Map<String, Set<PendingChange>> trackPackageHistory() {
+        Map<String, Set<PendingChange>> result = [:]
         //Package.withSession { Session sess ->
             //loop through all packages
             packagesToNotify.each { String packageUUID, Set<Map<String,Object>> diffsOfPackage ->
+                Set<PendingChange> packagePendingChanges = []
                 if(diffsOfPackage.find { Map<String,Object> diff -> diff.event in [PendingChangeConfiguration.NEW_TITLE,PendingChangeConfiguration.TITLE_DELETED] }) {
                     int newCount = TitleInstancePackagePlatform.executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp where tipp.pkg.gokbId = :gokbId',[gokbId:packageUUID])[0]
                     String newValue = newCount.toString()
@@ -548,71 +553,74 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     log.debug(diff.toMapString())
                     //[event:update, target:de.laser.TitleInstancePackagePlatform : 196477, diffs:[[prop:price, priceDiffs:[[event:add, target:de.laser.finance.PriceItem : 10791]]]]]
                     switch(diff.event) {
-                        case 'add': PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_TITLE,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY])
+                        case 'add': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_TITLE,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY])
                             break
                         case 'update':
                             diff.diffs.each { tippDiff ->
                                 switch(tippDiff.prop) {
                                     case 'coverage': tippDiff.covDiffs.each { covEntry ->
                                         switch(covEntry.event) {
-                                            case 'add': PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_COVERAGE,target:covEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
+                                            case 'add': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_COVERAGE,target:covEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
                                                 break
                                             case 'update': covEntry.diffs.each { covDiff ->
-                                                    PendingChange.construct([msgToken: PendingChangeConfiguration.COVERAGE_UPDATED, target: covEntry.target, status: RDStore.PENDING_CHANGE_HISTORY, prop: covDiff.prop, newValue: covDiff.newValue, oldValue: covDiff.oldValue])
+                                                    packagePendingChanges << PendingChange.construct([msgToken: PendingChangeConfiguration.COVERAGE_UPDATED, target: covEntry.target, status: RDStore.PENDING_CHANGE_HISTORY, prop: covDiff.prop, newValue: covDiff.newValue, oldValue: covDiff.oldValue])
                                                     //log.debug("tippDiff.covDiffs.covDiff: " + covDiff)
                                                 }
                                                 break
                                             case 'delete': JSON oldMap = covEntry.target.properties as JSON
-                                                PendingChange.construct([msgToken:PendingChangeConfiguration.COVERAGE_DELETED, target:covEntry.targetParent, oldValue: oldMap.toString() , status:RDStore.PENDING_CHANGE_HISTORY])
+                                                packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.COVERAGE_DELETED, target:covEntry.targetParent, oldValue: oldMap.toString() , status:RDStore.PENDING_CHANGE_HISTORY])
                                                 break
                                         }
                                     }
                                         break
                                     case 'price': tippDiff.priceDiffs.each { priceEntry ->
                                         switch(priceEntry.event) {
-                                            case 'add': PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_PRICE,target:priceEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
+                                            case 'add': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_PRICE,target:priceEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
                                                 break
                                             case 'update':
                                                 priceEntry.diffs.each { priceDiff ->
-                                                    PendingChange.construct([msgToken: PendingChangeConfiguration.PRICE_UPDATED, target: priceEntry.target, status: RDStore.PENDING_CHANGE_HISTORY, prop: priceDiff.prop, newValue: priceDiff.newValue, oldValue: priceDiff.oldValue])
+                                                    packagePendingChanges << PendingChange.construct([msgToken: PendingChangeConfiguration.PRICE_UPDATED, target: priceEntry.target, status: RDStore.PENDING_CHANGE_HISTORY, prop: priceDiff.prop, newValue: priceDiff.newValue, oldValue: priceDiff.oldValue])
                                                 }
                                                 //log.debug("tippDiff.priceDiffs: "+ priceEntry)
                                                 break
                                             case 'delete': JSON oldMap = priceEntry.target.properties as JSON
-                                                PendingChange.construct([msgToken:PendingChangeConfiguration.PRICE_DELETED,target:priceEntry.targetParent,oldValue:oldMap.toString(),status:RDStore.PENDING_CHANGE_HISTORY])
+                                                packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.PRICE_DELETED,target:priceEntry.targetParent,oldValue:oldMap.toString(),status:RDStore.PENDING_CHANGE_HISTORY])
                                                 break
                                         }
                                     }
                                         break
                                     default:
-                                        PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_UPDATED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:tippDiff.prop,newValue:tippDiff.newValue,oldValue:tippDiff.oldValue])
+                                        packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_UPDATED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:tippDiff.prop,newValue:tippDiff.newValue,oldValue:tippDiff.oldValue])
                                         break
                                 }
                             }
                             break
-                        case 'delete': PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_DELETED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY])
+                        case 'delete': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_DELETED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY])
                             break
                     }
                     //PendingChange.construct([msgToken,target,status,prop,newValue,oldValue])
                 }
                 //sess.flush()
+                result.put(packageUUID, packagePendingChanges)
             }
         //}
         log.info("end tracking package changes")
+        result
     }
 
-    void autoAcceptPendingChanges(Org contextOrg, SubscriptionPackage subPkg) {
+    void autoAcceptPendingChanges(Org contextOrg, SubscriptionPackage subPkg, Set<PendingChange> packageChanges) {
         //get for each subscription package the tokens which should be accepted
         String query = 'select pcc.settingKey from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where pcc.settingValue = :accept and sp = :sp and pcc.settingKey not in (:excludes)'
         List<String> pendingChangeConfigurations = PendingChangeConfiguration.executeQuery(query,[accept:RDStore.PENDING_CHANGE_CONFIG_ACCEPT,sp:subPkg,excludes:[PendingChangeConfiguration.NEW_PRICE,PendingChangeConfiguration.PRICE_DELETED,PendingChangeConfiguration.PRICE_UPDATED]])
         if(pendingChangeConfigurations) {
-            Map<String,Object> changeParams = [pkg:subPkg.pkg,history:RDStore.PENDING_CHANGE_HISTORY,subscriptionJoin:subPkg.dateCreated,msgTokens:pendingChangeConfigurations]
-            Set<PendingChange> newChanges = [],
-                               acceptedChanges = PendingChange.findAllByOidAndStatusAndMsgTokenIsNotNull(genericOIDService.getOID(subPkg.subscription),RDStore.PENDING_CHANGE_ACCEPTED)
-            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
-            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
+            Map<String,Object> changeParams = [pkg:subPkg.pkg,history:RDStore.PENDING_CHANGE_HISTORY,subscriptionJoin:subPkg.dateCreated,msgTokens:pendingChangeConfigurations,oid:genericOIDService.getOID(subPkg.subscription),accepted:RDStore.PENDING_CHANGE_ACCEPTED]
+            Set<PendingChange> acceptedChanges = PendingChange.findAllByOidAndStatusAndMsgTokenIsNotNull(genericOIDService.getOID(subPkg.subscription),RDStore.PENDING_CHANGE_ACCEPTED)
+            /*newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens) and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and pca.oid = :oid and pca.targetProperty = pc.targetProperty and pca.status = :accepted)',changeParams))
+            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens) and pc.targetProperty = null and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and pca.oid = :oid and pca.targetProperty = null and pca.status = :accepted)',changeParams))
+            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens) and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and pca.oid = :oid and pca.targetProperty = pc.targetProperty and pca.status = :accepted)',changeParams))
+            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens) and pc.targetProperty = null and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and pca.oid = :oid and pca.targetProperty = null and pca.status = :accepted)',changeParams))*/
             //newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.priceItem pi join pi.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
-            newChanges.each { PendingChange newChange ->
+            packageChanges.each { PendingChange newChange ->
                 boolean processed = false
                 if(newChange.tipp) {
                     if(newChange.targetProperty)
@@ -1075,16 +1083,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             if(tippB.identifiers) {
                 //I hate this solution ... wrestlers of GOKb stating that Identifiers do not need UUIDs were stronger.
-                //Identifier.withTransaction { TransactionStatus ts ->
-                    if(tippA.ids) {
-                        Identifier.executeUpdate('delete from Identifier i where i.tipp = :tipp',[tipp:tippA]) //damn those wrestlers ...
-                    }
-                    tippB.identifiers.each { idData ->
-                        if(!(idData.namespace.toLowerCase() in ['originediturl','uri'])) {
+                Set<String> oldIDs = []
+                if(tippA.ids) {
+                    oldIDs.addAll(tippA.ids.collect { Identifier id -> id.value })
+                }
+                if(oldIDs) {
+                    Identifier.executeUpdate('delete from Identifier i where i.tipp = :tipp and i.value not in (:oldValues)',[tipp:tippA, oldValues: oldIDs]) //damn those wrestlers ...
+                }
+                tippB.identifiers.each { idData ->
+                    if(!(idData.namespace.toLowerCase() in ['originediturl','uri'])) {
+                        if(!(idData.value in oldIDs))
                             Identifier.construct([namespace: idData.namespace, value: idData.value, name_de: idData.namespaceName, reference: tippA, isUnique: false, nsType: TitleInstancePackagePlatform.class.name])
-                        }
                     }
-                //}
+                }
             }
             if(tippB.ddcs) {
                 if(tippA.ddcs) {
@@ -1638,5 +1649,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
         RefdataCategory.getAllRefdataValues(RDConstants.DDC).each { RefdataValue rdv ->
             ddc.put(rdv.value, rdv)
         }
+        initialPackagesCounter = [:]
+        pkgPropDiffsContainer = [:]
+        packagesToNotify = [:]
     }
 }
