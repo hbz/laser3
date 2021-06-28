@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.AuditService
+import de.laser.ContextService
 import de.laser.EscapeService
 import de.laser.Identifier
 import de.laser.IssueEntitlement
@@ -47,7 +48,7 @@ class PendingChangeService extends AbstractLockableService {
     def genericOIDService
     SubscriptionService subscriptionService
     AuditService auditService
-    LinkGenerator grailsLinkGenerator
+    ContextService contextService
     def messageSource
     EscapeService escapeService
 
@@ -629,7 +630,7 @@ class PendingChangeService extends AbstractLockableService {
                     //here, it may be redundant, is just to go for sure ...
                     if(packageSettingMap.get(sp)?.get(row[0]) == "notify") {
                         Object[] args = [row[2]]
-                        Map<String,Object> eventRow = [subPkg:sp,eventString:messageSource.getMessage(row[0],args,locale)]
+                        Map<String,Object> eventRow = [subPkg:sp,eventString:messageSource.getMessage(row[0],args,locale),msgToken:row[0]]
                         notifications << eventRow
                     }
                 }
@@ -642,7 +643,7 @@ class PendingChangeService extends AbstractLockableService {
                         List newerCount = PendingChange.executeQuery('select count(distinct pc.'+row[4]+') from PendingChange pc where pc.'+row[3]+' = :package and pc.oid = null and pc.ts >= :entryDate and pc.msgToken = :token',[package: sp.pkg, entryDate: sp.dateCreated, token: row[0]])
                         if(!PendingChange.executeQuery('select pc.id from PendingChange pc where pc.'+row[3]+' = :package and pc.oid = :oid and pc.status in (:acceptedStatus)',[package:sp.pkg,oid:genericOIDService.getOID(sp.subscription),acceptedStatus:[RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED]]) && newerCount && newerCount[0] > 0){
                             Object[] args = [newerCount[0]]
-                            Map<String,Object> eventRow = [subPkg:sp,eventString:messageSource.getMessage(row[0],args,locale)]
+                            Map<String,Object> eventRow = [subPkg:sp,eventString:messageSource.getMessage(row[0],args,locale),msgToken:row[0]]
                             //eventRow.changeId = pendingChange1 ? pendingChange1[0] : null
                             pending << eventRow
                         }
@@ -997,11 +998,36 @@ class PendingChangeService extends AbstractLockableService {
         done
     }
 
-    boolean reject(PendingChange pc) {
-        pc.status = RDStore.PENDING_CHANGE_REJECTED
-        pc.actionDate = new Date()
-        if(!pc.save()) {
-            throw new ChangeAcceptException("problems when submitting new pending change status: ${pc.errors}")
+    boolean reject(PendingChange pc, String subId = null) {
+        if(pc.status != RDStore.PENDING_CHANGE_HISTORY) {
+            pc.status = RDStore.PENDING_CHANGE_REJECTED
+            pc.actionDate = new Date()
+            if(!pc.save()) {
+                throw new ChangeAcceptException("problems when submitting new pending change status: ${pc.errors}")
+            }
+        }
+        else if(subId) {
+            Org contextOrg = contextService.getOrg()
+            def target
+            Package targetPkg
+            if(pc.tipp) {
+                targetPkg = pc.tipp.pkg
+                target = pc.tipp
+            }
+            else if(pc.tippCoverage) {
+                targetPkg = pc.tippCoverage.tipp.pkg
+                target = pc.tippCoverage
+            }
+            if(target) {
+                List<SubscriptionPackage> subPkg = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where sp.pkg = :pkg and sp.subscription.id = :subscription and oo.org = :ctx and s.instanceOf is null',[ctx:contextOrg,pkg:targetPkg,subscription:Long.parseLong(subId)])
+                if(subPkg.size() == 1) {
+                    PendingChange toReject = PendingChange.construct([target: target, oid: genericOIDService.getOID(subPkg[0].subscription), newValue: pc.newValue, oldValue: pc.oldValue, prop: pc.targetProperty, msgToken: pc.msgToken, status: RDStore.PENDING_CHANGE_REJECTED, owner: contextOrg])
+                    if (!toReject)
+                        log.error("Error when auto-accepting pending change ${toReject} with token ${toReject.msgToken}!")
+                }
+                else log.error("unable to determine subscription package for pending change ${pc}")
+            }
+            else log.error("Unable to determine target object! Ignoring change ${pc}!")
         }
         true
     }
