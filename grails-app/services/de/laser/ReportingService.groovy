@@ -27,7 +27,7 @@ class ReportingService {
 
     // ----- MyInstitutionController.reporting() -----
 
-    void doFilter (Map<String, Object> result, GrailsParameterMap params) {
+    void doGlobalFilter(Map<String, Object> result, GrailsParameterMap params) {
 
         result.filter = params.filter
         result.token  = params.token ?: RandomStringUtils.randomAlphanumeric(16)
@@ -218,12 +218,12 @@ class ReportingService {
 
             // TODO
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String, Object> cacheMap = sessionCache.get("SubscriptionController/reporting/" + params.token)
+            Map<String, Object> cacheMap = sessionCache.get("SubscriptionController/reporting") // + params.token)
 
             cacheMap.queryCache = [:]
             cacheMap.queryCache.putAll(result)
 
-            sessionCache.put("SubscriptionController/reporting/" + params.token, cacheMap)
+            sessionCache.put("SubscriptionController/reporting" /* + params.token */, cacheMap)
         }
     }
 
@@ -312,7 +312,7 @@ class ReportingService {
         if (params.query) {
 
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String, Object> cacheMap = sessionCache.get("SubscriptionController/reporting/" + params.token)
+            Map<String, Object> cacheMap = sessionCache.get("SubscriptionController/reporting") // + params.token)
 
             List<Long> idList = [], plusIdList = [], minusIdList = []
 
@@ -331,9 +331,9 @@ class ReportingService {
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty('id', params.id)
                 Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, financeControllerService.getResultGenerics(clone))
-
-                result.billingSums = finance.cons.sums.billingSums ?: []
-                result.localSums   = finance.cons.sums.localSums ?: []
+println finance
+                result.billingSums = finance.cons.sums?.billingSums ?: []
+                result.localSums   = finance.cons.sums?.localSums ?: []
                 result.tmpl        = '/subscription/reporting/details/timeline/cost'
             }
             else if (params.query in ['timeline-entitlement', 'timeline-member']) {

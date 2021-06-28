@@ -1497,7 +1497,7 @@ class SubscriptionController {
         else {
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
             Map<String, Object> cacheMap = [ queryCache: [:] ]
-            sessionCache.put("SubscriptionController/reporting/" + ctrlResult.result.token, cacheMap)
+            sessionCache.put("SubscriptionController/reporting" /* + ctrlResult.result.token */, cacheMap)
 
             render view: 'reporting/index', model: ctrlResult.result
         }
