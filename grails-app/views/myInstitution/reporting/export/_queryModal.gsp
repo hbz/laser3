@@ -20,6 +20,7 @@
                             </p>
                         </div>
 
+                        <%-- ERMS-3614
                         <div id="fileformat-pdf" class="wide eight field">
                             <label>PDF-Konfiguration</label>
                             <p>
@@ -33,14 +34,21 @@
                                 />
                             </p>
                         </div>
+                        --%>
 
                         <div class="wide eight field">
                             <div class="field" style="margin-bottom: 1em !important;">
                                 <label for="fileformat">Dateiformat</label>
                                 <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
                                           optionKey="key" optionValue="value"
+                                          from="${[csv:'CSV']}"
+                                />
+                                <%-- ERMS-3614
+                                <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
+                                          optionKey="key" optionValue="value"
                                           from="${[csv:'CSV', pdf:'PDF']}"
                                 />
+                                --%>
                             </div>
                             <div class="field">
                                 <label for="filename">Dateiname</label>
@@ -54,32 +62,34 @@
             </div><!-- .form -->
 
             <input type="hidden" name="token" value="${token}" />
+            <%-- ERMS-3614
             <input type="hidden" name="imageData" value="" />
             <input type="hidden" name="imageSize" value="" />
-        </g:form>
+            --%>
+    </g:form>
 
-    </semui:modal>
+</semui:modal>
 
-    <laser:script file="${this.getGroovyPageFileName()}">
+<laser:script file="${this.getGroovyPageFileName()}">
 
-        $('#${modalID} select[name=fileformat]').on( 'change', function() {
-            $('#${modalID} *[id^=fileformat-').addClass('hidden')
-            $('#${modalID} *[id^=fileformat-' + $('#${modalID} select[name=fileformat]').val()).removeClass('hidden')
-        }).trigger('change');
+    $('#${modalID} select[name=fileformat]').on( 'change', function() {
+        $('#${modalID} *[id^=fileformat-').addClass('hidden')
+        $('#${modalID} *[id^=fileformat-' + $('#${modalID} select[name=fileformat]').val()).removeClass('hidden')
+    }).trigger('change');
 
-        /* -- TODO -- */
+    /* -- TODO -- */
 
-        $('#query-export-button').on( 'click', function() {
-            $('#${modalID} input[name=imageData]').attr( 'value',
-                JSPC.app.reporting.current.chart.echart.getDataURL({
-                    pixelRatio: 1
-                })
-            );
-            $('#${modalID} input[name=imageSize]').attr( 'value',
-                $('#chart-wrapper').width() + ':' + $('#chart-wrapper').height()
-            );
-        });
-    </laser:script>
+    $('#query-export-button').on( 'click', function() {
+        $('#${modalID} input[name=imageData]').attr( 'value',
+            JSPC.app.reporting.current.chart.echart.getDataURL({
+                pixelRatio: 1
+            })
+        );
+        $('#${modalID} input[name=imageSize]').attr( 'value',
+            $('#chart-wrapper').width() + ':' + $('#chart-wrapper').height()
+        );
+    });
+</laser:script>
 
 <!-- _queryChartModal.gsp -->
 
