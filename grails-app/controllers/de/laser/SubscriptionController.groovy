@@ -244,7 +244,7 @@ class SubscriptionController {
                     Map<String, Object> selectedFields = [:]
                     selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
 
-                    wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(ctrlResult.result.filteredSubChilds, selectedFields)
+                    wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, ctrlResult.result.institution)
                 }
                 else if (params.exportIPs) {
                     filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportIPs.fileName'))

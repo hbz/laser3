@@ -465,6 +465,7 @@ class SubscriptionControllerService {
                 Subscription subChild = (Subscription) row.sub
                 row.orgs.each { Org subscr ->
                     Map<String,Object> org = [:]
+                    org.sub = subChild
                     org.name = subscr.name
                     org.sortname = subscr.sortname
                     org.shortname = subscr.shortname
@@ -558,7 +559,10 @@ class SubscriptionControllerService {
                             licensesToProcess << genericOIDService.resolveOID(licenseKey)
                         }
                     }
-                    Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, PendingChangeConfiguration.SETTING_KEYS+PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
+                    List<String> excludes = PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key }
+                    excludes << 'freezeHolding'
+                    excludes.addAll(PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
+                    Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, excludes)
                     members.each { Org cm ->
                         log.debug("Generating separate slaved instances for members")
                         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()

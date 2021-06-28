@@ -204,7 +204,7 @@
 <semui:modal id="linkPackageModal" message="myinst.currentSubscriptions.link_pkg"
              msgSave="${message(code: 'default.button.link.label')}">
 
-    <g:form class="ui form" url="[controller: 'subscription', action: 'processLinkPackage', id: params.id]">
+    <g:form class="ui form" id="linkPackageForm" url="[controller: 'subscription', action: 'processLinkPackage', id: params.id]">
         <input type="hidden" name="addUUID" value=""/>
         <div class="field">
             <label for="pkgName">${message(code: 'package.label')}</label>
@@ -366,6 +366,15 @@
             $('#linkPackageModal #pkgName').attr('value', $(trigger).attr('data-packageName'))
             $('#linkPackageModal input[name=addUUID]').attr('value', $(trigger).attr('data-addUUID'))
         }
+
+        $('#linkPackageForm').submit(function(e){
+                e.preventDefault();
+                if($('#With').prop('checked') == false && $('#Without').prop('checked') == false) {
+                    alert("${message(code:'subscription.details.linkPackage.error.withORWithoutIEs')}");
+                }else{
+                    $('#linkPackageForm').unbind('submit').submit();
+                }
+                });
     </laser:script>
 
 </semui:modal>

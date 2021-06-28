@@ -585,7 +585,10 @@ r2d2 = {
                         url: ajaxUrl
                     })
                         .done(function (data) {
-                            $('#js-confirmation-content-term').html(data)
+                            if(elem.getAttribute("data-confirm-replaceHeader"))
+                                $('#js-modal [class="header"]').html(data)
+                            else
+                                $('#js-confirmation-content-term').html(data)
                         })
                         .fail(function (data) {
                             $('#js-confirmation-content-term').html('WARNING: AJAX-CALL FAILED')

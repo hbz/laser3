@@ -2,11 +2,11 @@
 <laser:serviceInjection/>
 <g:set var="exportClickMeService" bean="exportClickMeService"/>
 <!-- _individuallyExportModal.gsp -->
-<g:set var="formFields" value="${exportClickMeService.getExportSubscriptionFieldsForUI(subscription, institution)}"/>
+<g:set var="formFields" value="${exportClickMeService.getExportOrgFieldsForUI()}"/>
 
 <semui:modal id="${modalID}" text="Excel-Export" hideSubmitButton="true">
 
-    <g:form action="members" controller="subscription" params="${params+[id:params.id, exportClickMeExcel: true]}">
+    <g:form action="manageMembers" controller="myInstitution" params="${params+[exportClickMeExcel: true]}">
         <div class="ui form">
             <div class="field">
                 <label><g:message code="exportClickMe.fieldsToExport"/></label>
@@ -31,7 +31,11 @@
                                 <div class="ui checkbox">
                                     <input type="checkbox" name="iex:${field.key}"
                                            id="iex:${field.key}" ${field.value.defaultChecked ? 'checked="checked"' : ''}>
-                                    <label for="iex:${field.key}">${field.value.message ? message(code: field.value.message) : field.value.label}</label>
+                                    <label for="iex:${field.key}">${field.value.message ? message(code: field.value.message) : field.value.label}
+                                        <g:if test="${field.value.privateProperty}">
+                                            <i class='shield alternate icon'></i>
+                                        </g:if>
+                                    </label>
                                 </div>
 
                             </div><!-- .field -->
@@ -55,7 +59,7 @@
                 <div class="wide eight field">
                     <label for="filename"><g:message code="default.fileName.label"/></label>
                     <input name="filename" id="filename"
-                           value="${message(code: 'subscriptionDetails.members.members')}"/>
+                           value="${message(code: 'subscription.details.consortiaMembers.label')}"/>
                 </div>
 
                 <div class="wide eight field">

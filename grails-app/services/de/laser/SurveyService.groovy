@@ -1051,6 +1051,8 @@ class SurveyService {
 
         result = setSurveyConfigCounts(result, 'inEvaluation', tmpParams, contextOrg)
 
+        result = setSurveyConfigCounts(result, 'completed', tmpParams, contextOrg)
+
         return result
     }
 
@@ -1058,9 +1060,13 @@ class SurveyService {
         SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
         Map<String,Object> fsq = [:]
 
-        parameterMap.tab = tab
-        fsq = filterService.getSurveyConfigQueryConsortia(parameterMap, sdFormat, owner)
-        result."${tab}" =  SurveyInfo.executeQuery(fsq.query, fsq.queryParams, parameterMap).size()
+        def cloneParameterMap = parameterMap.clone()
+
+        cloneParameterMap.tab = tab
+        cloneParameterMap.remove('max')
+
+        fsq = filterService.getSurveyConfigQueryConsortia(cloneParameterMap, sdFormat, owner)
+        result."${tab}" =  SurveyInfo.executeQuery(fsq.query, fsq.queryParams, cloneParameterMap).size()
 
         return result
 
@@ -1292,10 +1298,15 @@ class SurveyService {
         SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
         Map fsq = [:]
 
+        def cloneParameterMap = parameterMap.clone()
+
         if(owner){
-            parameterMap.owner = owner
+            cloneParameterMap.owner = owner
         }
-        parameterMap.tab = tab
+
+        cloneParameterMap.tab = tab
+        cloneParameterMap.remove('max')
+
         fsq = filterService.getParticipantSurveyQuery_New(parameterMap, sdFormat, participant)
         result."${tab}" = SurveyResult.executeQuery(fsq.query, fsq.queryParams, parameterMap).groupBy { it.id[1] }.size()
 

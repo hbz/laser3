@@ -1592,7 +1592,7 @@ class SubscriptionService {
                         kind: genericOIDService.resolveOID(entry.kind),
                         form: genericOIDService.resolveOID(entry.form),
                         resource: genericOIDService.resolveOID(entry.resource),
-                        type: genericOIDService.resolveOID(entry.type),
+                        type: contextOrg.getCustomerType() == "ORG_CONSORTIUM" ? RDStore.SUBSCRIPTION_TYPE_CONSORTIAL : RDStore.SUBSCRIPTION_TYPE_LOCAL,
                         isPublicForApi: entry.isPublicForApi,
                         hasPerpetualAccess: entry.hasPerpetualAccess,
                         hasPublishComponent: entry.hasPublishComponent,
