@@ -26,7 +26,7 @@
             </tbody>
         </table>
     </g:if>
-    <g:else>
+    <g:elseif test="${localSums}">
         <table class="ui table la-table compact">
             <thead>
             <tr>
@@ -53,6 +53,9 @@
                 </tr>
             </tbody>
         </table>
+    </g:elseif>
+    <g:else>
+        Es wurden keine Kosten gefunden.
     </g:else>
 </div>
 

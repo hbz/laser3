@@ -58,12 +58,4 @@
             }
         ]
     };
-    JSPC.app.reporting.current.chart.details = <%
-        if (objectReference) {
-            print dataDetails.each { dd -> dd.id = objectReference + ':' + dd. id } as grails.converters.JSON // workaround : XYZ
-        }
-        else {
-            print dataDetails as grails.converters.JSON
-        }
-        %>
 </g:if>

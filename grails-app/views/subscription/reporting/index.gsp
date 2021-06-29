@@ -39,7 +39,8 @@
                         id: ${subscription.id},
                         query: value,
                         context: '${BaseConfig.KEY_SUBSCRIPTION}',
-                        chart: 'default'
+                        chart: 'default',
+                        token: '${token}'
                     }
                     JSPC.app.reporting.requestChartJsonData();
                 }
@@ -70,21 +71,14 @@
                             echart.setOption( JSPC.app.reporting.current.chart.option );
 
                             echart.on( 'click', function (params) {
-                                var valid = false;
-                                $.each( JSPC.app.reporting.current.chart.details, function(i, v) {
-                                    if (params.data[0] == v.id) {
-                                        valid = true;
-                                        var clone = Object.assign({}, v); // ---- TODO !!!! ----
-                                        if (JSPC.helper.contains(clone.id, ':')) { // workaround XYZ
-                                            clone.id = clone.id.split(':')[0]
-                                        }
-                                        clone.context = '${BaseConfig.KEY_SUBSCRIPTION}';
-                                        JSPC.app.reporting.requestChartHtmlDetails(clone);
-                                    }
-                                })
-                                if (! valid) {
-                                    $("#reporting-modal-nodetails").modal('show');
+                                var clone = Object.assign({}, JSPC.app.reporting.current.request);
+                                if (JSPC.helper.contains(params.data[0], ':')) { // workaround XYZ
+                                    clone.id  = params.data[0].split(':')[0];
+                                    clone.idx = params.data[0];
+                                } else {
+                                    clone.id = params.data[0];
                                 }
+                                JSPC.app.reporting.requestChartHtmlDetails(clone);
                             });
                             echart.on( 'legendselectchanged', function (params) { /* console.log(params); */ });
 
