@@ -63,17 +63,18 @@ verticalNavi = {
                 $( '.la-js-verticalNavi' ).clone().prependTo( 'body' ).addClass('la-js-verticalNavi-clone');
                 // sidebar function
                 $('.la-js-verticalNavi-clone').addClass('vertical sidebar sidebarMobile');
+                $('.la-js-verticalNavi-clone').addClass('accordion');
+                $('.ui.accordion').accordion();
+                $('.la-js-verticalNavi-clone')
+                .sidebar({
+                    context: $('body')
+                })
+                .sidebar('setting', 'transition', 'overlay')
+                .sidebar('attach events', '.la-menue-button')
+                .sidebar('setting', 'dimPage', false);
             }
 
-            $('.la-js-verticalNavi-clone').addClass('accordion');
-            $('.ui.accordion').accordion();
-            $('.la-js-verticalNavi-clone')
-            .sidebar({
-                context: $('body')
-            })
-            .sidebar('setting', 'transition', 'overlay')
-            .sidebar('attach events', '.la-menue-button')
-            .sidebar('setting', 'dimPage', false);
+
         });
 
         $('.ui.accordion').accordion();
