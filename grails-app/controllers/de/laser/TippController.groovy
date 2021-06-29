@@ -22,7 +22,13 @@ class TippController  {
     result.user = contextService.getUser()
     result.editable = false
 
-    result.tipp = TitleInstancePackagePlatform.get(params.id)
+    TitleInstancePackagePlatform tipp
+    if(params.id.isLong())
+      tipp = TitleInstancePackagePlatform.get(params.id)
+    else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
+      tipp = TitleInstancePackagePlatform.findByGokbId(params.id)
+    else tipp = Package.findByGlobalUID(params.id)
+    result.tipp = tipp
 
     result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.tipp.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0]
     result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.tipp.pkg, status: RDStore.TIPP_STATUS_EXPECTED])[0]

@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-3635    25.06.2021  rc2.1   2.1         Andreas Feature     Umstrukturierungen in der Änderungsübersicht
+3638    28.06.2021  rc2.1   2.1         Andreas Bug         verschiedene Bugs und Umstrukturierungen im Sync
+
+3635    28.06.2021  rc2.1   2.1         Andreas Feature     Umstrukturierungen in der Änderungsübersicht
 
 3637    25.06.2021  rc2.1   2.1         Andreas Bug         Dropdown für Lizenz wurde nicht befüllt
 
