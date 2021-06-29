@@ -23,4 +23,5 @@ $(function () {
     a11yIcon.go();
 
     $('main.ui.main').removeClass('hidden');
+    verticalNavi.go();
 })
