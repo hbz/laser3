@@ -101,6 +101,7 @@ ${message(code: 'email.survey.owner', locale: language)}
 ${survey.owner.name}
 <br />
 <br />
+${message(code: 'email.profile.settings', locale: language)}
 ${message(code: 'email.text.autogeneric', locale: language)}
 </body>
 </html>

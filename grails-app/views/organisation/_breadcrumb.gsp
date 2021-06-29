@@ -3,7 +3,12 @@
 <semui:breadcrumbs>
     <g:if test="${!inContextOrg}">
         <g:if test="${isProviderOrAgency}">
-            <semui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"/>
+            <g:if test="${params.my}">
+                <semui:crumb message="menu.my.providers" controller="myInstitution" action="currentProviders"/>
+            </g:if>
+            <g:else>
+                <semui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"/>
+            </g:else>
             <semui:crumb text="${orgInstance.name}" class="active"/>
         </g:if>
         <g:else>

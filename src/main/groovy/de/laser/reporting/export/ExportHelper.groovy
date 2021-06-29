@@ -6,12 +6,15 @@ import de.laser.Org
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.reporting.myInstitution.GenericHelper
+import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.reporting.myInstitution.base.BaseDetails
 import de.laser.reporting.myInstitution.base.BaseFilter
 import de.laser.reporting.myInstitution.base.BaseQuery
 
+import java.text.SimpleDateFormat
 import java.time.Year
 
 class ExportHelper {
@@ -57,6 +60,18 @@ class ExportHelper {
         Map<String, Object> queryCache = BaseQuery.getQueryCache(token)
         queryCache.labels.labels as List<String>
     }
+
+    // -----
+
+    static List<String> getIncompleteQueryLabels(String token) {
+
+        Map<String, Object> queryCache = BaseQuery.getQueryCache( token )
+        String prefix = queryCache.query.split('-')[0]
+        Map<String, Object> cfg = BaseConfig.getCurrentConfigByPrefix( prefix )
+        BaseQuery.getQueryLabels(cfg, queryCache.query as String)
+    }
+
+    // -----
 
     static String getFieldLabel(AbstractExport export, String fieldName) {
 
@@ -108,11 +123,16 @@ class ExportHelper {
 
     static String getFileName(List<String> labels) {
 
-        labels.collect{
+        SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
+        labels = labels ?: [ 'Reporting' ]
+
+        String filename = sdf.format(new Date()) + '_' + labels.collect{
             it.replaceAll('[→/]', '-')
                 .replaceAll('[^\\wäöüÄÖÜ!"§$%&()=?\'{},.\\-+~#;:]', '')
                 .replaceAll(' ', '')
         }.join('_')
+
+        filename
     }
 
     // -----  -----
@@ -250,7 +270,7 @@ class ExportHelper {
                 }
             }
         }
-        else if (pin == 'chartQueryExport_image') {
+        else if (pin == 'chartQueryExport-image') {
 
             // TODO
             // TODO

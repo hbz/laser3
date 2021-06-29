@@ -97,6 +97,7 @@ ${message(code: 'email.survey.finish.url', locale: language)}
 ${grailsApplication.config.grails.serverURL + surveyUrl}
 <br />
 <br />
+${message(code: 'email.profile.settings', locale: language)}
 <g:render template="/mailTemplates/html/signature" />
 </body>
 </html>

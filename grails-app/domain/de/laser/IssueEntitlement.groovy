@@ -99,6 +99,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
   static IssueEntitlement construct(Map<String,Object> configMap) throws EntitlementCreationException {
     if(configMap.subscription instanceof Subscription && configMap.tipp instanceof TitleInstancePackagePlatform) {
+        println "creating new issue entitlement for ${configMap.tipp} and ${configMap.subscription}"
       Subscription subscription = (Subscription) configMap.subscription
       TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
       IssueEntitlement ie = findBySubscriptionAndTipp(subscription,tipp)

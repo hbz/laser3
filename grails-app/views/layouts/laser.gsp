@@ -298,7 +298,7 @@
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="orgsExport">${message(code:'menu.admin.bulkOps.orgsExport')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="orgsImport">${message(code:'menu.admin.bulkOps.orgsImport')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="makeshiftLaserOrgExport">${message(code:'menu.admin.exportBasicData')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="titleEnrichment">Title Enrichment</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="titleEnrichment">Title Enrichment</semui:link>
                                     </div>
                                 </div>
                                 <div class="divider"></div>
@@ -378,7 +378,7 @@
                                     </div>
                                     <div class="menu" role="menu">
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="globalMultithreadSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync.multithread')}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateIdentifiers" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.updateIdentifiers')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="getTIsWithoutGOKBId">${message(code:'menu.yoda.purgeTIsWithoutGOKBID')}</semui:link>

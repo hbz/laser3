@@ -81,6 +81,7 @@ class MyInstitutionController  {
     PendingChangeService pendingChangeService
     UserControllerService userControllerService
     GokbService gokbService
+    ExportClickMeService exportClickMeService
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
@@ -101,7 +102,7 @@ class MyInstitutionController  {
         result.cfgChartsList = BaseConfig.CHARTS
 
         if (params.filter) {
-            reportingService.doFilter(result, params) // manipulates result, clones params
+            reportingService.doGlobalFilter(result, params) // manipulates result, clones params
 
             Map<String, Object> cacheMap = [
                 filterCache: [
@@ -1904,10 +1905,10 @@ join sub.orgRelations or_sub where
                 }
 
                 if(!noParticipation) {
-                    surveyResults.each { SurveyResult surre ->
+                   /* surveyResults.each { SurveyResult surre ->
                         if (!surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm())
                             allResultHaveValue = false
-                    }
+                    }*/
                 }
             }
             if (allResultHaveValue) {
@@ -2306,6 +2307,24 @@ join sub.orgRelations or_sub where
         if ( params.exportXLS ) {
 
             SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalMembers, header, true, 'xls')
+            response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+        }
+        else if(params.exportClickMeExcel) {
+            if (params.filename) {
+                file =params.filename
+            }
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields)
+
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)

@@ -19,6 +19,10 @@ import de.laser.Doc
 import de.laser.Person
 import de.laser.PersonRole
 import de.laser.SubscriptionService
+import de.laser.SurveyConfig
+import de.laser.SurveyInfo
+import de.laser.SurveyOrg
+import de.laser.SurveyResult
 import de.laser.Task
 import de.laser.TaskService
 import de.laser.annotations.DebugAnnotation
@@ -374,6 +378,32 @@ class AjaxHtmlController {
         }
     }
 
+    // ----- surveyInfos -----
+
+    @Secured(['ROLE_USER'])
+    def getSurveyFinishMessage() {
+        Org contextOrg = contextService.getOrg()
+        SurveyInfo surveyInfo = SurveyInfo.get(params.id)
+        SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextOrg, surveyConfig)
+        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(contextOrg, surveyConfig)
+        boolean allResultHaveValue = true
+        surveyResults.each { SurveyResult surre ->
+            if (!surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm())
+                allResultHaveValue = false
+        }
+        boolean noParticipation = false
+        if(surveyInfo.isMandatory) {
+            if(surveyConfig && surveyConfig.subSurveyUseForTransfer){
+                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextOrg, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
+            }
+        }
+        if(noParticipation || allResultHaveValue)
+            render message(code: "confirm.dialog.concludeBinding.survey")
+        else if(!noParticipation && !allResultHaveValue)
+            render message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
+    }
+
     // ----- reporting -----
 
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
@@ -383,11 +413,22 @@ class AjaxHtmlController {
     def chartDetails() {
         Map<String, Object> result = [
             token:  params.token,
-            query:  params.query,
-            id:     params.id ? params.id as Long : ''
+            query:  params.query
         ]
+        result.id = params.id ? params.id as Long : ''
 
-        reportingService.doChartDetails( result, params ) // manipulates result
+        // TODO
+        if (params.context == BaseConfig.KEY_MYINST) {
+            reportingService.doGlobalChartDetails( result, params ) // manipulates result
+        }
+        else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
+            if (params.idx) {
+                // TODO !!!!
+                params.idx = params.idx.replaceFirst(params.id + ':', '') // TODO !!!!
+                // TODO !!!!
+            }
+            reportingService.doLocalChartDetails( result, params ) // manipulates result
+        }
 
         render template: result.tmpl, model: result
     }
@@ -402,15 +443,7 @@ class AjaxHtmlController {
         Map<String, Object> selectedFields = [:]
         selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('cde:', ''), it.value ) }
 
-        SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
-        String filename
-
-        if (params.filename) {
-            filename = sdf.format(new Date()) + '_' + params.filename
-        }
-        else {
-            filename = sdf.format(new Date()) + '_reporting'
-        }
+        String filename = params.filename ?: ExportHelper.getFileName(['Reporting'])
 
         Map<String, Object> detailsCache = BaseDetails.getDetailsCache( params.token )
         AbstractExport export = DetailsExportManager.createExport( params.token, selectedFields )
@@ -430,7 +463,7 @@ class AjaxHtmlController {
             out.close()
         }
         else if (params.fileformat == 'pdf') {
-            List<List<String>> content = DetailsExportManager.export(export, 'pdf', detailsCache.idList)
+            List<List<String>> content = DetailsExportManager.export( export, 'pdf', detailsCache.idList )
             Map<String, Object> struct = ExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
 
             def pdf = wkhtmltoxService.makePdf(
@@ -465,17 +498,10 @@ class AjaxHtmlController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def chartQueryExport() {
-
-        // filename - TODO
-        Map<String, Object> queryCache = BaseQuery.getQueryCache( params.token )
-        String prefix = queryCache.query.split('-')[0]
-        Map<String, Object> cfg = BaseConfig.getCurrentConfigByPrefix( prefix )
-        List<String> queryLabels = BaseQuery.getQueryLabels(cfg, queryCache.query as String)
-
-        SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
-        String filename = sdf.format(new Date()) + '_' + ExportHelper.getFileName( queryLabels )
-
         QueryExport export = QueryExportManager.createExport( params.token )
+
+        List<String> queryLabels = ExportHelper.getIncompleteQueryLabels( params.token )
+        String filename = ExportHelper.getFileName( queryLabels )
 
         if (params.fileformat == 'csv') {
             response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
@@ -496,29 +522,35 @@ class AjaxHtmlController {
 
             Map<String, Object> struct = [:]
 
-            if (params.contentType == 'table') {
-                struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport')
-            }
-            if (params.contentType == 'image') {
+//            if (params.contentType == 'table') {
+//                struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport')
+//            }
+//            if (params.contentType == 'image') {
+                // struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport-image') // TODO
 
-                struct = [
-                        width       : Float.parseFloat( params.imageSize.split(':')[0] ),
-                        height      : Float.parseFloat( params.imageSize.split(':')[1] ),
-                        pageSize    : 'A4',
-                        orientation : 'Portrait'
-                ] as Map<String, Object>
+//                struct = [
+//                        width       : Float.parseFloat( params.imageSize.split(':')[0] ),
+//                        height      : Float.parseFloat( params.imageSize.split(':')[1] ),
+//                        pageSize    : 'A4',
+//                        orientation : 'Portrait'
+//                ] as Map<String, Object>
+//
+//                struct.whr = struct.width / struct.height
+//                if (struct.height < 400 && struct.whr >= 2) {
+//                    struct.orientation = 'Landscape'
+//                }
 
-                struct.whr = struct.width / struct.height
-                if (struct.height < 400 && struct.whr >= 2) {
-                    struct.orientation = 'Landscape'
-                }
-            }
+                //Map<String, Object> queryCache = BaseQuery.getQueryCache( params.token )
+                //queryCache.put( 'tmpBase64Data', params.imageData )
+//            }
 
             Map<String, Object> model = [
+                    token:        params.token,
                     filterLabels: ExportHelper.getCachedFilterLabels(params.token),
                     filterResult: ExportHelper.getCachedFilterResult(params.token),
                     queryLabels : queryLabels,
-                    imageData   : params.imageData,
+                    //imageData   : params.imageData,
+                    //tmpBase64Data : BaseQuery.getQueryCache( params.token ).get( 'tmpBase64Data' ),
                     contentType : params.contentType,
                     title       : filename,
                     header      : content.remove(0),
@@ -542,6 +574,8 @@ class AjaxHtmlController {
             response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
             response.setContentType('application/pdf')
             response.outputStream.withStream { it << pdf }
+
+//                render view: '/myInstitution/reporting/export/pdf/generic_query', model: model
         }
     }
 }

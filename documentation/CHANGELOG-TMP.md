@@ -7,11 +7,39 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3638    28.06.2021  rc2.1   2.1         Andreas Bug         verschiedene Bugs und Umstrukturierungen im Sync
+
+3635    28.06.2021  rc2.1   2.1         Andreas Feature     Umstrukturierungen in der Änderungsübersicht
+
+3637    25.06.2021  rc2.1   2.1         Andreas Bug         Dropdown für Lizenz wurde nicht befüllt
+
+3634    25.06.2021  rc2.1   2.1         Andreas Bug         Lizenzen mit festgefrorenen Beständen konnten keine neuen Teilnehmer erhalten
+
+3631    25.06.2021  rc2.1   2.1         Andreas Bug         Umfrageteilnehmer konnten nicht gelöscht werden
+
+3627    25.06.2021  rc2.1   2.1         Andreas Feature     Mail-Einstellung "Umfrage abgeschlossen und versendet" defaultmäßig auf Ja setzen
+
+3613    25.06.2021  rc2.1   2.1         Andreas Feature     modifizierter Hinweistext bei bestimmten Umfragekonstellationen
+
+3609    25.06.2021  rc2.1   2.1         Andreas Feature     Tausch von Organisation und Name im "Mein Adressbuch"-Filter
+
+3613    24.06.2021  rc2.1   2.1         Moe     Bug         Umfragemerkmale vom Typ Text müssen gefüllt sein um Umfrage abzuschließen
+
+3617    24.06.2021  rc2.1   2.1         Moe     Bug         click me auch auf meine einrichtungen
+
+3612    23.06.2021  rc2.1   2.1         Andreas Bug         falsche Zählung der Lizenzen korrigiert
+
+3606    23.06.2021  rc2.1   2.1         Andreas Bug         Identifier-Namensraum-Angebot bei Anbietern korrigiert
+
+3599    23.06.2021  rc2.1   2.1         Andreas Bug         Lizenztyp unvollständig gesetzt bei Lizenzimport
+
 3605    22.06.2021  rc2.1   2.1         David   Feature     Reporting: Diagramme als PDF exportieren
 
 3467    22.06.2021  rc2.1   2.1         David   Feature     Reporting: CSV- und PDF-Export in Schritt 2
 
 3603    22.06.2021  rc2.1   2.1         Andreas Feature     neue Filter für Alle Plattformen/Meine Plattformen
+
+3592    21.06.2021  rc2.1   2.1         Moe     Bug         Paket verknüpfen: Pflichtangabe mit/ohne Bestand auch nicht ausfüllbar
 
 3601    21.06.2021  rc2.1   2.1         Andreas Bug         falsche Sortierung (nach Namen statt Sortiernamen) bei Alle Plattformen korrigiert
 

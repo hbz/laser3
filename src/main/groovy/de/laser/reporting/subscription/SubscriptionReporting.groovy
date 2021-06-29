@@ -97,11 +97,12 @@ class SubscriptionReporting {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Subscription sub = Subscription.get(params.id)
 
-        // TODO
+        CONFIG.base.query2.each { cats ->
 
-        CONFIG.base.query2.each { it ->
-            if (it.value.containsKey(params.query)) {
-                meta = [ it.key, it.value.get(params.query).label, "${sdf.format(sub.startDate)} - ${sdf.format(sub.endDate)}" ]
+            cats.value.each {it ->
+                if (it.value.containsKey(params.query)) {
+                    meta = [ it.key, it.value.get(params.query).label, "${sdf.format(sub.startDate)} - ${sdf.format(sub.endDate)}" ]
+                }
             }
         }
         meta
