@@ -1,4 +1,4 @@
-package de.laser.reporting.subscription
+package de.laser.reporting.local
 
 import de.laser.FinanceService
 import de.laser.IssueEntitlement

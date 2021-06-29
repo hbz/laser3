@@ -1,15 +1,10 @@
 <%@ page import="de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails; de.laser.reporting.export.AbstractExport; de.laser.reporting.export.ExportHelper;" %>
 <laser:serviceInjection />
-<!-- _chartDetailsModal.gsp -->
-<g:set var="export" value="${DetailsExportManager.createExport( token )}" />
+<!-- _detailsModal.gsp -->
 
-<g:if test="${export}">
-    <g:set var="formFields" value="${export.getAllFields()}" />
-    <g:set var="filterLabels" value="${ExportHelper.getCachedFilterLabels( token )}" />
-    <g:set var="queryLabels" value="${ExportHelper.getCachedQueryLabels( token )}" />
+    <semui:modal id="${modalID}" text="Export" msgSave="Exportieren">
 
-    <semui:modal id="${modalID}" text="${message(code: 'reporting.export.key.' + export.KEY)}" msgSave="Exportieren">
-
+%{--
         <div class="ui form">
             <div class="field">
                 <label>Zu exportierende Datensätze</label>
@@ -17,22 +12,24 @@
             <div class="ui segments">
                 <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterLabels, stacked: true]}" />
                 <g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: queryLabels, stacked: true]}" />
+                </div>
             </div>
-        </div>
-
-        <g:set var="dcSize" value="${BaseDetails.getDetailsCache(token).idList.size()}" />
+--}%
+        %{-- <g:set var="dcSize" value="${BaseDetails.getDetailsCache(token).idList.size()}" />
         <g:if test="${dcSize > 50}">
             <div class="ui info message">
                 <i class="info circle icon"></i>
                 Bei größeren Datenmengen kann der Export einige Sekunden dauern.
             </div>
-        </g:if>
+        </g:if> --}%
 
         <g:form controller="ajaxHtml" action="chartDetailsExport" method="POST" target="_blank">
 
             <div class="ui form">
 
-            <div class="ui vertical segment">
+                %{--
+                <div class="ui vertical segment">
+
                 <div class="field">
                     <label>Zu exportierende Felder</label>
                 </div>
@@ -66,7 +63,7 @@
 
                 <div class="fields">
 
-                    <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-readerNumber'].contains( it.key ) }}" var="field" status="fc"> %{-- TODO --}%
+                    <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-readerNumber'].contains( it.key ) }}" var="field" status="fc">
                         <div class="wide eight field">
 
                             <g:set var="multiList" value="${ExportHelper.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
@@ -86,8 +83,9 @@
                     </g:each>
 
                 </div><!-- .fields -->
-            </div><!-- .segment -->
 
+            </div><!-- .segment -->
+--}%
             <div class="ui vertical segment">
                 <div class="fields">
 
@@ -128,7 +126,7 @@
             </div><!-- .form -->
 
             <input type="hidden" name="token" value="${token}" />
-            <input type="hidden" name="context" value="${BaseConfig.KEY_MYINST}" />
+            <input type="hidden" name="context" value="${BaseConfig.KEY_SUBSCRIPTION}" />
         </g:form>
 
     </semui:modal>
@@ -140,6 +138,6 @@
             $('#${modalID} *[id^=fileformat-' + $('#${modalID} select[name=fileformat]').val()).removeClass('hidden')
         }).trigger('change');
     </laser:script>
-</g:if>
-<!-- _chartDetailsModal.gsp -->
+
+<!-- _dDetailsModal.gsp -->
 

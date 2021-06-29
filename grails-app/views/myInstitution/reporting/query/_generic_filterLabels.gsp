@@ -1,4 +1,9 @@
 <%@page import="de.laser.reporting.myInstitution.GenericHelper" %>
+
+<sec:ifAnyGranted roles="ROLE_YODA">
+    <g:link controller="yoda" action="cacheInfo" params="${[key: 'MyInstitutionController/reporting/' + token]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
+</sec:ifAnyGranted>
+
 <g:if test="${stacked}">
 
     <div class="ui horizontal segments">
