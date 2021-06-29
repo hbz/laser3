@@ -310,17 +310,18 @@ class ReportingService {
     void doLocalChartDetails (Map<String, Object> result, GrailsParameterMap params) {
 
         if (params.query) {
-
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
             Map<String, Object> cacheMap = sessionCache.get("SubscriptionController/reporting") // + params.token)
 
             List<Long> idList = [], plusIdList = [], minusIdList = []
+            String label
 
             cacheMap.queryCache.dataDetails.each{ it ->
                 if ( it.get('id') == params.long('id') || it.get('id').toString() == params.idx ) { // TODO @ null
                     idList = it.get('idList')
                     plusIdList = it.get('plusIdList')
                     minusIdList = it.get('minusIdList')
+                    label = it.get('label') // todo
                     return
                 }
             }
@@ -331,7 +332,7 @@ class ReportingService {
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty('id', params.id)
                 Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, financeControllerService.getResultGenerics(clone))
-println finance
+
                 result.billingSums = finance.cons.sums?.billingSums ?: []
                 result.localSums   = finance.cons.sums?.localSums ?: []
                 result.tmpl        = '/subscription/reporting/details/timeline/cost'
@@ -357,7 +358,10 @@ println finance
                 }
             }
             else {
-                result.labels = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, params)
+                GrailsParameterMap clone = params.clone() as GrailsParameterMap
+                clone.setProperty('label', label) // todo
+
+                result.labels = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone)
                 result.list   = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name', [idList: idList])
                 result.tmpl   = '/subscription/reporting/details/entitlement'
             }
