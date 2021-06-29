@@ -17,7 +17,7 @@ import de.laser.reporting.myInstitution.base.BaseQuery
 import java.text.SimpleDateFormat
 import java.time.Year
 
-class ExportHelper {
+class ExportGlobalHelper extends AbstractExportHelper {
 
     // ----- Cache -----
 

@@ -1,6 +1,6 @@
 package de.laser.reporting.export
 
-import de.laser.AccessPointService
+
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.Org
@@ -14,7 +14,6 @@ import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointEzproxy
-import de.laser.oap.OrgAccessPointLink
 import de.laser.oap.OrgAccessPointOA
 import de.laser.oap.OrgAccessPointProxy
 import de.laser.oap.OrgAccessPointShibboleth
@@ -89,7 +88,7 @@ class OrgExport extends AbstractExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportHelper.normalizeSelectedMultipleFields( this )
+        ExportGlobalHelper.normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -99,7 +98,7 @@ class OrgExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportHelper.getFieldLabel( this, fieldName )
+        ExportGlobalHelper.getFieldLabel( this, fieldName )
     }
 
     @Override

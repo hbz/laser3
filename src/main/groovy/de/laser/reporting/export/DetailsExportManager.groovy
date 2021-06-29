@@ -3,16 +3,22 @@ package de.laser.reporting.export
 import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
+import de.laser.reporting.myInstitution.base.BaseConfig
 
 class DetailsExportManager {
 
-    static AbstractExport createExport(String token) {
-        DetailsExportManager.createExport( token, [:] )
+    static AbstractExport createExport(String token, String context) {
+        if (context == BaseConfig.KEY_MYINST) {
+            createGlobalExport(token, [:])
+        }
+        else if (context in [ BaseConfig.KEY_SUBSCRIPTION ]) {
+            createLocalExport(token, [:])
+        }
     }
 
-    static AbstractExport createExport(String token, Map<String, Object> selectedFields) {
+    static AbstractExport createGlobalExport(String token, Map<String, Object> selectedFields) {
 
-        String tmpl = ExportHelper.getCachedExportStrategy( token )
+        String tmpl = ExportGlobalHelper.getCachedExportStrategy( token )
 
         if (tmpl == LicenseExport.KEY) {
             return new LicenseExport( token, selectedFields )
@@ -22,6 +28,18 @@ class DetailsExportManager {
         }
         else if (tmpl == SubscriptionExport.KEY) {
             return new SubscriptionExport( token, selectedFields )
+        }
+    }
+
+    static AbstractExport createLocalExport(String token, Map<String, Object> selectedFields) {
+
+        String tmpl = ExportLocalHelper.getCachedExportStrategy( token )
+
+        if (tmpl == OrgExport.KEY) {
+            return new OrgExport( token, selectedFields )
+        }
+        else if (tmpl == IssueEntitlementExport.KEY) {
+            return new IssueEntitlementExport( token, selectedFields )
         }
     }
 

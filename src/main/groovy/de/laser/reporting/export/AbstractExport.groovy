@@ -1,7 +1,6 @@
 package de.laser.reporting.export
 
 import de.laser.ContextService
-import de.laser.Identifier
 import grails.util.Holders
 
 abstract class AbstractExport {
@@ -35,7 +34,8 @@ abstract class AbstractExport {
             '@ae-org-readerNumber'      : 'Nutzerzahlen und Stichtage',             // dyn.value
     ]
 
-    String token
+    String token                    // cache token
+    AbstractExportHelper helper     // context based helper
 
     Map<String, Object> selectedExportFields = [:]
 
@@ -73,8 +73,8 @@ abstract class AbstractExport {
     }
 
     Map<String, Object> getAllFields() {
-        String cfg   = ExportHelper.getCachedConfigStrategy( token )
-        String field = ExportHelper.getCachedFieldStrategy( token )
+        String cfg   = ExportGlobalHelper.getCachedConfigStrategy( token )
+        String field = ExportGlobalHelper.getCachedFieldStrategy( token )
 
         Map<String, Object> base = getCurrentConfig( KEY ).base as Map
 

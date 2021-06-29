@@ -68,7 +68,7 @@ class LicenseExport extends AbstractExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportHelper.normalizeSelectedMultipleFields( this )
+        ExportGlobalHelper.normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -78,7 +78,7 @@ class LicenseExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportHelper.getFieldLabel( this, fieldName )
+        ExportGlobalHelper.getFieldLabel( this, fieldName )
     }
 
     @Override

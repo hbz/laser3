@@ -33,7 +33,7 @@ import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.reporting.export.AbstractExport
 import de.laser.reporting.export.QueryExport
-import de.laser.reporting.export.ExportHelper
+import de.laser.reporting.export.ExportGlobalHelper
 import de.laser.reporting.export.DetailsExportManager
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -437,7 +437,7 @@ class AjaxHtmlController {
     })
     def chartDetailsExport() {
 
-        String filename = params.filename ?: ExportHelper.getFileName(['Reporting'])
+        String filename = params.filename ?: ExportGlobalHelper.getFileName(['Reporting'])
 
         if (params.context == BaseConfig.KEY_MYINST) {
 
@@ -446,7 +446,7 @@ class AjaxHtmlController {
             selectedFieldsRaw.each { it -> selectedFields.put(it.key.replaceFirst('cde:', ''), it.value) }
 
             Map<String, Object> detailsCache = BaseDetails.getDetailsCache(params.token)
-            AbstractExport export = DetailsExportManager.createExport(params.token, selectedFields)
+            AbstractExport export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
 
             if (params.fileformat == 'csv') {
                 response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
@@ -464,14 +464,14 @@ class AjaxHtmlController {
             }
             else if (params.fileformat == 'pdf') {
                 List<List<String>> content = DetailsExportManager.export(export, 'pdf', detailsCache.idList)
-                Map<String, Object> struct = ExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
+                Map<String, Object> struct = ExportGlobalHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
 
                 def pdf = wkhtmltoxService.makePdf(
                         view: '/myInstitution/reporting/export/pdf/generic_details',
                         model: [
-                                filterLabels: ExportHelper.getCachedFilterLabels(params.token),
-                                filterResult: ExportHelper.getCachedFilterResult(params.token),
-                                queryLabels : ExportHelper.getCachedQueryLabels(params.token),
+                                filterLabels: ExportGlobalHelper.getCachedFilterLabels(params.token),
+                                filterResult: ExportGlobalHelper.getCachedFilterResult(params.token),
+                                queryLabels : ExportGlobalHelper.getCachedQueryLabels(params.token),
                                 title       : filename,
                                 header      : content.remove(0),
                                 content     : content,
@@ -505,8 +505,8 @@ class AjaxHtmlController {
     def chartQueryExport() {
         QueryExport export = QueryExportManager.createExport( params.token )
 
-        List<String> queryLabels = ExportHelper.getIncompleteQueryLabels( params.token )
-        String filename = ExportHelper.getFileName( queryLabels )
+        List<String> queryLabels = ExportGlobalHelper.getIncompleteQueryLabels( params.token )
+        String filename = ExportGlobalHelper.getFileName( queryLabels )
 
         if (params.fileformat == 'csv') {
             response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
@@ -551,8 +551,8 @@ class AjaxHtmlController {
 
             Map<String, Object> model = [
                     token:        params.token,
-                    filterLabels: ExportHelper.getCachedFilterLabels(params.token),
-                    filterResult: ExportHelper.getCachedFilterResult(params.token),
+                    filterLabels: ExportGlobalHelper.getCachedFilterLabels(params.token),
+                    filterResult: ExportGlobalHelper.getCachedFilterResult(params.token),
                     queryLabels : queryLabels,
                     //imageData   : params.imageData,
                     //tmpBase64Data : BaseQuery.getQueryCache( params.token ).get( 'tmpBase64Data' ),

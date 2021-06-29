@@ -1,6 +1,12 @@
-<%@ page import="de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails; de.laser.reporting.export.AbstractExport; de.laser.reporting.export.ExportHelper;" %>
+<%@ page import="de.laser.reporting.export.ExportLocalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails; de.laser.reporting.export.AbstractExport;" %>
 <laser:serviceInjection />
 <!-- _detailsModal.gsp -->
+<g:set var="export" value="${DetailsExportManager.createExport( token, BaseConfig.KEY_SUBSCRIPTION )}" />
+
+<g:if test="${export}">
+    <g:set var="formFields" value="${export.getAllFields()}" />
+    <g:set var="filterLabels" value="${ExportLocalHelper.getCachedFilterLabels( token )}" />
+    <g:set var="queryLabels" value="${ExportLocalHelper.getCachedQueryLabels( token )}" />
 
     <semui:modal id="${modalID}" text="Export" msgSave="Exportieren">
 
@@ -27,7 +33,6 @@
 
             <div class="ui form">
 
-                %{--
                 <div class="ui vertical segment">
 
                 <div class="field">
@@ -35,7 +40,7 @@
                 </div>
                 <div class="fields">
 
-                    <g:each in="${ExportHelper.reorderFieldsForUI( formFields.findAll { !ExportHelper.isFieldMultiple( it.key ) } )}" var="field" status="fc">
+                    <g:each in="${ExportLocalHelper.reorderFieldsForUI( formFields.findAll { !ExportLocalHelper.isFieldMultiple( it.key ) } )}" var="field" status="fc">
                         <div class="wide eight field">
 
                             <g:if test="${field.key == 'globalUID'}">
@@ -66,7 +71,7 @@
                     <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-readerNumber'].contains( it.key ) }}" var="field" status="fc">
                         <div class="wide eight field">
 
-                            <g:set var="multiList" value="${ExportHelper.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
+                            <g:set var="multiList" value="${ExportLocalHelper.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
 
                             <g:select name="cde:${field.key}" class="ui selection dropdown"
                                       from="${multiList}" multiple="true"
@@ -85,7 +90,7 @@
                 </div><!-- .fields -->
 
             </div><!-- .segment -->
---}%
+
             <div class="ui vertical segment">
                 <div class="fields">
 
@@ -116,7 +121,7 @@
                         </div>
                         <div class="field">
                             <label for="filename">Dateiname</label>
-                            <input name="filename" id="filename" value="${ExportHelper.getFileName(queryLabels)}" />
+                            <input name="filename" id="filename" value="${ExportLocalHelper.getFileName(queryLabels)}" />
                         </div>
                     </div>
 
@@ -139,5 +144,5 @@
         }).trigger('change');
     </laser:script>
 
+</g:if>
 <!-- _dDetailsModal.gsp -->
-
