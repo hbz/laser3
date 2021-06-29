@@ -102,7 +102,7 @@ class MyInstitutionController  {
         result.cfgChartsList = BaseConfig.CHARTS
 
         if (params.filter) {
-            reportingService.doFilter(result, params) // manipulates result, clones params
+            reportingService.doGlobalFilter(result, params) // manipulates result, clones params
 
             Map<String, Object> cacheMap = [
                 filterCache: [
