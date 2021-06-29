@@ -413,11 +413,22 @@ class AjaxHtmlController {
     def chartDetails() {
         Map<String, Object> result = [
             token:  params.token,
-            query:  params.query,
-            id:     params.id ? params.id as Long : ''
+            query:  params.query
         ]
+        result.id = params.id ? params.id as Long : ''
 
-        reportingService.doChartDetails( result, params ) // manipulates result
+        // TODO
+        if (params.context == BaseConfig.KEY_MYINST) {
+            reportingService.doGlobalChartDetails( result, params ) // manipulates result
+        }
+        else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
+            if (params.idx) {
+                // TODO !!!!
+                params.idx = params.idx.replaceFirst(params.id + ':', '') // TODO !!!!
+                // TODO !!!!
+            }
+            reportingService.doLocalChartDetails( result, params ) // manipulates result
+        }
 
         render template: result.tmpl, model: result
     }
