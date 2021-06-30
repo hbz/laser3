@@ -139,7 +139,7 @@
 
             <br><br>
 
-            <g:form action="processSurveyCostItemsBulk" name="surveyCostItemsBulk" method="post" class="ui form"
+            <g:form action="processSurveyCostItemsBulk" data-confirm-id="processSurveyCostItemsBulk_form" name="surveyCostItemsBulk" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
 
                 <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
@@ -365,6 +365,7 @@
                         class="ui icon negative button js-open-confirm-modal"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyCostItems")}"
                         data-confirm-term-how="delete"
+                        data-confirm-id="processSurveyCostItemsBulk"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                     <i class="trash alternate icon"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
