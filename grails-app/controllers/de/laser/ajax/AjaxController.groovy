@@ -338,6 +338,7 @@ class AjaxController {
     }
   }
 
+    @Secured(['ROLE_USER'])
     def sel2RefdataSearch() {
 
         log.debug("sel2RefdataSearch params: ${params}");
@@ -421,15 +422,15 @@ class AjaxController {
           result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
       }
 
-    withFormat {
-      html {
-        result
-      }
-      json {
-        render result as JSON
-      }
+        withFormat {
+            html {
+                result
+            }
+            json {
+                render result as JSON
+            }
+        }
     }
-  }
 
   @Secured(['ROLE_USER'])
   def updateChecked() {
