@@ -25,7 +25,7 @@
 // Light Grey Sub Menu
 .ui.menu.la-contextBar {
   top: 50px;
-  z-index:90;
+  z-index:101;
   background-color: #d3dae3;
   .item {
     padding:0;

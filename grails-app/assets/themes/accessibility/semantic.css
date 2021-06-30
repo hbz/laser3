@@ -26505,7 +26505,7 @@ Floated Menu / Item
 
 .ui.menu.la-contextBar {
   top: 50px;
-  z-index: 90;
+  z-index: 101;
   background-color: #004678;
   color: white;
 }
