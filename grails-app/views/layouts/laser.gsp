@@ -34,7 +34,6 @@
 </head>
 
 <body class="${controllerName}_${actionName} ${severLabel}">
-<button class="ui button  la-menue-button"><i class="bars icon"></i></button>
     <g:if test="${currentServer == ServerUtils.SERVER_LOCAL}">
         <div class="ui yellow label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.local')}"></div>
     </g:if>
@@ -580,6 +579,7 @@
                                     </div>
                                 </g:else>
                             </div>
+
                             <laser:script file="${this.getGroovyPageFileName()}">
                                 JSPC.app.LaToggle = {};
                                 JSPC.app.LaToggle.advanced = {};
@@ -624,6 +624,9 @@
 
                             </div>
                         </g:if>
+                        <div class="item">
+                            <button class="ui button  la-menue-button"><i class="bars icon"></i></button>
+                        </div>
                 </div>
 
             </div>

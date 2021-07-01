@@ -697,6 +697,7 @@ aside.ui.accordion .title:not(.ui) {
 @media only screen and (max-width: @computerBreakpoint) {
     .ui.menu.la-contextBar {
         position: absolute !important;
+        top:0!important;
     }
 }
 @media only screen and (max-width: @tabletBreakpoint  ) {

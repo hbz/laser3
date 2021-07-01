@@ -61,6 +61,7 @@ verticalNavi = {
             }
             // smaller then 992px
             else {
+                $( '.la-contextBar' ).addClass('huge');
                 $( '.la-js-verticalNavi' ).hide();
                 $('.la-menue-button').show();
                 //dealing with dropdown menu vs vertical menu

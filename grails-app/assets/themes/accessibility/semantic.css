@@ -1475,6 +1475,7 @@ aside.ui.accordion .title:not(.ui) {
 @media only screen and (max-width: 992px) {
   .ui.menu.la-contextBar {
     position: absolute !important;
+    top: 0!important;
   }
 }
 
