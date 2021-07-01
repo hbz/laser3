@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3646    01.07.2021  rc2.1   2.1.1       Andreas Feature     Unschärfe bei der Suche von Freitextmerkmalen aufgehoben
+
+3645    01.07.2021  rc2.1   2.1.1       Andreas Bug         inkorrekte Ausgabe der Nutzerzahlenreferenzwerte und -erläuterungen
+
 3506    30.06.2021  rc2.1   2.1.1       David   Bug         Referenzwerte werden bei Umfragen und im Einrichtungsprofil nicht angezeigt!
 
 3644    30.06.2021  rc2.1   2.1.1       Andreas Bug         Formular für Löschen von Umfragekosten löste nicht aus
