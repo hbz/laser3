@@ -1,6 +1,11 @@
 package de.laser.reporting.export
 
 import de.laser.ContextService
+import de.laser.reporting.export.local.ExportLocalHelper
+import de.laser.reporting.export.myInstitution.ExportGlobalHelper
+import de.laser.reporting.export.myInstitution.LicenseExport
+import de.laser.reporting.export.myInstitution.OrgExport
+import de.laser.reporting.export.myInstitution.SubscriptionExport
 import grails.util.Holders
 
 abstract class AbstractExport {
@@ -73,8 +78,18 @@ abstract class AbstractExport {
     }
 
     Map<String, Object> getAllFields() {
-        String cfg   = ExportGlobalHelper.getCachedConfigStrategy( token )
-        String field = ExportGlobalHelper.getCachedFieldStrategy( token )
+
+        String cfg, field
+        String pkg = this.class.package.toString()
+
+        if (pkg.endsWith('.myInstitution')) {
+            cfg   = ExportGlobalHelper.getCachedConfigStrategy( token )
+            field = ExportGlobalHelper.getCachedFieldStrategy( token )
+        }
+        else if (pkg.endsWith('.local')) {
+            cfg   = ExportLocalHelper.getCachedConfigStrategy( token )
+            field = ExportLocalHelper.getCachedFieldStrategy( token )
+        }
 
         Map<String, Object> base = getCurrentConfig( KEY ).base as Map
 

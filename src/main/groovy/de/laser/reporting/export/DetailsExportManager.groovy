@@ -3,6 +3,11 @@ package de.laser.reporting.export
 import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
+import de.laser.reporting.export.local.ExportLocalHelper
+import de.laser.reporting.export.myInstitution.ExportGlobalHelper
+import de.laser.reporting.export.myInstitution.LicenseExport
+import de.laser.reporting.export.myInstitution.OrgExport
+import de.laser.reporting.export.myInstitution.SubscriptionExport
 import de.laser.reporting.myInstitution.base.BaseConfig
 
 class DetailsExportManager {
@@ -17,30 +22,11 @@ class DetailsExportManager {
     }
 
     static AbstractExport createGlobalExport(String token, Map<String, Object> selectedFields) {
-
-        String tmpl = ExportGlobalHelper.getCachedExportStrategy( token )
-
-        if (tmpl == LicenseExport.KEY) {
-            return new LicenseExport( token, selectedFields )
-        }
-        else if (tmpl == OrgExport.KEY) {
-            return new OrgExport( token, selectedFields )
-        }
-        else if (tmpl == SubscriptionExport.KEY) {
-            return new SubscriptionExport( token, selectedFields )
-        }
+        ExportGlobalHelper.createExport( token, selectedFields )
     }
 
     static AbstractExport createLocalExport(String token, Map<String, Object> selectedFields) {
-
-        String tmpl = ExportLocalHelper.getCachedExportStrategy( token )
-
-        if (tmpl == OrgExport.KEY) {
-            return new OrgExport( token, selectedFields )
-        }
-        else if (tmpl == IssueEntitlementExport.KEY) {
-            return new IssueEntitlementExport( token, selectedFields )
-        }
+        ExportLocalHelper.createExport( token, selectedFields )
     }
 
     static List export(AbstractExport export, String format, List<Long> idList) {

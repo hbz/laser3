@@ -1,12 +1,12 @@
-<%@ page import="de.laser.reporting.export.ExportLocalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails; de.laser.reporting.export.AbstractExport;" %>
+<%@ page import="de.laser.reporting.export.local.ExportLocalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails; de.laser.reporting.export.AbstractExport;" %>
 <laser:serviceInjection />
 <!-- _detailsModal.gsp -->
 <g:set var="export" value="${DetailsExportManager.createExport( token, BaseConfig.KEY_SUBSCRIPTION )}" />
 
 <g:if test="${export}">
     <g:set var="formFields" value="${export.getAllFields()}" />
-    <g:set var="filterLabels" value="${ExportLocalHelper.getCachedFilterLabels( token )}" />
-    <g:set var="queryLabels" value="${ExportLocalHelper.getCachedQueryLabels( token )}" />
+    %{--<g:set var="filterLabels" value="${ExportLocalHelper.getCachedFilterLabels( token )}" /> --}%
+    %{--<g:set var="queryLabels" value="${ExportLocalHelper.getCachedQueryLabels( token )}" />--}%
 
     <semui:modal id="${modalID}" text="Export" msgSave="Exportieren">
 

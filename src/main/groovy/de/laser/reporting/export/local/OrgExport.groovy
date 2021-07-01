@@ -1,24 +1,11 @@
-package de.laser.reporting.export
+package de.laser.reporting.export.local
 
-
-import de.laser.ContextService
-import de.laser.Identifier
-import de.laser.Org
-import de.laser.OrgSetting
-import de.laser.OrgSubjectGroup
-import de.laser.OrganisationService
-import de.laser.Person
-import de.laser.ReaderNumber
-import de.laser.RefdataValue
+import de.laser.*
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.oap.OrgAccessPoint
-import de.laser.oap.OrgAccessPointEzproxy
-import de.laser.oap.OrgAccessPointOA
-import de.laser.oap.OrgAccessPointProxy
-import de.laser.oap.OrgAccessPointShibboleth
-import de.laser.oap.OrgAccessPointVpn
-import de.laser.reporting.myInstitution.base.BaseDetails
+import de.laser.oap.*
+import de.laser.reporting.export.AbstractExport
+import de.laser.reporting.export.local.ExportLocalHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -49,7 +36,6 @@ class OrgExport extends AbstractExport {
                                     'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
                                     'eInvoice'          : FIELD_TYPE_PROPERTY,
                                     '@ae-org-contact'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
                                     '@ae-org-accessPoint'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     '@ae-org-readerNumber'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
@@ -62,7 +48,6 @@ class OrgExport extends AbstractExport {
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
                                     '@ae-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp,
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                             ],
                             agency: [
@@ -72,14 +57,13 @@ class OrgExport extends AbstractExport {
                                     'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
                                     'country'           : FIELD_TYPE_REFDATA,
                                     '@ae-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                                     'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
                             ]
                     ]
             ]
     ]
 
-    OrgExport (String token, Map<String, Object> fields) {
+    OrgExport(String token, Map<String, Object> fields) {
         this.token = token
 
         // keeping order ..
@@ -88,7 +72,7 @@ class OrgExport extends AbstractExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportGlobalHelper.normalizeSelectedMultipleFields( this )
+        ExportLocalHelper.normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -98,7 +82,7 @@ class OrgExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportGlobalHelper.getFieldLabel( this, fieldName )
+        ExportLocalHelper.getFieldLabel( this, fieldName )
     }
 
     @Override
@@ -290,16 +274,6 @@ class OrgExport extends AbstractExport {
                     }
 
                     content.add( oapList.join( CSV_VALUE_SEPARATOR ) )
-                }
-            }
-            // --> custom query depending filter implementation
-            else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
-
-                if (key == 'x-property') {
-                    Long pdId = BaseDetails.getDetailsCache(token).id as Long
-
-                    List<String> properties = BaseDetails.resolvePropertiesGeneric(org, pdId, contextService.getOrg())
-                    content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
                 }
             }
             else {

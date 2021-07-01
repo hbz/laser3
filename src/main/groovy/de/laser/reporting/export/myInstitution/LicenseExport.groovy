@@ -1,10 +1,11 @@
-package de.laser.reporting.export
+package de.laser.reporting.export.myInstitution
 
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.License
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.reporting.export.AbstractExport
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib

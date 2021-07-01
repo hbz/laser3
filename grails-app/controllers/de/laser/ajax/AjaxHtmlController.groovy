@@ -32,8 +32,8 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.reporting.export.AbstractExport
-import de.laser.reporting.export.QueryExport
-import de.laser.reporting.export.ExportGlobalHelper
+import de.laser.reporting.export.myInstitution.QueryExport
+import de.laser.reporting.export.myInstitution.ExportGlobalHelper
 import de.laser.reporting.export.DetailsExportManager
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore

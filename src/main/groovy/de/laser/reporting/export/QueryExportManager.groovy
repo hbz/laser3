@@ -1,5 +1,7 @@
 package de.laser.reporting.export
 
+import de.laser.reporting.export.myInstitution.QueryExport
+
 class QueryExportManager {
 
     static QueryExport createExport(String token) {

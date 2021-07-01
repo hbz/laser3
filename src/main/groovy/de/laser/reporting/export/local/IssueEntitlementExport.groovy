@@ -1,10 +1,11 @@
-package de.laser.reporting.export
+package de.laser.reporting.export.local
 
-import de.laser.*
+import de.laser.IssueEntitlement
+import de.laser.reporting.export.AbstractExport
 
 class IssueEntitlementExport extends AbstractExport {
 
-    static String KEY = 'issueEntitlement'
+    static String KEY = 'entitlement'
 
     static Map<String, Object> CONFIG_X = [
 

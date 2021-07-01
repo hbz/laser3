@@ -117,6 +117,22 @@ class ReportingLocalService {
                 result.list   = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name', [idList: idList])
                 result.tmpl   = '/subscription/reporting/details/entitlement'
             }
+
+            cacheMap.queryCache.labels.put('labels', result.labels)
+
+            cacheMap.detailsCache = [
+                    query   : params.query,
+                    tmpl    : result.tmpl,
+                    id      : params.long('id'),
+            ]
+            if (result.list)      { cacheMap.detailsCache.putAt( 'idList', result.list.collect{ it.id } ) } // only existing ids
+            if (result.plusList)  { cacheMap.detailsCache.putAt( 'plusIdList', result.plusList.collect{ it.id } ) } // only existing ids
+            if (result.minusList) { cacheMap.detailsCache.putAt( 'minusIdList', result.minusList.collect{ it.id } ) } // only existing ids
+
+            if (result.billingSums != null) { cacheMap.detailsCache.putAt( 'billingSums', result.billingSums ) }
+            if (result.localSums != null)   { cacheMap.detailsCache.putAt( 'localSums', result.localSums ) }
+
+            sessionCache.put("SubscriptionController/reporting" /* + params.token */, cacheMap)
         }
     }
 }

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.AbstractExport; de.laser.reporting.export.ExportGlobalHelper;" %>
+<%@ page import="de.laser.reporting.export.AbstractExport; de.laser.reporting.export.myInstitution.ExportGlobalHelper;" %>
 <laser:serviceInjection />
 <!-- _queryChartModal.gsp -->
 
