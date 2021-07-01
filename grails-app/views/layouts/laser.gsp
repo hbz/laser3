@@ -32,31 +32,17 @@
 
     <tmpl:/layouts/favicon />
 </head>
-<style>
-    .la-local{
-        border-left: 10px solid #5bc0de!important;
-    }
-    .la-dev{
-        border-left: 10px solid #98b500!important;
-    }
-    .la-qa{
-        border-left: 10px solid #bb1600!important;
-    }
-</style>
-<body class="${controllerName}_${actionName} ${severLabel} la-local">
+
+<body class="${controllerName}_${actionName} ${severLabel}">
 <button class="ui button  la-menue-button"><i class="bars icon"></i></button>
     <g:if test="${currentServer == ServerUtils.SERVER_LOCAL}">
-
+        <div class="ui teal label big la-server-label"></div>
     </g:if>
     <g:if test="${currentServer == ServerUtils.SERVER_DEV}">
-        <div class="ui green label big la-server-label" aria-label="Sie befinden sich im Developer-System">
-            <span>DEV</span>
-        </div>
+        <div class="ui green label big la-server-label" aria-label="Sie befinden sich im Developer-System"></div>
     </g:if>
     <g:if test="${currentServer == ServerUtils.SERVER_QA}">
-        <div class="ui red label big la-server-label">
-            <span>QA</span>
-        </div>
+        <div class="ui red label big la-server-label"></div>
     </g:if>
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu" />
 %{--    <nav aria-label="${message(code:'wcag.label.mainMenu')}">--}%

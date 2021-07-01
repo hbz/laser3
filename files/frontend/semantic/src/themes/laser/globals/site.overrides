@@ -423,3 +423,15 @@ aside.ui.accordion .title:not(.ui) {
     transition: height 500ms;
     overflow: hidden;
 }
+/*********************************** Responsive Behavior *******************/
+// Light Grey Sub Menu
+@media only screen and (max-width: @computerBreakpoint) {
+    .ui.menu.la-contextBar {
+        position: absolute !important;
+    }
+}
+@media only screen and (max-width: @tabletBreakpoint  ) {
+    body {
+        margin-left: 0.4em;
+    }
+}
