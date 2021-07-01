@@ -20,6 +20,12 @@ verticalNavi = {
             $('.la-menue-button').hide();
             $( '.la-js-verticalNavi' ).not('.la-js-verticalNavi-clone').show();
 
+            $('body').removeClass('pushable');
+            let main = $( "main" );
+            if ( main.parent().is( ".pusher" ) ) {
+                main.unwrap();
+            }
+
         }
         // smaller then 992px
         else {
@@ -47,6 +53,11 @@ verticalNavi = {
                 $('.la-menue-button').hide();
                 $( '.la-js-verticalNavi' ).not('.la-js-verticalNavi-clone').show();
 
+                $('body').removeClass('pushable');
+                let main = $( "main" );
+                if ( main.parent().is( ".pusher" ) ) {
+                    main.unwrap();
+                }
             }
             // smaller then 992px
             else {

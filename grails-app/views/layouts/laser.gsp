@@ -32,9 +32,22 @@
 
     <tmpl:/layouts/favicon />
 </head>
-
-<body class="${controllerName}_${actionName}">
+<style>
+    .la-local{
+        border-left: 10px solid #5bc0de!important;
+    }
+    .la-dev{
+        border-left: 10px solid #98b500!important;
+    }
+    .la-qa{
+        border-left: 10px solid #bb1600!important;
+    }
+</style>
+<body class="${controllerName}_${actionName} ${severLabel} la-local">
 <button class="ui button  la-menue-button"><i class="bars icon"></i></button>
+    <g:if test="${currentServer == ServerUtils.SERVER_LOCAL}">
+
+    </g:if>
     <g:if test="${currentServer == ServerUtils.SERVER_DEV}">
         <div class="ui green label big la-server-label" aria-label="Sie befinden sich im Developer-System">
             <span>DEV</span>
@@ -541,7 +554,7 @@
 
     <sec:ifAnyGranted roles="ROLE_USER">
         <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu" />
-        <nav class="ui fixed  stackable  menu la-contextBar" aria-label="${message(code:'wcag.label.modeNavigation')}" >
+        <nav class="ui fixed menu la-contextBar" aria-label="${message(code:'wcag.label.modeNavigation')}" >
             <div class="ui container">
                 <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
                 <div class="right menu la-advanced-view">

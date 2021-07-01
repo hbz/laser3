@@ -26503,6 +26503,12 @@ Floated Menu / Item
   width: 0;
 }
 
+@media only screen and (max-width: 992px) {
+  .ui.menu.la-contextBar {
+    position: absolute !important;
+  }
+}
+
 .ui.menu.la-contextBar {
   top: 50px;
   z-index: 101;

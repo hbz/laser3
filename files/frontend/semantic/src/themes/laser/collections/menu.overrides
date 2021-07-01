@@ -23,6 +23,11 @@
   }
 }
 // Light Grey Sub Menu
+@media only screen and (max-width: @computerBreakpoint) {
+  .ui.menu.la-contextBar {
+    position: absolute !important;
+  }
+}
 .ui.menu.la-contextBar {
   top: 50px;
   z-index:101;
