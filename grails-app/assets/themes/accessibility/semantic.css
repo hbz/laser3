@@ -26505,7 +26505,7 @@ Floated Menu / Item
 
 .ui.menu.la-contextBar {
   top: 50px;
-  z-index: 90;
+  z-index: 101;
   background-color: #004678;
   color: white;
 }
@@ -26601,6 +26601,10 @@ Floated Menu / Item
 .la-search-advanced {
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+#mainMenue {
+  z-index: 102;
 }
 /*!
  * # Semantic UI 2.4.2 - Message

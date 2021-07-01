@@ -2344,7 +2344,7 @@ mail.template.language,German,Deutsch,German,,
 mail.template.type,IP Message,IP-Meldung,IP Message,,
 number.type,Population,Einwohner,Population,Einwohner der Stadt,Einwohner der Stadt
 number.type,Scientific staff,wissenschaftliches Personal (Köpfe),Scientific staff (heads),Anzahl von Köpfen an wissenschaftlichem Personal,Count of heads in scientific personnel
-number.type,FTE,wissenschaftliches Personal (FTEs),Scientific staff (FTEs),Anzahl an Vollzeitstellen (full term equivalents) an wissenschaftlichem Personal,Count of full term equivalents in scientific personnel
+number.type,FTE,wissenschaftliches Personal (FTEs),Scientific staff (FTEs),Anzahl an Vollzeitstellen (full time equivalents) an wissenschaftlichem Personal,Count of full time equivalents in scientific personnel
 number.type,Students,Studierende,Students,Gesamtzahl aller immatrikulierten Studierenden,Gesamtzahl aller immatrikulierten Studierenden
 number.type,User,Nutzer,User,Nutzer der Einrichtung,Nutzer der Einrichtung
 oa.content.receiver,Subject repositories,Fachrepositorien,Subject repositories,,
