@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3600    01.07.2021  dev     2.1.1       Andreas Feature     PSQL-Skript zum manuellen Vereinigen von Organisationsdaten
+
 3638    28.06.2021  rc2.1   2.1         Andreas Bug         verschiedene Bugs und Umstrukturierungen im Sync
 
 3635    28.06.2021  rc2.1   2.1         Andreas Feature     Umstrukturierungen in der Änderungsübersicht
