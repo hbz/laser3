@@ -36,13 +36,13 @@
 <body class="${controllerName}_${actionName} ${severLabel}">
 <button class="ui button  la-menue-button"><i class="bars icon"></i></button>
     <g:if test="${currentServer == ServerUtils.SERVER_LOCAL}">
-        <div class="ui teal label big la-server-label"></div>
+        <div class="ui yellow label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.local')}"></div>
     </g:if>
     <g:if test="${currentServer == ServerUtils.SERVER_DEV}">
-        <div class="ui green label big la-server-label" aria-label="Sie befinden sich im Developer-System"></div>
+        <div class="ui green label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.dev')}"></div>
     </g:if>
     <g:if test="${currentServer == ServerUtils.SERVER_QA}">
-        <div class="ui red label big la-server-label"></div>
+        <div class="ui red label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.qa')}"></div>
     </g:if>
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu" />
 %{--    <nav aria-label="${message(code:'wcag.label.mainMenu')}">--}%

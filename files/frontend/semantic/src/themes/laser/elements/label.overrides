@@ -205,7 +205,7 @@
 }
 /* label what server */
 
-.la-server-label {
+.ui.label.la-server-label {
   position: fixed;
   bottom: 0;
   left: 0;
