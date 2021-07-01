@@ -130,7 +130,7 @@ class SemanticUiDropdownTagLib {
             out << '">'
             if(optionExpl instanceof Closure)
                 out << '<span class="description">'+optionExpl(el)+'</span>'
-            else out << el[optionExpl]
+            else out << '<span class="description">'+el[optionExpl]+'</span>'
             if(optionValue instanceof Closure)
                 out << '<span class="text">'+optionValue(el).toString().encodeAsHTML()+'</span>'
             else out << '<span class="text">'+el[optionValue].toString().encodeAsHTML()+'</span>'

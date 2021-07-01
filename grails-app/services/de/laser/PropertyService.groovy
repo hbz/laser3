@@ -76,8 +76,8 @@ class PropertyService {
                         if (!params.filterProp || params.filterProp.length() < 1) {
                             base_qry += " and gProp.stringValue = null ) "
                         } else {
-                            base_qry += " and lower(gProp.stringValue) like lower(:prop) ) "
-                            base_qry_params.put('prop', "%${AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type)}%")
+                            base_qry += " and gProp.stringValue = :prop ) "
+                            base_qry_params.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                         }
                 }
                 else if (pd.isBigDecimalType()) {
