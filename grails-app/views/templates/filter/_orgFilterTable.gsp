@@ -238,6 +238,12 @@
                             <i class="chess rook grey icon"></i>
                         </span>
                     </g:if>
+                    <g:elseif test="${org.gokbId != null && RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()}">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                              data-content="${RDStore.OT_PROVIDER.getI10n("value")}">
+                            <i class="certificate grey icon"></i>
+                        </span>
+                    </g:elseif>
                 </th>
             </g:if>
 
