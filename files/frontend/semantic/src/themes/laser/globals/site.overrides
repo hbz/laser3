@@ -427,8 +427,14 @@ aside.ui.accordion .title:not(.ui) {
 // Light Grey Sub Menu
 @media only screen and (max-width: @computerBreakpoint) {
     .ui.menu.la-contextBar {
-        position: absolute !important;
         top:0!important;
+    }
+}
+@media only screen and (max-width: @largeMonitorBreakpoint) {
+    .ui.menu.la-contextBar {
+        .ui.container {
+            width: 100%;
+        }
     }
 }
 @media only screen and (max-width: @tabletBreakpoint  ) {
