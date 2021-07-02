@@ -1469,6 +1469,21 @@ aside.ui.accordion .title:not(.ui) {
 .la-filter legend {
   color: #FFFFFF;
 }
+
+/*********************************** Responsive Behavior *******************/
+
+@media only screen and (max-width: 992px) {
+  .ui.menu.la-contextBar {
+    position: absolute !important;
+    top: 0!important;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  body {
+    margin-left: 0.4em;
+  }
+}
 /*!
  * # Semantic UI 2.4.2 - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -16351,6 +16366,19 @@ a.ui.basic.label:hover {
 .ui.label.la-advanced-label {
   background-color: #d3dae3;
 }
+
+/* label what server */
+
+.ui.label.la-server-label {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  top: 0;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  z-index: 999;
+  padding: 0.2em;
+}
 /*!
  * # Semantic UI 2.4.2 - List
  * http://github.com/semantic-org/semantic-ui/
@@ -26601,6 +26629,10 @@ Floated Menu / Item
 .la-search-advanced {
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+#mainMenue {
+  z-index: 102;
 }
 /*!
  * # Semantic UI 2.4.2 - Message

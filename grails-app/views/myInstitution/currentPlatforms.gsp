@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Platform" %>
+<%@ page import="de.laser.Platform; de.laser.helper.RDStore" %>
 
 <!doctype html>
 <html>
@@ -42,7 +42,13 @@
             </th>
             <td>
                 <g:if test="${platformInstance.org}">
-                    <g:link controller="organisation" action="show" id="${platformInstance.org?.id}">${platformInstance.org?.getDesignation()}</g:link>
+                    <g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
+                    <g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                              data-content="${RDStore.OT_PROVIDER.getI10n("value")}">
+                            <i class="certificate grey icon"></i>
+                        </span>
+                    </g:if>
                 </g:if>
             </td>
             <td>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Platform; de.laser.Package; de.laser.Org" %>
+<%@ page import="de.laser.Platform; de.laser.Package; de.laser.Org; de.laser.helper.RDStore" %>
 <!doctype html>
 <html>
 	<head>
@@ -50,10 +50,15 @@
 						<td>
 							<g:if test="${platformInstance && platformInstance.org}">
 								<g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
+								<g:if test="${org.gokbId != null && RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()}">
+									<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+										  data-content="${RDStore.OT_PROVIDER.getI10n("value")}">
+										<i class="certificate grey icon"></i>
+									</span>
+								</g:if>
 							</g:if>
 							<g:elseif test="${record.providerUuid}">
-								<%--${record.providerName}--%>
-								providerName missing in ES-Index!
+								${record.providerName}
 								<a target="_blank" href="${editUrl ? editUrl + '/public/orgContent?id=' + record.providerUuid : '#'}">
 									<i title="we:kb Link" class="external alternate icon"></i>
 								</a>

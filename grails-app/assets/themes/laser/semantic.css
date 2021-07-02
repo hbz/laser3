@@ -822,21 +822,23 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
         https://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer/
 *******************************/
 
-body {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  min-height: 100vh;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
-}
+@media only screen and (min-width: 992px) {
+  body {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    min-height: 100vh;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+  }
 
-main {
-  -webkit-box-flex: 1;
-  -ms-flex: 1;
-  flex: 1;
+  main {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+  }
 }
 
 /*******************************
@@ -1260,6 +1262,21 @@ aside.ui.accordion .title:not(.ui) {
   -webkit-transition: height 500ms;
   transition: height 500ms;
   overflow: hidden;
+}
+
+/*********************************** Responsive Behavior *******************/
+
+@media only screen and (max-width: 992px) {
+  .ui.menu.la-contextBar {
+    position: absolute !important;
+    top: 0!important;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  body {
+    margin-left: 0.4em;
+  }
 }
 /*!
  * # Semantic UI 2.4.2 - Button
@@ -16157,6 +16174,19 @@ a.ui.basic.label:hover {
 .ui.label.la-advanced-label {
   background-color: #d3dae3;
 }
+
+/* label what server */
+
+.ui.label.la-server-label {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  top: 0;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  z-index: 999;
+  padding: 0.2em;
+}
 /*!
  * # Semantic UI 2.4.2 - List
  * http://github.com/semantic-org/semantic-ui/
@@ -26369,6 +26399,10 @@ Floated Menu / Item
 .la-search-advanced {
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+#mainMenue {
+  z-index: 102;
 }
 /*!
  * # Semantic UI 2.4.2 - Message
