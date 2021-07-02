@@ -49,7 +49,7 @@ BEGIN
 	update org set org_url = oldorgdata.org_url where org_id = new_key and org_url is null;
     delete from contact WHERE ct_org_fk = old_key and ct_content in (select ct_content from contact where ct_org_fk = new_key);
 	update contact set ct_org_fk = new_key where ct_org_fk = old_key;
-	delete from doc_context WHERE dc_org_fk = old_key and dc_doc_fk in (select dc_doc_fk from contact where dc_org_fk = new_key);
+	delete from doc_context WHERE dc_org_fk = old_key and dc_doc_fk in (select dc_doc_fk from doc_context where dc_org_fk = new_key);
 	update doc_context set dc_org_fk = new_key where dc_org_fk = old_key;
 	update doc_context set dc_target_org_fk = new_key where dc_target_org_fk = old_key;
 	select count(id_id) into idcount from identifier where id_org_fk = old_key;
