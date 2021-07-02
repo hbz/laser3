@@ -33,17 +33,15 @@
     <tmpl:/layouts/favicon />
 </head>
 
-<body class="${controllerName}_${actionName}">
-<button class="ui button  la-menue-button"><i class="bars icon"></i></button>
+<body class="${controllerName}_${actionName} ${severLabel}">
+    <g:if test="${currentServer == ServerUtils.SERVER_LOCAL}">
+        <div class="ui yellow label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.local')}"></div>
+    </g:if>
     <g:if test="${currentServer == ServerUtils.SERVER_DEV}">
-        <div class="ui green label big la-server-label" aria-label="Sie befinden sich im Developer-System">
-            <span>DEV</span>
-        </div>
+        <div class="ui green label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.dev')}"></div>
     </g:if>
     <g:if test="${currentServer == ServerUtils.SERVER_QA}">
-        <div class="ui red label big la-server-label">
-            <span>QA</span>
-        </div>
+        <div class="ui red label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.qa')}"></div>
     </g:if>
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu" />
 %{--    <nav aria-label="${message(code:'wcag.label.mainMenu')}">--}%
@@ -541,7 +539,7 @@
 
     <sec:ifAnyGranted roles="ROLE_USER">
         <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu" />
-        <nav class="ui fixed  stackable  menu la-contextBar" aria-label="${message(code:'wcag.label.modeNavigation')}" >
+        <nav class="ui fixed menu la-contextBar" aria-label="${message(code:'wcag.label.modeNavigation')}" >
             <div class="ui container">
                 <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
                 <div class="right menu la-advanced-view">
@@ -581,6 +579,7 @@
                                     </div>
                                 </g:else>
                             </div>
+
                             <laser:script file="${this.getGroovyPageFileName()}">
                                 JSPC.app.LaToggle = {};
                                 JSPC.app.LaToggle.advanced = {};
@@ -625,6 +624,9 @@
 
                             </div>
                         </g:if>
+                        <div class="item">
+                            <button class="ui button  la-menue-button"><i class="bars icon"></i></button>
+                        </div>
                 </div>
 
             </div>

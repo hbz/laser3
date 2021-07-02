@@ -691,3 +691,17 @@ aside.ui.accordion .title:not(.ui) {
     }
 
 }
+
+/*********************************** Responsive Behavior *******************/
+// Light Grey Sub Menu
+@media only screen and (max-width: @computerBreakpoint) {
+    .ui.menu.la-contextBar {
+        position: absolute !important;
+        top:0!important;
+    }
+}
+@media only screen and (max-width: @tabletBreakpoint  ) {
+    body {
+        margin-left: 0.4em;
+    }
+}
