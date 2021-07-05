@@ -42,7 +42,7 @@ class BaseConfig {
     static String CUSTOM_KEY_CUSTOMER_TYPE      = 'customerType'
     static String CUSTOM_KEY_LEGAL_INFO         = 'legalInfo'
     static String CUSTOM_KEY_ANNUAL             = 'annual'
-
+    
     static Map<String, String> FILTER = [
 
             organisation : 'Organisationen',

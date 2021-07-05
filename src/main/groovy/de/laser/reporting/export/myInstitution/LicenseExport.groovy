@@ -1,17 +1,18 @@
-package de.laser.reporting.export
+package de.laser.reporting.export.myInstitution
 
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.License
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
-class LicenseExport extends AbstractExport {
+class LicenseExport extends BaseExport {
 
     static String KEY = 'license'
 
@@ -68,7 +69,7 @@ class LicenseExport extends AbstractExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportHelper.normalizeSelectedMultipleFields( this )
+        ExportGlobalHelper.normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -78,16 +79,16 @@ class LicenseExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportHelper.getFieldLabel( this, fieldName )
+        ExportGlobalHelper.getFieldLabel( this, fieldName )
     }
 
     @Override
-    List<String> getObject(Long id, Map<String, Object> fields) {
+    List<String> getObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
-        License lic = License.get(id)
+        License lic = obj as License
         List<String> content = []
 
         fields.each{ f ->

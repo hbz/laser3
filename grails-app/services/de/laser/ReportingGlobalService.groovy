@@ -2,32 +2,21 @@ package de.laser
 
 import de.laser.finance.CostItem
 import de.laser.helper.SessionCacheWrapper
-import de.laser.reporting.myInstitution.CostItemFilter
-import de.laser.reporting.myInstitution.CostItemQuery
-import de.laser.reporting.myInstitution.LicenseFilter
-import de.laser.reporting.myInstitution.LicenseQuery
-import de.laser.reporting.myInstitution.OrganisationFilter
-import de.laser.reporting.myInstitution.OrganisationQuery
-import de.laser.reporting.myInstitution.SubscriptionFilter
-import de.laser.reporting.myInstitution.SubscriptionQuery
+import de.laser.reporting.myInstitution.*
 import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.reporting.myInstitution.base.BaseQuery
-import de.laser.reporting.subscription.SubscriptionReporting
 import grails.gorm.transactions.Transactional
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.commons.lang3.RandomStringUtils
 
 @Transactional
-class ReportingService {
+class ReportingGlobalService {
 
     def contextService
-    def financeService
-    def financeControllerService
 
     // ----- MyInstitutionController.reporting() -----
 
-    void doGlobalFilter(Map<String, Object> result, GrailsParameterMap params) {
+    void doFilter(Map<String, Object> result, GrailsParameterMap params) {
 
         result.filter = params.filter
         result.token  = params.token ?: RandomStringUtils.randomAlphanumeric(16)
@@ -112,7 +101,7 @@ class ReportingService {
 
     // ----- 2 - chart
 
-    void doGlobalChart (Map<String, Object> result, GrailsParameterMap params) {
+    void doChart(Map<String, Object> result, GrailsParameterMap params) {
 
         if (params.query) {
 
@@ -190,46 +179,9 @@ class ReportingService {
         }
     }
 
-    void doLocalChart (Map<String, Object> result, GrailsParameterMap params) {
-
-        if (params.query) {
-
-            GrailsParameterMap clone = params.clone() as GrailsParameterMap // TODO: simplify
-            String prefix = clone.query.split('-')[0]
-            Subscription sub = Subscription.get( params.id )
-
-            if (prefix in ['timeline']) {
-                result.putAll( SubscriptionReporting.query(clone) )
-                result.labels.chart = SubscriptionReporting.getCurrentQuery2Config( sub ).getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
-
-                if (clone.query in ['timeline-cost']) {
-                    result.tmpl = '/subscription/reporting/chart/timeline-cost'
-                }
-                else {
-                    result.tmpl = '/subscription/reporting/chart/generic-timeline'
-                }
-            }
-            else {
-                result.putAll( SubscriptionReporting.query(clone) )
-                result.labels.tooltip = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone).get(1)
-
-                result.tmpl = '/subscription/reporting/chart/generic-bar'
-            }
-
-            // TODO
-            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String, Object> cacheMap = sessionCache.get("SubscriptionController/reporting") // + params.token)
-
-            cacheMap.queryCache = [:]
-            cacheMap.queryCache.putAll(result)
-
-            sessionCache.put("SubscriptionController/reporting" /* + params.token */, cacheMap)
-        }
-    }
-
     // ----- 3 - details
 
-    void doGlobalChartDetails (Map<String, Object> result, GrailsParameterMap params) {
+    void doChartDetails(Map<String, Object> result, GrailsParameterMap params) {
 
         if (params.query) {
 
@@ -305,74 +257,5 @@ class ReportingService {
 
             sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)
         }
-    }
-
-    void doLocalChartDetails (Map<String, Object> result, GrailsParameterMap params) {
-
-        if (params.query) {
-            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String, Object> cacheMap = sessionCache.get("SubscriptionController/reporting") // + params.token)
-
-            List<Long> idList = [], plusIdList = [], minusIdList = []
-            String label
-
-            cacheMap.queryCache.dataDetails.each{ it ->
-                if ( it.get('id') == params.long('id') || it.get('id').toString() == params.idx ) { // TODO @ null
-                    idList = it.get('idList')
-                    plusIdList = it.get('plusIdList')
-                    minusIdList = it.get('minusIdList')
-                    label = it.get('label') // todo
-                    return
-                }
-            }
-
-            if (params.query == 'timeline-cost') {
-                result.labels = SubscriptionReporting.getTimelineQueryLabels(params)
-
-                GrailsParameterMap clone = params.clone() as GrailsParameterMap
-                clone.setProperty('id', params.id)
-                Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, financeControllerService.getResultGenerics(clone))
-
-                result.billingSums = finance.cons.sums?.billingSums ?: []
-                result.localSums   = finance.cons.sums?.localSums ?: []
-                result.tmpl        = '/subscription/reporting/details/timeline/cost'
-            }
-            else if (params.query in ['timeline-entitlement', 'timeline-member']) {
-                result.labels = SubscriptionReporting.getTimelineQueryLabels(params)
-
-                if (params.query == 'timeline-entitlement') {
-                    String hql = 'select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name'
-
-                    result.list      = idList      ? TitleInstancePackagePlatform.executeQuery( hql, [idList: idList] ) : []
-                    result.plusList  = plusIdList  ? TitleInstancePackagePlatform.executeQuery( hql, [idList: plusIdList] ) : []
-                    result.minusList = minusIdList ? TitleInstancePackagePlatform.executeQuery( hql, [idList: minusIdList] ) : []
-                    result.tmpl      = '/subscription/reporting/details/timeline/entitlement'
-                }
-                else {
-                    String hql = 'select o from Org o where o.id in (:idList) order by o.sortname, o.name'
-
-                    result.list      = idList      ? Org.executeQuery( hql, [idList: idList] ) : []
-                    result.plusList  = plusIdList  ? Org.executeQuery( hql, [idList: plusIdList] ) : []
-                    result.minusList = minusIdList ? Org.executeQuery( hql, [idList: minusIdList] ) : []
-                    result.tmpl      = '/subscription/reporting/details/timeline/organisation'
-                }
-            }
-            else {
-                GrailsParameterMap clone = params.clone() as GrailsParameterMap
-                clone.setProperty('label', label) // todo
-
-                result.labels = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone)
-                result.list   = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name', [idList: idList])
-                result.tmpl   = '/subscription/reporting/details/entitlement'
-            }
-        }
-    }
-
-    // ----- helper
-
-    List getCachedFilterIdList(String prefix, GrailsParameterMap params) {
-
-        List<Long> idList = params?.filterCache?.data?.get(prefix + 'IdList')?.collect { it as Long }
-        return idList ?: []
     }
 }

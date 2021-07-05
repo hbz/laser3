@@ -1,4 +1,5 @@
 <%@page import="de.laser.reporting.myInstitution.GenericHelper" %>
+
 <g:if test="${stacked}">
 
     <div class="ui horizontal segments">

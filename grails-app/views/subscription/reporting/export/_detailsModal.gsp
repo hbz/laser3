@@ -1,15 +1,16 @@
-<%@ page import="de.laser.reporting.export.base.BaseExport; de.laser.reporting.export.myInstitution.ExportGlobalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.reporting.export.base.BaseExport; de.laser.reporting.export.local.ExportLocalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
-<!-- _chartDetailsModal.gsp -->
-<g:set var="export" value="${DetailsExportManager.createExport( token, BaseConfig.KEY_MYINST )}" />
+<!-- _detailsModal.gsp -->
+<g:set var="export" value="${DetailsExportManager.createExport( token, BaseConfig.KEY_SUBSCRIPTION )}" />
 
 <g:if test="${export}">
     <g:set var="formFields" value="${export.getAllFields()}" />
-    <g:set var="filterLabels" value="${ExportGlobalHelper.getCachedFilterLabels( token )}" />
-    <g:set var="queryLabels" value="${ExportGlobalHelper.getCachedQueryLabels( token )}" />
+    %{--<g:set var="filterLabels" value="${ExportLocalHelper.getCachedFilterLabels( token )}" />--}%
+    %{--<g:set var="queryLabels" value="${ExportLocalHelper.getCachedQueryLabels( token )}" />--}%
 
-    <semui:modal id="${modalID}" text="${message(code: 'reporting.export.key.' + export.KEY)}" msgSave="Exportieren">
+    <semui:modal id="${modalID}" text="Export" msgSave="Exportieren">
 
+    %{--
         <div class="ui form">
             <div class="field">
                 <label>Zu exportierende Datensätze</label>
@@ -17,10 +18,11 @@
             <div class="ui segments">
                 <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterLabels, stacked: true]}" />
                 <g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: queryLabels, stacked: true]}" />
+                </div>
             </div>
-        </div>
+    --}%
 
-        <g:set var="dcSize" value="${ExportGlobalHelper.getDetailsCache(token).idList.size()}" />
+        <g:set var="dcSize" value="${ExportLocalHelper.getDetailsCache(token).idList.size()}" />
         <g:if test="${dcSize > 50}">
             <div class="ui info message">
                 <i class="info circle icon"></i>
@@ -32,13 +34,14 @@
 
             <div class="ui form">
 
-            <div class="ui vertical segment">
+                <div class="ui vertical segment">
+
                 <div class="field">
                     <label>Zu exportierende Felder</label>
                 </div>
                 <div class="fields">
 
-                    <g:each in="${ExportGlobalHelper.reorderFieldsForUI( formFields.findAll { !ExportGlobalHelper.isFieldMultiple( it.key ) } )}" var="field" status="fc">
+                    <g:each in="${ExportLocalHelper.reorderFieldsForUI( formFields.findAll { !ExportLocalHelper.isFieldMultiple( it.key ) } )}" var="field" status="fc">
                         <div class="wide eight field">
 
                             <g:if test="${field.key == 'globalUID'}">
@@ -66,10 +69,10 @@
 
                 <div class="fields">
 
-                    <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-readerNumber'].contains( it.key ) }}" var="field" status="fc"> %{-- TODO --}%
+                    <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-readerNumber', '@ae-entitlement-tippIdentifier'].contains( it.key ) }}" var="field" status="fc">%{-- TODO --}%
                         <div class="wide eight field">
 
-                            <g:set var="multiList" value="${ExportGlobalHelper.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
+                            <g:set var="multiList" value="${ExportLocalHelper.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
 
                             <g:select name="cde:${field.key}" class="ui selection dropdown"
                                       from="${multiList}" multiple="true"
@@ -86,6 +89,7 @@
                     </g:each>
 
                 </div><!-- .fields -->
+
             </div><!-- .segment -->
 
             <div class="ui vertical segment">
@@ -118,7 +122,7 @@
                         </div>
                         <div class="field">
                             <label for="filename">Dateiname</label>
-                            <input name="filename" id="filename" value="${ExportGlobalHelper.getFileName(queryLabels)}" />
+                            <input name="filename" id="filename" value="${ExportLocalHelper.getFileName(queryLabels)}" />
                         </div>
                     </div>
 
@@ -128,7 +132,7 @@
             </div><!-- .form -->
 
             <input type="hidden" name="token" value="${token}" />
-            <input type="hidden" name="context" value="${BaseConfig.KEY_MYINST}" />
+            <input type="hidden" name="context" value="${BaseConfig.KEY_SUBSCRIPTION}" />
         </g:form>
 
     </semui:modal>
@@ -140,6 +144,9 @@
             $('#${modalID} *[id^=fileformat-' + $('#${modalID} select[name=fileformat]').val()).removeClass('hidden')
         }).trigger('change');
     </laser:script>
-</g:if>
-<!-- _chartDetailsModal.gsp -->
 
+    <style>
+        .ui.form .fields .field { margin-bottom: 0 !important; }
+    </style>
+</g:if>
+<!-- _dDetailsModal.gsp -->
