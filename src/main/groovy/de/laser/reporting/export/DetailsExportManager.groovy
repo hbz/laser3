@@ -57,7 +57,9 @@ class DetailsExportManager {
 
         List objList = resolveIdList( export, idList )
 
-        objList.each { obj ->
+        objList.eachWithIndex { obj, i ->
+            println '- ' + i + ' : ' + obj
+
             List<String> row = export.getObject( obj, fields )
             if (row) {
                 rows.add( buildCsvRow( row ) )
@@ -89,7 +91,9 @@ class DetailsExportManager {
 
         List objList = resolveIdList( export, idList )
 
-        objList.each { obj ->
+        objList.eachWithIndex { obj, i ->
+            println '- ' + i + ' : ' + obj
+
             List<String> row = export.getObject(obj, fields)
             if (row) {
                 rows.add( buildPdfRow( row ) )

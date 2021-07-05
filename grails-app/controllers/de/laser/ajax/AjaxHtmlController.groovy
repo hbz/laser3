@@ -520,7 +520,7 @@ class AjaxHtmlController {
                         view: '/subscription/reporting/export/pdf/generic_details',
                         model: [
                                 //filterLabels: ExportLocalHelper.getCachedFilterLabels(params.token),
-                                //filterResult: ExportLocalHelper.getCachedFilterResult(params.token),
+                                filterResult: ExportLocalHelper.getCachedFilterResult(params.token),
                                 queryLabels : ExportLocalHelper.getCachedQueryLabels(params.token),
                                 title       : filename,
                                 header      : content.remove(0),

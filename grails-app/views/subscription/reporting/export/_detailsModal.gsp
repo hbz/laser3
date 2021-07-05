@@ -5,12 +5,12 @@
 
 <g:if test="${export}">
     <g:set var="formFields" value="${export.getAllFields()}" />
-    %{--<g:set var="filterLabels" value="${ExportLocalHelper.getCachedFilterLabels( token )}" /> --}%
+    %{--<g:set var="filterLabels" value="${ExportLocalHelper.getCachedFilterLabels( token )}" />--}%
     %{--<g:set var="queryLabels" value="${ExportLocalHelper.getCachedQueryLabels( token )}" />--}%
 
     <semui:modal id="${modalID}" text="Export" msgSave="Exportieren">
 
-%{--
+    %{--
         <div class="ui form">
             <div class="field">
                 <label>Zu exportierende Datensätze</label>
@@ -20,7 +20,8 @@
                 <g:render template="/myInstitution/reporting/details/generic_queryLabels" model="${[queryLabels: queryLabels, stacked: true]}" />
                 </div>
             </div>
---}%
+    --}%
+
         <g:set var="dcSize" value="${ExportLocalHelper.getDetailsCache(token).idList.size()}" />
         <g:if test="${dcSize > 50}">
             <div class="ui info message">
@@ -68,7 +69,7 @@
 
                 <div class="fields">
 
-                    <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-readerNumber'].contains( it.key ) }}" var="field" status="fc">
+                    <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-readerNumber', '@ae-entitlement-tippIdentifier'].contains( it.key ) }}" var="field" status="fc">%{-- TODO --}%
                         <div class="wide eight field">
 
                             <g:set var="multiList" value="${ExportLocalHelper.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />

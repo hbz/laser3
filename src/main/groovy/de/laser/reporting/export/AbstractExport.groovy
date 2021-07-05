@@ -33,14 +33,19 @@ abstract class AbstractExport {
             // virtual; without XY.CONFIG.base.x
 
             '@ae-subscription-member'   : 'Anzahl Teilnehmer',
+
             '@ae-license-subscription'  : 'Anzahl Lizenzen',
             '@ae-license-member'        : 'Anzahl Teilnehmerverträge',
+
             '@ae-org-accessPoint'       : 'Zugangskonfigurationen (ohne Links)',    // dyn.value
             '@ae-org-contact'           : 'Kontaktdaten',
             '@ae-org-readerNumber'      : 'Nutzerzahlen und Stichtage',             // dyn.value
 
             '@ae-entitlement-tippName'              : 'Titel der Ressource',
-            '@ae-entitlement-tippIds'               : 'Identifikatoren',
+            '@ae-entitlement-tippEditionStatement'  : 'Auflage',
+            '@ae-entitlement-tippFirstAuthor'       : 'Autor(en)name',
+            '@ae-entitlement-tippHostPlatformURL'   : 'Plattform-URL',
+            '@ae-entitlement-tippIdentifier'        : 'Identifikatoren',            // dyn.value
             '@ae-entitlement-tippPublisherName'     : 'Publisher',
             '@ae-entitlement-tippSeriesName'        : 'Name der Reihe',
             '@ae-entitlement-tippSubjectReference'  : 'Fachbereich',
@@ -48,7 +53,6 @@ abstract class AbstractExport {
     ]
 
     String token                    // cache token
-    AbstractExportHelper helper     // context based helper
 
     Map<String, Object> selectedExportFields = [:]
 

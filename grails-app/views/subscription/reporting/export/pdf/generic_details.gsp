@@ -43,11 +43,14 @@
         color: #bb1600;
         font-weight: bold;
     }
+    .filterInfo,
+    .filterResult,
     .queryInfo {
         margin-bottom: 0.5em;
         padding: 0.5em 1em;
         border-left: 5px solid #a9cce3;
     }
+    .filterResult,
     .queryInfo {
         font-weight: bold;
     }
@@ -57,6 +60,10 @@
     <p><span class="warning">DEMO : Funktionalität in Entwicklung</span></p>
 
     <h1>LAS:eR Report <span>- ${DateUtils.getSDF_NoTime().format( new Date() )}</span></h1>
+
+    <div class="filterResult">
+        <%= filterResult %>
+    </div>
 
     <div class="queryInfo">
         ${queryLabels.join(' > ')}

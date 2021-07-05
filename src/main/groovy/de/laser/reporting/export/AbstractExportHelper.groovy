@@ -1,11 +1,13 @@
 package de.laser.reporting.export
 
 import de.laser.IdentifierNamespace
+import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.Org
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.TitleInstancePackagePlatform
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 
@@ -53,7 +55,7 @@ abstract class AbstractExportHelper {
 
     static boolean isFieldMultiple(String fieldName) {
 
-        if (fieldName in [ 'x-identifier', '@ae-org-accessPoint', '@ae-org-readerNumber']) {
+        if (fieldName in [ 'x-identifier', '@ae-org-accessPoint', '@ae-org-readerNumber', '@ae-entitlement-tippIdentifier']) {
             return true
         }
         return false
@@ -84,24 +86,30 @@ abstract class AbstractExportHelper {
         else if (key == '@ae-org-readerNumber') {
             getReaderNumberSemesterAndDueDatesForDropdown()
         }
+        else if (key == '@ae-entitlement-tippIdentifier') {
+            getIdentifierNamespacesForDropdown( cfg )
+        }
     }
 
     static List getIdentifierNamespacesForDropdown(Map<String, Object> cfg) {
         List<IdentifierNamespace> idnsList = []
 
         if (cfg.base.meta.class == Org) {
-            idnsList = Org.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: Org.class.name] )
+            idnsList = IdentifierNamespace.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: Org.class.name] )
         }
         else if (cfg.base.meta.class == License) {
-            idnsList = License.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: License.class.name] )
+            idnsList = IdentifierNamespace.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: License.class.name] )
         }
         else if (cfg.base.meta.class == Subscription) {
-            idnsList = Subscription.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: Subscription.class.name] )
+            idnsList = IdentifierNamespace.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: Subscription.class.name] )
+        }
+        else if (cfg.base.meta.class == IssueEntitlement) {
+            idnsList = IdentifierNamespace.executeQuery( 'select idns from IdentifierNamespace idns where idns.nsType = :type', [type: TitleInstancePackagePlatform.class.name] )
         }
 
         idnsList.collect{ it ->
             [ it.id, it.getI10n('name') ?: it.ns + ' *' ]
-        }
+        }.sort { a,b -> a[1] <=> b[1] }
     }
 
     static List getAccessPointMethodsforDropdown() {

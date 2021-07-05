@@ -1,10 +1,8 @@
 package de.laser.reporting.export.local
 
 import de.laser.ContextService
+import de.laser.Identifier
 import de.laser.IssueEntitlement
-import de.laser.Org
-import de.laser.Person
-import de.laser.RefdataValue
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.reporting.export.AbstractExport
@@ -26,15 +24,18 @@ class IssueEntitlementExport extends AbstractExport {
                     fields : [
                             default: [
                                     'globalUID'             : FIELD_TYPE_PROPERTY,
-                                    'status'                : FIELD_TYPE_REFDATA,
+                                    '@ae-entitlement-tippName'              : FIELD_TYPE_CUSTOM_IMPL,   // virtual
+                                    '@ae-entitlement-tippTitleType'         : FIELD_TYPE_CUSTOM_IMPL,   // virtual
                                     'medium'                : FIELD_TYPE_REFDATA,
                                     'acceptStatus'          : FIELD_TYPE_REFDATA,
-                                    '@ae-entitlement-tippName'              : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    '@ae-entitlement-tippIds'               : FIELD_TYPE_CUSTOM_IMPL,   // virtual
+                                    'status'                : FIELD_TYPE_REFDATA,
+                                    '@ae-entitlement-tippFirstAuthor'       : FIELD_TYPE_CUSTOM_IMPL,   // virtual
+                                    '@ae-entitlement-tippEditionStatement'  : FIELD_TYPE_CUSTOM_IMPL,   // virtual
                                     '@ae-entitlement-tippPublisherName'     : FIELD_TYPE_CUSTOM_IMPL,   // virtual
                                     '@ae-entitlement-tippSeriesName'        : FIELD_TYPE_CUSTOM_IMPL,   // virtual
                                     '@ae-entitlement-tippSubjectReference'  : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    '@ae-entitlement-tippTitleType'         : FIELD_TYPE_CUSTOM_IMPL,   // virtual
+                                    '@ae-entitlement-tippHostPlatformURL'   : FIELD_TYPE_CUSTOM_IMPL,   // virtual
+                                    '@ae-entitlement-tippIdentifier'        : FIELD_TYPE_CUSTOM_IMPL    // virtual
                             ]
                     ]
             ]
@@ -121,17 +122,32 @@ class IssueEntitlementExport extends AbstractExport {
                 if (key == '@ae-entitlement-tippName') {
                     content.add( ie.tipp.name ?: '' )
                 }
-                else if (key == '@ae-entitlement-tippIds') {
-                    content.add( ' todo ' )
+                else if (key == '@ae-entitlement-tippEditionStatement') {
+                    content.add( ie.tipp.editionStatement ?: '' )
+                }
+                else if (key == '@ae-entitlement-tippFirstAuthor') {
+                    content.add( ie.tipp.firstAuthor ?: '' )
+                }
+                else if (key == '@ae-entitlement-tippHostPlatformURL') {
+                    content.add( ie.tipp.hostPlatformURL ?: '' )
+                }
+                else if (key == '@ae-entitlement-tippIdentifier') {
+                    List<Identifier> ids = []
+
+                    if (f.value) {
+                        ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.tipp = :tipp and i.ns.id in (:idnsList)",
+                                [tipp: ie.tipp, idnsList: f.value] )
+                    }
+                    content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
                 else if (key == '@ae-entitlement-tippPublisherName') {
-                    content.add( ' todo ' )
+                    content.add( ie.tipp.publisherName ?: '' )
                 }
                 else if (key == '@ae-entitlement-tippSeriesName') {
-                    content.add( ' todo ' )
+                    content.add( ie.tipp.seriesName ?: '' )
                 }
                 else if (key == '@ae-entitlement-tippSubjectReference') {
-                    content.add( ' todo ' )
+                    content.add( ie.tipp.subjectReference ?: '' )
                 }
                 else if (key == '@ae-entitlement-tippTitleType') {
                     content.add( ie.tipp.titleType ?: '' )

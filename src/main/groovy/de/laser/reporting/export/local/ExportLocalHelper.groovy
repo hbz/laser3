@@ -5,6 +5,7 @@ import de.laser.helper.SessionCacheWrapper
 import de.laser.reporting.export.AbstractExport
 import de.laser.reporting.export.AbstractExportHelper
 import de.laser.reporting.myInstitution.GenericHelper
+import de.laser.reporting.myInstitution.base.BaseFilter
 import grails.util.Holders
 
 class ExportLocalHelper extends AbstractExportHelper {
@@ -22,6 +23,15 @@ class ExportLocalHelper extends AbstractExportHelper {
     }
 
     // ----- Cache -----
+
+    static Map<String, Object> getFilterCache(String token) {
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+
+        SessionCacheWrapper sessionCache = contextService.getSessionCache()
+        Map<String, Object> cacheMap = sessionCache.get("SubscriptionController/reporting" /* + token */)
+
+        cacheMap.filterCache as Map<String, Object>
+    }
 
     static Map<String, Object> getQueryCache(String token) {
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
@@ -63,19 +73,17 @@ class ExportLocalHelper extends AbstractExportHelper {
 
     // -----
 
-    /*
-    static Map<String, Object> getCachedFilterLabels(String token) {
-
-        Map<String, Object> filterCache = BaseFilter.getFilterCache(token)
-        filterCache.labels as Map<String, Object>
-    }
+//    static Map<String, Object> getCachedFilterLabels(String token) {
+//
+//        Map<String, Object> filterCache = getFilterCache(token)
+//        filterCache.labels as Map<String, Object>
+//    }
 
     static String getCachedFilterResult(String token) {
 
-        Map<String, Object> filterCache = BaseFilter.getFilterCache(token)
+        Map<String, Object> filterCache = getFilterCache(token)
         filterCache.result
     }
-    */
 
     static List<String> getCachedQueryLabels(String token) {
 
@@ -90,7 +98,7 @@ class ExportLocalHelper extends AbstractExportHelper {
         if ( isFieldMultiple(fieldName) ) {
             String label = AbstractExport.CUSTOM_LABEL.get(fieldName)
 
-            if (fieldName == 'x-identifier') {
+            if (fieldName == 'x-identifier' || fieldName == '@ae-entitlement-tippIdentifier') {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
                 label += (selList ? ': ' + selList.collect{it ->
                     IdentifierNamespace idns = IdentifierNamespace.get(it)
