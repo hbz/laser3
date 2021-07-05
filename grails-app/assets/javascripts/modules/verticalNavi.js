@@ -90,7 +90,6 @@ verticalNavi = {
                 .sidebar({
                     context: $('body')
                 })
-                .sidebar('setting', 'transition', 'overlay')
                 .sidebar('attach events', '.la-menue-button')
                 .sidebar('setting', 'dimPage', false);
             }
@@ -103,7 +102,6 @@ verticalNavi = {
         .sidebar({
             context: $('body')
         })
-        .sidebar('setting', 'transition', 'overlay')
         .sidebar('attach events', '.la-menue-button')
         .sidebar('setting', 'dimPage', false);
 
