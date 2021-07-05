@@ -44,7 +44,7 @@ class SemanticUiDropdownTagLib {
 
         out << '<div class="ui simple dropdown button la-js-dont-hide-button">'
         out <<  '<i class="magic icon"></i>'
-        out <<  '<div class="menu">'
+        out <<  '<div class="menu" style="left: auto; right: 0">'
 
         out <<          body()
 
