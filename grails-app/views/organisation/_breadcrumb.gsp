@@ -13,7 +13,7 @@
         </g:if>
         <g:else>
             <g:if test="${institutionalView}">
-                <semui:crumb message="menu.my.consortia" controller="myInstitution" action="manageMembers" params="[comboType:RDStore.COMBO_TYPE_CONSORTIUM]"/>
+                <semui:crumb message="menu.my.insts" controller="myInstitution" action="manageMembers" params="[comboType:RDStore.COMBO_TYPE_CONSORTIUM]"/>
                 <semui:crumb text="${orgInstance.sortname}" class="active"/>
             </g:if>
             <g:else>

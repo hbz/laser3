@@ -2232,6 +2232,113 @@ join sub.orgRelations or_sub where
         }
     }
 
+    @Secured(['ROLE_USER'])
+    def currentConsortia() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        ProfilerUtils pu = new ProfilerUtils()
+        pu.setBenchmark('start')
+
+        // new: filter preset
+        result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
+        //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
+        params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+        Map queryParams = params.clone()
+        //queryParams.subPerpetual = "on"
+        //result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
+        /*
+        if(!params.subStatus) {
+            if(!params.filterSet) {
+                params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+                result.filterSet = true
+            }
+        }
+        else result.filterSet    = params.filterSet ? true : false
+        if(!params.subPerpetual) {
+            if(!params.filterSet) {
+                params.subPerpetual = "on"
+                result.filterSet = true
+            }
+        }
+        else result.filterSet    = params.filterSet ? true : false
+        */
+        result.filterSet    = params.filterSet ? true : false
+
+        queryParams.comboType = result.comboType.value
+        queryParams.invertDirection = true
+        def fsq = filterService.getOrgComboQuery(queryParams, result.institution)
+        //def tmpQuery = "select o.id " + fsq.query.minus("select o ")
+        //def memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
+
+		pu.setBenchmark('query')
+
+        List totalConsortia      = Org.executeQuery(fsq.query, fsq.queryParams)
+        result.totalConsortia    = totalConsortia
+        result.consortiaCount    = totalConsortia.size()
+        result.consortia         = totalConsortia.drop((int) result.offset).take((int) result.max)
+        //String header
+        //String exportHeader
+
+        //header = message(code: 'menu.my.insts')
+        //exportHeader = message(code: 'export.my.consortia')
+        //SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
+        // Write the output to a file
+        //String file = "${sdf.format(new Date(System.currentTimeMillis()))}_"+exportHeader
+
+		List bm = pu.stopBenchmark()
+		result.benchMark = bm
+
+        result
+        /*
+        if ( params.exportXLS ) {
+
+            SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalMembers, header, true, 'xls')
+            response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+        }
+        else if(params.exportClickMeExcel) {
+            if (params.filename) {
+                file =params.filename
+            }
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields)
+
+            response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+        }
+        else {
+            withFormat {
+                html {
+                    result
+                }
+                csv {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) organisationService.exportOrg(totalMembers,header,true,"csv"))
+                    }
+                    out.close()
+                }
+            }
+        }
+        */
+    }
+
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
@@ -2295,7 +2402,7 @@ join sub.orgRelations or_sub where
         String header
         String exportHeader
 
-        header = message(code: 'menu.my.consortia')
+        header = message(code: 'menu.my.insts')
         exportHeader = message(code: 'export.my.consortia')
         SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
         // Write the output to a file

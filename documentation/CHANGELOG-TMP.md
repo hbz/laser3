@@ -11,6 +11,8 @@
 
 3597    05.07.2021  dev     2.2         Andreas Feature     Bearbeitungsfelder für Sprache eines Kontakts hinzugefügt
 
+3419    05.07.2021  dev     2.2         Andreas Feature     neue Sichten "Alle Konsortien" und "Meine Konsortien" eingeführt
+
 3257    05.07.2021  dev     2.2         Andreas Feature     generische Filtersuche von ODER auf UND-Verknüpfung umgestellt
 
 3600    02.07.2021  dev     2.2         Andreas Feature     PSQL-Skript zum manuellen Vereinigen von Organisationsdaten
