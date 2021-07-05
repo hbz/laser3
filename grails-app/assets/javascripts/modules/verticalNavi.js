@@ -13,6 +13,8 @@ verticalNavi = {
 
         // bigger then 992px
         if (window.matchMedia('(min-width: 992px)').matches) {
+            //smaller Context Bar
+            $( '.la-contextBar' ).removeClass('massive');
             // clone hide
             $( '.la-js-verticalNavi-clone' ).hide();
             // sidebar function
@@ -39,6 +41,8 @@ verticalNavi = {
             $('.la-js-verticalNavi-clone').find('div.dropdown').removeClass('dropdown').addClass('item');
             $('.la-js-verticalNavi-clone').find('.menu').removeClass('menu').addClass('content');
             $('.la-js-verticalNavi-clone').addClass('accordion');
+            //bigger Context Bar
+            $('.la-contextBar').addClass('massive');
         }
 
         // Resize the Window
@@ -46,6 +50,8 @@ verticalNavi = {
 
             // bigger then 992px
             if (window.matchMedia('(min-width: 992px)').matches) {
+                //smaller Context Bar
+                $( '.la-contextBar' ).removeClass('massive');
                 // clone hide
                 $( '.la-js-verticalNavi-clone' ).hide();
                 // sidebar function
@@ -61,7 +67,8 @@ verticalNavi = {
             }
             // smaller then 992px
             else {
-                $( '.la-contextBar' ).addClass('huge');
+                //bigger Context Bar
+                $( '.la-contextBar' ).addClass('massive');
                 $( '.la-js-verticalNavi' ).hide();
                 $('.la-menue-button').show();
                 //dealing with dropdown menu vs vertical menu
@@ -76,6 +83,8 @@ verticalNavi = {
                 // sidebar function
                 $('.la-js-verticalNavi-clone').addClass('vertical sidebar sidebarMobile');
                 $('.la-js-verticalNavi-clone').addClass('accordion');
+
+
                 $('.ui.accordion').accordion();
                 $('.la-js-verticalNavi-clone')
                 .sidebar({
