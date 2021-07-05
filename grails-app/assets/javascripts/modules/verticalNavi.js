@@ -106,12 +106,11 @@ verticalNavi = {
         .sidebar('setting', 'dimPage', false);
 
 //help panell
-/*        $('.la-help-panel-button').click(function() {
+        $('.la-help-panel-button').click(function() {
 
             $('.la-help-panel')
-            .sidebar('setting', 'transition', 'overlay')
             .sidebar('setting', 'dimPage', false)
             .sidebar('toggle');
-        });*/
+        });
     }
 }
