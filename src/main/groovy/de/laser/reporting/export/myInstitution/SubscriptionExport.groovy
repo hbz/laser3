@@ -95,12 +95,12 @@ class SubscriptionExport extends AbstractExport {
     }
 
     @Override
-    List<String> getObject(Long id, Map<String, Object> fields) {
+    List<String> getObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
-        Subscription sub = Subscription.get(id)
+        Subscription sub = obj as Subscription
         List<String> content = []
 
         fields.each{ f ->

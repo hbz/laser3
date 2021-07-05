@@ -86,12 +86,12 @@ class OrgExport extends AbstractExport {
     }
 
     @Override
-    List<String> getObject(Long id, Map<String, Object> fields) {
+    List<String> getObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
-        Org org = Org.get(id)
+        Org org = obj as Org
         List<String> content = []
 
         fields.each{ f ->

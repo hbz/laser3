@@ -1,9 +1,11 @@
 package de.laser.reporting.export
 
+import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.reporting.export.local.ExportLocalHelper
+import de.laser.reporting.export.local.IssueEntitlementExport
 import de.laser.reporting.export.myInstitution.ExportGlobalHelper
 import de.laser.reporting.export.myInstitution.LicenseExport
 import de.laser.reporting.export.myInstitution.OrgExport
@@ -45,7 +47,6 @@ class DetailsExportManager {
             ) )
             rows.addAll( buildPdf(export, idList) )
         }
-
         rows
     }
 
@@ -54,23 +55,14 @@ class DetailsExportManager {
         List<String> rows = []
         Map<String, Object> fields = export.getSelectedFields()
 
-        if (export.KEY == LicenseExport.KEY) {
-            idList = License.executeQuery( 'select l.id from License l where l.id in (:idList) order by l.reference', [idList: idList] )
-        }
-        else if (export.KEY == OrgExport.KEY) {
-            idList = Org.executeQuery( 'select o.id from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList] )
-        }
-        else if (export.KEY == SubscriptionExport.KEY) {
-            idList = Subscription.executeQuery( 'select s.id from Subscription s where s.id in (:idList) order by s.name', [idList: idList] )
-        }
+        List objList = resolveIdList( export, idList )
 
-        idList.each { id ->
-            List<String> row = export.getObject( id as Long, fields )
+        objList.each { obj ->
+            List<String> row = export.getObject( obj, fields )
             if (row) {
                 rows.add( buildCsvRow( row ) )
             }
         }
-
         rows
     }
 
@@ -95,23 +87,14 @@ class DetailsExportManager {
         List<List<List<String>>> rows = []
         Map<String, Object> fields = export.getSelectedFields()
 
-        if (export.KEY == LicenseExport.KEY) {
-            idList = License.executeQuery('select l.id from License l where l.id in (:idList) order by l.reference', [idList: idList])
-        }
-        else if (export.KEY == OrgExport.KEY) {
-            idList = Org.executeQuery('select o.id from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
-        }
-        else if (export.KEY == SubscriptionExport.KEY) {
-            idList = Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
-        }
+        List objList = resolveIdList( export, idList )
 
-        idList.each { id ->
-            List<String> row = export.getObject(id as Long, fields)
+        objList.each { obj ->
+            List<String> row = export.getObject(obj, fields)
             if (row) {
                 rows.add( buildPdfRow( row ) )
             }
         }
-
         rows
     }
 
@@ -123,5 +106,28 @@ class DetailsExportManager {
             }
             return it.split(AbstractExport.CSV_VALUE_SEPARATOR).collect{ it.trim() }
         }
+    }
+
+    static List<Object> resolveIdList(AbstractExport export, List<Long> idList) {
+
+        List<Object> result = []
+
+        if (export.KEY == LicenseExport.KEY) {
+            result = License.executeQuery('select l from License l where l.id in (:idList) order by l.reference', [idList: idList])
+        }
+        else if (export.KEY == OrgExport.KEY) {
+            result = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
+        }
+        else if (export.KEY == SubscriptionExport.KEY) {
+            result = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
+        }
+        else if (export.KEY == IssueEntitlementExport.KEY) {
+            Long subId = ExportLocalHelper.getDetailsCache( export.token ).id
+            result = IssueEntitlement.executeQuery(
+                    'select ie from IssueEntitlement ie where ie.subscription.id = :subId and ie.tipp.id in (:idList) order by ie.tipp.name',
+                    [subId: subId, idList: idList]
+            )
+        }
+        result
     }
 }

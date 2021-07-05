@@ -2,6 +2,7 @@ package de.laser.reporting.export
 
 import de.laser.ContextService
 import de.laser.reporting.export.local.ExportLocalHelper
+import de.laser.reporting.export.local.IssueEntitlementExport
 import de.laser.reporting.export.myInstitution.ExportGlobalHelper
 import de.laser.reporting.export.myInstitution.LicenseExport
 import de.laser.reporting.export.myInstitution.OrgExport
@@ -37,6 +38,13 @@ abstract class AbstractExport {
             '@ae-org-accessPoint'       : 'Zugangskonfigurationen (ohne Links)',    // dyn.value
             '@ae-org-contact'           : 'Kontaktdaten',
             '@ae-org-readerNumber'      : 'Nutzerzahlen und Stichtage',             // dyn.value
+
+            '@ae-entitlement-tippName'              : 'Titel der Ressource',
+            '@ae-entitlement-tippIds'               : 'Identifikatoren',
+            '@ae-entitlement-tippPublisherName'     : 'Publisher',
+            '@ae-entitlement-tippSeriesName'        : 'Name der Reihe',
+            '@ae-entitlement-tippSubjectReference'  : 'Fachbereich',
+            '@ae-entitlement-tippTitleType'         : 'Titel-Typ',
     ]
 
     String token                    // cache token
@@ -48,7 +56,7 @@ abstract class AbstractExport {
 
     abstract String getFieldLabel(String fieldName)
 
-    abstract List<String> getObject(Long id, Map<String, Object> fields)
+    abstract List<String> getObject(Object obj, Map<String, Object> fields)
 
     Map<String, Object> getCurrentConfig(String key) {
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
@@ -74,6 +82,10 @@ abstract class AbstractExport {
             else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
                 SubscriptionExport.CONFIG_ORG_INST
             }
+        }
+        else if (key == IssueEntitlementExport.KEY) {
+
+            IssueEntitlementExport.CONFIG_X
         }
     }
 

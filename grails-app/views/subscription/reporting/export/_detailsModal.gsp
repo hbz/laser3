@@ -21,13 +21,13 @@
                 </div>
             </div>
 --}%
-        %{-- <g:set var="dcSize" value="${BaseDetails.getDetailsCache(token).idList.size()}" />
+        <g:set var="dcSize" value="${ExportLocalHelper.getDetailsCache(token).idList.size()}" />
         <g:if test="${dcSize > 50}">
             <div class="ui info message">
                 <i class="info circle icon"></i>
                 Bei größeren Datenmengen kann der Export einige Sekunden dauern.
             </div>
-        </g:if> --}%
+        </g:if>
 
         <g:form controller="ajaxHtml" action="chartDetailsExport" method="POST" target="_blank">
 
@@ -144,5 +144,8 @@
         }).trigger('change');
     </laser:script>
 
+    <style>
+        .ui.form .fields .field { margin-bottom: 0 !important; }
+    </style>
 </g:if>
 <!-- _dDetailsModal.gsp -->

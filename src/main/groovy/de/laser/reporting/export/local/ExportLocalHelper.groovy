@@ -5,11 +5,7 @@ import de.laser.helper.SessionCacheWrapper
 import de.laser.reporting.export.AbstractExport
 import de.laser.reporting.export.AbstractExportHelper
 import de.laser.reporting.myInstitution.GenericHelper
-import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.util.Holders
-
-import java.text.SimpleDateFormat
-import java.time.Year
 
 class ExportLocalHelper extends AbstractExportHelper {
 
@@ -26,6 +22,15 @@ class ExportLocalHelper extends AbstractExportHelper {
     }
 
     // ----- Cache -----
+
+    static Map<String, Object> getQueryCache(String token) {
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+
+        SessionCacheWrapper sessionCache = contextService.getSessionCache()
+        Map<String, Object> cacheMap = sessionCache.get("SubscriptionController/reporting" /* + token */)
+
+        cacheMap.queryCache as Map<String, Object>
+    }
 
     static Map<String, Object> getDetailsCache(String token) {
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
@@ -74,21 +79,9 @@ class ExportLocalHelper extends AbstractExportHelper {
 
     static List<String> getCachedQueryLabels(String token) {
 
-        Map<String, Object> queryCache = BaseQuery.getQueryCache(token)
+        Map<String, Object> queryCache = getQueryCache(token)
         queryCache.labels.labels as List<String>
     }
-
-    // -----
-
-    /*
-    static List<String> getIncompleteQueryLabels(String token) {
-
-        Map<String, Object> queryCache = BaseQuery.getQueryCache( token )
-        String prefix = queryCache.query.split('-')[0]
-        Map<String, Object> cfg = BaseConfig.getCurrentConfigByPrefix( prefix )
-        BaseQuery.getQueryLabels(cfg, queryCache.query as String)
-    }
-    */
 
     // -----
 
@@ -118,7 +111,7 @@ class ExportLocalHelper extends AbstractExportHelper {
             return label
         }
         else if (fieldName == 'x-property') {
-            return 'Merkmal: ' + BaseQuery.getQueryCache( export.token ).labels.labels[2] // TODO - modal
+            return 'Merkmal: ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
         }
         else if (AbstractExport.CUSTOM_LABEL.containsKey(fieldName)) {
             return AbstractExport.CUSTOM_LABEL.get(fieldName)

@@ -33,6 +33,7 @@ import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.reporting.export.AbstractExport
 import de.laser.reporting.export.myInstitution.QueryExport
+import de.laser.reporting.export.local.ExportLocalHelper
 import de.laser.reporting.export.myInstitution.ExportGlobalHelper
 import de.laser.reporting.export.DetailsExportManager
 import de.laser.helper.RDConstants
@@ -439,20 +440,20 @@ class AjaxHtmlController {
 
         String filename = params.filename ?: ExportGlobalHelper.getFileName(['Reporting'])
 
+        Map<String, Object> selectedFieldsRaw = params.findAll { it -> it.toString().startsWith('cde:') }
+        Map<String, Object> selectedFields = [:]
+        selectedFieldsRaw.each { it -> selectedFields.put(it.key.replaceFirst('cde:', ''), it.value) }
+
         if (params.context == BaseConfig.KEY_MYINST) {
 
-            Map<String, Object> selectedFieldsRaw = params.findAll { it -> it.toString().startsWith('cde:') }
-            Map<String, Object> selectedFields = [:]
-            selectedFieldsRaw.each { it -> selectedFields.put(it.key.replaceFirst('cde:', ''), it.value) }
-
-            Map<String, Object> detailsCache = BaseDetails.getDetailsCache(params.token)
+            Map<String, Object> detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
             AbstractExport export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
 
             if (params.fileformat == 'csv') {
                 response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
                 response.contentType = 'text/csv'
 
-                List<String> rows = DetailsExportManager.export(export, 'csv', detailsCache.idList)
+                List<String> rows = DetailsExportManager.export(export, 'csv', detailsCache.idList as List<Long>)
 
                 ServletOutputStream out = response.outputStream
                 out.withWriter { w ->
@@ -463,7 +464,7 @@ class AjaxHtmlController {
                 out.close()
             }
             else if (params.fileformat == 'pdf') {
-                List<List<String>> content = DetailsExportManager.export(export, 'pdf', detailsCache.idList)
+                List<List<String>> content = DetailsExportManager.export(export, 'pdf', detailsCache.idList as List<Long>)
                 Map<String, Object> struct = ExportGlobalHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
 
                 def pdf = wkhtmltoxService.makePdf(
@@ -494,7 +495,52 @@ class AjaxHtmlController {
         }
         else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
 
-            println '------------------- TODO -------------------'
+            Map<String, Object> detailsCache = ExportLocalHelper.getDetailsCache(params.token)
+            AbstractExport export = DetailsExportManager.createLocalExport(params.token, selectedFields)
+
+            if (params.fileformat == 'csv') {
+                response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
+                response.contentType = 'text/csv'
+
+                List<String> rows = DetailsExportManager.export(export, 'csv', detailsCache.idList as List<Long>)
+
+                ServletOutputStream out = response.outputStream
+                out.withWriter { w ->
+                    rows.each { r ->
+                        w.write(r + '\n')
+                    }
+                }
+                out.close()
+            }
+            else if (params.fileformat == 'pdf') {
+                List<List<String>> content = DetailsExportManager.export(export, 'pdf', detailsCache.idList as List<Long>)
+                Map<String, Object> struct = ExportLocalHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
+
+                def pdf = wkhtmltoxService.makePdf(
+                        view: '/subscription/reporting/export/pdf/generic_details',
+                        model: [
+                                //filterLabels: ExportLocalHelper.getCachedFilterLabels(params.token),
+                                //filterResult: ExportLocalHelper.getCachedFilterResult(params.token),
+                                queryLabels : ExportLocalHelper.getCachedQueryLabels(params.token),
+                                title       : filename,
+                                header      : content.remove(0),
+                                content     : content,
+                                struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
+                        ],
+                        // header: '',
+                        // footer: '',
+                        pageSize: struct.pageSize,
+                        orientation: struct.orientation,
+                        marginLeft: 10,
+                        marginTop: 15,
+                        marginBottom: 15,
+                        marginRight: 10
+                )
+
+                response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
+                response.setContentType('application/pdf')
+                response.outputStream.withStream { it << pdf }
+            }
         }
     }
 

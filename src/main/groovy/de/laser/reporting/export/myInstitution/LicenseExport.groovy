@@ -83,12 +83,12 @@ class LicenseExport extends AbstractExport {
     }
 
     @Override
-    List<String> getObject(Long id, Map<String, Object> fields) {
+    List<String> getObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
-        License lic = License.get(id)
+        License lic = obj as License
         List<String> content = []
 
         fields.each{ f ->

@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <g:set var="dcSize" value="${BaseDetails.getDetailsCache(token).idList.size()}" />
+        <g:set var="dcSize" value="${ExportGlobalHelper.getDetailsCache(token).idList.size()}" />
         <g:if test="${dcSize > 50}">
             <div class="ui info message">
                 <i class="info circle icon"></i>

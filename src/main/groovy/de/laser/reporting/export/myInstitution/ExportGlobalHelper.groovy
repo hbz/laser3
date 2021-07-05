@@ -31,6 +31,11 @@ class ExportGlobalHelper extends AbstractExportHelper {
 
     // ----- Cache -----
 
+    static Map<String, Object> getQueryCache(String token) {
+
+        BaseQuery.getQueryCache(token)
+    }
+    
     static Map<String, Object> getDetailsCache(String token) {
 
         BaseDetails.getDetailsCache(token)
@@ -72,7 +77,7 @@ class ExportGlobalHelper extends AbstractExportHelper {
 
     static List<String> getCachedQueryLabels(String token) {
 
-        Map<String, Object> queryCache = BaseQuery.getQueryCache(token)
+        Map<String, Object> queryCache = getQueryCache(token)
         queryCache.labels.labels as List<String>
     }
 
@@ -80,10 +85,10 @@ class ExportGlobalHelper extends AbstractExportHelper {
 
     static List<String> getIncompleteQueryLabels(String token) {
 
-        Map<String, Object> queryCache = BaseQuery.getQueryCache( token )
+        Map<String, Object> queryCache = getQueryCache( token )
         String prefix = queryCache.query.split('-')[0]
         Map<String, Object> cfg = BaseConfig.getCurrentConfigByPrefix( prefix )
-        BaseQuery.getQueryLabels(cfg, queryCache.query as String)
+        BaseQuery.getQueryLabels(cfg, queryCache.query as String) // TODO
     }
 
     // -----
@@ -114,7 +119,7 @@ class ExportGlobalHelper extends AbstractExportHelper {
             return label
         }
         else if (fieldName == 'x-property') {
-            return 'Merkmal: ' + BaseQuery.getQueryCache( export.token ).labels.labels[2] // TODO - modal
+            return 'Merkmal: ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
         }
         else if (AbstractExport.CUSTOM_LABEL.containsKey(fieldName)) {
             return AbstractExport.CUSTOM_LABEL.get(fieldName)
