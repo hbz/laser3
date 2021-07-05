@@ -5,12 +5,12 @@
     <head>
         <meta name="layout" content="laser">
         <g:set var="entityName" value="${message(code: 'org.label')}" />
-        <title>${message(code:'laser')} : ${message(code: 'menu.public.all_insts')}</title>
+        <title>${message(code:'laser')} : ${message(code: 'menu.public.all_cons')}</title>
     </head>
     <body>
 
     <semui:breadcrumbs>
-        <semui:crumb message="menu.public.all_insts" class="active" />
+        <semui:crumb message="menu.public.all_cons" class="active" />
     </semui:breadcrumbs>
 
     <semui:controlButtons>
