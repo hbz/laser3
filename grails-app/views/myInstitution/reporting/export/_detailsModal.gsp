@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.myInstitution.ExportGlobalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails; de.laser.reporting.export.AbstractExport;" %>
+<%@ page import="de.laser.reporting.export.base.BaseExport; de.laser.reporting.export.myInstitution.ExportGlobalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 <!-- _chartDetailsModal.gsp -->
 <g:set var="export" value="${DetailsExportManager.createExport( token, BaseConfig.KEY_MYINST )}" />
@@ -94,9 +94,9 @@
                     <div id="fileformat-csv" class="wide eight field">
                         <label>CSV-Konfiguration</label>
                         <p>
-                            Feldtrenner: <span class="ui circular label">${AbstractExport.CSV_FIELD_SEPARATOR}</span> <br />
-                            Zeichenkettentrenner: <span class="ui circular label">${AbstractExport.CSV_FIELD_QUOTATION}</span> <br />
-                            Trenner für mehrfache Werte: <span class="ui circular label">${AbstractExport.CSV_VALUE_SEPARATOR}</span>
+                            Feldtrenner: <span class="ui circular label">${BaseExport.CSV_FIELD_SEPARATOR}</span> <br />
+                            Zeichenkettentrenner: <span class="ui circular label">${BaseExport.CSV_FIELD_QUOTATION}</span> <br />
+                            Trenner für mehrfache Werte: <span class="ui circular label">${BaseExport.CSV_VALUE_SEPARATOR}</span>
                         </p>
                     </div>
 

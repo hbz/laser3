@@ -2,15 +2,14 @@ package de.laser.reporting.export.local
 
 import de.laser.*
 import de.laser.helper.SessionCacheWrapper
-import de.laser.reporting.export.AbstractExport
-import de.laser.reporting.export.AbstractExportHelper
+import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.myInstitution.GenericHelper
-import de.laser.reporting.myInstitution.base.BaseFilter
 import grails.util.Holders
 
-class ExportLocalHelper extends AbstractExportHelper {
+class ExportLocalHelper extends BaseExportHelper {
 
-    static AbstractExport createExport(String token, Map<String, Object> selectedFields) {
+    static BaseExport createExport(String token, Map<String, Object> selectedFields) {
 
         String tmpl = getCachedExportStrategy( token )
 
@@ -93,10 +92,10 @@ class ExportLocalHelper extends AbstractExportHelper {
 
     // -----
 
-    static String getFieldLabel(AbstractExport export, String fieldName) {
+    static String getFieldLabel(BaseExport export, String fieldName) {
 
         if ( isFieldMultiple(fieldName) ) {
-            String label = AbstractExport.CUSTOM_LABEL.get(fieldName)
+            String label = BaseExport.CUSTOM_LABEL.get(fieldName)
 
             if (fieldName == 'x-identifier' || fieldName == '@ae-entitlement-tippIdentifier') {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
@@ -121,8 +120,8 @@ class ExportLocalHelper extends AbstractExportHelper {
         else if (fieldName == 'x-property') {
             return 'Merkmal: ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
         }
-        else if (AbstractExport.CUSTOM_LABEL.containsKey(fieldName)) {
-            return AbstractExport.CUSTOM_LABEL.get(fieldName)
+        else if (BaseExport.CUSTOM_LABEL.containsKey(fieldName)) {
+            return BaseExport.CUSTOM_LABEL.get(fieldName)
         }
 
         // --- adapter ---

@@ -1,5 +1,6 @@
 package de.laser.reporting.export
 
+import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.export.myInstitution.QueryExport
 
 class QueryExportManager {
@@ -14,7 +15,7 @@ class QueryExportManager {
         Map<String, Object> data = export.getData()
 
         if (format == 'csv') {
-            rows.add( data.cols.join( AbstractExport.CSV_FIELD_SEPARATOR ) )
+            rows.add( data.cols.join( BaseExport.CSV_FIELD_SEPARATOR ) )
             data.rows.each { row ->
                 rows.add( buildCsvRow( row ) )
             }
@@ -34,14 +35,14 @@ class QueryExportManager {
             if (! it) {
                 return ''
             }
-            if (it.contains( AbstractExport.CSV_FIELD_QUOTATION )) {
-                it = it.replaceAll( AbstractExport.CSV_FIELD_QUOTATION , AbstractExport.CSV_FIELD_QUOTATION + AbstractExport.CSV_FIELD_QUOTATION)
+            if (it.contains( BaseExport.CSV_FIELD_QUOTATION )) {
+                it = it.replaceAll( BaseExport.CSV_FIELD_QUOTATION , BaseExport.CSV_FIELD_QUOTATION + BaseExport.CSV_FIELD_QUOTATION)
             }
-            if (it.contains( AbstractExport.CSV_FIELD_SEPARATOR )) {
-                return AbstractExport.CSV_FIELD_QUOTATION + it.trim() + AbstractExport.CSV_FIELD_QUOTATION
+            if (it.contains( BaseExport.CSV_FIELD_SEPARATOR )) {
+                return BaseExport.CSV_FIELD_QUOTATION + it.trim() + BaseExport.CSV_FIELD_QUOTATION
             }
             return it.trim()
-        }.join( AbstractExport.CSV_FIELD_SEPARATOR )
+        }.join( BaseExport.CSV_FIELD_SEPARATOR )
     }
 
     static List<String> buildPdfRow(List<String> content) {

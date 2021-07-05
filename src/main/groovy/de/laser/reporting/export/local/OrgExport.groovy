@@ -4,14 +4,13 @@ import de.laser.*
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.oap.*
-import de.laser.reporting.export.AbstractExport
-import de.laser.reporting.export.local.ExportLocalHelper
+import de.laser.reporting.export.base.BaseExport
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
-class OrgExport extends AbstractExport {
+class OrgExport extends BaseExport {
 
     static String KEY = 'organisation'
 

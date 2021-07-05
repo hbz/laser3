@@ -31,7 +31,7 @@ import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
-import de.laser.reporting.export.AbstractExport
+import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.export.myInstitution.QueryExport
 import de.laser.reporting.export.local.ExportLocalHelper
 import de.laser.reporting.export.myInstitution.ExportGlobalHelper
@@ -40,7 +40,6 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.export.QueryExportManager
 import de.laser.reporting.myInstitution.base.BaseConfig
-import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.plugin.springsecurity.annotation.Secured
 
 import javax.servlet.ServletOutputStream
@@ -447,7 +446,7 @@ class AjaxHtmlController {
         if (params.context == BaseConfig.KEY_MYINST) {
 
             Map<String, Object> detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
-            AbstractExport export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
+            BaseExport export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
 
             if (params.fileformat == 'csv') {
                 response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
@@ -496,7 +495,7 @@ class AjaxHtmlController {
         else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
 
             Map<String, Object> detailsCache = ExportLocalHelper.getDetailsCache(params.token)
-            AbstractExport export = DetailsExportManager.createLocalExport(params.token, selectedFields)
+            BaseExport export = DetailsExportManager.createLocalExport(params.token, selectedFields)
 
             if (params.fileformat == 'csv') {
                 response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')

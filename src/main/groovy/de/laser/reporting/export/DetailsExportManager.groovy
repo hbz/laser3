@@ -4,6 +4,7 @@ import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
+import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.export.local.ExportLocalHelper
 import de.laser.reporting.export.local.IssueEntitlementExport
 import de.laser.reporting.export.myInstitution.ExportGlobalHelper
@@ -14,7 +15,7 @@ import de.laser.reporting.myInstitution.base.BaseConfig
 
 class DetailsExportManager {
 
-    static AbstractExport createExport(String token, String context) {
+    static BaseExport createExport(String token, String context) {
         if (context == BaseConfig.KEY_MYINST) {
             createGlobalExport(token, [:])
         }
@@ -23,15 +24,15 @@ class DetailsExportManager {
         }
     }
 
-    static AbstractExport createGlobalExport(String token, Map<String, Object> selectedFields) {
+    static BaseExport createGlobalExport(String token, Map<String, Object> selectedFields) {
         ExportGlobalHelper.createExport( token, selectedFields )
     }
 
-    static AbstractExport createLocalExport(String token, Map<String, Object> selectedFields) {
+    static BaseExport createLocalExport(String token, Map<String, Object> selectedFields) {
         ExportLocalHelper.createExport( token, selectedFields )
     }
 
-    static List export(AbstractExport export, String format, List<Long> idList) {
+    static List export(BaseExport export, String format, List<Long> idList) {
 
         List rows = []
 
@@ -50,7 +51,7 @@ class DetailsExportManager {
         rows
     }
 
-    static List<String> buildCsv(AbstractExport export, List<Long> idList) {
+    static List<String> buildCsv(BaseExport export, List<Long> idList) {
 
         List<String> rows = []
         Map<String, Object> fields = export.getSelectedFields()
@@ -58,7 +59,7 @@ class DetailsExportManager {
         List objList = resolveIdList( export, idList )
 
         objList.eachWithIndex { obj, i ->
-            println '- ' + i + ' : ' + obj
+            //println '- ' + i + ' : ' + obj
 
             List<String> row = export.getObject( obj, fields )
             if (row) {
@@ -74,17 +75,17 @@ class DetailsExportManager {
             if (it == null) {
                 return ''
             }
-            if (it.contains( AbstractExport.CSV_FIELD_QUOTATION )) {
-                it = it.replaceAll( AbstractExport.CSV_FIELD_QUOTATION , AbstractExport.CSV_FIELD_QUOTATION + AbstractExport.CSV_FIELD_QUOTATION)
+            if (it.contains( BaseExport.CSV_FIELD_QUOTATION )) {
+                it = it.replaceAll( BaseExport.CSV_FIELD_QUOTATION , BaseExport.CSV_FIELD_QUOTATION + BaseExport.CSV_FIELD_QUOTATION)
             }
-            if (it.contains( AbstractExport.CSV_FIELD_SEPARATOR )) {
-                return AbstractExport.CSV_FIELD_QUOTATION + it.trim() + AbstractExport.CSV_FIELD_QUOTATION
+            if (it.contains( BaseExport.CSV_FIELD_SEPARATOR )) {
+                return BaseExport.CSV_FIELD_QUOTATION + it.trim() + BaseExport.CSV_FIELD_QUOTATION
             }
             return it.trim()
-        }.join( AbstractExport.CSV_FIELD_SEPARATOR )
+        }.join( BaseExport.CSV_FIELD_SEPARATOR )
     }
 
-    static List<List<List<String>>> buildPdf(AbstractExport export, List<Long> idList) {
+    static List<List<List<String>>> buildPdf(BaseExport export, List<Long> idList) {
 
         List<List<List<String>>> rows = []
         Map<String, Object> fields = export.getSelectedFields()
@@ -92,7 +93,7 @@ class DetailsExportManager {
         List objList = resolveIdList( export, idList )
 
         objList.eachWithIndex { obj, i ->
-            println '- ' + i + ' : ' + obj
+            //println '- ' + i + ' : ' + obj
 
             List<String> row = export.getObject(obj, fields)
             if (row) {
@@ -108,11 +109,11 @@ class DetailsExportManager {
             if (it == null) {
                 return ['']
             }
-            return it.split(AbstractExport.CSV_VALUE_SEPARATOR).collect{ it.trim() }
+            return it.split(BaseExport.CSV_VALUE_SEPARATOR).collect{ it.trim() }
         }
     }
 
-    static List<Object> resolveIdList(AbstractExport export, List<Long> idList) {
+    static List<Object> resolveIdList(BaseExport export, List<Long> idList) {
 
         List<Object> result = []
 

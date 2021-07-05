@@ -6,14 +6,14 @@ import de.laser.Org
 import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.export.AbstractExport
+import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
-class SubscriptionExport extends AbstractExport {
+class SubscriptionExport extends BaseExport {
 
     static String KEY = 'subscription'
 

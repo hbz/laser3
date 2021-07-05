@@ -5,14 +5,14 @@ import de.laser.Identifier
 import de.laser.License
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.export.AbstractExport
+import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
-class LicenseExport extends AbstractExport {
+class LicenseExport extends BaseExport {
 
     static String KEY = 'license'
 

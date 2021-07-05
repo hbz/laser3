@@ -5,13 +5,13 @@ import de.laser.Identifier
 import de.laser.IssueEntitlement
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
-import de.laser.reporting.export.AbstractExport
+import de.laser.reporting.export.base.BaseExport
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
-class IssueEntitlementExport extends AbstractExport {
+class IssueEntitlementExport extends BaseExport {
 
     static String KEY = 'entitlement'
 

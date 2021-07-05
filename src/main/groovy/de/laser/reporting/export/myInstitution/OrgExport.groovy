@@ -18,14 +18,14 @@ import de.laser.oap.OrgAccessPointOA
 import de.laser.oap.OrgAccessPointProxy
 import de.laser.oap.OrgAccessPointShibboleth
 import de.laser.oap.OrgAccessPointVpn
-import de.laser.reporting.export.AbstractExport
+import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
-class OrgExport extends AbstractExport {
+class OrgExport extends BaseExport {
 
     static String KEY = 'organisation'
 

@@ -1,4 +1,4 @@
-package de.laser.reporting.export
+package de.laser.reporting.export.base
 
 import de.laser.ContextService
 import de.laser.reporting.export.local.ExportLocalHelper
@@ -9,7 +9,7 @@ import de.laser.reporting.export.myInstitution.OrgExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport
 import grails.util.Holders
 
-abstract class AbstractExport {
+abstract class BaseExport {
 
     static String FIELD_TYPE_PROPERTY           = 'property'
     static String FIELD_TYPE_REFDATA            = 'refdata'

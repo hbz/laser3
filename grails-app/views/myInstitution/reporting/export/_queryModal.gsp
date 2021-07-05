@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.AbstractExport; de.laser.reporting.export.myInstitution.ExportGlobalHelper;" %>
+<%@ page import="de.laser.reporting.export.base.BaseExport; de.laser.reporting.export.myInstitution.ExportGlobalHelper;" %>
 <laser:serviceInjection />
 <!-- _queryChartModal.gsp -->
 
@@ -14,9 +14,9 @@
                         <div id="fileformat-csv" class="wide eight field">
                             <label>CSV-Konfiguration</label>
                             <p>
-                                Feldtrenner: <span class="ui circular label">${AbstractExport.CSV_FIELD_SEPARATOR}</span> <br />
-                                Zeichenkettentrenner: <span class="ui circular label">${AbstractExport.CSV_FIELD_QUOTATION}</span> <br />
-                                Trenner für mehrfache Werte: <span class="ui circular label">${AbstractExport.CSV_VALUE_SEPARATOR}</span>
+                                Feldtrenner: <span class="ui circular label">${BaseExport.CSV_FIELD_SEPARATOR}</span> <br />
+                                Zeichenkettentrenner: <span class="ui circular label">${BaseExport.CSV_FIELD_QUOTATION}</span> <br />
+                                Trenner für mehrfache Werte: <span class="ui circular label">${BaseExport.CSV_VALUE_SEPARATOR}</span>
                             </p>
                         </div>
 

@@ -1,4 +1,4 @@
-package de.laser.reporting.export
+package de.laser.reporting.export.base
 
 import de.laser.IdentifierNamespace
 import de.laser.IssueEntitlement
@@ -14,7 +14,7 @@ import de.laser.helper.RDConstants
 import java.text.SimpleDateFormat
 import java.time.Year
 
-abstract class AbstractExportHelper {
+abstract class BaseExportHelper {
 
     static String getFileName(List<String> labels) {
 
@@ -61,7 +61,7 @@ abstract class AbstractExportHelper {
         return false
     }
 
-    static void normalizeSelectedMultipleFields(AbstractExport export) {
+    static void normalizeSelectedMultipleFields(BaseExport export) {
 
         export.selectedExportFields.each {it ->
             if ( isFieldMultiple( it.key ) ) {
