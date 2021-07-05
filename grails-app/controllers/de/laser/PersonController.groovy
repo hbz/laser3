@@ -107,7 +107,7 @@ class PersonController  {
                             params.list('content').eachWithIndex { content, i ->
                                 if (content) {
                                     RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
-
+                                    RefdataValue lang = params['lang.id'] ? RefdataValue.get(params['lang.id']) : null
                                     if (RDStore.CCT_EMAIL == rdvCT) {
                                         if (!formService.validateEmailAddress(content)) {
                                             flash.error = message(code: 'contact.create.email.error')
@@ -115,7 +115,7 @@ class PersonController  {
                                         }
                                     }
 
-                                    Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: RDStore.CONTACT_TYPE_JOBRELATED, content: content)
+                                    Contact contact = new Contact(prs: personInstance, contentType: rdvCT, language: lang, type: RDStore.CONTACT_TYPE_JOBRELATED, content: content)
                                     contact.save()
                                 }
                             }
@@ -320,13 +320,17 @@ class PersonController  {
                     contact.content = params."content${contact.id}"
                     contact.save()
                 }
+                if (params."lang${contact.id}") {
+                    contact.language = RefdataValue.get(params."lang${contact.id}")
+                    contact.save()
+                }
             }
 
             if (params.content) {
                 params.list('content').eachWithIndex { content, i ->
                     if (content) {
                         RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
-
+                        RefdataValue lang = params['lang.id'] ? RefdataValue.get(params['lang.id']) : null
                         if (RDStore.CCT_EMAIL == rdvCT) {
                             if (!formService.validateEmailAddress(content)) {
                                 flash.error = message(code: 'contact.create.email.error')
@@ -334,7 +338,7 @@ class PersonController  {
                             }
                         }
 
-                        Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: RDStore.CONTACT_TYPE_JOBRELATED, content: content)
+                        Contact contact = new Contact(prs: personInstance, contentType: rdvCT, lang: lang, type: RDStore.CONTACT_TYPE_JOBRELATED, content: content)
                         contact.save()
                     }
                 }

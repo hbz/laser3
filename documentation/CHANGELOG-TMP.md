@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3648    05.07.2021  dev     2.2         Andreas Feature     Default-Sichtbarkeit bei Org-Dokumenten umgestellt
+
+3597    05.07.2021  dev     2.2         Andreas Feature     Bearbeitungsfelder für Sprache eines Kontakts hinzugefügt
+
 3257    05.07.2021  dev     2.2         Andreas Feature     generische Filtersuche von ODER auf UND-Verknüpfung umgestellt
 
 3600    02.07.2021  dev     2.2         Andreas Feature     PSQL-Skript zum manuellen Vereinigen von Organisationsdaten
