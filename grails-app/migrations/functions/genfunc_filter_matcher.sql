@@ -4,13 +4,13 @@ CREATE OR REPLACE FUNCTION GENFUNC_FILTER_MATCHER(content TEXT, test TEXT)
     AS $$
 
 DECLARE
-    VERSION CONSTANT NUMERIC = 3;
+    VERSION CONSTANT NUMERIC = 4;
 
-    result_phrases BOOLEAN = false;
-    result_terms BOOLEAN = false;
+    result_phrases BOOLEAN;
+    result_terms BOOLEAN;
 
-    tmp_phrases BOOLEAN = false;
-    tmp_terms BOOLEAN = false;
+    tmp_phrases TEXT[];
+    tmp_terms TEXT[];
 
     phrases TEXT[];
     terms TEXT[];
@@ -44,11 +44,14 @@ BEGIN
                 IF length(trim(char_phrase)) > 0 THEN
                     RAISE NOTICE 'char_phrase: [%]',  char_phrase;
 
-                    SELECT TRUE into tmp_phrases WHERE content ILIKE '%'||char_phrase||'%';
-                    result_phrases = bool_or(result_phrases or tmp_phrases);
+                    select array_append(tmp_phrases, '%'||trim(char_phrase)||'%') into tmp_phrases;
                 END IF;
             END LOOP;
-
+		select into result_phrases 
+			case 
+				when content ilike all(tmp_phrases) then true
+				else false
+				end;
         RAISE NOTICE 'result_phrases --> %', result_phrases;
     END IF;
 
@@ -64,14 +67,23 @@ BEGIN
         FOREACH char_term IN ARRAY terms
             LOOP
                 IF length(trim(char_term)) > 0 THEN
-                    SELECT TRUE INTO tmp_terms WHERE content ILIKE '%'||trim(char_term)||'%';
-                    result_terms = bool_or(result_terms or tmp_terms);
+                    select array_append(tmp_terms, '%'||trim(char_term)||'%') into tmp_terms;
                 END IF;
             END LOOP;
-
+		select into result_terms 
+			case
+				when content ilike all(tmp_terms) then true
+				else false
+				end;
         RAISE NOTICE 'result_terms --> %', result_terms;
     END IF;
-
-    RETURN bool_or(result_phrases OR result_terms);
+	
+	if result_phrases is not null and result_terms is not null then
+    	RETURN bool_and(result_phrases AND result_terms);
+	elsif result_phrases is null then
+		return result_terms;
+	elsif result_terms is null then
+		return result_phrases;
+	end if;
 END;
 $$;
