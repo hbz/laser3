@@ -12,7 +12,8 @@ import de.laser.Org
 import de.laser.OrgRole
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
-import de.laser.ReportingService
+import de.laser.ReportingGlobalService
+import de.laser.ReportingLocalService
 import de.laser.Subscription
 import de.laser.Address
 import de.laser.Doc
@@ -30,21 +31,18 @@ import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
-import de.laser.reporting.export.AbstractExport
-import de.laser.reporting.export.QueryExport
-import de.laser.reporting.export.ExportHelper
+import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.myInstitution.QueryExport
+import de.laser.reporting.export.local.ExportLocalHelper
+import de.laser.reporting.export.myInstitution.ExportGlobalHelper
 import de.laser.reporting.export.DetailsExportManager
-import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.export.QueryExportManager
 import de.laser.reporting.myInstitution.base.BaseConfig
-import de.laser.reporting.myInstitution.base.BaseDetails
-import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.plugin.springsecurity.annotation.Secured
 
 import javax.servlet.ServletOutputStream
-import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxHtmlController {
@@ -64,7 +62,8 @@ class AjaxHtmlController {
     LinksGenerationService linksGenerationService
     AccessService accessService
     GokbService gokbService
-    ReportingService reportingService
+    ReportingGlobalService reportingGlobalService
+    ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
     LicenseControllerService licenseControllerService
     CustomWkhtmltoxService wkhtmltoxService // custom
@@ -417,9 +416,8 @@ class AjaxHtmlController {
         ]
         result.id = params.id ? params.id as Long : ''
 
-        // TODO
         if (params.context == BaseConfig.KEY_MYINST) {
-            reportingService.doGlobalChartDetails( result, params ) // manipulates result
+            reportingGlobalService.doChartDetails( result, params ) // manipulates result
         }
         else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
             if (params.idx) {
@@ -427,7 +425,7 @@ class AjaxHtmlController {
                 params.idx = params.idx.replaceFirst(params.id + ':', '') // TODO !!!!
                 // TODO !!!!
             }
-            reportingService.doLocalChartDetails( result, params ) // manipulates result
+            reportingLocalService.doChartDetails( result, params ) // manipulates result
         }
 
         render template: result.tmpl, model: result
@@ -439,57 +437,109 @@ class AjaxHtmlController {
     })
     def chartDetailsExport() {
 
-        Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('cde:') }
+        String filename = params.filename ?: ExportGlobalHelper.getFileName(['Reporting'])
+
+        Map<String, Object> selectedFieldsRaw = params.findAll { it -> it.toString().startsWith('cde:') }
         Map<String, Object> selectedFields = [:]
-        selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('cde:', ''), it.value ) }
+        selectedFieldsRaw.each { it -> selectedFields.put(it.key.replaceFirst('cde:', ''), it.value) }
 
-        String filename = params.filename ?: ExportHelper.getFileName(['Reporting'])
+        if (params.context == BaseConfig.KEY_MYINST) {
 
-        Map<String, Object> detailsCache = BaseDetails.getDetailsCache( params.token )
-        AbstractExport export = DetailsExportManager.createExport( params.token, selectedFields )
+            Map<String, Object> detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
+            BaseExport export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
 
-        if (params.fileformat == 'csv') {
-            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
-            response.contentType = 'text/csv'
+            if (params.fileformat == 'csv') {
+                response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
+                response.contentType = 'text/csv'
 
-            List<String> rows = DetailsExportManager.export( export, 'csv', detailsCache.idList )
+                List<String> rows = DetailsExportManager.export(export, 'csv', detailsCache.idList as List<Long>)
 
-            ServletOutputStream out = response.outputStream
-            out.withWriter { w ->
-                rows.each { r ->
-                    w.write( r + '\n')
+                ServletOutputStream out = response.outputStream
+                out.withWriter { w ->
+                    rows.each { r ->
+                        w.write(r + '\n')
+                    }
                 }
+                out.close()
             }
-            out.close()
+            else if (params.fileformat == 'pdf') {
+                List<List<String>> content = DetailsExportManager.export(export, 'pdf', detailsCache.idList as List<Long>)
+                Map<String, Object> struct = ExportGlobalHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
+
+                def pdf = wkhtmltoxService.makePdf(
+                        view: '/myInstitution/reporting/export/pdf/generic_details',
+                        model: [
+                                filterLabels: ExportGlobalHelper.getCachedFilterLabels(params.token),
+                                filterResult: ExportGlobalHelper.getCachedFilterResult(params.token),
+                                queryLabels : ExportGlobalHelper.getCachedQueryLabels(params.token),
+                                title       : filename,
+                                header      : content.remove(0),
+                                content     : content,
+                                struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
+                        ],
+                        // header: '',
+                        // footer: '',
+                        pageSize: struct.pageSize,
+                        orientation: struct.orientation,
+                        marginLeft: 10,
+                        marginTop: 15,
+                        marginBottom: 15,
+                        marginRight: 10
+                )
+
+                response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
+                response.setContentType('application/pdf')
+                response.outputStream.withStream { it << pdf }
+            }
         }
-        else if (params.fileformat == 'pdf') {
-            List<List<String>> content = DetailsExportManager.export( export, 'pdf', detailsCache.idList )
-            Map<String, Object> struct = ExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
+        else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
 
-            def pdf = wkhtmltoxService.makePdf(
-                    view: '/myInstitution/reporting/export/pdf/generic_details',
-                    model: [
-                            filterLabels: ExportHelper.getCachedFilterLabels(params.token),
-                            filterResult: ExportHelper.getCachedFilterResult(params.token),
-                            queryLabels : ExportHelper.getCachedQueryLabels(params.token),
-                            title       : filename,
-                            header      : content.remove(0),
-                            content     : content,
-                            struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
-                    ],
-                    // header: '',
-                    // footer: '',
-                    pageSize: struct.pageSize,
-                    orientation: struct.orientation,
-                    marginLeft: 10,
-                    marginTop: 15,
-                    marginBottom: 15,
-                    marginRight: 10
-            )
+            Map<String, Object> detailsCache = ExportLocalHelper.getDetailsCache(params.token)
+            BaseExport export = DetailsExportManager.createLocalExport(params.token, selectedFields)
 
-            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
-            response.setContentType('application/pdf')
-            response.outputStream.withStream { it << pdf }
+            if (params.fileformat == 'csv') {
+                response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
+                response.contentType = 'text/csv'
+
+                List<String> rows = DetailsExportManager.export(export, 'csv', detailsCache.idList as List<Long>)
+
+                ServletOutputStream out = response.outputStream
+                out.withWriter { w ->
+                    rows.each { r ->
+                        w.write(r + '\n')
+                    }
+                }
+                out.close()
+            }
+            else if (params.fileformat == 'pdf') {
+                List<List<String>> content = DetailsExportManager.export(export, 'pdf', detailsCache.idList as List<Long>)
+                Map<String, Object> struct = ExportLocalHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
+
+                def pdf = wkhtmltoxService.makePdf(
+                        view: '/subscription/reporting/export/pdf/generic_details',
+                        model: [
+                                //filterLabels: ExportLocalHelper.getCachedFilterLabels(params.token),
+                                filterResult: ExportLocalHelper.getCachedFilterResult(params.token),
+                                queryLabels : ExportLocalHelper.getCachedQueryLabels(params.token),
+                                title       : filename,
+                                header      : content.remove(0),
+                                content     : content,
+                                struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
+                        ],
+                        // header: '',
+                        // footer: '',
+                        pageSize: struct.pageSize,
+                        orientation: struct.orientation,
+                        marginLeft: 10,
+                        marginTop: 15,
+                        marginBottom: 15,
+                        marginRight: 10
+                )
+
+                response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
+                response.setContentType('application/pdf')
+                response.outputStream.withStream { it << pdf }
+            }
         }
     }
 
@@ -500,8 +550,8 @@ class AjaxHtmlController {
     def chartQueryExport() {
         QueryExport export = QueryExportManager.createExport( params.token )
 
-        List<String> queryLabels = ExportHelper.getIncompleteQueryLabels( params.token )
-        String filename = ExportHelper.getFileName( queryLabels )
+        List<String> queryLabels = ExportGlobalHelper.getIncompleteQueryLabels( params.token )
+        String filename = ExportGlobalHelper.getFileName( queryLabels )
 
         if (params.fileformat == 'csv') {
             response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
@@ -546,8 +596,8 @@ class AjaxHtmlController {
 
             Map<String, Object> model = [
                     token:        params.token,
-                    filterLabels: ExportHelper.getCachedFilterLabels(params.token),
-                    filterResult: ExportHelper.getCachedFilterResult(params.token),
+                    filterLabels: ExportGlobalHelper.getCachedFilterLabels(params.token),
+                    filterResult: ExportGlobalHelper.getCachedFilterResult(params.token),
                     queryLabels : queryLabels,
                     //imageData   : params.imageData,
                     //tmpBase64Data : BaseQuery.getQueryCache( params.token ).get( 'tmpBase64Data' ),

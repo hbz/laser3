@@ -1,4 +1,4 @@
-package de.laser.reporting.export
+package de.laser.reporting.export.myInstitution
 
 import de.laser.ContextService
 import de.laser.Identifier
@@ -6,13 +6,14 @@ import de.laser.Org
 import de.laser.Subscription
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
-class SubscriptionExport extends AbstractExport {
+class SubscriptionExport extends BaseExport {
 
     static String KEY = 'subscription'
 
@@ -80,7 +81,7 @@ class SubscriptionExport extends AbstractExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportHelper.normalizeSelectedMultipleFields( this )
+        ExportGlobalHelper.normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -90,16 +91,16 @@ class SubscriptionExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportHelper.getFieldLabel( this, fieldName )
+        ExportGlobalHelper.getFieldLabel( this, fieldName )
     }
 
     @Override
-    List<String> getObject(Long id, Map<String, Object> fields) {
+    List<String> getObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
-        Subscription sub = Subscription.get(id)
+        Subscription sub = obj as Subscription
         List<String> content = []
 
         fields.each{ f ->

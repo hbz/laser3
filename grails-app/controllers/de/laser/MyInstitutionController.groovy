@@ -68,7 +68,7 @@ class MyInstitutionController  {
     def organisationService
     def orgTypeService
     def propertyService
-    def reportingService
+    def reportingGlobalService
     def subscriptionsQueryService
     def subscriptionService
     def surveyService
@@ -102,7 +102,7 @@ class MyInstitutionController  {
         result.cfgChartsList = BaseConfig.CHARTS
 
         if (params.filter) {
-            reportingService.doGlobalFilter(result, params) // manipulates result, clones params
+            reportingGlobalService.doFilter(result, params) // manipulates result, clones params
 
             Map<String, Object> cacheMap = [
                 filterCache: [

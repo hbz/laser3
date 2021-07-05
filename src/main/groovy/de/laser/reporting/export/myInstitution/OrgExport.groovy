@@ -1,6 +1,6 @@
-package de.laser.reporting.export
+package de.laser.reporting.export.myInstitution
 
-import de.laser.AccessPointService
+
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.Org
@@ -14,18 +14,18 @@ import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointEzproxy
-import de.laser.oap.OrgAccessPointLink
 import de.laser.oap.OrgAccessPointOA
 import de.laser.oap.OrgAccessPointProxy
 import de.laser.oap.OrgAccessPointShibboleth
 import de.laser.oap.OrgAccessPointVpn
+import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 
-class OrgExport extends AbstractExport {
+class OrgExport extends BaseExport {
 
     static String KEY = 'organisation'
 
@@ -89,7 +89,7 @@ class OrgExport extends AbstractExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportHelper.normalizeSelectedMultipleFields( this )
+        ExportGlobalHelper.normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -99,16 +99,16 @@ class OrgExport extends AbstractExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportHelper.getFieldLabel( this, fieldName )
+        ExportGlobalHelper.getFieldLabel( this, fieldName )
     }
 
     @Override
-    List<String> getObject(Long id, Map<String, Object> fields) {
+    List<String> getObject(Object obj, Map<String, Object> fields) {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
 
-        Org org = Org.get(id)
+        Org org = obj as Org
         List<String> content = []
 
         fields.each{ f ->

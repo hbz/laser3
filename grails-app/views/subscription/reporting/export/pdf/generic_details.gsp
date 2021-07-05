@@ -44,16 +44,13 @@
         font-weight: bold;
     }
     .filterInfo,
-    .filterResult {
-        font-size: 90%;
-    }
-    .filterInfo,
     .filterResult,
     .queryInfo {
         margin-bottom: 0.5em;
         padding: 0.5em 1em;
         border-left: 5px solid #a9cce3;
     }
+    .filterResult,
     .queryInfo {
         font-weight: bold;
     }
@@ -63,36 +60,6 @@
     <p><span class="warning">DEMO : Funktionalität in Entwicklung</span></p>
 
     <h1>LAS:eR Report <span>- ${DateUtils.getSDF_NoTime().format( new Date() )}</span></h1>
-
-    <div class="filterInfo">
-        <g:each in="${filterLabels}" var="lblGroup">
-            ${lblGroup.value.source}
-
-            <g:each in="${lblGroup.value}" var="label">
-                <g:if test="${label.key != 'source'}">
-                    -
-                    <g:if test="${label.key in ['endDate', 'startDate']}">
-                        ${label.value.label} ${label.value.value}
-                    </g:if>
-                    <g:else>
-                        ${label.value.label}:
-                        <g:if test="${GenericHelper.isFieldMultiple(label.key)}">
-                            <g:if test="${label.value.value instanceof String}">
-                                ${label.value.value}
-                            </g:if>
-                            <g:else>
-                                ${label.value.value.join(', ')}
-                            </g:else>
-                        </g:if>
-                        <g:else>
-                            ${label.value.value}
-                        </g:else>
-                    </g:else>
-                </g:if>
-            </g:each>
-            <br />
-        </g:each>
-    </div>
 
     <div class="filterResult">
         <%= filterResult %>
