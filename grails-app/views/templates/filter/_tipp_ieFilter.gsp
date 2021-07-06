@@ -109,9 +109,9 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${ddcs}" var="ddc">
-                        <option <%=(params.list('ddcs')?.contains(ddc.ddc.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${ddc.ddc.id}">
-                            ${ddc.ddc.value} - ${ddc.ddc.getI10n("value")}
+                        <option <%=(params.list('ddcs')?.contains(ddc.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${ddc.id}">
+                            ${ddc.value} - ${ddc.getI10n("value")}
                         </option>
                     </g:each>
                 </select>
@@ -125,9 +125,9 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${languages}" var="language">
-                        <option <%=(params.list('languages')?.contains(language.language.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${language.language.id}">
-                            ${language.language.getI10n("value")}
+                        <option <%=(params.list('languages')?.contains(language.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${language.id}">
+                            ${language.getI10n("value")}
                         </option>
                     </g:each>
                 </select>
