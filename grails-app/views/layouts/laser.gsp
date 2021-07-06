@@ -286,6 +286,11 @@
                                 </div>
 
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="user" action="list">${message(code:'menu.institutions.users')}</semui:link>
+
+                                <sec:ifAnyGranted roles="ROLE_YODA">
+                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageWorkflows">DEMO: Workflows</semui:link>
+                                </sec:ifAnyGranted>
+
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="showAffiliations">${message(code:'menu.admin.showAffiliations')}</semui:link>
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="usage">${message(code:'menu.admin.manageUsageStats')}</semui:link>
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="updateQASubscriptionDates">${message(code:'menu.admin.updateTestSubscriptionDates')}</semui:link>

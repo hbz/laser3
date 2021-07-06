@@ -405,6 +405,11 @@ class AdminController  {
   }
 
     @Secured(['ROLE_ADMIN'])
+    def manageWorkflows() {
+        Map<String, Object> result = [:]
+    }
+
+    @Secured(['ROLE_ADMIN'])
     def showAffiliations() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
