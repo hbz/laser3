@@ -562,42 +562,42 @@ class ControlledListService {
         seriesName
     }
 
-    Set<DeweyDecimalClassification> getAllPossibleDdcsByPackage(Package pkg, String forTitles) {
+    Set<RefdataValue> getAllPossibleDdcsByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
-        Set<DeweyDecimalClassification> ddcs = []
+        Set<RefdataValue> ddcs = []
 
-        ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by ddc.ddc.value_"+I10nTranslation.decodeLocale(locale), [pkg: pkg, status: tippStatus]))
+        ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by ddc.ddc.value_"+I10nTranslation.decodeLocale(locale), [pkg: pkg, status: tippStatus]))
 
         ddcs
     }
 
-    Set<DeweyDecimalClassification> getAllPossibleDdcsBySub(Subscription subscription) {
+    Set<RefdataValue> getAllPossibleDdcsBySub(Subscription subscription) {
         Locale locale = LocaleContextHolder.getLocale()
-        Set<DeweyDecimalClassification> ddcs = []
+        Set<RefdataValue> ddcs = []
 
         if(subscription.packages){
-            ddcs.addAll(DeweyDecimalClassification.executeQuery("select ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by ddc.ddc.value_"+I10nTranslation.decodeLocale(locale), [pkg: subscription.packages.pkg]))
+            ddcs.addAll(DeweyDecimalClassification.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by ddc.ddc.value_"+I10nTranslation.decodeLocale(locale), [pkg: subscription.packages.pkg]))
         }
         ddcs
     }
 
-    Set<Language> getAllPossibleLanguagesByPackage(Package pkg, String forTitles) {
+    Set<RefdataValue> getAllPossibleLanguagesByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
-        Set<Language> languages = []
+        Set<RefdataValue> languages = []
 
-        languages.addAll(TitleInstancePackagePlatform.executeQuery("select lang from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by lang.language.value_"+I10nTranslation.decodeLocale(locale), [pkg: pkg, status: tippStatus]))
+        languages.addAll(TitleInstancePackagePlatform.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status order by lang.language.value_"+I10nTranslation.decodeLocale(locale), [pkg: pkg, status: tippStatus]))
 
         languages
     }
 
-    Set<Language> getAllPossibleLanguagesBySub(Subscription subscription) {
+    Set<RefdataValue> getAllPossibleLanguagesBySub(Subscription subscription) {
         Locale locale = LocaleContextHolder.getLocale()
-        Set<Language> languages = []
+        Set<RefdataValue> languages = []
 
         if(subscription.packages){
-            languages.addAll(DeweyDecimalClassification.executeQuery("select lang from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by lang.language.value_"+I10nTranslation.decodeLocale(locale), [pkg: subscription.packages.pkg]))
+            languages.addAll(DeweyDecimalClassification.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by lang.language.value_"+I10nTranslation.decodeLocale(locale), [pkg: subscription.packages.pkg]))
         }
         languages
     }

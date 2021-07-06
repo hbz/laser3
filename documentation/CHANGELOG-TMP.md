@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3657    06.07.2021  dev     2.2         Andreas Bug         falsche Befüllung der Dropdown-Listen
+
+3654    06.07.2021  dev     2.2         Andreas Bug         Kontakttyp wurde nicht korrekt prozessiert
+
 3655    05.07.2021  dev     2.2         Andreas Bug         Vererbung von Identifier korrigiert
 
 3648    05.07.2021  dev     2.2         Andreas Feature     Default-Sichtbarkeit bei Org-Dokumenten umgestellt

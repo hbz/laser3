@@ -134,9 +134,10 @@ class I10nTranslation {
         else if(locale?.contains("_")) {
             return locale.split("_").first().toLowerCase()
         }
-        else {
-            return locale
+        else if(locale?.isNumber()){
+            return "de" //fallback for some strange values
         }
+        else return locale
     }
     static String decodeLocale(Locale locale) {
         decodeLocale(locale.toString())
