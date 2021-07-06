@@ -3,10 +3,12 @@ package de.laser.reporting.export.base
 import de.laser.ContextService
 import de.laser.reporting.export.local.ExportLocalHelper
 import de.laser.reporting.export.local.IssueEntitlementExport
+import de.laser.reporting.export.local.OrgExport as OrgExportLocal
+import de.laser.reporting.export.myInstitution.OrgExport as OrgExportGlobal
 import de.laser.reporting.export.myInstitution.ExportGlobalHelper
 import de.laser.reporting.export.myInstitution.LicenseExport
-import de.laser.reporting.export.myInstitution.OrgExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport
+
 import grails.util.Holders
 
 abstract class BaseExport {
@@ -74,9 +76,16 @@ abstract class BaseExport {
                 LicenseExport.CONFIG_ORG_INST
             }
         }
-        else if (key == OrgExport.KEY) {
+        else if (key in [OrgExportLocal.KEY, OrgExportGlobal.KEY]) {
 
-            OrgExport.CONFIG_X
+            String pkg = this.class.package.toString()
+
+            if (pkg.endsWith('.myInstitution')) {
+                OrgExportGlobal.CONFIG_X
+            }
+            else if (pkg.endsWith('.local')) {
+                OrgExportLocal.CONFIG_X
+            }
         }
         else if (key == SubscriptionExport.KEY) {
 
