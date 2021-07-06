@@ -1,4 +1,4 @@
-package de.laser.reporting.export
+package de.laser.reporting.export.myInstitution
 
 import de.laser.reporting.myInstitution.base.BaseQuery
 

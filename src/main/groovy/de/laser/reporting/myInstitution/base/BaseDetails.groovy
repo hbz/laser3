@@ -27,7 +27,7 @@ class BaseDetails {
 
     static List<String> resolvePropertiesGeneric(Object obj, Long pdId, Org ctxOrg) {
 
-        BaseDetails.getPropertiesGeneric(obj, pdId, ctxOrg).collect { prop ->
+        getPropertiesGeneric(obj, pdId, ctxOrg).collect { prop ->
             if (prop.getType().isRefdataValueType()) {
                 if (prop.getRefValue()) {
                     prop.getRefValue()?.getI10n('value')

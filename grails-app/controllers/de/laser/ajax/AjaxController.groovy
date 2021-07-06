@@ -1112,10 +1112,10 @@ class AjaxController {
                         memberType = 'lic'
                 if(memberType) {
                     owner.getClass().findAllByInstanceOf(owner).each { member ->
-                        Identifier existingProp = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.instanceOf = :id', [member: member, id: identifier])[0]
-                        if (! existingProp) {
+                        Identifier existingIdentifier = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.instanceOf = :id', [member: member, id: identifier])[0]
+                        if (! existingIdentifier) {
                             //List<Identifier> matchingProps = Identifier.findAllByOwnerAndTypeAndTenant(member, property.type, contextOrg)
-                            List<Identifier> matchingIds = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.ns = :ns',[member: member, ns: identifier.ns])
+                            List<Identifier> matchingIds = Identifier.executeQuery('select id from Identifier id where id.'+memberType+' = :member and id.value = :value and id.ns = :ns',[member: member, value: identifier.value, ns: identifier.ns])
                             // unbound prop found with matching type, set backref
                             if (matchingIds) {
                                 matchingIds.each { Identifier memberId ->

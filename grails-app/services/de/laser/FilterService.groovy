@@ -101,7 +101,7 @@ class FilterService {
         }
 
         if (params.customerType?.length() > 0) {
-            query << "exists (select oss from OrgSetting as oss where oss.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
+            query << "exists (select oss from OrgSetting as oss where oss.org.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
             queryParams << [customerType : Long.parseLong(params.customerType)]
             queryParams << [customerTypeKey : OrgSetting.KEYS.CUSTOMER_TYPE]
         }
@@ -198,9 +198,14 @@ class FilterService {
 
         if (params.subStatus || params.subValidOn || params.subPerpetual) {
             String subQuery = "exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType"
-            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg()]
+            if(params.invertDirection) {
+                subQuery = "exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org = :context and oo.roleType in (:subscrRoles) and ooCons.org.id = o.id and ooCons.roleType = :consType"
+                queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg()]
+            }
+            else
+                queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg()]
             if (params.subStatus) {
-                subQuery +=  " and (sub.status = :subStatus" // ( closed in line 208; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
+                subQuery +=  " and (sub.status = :subStatus" // ( closed in line 213; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
                 RefdataValue subStatus = RefdataValue.get(params.subStatus)
                 queryParams << [subStatus: subStatus]
                 if (!params.subValidOn && params.subPerpetual && subStatus == RDStore.SUBSCRIPTION_CURRENT)
@@ -243,10 +248,13 @@ class FilterService {
 
         String defaultOrder = " order by " + (params.sort && (!params.consSort && !params.ownSort && !params.subscrSort) ? params.sort : " LOWER(o.sortname)") + " " + (params.order && (!params.consSort && !params.ownSort && !params.subscrSort) ? params.order : "asc")
 
+        String direction = "c.fromOrg = o and c.toOrg = :org"
+        if(params.invertDirection)
+            direction = "c.fromOrg = :org and c.toOrg = o"
         if (query.size() > 0) {
-            result.query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and c.fromOrg = o and c.toOrg = :org and c.type.value = :comboType " + defaultOrder
+            result.query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and "+direction+" and c.type.value = :comboType " + defaultOrder
         } else {
-            result.query = "select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :org and c.type.value = :comboType " + defaultOrder
+            result.query = "select o from Org as o, Combo as c where "+direction+" and c.type.value = :comboType " + defaultOrder
         }
         result.queryParams = queryParams
         result

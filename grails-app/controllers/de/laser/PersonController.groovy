@@ -107,7 +107,7 @@ class PersonController  {
                             params.list('content').eachWithIndex { content, i ->
                                 if (content) {
                                     RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
-
+                                    RefdataValue contactLang = params['contactLang.id'] ? RefdataValue.get(params['contactLang.id']) : null
                                     if (RDStore.CCT_EMAIL == rdvCT) {
                                         if (!formService.validateEmailAddress(content)) {
                                             flash.error = message(code: 'contact.create.email.error')
@@ -115,7 +115,7 @@ class PersonController  {
                                         }
                                     }
 
-                                    Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: RDStore.CONTACT_TYPE_JOBRELATED, content: content)
+                                    Contact contact = new Contact(prs: personInstance, contentType: rdvCT, language: contactLang, type: RDStore.CONTACT_TYPE_JOBRELATED, content: content)
                                     contact.save()
                                 }
                             }
@@ -278,7 +278,7 @@ class PersonController  {
                     }
                 }
 
-                personInstance.getPersonRoleByOrg(contextOrg).each { psr ->
+                personInstance.getPersonRoleByOrg(personRoleOrg).each { psr ->
                     if (psr.functionType && !(psr.functionType.id.toString() in params.list('functionType'))) {
                         personInstance.removeFromRoleLinks(psr)
                         psr.delete()
@@ -306,7 +306,7 @@ class PersonController  {
                     }
                 }
 
-                personInstance.getPersonRoleByOrg(contextOrg).each { psr ->
+                personInstance.getPersonRoleByOrg(personRoleOrg).each { psr ->
                     if (psr.positionType && !(psr.positionType.id.toString() in params.list('positionType'))) {
                         personInstance.removeFromRoleLinks(psr)
                         psr.delete()
@@ -320,13 +320,17 @@ class PersonController  {
                     contact.content = params."content${contact.id}"
                     contact.save()
                 }
+                if (params."contactLang${contact.id}") {
+                    contact.language = RefdataValue.get(params."contactLang${contact.id}")
+                    contact.save()
+                }
             }
 
             if (params.content) {
                 params.list('content').eachWithIndex { content, i ->
                     if (content) {
                         RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
-
+                        RefdataValue contactLang = params['contactLang.id'] ? RefdataValue.get(params['contactLang.id']) : null
                         if (RDStore.CCT_EMAIL == rdvCT) {
                             if (!formService.validateEmailAddress(content)) {
                                 flash.error = message(code: 'contact.create.email.error')
@@ -334,7 +338,7 @@ class PersonController  {
                             }
                         }
 
-                        Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: RDStore.CONTACT_TYPE_JOBRELATED, content: content)
+                        Contact contact = new Contact(prs: personInstance, contentType: rdvCT, language: contactLang, type: RDStore.CONTACT_TYPE_JOBRELATED, content: content)
                         contact.save()
                     }
                 }

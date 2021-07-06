@@ -1328,6 +1328,8 @@ class SubscriptionController {
             else flash.error = ctrlResult.result.error
         }
         else {
+            if(ctrlResult.result.transferIntoMember && params.workFlowPart in [CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS, CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS])
+                params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
             switch (params.workFlowPart) {
                 case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
                     ctrlResult.result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
@@ -1380,7 +1382,10 @@ class SubscriptionController {
                     ctrlResult.result << copyElementsService.copyObjectElements_Properties(params)
                     break
                 default:
-                    ctrlResult.result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
+                    if(ctrlResult.result.transferIntoMember)
+                        ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    else
+                        ctrlResult.result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                     break
             }
             ctrlResult.result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS
@@ -1495,8 +1500,21 @@ class SubscriptionController {
                 return
         }
         else {
+            Subscription sub = Subscription.get(params.id)
+            String filterResult = sub.name
+
+            if (sub.startDate || sub.endDate) {
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                filterResult += ' (' + (sub.startDate ? sdf.format(sub.startDate) : '') + ' - ' + (sub.endDate ? sdf.format(sub.endDate) : '')  + ')'
+            }
+
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String, Object> cacheMap = [ queryCache: [:] ]
+            Map<String, Object> cacheMap = [
+                    filterCache: [
+                        result: filterResult
+                    ],
+                    queryCache: [:]
+            ]
             sessionCache.put("SubscriptionController/reporting" /* + ctrlResult.result.token */, cacheMap)
 
             render view: 'reporting/index', model: ctrlResult.result

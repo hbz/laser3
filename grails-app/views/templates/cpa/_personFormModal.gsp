@@ -220,12 +220,21 @@
 
                 <g:if test="${personInstance}">
                     <g:each in="${personInstance.contacts?.toSorted()}" var="contact">
-                        <div class="two fields">
-                            <div class="field three wide">
+                        <div class="three fields">
+                            <div class="field wide four ">
                                 <input type="text" readonly value="${contact.contentType.getI10n('value')}"/>
                             </div>
 
-                            <div class="field thirteen wide">
+                            <div class="field wide four">
+                                <laser:select class="ui search dropdown" name="contactLang${contact.id}"
+                                              from="${RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)}"
+                                              optionKey="id"
+                                              optionValue="value"
+                                              value="${contact.language?.id}"
+                                              noSelection="['null': '']"/>
+                            </div>
+
+                            <div class="field wide eight">
                                 <g:textField name="content${contact.id}" value="${contact.content}"/>
                             </div>
                         </div>
@@ -248,9 +257,9 @@
 
                 <br />
                 <br />
-
+            <div class="field">
                 <div class="three fields">
-                    <div class="field three wide">
+                    <div class="field wide four">
                         <label></label>
                         <laser:select class="ui dropdown" name="contentType.id"
                                       from="${Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
@@ -259,16 +268,24 @@
                                       value="${contactInstance?.contentType?.id}"/>
                     </div>
 
-                    <div class="field one wide">
-
+                    <div class="field wide four">
+                        <label></label>
+                        <laser:select class="ui search dropdown" name="contactLang.id"
+                                      from="${RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      value="${contactInstance?.language?.id}"
+                                      noSelection="['null': '']"/>
                     </div>
 
 
-                    <div class="field twelve wide">
+                    <div class="field wide eight">
                         <label></label>
                         <g:textField id="content" name="content" value="${contactInstance?.content}"/>
                     </div>
                 </div>
+            </div>
+
 
                 <div id="contactElements"></div>
             </g:if>

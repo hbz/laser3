@@ -432,6 +432,15 @@
                                 </div>
                             </g:link>
                         </g:if>
+                        <g:elseif test="${actionName == 'currentConsortia'}">
+                            <g:link controller="myInstitution" action="currentSubscriptions"
+                                    params="${[consortia: genericOIDService.getOID(org), status: params.subStatus ?: null, validOn: params.subValidOn, filterSet: true]}"
+                                    title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
+                                <div class="ui circular label">
+                                    ${numberOfSubscriptions}
+                                </div>
+                            </g:link>
+                        </g:elseif>
                         <g:else>
                             <g:link controller="myInstitution" action="currentSubscriptions"
                                     params="${[identifier: org.globalUID]}"
@@ -447,9 +456,14 @@
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
                     <td class="center aligned">
                         <div class="la-flexbox">
-
-                            <g:set var="participantSurveys"
-                                   value="${SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date(System.currentTimeMillis()))}"/>
+                            <g:if test="${invertDirection}">
+                                <g:set var="participantSurveys"
+                                       value="${SurveyResult.findAllByParticipantAndOwnerAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date(System.currentTimeMillis()))}"/>
+                            </g:if>
+                            <g:else>
+                                <g:set var="participantSurveys"
+                                       value="${SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date(System.currentTimeMillis()))}"/>
+                            </g:else>
                             <g:set var="numberOfSurveys"
                                    value="${participantSurveys.groupBy { it.surveyConfig.id }.size()}"/>
                             <%
@@ -473,12 +487,23 @@
                                 }
                             %>
 
-                            <g:link controller="myInstitution" action="manageParticipantSurveys"
-                                    id="${org.id}">
-                                <div class="ui circular ${finishColor} label">
-                                    ${numberOfSurveys}
-                                </div>
-                            </g:link>
+                            <g:if test="${invertDirection}">
+                                <g:link controller="myInstitution" action="currentSurveys"
+                                        params="[owner: org.id]">
+                                    <div class="ui circular ${finishColor} label">
+                                        ${numberOfSurveys}
+                                    </div>
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link controller="myInstitution" action="manageParticipantSurveys"
+                                        id="${org.id}">
+                                    <div class="ui circular ${finishColor} label">
+                                        ${numberOfSurveys}
+                                    </div>
+                                </g:link>
+                            </g:else>
+
                         </div>
                     </td>
                 </g:if>

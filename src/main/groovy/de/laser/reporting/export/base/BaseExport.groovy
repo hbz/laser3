@@ -1,10 +1,15 @@
-package de.laser.reporting.export
+package de.laser.reporting.export.base
 
 import de.laser.ContextService
-import de.laser.Identifier
+import de.laser.reporting.export.local.ExportLocalHelper
+import de.laser.reporting.export.local.IssueEntitlementExport
+import de.laser.reporting.export.myInstitution.ExportGlobalHelper
+import de.laser.reporting.export.myInstitution.LicenseExport
+import de.laser.reporting.export.myInstitution.OrgExport
+import de.laser.reporting.export.myInstitution.SubscriptionExport
 import grails.util.Holders
 
-abstract class AbstractExport {
+abstract class BaseExport {
 
     static String FIELD_TYPE_PROPERTY           = 'property'
     static String FIELD_TYPE_REFDATA            = 'refdata'
@@ -28,14 +33,26 @@ abstract class AbstractExport {
             // virtual; without XY.CONFIG.base.x
 
             '@ae-subscription-member'   : 'Anzahl Teilnehmer',
+
             '@ae-license-subscription'  : 'Anzahl Lizenzen',
             '@ae-license-member'        : 'Anzahl Teilnehmerverträge',
+
             '@ae-org-accessPoint'       : 'Zugangskonfigurationen (ohne Links)',    // dyn.value
             '@ae-org-contact'           : 'Kontaktdaten',
             '@ae-org-readerNumber'      : 'Nutzerzahlen und Stichtage',             // dyn.value
+
+            '@ae-entitlement-tippName'              : 'Titel der Ressource',
+            '@ae-entitlement-tippEditionStatement'  : 'Auflage',
+            '@ae-entitlement-tippFirstAuthor'       : 'Autor(en)name',
+            '@ae-entitlement-tippHostPlatformURL'   : 'Plattform-URL',
+            '@ae-entitlement-tippIdentifier'        : 'Identifikatoren',            // dyn.value
+            '@ae-entitlement-tippPublisherName'     : 'Publisher',
+            '@ae-entitlement-tippSeriesName'        : 'Name der Reihe',
+            '@ae-entitlement-tippSubjectReference'  : 'Fachbereich',
+            '@ae-entitlement-tippTitleType'         : 'Titel-Typ',
     ]
 
-    String token
+    String token                    // cache token
 
     Map<String, Object> selectedExportFields = [:]
 
@@ -43,7 +60,7 @@ abstract class AbstractExport {
 
     abstract String getFieldLabel(String fieldName)
 
-    abstract List<String> getObject(Long id, Map<String, Object> fields)
+    abstract List<String> getObject(Object obj, Map<String, Object> fields)
 
     Map<String, Object> getCurrentConfig(String key) {
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
@@ -70,11 +87,25 @@ abstract class AbstractExport {
                 SubscriptionExport.CONFIG_ORG_INST
             }
         }
+        else if (key == IssueEntitlementExport.KEY) {
+
+            IssueEntitlementExport.CONFIG_X
+        }
     }
 
     Map<String, Object> getAllFields() {
-        String cfg   = ExportHelper.getCachedConfigStrategy( token )
-        String field = ExportHelper.getCachedFieldStrategy( token )
+
+        String cfg, field
+        String pkg = this.class.package.toString()
+
+        if (pkg.endsWith('.myInstitution')) {
+            cfg   = ExportGlobalHelper.getCachedConfigStrategy( token )
+            field = ExportGlobalHelper.getCachedFieldStrategy( token )
+        }
+        else if (pkg.endsWith('.local')) {
+            cfg   = ExportLocalHelper.getCachedConfigStrategy( token )
+            field = ExportLocalHelper.getCachedFieldStrategy( token )
+        }
 
         Map<String, Object> base = getCurrentConfig( KEY ).base as Map
 

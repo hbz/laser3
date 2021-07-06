@@ -5,7 +5,6 @@ import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.GenericOIDService
 import de.laser.annotations.DebugAnnotation
 import de.laser.ctrl.FinanceControllerService
-import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.SurveyControllerService
 import de.laser.custom.CustomWkhtmltoxService
@@ -18,13 +17,11 @@ import de.laser.finance.CostItem
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
-import de.laser.reporting.export.ExportHelper
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.grails.plugins.wkhtmltopdf.WkhtmltoxService
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.transaction.TransactionStatus

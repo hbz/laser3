@@ -86,7 +86,7 @@
                 <g:if test="${sourceObject instanceof SurveyConfig}">
                     <g:select class="ui search dropdown"
                               name="targetObjectId"
-                              from="${((List<Object>) allObjects_writeRights)?.sort { it.dropdownNamingConvention() }}"
+                              from="${((List<Object>) allObjects_readRights)?.sort { it.dropdownNamingConvention() }}"
                               optionValue="${{ it.dropdownNamingConvention() }}"
                               optionKey="${{ genericOIDService.getOID(it) }}"
                               value="${genericOIDService.getOID(sourceObject)}"/>

@@ -3,7 +3,6 @@ package de.laser.ajax
 import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.auth.Role
-import de.laser.helper.SessionCacheWrapper
 import de.laser.properties.LicenseProperty
 import de.laser.Org
 import de.laser.properties.OrgProperty
@@ -27,18 +26,11 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
-import de.laser.reporting.myInstitution.CostItemQuery
 import de.laser.reporting.myInstitution.base.BaseConfig
-import de.laser.reporting.myInstitution.base.BaseQuery
-import de.laser.reporting.myInstitution.LicenseQuery
-import de.laser.reporting.myInstitution.OrganisationQuery
-import de.laser.reporting.myInstitution.SubscriptionQuery
-import de.laser.reporting.subscription.SubscriptionReporting
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
-import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -58,7 +50,8 @@ class AjaxJsonController {
     def genericOIDService
     def licenseService
     def linksGenerationService
-    def reportingService
+    def reportingGlobalService
+    def reportingLocalService
     def subscriptionService
 
     @Secured(['ROLE_USER'])
@@ -83,7 +76,7 @@ class AjaxJsonController {
         queryParams.showSubscriber = showSubscriber
         queryParams.showConnectedObjs = showConnectedObjs
 
-        data = subscriptionService.getMySubscriptions_writeRights(queryParams)
+        data = subscriptionService.getMySubscriptions_readRights(queryParams)
         if (data) {
             if (params.valueAsOID){
                 data.each { Subscription s ->
@@ -684,10 +677,10 @@ class AjaxJsonController {
         Map<String, Object> result = [:]
 
         if (params.context == BaseConfig.KEY_MYINST) {
-            reportingService.doGlobalChart( result, params ) // manipulates result
+            reportingGlobalService.doChart( result, params ) // manipulates result
         }
         else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
-            reportingService.doLocalChart( result, params ) // manipulates result
+            reportingLocalService.doChart( result, params ) // manipulates result
         }
 
         if (result.tmpl) {
