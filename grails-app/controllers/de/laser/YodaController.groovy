@@ -588,10 +588,10 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def updateIdentifiers() {
+    def updateData() {
         if(!globalSourceSyncService.running) {
             log.debug("start reloading ...")
-            globalSourceSyncService.updateIdentifiers()
+            globalSourceSyncService.updateData(params.dataToLoad)
         }
         else {
             log.debug("process running, lock is set!")
