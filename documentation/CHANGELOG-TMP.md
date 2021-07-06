@@ -11,6 +11,8 @@
 
 3654    06.07.2021  dev     2.2         Andreas Bug         Kontakttyp wurde nicht korrekt prozessiert
 
+3285    06.07.2021  dev     2.2         Andreas Bug         irrtümliches Überschreiben von Konsortiallizenzparameter für Vollnutzer unterbunden
+
 3655    05.07.2021  dev     2.2         Andreas Bug         Vererbung von Identifier korrigiert
 
 3648    05.07.2021  dev     2.2         Andreas Feature     Default-Sichtbarkeit bei Org-Dokumenten umgestellt
