@@ -654,9 +654,6 @@
     %{-- global content container --}%
         <div class="pusher">
             <main class="ui main container ${visibilityContextOrgMenu} hidden la-js-mainContent">
-            <div class="ui icon button la-popup-tooltip la-delay" data-content="Add users to your feed">
-                <i class="add icon"></i>
-            </div>
 
             %{-- system messages --}%
 
@@ -677,7 +674,9 @@
             %{-- content --}%
 
             <g:layoutBody/>
-
+                <div class="ui icon button la-popup-tooltip la-delay" data-content="Add users to your feed">
+                    <i class="add icon"></i>
+                </div>
         </main><!-- .main -->
         </div>
 
