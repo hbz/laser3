@@ -109,7 +109,10 @@ verticalNavi = {
         $('.la-help-panel-button').click(function() {
 
             $('.la-help-panel')
-            .sidebar('setting', 'dimPage', false)
+            .sidebar({
+                context: $('body')
+            })
+            //.sidebar('setting', 'dimPage', false)
             .sidebar('toggle');
         });
     }

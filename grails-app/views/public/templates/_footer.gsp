@@ -1,4 +1,20 @@
 <%@ page import="de.laser.helper.ConfigUtils" %>
+<style>
+        /** inline style here with intention:
+            flex layout helps footer to stick at bottom when main high not high enough
+            but would make a bug when using the sidebars at all the other sides without the footer
+         */
+      body {
+          display: flex;
+          min-height: 100vh;
+          flex-direction: column;
+      }
+
+      main {
+          flex: 1;
+      }
+
+</style>
 <footer class="ui inverted vertical footer segment la-footer">
     <div class="ui container">
 
