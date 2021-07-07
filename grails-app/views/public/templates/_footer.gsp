@@ -4,6 +4,9 @@
             flex layout helps footer to stick at bottom when main high not high enough
             but would make a bug when using the sidebars at all the other sides without the footer
          */
+    .pusher {
+        flex: 1;
+    }
       body {
           display: flex;
           min-height: 100vh;

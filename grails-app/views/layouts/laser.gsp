@@ -674,9 +674,6 @@
             %{-- content --}%
 
             <g:layoutBody/>
-                <div class="ui icon button la-popup-tooltip la-delay" data-content="Add users to your feed">
-                    <i class="add icon"></i>
-                </div>
         </main><!-- .main -->
         </div>
 
