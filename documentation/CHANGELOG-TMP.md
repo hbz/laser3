@@ -11,6 +11,8 @@
 
 3657    06.07.2021  dev     2.2         Andreas Bug         falsche Befüllung der Dropdown-Listen
 
+3656    06.07.2021  dev     2.2         Andreas Bug         falsche Zahlen an die Reiter gegeben
+
 3654    06.07.2021  dev     2.2         Andreas Bug         Kontakttyp wurde nicht korrekt prozessiert
 
 3285    06.07.2021  dev     2.2         Andreas Bug         irrtümliches Überschreiben von Konsortiallizenzparameter für Vollnutzer unterbunden
