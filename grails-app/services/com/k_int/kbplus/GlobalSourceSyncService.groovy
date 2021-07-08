@@ -220,15 +220,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
             this.source = GlobalRecordSource.findByActiveAndRectype(true,RECTYPE_TIPP)
             this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
             List<String> triggeredTypes
+            int max
             switch(dataToLoad) {
                 case "identifier": triggeredTypes = ['Package','Org','TitleInstancePackagePlatform']
+                    max = 100
                     break
                 case "ddc": triggeredTypes = ['TitleInstancePackagePlatform']
                     RefdataCategory.getAllRefdataValues(RDConstants.DDC).each { RefdataValue rdv ->
                         ddc.put(rdv.value, rdv)
                     }
+                    max = 5000
                     break
                 case "language": triggeredTypes = ['TitleInstancePackagePlatform']
+                    max = 5000
                     break
                 default: triggeredTypes = []
                     break
@@ -236,7 +240,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             try {
                 triggeredTypes.each { String componentType ->
                     GlobalRecordSource.withNewSession { Session sess ->
-                        int offset = 0, max = 5000
+                        int offset = 0
                         Map<String, Object> queryParams = [component_type: componentType, max: max]
                         Map<String,Object> result = fetchRecordJSON(true,queryParams)
                         if(result) {
@@ -312,7 +316,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                             oldDdcs.addAll(tipp.ddcs.collect { DeweyDecimalClassification ddc -> ddc.ddc.value })
                                                         if(ddcs) {
                                                             if(oldDdcs) {
-                                                                DeweyDecimalClassification.executeUpdate('delete from DeweyDecimalClassification ddc join ddc.ddc rdv where ddc.tipp = :tipp and rdv.value not in (:newDdcs)', [tipp: tipp, newDdcs: ddcs.collect { ddc -> ddc.value }])
+                                                                DeweyDecimalClassification.executeUpdate('delete from DeweyDecimalClassification ddc where ddc.id in (select ddc.id from DeweyDecimalClassification ddc join ddc.ddc rdv where ddc.tipp = :tipp and rdv.value not in (:newDdcs))', [tipp: tipp, newDdcs: ddcs.collect { ddc -> ddc.value }])
                                                             }
                                                             ddcs.each { ddcData ->
                                                                 if(!(ddcData.value in (oldDdcs))) {
