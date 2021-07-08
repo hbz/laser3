@@ -34,8 +34,7 @@
 </head>
 
 <body class="${controllerName}_${actionName} ${severLabel}">
-    %{-- help sidebar --}%
-    <g:render template="/templates/help/help_subscription_show"/>
+
 
     <g:if test="${currentServer == ServerUtils.SERVER_LOCAL}">
         <div class="ui yellow label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.local')}"></div>
