@@ -18,6 +18,7 @@
                 %>
             ]
         },
+        toolbox: JSPC.app.reporting.helper.toolbox,
         tooltip: {
             trigger: 'item',
             formatter (params) {

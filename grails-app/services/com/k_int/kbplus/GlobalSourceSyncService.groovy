@@ -213,16 +213,34 @@ class GlobalSourceSyncService extends AbstractLockableService {
         })
     }
 
-    void updateIdentifiers() {
+    void updateData(String dataToLoad) {
         running = true
         executorService.execute({
-            Thread.currentThread().setName("UpdateIdentifiers")
+            Thread.currentThread().setName("UpdateData")
             this.source = GlobalRecordSource.findByActiveAndRectype(true,RECTYPE_TIPP)
             this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
+            List<String> triggeredTypes
+            int max
+            switch(dataToLoad) {
+                case "identifier": triggeredTypes = ['Package','Org','TitleInstancePackagePlatform']
+                    max = 100
+                    break
+                case "ddc": triggeredTypes = ['TitleInstancePackagePlatform']
+                    RefdataCategory.getAllRefdataValues(RDConstants.DDC).each { RefdataValue rdv ->
+                        ddc.put(rdv.value, rdv)
+                    }
+                    max = 5000
+                    break
+                case "language": triggeredTypes = ['TitleInstancePackagePlatform']
+                    max = 5000
+                    break
+                default: triggeredTypes = []
+                    break
+            }
             try {
-                ['Package','Org','TitleInstancePackagePlatform'].each { String componentType ->
+                triggeredTypes.each { String componentType ->
                     GlobalRecordSource.withNewSession { Session sess ->
-                        int offset = 0, max = 1000
+                        int offset = 0
                         Map<String, Object> queryParams = [component_type: componentType, max: max]
                         Map<String,Object> result = fetchRecordJSON(true,queryParams)
                         if(result) {
@@ -238,7 +256,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         case 'Package': List<Package> packages = Package.findAllByGokbIdInList(uuids.toList())
                                             log.debug("from current page, ${packages.size()} packages exist in LAS:eR")
                                             packages.eachWithIndex { Package pkg, int idx ->
-                                                log.debug("now processing package ${idx}, total entry: ${offset+idx}")
+                                                log.debug("now processing package ${idx} with uuid ${pkg.gokbId}, total entry: ${offset+idx}")
                                                 List identifiers = result.records.find { record -> record.uuid == pkg.gokbId }.identifiers
                                                 if(identifiers) {
                                                     if(pkg.ids) {
@@ -255,7 +273,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         case 'Org': List<Org> providers = Org.findAllByGokbIdInList(uuids.toList())
                                             log.debug("from current page, ${providers.size()} providers exist in LAS:eR")
                                             providers.eachWithIndex { Org provider, int idx ->
-                                                log.debug("now processing org ${idx}, total entry: ${offset+idx}")
+                                                log.debug("now processing org ${idx} with uuid ${provider.gokbId}, total entry: ${offset+idx}")
                                                 List identifiers = result.records.find { record -> record.uuid == provider.gokbId }.identifiers
                                                 if(identifiers) {
                                                     if(provider.ids) {
@@ -272,27 +290,58 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         case 'TitleInstancePackagePlatform': List<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByGokbIdInList(uuids.toList())
                                             log.debug("from this page, ${tipps.size()} TIPPs do exist in LAS:eR")
                                             tipps.eachWithIndex { TitleInstancePackagePlatform tipp, int idx ->
-                                                long start = System.currentTimeMillis()
-                                                log.debug("now processing tipp ${idx}, total entry: ${offset+idx}")
-                                                List identifiers = result.records.find { record -> record.uuid == tipp.gokbId }.identifiers
-                                                log.debug("after identifiers: ${System.currentTimeMillis()-start} msecs")
-                                                Set<String> oldIds = []
-                                                if(tipp.ids)
-                                                    oldIds.addAll(tipp.ids.collect { Identifier id -> id.value })
-                                                if(identifiers) {
-                                                    if(oldIds) {
-                                                        start = System.currentTimeMillis()
-                                                        Identifier.executeUpdate('delete from Identifier i where i.tipp = :tipp and i.value not in (:newValues)',[tipp: tipp, newValues: identifiers.collect { id -> id.values }]) //damn those wrestlers ...
-                                                        log.debug("deleting old: ${System.currentTimeMillis()-start} msecs")
-                                                    }
-                                                    start = System.currentTimeMillis()
-                                                    identifiers.each { id ->
-                                                        if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
-                                                            if(!(id.value in (oldIds)))
-                                                                Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: tipp, isUnique: false, nsType: TitleInstancePackagePlatform.class.name])
+                                                log.debug("now processing tipp ${idx} with uuid ${tipp.gokbId}, total entry: ${offset+idx}")
+                                                switch(dataToLoad) {
+                                                    case "identifier":
+                                                        List identifiers = result.records.find { record -> record.uuid == tipp.gokbId }.identifiers
+                                                        Set<String> oldIds = []
+                                                        if(tipp.ids)
+                                                            oldIds.addAll(tipp.ids.collect { Identifier id -> id.value })
+                                                        if(identifiers) {
+                                                            if(oldIds) {
+                                                                Identifier.executeUpdate('delete from Identifier i where i.tipp = :tipp and i.value not in (:newValues)', [tipp: tipp, newValues: identifiers.collect { id -> id.value }]) //damn those wrestlers ...
+                                                            }
+                                                            identifiers.each { id ->
+                                                                if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
+                                                                    if(!(id.value in (oldIds)))
+                                                                        Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: tipp, isUnique: false, nsType: TitleInstancePackagePlatform.class.name])
+                                                                }
+                                                            }
                                                         }
-                                                    }
-                                                    log.debug("after creating new: ${System.currentTimeMillis()-start}")
+                                                        break
+                                                    case "ddc":
+                                                        List ddcs = result.records.find { record -> record.uuid == tipp.gokbId }.ddcs
+                                                        Set<String> oldDdcs = []
+                                                        if(tipp.ddcs)
+                                                            oldDdcs.addAll(tipp.ddcs.collect { DeweyDecimalClassification ddc -> ddc.ddc.value })
+                                                        if(ddcs) {
+                                                            if(oldDdcs) {
+                                                                DeweyDecimalClassification.executeUpdate('delete from DeweyDecimalClassification ddc where ddc.id in (select ddc.id from DeweyDecimalClassification ddc join ddc.ddc rdv where ddc.tipp = :tipp and rdv.value not in (:newDdcs))', [tipp: tipp, newDdcs: ddcs.collect { ddc -> ddc.value }])
+                                                            }
+                                                            ddcs.each { ddcData ->
+                                                                if(!(ddcData.value in (oldDdcs))) {
+                                                                    DeweyDecimalClassification.construct([ddc: ddc.get(ddcData.value), tipp: tipp])
+                                                                }
+                                                            }
+                                                        }
+                                                        break
+                                                    case "language":
+                                                        List languages = result.records.find { record -> record.uuid == tipp.gokbId }.languages
+                                                        Set<String> oldLanguages = []
+                                                        if(tipp.languages)
+                                                            oldLanguages.addAll(tipp.languages.collect { Language language -> language.language.value })
+                                                        if(languages) {
+                                                            if(oldLanguages) {
+                                                                //the direct way would require a join in a delete query which is not allowed
+                                                                Language.executeUpdate('delete from Language lang where lang.id in (select lang.id from Language lang join lang.language rdv where lang.tipp = :tipp and rdv.value not in (:newLangs))', [tipp: tipp, newLangs: languages.collect { lang -> lang.value }])
+                                                            }
+                                                            languages.each { langData ->
+                                                                if(!(langData.value in (oldLanguages))) {
+                                                                    Language.construct([language: RefdataValue.getByValueAndCategory(langData.value,RDConstants.LANGUAGE_ISO), tipp: tipp])
+                                                                }
+                                                            }
+                                                        }
+                                                        break
                                                 }
                                             }
                                             log.debug("interim flush at end of load: ${offset}")

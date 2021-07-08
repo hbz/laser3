@@ -1307,8 +1307,8 @@ class SurveyService {
         cloneParameterMap.tab = tab
         cloneParameterMap.remove('max')
 
-        fsq = filterService.getParticipantSurveyQuery_New(parameterMap, sdFormat, participant)
-        result."${tab}" = SurveyResult.executeQuery(fsq.query, fsq.queryParams, parameterMap).groupBy { it.id[1] }.size()
+        fsq = filterService.getParticipantSurveyQuery_New(cloneParameterMap, sdFormat, participant)
+        result."${tab}" = SurveyResult.executeQuery(fsq.query, fsq.queryParams, cloneParameterMap).groupBy { it.id[1] }.size()
 
         return result
 

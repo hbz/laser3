@@ -5,13 +5,13 @@
             text: '${labels.tooltip}',
             show: false
         },
-        toolbox: JSPC.app.reporting.helper.toolbox,
         dataset: {
             source: [
                 ['id', 'name', 'value'],
                 <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}]," } %>
             ]
         },
+        toolbox: JSPC.app.reporting.helper.toolbox,
         tooltip: {
             trigger: 'item',
             formatter (params) {

@@ -32,6 +32,7 @@ import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.reporting.export.base.BaseExport
+import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.myInstitution.QueryExport
 import de.laser.reporting.export.local.ExportLocalHelper
 import de.laser.reporting.export.myInstitution.ExportGlobalHelper
@@ -437,67 +438,28 @@ class AjaxHtmlController {
     })
     def chartDetailsExport() {
 
-        String filename = params.filename ?: ExportGlobalHelper.getFileName(['Reporting'])
-
         Map<String, Object> selectedFieldsRaw = params.findAll { it -> it.toString().startsWith('cde:') }
         Map<String, Object> selectedFields = [:]
         selectedFieldsRaw.each { it -> selectedFields.put(it.key.replaceFirst('cde:', ''), it.value) }
 
+        String filename = params.filename ?: BaseExportHelper.getFileName(['Reporting'])
+
+        BaseExport export
+        Map<String, Object> detailsCache
+
         if (params.context == BaseConfig.KEY_MYINST) {
-
-            Map<String, Object> detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
-            BaseExport export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
-
-            if (params.fileformat == 'csv') {
-                response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
-                response.contentType = 'text/csv'
-
-                List<String> rows = DetailsExportManager.export(export, 'csv', detailsCache.idList as List<Long>)
-
-                ServletOutputStream out = response.outputStream
-                out.withWriter { w ->
-                    rows.each { r ->
-                        w.write(r + '\n')
-                    }
-                }
-                out.close()
-            }
-            else if (params.fileformat == 'pdf') {
-                List<List<String>> content = DetailsExportManager.export(export, 'pdf', detailsCache.idList as List<Long>)
-                Map<String, Object> struct = ExportGlobalHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
-
-                def pdf = wkhtmltoxService.makePdf(
-                        view: '/myInstitution/reporting/export/pdf/generic_details',
-                        model: [
-                                filterLabels: ExportGlobalHelper.getCachedFilterLabels(params.token),
-                                filterResult: ExportGlobalHelper.getCachedFilterResult(params.token),
-                                queryLabels : ExportGlobalHelper.getCachedQueryLabels(params.token),
-                                title       : filename,
-                                header      : content.remove(0),
-                                content     : content,
-                                struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
-                        ],
-                        // header: '',
-                        // footer: '',
-                        pageSize: struct.pageSize,
-                        orientation: struct.orientation,
-                        marginLeft: 10,
-                        marginTop: 15,
-                        marginBottom: 15,
-                        marginRight: 10
-                )
-
-                response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.pdf"')
-                response.setContentType('application/pdf')
-                response.outputStream.withStream { it << pdf }
-            }
+            detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
+            export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
         }
         else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
+            detailsCache = ExportLocalHelper.getDetailsCache(params.token)
+            export = DetailsExportManager.createLocalExport(params.token, selectedFields)
+        }
 
-            Map<String, Object> detailsCache = ExportLocalHelper.getDetailsCache(params.token)
-            BaseExport export = DetailsExportManager.createLocalExport(params.token, selectedFields)
+        if (export && detailsCache) {
 
             if (params.fileformat == 'csv') {
+
                 response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
                 response.contentType = 'text/csv'
 
@@ -512,20 +474,45 @@ class AjaxHtmlController {
                 out.close()
             }
             else if (params.fileformat == 'pdf') {
-                List<List<String>> content = DetailsExportManager.export(export, 'pdf', detailsCache.idList as List<Long>)
-                Map<String, Object> struct = ExportLocalHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
 
-                def pdf = wkhtmltoxService.makePdf(
-                        view: '/subscription/reporting/export/pdf/generic_details',
-                        model: [
-                                //filterLabels: ExportLocalHelper.getCachedFilterLabels(params.token),
-                                filterResult: ExportLocalHelper.getCachedFilterResult(params.token),
-                                queryLabels : ExportLocalHelper.getCachedQueryLabels(params.token),
-                                title       : filename,
-                                header      : content.remove(0),
-                                content     : content,
-                                struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
-                        ],
+                List<List<String>> content = DetailsExportManager.export(export, 'pdf', detailsCache.idList as List<Long>)
+                Map<String, Object> struct = [:]
+
+                String view = ''
+                Map<String, Object> model = [:]
+
+                if (params.context == BaseConfig.KEY_MYINST) {
+
+                    struct  = ExportGlobalHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
+                    view    = '/myInstitution/reporting/export/pdf/generic_details'
+                    model   = [
+                            filterLabels: ExportGlobalHelper.getCachedFilterLabels(params.token),
+                            filterResult: ExportGlobalHelper.getCachedFilterResult(params.token),
+                            queryLabels : ExportGlobalHelper.getCachedQueryLabels(params.token),
+                            title       : filename,
+                            header      : content.remove(0),
+                            content     : content,
+                            struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
+                    ]
+                }
+                else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
+
+                    struct  = ExportLocalHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
+                    view    = '/subscription/reporting/export/pdf/generic_details'
+                    model   = [
+                            //filterLabels: ExportLocalHelper.getCachedFilterLabels(params.token),
+                            filterResult: ExportLocalHelper.getCachedFilterResult(params.token),
+                            queryLabels : ExportLocalHelper.getCachedQueryLabels(params.token),
+                            title       : filename,
+                            header      : content.remove(0),
+                            content     : content,
+                            struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
+                    ]
+                }
+
+                byte[] pdf = wkhtmltoxService.makePdf(
+                        view: view,
+                        model: model,
                         // header: '',
                         // footer: '',
                         pageSize: struct.pageSize,
@@ -608,7 +595,7 @@ class AjaxHtmlController {
                     struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
             ]
 
-            def pdf = wkhtmltoxService.makePdf(
+            byte[] pdf = wkhtmltoxService.makePdf(
                     view: '/myInstitution/reporting/export/pdf/generic_query',
                     model: model,
                     // header: '',
