@@ -4,7 +4,6 @@
 verticalNavi = {
 
     go: function () {
-        // console.log('a11yIcon.go()')
         verticalNavi.init('body')
     },
 
@@ -21,13 +20,6 @@ verticalNavi = {
             $('.la-js-mainContent').removeClass('pusher');
             $('.la-menue-button').hide();
             $( '.la-js-verticalNavi' ).not('.la-js-verticalNavi-clone').show();
-
-            $('body').removeClass('pushable');
-            let main = $( "main" );
-            if ( main.parent().is( ".pusher" ) ) {
-                main.unwrap();
-            }
-
         }
         // smaller then 992px
         else {
@@ -55,15 +47,8 @@ verticalNavi = {
                 // clone hide
                 $( '.la-js-verticalNavi-clone' ).hide();
                 // sidebar function
-                $('.la-js-mainContent').removeClass('pusher');
                 $('.la-menue-button').hide();
                 $( '.la-js-verticalNavi' ).not('.la-js-verticalNavi-clone').show();
-
-                $('body').removeClass('pushable');
-                let main = $( "main" );
-                if ( main.parent().is( ".pusher" ) ) {
-                    main.unwrap();
-                }
             }
             // smaller then 992px
             else {
@@ -90,7 +75,6 @@ verticalNavi = {
                 .sidebar({
                     context: $('body')
                 })
-                .sidebar('setting', 'transition', 'overlay')
                 .sidebar('attach events', '.la-menue-button')
                 .sidebar('setting', 'dimPage', false);
             }
@@ -103,17 +87,18 @@ verticalNavi = {
         .sidebar({
             context: $('body')
         })
-        .sidebar('setting', 'transition', 'overlay')
         .sidebar('attach events', '.la-menue-button')
         .sidebar('setting', 'dimPage', false);
 
-//help panell
-/*        $('.la-help-panel-button').click(function() {
+        //help panell
+        $('.la-help-panel-button').click(function() {
 
             $('.la-help-panel')
-            .sidebar('setting', 'transition', 'overlay')
-            .sidebar('setting', 'dimPage', false)
+            .sidebar({
+                context: $('body')
+            })
+            //.sidebar('setting', 'dimPage', false)
             .sidebar('toggle');
-        });*/
+        });
     }
 }

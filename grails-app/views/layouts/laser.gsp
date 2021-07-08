@@ -34,6 +34,8 @@
 </head>
 
 <body class="${controllerName}_${actionName} ${severLabel}">
+
+
     <g:if test="${currentServer == ServerUtils.SERVER_LOCAL}">
         <div class="ui yellow label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.local')}"></div>
     </g:if>
@@ -43,6 +45,8 @@
     <g:if test="${currentServer == ServerUtils.SERVER_QA}">
         <div class="ui red label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.qa')}"></div>
     </g:if>
+
+
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu" />
 %{--    <nav aria-label="${message(code:'wcag.label.mainMenu')}">--}%
         <div id="mainMenue" class="ui fixed inverted  menu la-js-verticalNavi" role="menubar" >
@@ -585,6 +589,7 @@
                             </div>
                         </g:if>
 
+
                         <g:if test="${(params.mode)}">
                             <div class="item">
                                 <g:if test="${params.mode=='advanced'}">
@@ -643,6 +648,11 @@
 
                             </div>
                         </g:if>
+                        <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='dev' && actionName=='frontend')}">
+                            <div class="item">
+                                <button class="ui button la-help-panel-button"><i class="info circle large icon"></i></button>
+                            </div>
+                        </g:if>
                 </div>
 
             </div>
@@ -651,8 +661,8 @@
     </sec:ifAnyGranted><%-- ROLE_USER --%>
 
     %{-- global content container --}%
-
-        <main class="ui main container ${visibilityContextOrgMenu} hidden la-js-mainContent">
+        <div class="pusher">
+            <main class="ui main container ${visibilityContextOrgMenu} hidden la-js-mainContent">
 
             %{-- system messages --}%
 
@@ -673,8 +683,9 @@
             %{-- content --}%
 
             <g:layoutBody/>
-
         </main><!-- .main -->
+        </div>
+
 
         %{-- footer --}%
 
@@ -796,6 +807,5 @@
                 </g:if>
             })
         </script>
-
     </body>
 </html>

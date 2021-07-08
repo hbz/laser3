@@ -817,31 +817,6 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
 }
 
 /*******************************
-        Sticky Footer
-        see
-        https://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer/
-*******************************/
-
-@media only screen and (min-width: 992px) {
-  body {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    min-height: 100vh;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
-    flex-direction: column;
-  }
-
-  main {
-    -webkit-box-flex: 1;
-    -ms-flex: 1;
-    flex: 1;
-  }
-}
-
-/*******************************
         MISSED IN SEMANTIC UI
 *******************************/
 
@@ -26408,6 +26383,10 @@ Floated Menu / Item
 
 #mainMenue {
   z-index: 102;
+}
+
+.la-ctrls .ui.dropdown .menu {
+  z-index: 101;
 }
 /*!
  * # Semantic UI 2.4.2 - Message

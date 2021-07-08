@@ -107,3 +107,7 @@
 #mainMenue {
   z-index: 102;
 }
+
+.la-ctrls .ui.dropdown .menu {
+  z-index: 101;
+}
