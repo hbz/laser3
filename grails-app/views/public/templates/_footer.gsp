@@ -4,18 +4,26 @@
             flex layout helps footer to stick at bottom when main high not high enough
             but would make a bug when using the sidebars at all the other sides without the footer
          */
-    .pusher {
-        flex: 1;
-    }
-      body {
+        .pusher {
+            flex: 1;
+        }
+        body {
           display: flex;
-          min-height: 100vh;
-          flex-direction: column;
-      }
+        min-height: 100vh;
+        flex-direction: column;
+        }
 
-      main {
+        main {
           flex: 1;
-      }
+        }
+        .pushable>.pusher {
+            overflow-y: visible!important;
+            overflow-x: visible!important;
+            min-height: auto!important;
+        }
+        .la-js-verticalNavi {
+            display: block!important;
+        }
 
 </style>
 <footer class="ui inverted vertical footer segment la-footer">
