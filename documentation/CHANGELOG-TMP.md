@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3460    08.07.2021  dev     2.2         Andreas Feature     Nachladen von DDCs, Sprachen und Identifiern per Massenoperation
+
 3657    06.07.2021  dev     2.2         Andreas Bug         falsche Befüllung der Dropdown-Listen
 
 3654    06.07.2021  dev     2.2         Andreas Bug         Kontakttyp wurde nicht korrekt prozessiert
