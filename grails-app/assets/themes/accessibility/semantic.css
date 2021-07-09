@@ -26522,6 +26522,9 @@ Floated Menu / Item
 .ui.menu.la-contextBar .la-context-org {
   font-size: 0.87em;
   color: white;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 200px;
+  flex: 0 0 200px;
 }
 
 .ui.menu.la-contextBar .ui.sub.header.item {
