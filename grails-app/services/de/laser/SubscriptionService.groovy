@@ -249,15 +249,25 @@ class SubscriptionService {
             qarams.put('validOn', new Timestamp(sdf.parse(params.validOn).getTime()))
         }
 
+        String statusQuery = ""
         if (params.status?.size() > 0) {
-            query += " and subT.status.id = :status "
+            statusQuery = " and subT.status.id = :status "
             qarams.put('status',params.long('status'))
         } else if(!params.filterSet) {
-            query += " and subT.status.id = :status "
+            statusQuery = " and subT.status.id = :status "
             qarams.put('status',RDStore.SUBSCRIPTION_CURRENT.id)
             params.status = RDStore.SUBSCRIPTION_CURRENT.id
             result.defaultSet = true
         }
+        if(params.status == RDStore.SUBSCRIPTION_CURRENT.id.toString() && params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
+            statusQuery = " and (subT.status.id = :status or (subT.status.id = :expired and subT.hasPerpetualAccess = true)) "
+            qarams.put('expired', RDStore.SUBSCRIPTION_EXPIRED.id)
+        }
+        else if (params.hasPerpetualAccess) {
+            query += " and subT.hasPerpetualAccess = :hasPerpetualAccess "
+            qarams.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
+        }
+        query += statusQuery
 
         if (params.filterPropDef?.size() > 0) {
             def psq = propertyService.evalFilterQuery(params, query, 'subT', qarams)
@@ -284,13 +294,8 @@ class SubscriptionService {
         }
 
         if (params.isPublicForApi) {
-            query += "and subT.isPublicForApi = :isPublicForApi "
+            query += " and subT.isPublicForApi = :isPublicForApi "
             qarams.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
-        }
-
-        if (params.hasPerpetualAccess) {
-            query += "and subT.hasPerpetualAccess = :hasPerpetualAccess "
-            qarams.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
         }
 
         if (params.subRunTimeMultiYear || params.subRunTime) {
