@@ -1,28 +1,16 @@
 package de.laser.workflow
 
-import de.laser.Org
-import de.laser.RefdataValue
-import de.laser.annotations.RefdataAnnotation
-import de.laser.helper.RDConstants
+class WfSequencePrototype extends WfSequenceBase {
 
-class WfSequencePrototype {
+    static final String KEY = 'WFSP'
 
-    @RefdataAnnotation(cat = RDConstants.WORKFLOW_SEQUENCE_TYPE)
-    RefdataValue type
-
-    Org owner
-
-    String title
-    String description
-
-    Date dateCreated
-    Date lastUpdated
+    WfTaskPrototype head
 
     static mapping = {
                  id column: 'wfsp_id'
             version column: 'wfsp_version'
                type column: 'wfsp_type_rv_fk'
-              owner column: 'wfsp_owner_fk'
+               head column: 'wfsp_head_fk'
               title column: 'wfsp_title'
         description column: 'wfsp_description', type: 'text'
 
@@ -31,6 +19,11 @@ class WfSequencePrototype {
     }
 
     static constraints = {
+        head        (nullable: true)
         description (nullable: true, blank: false)
+    }
+
+    List<WfTaskPrototype> getWorkflow() {
+        head ? head.getWorkflow() : []
     }
 }

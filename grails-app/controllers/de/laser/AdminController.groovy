@@ -21,6 +21,10 @@ import de.laser.helper.SessionCacheWrapper
 import de.laser.system.SystemAnnouncement
 import de.laser.system.SystemEvent
 import de.laser.system.SystemMessage
+import de.laser.workflow.WfSequence
+import de.laser.workflow.WfSequencePrototype
+import de.laser.workflow.WfTask
+import de.laser.workflow.WfTaskPrototype
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -58,6 +62,7 @@ class AdminController  {
     def dataConsistencyService
     def organisationService
     def apiService
+    def workflowService
 
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
@@ -407,6 +412,29 @@ class AdminController  {
     @Secured(['ROLE_ADMIN'])
     def manageWorkflows() {
         Map<String, Object> result = [:]
+
+        if (params.cmd) {
+            String[] cmd = (params.cmd as String).split(':')
+
+            if (cmd[0] == 'create') {
+
+                if (cmd[1] in [ WfSequencePrototype.KEY, WfSequence.KEY ]) {
+                    workflowService.createSequence(params)
+                }
+                else if (cmd[1] in [ WfTaskPrototype.KEY, WfTask.KEY ]) {
+                    workflowService.createTask(params)
+                }
+            }
+            else if (cmd[0] == 'edit') {
+
+                if (cmd[1] in [ WfSequencePrototype.KEY, WfSequence.KEY ]) {
+                    workflowService.editSequence(params)
+                }
+                else if (cmd[1] in [ WfTaskPrototype.KEY, WfTask.KEY ]) {
+                    workflowService.editTask(params)
+                }
+            }
+        }
     }
 
     @Secured(['ROLE_ADMIN'])

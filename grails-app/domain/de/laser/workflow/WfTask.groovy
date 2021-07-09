@@ -4,13 +4,16 @@ import de.laser.RefdataValue
 import de.laser.annotations.RefdataAnnotation
 import de.laser.helper.RDConstants
 
-class WfTask extends WfTaskPrototype {
+class WfTask extends WfTaskBase {
+
+    static final String KEY = 'WFT'
 
     @RefdataAnnotation(cat = RDConstants.WORKFLOW_TASK_STATUS)
     RefdataValue status
 
     WfTaskPrototype prototype
-    WfTask parent
+    WfTask head
+    WfTask next
 
     String comment
 
@@ -24,7 +27,8 @@ class WfTask extends WfTaskPrototype {
               title column: 'wft_title'
         description column: 'wft_description', type: 'text'
             comment column: 'wft_comment', type: 'text'
-             parent column:' wft_parent_fk'
+               head column: 'wft_head_fk'
+               next column: 'wft_next_fk'
 
         dateCreated column: 'wft_date_created'
         lastUpdated column: 'wft_last_updated'
@@ -32,7 +36,30 @@ class WfTask extends WfTaskPrototype {
 
     static constraints = {
         description (nullable: true, blank: false)
+        head        (nullable: true)
+        next        (nullable: true)
         comment     (nullable: true, blank: false)
-        parent      (nullable: true)
+    }
+
+    List<WfTask> getWorkflow() {
+        List<WfTask> wf = []
+
+        WfTask t = this
+        while (t) {
+            wf.add( t ); t = t.next
+        }
+        wf
+    }
+
+    WfTask getPrevious() {
+        List<WfTask> result = WfTask.executeQuery('select wft from WfTask wft where next = :current order by id', [current: this] )
+
+        if (result.size() > 1) {
+            log.warn( 'MULTIPLE MATCHES - getPrevious()')
+        }
+
+        if (result) {
+            return result.first() as WfTask
+        }
     }
 }

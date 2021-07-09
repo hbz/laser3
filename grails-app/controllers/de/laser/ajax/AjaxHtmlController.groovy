@@ -40,6 +40,10 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.export.QueryExportManager
 import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.workflow.WfSequence
+import de.laser.workflow.WfSequencePrototype
+import de.laser.workflow.WfTask
+import de.laser.workflow.WfTaskPrototype
 import grails.plugin.springsecurity.annotation.Secured
 
 import javax.servlet.ServletOutputStream
@@ -626,6 +630,65 @@ class AjaxHtmlController {
             response.outputStream.withStream { it << pdf }
 
 //                render view: '/myInstitution/reporting/export/pdf/generic_query', model: model
+        }
+    }
+
+    @Secured(['ROLE_USER'])
+    def editWfComponentModal() {
+        Map<String, Object> result = [:]
+
+        if (params.key) {
+            result.prefix = params.key
+
+            if (params.key == WfSequencePrototype.KEY) {
+                result.sequence       = WfSequencePrototype.get( params.id )
+                result.tmpl           = '/templates/workflow/forms/wfSequence'
+                result.tmplModalTitle = 'Sequenz (Prototyp): ' + result.sequence.title + ' (' + result.sequence.id + ')'
+
+                if (result.sequence) {
+                    result.dd_headList = WfTaskPrototype.executeQuery('select wftp from WfTaskPrototype wftp order by id')
+                }
+            }
+            else if (params.key == WfSequence.KEY) {
+                result.sequence       = WfSequence.get( params.id )
+                result.tmpl           = '/templates/workflow/forms/wfSequence'
+                result.tmplModalTitle = 'Sequenz: ' + result.sequence.title + ' (' + result.sequence.id + ')'
+
+                if (result.sequence) {
+                    result.dd_headList = WfTask.executeQuery('select wft from WfTask wft order by id')
+                }
+            }
+            else if (params.key == WfTaskPrototype.KEY) {
+                result.task           = WfTaskPrototype.get( params.id )
+                result.tmpl           = '/templates/workflow/forms/wfTask'
+                result.tmplModalTitle = 'Task (Prototyp): ' + result.task.title + ' (' + result.task.id + ')'
+
+                if (result.task) {
+                    String sql = 'select wftp from WfTaskPrototype wftp where id != :id order by id'
+                    Map<String, Object> sqlParams = [id: params.long('id')]
+
+                    result.dd_previousList  = WfTaskPrototype.executeQuery(sql, sqlParams)
+                    result.dd_nextList      = WfTaskPrototype.executeQuery(sql, sqlParams)
+                    result.dd_headList      = WfTaskPrototype.executeQuery(sql, sqlParams)
+                }
+            }
+            else if (params.key == WfTask.KEY) {
+                result.task           = WfTask.get( params.id )
+                result.tmpl           = '/templates/workflow/forms/wfTask'
+                result.tmplModalTitle = 'Task: ' + result.task.title + ' (' + result.task.id + ')'
+
+                if (result.task) {
+                    String sql = 'select wft from WfTask wft where id != :id order by id'
+                    Map<String, Object> sqlParams = [id: params.long('id')]
+
+                    result.dd_previousList  = WfTask.executeQuery(sql, sqlParams)
+                    result.dd_nextList      = WfTask.executeQuery(sql, sqlParams)
+                    result.dd_headList      = WfTask.executeQuery(sql, sqlParams)
+                }
+            }
+
+            println result
+            render template:  '/templates/workflow/forms/modalWrapper', model: result
         }
     }
 }

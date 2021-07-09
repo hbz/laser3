@@ -1,28 +1,19 @@
 package de.laser.workflow
 
-import de.laser.RefdataValue
-import de.laser.annotations.RefdataAnnotation
-import de.laser.helper.RDConstants
+class WfTaskPrototype extends WfTaskBase {
 
-class WfTaskPrototype {
+    static final String KEY = 'WFTP'
 
-    @RefdataAnnotation(cat = RDConstants.WORKFLOW_TASK_PRIORITY)
-    RefdataValue priority
-
-    @RefdataAnnotation(cat = RDConstants.WORKFLOW_TASK_TYPE)
-    RefdataValue type
-
-    String title
-    String description
-
-    Date dateCreated
-    Date lastUpdated
+    WfTaskPrototype head
+    WfTaskPrototype next
 
     static mapping = {
                  id column: 'wftp_id'
             version column: 'wftp_version'
            priority column: 'wftp_priority_rv_fk'
                type column: 'wftp_type_rv_fk'
+               head column: 'wftp_head_fk'
+               next column: 'wftp_next_fk'
               title column: 'wftp_title'
         description column: 'wftp_description', type: 'text'
 
@@ -32,5 +23,29 @@ class WfTaskPrototype {
 
     static constraints = {
         description (nullable: true, blank: false)
+        head        (nullable: true)
+        next        (nullable: true)
+    }
+
+    List<WfTaskPrototype> getWorkflow() {
+        List<WfTaskPrototype> wf = []
+
+        WfTaskPrototype t = this
+        while (t) {
+            wf.add( t ); t = t.next
+        }
+        wf
+    }
+
+    WfTaskPrototype getPrevious() {
+        List<WfTaskPrototype> result = WfTaskPrototype.executeQuery('select wftp from WfTaskPrototype wftp where next = :current order by id', [current: this] )
+
+        if (result.size() > 1) {
+            log.warn( 'MULTIPLE MATCHES - getPrevious()')
+        }
+
+        if (result) {
+            return result.first() as WfTaskPrototype
+        }
     }
 }

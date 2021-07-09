@@ -5,12 +5,15 @@ import de.laser.Subscription
 import de.laser.annotations.RefdataAnnotation
 import de.laser.helper.RDConstants
 
-class WfSequence extends WfSequencePrototype {
+class WfSequence extends WfSequenceBase {
+
+    static final String KEY = 'WFS'
 
     @RefdataAnnotation(cat = RDConstants.WORKFLOW_SEQUENCE_STATUS)
     RefdataValue status
 
     WfSequencePrototype prototype
+    WfTask head
     Subscription subscription
 
     String comment
@@ -20,8 +23,8 @@ class WfSequence extends WfSequencePrototype {
             version column: 'wfs_version'
              status column: 'wfs_status_rv_fk'
                type column: 'wfs_type_rv_fk'
-              owner column: 'wfs_owner_fk'
           prototype column: 'wfs_prototype_fk'
+               head column: 'wfs_head_fk'
        subscription column: 'wfs_subscription_fk'
               title column: 'wfs_title'
         description column: 'wfs_description', type: 'text'
@@ -32,6 +35,7 @@ class WfSequence extends WfSequencePrototype {
     }
 
     static constraints = {
+        head        (nullable: true)
         description (nullable: true, blank: false)
         comment     (nullable: true, blank: false)
     }
