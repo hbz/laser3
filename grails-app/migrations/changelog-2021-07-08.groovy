@@ -40,7 +40,7 @@ databaseChangeLog = {
                 constraints(nullable: "false")
             }
 
-            column(name: "wfs_head_fk", type: "BIGINT")
+            column(name: "wfs_child_fk", type: "BIGINT")
 
             column(name: "wfs_description", type: "TEXT")
         }
@@ -74,7 +74,7 @@ databaseChangeLog = {
 
             column(name: "wfsp_description", type: "TEXT")
 
-            column(name: "wfsp_head_fk", type: "BIGINT")
+            column(name: "wfsp_child_fk", type: "BIGINT")
         }
     }
 
@@ -122,7 +122,7 @@ databaseChangeLog = {
 
             column(name: "wft_description", type: "TEXT")
 
-            column(name: "wft_head_fk", type: "BIGINT")
+            column(name: "wft_child_fk", type: "BIGINT")
         }
     }
 
@@ -160,7 +160,7 @@ databaseChangeLog = {
 
             column(name: "wftp_description", type: "TEXT")
 
-            column(name: "wftp_head_fk", type: "BIGINT")
+            column(name: "wftp_child_fk", type: "BIGINT")
         }
     }
 
@@ -169,7 +169,7 @@ databaseChangeLog = {
     }
 
     changeSet(author: "klober (generated)", id: "1625727149064-6") {
-        addForeignKeyConstraint(baseColumnNames: "wfsp_head_fk", baseTableName: "wf_sequence_prototype", constraintName: "FK4f5pplyfphvsoci87c5eqimkn", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "wftp_id", referencedTableName: "wf_task_prototype")
+        addForeignKeyConstraint(baseColumnNames: "wfsp_child_fk", baseTableName: "wf_sequence_prototype", constraintName: "FK4f5pplyfphvsoci87c5eqimkn", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "wftp_id", referencedTableName: "wf_task_prototype")
     }
 
     changeSet(author: "klober (generated)", id: "1625727149064-7") {
@@ -205,7 +205,7 @@ databaseChangeLog = {
     }
 
     changeSet(author: "klober (generated)", id: "1625727149064-15") {
-        addForeignKeyConstraint(baseColumnNames: "wftp_head_fk", baseTableName: "wf_task_prototype", constraintName: "FKhc1bdqcgirgyffc9a66se16x1", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "wftp_id", referencedTableName: "wf_task_prototype")
+        addForeignKeyConstraint(baseColumnNames: "wftp_child_fk", baseTableName: "wf_task_prototype", constraintName: "FKhc1bdqcgirgyffc9a66se16x1", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "wftp_id", referencedTableName: "wf_task_prototype")
     }
 
     changeSet(author: "klober (generated)", id: "1625727149064-16") {
@@ -213,7 +213,7 @@ databaseChangeLog = {
     }
 
     changeSet(author: "klober (generated)", id: "1625727149064-17") {
-        addForeignKeyConstraint(baseColumnNames: "wfs_head_fk", baseTableName: "wf_sequence", constraintName: "FKklnghjo9n6fipouavgdadegr1", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "wft_id", referencedTableName: "wf_task")
+        addForeignKeyConstraint(baseColumnNames: "wfs_child_fk", baseTableName: "wf_sequence", constraintName: "FKklnghjo9n6fipouavgdadegr1", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "wft_id", referencedTableName: "wf_task")
     }
 
     changeSet(author: "klober (generated)", id: "1625727149064-18") {
@@ -225,7 +225,7 @@ databaseChangeLog = {
     }
 
     changeSet(author: "klober (generated)", id: "1625727149064-20") {
-        addForeignKeyConstraint(baseColumnNames: "wft_head_fk", baseTableName: "wf_task", constraintName: "FKq442ado5p6y5v42punphxa015", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "wft_id", referencedTableName: "wf_task")
+        addForeignKeyConstraint(baseColumnNames: "wft_child_fk", baseTableName: "wf_task", constraintName: "FKq442ado5p6y5v42punphxa015", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "wft_id", referencedTableName: "wf_task")
     }
 
     changeSet(author: "klober (generated)", id: "1625727149064-21") {

@@ -4,7 +4,7 @@ class WfTaskPrototype extends WfTaskBase {
 
     static final String KEY = 'WFTP'
 
-    WfTaskPrototype head
+    WfTaskPrototype child
     WfTaskPrototype next
 
     static mapping = {
@@ -12,7 +12,7 @@ class WfTaskPrototype extends WfTaskBase {
             version column: 'wftp_version'
            priority column: 'wftp_priority_rv_fk'
                type column: 'wftp_type_rv_fk'
-               head column: 'wftp_head_fk'
+              child column: 'wftp_child_fk'
                next column: 'wftp_next_fk'
               title column: 'wftp_title'
         description column: 'wftp_description', type: 'text'
@@ -23,18 +23,29 @@ class WfTaskPrototype extends WfTaskBase {
 
     static constraints = {
         description (nullable: true, blank: false)
-        head        (nullable: true)
+        child       (nullable: true)
         next        (nullable: true)
     }
 
-    List<WfTaskPrototype> getWorkflow() {
-        List<WfTaskPrototype> wf = []
+    List<WfTaskPrototype> getStructure() {
+        List<WfTaskPrototype> struct = []
 
         WfTaskPrototype t = this
         while (t) {
-            wf.add( t ); t = t.next
+            struct.add( t ); t = t.next
         }
-        wf
+        struct
+    }
+
+    WfTaskPrototype getParent() {
+        List<WfTaskPrototype> result = WfTaskPrototype.executeQuery('select wftp from WfTaskPrototype wftp where child = :current order by id', [current: this] )
+
+        if (result.size() > 1) {
+            log.warn( 'MULTIPLE MATCHES - getParent()')
+        }
+        if (result) {
+            return result.first() as WfTaskPrototype
+        }
     }
 
     WfTaskPrototype getPrevious() {
@@ -43,7 +54,6 @@ class WfTaskPrototype extends WfTaskBase {
         if (result.size() > 1) {
             log.warn( 'MULTIPLE MATCHES - getPrevious()')
         }
-
         if (result) {
             return result.first() as WfTaskPrototype
         }

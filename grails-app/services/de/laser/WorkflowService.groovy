@@ -9,7 +9,7 @@ class WorkflowService {
 
     //static Log static_logger = LogFactory.getLog(WorkflowService)
 
-    void createSequence(GrailsParameterMap params) {
+    Map<String, Object> createSequence(GrailsParameterMap params) {
         log.debug('createSequence() ' + params)
         String[] cmd = (params.cmd as String).split(':')
 
@@ -25,7 +25,7 @@ class WorkflowService {
         }
     }
 
-    void createTask(GrailsParameterMap params) {
+    Map<String, Object> createTask(GrailsParameterMap params) {
         log.debug('createTask() ' + params)
         String[] cmd = (params.cmd as String).split(':')
 
@@ -41,7 +41,7 @@ class WorkflowService {
         }
     }
 
-    void editSequence(GrailsParameterMap params) {
+    Map<String, Object> editSequence(GrailsParameterMap params) {
         log.debug('editSequence() ' + params)
         String[] cmd = (params.cmd as String).split(':')
 
@@ -57,7 +57,7 @@ class WorkflowService {
         }
     }
 
-    void editTask(GrailsParameterMap params) {
+    Map<String, Object> editTask(GrailsParameterMap params) {
         log.debug('editTask() ' + params)
         String[] cmd = (params.cmd as String).split(':')
 
@@ -73,7 +73,7 @@ class WorkflowService {
         }
     }
 
-    WfSequenceBase internalEditSequence(WfSequenceBase seq, GrailsParameterMap params) {
+    Map<String, Object> internalEditSequence(WfSequenceBase seq, GrailsParameterMap params) {
 
         log.debug( seq.toString() )
         String[] cmd = (params.cmd as String).split(':')
@@ -85,7 +85,7 @@ class WorkflowService {
             Closure getLongParam = { key -> params.long(WfSequencePrototype.KEY + '_' + key) }
 
             seq.description = getParam('description')
-            seq.head = WfTaskPrototype.get(getLongParam('head'))
+            seq.child = WfTaskPrototype.get(getLongParam('child'))
             seq.title = getParam('title')
             seq.type = RefdataValue.get(getLongParam('type'))
         }
@@ -96,7 +96,7 @@ class WorkflowService {
             Closure getLongParam = { key -> params.long(WfSequence.KEY + '_' + key) }
 
             seq.description = getParam('description')
-            seq.head = WfTask.get(getLongParam('head'))
+            seq.child = WfTask.get(getLongParam('child'))
             seq.title = getParam('title')
             seq.type = RefdataValue.get(getLongParam('type'))
 
@@ -106,15 +106,22 @@ class WorkflowService {
             seq.subscription = Subscription.get(getLongParam('subscription'))
         }
 
-        log.debug( 'changed: ' + seq.dirtyPropertyNames.toString() +  ' validation: ' + seq.validate() )
-        if (seq.getErrors()) {
+        Map<String, Object> result = [
+            sequence: seq,
+            key:      cmd[1],
+            changes:  seq.getDirtyPropertyNames(),
+            save:     seq.save()
+        ]
+
+        if (! result.save) {
+            log.debug( 'changes: ' + result.changes.toString() )
+            log.debug( 'validation: ' + seq.validate() )
             log.debug( seq.getErrors().toString() )
         }
-
-        seq.save()
+        result
     }
 
-    WfTaskBase internalEditTask(WfTaskBase task, GrailsParameterMap params) {
+    Map<String, Object> internalEditTask(WfTaskBase task, GrailsParameterMap params) {
 
         log.debug( task.toString() )
         String[] cmd = (params.cmd as String).split(':')
@@ -127,7 +134,7 @@ class WorkflowService {
 
             task.description = getParam('description')
             task.next = WfTaskPrototype.get(getLongParam('next'))
-            task.head = WfTaskPrototype.get(getLongParam('head'))
+            task.child = WfTaskPrototype.get(getLongParam('child'))
             task.priority = RefdataValue.get(getLongParam('priority'))
             task.title = getParam('title')
             task.type = RefdataValue.get(getLongParam('type'))
@@ -140,7 +147,7 @@ class WorkflowService {
 
             task.description = getParam('description')
             task.next = WfTask.get(getLongParam('next'))
-            task.head = WfTask.get(getLongParam('head'))
+            task.child = WfTask.get(getLongParam('child'))
             task.priority = RefdataValue.get(getLongParam('priority'))
             task.title = getParam('title')
             task.type = RefdataValue.get(getLongParam('type'))
@@ -150,11 +157,18 @@ class WorkflowService {
             task.status = RefdataValue.get(getLongParam('status'))
         }
 
-        log.debug( 'changed: ' + task.dirtyPropertyNames.toString() +  ' validation: ' + task.validate() )
-        if (task.getErrors()) {
+        Map<String, Object> result = [
+                task:       task,
+                key:        cmd[1],
+                changes:    task.getDirtyPropertyNames(),
+                save:       task.save()
+        ]
+
+        if (! result.save) {
+            log.debug( 'changes: ' + result.changes.toString() )
+            log.debug( 'validation: ' + task.validate() )
             log.debug( task.getErrors().toString() )
         }
-
-        task.save()
+        result
     }
 }

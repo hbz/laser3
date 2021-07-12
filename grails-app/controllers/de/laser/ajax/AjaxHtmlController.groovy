@@ -634,8 +634,24 @@ class AjaxHtmlController {
     }
 
     @Secured(['ROLE_USER'])
+    def createWfComponentModal() {
+        Map<String, Object> result = [
+                tmplCmd: 'create',
+                prefix: params.key
+        ]
+
+        if (params.key in [ WfSequencePrototype.KEY, WfSequence.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfSequence'
+        }
+        else if (params.key in [ WfTaskPrototype.KEY, WfTask.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfTask'
+        }
+        render template: '/templates/workflow/forms/modalWrapper', model: result
+    }
+
+    @Secured(['ROLE_USER'])
     def editWfComponentModal() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [ tmplCmd : 'edit' ]
 
         if (params.key) {
             result.prefix = params.key
@@ -646,7 +662,10 @@ class AjaxHtmlController {
                 result.tmplModalTitle = 'Sequenz (Prototyp): ' + result.sequence.title + ' (' + result.sequence.id + ')'
 
                 if (result.sequence) {
-                    result.dd_headList = WfTaskPrototype.executeQuery('select wftp from WfTaskPrototype wftp order by id')
+                    // not: * used as wftp.next
+                    result.dd_childList = WfTaskPrototype.executeQuery(
+                            'select wftp from WfTaskPrototype wftp where wftp not in (select n.next from WfTaskPrototype n) order by id'
+                    )
                 }
             }
             else if (params.key == WfSequence.KEY) {
@@ -655,7 +674,10 @@ class AjaxHtmlController {
                 result.tmplModalTitle = 'Sequenz: ' + result.sequence.title + ' (' + result.sequence.id + ')'
 
                 if (result.sequence) {
-                    result.dd_headList = WfTask.executeQuery('select wft from WfTask wft order by id')
+                    // not: * used as wft.next
+                    result.dd_childList = WfTask.executeQuery(
+                            'select t from WfTask wft where wft not in (select n.next from WfTask n) order by id'
+                    )
                 }
             }
             else if (params.key == WfTaskPrototype.KEY) {
@@ -667,9 +689,16 @@ class AjaxHtmlController {
                     String sql = 'select wftp from WfTaskPrototype wftp where id != :id order by id'
                     Map<String, Object> sqlParams = [id: params.long('id')]
 
+                    // not: * self * used as wftp.child
+                    result.dd_nextList      = WfTaskPrototype.executeQuery(
+                            'select wftp from WfTaskPrototype wftp where id != :id and wftp not in (select tp.child from WfTaskPrototype tp) order by id', sqlParams
+                    )
+                    // not: * self * used as wftp.next
+                    result.dd_childList      = WfTaskPrototype.executeQuery(
+                            'select wftp from WfTaskPrototype wftp where id != :id and wftp not in (select tp.next from WfTaskPrototype tp) order by id', sqlParams
+                    )
                     result.dd_previousList  = WfTaskPrototype.executeQuery(sql, sqlParams)
-                    result.dd_nextList      = WfTaskPrototype.executeQuery(sql, sqlParams)
-                    result.dd_headList      = WfTaskPrototype.executeQuery(sql, sqlParams)
+                    result.dd_parentList    = WfTaskPrototype.executeQuery(sql, sqlParams)
                 }
             }
             else if (params.key == WfTask.KEY) {
@@ -681,14 +710,20 @@ class AjaxHtmlController {
                     String sql = 'select wft from WfTask wft where id != :id order by id'
                     Map<String, Object> sqlParams = [id: params.long('id')]
 
+                    // not: * self * used as wft.child
+                    result.dd_nextList      = WfTask.executeQuery(
+                            'select wft from WfTask wft where id != :id and wft not in (select t.child from WfTask t) order by id', sqlParams
+                    )
+                    // not: * self * used as wft.next
+                    result.dd_childList      = WfTask.executeQuery(
+                            'select wft from WfTask wft where id != :id and wft not in (select t.next from WfTask t) order by id', sqlParams
+                    )
                     result.dd_previousList  = WfTask.executeQuery(sql, sqlParams)
-                    result.dd_nextList      = WfTask.executeQuery(sql, sqlParams)
-                    result.dd_headList      = WfTask.executeQuery(sql, sqlParams)
+                    result.dd_parentList    = WfTask.executeQuery(sql, sqlParams)
                 }
             }
 
-            println result
-            render template:  '/templates/workflow/forms/modalWrapper', model: result
+            render template: '/templates/workflow/forms/modalWrapper', model: result
         }
     }
 }

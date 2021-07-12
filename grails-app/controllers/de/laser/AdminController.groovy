@@ -419,22 +419,23 @@ class AdminController  {
             if (cmd[0] == 'create') {
 
                 if (cmd[1] in [ WfSequencePrototype.KEY, WfSequence.KEY ]) {
-                    workflowService.createSequence(params)
+                    result = workflowService.createSequence(params)
                 }
                 else if (cmd[1] in [ WfTaskPrototype.KEY, WfTask.KEY ]) {
-                    workflowService.createTask(params)
+                    result = workflowService.createTask(params)
                 }
             }
             else if (cmd[0] == 'edit') {
 
                 if (cmd[1] in [ WfSequencePrototype.KEY, WfSequence.KEY ]) {
-                    workflowService.editSequence(params)
+                    result = workflowService.editSequence(params)
                 }
                 else if (cmd[1] in [ WfTaskPrototype.KEY, WfTask.KEY ]) {
-                    workflowService.editTask(params)
+                    result = workflowService.editTask(params)
                 }
             }
         }
+        result
     }
 
     @Secured(['ROLE_ADMIN'])

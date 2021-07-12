@@ -12,7 +12,7 @@ class WfTask extends WfTaskBase {
     RefdataValue status
 
     WfTaskPrototype prototype
-    WfTask head
+    WfTask child
     WfTask next
 
     String comment
@@ -27,7 +27,7 @@ class WfTask extends WfTaskBase {
               title column: 'wft_title'
         description column: 'wft_description', type: 'text'
             comment column: 'wft_comment', type: 'text'
-               head column: 'wft_head_fk'
+              child column: 'wft_child_fk'
                next column: 'wft_next_fk'
 
         dateCreated column: 'wft_date_created'
@@ -36,19 +36,30 @@ class WfTask extends WfTaskBase {
 
     static constraints = {
         description (nullable: true, blank: false)
-        head        (nullable: true)
+        child       (nullable: true)
         next        (nullable: true)
         comment     (nullable: true, blank: false)
     }
 
-    List<WfTask> getWorkflow() {
-        List<WfTask> wf = []
+    List<WfTask> getStructure() {
+        List<WfTask> struct = []
 
         WfTask t = this
         while (t) {
-            wf.add( t ); t = t.next
+            struct.add( t ); t = t.next
         }
-        wf
+        struct
+    }
+
+    WfTaskPrototype getParent() {
+        List<WfTask> result = WfTask.executeQuery('select wft from WfTask wft where child = :current order by id', [current: this] )
+
+        if (result.size() > 1) {
+            log.warn( 'MULTIPLE MATCHES - getParent()')
+        }
+        if (result) {
+            return result.first() as WfTask
+        }
     }
 
     WfTask getPrevious() {
@@ -57,7 +68,6 @@ class WfTask extends WfTaskBase {
         if (result.size() > 1) {
             log.warn( 'MULTIPLE MATCHES - getPrevious()')
         }
-
         if (result) {
             return result.first() as WfTask
         }

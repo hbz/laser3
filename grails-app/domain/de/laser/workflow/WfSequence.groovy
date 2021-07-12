@@ -13,7 +13,7 @@ class WfSequence extends WfSequenceBase {
     RefdataValue status
 
     WfSequencePrototype prototype
-    WfTask head
+    WfTask child
     Subscription subscription
 
     String comment
@@ -24,7 +24,7 @@ class WfSequence extends WfSequenceBase {
              status column: 'wfs_status_rv_fk'
                type column: 'wfs_type_rv_fk'
           prototype column: 'wfs_prototype_fk'
-               head column: 'wfs_head_fk'
+              child column: 'wfs_child_fk'
        subscription column: 'wfs_subscription_fk'
               title column: 'wfs_title'
         description column: 'wfs_description', type: 'text'
@@ -35,7 +35,7 @@ class WfSequence extends WfSequenceBase {
     }
 
     static constraints = {
-        head        (nullable: true)
+        child       (nullable: true)
         description (nullable: true, blank: false)
         comment     (nullable: true, blank: false)
     }

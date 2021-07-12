@@ -72,11 +72,11 @@
 
     <div class="fields three">
         <div class="field">
-            <label for="${prefix}_head">Head &darr;</label>
-            <g:select class="ui dropdown" id="${prefix}_head" name="${prefix}_head"
+            <label for="${prefix}_child">Child &darr;</label>
+            <g:select class="ui dropdown" id="${prefix}_child" name="${prefix}_child"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                          from="${dd_headList}"
-                          value="${sequence?.head?.id}"
+                          from="${dd_childList}"
+                          value="${sequence?.child?.id}"
                           optionKey="id"
                           optionValue="${{'(' + it.id + ') ' + it.title}}" />
         </div>

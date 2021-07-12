@@ -8,7 +8,6 @@
             <label for="${prefix}_title">Titel</label>
             <input type="text" name="${prefix}_title" id="${prefix}_title" value="${task?.title}" />
         </div>
-
         <div class="field">
             <label for="${prefix}_description">Beschreibung</label>
             <input type="text" name="${prefix}_description" id="${prefix}_description" value="${task?.description}" />
@@ -25,7 +24,6 @@
                           optionKey="id"
                           optionValue="value" />
         </div>
-
         <div class="field">
             <label for="${prefix}_priority">Priorität</label>
             <laser:select class="ui dropdown" id="${prefix}_priority" name="${prefix}_priority"
@@ -48,7 +46,6 @@
                               optionKey="id"
                               optionValue="value" />
             </div>
-
             <div class="field">
                 <label for="${prefix}_comment">Kommentar</label>
                 <input type="text" name="${prefix}_comment" id="${prefix}_comment" value="${task?.comment}" />
@@ -57,17 +54,7 @@
 
     </g:if>
 
-    <div class="fields three">
-        <div class="field">
-            <label for="${prefix}_previous">Previous &larr;</label> %{-- TODO --}%
-            <g:select class="ui dropdown" id="${prefix}_previous" name="${prefix}_previous"
-                          noSelection="${['' : message(code:'default.select.choose.label')]}"
-                          from="${dd_previousList}"
-                          value="${task?.previous?.id}"
-                          optionKey="id"
-                          optionValue="${{'(' + it.id + ') ' + it.title}}" />
-        </div>
-
+    <div class="fields two">
         <div class="field">
             <label for="${prefix}_next">Next &rarr;</label>
             <g:select class="ui dropdown" id="${prefix}_next" name="${prefix}_next"
@@ -77,15 +64,35 @@
                           optionKey="id"
                           optionValue="${{'(' + it.id + ') ' + it.title}}" />
         </div>
-
         <div class="field">
-            <label for="${prefix}_head">Head &larr;</label>
-            <g:select class="ui dropdown" id="${prefix}_head" name="${prefix}_head"
+            <label for="${prefix}_child">Child &darr;</label>
+            <g:select class="ui dropdown" id="${prefix}_child" name="${prefix}_child"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                          from="${dd_headList}"
-                          value="${task?.head?.id}"
+                          from="${dd_childList}"
+                          value="${task?.child?.id}"
                           optionKey="id"
                           optionValue="${{'(' + it.id + ') ' + it.title}}" />
+        </div>
+    </div>
+
+    <div class="fields two">
+        <div class="field">
+            <label for="${prefix}_previous">Previous &larr;</label> %{-- TODO --}%
+            <g:select class="ui dropdown disabled" id="${prefix}_previous" name="${prefix}_previous"
+                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                      from="${dd_previousList}"
+                      value="${task?.getPrevious()?.id}"
+                      optionKey="id"
+                      optionValue="${{'(' + it.id + ') ' + it.title}}" />
+        </div>
+        <div class="field">
+            <label for="${prefix}_parent">Parent &uarr;</label>
+            <g:select class="ui dropdown disabled" id="${prefix}_parent" name="${prefix}_parent"
+                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                      from="${dd_parentList}"
+                      value="${task?.getParent()?.id}"
+                      optionKey="id"
+                      optionValue="${{'(' + it.id + ') ' + it.title}}" />
         </div>
     </div>
 

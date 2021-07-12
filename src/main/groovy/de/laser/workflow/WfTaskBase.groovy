@@ -14,7 +14,7 @@ class WfTaskBase {
     @RefdataAnnotation(cat = RDConstants.WORKFLOW_TASK_TYPE)
     RefdataValue type
 
-    WfTaskBase head
+    WfTaskBase child
     WfTaskBase next
 
     String title
