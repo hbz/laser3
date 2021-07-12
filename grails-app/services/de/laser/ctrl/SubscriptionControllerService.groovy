@@ -17,6 +17,7 @@ import de.laser.properties.SubscriptionProperty
 import de.laser.reporting.local.SubscriptionReporting
 import grails.doc.internal.StringEscapeCategory
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
 import org.apache.commons.lang3.RandomStringUtils
@@ -26,6 +27,8 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.MultipartFile
 
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorService
@@ -201,6 +204,26 @@ class SubscriptionControllerService {
                         }
                     } else
                         log.info('institutional usage identifier not available')
+                }
+                if(SpringSecurityUtils.ifAnyGranted("ROLE_YODA")) {
+                    result.tokens = []
+                    Org requestee = result.subscription.getSubscriber()
+                    def pw = OrgSetting.get(result.institution, OrgSetting.KEYS.LASERSTAT_SERVER_KEY)
+                    if(pw == OrgSetting.SETTING_NOT_FOUND) {
+                        pw = OrgSetting.add(result.institution, OrgSetting.KEYS.LASERSTAT_SERVER_KEY, org.apache.commons.lang.RandomStringUtils.randomAlphanumeric(24))
+                    }
+                    SecretKeySpec secret = new SecretKeySpec(pw.getValue().getBytes(), "HmacSHA256")
+                    Mac mac = Mac.getInstance("HmacSHA256")
+                    mac.init(secret)
+                    Set<String> platforms = Platform.executeQuery('select plat.globalUID from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.subscription = :subscription',[subscription: result.subscription])
+                    platforms.each { String platformGlobalUID ->
+                        String data = "requestor=${result.institution.globalUID}&customer=${requestee.globalUID}&platform=${platformGlobalUID}"
+                        byte[] rawHmac = mac.doFinal(data.getBytes())
+                        result.tokens << rawHmac.encodeHex()
+                        result.requestData = data
+                    }
+                    if(result.tokens.size() > 0)
+                        result.subStats = true //development only
                 }
             }
             //}
