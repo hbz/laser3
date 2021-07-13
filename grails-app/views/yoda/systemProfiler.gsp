@@ -26,7 +26,7 @@
         </laser:script>
     </div>
 
-    <div class="ui secondary pointing tabular menu">
+    <div class="ui secondary stackable pointing tabular menu">
         <a data-tab="first" class="item active">Global</a>
         <a data-tab="second" class="item">Kontextbezogen</a>
     </div>

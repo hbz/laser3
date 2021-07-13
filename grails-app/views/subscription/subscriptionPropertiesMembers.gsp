@@ -403,6 +403,36 @@
                                                     editmode     : editable,
                                                     showPersons  : false
                                           ]}"/>
+                                <div class="ui la-vertical buttons">
+
+                                    <g:render template="/templates/links/orgLinksSimpleModal"
+                                              model="${[linkType: subscription.class.name,
+                                                        parent: genericOIDService.getOID(subscription),
+                                                        property: 'orgs',
+                                                        recip_prop: 'sub',
+                                                        tmplRole: RDStore.OR_PROVIDER,
+                                                        tmplType: RDStore.OT_PROVIDER,
+                                                        tmplEntity:message(code:'subscription.details.linkProvider.tmplEntity'),
+                                                        tmplText:message(code:'subscription.details.linkProvider.tmplText'),
+                                                        tmplButtonText:message(code:'subscription.details.linkProvider.tmplButtonText'),
+                                                        tmplModalID:'modal_add_provider',
+                                                        editmode: editable
+                                              ]}" />
+                                    <g:render template="/templates/links/orgLinksSimpleModal"
+                                              model="${[linkType: subscription.class.name,
+                                                        parent: genericOIDService.getOID(subscription),
+                                                        property: 'orgs',
+                                                        recip_prop: 'sub',
+                                                        tmplRole: RDStore.OR_AGENCY,
+                                                        tmplType: RDStore.OT_AGENCY,
+                                                        tmplEntity: message(code:'subscription.details.linkAgency.tmplEntity'),
+                                                        tmplText: message(code:'subscription.details.linkAgency.tmplText'),
+                                                        tmplButtonText: message(code:'subscription.details.linkAgency.tmplButtonText'),
+                                                        tmplModalID:'modal_add_agency',
+                                                        editmode: editable
+                                              ]}" />
+
+                                </div><!-- la-js-hide-this-card -->
                             </div>
                         </div>
 
@@ -466,6 +496,36 @@
                                                                         editmode     : editable,
                                                                         showPersons  : false
                                                               ]}"/>
+                                                    <div class="ui la-vertical buttons la-js-hide-this-card">
+
+                                                        <g:render template="/templates/links/orgLinksSimpleModal"
+                                                                  model="${[linkType: sub.class.name,
+                                                                            parent: genericOIDService.getOID(sub),
+                                                                            property: 'orgs',
+                                                                            recip_prop: 'sub',
+                                                                            tmplRole: RDStore.OR_PROVIDER,
+                                                                            tmplType: RDStore.OT_PROVIDER,
+                                                                            tmplEntity:message(code:'subscription.details.linkProvider.tmplEntity'),
+                                                                            tmplText:message(code:'subscription.details.linkProvider.tmplText'),
+                                                                            tmplButtonText:message(code:'subscription.details.linkProvider.tmplButtonText'),
+                                                                            tmplModalID:'modal_add_provider_'+sub.id,
+                                                                            editmode: editable
+                                                                  ]}" />
+                                                        <g:render template="/templates/links/orgLinksSimpleModal"
+                                                                  model="${[linkType: sub.class.name,
+                                                                            parent: genericOIDService.getOID(sub),
+                                                                            property: 'orgs',
+                                                                            recip_prop: 'sub',
+                                                                            tmplRole: RDStore.OR_AGENCY,
+                                                                            tmplType: RDStore.OT_AGENCY,
+                                                                            tmplEntity: message(code:'subscription.details.linkAgency.tmplEntity'),
+                                                                            tmplText: message(code:'subscription.details.linkAgency.tmplText'),
+                                                                            tmplButtonText: message(code:'subscription.details.linkAgency.tmplButtonText'),
+                                                                            tmplModalID:'modal_add_agency_'+sub.id,
+                                                                            editmode: editable
+                                                                  ]}" />
+
+                                                    </div><!-- la-js-hide-this-card -->
                                                 </div>
                                             </div>
                                         </td>

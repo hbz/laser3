@@ -269,14 +269,18 @@ class ESSearchService{
           try {
             if ( params[mapping.key] ) {
                 if (params[mapping.key].length() > 0 && !(params[mapping.key].equalsIgnoreCase('*'))) {
-                  if (sw.toString()) sw.write(" AND ")
+                  if (sw.toString())
+                    sw.write(" AND ")
                   sw.write(mapping.value)
                   sw.write(":")
                   if (params[mapping.key].startsWith("[") && params[mapping.key].endsWith("]")) {
                     sw.write("${params[mapping.key]}")
                   } else if (params[mapping.key].count("\"") >= 2) {
                     sw.write("${params[mapping.key]}")
-                  } else {
+                  } else if (params[mapping.key].contains(" ")) {
+                    sw.write(params[mapping.key].trim().replace(" "," AND "))
+                  }
+                  else {
                     sw.write("( ${params[mapping.key]} )")
                   }
                 }

@@ -56,7 +56,8 @@
 </head>
 
 <body>
-
+%{-- help sidebar --}%
+<g:render template="/templates/help/help_subscription_show"/>
 <section id="example">
 
     <h2 class="ui dividing header">Icons<a class="anchor" id="icons"></a></h2>

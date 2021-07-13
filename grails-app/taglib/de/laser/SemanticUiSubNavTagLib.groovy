@@ -30,12 +30,17 @@ class SemanticUiSubNavTagLib {
         String aClass = ((this.pageScope.variables?.workFlowPart == attrs.workFlowPart) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         if (attrs.controller) {
-            out << g.link(body(),
-                    class: aClass,
-                    controller: attrs.controller,
-                    action: attrs.action,
-                    params: attrs.params
-            )
+            if(attrs.disabled == true) {
+                out << '<div class="item disabled">' +body()+ '</div>'
+            }
+            else {
+                out << g.link(body(),
+                        class: aClass,
+                        controller: attrs.controller,
+                        action: attrs.action,
+                        params: attrs.params
+                )
+            }
         }
         else {
             out << body()

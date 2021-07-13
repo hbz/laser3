@@ -47,7 +47,7 @@
 
                 <div class="ui field">
                     <label>${message(code:'user.email')}</label>
-                    <semui:xEditable owner="${user}" field="email" />
+                    <semui:xEditable owner="${user}" field="email" validation="email"/>
                 </div>
 
                 <g:if test="${editable}">

@@ -26,7 +26,7 @@ class TitleController  {
 
     @Secured(['ROLE_USER'])
     def list() {
-        log.debug("titleSearch : ${params}");
+        log.debug("titleSearch : ${params}")
 
         // TODO: copied from index() because no list() given | DB_QUERY
 

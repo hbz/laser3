@@ -35,6 +35,7 @@
   .la-context-org {
     font-size: 0.87em;
     color: white;
+    flex: 0 0 200px;
   }
   .ui.sub.header.item {
     border-left: none!important;
@@ -108,4 +109,7 @@
 }
 #mainMenue {
   z-index: 102;
+}
+.la-ctrls .ui.dropdown .menu {
+  z-index: 101;
 }

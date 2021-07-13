@@ -420,13 +420,13 @@
                         (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: params.subStatus ?: null, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null], contextService.getOrg())
                         def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
                         if(params.subPerpetual == "on") {
-                            (base_qry2, qry_params2) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, hasPerpetualAccess: RDStore.YN_YES.id.toString()], contextService.getOrg())
+                            (base_qry2, qry_params2) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: params.subStatus == RDStore.SUBSCRIPTION_CURRENT.id.toString() ? RDStore.SUBSCRIPTION_EXPIRED.id.toString() : null, hasPerpetualAccess: RDStore.YN_YES.id.toString()], contextService.getOrg())
                             numberOfSubscriptions+=Subscription.executeQuery("select s.id " + base_qry2, qry_params2).size()
                         }
                         %>
                         <g:if test="${actionName == 'manageMembers'}">
                             <g:link controller="myInstitution" action="manageConsortiaSubscriptions"
-                                    params="${[member: org.id, status: params.subStatus ?: null, validOn: params.subValidOn, filterSet: true]}">
+                                    params="${[member: org.id, status: params.subStatus ?: null, hasPerpetualAccess: params.subPerpetual == 'on' ? RDStore.YN_YES.id : null, validOn: params.subValidOn, filterSet: true]}">
                                 <div class="ui circular label">
                                     ${numberOfSubscriptions}
                                 </div>

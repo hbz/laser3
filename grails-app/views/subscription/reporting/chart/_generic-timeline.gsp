@@ -25,6 +25,7 @@ JSPC.app.reporting.current.chart.option = {
         }
     },
     yAxis: { },
+    toolbox: JSPC.app.reporting.helper.toolbox,
     tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },

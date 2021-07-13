@@ -34,6 +34,8 @@
 </head>
 
 <body class="${controllerName}_${actionName} ${severLabel}">
+
+
     <g:if test="${currentServer == ServerUtils.SERVER_LOCAL}">
         <div class="ui yellow label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.local')}"></div>
     </g:if>
@@ -43,6 +45,8 @@
     <g:if test="${currentServer == ServerUtils.SERVER_QA}">
         <div class="ui red label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.qa')}"></div>
     </g:if>
+
+
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu" />
 %{--    <nav aria-label="${message(code:'wcag.label.mainMenu')}">--}%
         <div id="mainMenue" class="ui fixed inverted  menu la-js-verticalNavi" role="menubar" >
@@ -388,7 +392,17 @@
                                     </div>
                                     <div class="menu" role="menu">
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateIdentifiers" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.updateIdentifiers')}</semui:link>
+                                        <div class="item" role="menuitem" aria-haspopup="true">
+                                            <div class="title">
+                                                ${message(code:'menu.admin.syncManagement.reload')}
+                                                <i class="dropdown icon"></i>
+                                            </div>
+                                            <div class="menu" role="menu">
+                                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'identifier']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIdentifiers')}</semui:link>
+                                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'ddc']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateDDC')}</semui:link>
+                                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'language']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateLanguage')}</semui:link>
+                                            </div>
+                                        </div>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="getTIsWithoutGOKBId">${message(code:'menu.yoda.purgeTIsWithoutGOKBID')}</semui:link>
@@ -580,6 +594,7 @@
                             </div>
                         </g:if>
 
+
                         <g:if test="${(params.mode)}">
                             <div class="item">
                                 <g:if test="${params.mode=='advanced'}">
@@ -638,6 +653,11 @@
 
                             </div>
                         </g:if>
+                        <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='dev' && actionName=='frontend')}">
+                            <div class="item">
+                                <button class="ui button la-help-panel-button"><i class="info circle large icon"></i></button>
+                            </div>
+                        </g:if>
                 </div>
 
             </div>
@@ -646,8 +666,8 @@
     </sec:ifAnyGranted><%-- ROLE_USER --%>
 
     %{-- global content container --}%
-
-        <main class="ui main container ${visibilityContextOrgMenu} hidden la-js-mainContent">
+        <div class="pusher">
+            <main class="ui main container ${visibilityContextOrgMenu} hidden la-js-mainContent">
 
             %{-- system messages --}%
 
@@ -668,8 +688,9 @@
             %{-- content --}%
 
             <g:layoutBody/>
-
         </main><!-- .main -->
+        </div>
+
 
         %{-- footer --}%
 
@@ -791,6 +812,5 @@
                 </g:if>
             })
         </script>
-
     </body>
 </html>

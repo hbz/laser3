@@ -4,7 +4,6 @@
 verticalNavi = {
 
     go: function () {
-        // console.log('a11yIcon.go()')
         verticalNavi.init('body')
     },
 
@@ -13,21 +12,12 @@ verticalNavi = {
 
         // bigger then 992px
         if (window.matchMedia('(min-width: 992px)').matches) {
-            //smaller Context Bar
-            $( '.la-contextBar' ).removeClass('massive');
             // clone hide
             $( '.la-js-verticalNavi-clone' ).hide();
             // sidebar function
             $('.la-js-mainContent').removeClass('pusher');
             $('.la-menue-button').hide();
             $( '.la-js-verticalNavi' ).not('.la-js-verticalNavi-clone').show();
-
-            $('body').removeClass('pushable');
-            let main = $( "main" );
-            if ( main.parent().is( ".pusher" ) ) {
-                main.unwrap();
-            }
-
         }
         // smaller then 992px
         else {
@@ -41,8 +31,6 @@ verticalNavi = {
             $('.la-js-verticalNavi-clone').find('div.dropdown').removeClass('dropdown').addClass('item');
             $('.la-js-verticalNavi-clone').find('.menu').removeClass('menu').addClass('content');
             $('.la-js-verticalNavi-clone').addClass('accordion');
-            //bigger Context Bar
-            $('.la-contextBar').addClass('massive');
         }
 
         // Resize the Window
@@ -50,25 +38,14 @@ verticalNavi = {
 
             // bigger then 992px
             if (window.matchMedia('(min-width: 992px)').matches) {
-                //smaller Context Bar
-                $( '.la-contextBar' ).removeClass('massive');
                 // clone hide
                 $( '.la-js-verticalNavi-clone' ).hide();
                 // sidebar function
-                $('.la-js-mainContent').removeClass('pusher');
                 $('.la-menue-button').hide();
                 $( '.la-js-verticalNavi' ).not('.la-js-verticalNavi-clone').show();
-
-                $('body').removeClass('pushable');
-                let main = $( "main" );
-                if ( main.parent().is( ".pusher" ) ) {
-                    main.unwrap();
-                }
             }
             // smaller then 992px
             else {
-                //bigger Context Bar
-                $( '.la-contextBar' ).addClass('massive');
                 $( '.la-js-verticalNavi' ).hide();
                 $('.la-menue-button').show();
                 //dealing with dropdown menu vs vertical menu
@@ -90,7 +67,6 @@ verticalNavi = {
                 .sidebar({
                     context: $('body')
                 })
-                .sidebar('setting', 'transition', 'overlay')
                 .sidebar('attach events', '.la-menue-button')
                 .sidebar('setting', 'dimPage', false);
             }
@@ -103,17 +79,18 @@ verticalNavi = {
         .sidebar({
             context: $('body')
         })
-        .sidebar('setting', 'transition', 'overlay')
         .sidebar('attach events', '.la-menue-button')
         .sidebar('setting', 'dimPage', false);
 
-//help panell
-/*        $('.la-help-panel-button').click(function() {
+        //help panell
+        $('.la-help-panel-button').click(function() {
 
             $('.la-help-panel')
-            .sidebar('setting', 'transition', 'overlay')
-            .sidebar('setting', 'dimPage', false)
+            .sidebar({
+                context: $('body')
+            })
+            //.sidebar('setting', 'dimPage', false)
             .sidebar('toggle');
-        });*/
+        });
     }
 }
