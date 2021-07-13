@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
 <!doctype html>
 <html>
 <head>
@@ -19,37 +19,9 @@
 
 <h2 class="ui header">Workflows</h2>
 
-%{-- <ul>
-<g:each in="${WfSequencePrototype.executeQuery('select wfsp from WfSequencePrototype wfsp order by id')}" var="wfsp">
-    <li>
-        <g:link class="wfModalLink" controller="ajaxHtml" action="editWfComponentModal" params="${[key: WfSequencePrototype.KEY, id: wfsp.id]}">Sequenz: (${wfsp.id}) ${wfsp.title}</g:link>
-        <g:set var="tasks" value="${wfsp.getWorkflow()}" />
-        <g:if test="${tasks}">
-            <ul>
-                <g:each in="${tasks}" var="wftp">
-                    <li>
-                        <g:link class="wfModalLink" controller="ajaxHtml" action="editWfComponentModal" params="${[key: WfTaskPrototype.KEY, id: wftp.id]}">Task: (${wftp.id}) ${wftp.title}</g:link>
-                        <g:if test="${wftp.head}">
-                            <g:set var="children" value="${wftp.head.getWorkflow()}" />
-                            <ul>
-                                <g:each in="${children}" var="ch">
-                                    <li>
-                                        <g:link class="wfModalLink" controller="ajaxHtml" action="editWfComponentModal" params="${[key: WfTaskPrototype.KEY, id: ch.id]}">Task: (${ch.id}) ${ch.title}</g:link>
-                                    </li>
-                                </g:each>
-                            </ul>
-                        </g:if>
-                    </li>
-                </g:each>
-            </ul>
-        </g:if>
-    </li>
-</g:each>
-</ul> --}%
-
 <ul>
     <g:each in="${WfSequencePrototype.executeQuery('select wfsp from WfSequencePrototype wfsp order by id')}" var="wfsp">
-        <li><g:link class="wfModalLink" controller="ajaxHtml" action="editWfComponentModal" params="${[key: WfSequencePrototype.KEY, id: wfsp.id]}">Sequenz: (${wfsp.id}) ${wfsp.title}</g:link></li>
+        <li><g:link class="wfModalLink" controller="ajaxHtml" action="editWfComponentModal" params="${[key: WfSequencePrototype.KEY, id: wfsp.id]}">(${wfsp.id}) ${wfsp.title}</g:link></li>
     </g:each>
 </ul>
 
@@ -113,19 +85,25 @@
             <th>Sequenz</th>
             <th>Typ</th>
             <th>Has Child</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        <g:each in="${WfSequencePrototype.executeQuery('select wf from WfSequencePrototype wf order by id')}" var="wf">
+        <g:each in="${WfSequencePrototype.executeQuery('select sp from WfSequencePrototype sp order by id')}" var="sp">
             <tr>
                 <td>
-                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfComponentModal" params="${[key: WfSequencePrototype.KEY, id: wf.id]}">Sequenz: (${wf.id}) ${wf.title}</g:link>
+                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfComponentModal" params="${[key: WfSequencePrototype.KEY, id: sp.id]}">(${sp.id}) ${sp.title}</g:link>
                 </td>
                 <td>
-                    ${wf.type.getI10n('value')}
+                    ${sp.type?.getI10n('value')}
                 </td>
                 <td>
-                    <g:if test="${wf.child}"> <i class="check green icon"></i> </g:if>
+                    <g:if test="${sp.child}"> <i class="check green icon"></i> </g:if>
+                </td>
+                <td>
+                    <g:if test="${! sp.inStructure()}">
+                        <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfSequencePrototype.KEY}", id: sp.id]}"><i class="trash alternate icon"></i></g:link>
+                    </g:if>
                 </td>
             </tr>
         </g:each>
@@ -133,12 +111,7 @@
 </table>
 
 <g:if test="${key == WfSequencePrototype.KEY}">
-    <g:if test="${save}">
-        <semui:msg class="positive" text="${sequence} wurde erfolgreich gespeichert." />
-    </g:if>
-    <g:else>
-        <semui:errors bean="${sequence}" />
-    </g:else>
+    <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:sequence]}" />
 </g:if>
 
 <g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfComponentModal" params="${[key: WfSequencePrototype.KEY]}">Sequenz (Prototyp) erstellen</g:link>
@@ -158,34 +131,40 @@
             <th>Has Next</th>
             <th>Has Parent</th>
             <th>Has Previous</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        <g:each in="${WfTaskPrototype.executeQuery('select wf from WfTaskPrototype wf order by id')}" var="wf">
+        <g:each in="${WfTaskPrototype.executeQuery('select tp from WfTaskPrototype tp order by id')}" var="tp">
             <tr>
                 <td>
-                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfComponentModal" params="${[key: WfTaskPrototype.KEY, id: wf.id]}">Task: (${wf.id}) ${wf.title}</g:link>
+                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfComponentModal" params="${[key: WfTaskPrototype.KEY, id: tp.id]}">(${tp.id}) ${tp.title}</g:link>
                 </td>
                 <td>
-                    ${wf.priority.getI10n('value')}
+                    ${tp.priority?.getI10n('value')}
                 </td>
                 <td>
-                    ${wf.type.getI10n('value')}
+                    ${tp.type?.getI10n('value')}
                 </td>
                 <td>
-                    <g:if test="${WfSequencePrototype.findByChild(wf)}"> <i class="check green icon"></i> </g:if>
+                    <g:if test="${WfSequencePrototype.findByChild(tp)}"> <i class="check green icon"></i> </g:if>
                 </td>
                 <td>
-                    <g:if test="${wf.child}"> <i class="check green icon"></i> </g:if>
+                    <g:if test="${tp.child}"> <i class="check green icon"></i> </g:if>
                 </td>
                 <td>
-                    <g:if test="${wf.next}"> <i class="check green icon"></i> </g:if>
+                    <g:if test="${tp.next}"> <i class="check green icon"></i> </g:if>
                 </td>
                 <td>
-                    <g:if test="${WfTaskPrototype.findByChild(wf)}"> <i class="check green icon"></i> </g:if>
+                    <g:if test="${WfTaskPrototype.findByChild(tp)}"> <i class="check green icon"></i> </g:if>
                 </td>
                 <td>
-                    <g:if test="${WfTaskPrototype.findByNext(wf)}"> <i class="check green icon"></i> </g:if>
+                    <g:if test="${WfTaskPrototype.findByNext(tp)}"> <i class="check green icon"></i> </g:if>
+                </td>
+                <td>
+                    <g:if test="${! tp.inStructure()}">
+                        <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfTaskPrototype.KEY}", id: tp.id]}"><i class="trash alternate icon"></i></g:link>
+                    </g:if>
                 </td>
             </tr>
         </g:each>
@@ -193,12 +172,7 @@
 </table>
 
 <g:if test="${key == WfTaskPrototype.KEY}">
-    <g:if test="${save}">
-        <semui:msg class="positive" text="${task} wurde erfolgreich gespeichert." />
-    </g:if>
-    <g:else>
-        <semui:errors bean="${task}" />
-    </g:else>
+    <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:task]}" />
 </g:if>
 
 <g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfComponentModal" params="${[key: WfTaskPrototype.KEY]}">Task (Prototyp) erstellen</g:link>
@@ -207,17 +181,12 @@
 
 <h2 class="ui header">WfSequence : ${WfSequence.findAll().size()}</h2>
 
-<g:each in="${WfSequence.executeQuery('select wf from WfSequence wf order by id')}" var="wf">
-    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfComponentModal" params="${[key: WfSequence.KEY, id: wf.id]}">Sequenz: (${wf.id}) ${wf.title}</g:link>
+<g:each in="${WfSequence.executeQuery('select s from WfSequence s order by id')}" var="s">
+    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfComponentModal" params="${[key: WfSequence.KEY, id: s.id]}">(${s.id}) ${s.title}</g:link>
 </g:each>
 
 <g:if test="${key == WfSequence.KEY}">
-    <g:if test="${save}">
-        <semui:msg class="positive" text="${sequence} wurde erfolgreich gespeichert." />
-    </g:if>
-    <g:else>
-        <semui:errors bean="${sequence}" />
-    </g:else>
+    <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:sequence]}" />
 </g:if>
 
 <g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfComponentModal" params="${[key: WfSequence.KEY]}">Sequenz erstellen</g:link>
@@ -226,17 +195,12 @@
 
 <h2 class="ui header">WfTask : ${WfTask.findAll().size()}</h2>
 
-<g:each in="${WfTask.executeQuery('select wf from WfTask wf order by id')}" var="wf">
-    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfComponentModal" params="${[key: WfTask.KEY, id: wf.id]}">Task: (${wf.id}) ${wf.title}}</g:link><br/>
+<g:each in="${WfTask.executeQuery('select t from WfTask t order by id')}" var="t">
+    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfComponentModal" params="${[key: WfTask.KEY, id: t.id]}">(${t.id}) ${t.title}}</g:link><br/>
 </g:each>
 
 <g:if test="${key == WfTask.KEY}">
-    <g:if test="${save}">
-        <semui:msg class="positive" text="${task} wurde erfolgreich gespeichert." />
-    </g:if>
-    <g:else>
-        <semui:errors bean="${task}" />
-    </g:else>
+    <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:task]}" />
 </g:if>
 
 <g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfComponentModal" params="${[key: WfTask.KEY]}">Task erstellen</g:link>

@@ -37,8 +37,19 @@ class WfTaskPrototype extends WfTaskBase {
         struct
     }
 
+    WfSequencePrototype getSequence() {
+        List<WfSequencePrototype> result = WfSequencePrototype.executeQuery('select sp from WfSequencePrototype sp where child = :current order by id', [current: this] )
+
+        if (result.size() > 1) {
+            log.warn( 'MULTIPLE MATCHES - getParentSequence()')
+        }
+        if (result) {
+            return result.first() as WfSequencePrototype
+        }
+    }
+
     WfTaskPrototype getParent() {
-        List<WfTaskPrototype> result = WfTaskPrototype.executeQuery('select wftp from WfTaskPrototype wftp where child = :current order by id', [current: this] )
+        List<WfTaskPrototype> result = WfTaskPrototype.executeQuery('select tp from WfTaskPrototype tp where child = :current order by id', [current: this] )
 
         if (result.size() > 1) {
             log.warn( 'MULTIPLE MATCHES - getParent()')
@@ -49,7 +60,7 @@ class WfTaskPrototype extends WfTaskBase {
     }
 
     WfTaskPrototype getPrevious() {
-        List<WfTaskPrototype> result = WfTaskPrototype.executeQuery('select wftp from WfTaskPrototype wftp where next = :current order by id', [current: this] )
+        List<WfTaskPrototype> result = WfTaskPrototype.executeQuery('select tp from WfTaskPrototype tp where next = :current order by id', [current: this] )
 
         if (result.size() > 1) {
             log.warn( 'MULTIPLE MATCHES - getPrevious()')
@@ -57,5 +68,9 @@ class WfTaskPrototype extends WfTaskBase {
         if (result) {
             return result.first() as WfTaskPrototype
         }
+    }
+
+    boolean inStructure() {
+        return getSequence() || getParent() || getPrevious()
     }
 }

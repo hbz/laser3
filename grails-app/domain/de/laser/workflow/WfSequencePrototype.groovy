@@ -26,4 +26,8 @@ class WfSequencePrototype extends WfSequenceBase {
     List<WfTaskPrototype> getStructure() {
         child ? child.getStructure() : []
     }
+
+    boolean inStructure() {
+         child != null
+    }
 }

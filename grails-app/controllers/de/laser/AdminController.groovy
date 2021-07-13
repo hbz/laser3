@@ -434,7 +434,17 @@ class AdminController  {
                     result = workflowService.editTask(params)
                 }
             }
+            else if (cmd[0] == 'delete') {
+                if (cmd[1] in [ WfSequencePrototype.KEY, WfSequence.KEY ]) {
+                    result = workflowService.deleteSequence(params)
+                }
+                else if (cmd[1] in [ WfTaskPrototype.KEY, WfTask.KEY ]) {
+                    result = workflowService.deleteTask(params)
+                }
+            }
         }
+
+        log.debug( params.toMapString() )
         result
     }
 

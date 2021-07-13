@@ -52,7 +52,7 @@ class WfTask extends WfTaskBase {
     }
 
     WfTaskPrototype getParent() {
-        List<WfTask> result = WfTask.executeQuery('select wft from WfTask wft where child = :current order by id', [current: this] )
+        List<WfTask> result = WfTask.executeQuery('select t from WfTask t where child = :current order by id', [current: this] )
 
         if (result.size() > 1) {
             log.warn( 'MULTIPLE MATCHES - getParent()')
@@ -63,7 +63,7 @@ class WfTask extends WfTaskBase {
     }
 
     WfTask getPrevious() {
-        List<WfTask> result = WfTask.executeQuery('select wft from WfTask wft where next = :current order by id', [current: this] )
+        List<WfTask> result = WfTask.executeQuery('select t from WfTask t where next = :current order by id', [current: this] )
 
         if (result.size() > 1) {
             log.warn( 'MULTIPLE MATCHES - getPrevious()')
@@ -71,5 +71,9 @@ class WfTask extends WfTaskBase {
         if (result) {
             return result.first() as WfTask
         }
+    }
+
+    boolean inStructure() {
+        child != null
     }
 }

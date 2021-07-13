@@ -7,6 +7,9 @@ import grails.web.servlet.mvc.GrailsParameterMap
 @Transactional
 class WorkflowService {
 
+    static final String OP_STATUS_DONE  = 'OP_STATUS_DONE'
+    static final String OP_STATUS_ERROR = 'OP_STATUS_ERROR'
+
     //static Log static_logger = LogFactory.getLog(WorkflowService)
 
     Map<String, Object> createSequence(GrailsParameterMap params) {
@@ -73,6 +76,70 @@ class WorkflowService {
         }
     }
 
+    Map<String, Object> deleteSequence(GrailsParameterMap params) {
+        log.debug('deleteSequence() ' + params)
+        String[] cmd = (params.cmd as String).split(':')
+
+        Map<String, Object> result = [
+            cmd: cmd[0], key: cmd[1]
+        ]
+
+        if (cmd[1] == WfSequencePrototype.KEY) {
+            WfSequencePrototype seq = WfSequencePrototype.get(params.id)
+            result.sequence = seq
+
+            if (! seq.inStructure()) {
+                try {
+                    seq.delete()
+                    result.status = OP_STATUS_DONE
+                }
+                catch (Exception e) {
+                    result.status = OP_STATUS_ERROR
+                }
+            }
+        }
+        else if (cmd[1] == WfSequence.KEY) {
+            WfSequence seq = WfSequence.get(params.id)
+            result.sequence = seq
+            result.status = OP_STATUS_ERROR
+
+            println '--- TODO ---'
+        }
+        result
+    }
+
+    Map<String, Object> deleteTask(GrailsParameterMap params) {
+        log.debug('deleteTask() ' + params)
+        String[] cmd = (params.cmd as String).split(':')
+
+        Map<String, Object> result = [
+            cmd: cmd[0], key: cmd[1]
+        ]
+
+        if (cmd[1] == WfTaskPrototype.KEY) {
+            WfTaskPrototype task = WfTaskPrototype.get( params.id )
+            result.task = task
+
+            if (! task.inStructure()) {
+                try {
+                    task.delete()
+                    result.status = OP_STATUS_DONE
+                }
+                catch (Exception e) {
+                    result.status = OP_STATUS_ERROR
+                }
+            }
+        }
+        else if (cmd[1] == WfTask.KEY) {
+            WfTask task = WfTask.get( params.id )
+            result.task = task
+            result.status = OP_STATUS_ERROR
+
+            println '--- TODO ---'
+        }
+        result
+    }
+
     Map<String, Object> internalEditSequence(WfSequenceBase seq, GrailsParameterMap params) {
 
         log.debug( seq.toString() )
@@ -107,16 +174,17 @@ class WorkflowService {
         }
 
         Map<String, Object> result = [
-            sequence: seq,
-            key:      cmd[1],
-            changes:  seq.getDirtyPropertyNames(),
-            save:     seq.save()
+            sequence: seq, cmd: cmd[0], key: cmd[1]
         ]
 
-        if (! result.save) {
+        if (! seq.save()) {
+            result.status = OP_STATUS_ERROR
             log.debug( 'changes: ' + result.changes.toString() )
             log.debug( 'validation: ' + seq.validate() )
             log.debug( seq.getErrors().toString() )
+        }
+        else {
+            result.status = OP_STATUS_DONE
         }
         result
     }
@@ -158,16 +226,17 @@ class WorkflowService {
         }
 
         Map<String, Object> result = [
-                task:       task,
-                key:        cmd[1],
-                changes:    task.getDirtyPropertyNames(),
-                save:       task.save()
+            task: task, cmd: cmd[0], key: cmd[1]
         ]
 
-        if (! result.save) {
+        if (! task.save()) {
+            result.status = OP_STATUS_ERROR
             log.debug( 'changes: ' + result.changes.toString() )
             log.debug( 'validation: ' + task.validate() )
             log.debug( task.getErrors().toString() )
+        }
+        else {
+            result.status = OP_STATUS_DONE
         }
         result
     }
