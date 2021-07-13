@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3673    12.07.2021  dev     2.2         Andreas Bug         Alle Titel: ID-Verarbeitung korrigiert
+
+3257    12.07.2021  dev     2.2         Andreas Bug         verschiedene Fehlfunktionen ausgebessert
+
+3668    09.07.2021  dev     2.2         Andreas Bug         Email-Validierung bei Nutzerverwaltung aufgenommen
+
 3667    08.07.2021  dev     2.2         Andreas Bug         Zählfehler und Filterinkonsistenz behoben
 
 3460    08.07.2021  dev     2.2         Andreas Feature     Nachladen von DDCs, Sprachen und Identifiern per Massenoperation
