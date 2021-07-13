@@ -214,6 +214,22 @@ class OrganisationController  {
     }
 
     @Secured(['ROLE_USER'])
+    Map listConsortia() {
+        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
+        params.customerType   = Role.findByAuthority('ORG_CONSORTIUM').id.toString()
+        if(!params.sort)
+            params.sort = " LOWER(o.sortname)"
+        def fsq = filterService.getOrgQuery(params)
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
+        availableOrgs.remove(Org.findByName("LAS:eR Backoffice"))
+        result.consortiaTotal = availableOrgs.size()
+        result.availableOrgs = availableOrgs.drop(result.offset).take(result.max)
+        result
+    }
+
+    @Secured(['ROLE_USER'])
     def listProvider() {
         Map<String, Object> result = [:]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())

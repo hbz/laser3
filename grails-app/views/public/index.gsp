@@ -28,7 +28,7 @@
 
     <!--Page Contents-->
 
-        <nav class="ui inverted stackable menu la-top-menu" aria-label="${message(code:'wcag.label.mainMenu')}">
+        <nav class="ui inverted menu la-top-menu" aria-label="${message(code:'wcag.label.mainMenu')}">
             <div class="ui container">
                 <img class="logo" alt="Logo Laser" src="${resource(dir: 'images', file: 'laser.svg')}"/>
                 <a href="https://www.hbz-nrw.de/produkte/digitale-inhalte/las-er" class="item" target="_blank">${message(code: 'landingpage.menu.about')}</a>

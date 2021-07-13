@@ -70,7 +70,7 @@
             break
         }
     %>
-    <div class="ui secondary pointing tabular menu">
+    <div class="ui secondary stackable pointing tabular menu">
         <a class="${us_dashboard_tab.getValue().value=='Due Dates' || us_dashboard_tab.getValue()=='Due Dates' ? 'active item':'item'}" data-tab="duedates">
             <i class="checked alarm end icon large"></i>
             ${dueDatesCount}

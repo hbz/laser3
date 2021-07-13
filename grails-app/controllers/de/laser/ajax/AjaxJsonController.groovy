@@ -76,7 +76,7 @@ class AjaxJsonController {
         queryParams.showSubscriber = showSubscriber
         queryParams.showConnectedObjs = showConnectedObjs
 
-        data = subscriptionService.getMySubscriptions_writeRights(queryParams)
+        data = subscriptionService.getMySubscriptions_readRights(queryParams)
         if (data) {
             if (params.valueAsOID){
                 data.each { Subscription s ->

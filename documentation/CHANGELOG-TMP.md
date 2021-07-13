@@ -9,6 +9,40 @@
 
 3664    13.07.2021  dev     2.2         David   Feature     Reporting: Bestandsinformationen exportieren
 
+3674    13.07.2021  dev     2.2         Andreas Feature     neuer Identifier-Namensraum und neue Merkmale für FID-Daten
+
+3673    12.07.2021  dev     2.2         Andreas Bug         Alle Titel: ID-Verarbeitung korrigiert
+
+3257    12.07.2021  dev     2.2         Andreas Bug         verschiedene Fehlfunktionen ausgebessert
+
+3668    09.07.2021  dev     2.2         Andreas Bug         Email-Validierung bei Nutzerverwaltung aufgenommen
+
+3667    08.07.2021  dev     2.2         Andreas Bug         Zählfehler und Filterinkonsistenz behoben
+
+3460    08.07.2021  dev     2.2         Andreas Feature     Nachladen von DDCs, Sprachen und Identifiern per Massenoperation
+
+3657    06.07.2021  dev     2.2         Andreas Bug         falsche Befüllung der Dropdown-Listen
+
+3656    06.07.2021  dev     2.2         Andreas Bug         falsche Zahlen an die Reiter gegeben
+
+3654    06.07.2021  dev     2.2         Andreas Bug         Kontakttyp wurde nicht korrekt prozessiert
+
+3285    06.07.2021  dev     2.2         Andreas Bug         irrtümliches Überschreiben von Konsortiallizenzparameter für Vollnutzer unterbunden
+
+3655    05.07.2021  dev     2.2         Andreas Bug         Vererbung von Identifier korrigiert
+
+3648    05.07.2021  dev     2.2         Andreas Feature     Default-Sichtbarkeit bei Org-Dokumenten umgestellt
+
+3597    05.07.2021  dev     2.2         Andreas Feature     Bearbeitungsfelder für Sprache eines Kontakts hinzugefügt
+
+3419    05.07.2021  dev     2.2         Andreas Feature     neue Sichten "Alle Konsortien" und "Meine Konsortien" eingeführt
+
+3257    05.07.2021  dev     2.2         Andreas Feature     generische Filtersuche von ODER auf UND-Verknüpfung umgestellt
+
+2931    05.07.2021  dev     2.2         Andreas Feature     Anbieter/Lieferant per Teilnehmer verwalten verknüpfen
+
+3600    02.07.2021  dev     2.2         Andreas Feature     PSQL-Skript zum manuellen Vereinigen von Organisationsdaten
+
 3647    02.07.2021  rc2.1   2.1.1       Andreas Feature     Icon für Anbieter eingeführt
 
 3646    01.07.2021  rc2.1   2.1.1       Andreas Feature     Unschärfe bei der Suche von Freitextmerkmalen aufgehoben

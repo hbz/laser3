@@ -17,7 +17,8 @@
         </style>
     </head>
     <body>
-
+    %{-- help sidebar --}%
+    <g:render template="/templates/help/help_subscription_show"/>
         <semui:debugInfo>
             <div style="padding: 1em 0;">
                 <p>sub.type: ${subscription.type}</p>

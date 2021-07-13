@@ -10,6 +10,7 @@
 //= require modules/a11y/elements/icon.js
 //= require modules/a11y/modules/modal.js
 //= require modules/jsqtk.js
+//= require modules/verticalNavi.js
 
 console.log('+ laser.js')
 
@@ -23,4 +24,5 @@ $(function () {
     a11yIcon.go();
 
     $('main.ui.main').removeClass('hidden');
+    verticalNavi.go();
 })
