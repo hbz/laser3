@@ -28,6 +28,8 @@ cost.item.type,Typ,Type
 country,Land,Country
 currency,Währung,Currency
 customer.identifier.type,Kategorie der Kundennummer,Customer Identifier Type
+delivery.edit.status,Status Bearbeitung,Delivery edit status
+delivery.status,Status Lieferungen,Delivery status
 document.context.status,Document Context Status,Document Context Status
 document.type,Dokumenttyp,Document Type
 dbs.subject.group,DBS Fächergruppe,DBS Subject Group
@@ -65,6 +67,7 @@ license.arc.hosting.time,Hostingrecht Zeitpunkt,Hosting Time
 license.arc.payment.note,Zugriffsrechte Kosten,Archive Payment Note
 license.arc.title.transfer.regulation,Titeltransfer Regeln,Titletransfer Regulation
 license.category,Vertragskategorie,LicenseCategory
+license.content,Vertrag: Inhaltsdaten,License: content data
 license.oa.corresponding.author.identification,Autorenindentifikation,Corresponding Author Identification
 license.oa.earc.version,License.OA.eArcVersion,License.OA.eArcVersion
 license.oa.license.to.publish,Publikationslizenz,License to Publish
@@ -120,6 +123,23 @@ reminder.unit,ReminderUnit,ReminderUnit
 semester,Semester,Semester
 share.configuration,Share Configuration,Share Configuration
 sim.user.number,Sim User Zahl,Sim-User Number
+sis.access.extensions,FID - Zugriffserweiterungen / -ergänzungen, SIS - access extensions / completions
+sis.access.kind,FID - Art der erworbenen Zugriffsrechte,SIS - kind of purchased access rights
+sis.authentication,FID-Authentifizierung,SIS authentication
+sis.business.model.base,FID-Geschäftsmodell - Grundtyp,SIS business model - base type
+sis.business.model.attr1,FID-Geschäftsmodell - Attribute_1,SIS business model - Attribute_1
+sis.business.model.attr2,FID-Geschäftsmodell - Attribute_2,SIS business model - Attribute_2
+sis.cost.sharing,FID - Kostenbeteiligung,SIS - cost sharing
+sis.hosting,FID-Hosting,SIS hosting
+sis.license.status,FID-Vertragsstatus,SIS license status
+sis.pricing.model,FID-Preismodell,SIS pricing model
+sis.product.type,FID - Produktart,SIS product type
+sis.proof,FID-Nachweis,SIS proof
+sis.proxy.config.status,FID-Proxykonfig-Status,SIS proxy config status
+sis.user.group,FID-Nutzerkreis,SIS user group
+sis.user.group.base,FID-Nutzerkreismodell - Grundtyp,SIS user group model - base type
+sis.user.group.attr1,FID-Nutzerkreismodell - Attribute_1,SIS user group model - Attribute_1
+sis.user.group.attr2,FID-Nutzerkreismodell - Attribute_2,SIS user group model - Attribute_2
 platform.statistics.format,Statistik Auslieferungsformat (Plattform),Statistics Format (Platform)
 platform.statistics.frequency,Statistik Auslieferungsfrequenz (Plattform),Statistics Frequency (Platform)
 subjectgroup,Fächergruppe,Subject Group
@@ -151,5 +171,7 @@ usage.status,UsageStatus,UsageStatus
 user.setting.dashboard.tab,Dashbord Tab,Dashboard Tab
 user.setting.theme,Theme,Theme
 y.n,Ja/Nein,Yes/No
+y.n.l,Ja/Nein/Eingeschränkt/Keine Angaben,Yes/No/limited/no statement
 y.n.o,Ja/Nein/Anderes,Yes/No/Others
+y.n.r,Ja/Nein/Eingeschränkt/Keine Angaben/Nicht relevant,Yes/No/limited/no statement/not relevant
 y.n.u,Ja/Nein/Unbekannt,Yes/No/Unknown
