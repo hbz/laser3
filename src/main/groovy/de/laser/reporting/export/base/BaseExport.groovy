@@ -43,15 +43,23 @@ abstract class BaseExport {
             '@ae-org-contact'           : 'Kontaktdaten',
             '@ae-org-readerNumber'      : 'Nutzerzahlen und Stichtage',             // dyn.value
 
-            '@ae-entitlement-tippName'              : 'Titel der Ressource',
-            '@ae-entitlement-tippEditionStatement'  : 'Auflage',
-            '@ae-entitlement-tippFirstAuthor'       : 'Autor(en)name',
-            '@ae-entitlement-tippHostPlatformURL'   : 'Plattform-URL',
-            '@ae-entitlement-tippIdentifier'        : 'Identifikatoren',            // dyn.value
-            '@ae-entitlement-tippPublisherName'     : 'Publisher',
-            '@ae-entitlement-tippSeriesName'        : 'Name der Reihe',
-            '@ae-entitlement-tippSubjectReference'  : 'Fachbereich',
-            '@ae-entitlement-tippTitleType'         : 'Titel-Typ',
+            '@ae-entitlement-priceItem'                         : 'Preise',
+            '@ae-entitlement-tippName'                          : 'Titel der Ressource',
+            '@ae-entitlement-tippDeweyDecimalClassification'    : 'Dewey-Dezimalklassifikation',
+            '@ae-entitlement-tippEditionStatement'              : 'Auflage',
+            '@ae-entitlement-tippFirstAuthor'                   : 'Autor(en)name',
+            '@ae-entitlement-tippFirstEditor'                   : 'Herausgeber',
+            '@ae-entitlement-tippHostPlatformURL'               : 'Plattform-URL',
+            '@ae-entitlement-tippIdentifier'                    : 'Identifikatoren',            // dyn.value
+            '@ae-entitlement-tippLanguage'                      : 'Sprachen',
+            '@ae-entitlement-tippOpenAccessX'                   : 'Open Access (verzögert/hybrid)',
+            '@ae-entitlement-tippPackage'                       : 'Paket',
+            '@ae-entitlement-tippPlatform'                      : 'Platform',
+            '@ae-entitlement-tippProvider'                      : 'Anbieter',
+            '@ae-entitlement-tippPublisherName'                 : 'Verlag',
+            '@ae-entitlement-tippSeriesName'                    : 'Name der Reihe',
+            '@ae-entitlement-tippSubjectReference'              : 'Fachbereich',
+            '@ae-entitlement-tippTitleType'                     : 'Titel-Typ'
     ]
 
     String token                    // cache token
