@@ -101,7 +101,9 @@ class SubscriptionReporting {
 
             cats.value.each {it ->
                 if (it.value.containsKey(params.query)) {
-                    meta = [ it.key, it.value.get(params.query).label, "${sdf.format(sub.startDate)} - ${sdf.format(sub.endDate)}" ]
+                    String sd = sub.startDate ? sdf.format(sub.startDate) : NO_STARTDATE
+                    String ed = sub.endDate ? sdf.format(sub.endDate) : NO_ENDDATE
+                    meta = [ it.key, it.value.get(params.query).label, "${sd} - ${ed}" ]
                 }
             }
         }
