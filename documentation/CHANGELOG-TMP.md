@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3663    13.07.2021  dev                 David   Feature     Workflows: Datenmodell und Strukturen
+
 3648    05.07.2021  dev     2.2         Andreas Feature     Default-Sichtbarkeit bei Org-Dokumenten umgestellt
 
 3597    05.07.2021  dev     2.2         Andreas Feature     Bearbeitungsfelder für Sprache eines Kontakts hinzugefügt
