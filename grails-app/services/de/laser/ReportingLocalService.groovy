@@ -1,6 +1,7 @@
 package de.laser
 
-import de.laser.helper.SessionCacheWrapper
+import de.laser.reporting.ReportingCache
+import de.laser.reporting.ReportingCacheHelper
 import de.laser.reporting.myInstitution.base.BaseQuery
 import de.laser.reporting.local.SubscriptionReporting
 import grails.gorm.transactions.Transactional
@@ -20,7 +21,7 @@ class ReportingLocalService {
 
     // ----- 2 - chart
 
-    void doChart (Map<String, Object> result, GrailsParameterMap params) {
+    void doChart (Map<String, Object> result, GrailsParameterMap params) throws Exception {
 
         if (params.query) {
 
@@ -46,29 +47,27 @@ class ReportingLocalService {
                 result.tmpl = '/subscription/reporting/chart/generic-bar'
             }
 
-            // TODO
-            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String, Object> cacheMap = sessionCache.get("SubscriptionController/reporting") // + params.token)
-
-            cacheMap.queryCache = [:]
-            cacheMap.queryCache.putAll(result)
-
-            sessionCache.put("SubscriptionController/reporting" /* + params.token */, cacheMap)
+            ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
+            if (! rCache.exists()) {
+                ReportingCacheHelper.initSubscriptionCache(params.long('id'))
+            }
+            rCache.writeQueryCache(result)
         }
     }
 
     // ----- 3 - details
 
-    void doChartDetails (Map<String, Object> result, GrailsParameterMap params) {
+    void doChartDetails (Map<String, Object> result, GrailsParameterMap params) throws Exception {
+
+        // TODO : SESSION TIMEOUT
 
         if (params.query) {
-            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String, Object> cacheMap = sessionCache.get("SubscriptionController/reporting") // + params.token)
+            ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
 
             List<Long> idList = [], plusIdList = [], minusIdList = []
             String label
 
-            cacheMap.queryCache.dataDetails.each{ it ->
+            rCache.readQueryCache().dataDetails.each{ it ->
                 if ( it.get('id') == params.long('id') || it.get('id').toString() == params.idx ) { // TODO @ null
                     idList = it.get('idList')
                     plusIdList = it.get('plusIdList')
@@ -118,21 +117,21 @@ class ReportingLocalService {
                 result.tmpl   = '/subscription/reporting/details/entitlement'
             }
 
-            cacheMap.queryCache.labels.put('labels', result.labels)
+            rCache.intoQueryCache( 'labels', [labels: result.labels] )
 
-            cacheMap.detailsCache = [
+            Map<String, Object> detailsCache = [
                     query   : params.query,
                     tmpl    : result.tmpl,
                     id      : params.long('id'),
             ]
-            if (result.list)      { cacheMap.detailsCache.putAt( 'idList', result.list.collect{ it.id } ) } // only existing ids
-            if (result.plusList)  { cacheMap.detailsCache.putAt( 'plusIdList', result.plusList.collect{ it.id } ) } // only existing ids
-            if (result.minusList) { cacheMap.detailsCache.putAt( 'minusIdList', result.minusList.collect{ it.id } ) } // only existing ids
+            if (result.list)      { detailsCache.putAt( 'idList', result.list.collect{ it.id } ) } // only existing ids
+            if (result.plusList)  { detailsCache.putAt( 'plusIdList', result.plusList.collect{ it.id } ) } // only existing ids
+            if (result.minusList) { detailsCache.putAt( 'minusIdList', result.minusList.collect{ it.id } ) } // only existing ids
 
-            if (result.billingSums != null) { cacheMap.detailsCache.putAt( 'billingSums', result.billingSums ) }
-            if (result.localSums != null)   { cacheMap.detailsCache.putAt( 'localSums', result.localSums ) }
+            if (result.billingSums != null) { detailsCache.putAt( 'billingSums', result.billingSums ) }
+            if (result.localSums != null)   { detailsCache.putAt( 'localSums', result.localSums ) }
 
-            sessionCache.put("SubscriptionController/reporting" /* + params.token */, cacheMap)
+            rCache.writeDetailsCache( detailsCache )
         }
     }
 }

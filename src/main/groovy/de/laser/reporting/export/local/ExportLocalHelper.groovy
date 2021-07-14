@@ -1,11 +1,10 @@
 package de.laser.reporting.export.local
 
 import de.laser.*
-import de.laser.helper.SessionCacheWrapper
+import de.laser.reporting.ReportingCache
 import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.myInstitution.GenericHelper
-import grails.util.Holders
 
 class ExportLocalHelper extends BaseExportHelper {
 
@@ -24,28 +23,22 @@ class ExportLocalHelper extends BaseExportHelper {
     // ----- Cache -----
 
     static Map<String, Object> getFilterCache(String token) {
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
-        Map<String, Object> cacheMap = sessionCache.get("SubscriptionController/reporting" /* + token */)
+        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
+        Map<String, Object> cacheMap = rCache.get()
 
         cacheMap.filterCache as Map<String, Object>
     }
 
     static Map<String, Object> getQueryCache(String token) {
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
-        Map<String, Object> cacheMap = sessionCache.get("SubscriptionController/reporting" /* + token */)
+        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
+        Map<String, Object> cacheMap = rCache.get()
 
         cacheMap.queryCache as Map<String, Object>
     }
 
     static Map<String, Object> getDetailsCache(String token) {
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
-        Map<String, Object> cacheMap = sessionCache.get("SubscriptionController/reporting" /* + token */)
+        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
+        Map<String, Object> cacheMap = rCache.get()
 
         cacheMap.detailsCache as Map<String, Object>
     }
