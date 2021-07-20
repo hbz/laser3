@@ -1,7 +1,5 @@
 package de.laser.reporting.export.myInstitution
 
-import de.laser.reporting.myInstitution.base.BaseQuery
-
 class QueryExport {
 
     String token
@@ -12,7 +10,7 @@ class QueryExport {
 
     Map<String, Object> getData() {
 
-        Map<String, Object> queryCache = BaseQuery.getQueryCache( token )
+        Map<String, Object> queryCache = ExportGlobalHelper.getQueryCache( token )
 
         Map<String, Object> result = [
                 cols: [ queryCache.labels.tooltip ],

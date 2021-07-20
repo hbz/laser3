@@ -176,7 +176,7 @@ class SubscriptionExport extends BaseExport {
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
 
                 if (key == 'x-property') {
-                    Long pdId = BaseDetails.getDetailsCache(token).id as Long
+                    Long pdId = ExportGlobalHelper.getDetailsCache(token).id as Long
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(sub, pdId, contextService.getOrg())
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values

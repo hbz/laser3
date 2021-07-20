@@ -6,7 +6,6 @@ import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.helper.DateUtils
 import de.laser.properties.PropertyDefinition
-import de.laser.reporting.ReportingCache
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -27,12 +26,6 @@ class BaseQuery {
     static int SPEC_DATA_ID_2   = 9990002
     static int SPEC_DATA_ID_3   = 9990003
 
-    static Map<String, Object> getQueryCache(String token) {
-        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, token )
-        rCache.readQueryCache()
-    }
-
-    // ----- ----- -----
 
     static Map<String, Object> getEmptyResult(String query, String chart) {
         return [

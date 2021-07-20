@@ -1,16 +1,8 @@
 package de.laser.reporting.myInstitution.base
 
-import de.laser.reporting.ReportingCache
 import grails.web.servlet.mvc.GrailsParameterMap
 
 class BaseFilter {
-
-    static Map<String, Object> getFilterCache(String token) {
-        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, token )
-        rCache.readFilterCache()
-    }
-
-    // ----- ----- -----
 
     static String getFilterSourceLabel(Map<String, Object> objConfig, String key) {
         objConfig.source.get(key)

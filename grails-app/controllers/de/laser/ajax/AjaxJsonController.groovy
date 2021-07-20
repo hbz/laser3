@@ -676,11 +676,16 @@ class AjaxJsonController {
     def chart() {
         Map<String, Object> result = [:]
 
-        if (params.context == BaseConfig.KEY_MYINST) {
-            reportingGlobalService.doChart( result, params ) // manipulates result
-        }
-        else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
-            reportingLocalService.doChart( result, params ) // manipulates result
+        try {
+            if (params.context == BaseConfig.KEY_MYINST) {
+                reportingGlobalService.doChart(result, params) // manipulates result
+            }
+            else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
+                reportingLocalService.doChart(result, params) // manipulates result
+            }
+        } catch (Exception e) {
+            log.error( e.getMessage() )
+            e.printStackTrace()
         }
 
         if (result.tmpl) {

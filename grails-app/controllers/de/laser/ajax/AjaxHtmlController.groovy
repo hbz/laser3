@@ -31,6 +31,7 @@ import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
+import de.laser.reporting.ReportingCache
 import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.myInstitution.QueryExport
@@ -411,6 +412,8 @@ class AjaxHtmlController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def chartDetails() {
+        // TODO - SESSION TIMEOUTS
+
         Map<String, Object> result = [
             token:  params.token,
             query:  params.query
@@ -444,16 +447,33 @@ class AjaxHtmlController {
 
         String filename = params.filename ?: BaseExportHelper.getFileName(['Reporting'])
 
+        ReportingCache rCache
         BaseExport export
         Map<String, Object> detailsCache
 
         if (params.context == BaseConfig.KEY_MYINST) {
-            detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
-            export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
+            rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
+
+            if (rCache.exists()) {
+                detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
+                export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
+            }
+            else {
+                redirect(url: request.getHeader('referer')) // TODO
+                return
+            }
         }
         else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
-            detailsCache = ExportLocalHelper.getDetailsCache(params.token)
-            export = DetailsExportManager.createLocalExport(params.token, selectedFields)
+            rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
+
+            if (rCache.exists()) {
+                detailsCache = ExportLocalHelper.getDetailsCache(params.token)
+                export = DetailsExportManager.createLocalExport(params.token, selectedFields)
+            }
+            else {
+                redirect(url: request.getHeader('referer')) // TODO
+                return
+            }
         }
 
         if (export && detailsCache) {
@@ -535,6 +555,14 @@ class AjaxHtmlController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def chartQueryExport() {
+
+        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
+
+        if (! rCache.exists()) {
+            redirect (url: request.getHeader('referer')) // TODO
+            return
+        }
+
         QueryExport export = QueryExportManager.createExport( params.token )
 
         List<String> queryLabels = ExportGlobalHelper.getIncompleteQueryLabels( params.token )

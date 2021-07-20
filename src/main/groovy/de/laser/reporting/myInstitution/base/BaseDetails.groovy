@@ -7,16 +7,9 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.SubscriptionProperty
-import de.laser.reporting.ReportingCache
+
 
 class BaseDetails {
-
-    static Map<String, Object> getDetailsCache(String token) {
-        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, token )
-        rCache.readDetailsCache()
-    }
-
-    // ----- ----- -----
 
     static List<String> resolvePropertiesGeneric(Object obj, Long pdId, Org ctxOrg) {
 
