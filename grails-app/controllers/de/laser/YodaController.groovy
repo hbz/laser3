@@ -539,6 +539,43 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def fillStatsSources() {
+        List<Map<String, Object>> testSources = []
+        //Bloomsbury
+        //https://api-fivestar.highwire.org/sushi/reports/tr?customer_id=1000000001&begin_date=2018-10&end_date=2018-11&attributes_to_show=YOP&api_key=xxxxx-xxxxx-xxxxx&platform=SiteA
+        testSources << [version: "counter5",
+                        provider: 1803,
+                        platform: 199,
+                        baseUrl: "https://api-fivestar.highwire.org/sushi/reports/",
+                        arguments: [platform: [value: "BloomsburyCollections"]]
+        ]
+        //Preselect
+        testSources << [version: "counter4",
+                        provider: 1051,
+                        platform: 127,
+                        baseUrl: "https://content-select.com/stats/soap/"
+        ]
+        testSources.each { Map<String, Object> src ->
+            statsSyncService.createOrUpdateSushiSource(src)
+        }
+        redirect(controller:'home')
+    }
+
+    @Secured(['ROLE_YODA'])
+    def statsSync() {
+        log.debug("statsSync()")
+        statsSyncService.doSync()
+        redirect(controller:'home')
+    }
+
+    @Secured(['ROLE_YODA'])
+    def fetchStats() {
+        log.debug("fetchStats()")
+        statsSyncService.doFetch()
+        redirect(controller:'home')
+    }
+
+    @Secured(['ROLE_YODA'])
     def esIndexUpdate() {
         log.debug("manual start full text index")
         dataloadService.updateFTIndexes()

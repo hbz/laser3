@@ -377,7 +377,9 @@
                                     </div>
                                 </div>
                                 <div class="divider"></div>
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="statsSync">${message(code:'menu.admin.stats.sync')}</semui:link>
+                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="statsSync">${message(code:'menu.admin.stats.sync')}</semui:link>
+                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fillStatsSources">SUSHI-Quellen generieren (nur für Test!)</semui:link>
+                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fetchStats">${message(code:'menu.admin.stats.fetch')}</semui:link>
                                 <div class="divider"></div>
 
                                 <div class="item" role="menuitem" aria-haspopup="true">

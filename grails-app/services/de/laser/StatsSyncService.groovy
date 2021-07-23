@@ -1,21 +1,33 @@
 package de.laser
 
-
+import de.laser.base.AbstractCounterApiSource
 import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
-import de.laser.titles.TitleInstance
+import de.laser.stats.Counter4ApiSource
+import de.laser.stats.Counter5ApiSource
+import de.laser.stats.Counter5Report
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
+import grails.converters.JSON
+import grails.converters.XML
 import grails.gorm.transactions.Transactional
 import groovy.json.JsonOutput
+import groovy.xml.MarkupBuilder
+import groovy.xml.StreamingMarkupBuilder
+import groovy.xml.XmlUtil
 import groovyx.gpars.GParsPool
+import groovyx.net.http.ContentType
+import groovyx.net.http.HTTPBuilder
+import groovyx.net.http.Method
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder
 
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.Year
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.ExecutorService
@@ -26,7 +38,6 @@ class StatsSyncService {
     static final THREAD_POOL_SIZE = 1
     static final SYNC_STATS_FROM = '2012-01-01'
 
-    def grailsApplication
     ExecutorService executorService
     def factService
     def globalService
@@ -107,6 +118,15 @@ class StatsSyncService {
         executorService.execute({ internalDoSync() })
     }
 
+    void doFetch() {
+        log.debug("fetching data from providers started")
+        if (running) {
+            log.debug("Skipping sync ... fetching task already running")
+        }
+        running = true
+        executorService.execute({ internalDoFetch() })
+    }
+
     void internalDoSync() {
         try {
             log.debug("create thread pool")
@@ -139,6 +159,195 @@ class StatsSyncService {
             log.debug("Mark StatsSyncTask as not running...")
             running = false
         }
+    }
+
+    void internalDoFetch() {
+        SimpleDateFormat monthFormatter = new SimpleDateFormat("yyyy-MM")
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        Date startDate = DateUtils.parseDateGeneric("2015-01-01")
+        //for COUNTER 4
+        Calendar startTime = GregorianCalendar.getInstance(), currentYearEnd = GregorianCalendar.getInstance()
+        //for COUNTER 5
+        Calendar now = GregorianCalendar.getInstance()
+        now.add(Calendar.MONTH, -1)
+        now.set(Calendar.DATE, now.getActualMaximum(Calendar.DATE))
+        Date endDate = now.getTime()
+        String startMonth = monthFormatter.format(startDate), endMonth = monthFormatter.format(endDate)
+        List<Counter4ApiSource> c4SushiSources = Counter4ApiSource.executeQuery("select c4as from Counter4ApiSource c4as where not exists (select c5as.id from Counter5ApiSource c5as where c5as.provider = c4as.provider and c5as.platform = c4as.platform)")
+        List<Counter5ApiSource> c5SushiSources = Counter5ApiSource.findAll()
+        //process each platform with a SUSHI API
+        c4SushiSources.each { Counter4ApiSource c4as ->
+            List<CustomerIdentifier> keyPairs = CustomerIdentifier.findAllByPlatform(c4as.platform)
+            keyPairs.eachWithIndex{ CustomerIdentifier keyPair, int i ->
+                log.debug("now processing key pair ${i}, requesting data for ${keyPair.customer.name}:${keyPair.value}:${keyPair.requestorKey}")
+                Counter4ApiSource.COUNTER_4_REPORTS.each { String reportID ->
+                    startTime.setTime(startDate)
+                    currentYearEnd.setTime(DateUtils.parseDateGeneric("2015-12-31"))
+                    boolean more = true
+                    while(more) {
+                        StreamingMarkupBuilder requestBuilder = new StreamingMarkupBuilder()
+                        def requestBody = requestBuilder.bind {
+                            mkp.xmlDeclaration()
+                            mkp.declareNamespace(x: "http://schemas.xmlsoap.org/soap/envelope/")
+                            mkp.declareNamespace(cou: "http://www.niso.org/schemas/sushi/counter")
+                            mkp.declareNamespace(sus: "http://www.niso.org/schemas/sushi")
+                            x.Envelope {
+                                x.Header {}
+                                x.Body {
+                                    cou.ReportRequest(Created: '?', ID: '?') {
+                                        sus.Requestor {
+                                            sus.ID(keyPair.requestorKey)
+                                            sus.Name('?')
+                                            sus.Email('?')
+                                        }
+                                        sus.CustomerReference {
+                                            sus.ID(keyPair.value)
+                                            sus.Name('?')
+                                        }
+                                        sus.ReportDefinition(Name: reportID, Release: 4) {
+                                            sus.Filters {
+                                                sus.UsageDateRange {
+                                                    sus.Begin(startTime.format("yyyy-MM-dd"))
+                                                    if(currentYearEnd.before(now))
+                                                        sus.End(currentYearEnd.format("yyyy-MM-dd"))
+                                                    else {
+                                                        sus.End(now.format("yyyy-MM-dd"))
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        //println XmlUtil.serialize(requestBody)
+                        fetchXMLData(c4as.baseUrl, requestBody)
+                        startTime.add(Calendar.YEAR, 1)
+                        currentYearEnd.add(Calendar.YEAR, 1)
+                        if(now.before(startTime))
+                            more = false
+                    }
+                }
+            }
+        }
+        c5SushiSources.each { Counter5ApiSource c5as ->
+            //grasp all customer numbers with requestor keys
+            List<CustomerIdentifier> keyPairs = CustomerIdentifier.findAllByPlatform(c5as.platform)
+            keyPairs.eachWithIndex { CustomerIdentifier keyPair, int i ->
+                log.debug("now processing key pair ${i}, requesting data for ${keyPair.customer.name}:${keyPair.value}:${keyPair.requestorKey}")
+                String params = "?customer_id=${keyPair.value}&requestor_id=${keyPair.requestorKey}&api_key=${keyPair.requestorKey}&"
+                Map<String, Map<String, Object>> arguments = (Map<String, Map<String, Object>>) JSON.parse(c5as.arguments)
+                arguments.eachWithIndex { String arg, Map<String, Object> value, int argIndex ->
+                    def obj
+                    String val
+                    switch (value.object) {
+                        case "platform": obj = c5as.platform
+                            val = obj[value.field]
+                            break
+                        default: val = value.value
+                            break
+                    }
+                    params += "${arg}=${val}"
+                    if(argIndex < arguments.size()-1)
+                        params += "&"
+                }
+                Map<String, Object> availableReports = fetchJSONData(c5as.baseUrl+params, true)
+                if(availableReports && availableReports.list) {
+                    List<String> reportList = availableReports.list.collect { listEntry -> listEntry["Report_ID"].toLowerCase() }
+                    reportList.each { String reportId ->
+                        Map<String, Object> report = fetchJSONData(c5as.baseUrl+reportId+params+"&begin_date=${startMonth}&end_date=${endMonth}")
+                        report.items.each { Map reportItem ->
+                            String doi = reportItem["Item_ID"].find { idData -> idData["Type"] == "DOI" }.Value, isbn = reportItem["Item_ID"].find { idData -> idData["Type"] == "ISBN" }.Value
+                            List title = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id where ((id.value = :doi and id.ns.ns = :doiNs) or (id.value = :isbn and id.ns.ns = :isbnNs))',[doi: doi, doiNs: IdentifierNamespace.DOI, isbn: isbn, isbnNs: IdentifierNamespace.ISBN])
+                            TitleInstancePackagePlatform currTitle
+                            if(title.size() == 1) {
+                                currTitle = title[0] as TitleInstancePackagePlatform
+                                List<Map> performances = reportItem.Performance as List<Map>
+                                performances.each { Map performance ->
+                                    performance.Instance.each { Map instance ->
+                                        Counter5Report c5report = new Counter5Report()
+                                        c5report.title = currTitle
+                                        c5report.reportInstitution = keyPair.customer
+                                        c5report.reportType = report.header.Report_ID
+                                        c5report.platform = c5as.platform
+                                        c5report.publisher = reportItem.Publisher
+                                        LocalDate reportingPeriod = LocalDate.parse(performance.Period.Begin_Date, formatter)
+                                        c5report.month = reportingPeriod.getMonth()
+                                        c5report.year = Year.parse(reportingPeriod.getYear().toString())
+                                        c5report.accessType = report.header.Report_Filters.find{ filterData -> filterData["Name"] == "Access_Type" }?.Value
+                                        if(!c5report.accessType) {
+                                            log.debug("unimplemented access type, check sample output!")
+                                            c5report.accessType = "missing"
+                                        }
+                                        c5report.metricType = instance.Metric_Type
+                                        c5report.count = instance.Count as int
+                                        c5report.save()
+                                    }
+                                }
+                            }
+                            else log.error("no matching or multiple matching titles determined for DOI ${doi} resp. ISBN ${isbn}: ${title}")
+                        }
+                    }
+                }
+            }
+        }
+        running = false
+    }
+
+    boolean createOrUpdateSushiSource(Map<String, Object> configMap) {
+        AbstractCounterApiSource source = AbstractCounterApiSource.construct(configMap)
+        if(source) {
+            log.debug("source ${source} created")
+            true
+        }
+        else false
+    }
+
+    Map<String, Object> fetchJSONData(String url, boolean requestList = false) {
+        Map<String, Object> result = [:]
+        log.debug(url)
+        HTTPBuilder http = new HTTPBuilder(url)
+        http.request(Method.GET, ContentType.JSON) { req ->
+            response.success = { resp, json ->
+                if(resp.status == 200) {
+                    if(!requestList) {
+                        result.header = json["Report_Header"]
+                        result.items = json["Report_Items"]
+                    }
+                    else {
+                        result.list = json
+                    }
+                }
+                else {
+                    log.error("server response: ${resp.statusLine}")
+                }
+            }
+            response.failure = { resp, reader ->
+                log.error("server response: ${resp.statusLine} - ${reader}")
+            }
+        }
+        http.shutdown()
+        result
+    }
+
+    def fetchXMLData(String url, requestBody) {
+        HTTPBuilder http = new HTTPBuilder(url)
+        XmlSlurper parser = new XmlSlurper()
+        http.request(Method.POST, ContentType.XML) { req ->
+            body = requestBody.toString()
+            response.success = { resp, xml ->
+                if(resp.status == 200) {
+                    log.debug(xml.toString())
+                }
+                else {
+                    log.error("server response: ${resp.statusLine}")
+                }
+            }
+            response.failure = { resp, reader ->
+                log.error("server response: ${resp.statusLine} - ${reader}")
+            }
+        }
+        http.shutdown()
     }
 
     String generateMD5(String s) {
