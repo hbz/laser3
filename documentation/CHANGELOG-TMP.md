@@ -7,7 +7,18 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
 3697    23.07.2021  rc2.1   2.1.2       Andreas Bug         Umfragekosten waren nicht übertragbar, wenn mindestens eine Auftragsnummer belegt ist
+
+3669    26.07.2021  dev     2.2         Andreas Bug         Übertragung eigener Merkmale hakte wegen Legacy-Brücke
+
+3654    26.07.2021  dev     2.2         Andreas Bug         Fehlermeldung bei fehlender Position/Funktion nachgereicht
+
+3689    23.07.2021  dev     2.2         Andreas Bug         technischer Support und Service-Support aus Einrichtungen abgeblendet
+
+3683    23.07.2021  dev     2.2         Andreas Bug         Zugriffsfehler unter "Alle Plattformen" korrigiert
+
+3682    23.07.2021  dev     2.2         Andreas Bug         gelöscht markierte und erloschene Organisationen waren in kontrollierter Liste
 
 3664    13.07.2021  dev     2.2         David   Feature     Reporting: Bestandsinformationen exportieren
 
