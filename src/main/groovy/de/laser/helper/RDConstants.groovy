@@ -165,12 +165,15 @@ class RDConstants {
     public static final String USER_SETTING_DASHBOARD_TAB = 'user.setting.dashboard.tab'
     public static final String USER_SETTING_THEME         = 'user.setting.theme'
 
-    public static final String WORKFLOW_SEQUENCE_STATUS     = 'workflow.sequence.status'
-    public static final String WORKFLOW_SEQUENCE_TYPE       = 'workflow.sequence.type'
+    public static final String WF_WORKFLOW_STATE    = 'workflow.workflow.state'
+    public static final String WF_WORKFLOW_STATUS   = 'workflow.workflow.status'
 
-    public static final String WORKFLOW_TASK_PRIORITY   = 'workflow.task.priority'
-    public static final String WORKFLOW_TASK_STATUS     = 'workflow.task.status'
-    public static final String WORKFLOW_TASK_TYPE       = 'workflow.task.type'
+    public static final String WF_TASK_PRIORITY     = 'workflow.task.priority'
+    public static final String WF_TASK_STATUS       = 'workflow.task.status'
+    //public static final String WF_TASK_TYPE         = 'workflow.task.type'
+
+    public static final String WF_CONDITION_STATUS  = 'workflow.condition.status'
+    //public static final String WF_CONDITION_TYPE    = 'workflow.condition.type'
 
     public static final String Y_N                    = 'y.n'
     public static final String Y_N_O                  = 'y.n.o'

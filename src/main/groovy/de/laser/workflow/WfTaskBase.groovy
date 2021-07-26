@@ -8,11 +8,13 @@ import grails.gorm.dirty.checking.DirtyCheck
 @DirtyCheck
 class WfTaskBase {
 
-    @RefdataAnnotation(cat = RDConstants.WORKFLOW_TASK_PRIORITY)
+    @RefdataAnnotation(cat = RDConstants.WF_TASK_PRIORITY)
     RefdataValue priority
 
-    @RefdataAnnotation(cat = RDConstants.WORKFLOW_TASK_TYPE)
-    RefdataValue type
+    //@RefdataAnnotation(cat = RDConstants.WF_TASK_TYPE)
+    //RefdataValue type
+
+    WfConditionBase condition
 
     WfTaskBase child
     WfTaskBase next

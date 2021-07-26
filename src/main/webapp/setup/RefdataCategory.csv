@@ -150,11 +150,12 @@ transform.type,Transform Type,Transform Type
 usage.status,UsageStatus,UsageStatus
 user.setting.dashboard.tab,Dashbord Tab,Dashboard Tab
 user.setting.theme,Theme,Theme
-workflow.sequence.status,Status,Status
-workflow.sequence.type,Typ,Type
+workflow.condition.status,Status,Status
+workflow.condition.type,Typ,Typ
 workflow.task.priority,Priorität,Priority
 workflow.task.status,Status,Status
-workflow.task.type,Typ,Type
+workflow.workflow.state,Zustand,Zustand
+workflow.workflow.status,Status,Status
 y.n,Ja/Nein,Yes/No
 y.n.o,Ja/Nein/Anderes,Yes/No/Others
 y.n.u,Ja/Nein/Unbekannt,Yes/No/Unknown

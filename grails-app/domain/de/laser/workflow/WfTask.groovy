@@ -6,27 +6,33 @@ import de.laser.helper.RDConstants
 
 class WfTask extends WfTaskBase {
 
-    static final String KEY = 'WFT'
+    static final String KEY = 'WF_TASK'
 
-    @RefdataAnnotation(cat = RDConstants.WORKFLOW_TASK_STATUS)
+    @RefdataAnnotation(cat = RDConstants.WF_TASK_STATUS)
     RefdataValue status
 
     WfTaskPrototype prototype
+
+    WfCondition condition
+
     WfTask child
     WfTask next
 
     String comment
+
+    // static belongsTo = [ workflow: WfWorkflow ]
 
     static mapping = {
                  id column: 'wft_id'
             version column: 'wft_version'
            priority column: 'wft_priority_rv_fk'
              status column: 'wft_status_rv_fk'
-               type column: 'wft_type_rv_fk'
+               //type column: 'wft_type_rv_fk'
           prototype column: 'wft_prototype_fk'
               title column: 'wft_title'
         description column: 'wft_description', type: 'text'
             comment column: 'wft_comment', type: 'text'
+          condition column: 'wft_condition_fk'
               child column: 'wft_child_fk'
                next column: 'wft_next_fk'
 
@@ -36,6 +42,7 @@ class WfTask extends WfTaskBase {
 
     static constraints = {
         description (nullable: true, blank: false)
+        condition   (nullable: true)
         child       (nullable: true)
         next        (nullable: true)
         comment     (nullable: true, blank: false)
@@ -51,26 +58,12 @@ class WfTask extends WfTaskBase {
         struct
     }
 
-    WfTaskPrototype getParent() {
-        List<WfTask> result = WfTask.executeQuery('select t from WfTask t where child = :current order by id', [current: this] )
-
-        if (result.size() > 1) {
-            log.warn( 'MULTIPLE MATCHES - getParent()')
-        }
-        if (result) {
-            return result.first() as WfTask
-        }
+    WfTask getParent() {
+        WfTask.findByChild( this )
     }
 
     WfTask getPrevious() {
-        List<WfTask> result = WfTask.executeQuery('select t from WfTask t where next = :current order by id', [current: this] )
-
-        if (result.size() > 1) {
-            log.warn( 'MULTIPLE MATCHES - getPrevious()')
-        }
-        if (result) {
-            return result.first() as WfTask
-        }
+        WfTask.findByNext( this )
     }
 
     boolean inStructure() {

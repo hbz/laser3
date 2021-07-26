@@ -16,24 +16,34 @@
 
     <div class="fields two">
         <div class="field">
-            <label for="${prefix}_type">Typ</label>
-            <laser:select class="ui dropdown" id="${prefix}_type" name="${prefix}_type"
-                          noSelection="${['' : message(code:'default.select.choose.label')]}"
-                          from="${RefdataCategory.getAllRefdataValues( RDConstants.WORKFLOW_TASK_TYPE )}"
-                          value="${task?.type?.id}"
-                          optionKey="id"
-                          optionValue="value" />
+            <label for="${prefix}_next">Condition</label>
+            <g:select class="ui dropdown" id="${prefix}_condition" name="${prefix}_condition"
+                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                      from="${dd_conditionList}"
+                      value="${task?.condition?.id}"
+                      optionKey="id"
+                      optionValue="${{'(' + it.id + ') ' + it.title}}" />
         </div>
         <div class="field">
             <label for="${prefix}_priority">Priorität</label>
             <laser:select class="ui dropdown" id="${prefix}_priority" name="${prefix}_priority"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                          from="${RefdataCategory.getAllRefdataValues( RDConstants.WORKFLOW_TASK_PRIORITY )}"
+                          from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_PRIORITY )}"
                           value="${task?.priority?.id}"
                           optionKey="id"
                           optionValue="value" />
         </div>
     </div>
+
+    %{-- <div class="field">
+        <label for="${prefix}_type">Typ</label>
+        <laser:select class="ui dropdown" id="${prefix}_type" name="${prefix}_type"
+                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                      from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_TYPE )}"
+                      value="${task?.type?.id}"
+                      optionKey="id"
+                      optionValue="value" />
+    </div> --}%
 
     <g:if test="${prefix == WfTask.KEY}">
 
@@ -41,7 +51,7 @@
             <div class="field">
                 <label for="${prefix}_status">Status</label>
                 <laser:select class="ui dropdown" id="${prefix}_status" name="${prefix}_status"
-                              from="${RefdataCategory.getAllRefdataValues( RDConstants.WORKFLOW_TASK_STATUS )}"
+                              from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_STATUS )}"
                               value="${task?.status?.id}"
                               optionKey="id"
                               optionValue="value" />

@@ -6,10 +6,10 @@ import de.laser.helper.RDConstants
 import grails.gorm.dirty.checking.DirtyCheck
 
 @DirtyCheck
-class WfSequenceBase {
+class WfWorkflowBase {
 
-    @RefdataAnnotation(cat = RDConstants.WORKFLOW_SEQUENCE_TYPE)
-    RefdataValue type
+    @RefdataAnnotation(cat = RDConstants.WF_WORKFLOW_STATE)
+    RefdataValue state
 
     WfTaskBase child
 

@@ -14,15 +14,16 @@ import de.laser.properties.PropertyDefinitionGroupItem
 import de.laser.api.v0.ApiToolkit
  
 import de.laser.exceptions.CleanupException
-import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import de.laser.helper.SessionCacheWrapper
 import de.laser.system.SystemAnnouncement
 import de.laser.system.SystemEvent
 import de.laser.system.SystemMessage
-import de.laser.workflow.WfSequence
-import de.laser.workflow.WfSequencePrototype
+import de.laser.workflow.WfCondition
+import de.laser.workflow.WfConditionPrototype
+import de.laser.workflow.WfWorkflow
+import de.laser.workflow.WfWorkflowPrototype
 import de.laser.workflow.WfTask
 import de.laser.workflow.WfTaskPrototype
 import grails.converters.JSON
@@ -416,30 +417,26 @@ class AdminController  {
         if (params.cmd) {
             String[] cmd = (params.cmd as String).split(':')
 
-            if (cmd[0] == 'create') {
-
-                if (cmd[1] in [ WfSequencePrototype.KEY, WfSequence.KEY ]) {
-                    result = workflowService.createSequence(params)
+            if (cmd[0] in [ 'create', 'edit' ]) {
+                if (cmd[1] in [WfWorkflowPrototype.KEY, WfWorkflow.KEY ]) {
+                    result = workflowService.handleWorkflow(params)
                 }
                 else if (cmd[1] in [ WfTaskPrototype.KEY, WfTask.KEY ]) {
-                    result = workflowService.createTask(params)
+                    result = workflowService.handleTask(params)
                 }
-            }
-            else if (cmd[0] == 'edit') {
-
-                if (cmd[1] in [ WfSequencePrototype.KEY, WfSequence.KEY ]) {
-                    result = workflowService.editSequence(params)
-                }
-                else if (cmd[1] in [ WfTaskPrototype.KEY, WfTask.KEY ]) {
-                    result = workflowService.editTask(params)
+                else if (cmd[1] in [ WfConditionPrototype.KEY, WfCondition.KEY ]) {
+                    result = workflowService.handleCondition(params)
                 }
             }
             else if (cmd[0] == 'delete') {
-                if (cmd[1] in [ WfSequencePrototype.KEY, WfSequence.KEY ]) {
-                    result = workflowService.deleteSequence(params)
+                if (cmd[1] in [WfWorkflowPrototype.KEY, WfWorkflow.KEY ]) {
+                    result = workflowService.deleteWorkflow(params)
                 }
                 else if (cmd[1] in [ WfTaskPrototype.KEY, WfTask.KEY ]) {
                     result = workflowService.deleteTask(params)
+                }
+                else if (cmd[1] in [ WfConditionPrototype.KEY, WfCondition.KEY ]) {
+                    result = workflowService.deleteCondition(params)
                 }
             }
         }
