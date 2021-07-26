@@ -588,9 +588,9 @@ class CopyElementsService {
                 isTargetSubChanged = true
             }
 
-            if (isTargetSubChanged) {
+            /*if (isTargetSubChanged) {
                 targetObject = targetObject.refresh()
-            }
+            }*/
         }
 
         result.sourceObject = sourceObject
@@ -623,9 +623,9 @@ class CopyElementsService {
             isTargetSubChanged = true
         }
 
-        if (isTargetSubChanged) {
+        /*if (isTargetSubChanged) {
             targetObject = targetObject.refresh()
-        }
+        }*/
 
         result.flash = flash
         result.sourceObject = sourceObject
@@ -710,7 +710,7 @@ class CopyElementsService {
         }
 
         if (targetObject) {
-            result.targetObject = targetObject.refresh()
+            result.targetObject = targetObject
         }
         result
     }
@@ -783,11 +783,11 @@ class CopyElementsService {
                 List<IssueEntitlement> entitlementsToTake = params.list('subscription.takeEntitlementIds').collect { genericOIDService.resolveOID(it) }
                 copyEntitlements(entitlementsToTake, targetObject, flash)
                 isTargetSubChanged = true
-            }*/
+            }
 
             if (isTargetSubChanged) {
-                targetObject = targetObject.refresh()
-            }
+                targetObject = targetObject
+            }*/
         }
         result.targetObject = targetObject
         result.sourceObject = sourceObject
