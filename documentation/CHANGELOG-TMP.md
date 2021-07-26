@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3697    23.07.2021  rc2.1   2.1.2       Andreas Bug         Umfragekosten waren nicht übertragbar, wenn mindestens eine Auftragsnummer belegt ist
+
 3647    02.07.2021  rc2.1   2.1.1       Andreas Feature     Icon für Anbieter eingeführt
 
 3646    01.07.2021  rc2.1   2.1.1       Andreas Feature     Unschärfe bei der Suche von Freitextmerkmalen aufgehoben

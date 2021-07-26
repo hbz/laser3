@@ -3653,7 +3653,7 @@ class SurveyController {
                         copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
                     }
                     Org org = participantSub.getSubscriber()
-                    SurveyResult surveyResult = org ? SurveyResult.findBySurveyConfigAndParticipantAndType(result.surveyConfig, org, RDStore.SURVEY_PROPERTY_ORDER_NUMBER) : null
+                    SurveyResult surveyResult = org ? SurveyResult.findBySurveyConfigAndParticipantAndTypeAndStringValueIsNotNull(result.surveyConfig, org, RDStore.SURVEY_PROPERTY_ORDER_NUMBER) : null
 
                     if(surveyResult){
                         Order order = new Order(orderNumber: surveyResult.getValue(), owner: result.institution)
