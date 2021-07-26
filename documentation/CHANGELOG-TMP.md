@@ -7,6 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
+3697    23.07.2021  rc2.1   2.1.2       Andreas Bug         Umfragekosten waren nicht übertragbar, wenn mindestens eine Auftragsnummer belegt ist
+
 3669    26.07.2021  dev     2.2         Andreas Bug         Übertragung eigener Merkmale hakte wegen Legacy-Brücke
 
 3654    26.07.2021  dev     2.2         Andreas Bug         Fehlermeldung bei fehlender Position/Funktion nachgereicht
