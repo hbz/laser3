@@ -7,7 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-3663    13.07.2021  dev                 David   Feature     Workflows: Datenmodell und Strukturen
+3664    13.07.2021  dev     2.2         David   Feature     Reporting: Bestandsinformationen exportieren
+
+3674    13.07.2021  dev     2.2         Andreas Feature     neuer Identifier-Namensraum und neue Merkmale für FID-Daten
+
+3663    13.07.2021  dev     2.2         David   Feature     Workflows: Datenmodell und Strukturen
 
 3673    12.07.2021  dev     2.2         Andreas Bug         Alle Titel: ID-Verarbeitung korrigiert
 
