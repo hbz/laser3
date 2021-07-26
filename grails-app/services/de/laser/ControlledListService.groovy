@@ -52,8 +52,8 @@ class ControlledListService {
             }
         }
         else {
-            String queryString = 'select o from Org o join o.orgType ot where ot in (:providerTypes)'
-            LinkedHashMap filter = [providerTypes:providerAgency]
+            String queryString = 'select o from Org o join o.orgType ot where ot in (:providerTypes) and o.status = :current'
+            LinkedHashMap filter = [providerTypes:providerAgency, current: RDStore.ORG_STATUS_CURRENT]
             if(params.query && params.query.length() > 0) {
                 filter.put("query",params.query)
                 queryString += " and genfunc_filter_matcher(o.name,:query) = true "
