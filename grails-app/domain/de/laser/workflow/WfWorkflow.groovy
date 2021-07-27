@@ -38,8 +38,9 @@ class WfWorkflow extends WfWorkflowBase {
     }
 
     static constraints = {
+        title       (blank: false)
         child       (nullable: true)
-        description (nullable: true, blank: false)
-        comment     (nullable: true, blank: false)
+        description (nullable: true)
+        comment     (nullable: true)
     }
 }

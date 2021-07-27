@@ -19,8 +19,9 @@ class WfWorkflowPrototype extends WfWorkflowBase {
     }
 
     static constraints = {
+        title       (blank: false)
         child       (nullable: true)
-        description (nullable: true, blank: false)
+        description (nullable: true)
     }
 
     List<WfTaskPrototype> getStructure() {

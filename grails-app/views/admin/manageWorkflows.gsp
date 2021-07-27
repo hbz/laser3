@@ -40,7 +40,10 @@
                             <g:if test="${wftp.priority == RDStore.WF_TASK_PRIORITY_BLOCKER}">
                                 <i class="ui icon exclamation triangle orange"></i>
                             </g:if>
-                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: wftp.id]}">${wftp.title}</g:link>
+                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: wftp.id]}">${wftp.id}</g:link>
+                            <g:if test="${wftp.condition}">
+                                : <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY, id: wftp.condition.id]}">${wftp.condition.id}</g:link>
+                            </g:if>
                         </div>
                     </div>
                 </g:if>
@@ -52,7 +55,10 @@
                                 <g:if test="${wftp.priority == RDStore.WF_TASK_PRIORITY_BLOCKER}">
                                     <i class="ui icon exclamation triangle orange"></i>
                                 </g:if>
-                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: wftp.id]}">${wftp.title}</g:link>
+                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: wftp.id]}">${wftp.id}</g:link>
+                                <g:if test="${wftp.condition}">
+                                    : <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY, id: wftp.condition.id]}">${wftp.condition.id}</g:link>
+                                </g:if>
                             </div>
                         </div>
                         <div class="ui mini vertical steps" style="width: 100% !important;">
@@ -63,7 +69,10 @@
                                             <g:if test="${ch.priority == RDStore.WF_TASK_PRIORITY_BLOCKER}">
                                                 <i class="ui icon exclamation triangle orange"></i>
                                             </g:if>
-                                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: ch.id]}">${ch.title}</g:link>
+                                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: ch.id]}">${ch.id}</g:link>
+                                            <g:if test="${ch.condition}">
+                                                : <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY, id: ch.condition.id]}">${ch.condition.id}</g:link>
+                                            </g:if>
                                         </div>
                                     </div>
                                 </div>
@@ -78,13 +87,13 @@
 
 <!-- -->
 
-<h2 class="ui header">WfWorkflowPrototype : ${WfWorkflowPrototype.findAll().size()}</h2>
+<h2 class="ui header">${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} : ${WfWorkflowPrototype.findAll().size()}</h2>
 
 <table class="ui celled la-table compact table">
     <thead>
         <tr>
             <th>Workflow</th>
-            <th>Task</th>
+            <th>Aufgabe &darr;</th>
             <th>Zustand</th>
             <th></th>
         </tr>
@@ -119,24 +128,24 @@
     <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:workflow]}" />
 </g:if>
 
-<g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfWorkflowPrototype.KEY]}">Workflow (Prototyp) erstellen</g:link>
+<g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfWorkflowPrototype.KEY]}">${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} erstellen</g:link>
 
 <!-- -->
 
-<h2 class="ui header">WfTaskPrototype : ${WfTaskPrototype.findAll().size()}</h2>
+<h2 class="ui header">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} : ${WfTaskPrototype.findAll().size()}</h2>
 
 <table class="ui celled la-table compact table">
     <thead>
         <tr>
-            <th>Task</th>
-            <th>Condition</th>
-            <th>Workflow</th>
+            <th>Aufgabe</th>
+            <th>Bedingung &darr;</th>
+            <th>Workflow &uarr;</th>
             <th>Priorität</th>
             %{-- <th>Typ</th> --}%
-            <th>Has Next</th>
-            <th>Has Child</th>
-            <th>Has Previous</th>
-            <th>Has Parent</th>
+            <th>Nachfolger &rarr;</th>
+            <th>Kind &darr;</th>
+            <th>Vorgänger &larr;</th>
+            <th>Super &uarr;</th>
             <th></th>
         </tr>
     </thead>
@@ -192,18 +201,19 @@
     <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:task]}" />
 </g:if>
 
-<g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfTaskPrototype.KEY]}">Aufgabe (Prototyp) erstellen</g:link>
+<g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfTaskPrototype.KEY]}">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} erstellen</g:link>
 
 <!-- -->
 
-<h2 class="ui header">WfConditionPrototype : ${WfConditionPrototype.findAll().size()}</h2>
+<h2 class="ui header">${message(code: 'workflow.object.' + WfConditionPrototype.KEY)} : ${WfConditionPrototype.findAll().size()}</h2>
 
 <table class="ui celled la-table compact table">
     <thead>
     <tr>
-        <th>Condition</th>
-        <th>Task</th>
+        <th>Bedingung</th>
+        <th>Aufgabe &uarr;</th>
         <th>Typ</th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
@@ -222,12 +232,21 @@
                 <td>
                     ${cp.getTypeAsRefdataValue().getI10n('value')}
                 </td>
+                <td>
+                    <g:if test="${! cp.inStructure()}">
+                        <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfConditionPrototype.KEY}", id: cp.id]}"><i class="trash alternate icon"></i></g:link>
+                    </g:if>
+                </td>
             </tr>
         </g:each>
     </tbody>
 </table>
 
-<g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfConditionPrototype.KEY]}">Bedingung (Prototyp) erstellen</g:link>
+<g:if test="${key == WfConditionPrototype.KEY}">
+    <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:condition]}" />
+</g:if>
+
+<g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfConditionPrototype.KEY]}">${message(code: 'workflow.object.' + WfConditionPrototype.KEY)} erstellen</g:link>
 
 %{--
 <!-- -->

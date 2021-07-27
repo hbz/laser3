@@ -12,6 +12,27 @@ class WorkflowService {
 
     //static Log static_logger = LogFactory.getLog(WorkflowService)
 
+    class ParamsHelper {
+
+        ParamsHelper(String cmpKey, GrailsParameterMap params) {
+            this.cmpKey = cmpKey + '_'
+            this.params = params
+        }
+
+        String cmpKey
+        GrailsParameterMap params
+
+        String getString(String key) {
+            params.get(cmpKey + key) ? params.get(cmpKey + key).toString().trim() : null
+        }
+        Long getLong(String key) {
+            params.long(cmpKey + key)
+        }
+        Integer getInt(String key) {
+            params.int(cmpKey + key)
+        }
+    }
+
     Map<String, Object> handleWorkflow(GrailsParameterMap params) {
         log.debug('handleWorkflow() ' + params)
         String[] cmd = (params.cmd as String).split(':')
@@ -191,32 +212,28 @@ class WorkflowService {
         log.debug( wf.toString() )
         String[] cmd = (params.cmd as String).split(':')
 
+        ParamsHelper ph = new ParamsHelper( cmd[1], params )
+
         if (cmd[1] == WfWorkflowPrototype.KEY) {
             wf = wf as WfWorkflowPrototype
 
-            Closure getParam     = { key -> params.get(WfWorkflowPrototype.KEY + '_' + key).toString().trim() }
-            Closure getLongParam = { key -> params.long(WfWorkflowPrototype.KEY + '_' + key) }
-
-            wf.child = WfTaskPrototype.get(getLongParam('child'))
-            wf.description = getParam('description')
-            wf.state = RefdataValue.get(getLongParam('state'))
-            wf.title = getParam('title')
+            wf.child        = WfTaskPrototype.get(ph.getLong('child'))
+            wf.description  = ph.getString('description')
+            wf.state        = RefdataValue.get(ph.getLong('state'))
+            wf.title        = ph.getString('title')
         }
         else if (cmd[1] == WfWorkflow.KEY) {
             wf = wf as WfWorkflow
 
-            Closure getParam     = { key -> params.get(WfWorkflow.KEY + '_' + key).toString().trim() }
-            Closure getLongParam = { key -> params.long(WfWorkflow.KEY + '_' + key) }
+            wf.child        = WfTask.get(ph.getLong('child'))
+            wf.description  = ph.getString('description')
+            wf.state        = RefdataValue.get(ph.getLong('state'))
+            wf.title        = ph.getString('title')
 
-            wf.child = WfTask.get(getLongParam('child'))
-            wf.description = getParam('description')
-            wf.state = RefdataValue.get(getLongParam('state'))
-            wf.title = getParam('title')
-
-            wf.comment = getParam('comment')
-            wf.prototype = WfWorkflowPrototype.get(getLongParam('prototype'))
-            wf.status = RefdataValue.get(getLongParam('status'))
-            wf.subscription = Subscription.get(getLongParam('subscription'))
+            wf.comment      = ph.getString('comment')
+            wf.prototype    = WfWorkflowPrototype.get(ph.getLong('prototype'))
+            wf.status       = RefdataValue.get(ph.getLong('status'))
+            wf.subscription = Subscription.get(ph.getLong('subscription'))
         }
 
         Map<String, Object> result = [
@@ -240,37 +257,33 @@ class WorkflowService {
         log.debug( task.toString() )
         String[] cmd = (params.cmd as String).split(':')
 
+        ParamsHelper ph = new ParamsHelper( cmd[1], params )
+
         if (cmd[1] == WfTaskPrototype.KEY) {
             task = task as WfTaskPrototype
 
-            Closure getParam     = { key -> params.get(WfTaskPrototype.KEY + '_' + key).toString().trim() }
-            Closure getLongParam = { key -> params.long(WfTaskPrototype.KEY + '_' + key) }
-
-            task.child = WfTaskPrototype.get(getLongParam('child'))
-            task.condition = WfConditionPrototype.get(getLongParam('condition'))
-            task.description = getParam('description')
-            task.next = WfTaskPrototype.get(getLongParam('next'))
-            task.priority = RefdataValue.get(getLongParam('priority'))
-            task.title = getParam('title')
-            //task.type = RefdataValue.get(getLongParam('type'))
+            task.child          = WfTaskPrototype.get(ph.getLong('child'))
+            task.condition      = WfConditionPrototype.get(ph.getLong('condition'))
+            task.description    = ph.getString('description')
+            task.next           = WfTaskPrototype.get(ph.getLong('next'))
+            task.priority       = RefdataValue.get(ph.getLong('priority'))
+            task.title          = ph.getString('title')
+            //task.type = RefdataValue.get(ph.getLongParam('type'))
         }
         else if (cmd[1] == WfTask.KEY) {
             task = task as WfTask
 
-            Closure getParam     = { key -> params.get(WfTask.KEY + '_' + key).toString().trim() }
-            Closure getLongParam = { key -> params.long(WfTask.KEY + '_' + key) }
+            task.child          = WfTask.get(ph.getLong('child'))
+            task.condition      = WfCondition.get(ph.getLong('condition'))
+            task.description    = ph.getString('description')
+            task.next           = WfTask.get(ph.getLong('next'))
+            task.priority       = RefdataValue.get(ph.getLong('priority'))
+            task.title          = ph.getString('title')
+            //task.type = RefdataValue.get(ph.getLongParam('type'))
 
-            task.child = WfTask.get(getLongParam('child'))
-            task.condition = WfCondition.get(getLongParam('condition'))
-            task.description = getParam('description')
-            task.next = WfTask.get(getLongParam('next'))
-            task.priority = RefdataValue.get(getLongParam('priority'))
-            task.title = getParam('title')
-            //task.type = RefdataValue.get(getLongParam('type'))
-
-            task.comment = getParam('comment')
-            task.prototype = WfTaskPrototype.get(getLongParam('prototype'))
-            task.status = RefdataValue.get(getLongParam('status'))
+            task.comment    = ph.getString('comment')
+            task.prototype  = WfTaskPrototype.get(ph.getLong('prototype'))
+            task.status     = RefdataValue.get(ph.getLong('status'))
         }
 
         Map<String, Object> result = [
@@ -295,37 +308,46 @@ class WorkflowService {
         log.debug( condition.toString() )
         String[] cmd = (params.cmd as String).split(':')
 
+        ParamsHelper ph = new ParamsHelper( cmd[1], params )
+
         if (cmd[1] == WfConditionPrototype.KEY) {
             condition = condition as WfConditionPrototype
 
-            Closure getParam     = { key -> params.get(WfConditionPrototype.KEY + '_' + key).toString().trim() }
-            Closure getLongParam = { key -> params.long(WfConditionPrototype.KEY + '_' + key) }
-            Closure getIntParam  = { key -> params.int(WfConditionPrototype.KEY + '_' + key) }
+            condition.description   = ph.getString('description')
+            condition.title         = ph.getString('title')
+            condition.type          = ph.getInt('type') ?: 0
 
-            condition.description = getParam('description')
-            condition.title = getParam('title')
-            condition.type = getIntParam('type') ?: 0
+            condition.checkbox1 = ph.getString('checkbox1') == 'on'
+            condition.checkbox2 = ph.getString('checkbox2') == 'on'
 
-            condition.checkbox1 = getParam('checkbox1') ? true : false
-            condition.checkbox1_isTrigger = getParam('checkbox1_isTrigger') ? true : false
-            condition.checkbox2 = getParam('checkbox2') ? true : false
-            condition.checkbox2_isTrigger = getParam('checkbox2_isTrigger') ? true : false
+            condition.checkbox1_title = ph.getString('checkbox1_title')
+            condition.checkbox2_title = ph.getString('checkbox2_title')
+
+            condition.date1_title = ph.getString('date1_title')
+            condition.date2_title = ph.getString('date2_title')
+
+            condition.checkbox1_isTrigger = ph.getString('checkbox1_isTrigger') == 'on'
+            condition.checkbox2_isTrigger = ph.getString('checkbox2_isTrigger') == 'on'
         }
         else if (cmd[1] == WfCondition.KEY) {
             condition = condition as WfCondition
 
-            Closure getParam     = { key -> params.get(WfCondition.KEY + '_' + key).toString().trim() }
-            Closure getLongParam = { key -> params.long(WfCondition.KEY + '_' + key) }
-            Closure getIntParam  = { key -> params.int(WfCondition.KEY + '_' + key) }
+            condition.description   = ph.getString('description')
+            condition.title         = ph.getString('title')
+            condition.type          = ph.getInt('type') ?: 0
 
-            condition.description = getParam('description')
-            condition.title = getParam('title')
-            condition.type = getIntParam('type') ?: 0
+            condition.checkbox1 = ph.getString('checkbox1') == 'on'
+            condition.checkbox2 = ph.getString('checkbox2') == 'on'
 
-            condition.checkbox1 = getParam('checkbox1') ? true : false
-            condition.checkbox1_isTrigger = getParam('checkbox1_isTrigger') ? true : false
-            condition.checkbox2 = getParam('checkbox2') ? true : false
-            condition.checkbox2_isTrigger = getParam('checkbox2_isTrigger') ? true : false
+            condition.checkbox1_title = ph.getString('checkbox1_title')
+            condition.checkbox2_title = ph.getString('checkbox2_title')
+
+            condition.date1_title = ph.getString('date1_title')
+            condition.date2_title = ph.getString('date2_title')
+
+            condition.checkbox1_isTrigger = ph.getString('checkbox1_isTrigger') == 'on'
+            condition.checkbox2_isTrigger = ph.getString('checkbox2_isTrigger') == 'on'
+
         }
 
         Map<String, Object> result = [

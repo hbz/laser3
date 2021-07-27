@@ -41,6 +41,37 @@ class WfConditionBase {
 
     // --
 
+    List<String> getFields() {
+        List<String> fields = []
+
+        if (type == 1) {
+            fields.add( 'checkbox1' )
+        }
+        else if (type == 2) {
+            fields.addAll( 'checkbox1', 'date1' )
+        }
+        else if (type == 3) {
+            fields.addAll( 'checkbox1', 'checkbox2' )
+        }
+        else if (type == 4 || type == 0) {
+            fields.addAll( 'checkbox1', 'date1', 'checkbox2', 'date2' )
+        }
+        fields
+    }
+
+    String getFieldLabel(String key) {
+
+        if (key.startsWith('checkbox')) {
+            'Checkbox'
+        }
+        else if (key.startsWith('date')) {
+            'Datum'
+        }
+        else {
+            'Feld'
+        }
+    }
+
     RefdataValue getTypeAsRefdataValue() {
         RefdataValue.findByOwnerAndValue( RefdataCategory.findByDesc('workflow.condition.type'), 'type_' + type)
     }

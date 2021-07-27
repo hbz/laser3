@@ -37,13 +37,17 @@ class WfCondition extends WfConditionBase {
     }
 
     static constraints = {
-        description     (nullable: true, blank: false)
-        checkbox1_title (nullable: true, blank: false)
-        checkbox2_title (nullable: true, blank: false)
+        title           (blank: false)
+        description     (nullable: true)
+        checkbox1_title (nullable: true)
+        checkbox2_title (nullable: true)
         date1           (nullable: true)
-        date1_title     (nullable: true, blank: false)
+        date1_title     (nullable: true)
         date2           (nullable: true)
-        date2_title     (nullable: true, blank: false)
+        date2_title     (nullable: true)
     }
 
+    boolean inStructure() {
+        WfTask.findByCondition( this ) != null
+    }
 }

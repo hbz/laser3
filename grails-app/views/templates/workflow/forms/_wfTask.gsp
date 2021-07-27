@@ -3,20 +3,24 @@
 <g:form controller="admin" action="manageWorkflows" method="POST" class="ui form">
     <g:if test="${! tmplIsModal}"><div class="ui segment"></g:if>
 
-    <div class="fields two">
-        <div class="field">
-            <label for="${prefix}_title">Titel</label>
-            <input type="text" name="${prefix}_title" id="${prefix}_title" value="${task?.title}" />
-        </div>
-        <div class="field">
-            <label for="${prefix}_description">Beschreibung</label>
-            <input type="text" name="${prefix}_description" id="${prefix}_description" value="${task?.description}" />
-        </div>
+    <div class="field">
+        <label for="${prefix}_title">Titel</label>
+        <input type="text" name="${prefix}_title" id="${prefix}_title" value="${task?.title}" />
+    </div>
+
+    <div class="field">
+        <label for="${prefix}_description">Beschreibung</label>
+        <input type="text" name="${prefix}_description" id="${prefix}_description" value="${task?.description}" />
     </div>
 
     <div class="fields two">
         <div class="field">
-            <label for="${prefix}_next">Condition</label>
+            <g:if test="${prefix == WfTask.KEY}">
+                <label for="${prefix}_condition">${message(code: 'workflow.object.' + WfCondition.KEY)}</label>
+            </g:if>
+            <g:else>
+                <label for="${prefix}_condition">${message(code: 'workflow.object.' + WfConditionPrototype.KEY)}</label>
+            </g:else>
             <g:select class="ui dropdown" id="${prefix}_condition" name="${prefix}_condition"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                       from="${dd_conditionList}"
@@ -66,7 +70,7 @@
 
     <div class="fields two">
         <div class="field">
-            <label for="${prefix}_next">Next &rarr;</label>
+            <label for="${prefix}_next">Nachfolger &rarr;</label>
             <g:select class="ui dropdown" id="${prefix}_next" name="${prefix}_next"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                           from="${dd_nextList}"
@@ -75,7 +79,7 @@
                           optionValue="${{'(' + it.id + ') ' + it.title}}" />
         </div>
         <div class="field">
-            <label for="${prefix}_child">Child &darr;</label>
+            <label for="${prefix}_child">Kind &darr;</label>
             <g:select class="ui dropdown" id="${prefix}_child" name="${prefix}_child"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                           from="${dd_childList}"
@@ -87,7 +91,7 @@
 
     <div class="fields two">
         <div class="field">
-            <label for="${prefix}_previous">Previous &larr;</label> %{-- TODO --}%
+            <label for="${prefix}_previous">Vorgänger &larr;</label> %{-- TODO --}%
             <g:select class="ui dropdown disabled" id="${prefix}_previous" name="${prefix}_previous"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                       from="${dd_previousList}"
@@ -96,7 +100,7 @@
                       optionValue="${{'(' + it.id + ') ' + it.title}}" />
         </div>
         <div class="field">
-            <label for="${prefix}_parent">Parent &uarr;</label>
+            <label for="${prefix}_parent">Super &uarr;</label> %{-- TODO --}%
             <g:select class="ui dropdown disabled" id="${prefix}_parent" name="${prefix}_parent"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                       from="${dd_parentList}"

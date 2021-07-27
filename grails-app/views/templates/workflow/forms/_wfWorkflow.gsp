@@ -3,16 +3,14 @@
 <g:form controller="admin" action="manageWorkflows" method="POST" class="ui form">
     <g:if test="${! tmplIsModal}"><div class="ui segment"></g:if>
 
-    <div class="fields two">
-        <div class="field">
-            <label for="${prefix}_title">Titel</label>
-            <input type="text" name="${prefix}_title" id="${prefix}_title" value="${workflow?.title}" />
-        </div>
+    <div class="field">
+        <label for="${prefix}_title">Titel</label>
+        <input type="text" name="${prefix}_title" id="${prefix}_title" value="${workflow?.title}" />
+    </div>
 
-        <div class="field">
-            <label for="${prefix}_description">Beschreibung</label>
-            <input type="text" name="${prefix}_description" id="${prefix}_description" value="${workflow?.description}" />
-        </div>
+    <div class="field">
+        <label for="${prefix}_description">Beschreibung</label>
+        <input type="text" name="${prefix}_description" id="${prefix}_description" value="${workflow?.description}" />
     </div>
 
     <div class="fields two">
@@ -72,7 +70,12 @@
 
     <div class="fields three">
         <div class="field">
-            <label for="${prefix}_child">Child &darr;</label>
+            <g:if test="${prefix == WfWorkflow.KEY}">
+                <label for="${prefix}_child">${message(code: 'workflow.object.' + WfTask.KEY)} &darr;</label>
+            </g:if>
+            <g:else>
+                <label for="${prefix}_child">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} &darr;</label>
+            </g:else>
             <g:select class="ui dropdown" id="${prefix}_child" name="${prefix}_child"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                           from="${dd_childList}"

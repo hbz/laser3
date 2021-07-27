@@ -41,11 +41,12 @@ class WfTask extends WfTaskBase {
     }
 
     static constraints = {
-        description (nullable: true, blank: false)
+        title       (blank: false)
+        description (nullable: true)
         condition   (nullable: true)
         child       (nullable: true)
         next        (nullable: true)
-        comment     (nullable: true, blank: false)
+        comment     (nullable: true)
     }
 
     List<WfTask> getStructure() {

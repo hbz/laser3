@@ -25,7 +25,8 @@ class WfTaskPrototype extends WfTaskBase {
     }
 
     static constraints = {
-        description (nullable: true, blank: false)
+        title       (blank: false)
+        description (nullable: true)
         condition   (nullable: true)
         child       (nullable: true)
         next        (nullable: true)
