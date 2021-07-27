@@ -394,6 +394,8 @@
                                             </div>
                                             <div class="menu" role="menu">
                                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'identifier']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIdentifiers')}</semui:link>
+                                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'editionStatement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateEditionStatement')}</semui:link>
+                                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'iemedium']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIEMedium')}</semui:link>
                                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'ddc']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateDDC')}</semui:link>
                                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'language']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateLanguage')}</semui:link>
                                             </div>
