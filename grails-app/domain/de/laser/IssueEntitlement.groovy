@@ -104,7 +104,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
       IssueEntitlement ie = findBySubscriptionAndTipp(subscription,tipp)
       if(!ie) {
-        ie = new IssueEntitlement(subscription: subscription,tipp: tipp, status:tipp.status, acceptStatus: configMap.acceptStatus)
+        ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, acceptStatus: configMap.acceptStatus)
       }
       if(ie.save()) {
         if(tipp.coverages) {
