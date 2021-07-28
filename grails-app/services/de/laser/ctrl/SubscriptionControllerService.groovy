@@ -22,8 +22,10 @@ import groovy.time.TimeCategory
 import org.apache.commons.lang3.RandomStringUtils
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.hibernate.Session
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.MultipartFile
 
 import java.text.NumberFormat
@@ -1463,6 +1465,9 @@ class SubscriptionControllerService {
                 if (it.name == 'PackageSync_'+result.subscription.id) {
                     result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
                 }
+                else if (it.name == 'EntitlementEnrichment_'+result.subscription.id) {
+                    result.message = messageSource.getMessage('subscription.details.addEntitlements.thread.running', null, locale)
+                }
             }
             result.issueEntitlementEnrichment = params.issueEntitlementEnrichment
             SwissKnife.setPaginationParams(result, params, (User) result.user)
@@ -1623,6 +1628,10 @@ class SubscriptionControllerService {
                 if (it.name == 'PackageSync_'+result.subscription.id) {
                     result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
                 }
+                else if (it.name == 'EntitlementEnrichment_'+result.subscription.id) {
+                    result.message = messageSource.getMessage('subscription.details.addEntitlements.thread.running', null, locale)
+                    result.blockSubmit = true
+                }
             }
             SwissKnife.setPaginationParams(result, params, (User) result.user)
             RefdataValue tipp_current = RDStore.TIPP_STATUS_CURRENT
@@ -1652,10 +1661,10 @@ class SubscriptionControllerService {
                 Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
                 if(tippIds)
                     tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(tippIds.drop(result.offset).take(result.max),[sort:'sortName']))
-                //now, assemble the identifiers available to highlight - findAll is subject for TODO
-                Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findAllByNs('zdb'),
-                                                               eissn: IdentifierNamespace.findAllByNs('eissn'), isbn: IdentifierNamespace.findAllByNs('isbn'),
-                                                               issn : IdentifierNamespace.findAllByNs('issn'), pisbn: IdentifierNamespace.findAllByNs('pisbn')]
+                //now, assemble the identifiers available to highlight
+                Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNs('zdb'),
+                                                               eissn: IdentifierNamespace.findByNs('eissn'), isbn: IdentifierNamespace.findByNs('isbn'),
+                                                               issn : IdentifierNamespace.findByNs('issn'), pisbn: IdentifierNamespace.findByNs('pisbn')]
                 result.num_tipp_rows = tippIds.size()
                 result.tipps = tipps
                 Map<String, Object> identifiers = [zdbIds: [], onlineIds: [], printIds: [], unidentified: []]
@@ -1666,7 +1675,7 @@ class SubscriptionControllerService {
                     identifiers.filename = kbartFile.originalFilename
                     InputStream stream = kbartFile.getInputStream()
                     ArrayList<String> rows = stream.text.split('\n')
-                    Map<String, Integer> colMap = [publicationTitleCol: -1, zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, dateFirstInPrintCol: -1, dateFirstOnlineCol: -1,
+                    Map<String, Integer> colMap = [publicationTitleCol: -1, zdbCol: -1, mediumCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, dateFirstInPrintCol: -1, dateFirstOnlineCol: -1,
                                                    startDateCol       : -1, startVolumeCol: -1, startIssueCol: -1,
                                                    endDateCol         : -1, endVolumeCol: -1, endIssueCol: -1,
                                                    accessStartDateCol : -1, accessEndDateCol: -1, coverageDepthCol: -1, coverageNotesCol: -1, embargoCol: -1,
@@ -1676,6 +1685,8 @@ class SubscriptionControllerService {
                     rows[0].split('\t').eachWithIndex { String headerCol, int c ->
                         switch (headerCol.toLowerCase().trim()) {
                             case "zdb_id": colMap.zdbCol = c
+                                break
+                            case "medium": colMap.mediumCol = c
                                 break
                             case "print_identifier": colMap.printIdentifierCol = c
                                 break
@@ -1739,7 +1750,7 @@ class SubscriptionControllerService {
                     rows.eachWithIndex { row, int i ->
                         Map<String, Object> ieCandidate = [:]
                         ArrayList<String> cols = row.split('\t')
-                        Map<String, Object> idCandidate
+                        Map<String, Object> idCandidate = [:]
                         String ieCandIdentifier
                         if (colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
                             identifiers.zdbIds.add(cols[colMap.zdbCol])
@@ -1751,8 +1762,8 @@ class SubscriptionControllerService {
                         if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
                             identifiers.onlineIds.add(cols[colMap.onlineIdentifierCol])
                             idCandidate = [namespaces: [], value: cols[colMap.onlineIdentifierCol]]
-                            idCandidate.namespaces.addAll(namespaces.eissn)
-                            idCandidate.namespaces.addAll(namespaces.isbn)
+                            idCandidate.namespaces.add(namespaces.eissn)
+                            idCandidate.namespaces.add(namespaces.isbn)
                             if (ieCandIdentifier == null && !issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]])
                                 ieCandIdentifier = cols[colMap.onlineIdentifierCol]
                             else if (issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]])
@@ -1761,8 +1772,8 @@ class SubscriptionControllerService {
                         if (colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
                             identifiers.printIds.add(cols[colMap.printIdentifierCol])
                             idCandidate = [namespaces: [], value: cols[colMap.printIdentifierCol]]
-                            idCandidate.namespaces.addAll(namespaces.issn)
-                            idCandidate.namespaces.addAll(namespaces.pisbn)
+                            idCandidate.namespaces.add(namespaces.issn)
+                            idCandidate.namespaces.add(namespaces.pisbn)
                             if (ieCandIdentifier == null && !issueEntitlementOverwrite[cols[colMap.printIdentifierCol]])
                                 ieCandIdentifier = cols[colMap.printIdentifierCol]
                             else if (issueEntitlementOverwrite[cols[colMap.printIdentifierCol]])
@@ -1775,16 +1786,16 @@ class SubscriptionControllerService {
                         } else {
                             //make checks ...
                             //is title in LAS:eR?
-                            List<Identifier> ids = Identifier.executeQuery("select id from Identifier id where id.value = :value and id.ns in (:ns) and id.tipp != null",[value: idCandidate.value, ns: idCandidate.namespaces])
-                            Identifier id = ids.find { Identifier check -> check.tipp.pkg in result.subscription.packages.pkg } //it is *always* possible to have multiple packages linked to a subscription!
-                            if (id) {
+                            List<TitleInstancePackagePlatform> matchingTipps = TitleInstancePackagePlatform.executeQuery("select tipp from Identifier id join id.tipp tipp where id.value = :value and id.ns in (:ns) and tipp.pkg in (:subPkgs)",[value: idCandidate.value, ns: idCandidate.namespaces, subPkgs: result.subscription.packages.collect { SubscriptionPackage sp -> sp.pkg }]) //it is *always* possible to have multiple packages linked to a subscription!
+                            if (matchingTipps) {
+                                TitleInstancePackagePlatform tipp = matchingTipps.find { TitleInstancePackagePlatform matchingTipp -> matchingTipp.pkg == result.subscription.packages.pkg } as TitleInstancePackagePlatform
                                 //is title already added?
-                                if (addedTipps.contains(id.tipp.gokbId)) {
+                                if (addedTipps.contains(tipp.gokbId)) {
                                     errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleAlreadyAdded', null, locale)}")
                                 }
                             }
                             else {
-                                if(ids)
+                                if(matchingTipps)
                                     errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInPackage', null, locale)}")
                                 else
                                     errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInERMS', null, locale)}")
@@ -1989,26 +2000,34 @@ class SubscriptionControllerService {
             if(!params.singleTitle) {
                 Map checked = cache.get('checked')
                 if(checked) {
-                    checked.each { k,v ->
-                        if(v == 'checked') {
-                            try {
-                                if(issueEntitlementCandidates?.get(k) || Boolean.valueOf(params.uploadPriceInfo))  {
-                                    if(subscriptionService.addEntitlement(result.subscription, k, issueEntitlementCandidates?.get(k), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
-                                        log.debug("Added tipp ${k} to sub ${result.subscription.id} with issue entitlement overwrites")
+                    executorService.execute({
+                        Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
+                        IssueEntitlement.withNewTransaction { TransactionStatus ts ->
+                            checked.each { k, v ->
+                                if(v == 'checked') {
+                                    try {
+                                        if(issueEntitlementCandidates?.get(k) || Boolean.valueOf(params.uploadPriceInfo))  {
+                                            if(subscriptionService.addEntitlement(result.subscription, k, issueEntitlementCandidates?.get(k), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
+                                                log.debug("Added tipp ${k} to sub ${result.subscription.id} with issue entitlement overwrites")
+                                        }
+                                        else if(subscriptionService.addEntitlement(result.subscription,k,null,false, ie_accept_status)) {
+                                            log.debug("Added tipp ${k} to sub ${result.subscription.id}")
+                                        }
+                                        addTitlesCount++
+                                        if(addTitlesCount > 0 && addTitlesCount % 10000 == 0) {
+                                            log.debug("interim flush at ${addTitlesCount}")
+                                            ts.flush()
+                                        }
+                                    }
+                                    catch (EntitlementCreationException e) {
+                                        result.error = e.getMessage()
+                                    }
                                 }
-                                else if(subscriptionService.addEntitlement(result.subscription,k,null,false, ie_accept_status)) {
-                                    log.debug("Added tipp ${k} to sub ${result.subscription.id}")
-                                }
-                                addTitlesCount++
-
-                            }
-                            catch (EntitlementCreationException e) {
-                                result.error = e.getMessage()
                             }
                         }
-                    }
-                    Object[] args = [addTitlesCount]
-                    result.message = messageSource.getMessage('subscription.details.addEntitlements.titlesAddToSub',args,locale)
+                        Object[] args = [addTitlesCount]
+                        result.message = messageSource.getMessage('subscription.details.addEntitlements.titlesAddToSub',args,locale)
+                    })
                 }
                 else {
                     log.error('cache error or no titles selected')

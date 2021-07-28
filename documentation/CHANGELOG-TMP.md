@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3702    28.07.2021  dev     2.2         Andreas Bug         Tippfehler in Übersetzungstexten korrigiert
+
+3676    28.07.2021  dev     2.2         Andreas Feature     Umstrukturierungen bei Titel hinzufügen
+
 3691    26.07.2021  dev     2.2         Andreas Bug         verschiedene Ausbesserungen an Titel- und Anbieterdaten und am we:kb-Sync
 
 3669    26.07.2021  dev     2.2         Andreas Bug         Übertragung eigener Merkmale hakte wegen Legacy-Brücke
