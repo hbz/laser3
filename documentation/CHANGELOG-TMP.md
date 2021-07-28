@@ -9,6 +9,8 @@
 
 3702    28.07.2021  dev     2.2         Andreas Bug         Tippfehler in Übersetzungstexten korrigiert
 
+3700    28.07.2021  dev     2.2         Andreas Bug         Lizenzexport berücksichtigte Merkmale nicht, die von der Konsortialstelle eingetragen wurden
+
 3676    28.07.2021  dev     2.2         Andreas Feature     Umstrukturierungen bei Titel hinzufügen
 
 3691    26.07.2021  dev     2.2         Andreas Bug         verschiedene Ausbesserungen an Titel- und Anbieterdaten und am we:kb-Sync
