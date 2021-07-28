@@ -24,7 +24,6 @@ class WfWorkflow extends WfWorkflowBase {
                  id column: 'wfw_id'
             version column: 'wfw_version'
              status column: 'wfw_status_rv_fk'
-              state column: 'wfw_state_rv_fk'
           prototype column: 'wfw_prototype_fk'
               child column: 'wfw_child_fk'
        subscription column: 'wfw_subscription_fk'
@@ -42,5 +41,9 @@ class WfWorkflow extends WfWorkflowBase {
         child       (nullable: true)
         description (nullable: true)
         comment     (nullable: true)
+    }
+
+    List<WfTask> getSequence() {
+        child ? child.getSequence() : []
     }
 }

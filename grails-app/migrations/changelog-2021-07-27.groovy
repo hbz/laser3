@@ -226,10 +226,6 @@ databaseChangeLog = {
 
             column(name: "wfw_child_fk", type: "BIGINT")
 
-            column(name: "wfw_state_rv_fk", type: "BIGINT") {
-                constraints(nullable: "false")
-            }
-
             column(name: "wfw_title", type: "VARCHAR(255)") {
                 constraints(nullable: "false")
             }
@@ -319,7 +315,7 @@ databaseChangeLog = {
     }
 
     changeSet(author: "klober (generated)", id: "1627370771106-15") {
-        addForeignKeyConstraint(baseColumnNames: "wfw_state_rv_fk", baseTableName: "wf_workflow", constraintName: "FKe462lliwak90mgn1ki7fyc8ox", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value")
+        //addForeignKeyConstraint(baseColumnNames: "wfw_state_rv_fk", baseTableName: "wf_workflow", constraintName: "FKe462lliwak90mgn1ki7fyc8ox", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value")
     }
 
     changeSet(author: "klober (generated)", id: "1627370771106-16") {

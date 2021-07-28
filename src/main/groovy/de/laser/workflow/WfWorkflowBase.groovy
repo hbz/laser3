@@ -8,9 +8,6 @@ import grails.gorm.dirty.checking.DirtyCheck
 @DirtyCheck
 class WfWorkflowBase {
 
-    @RefdataAnnotation(cat = RDConstants.WF_WORKFLOW_STATE)
-    RefdataValue state
-
     WfTaskBase child
 
     String title

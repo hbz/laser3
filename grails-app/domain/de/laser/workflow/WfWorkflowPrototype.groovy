@@ -1,8 +1,19 @@
 package de.laser.workflow
 
+import de.laser.RefdataValue
+import de.laser.Subscription
+import de.laser.annotations.RefdataAnnotation
+import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
+
 class WfWorkflowPrototype extends WfWorkflowBase {
 
+    def contextService
+
     static final String KEY = 'WF_WORKFLOW_PROTOTYPE'
+
+    @RefdataAnnotation(cat = RDConstants.WF_WORKFLOW_STATE)
+    RefdataValue state
 
     WfTaskPrototype child
 
@@ -24,11 +35,31 @@ class WfWorkflowPrototype extends WfWorkflowBase {
         description (nullable: true)
     }
 
-    List<WfTaskPrototype> getStructure() {
-        child ? child.getStructure() : []
+    boolean inUse() {
+        child != null
     }
 
-    boolean inStructure() {
-         child != null
+    List<WfTaskPrototype> getSequence() {
+        child ? child.getSequence() : []
+    }
+
+    WfWorkflow instantiate() throws Exception {
+
+        WfWorkflow workflow = new WfWorkflow(
+                title:       this.title,
+                description: this.description,
+                prototype:   this,
+                owner:       contextService.getOrg(),
+                status:      RDStore.WF_WORKFLOW_STATUS_OPEN,
+                subscription: Subscription.get(9542)
+        )
+        if (this.child) {
+            workflow.child = this.child.instantiate()
+        }
+        if (! workflow.validate()) {
+            log.debug( '[ ' + this.id + ' ].instantiate() : ' + workflow.getErrors().toString() )
+        }
+
+        workflow
     }
 }

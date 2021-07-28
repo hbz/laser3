@@ -3,7 +3,7 @@
 <g:form controller="admin" action="manageWorkflows" method="POST" class="ui form">
     <g:if test="${! tmplIsModal}"><div class="ui segment"></g:if>
 
-    <div class="field">
+    <div class="field required">
         <label for="${prefix}_title">Titel</label>
         <input type="text" name="${prefix}_title" id="${prefix}_title" value="${workflow?.title}" />
     </div>
@@ -14,7 +14,7 @@
     </div>
 
     <div class="fields two">
-        <div class="field">
+        <div class="field required">
             <label for="${prefix}_type">Zustand</label>
             <laser:select class="ui dropdown" id="${prefix}_state" name="${prefix}_state"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
@@ -28,7 +28,7 @@
     <g:if test="${prefix == WfWorkflow.KEY}">
 
         <div class="fields two">
-            <div class="field">
+            <div class="field required">
                 <label for="${prefix}_status">Status</label>
                 <laser:select class="ui dropdown" id="${prefix}_status" name="${prefix}_status"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"

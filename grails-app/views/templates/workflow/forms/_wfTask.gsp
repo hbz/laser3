@@ -3,7 +3,7 @@
 <g:form controller="admin" action="manageWorkflows" method="POST" class="ui form">
     <g:if test="${! tmplIsModal}"><div class="ui segment"></g:if>
 
-    <div class="field">
+    <div class="field required">
         <label for="${prefix}_title">Titel</label>
         <input type="text" name="${prefix}_title" id="${prefix}_title" value="${task?.title}" />
     </div>
@@ -28,7 +28,7 @@
                       optionKey="id"
                       optionValue="${{'(' + it.id + ') ' + it.title}}" />
         </div>
-        <div class="field">
+        <div class="field required">
             <label for="${prefix}_priority">Priorität</label>
             <laser:select class="ui dropdown" id="${prefix}_priority" name="${prefix}_priority"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
@@ -52,7 +52,7 @@
     <g:if test="${prefix == WfTask.KEY}">
 
         <div class="fields two">
-            <div class="field">
+            <div class="field required">
                 <label for="${prefix}_status">Status</label>
                 <laser:select class="ui dropdown" id="${prefix}_status" name="${prefix}_status"
                               from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_STATUS )}"

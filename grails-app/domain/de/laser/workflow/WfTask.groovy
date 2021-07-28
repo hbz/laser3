@@ -49,14 +49,14 @@ class WfTask extends WfTaskBase {
         comment     (nullable: true)
     }
 
-    List<WfTask> getStructure() {
-        List<WfTask> struct = []
+    List<WfTask> getSequence() {
+        List<WfTask> sequence = []
 
         WfTask t = this
         while (t) {
-            struct.add( t ); t = t.next
+            sequence.add( t ); t = t.next
         }
-        struct
+        sequence
     }
 
     WfTask getParent() {
@@ -65,9 +65,5 @@ class WfTask extends WfTaskBase {
 
     WfTask getPrevious() {
         WfTask.findByNext( this )
-    }
-
-    boolean inStructure() {
-        child != null
     }
 }

@@ -46,8 +46,4 @@ class WfCondition extends WfConditionBase {
         date2           (nullable: true)
         date2_title     (nullable: true)
     }
-
-    boolean inStructure() {
-        WfTask.findByCondition( this ) != null
-    }
 }

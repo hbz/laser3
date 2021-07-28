@@ -1,5 +1,7 @@
 package de.laser.workflow
 
+import de.laser.helper.RDStore
+
 class WfConditionPrototype extends WfConditionBase {
 
     static final String KEY = 'WF_CONDITION_PROTOTYPE'
@@ -37,6 +39,36 @@ class WfConditionPrototype extends WfConditionBase {
         date2_title     (nullable: true)
     }
 
+    boolean inUse() {
+        WfTaskPrototype.findByCondition( this ) != null
+    }
+
+    WfCondition instantiate() throws Exception {
+
+        WfCondition condition = new WfCondition(
+                title:              this.title,
+                description:        this.description,
+                prototype:          this,
+                status:             RDStore.WF_CONDITION_STATUS_OPEN,
+                type:               this.type,
+                checkbox1:              this.checkbox1,
+                checkbox1_title:        this.checkbox1_title,
+                checkbox1_isTrigger:    this.checkbox1_isTrigger,
+                checkbox2:              this.checkbox2,
+                checkbox2_title:        this.checkbox2_title,
+                checkbox2_isTrigger:    this.checkbox2_isTrigger,
+                date1:                  this.date1,
+                date1_title:            this.date1_title,
+                date2:                  this.date2,
+                date2_title:            this.date2_title,
+        )
+        if (! condition.validate()) {
+            log.debug( '[ ' + this.id + ' ].instantiate() : ' + condition.getErrors().toString() )
+        }
+
+        condition
+    }
+
     WfTaskPrototype getTask() {
         List<WfTaskPrototype> result = WfTaskPrototype.executeQuery('select tp from WfTaskPrototype tp where condition = :current order by id', [current: this] )
 
@@ -46,9 +78,5 @@ class WfConditionPrototype extends WfConditionBase {
         if (result) {
             return result.first() as WfTaskPrototype
         }
-    }
-
-    boolean inStructure() {
-        WfTaskPrototype.findByCondition( this ) != null
     }
 }

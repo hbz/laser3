@@ -413,6 +413,7 @@ class AdminController  {
     @Secured(['ROLE_ADMIN'])
     def manageWorkflows() {
         Map<String, Object> result = [:]
+        //log.debug( params.toMapString() )
 
         if (params.cmd) {
             String[] cmd = (params.cmd as String).split(':')
@@ -428,6 +429,11 @@ class AdminController  {
                     result = workflowService.handleCondition(params)
                 }
             }
+            else if (cmd[0] == 'init') {
+                if (cmd[1] in [WfWorkflowPrototype.KEY ]) {
+                    result = workflowService.initWorkflow(params)
+                }
+            }
             else if (cmd[0] == 'delete') {
                 if (cmd[1] in [WfWorkflowPrototype.KEY, WfWorkflow.KEY ]) {
                     result = workflowService.deleteWorkflow(params)
@@ -441,7 +447,7 @@ class AdminController  {
             }
         }
 
-        log.debug( params.toMapString() )
+        log.debug( result.toMapString() )
         result
     }
 

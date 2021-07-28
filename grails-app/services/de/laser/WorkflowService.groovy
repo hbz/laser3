@@ -3,9 +3,12 @@ package de.laser
 import de.laser.workflow.*
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.transaction.TransactionStatus
 
 @Transactional
 class WorkflowService {
+
+    def contextService
 
     static final String OP_STATUS_DONE  = 'OP_STATUS_DONE'
     static final String OP_STATUS_ERROR = 'OP_STATUS_ERROR'
@@ -123,7 +126,7 @@ class WorkflowService {
             WfWorkflowPrototype wf = WfWorkflowPrototype.get(params.id)
             result.workflow = wf
 
-            if (! wf.inStructure()) {
+            if (! wf.inUse()) {
                 try {
                     wf.delete()
                     result.status = OP_STATUS_DONE
@@ -155,7 +158,7 @@ class WorkflowService {
             WfTaskPrototype task = WfTaskPrototype.get( params.id )
             result.task = task
 
-            if (! task.inStructure()) {
+            if (! task.inUse()) {
                 try {
                     task.delete()
                     result.status = OP_STATUS_DONE
@@ -187,7 +190,7 @@ class WorkflowService {
             WfConditionPrototype condition = WfConditionPrototype.get( params.id )
             result.condition = condition
 
-            if (! condition.inStructure()) {
+            if (! condition.inUse()) {
                 try {
                     condition.delete()
                     result.status = OP_STATUS_DONE
@@ -365,4 +368,48 @@ class WorkflowService {
         }
         result
     }
+
+    Map<String, Object> initWorkflow(GrailsParameterMap params) {
+        log.debug('initWorkflow() ' + params)
+        String[] cmd = (params.cmd as String).split(':')
+
+        Map<String, Object> result = [
+                cmd: cmd[0], key: cmd[1]
+        ]
+
+        if (cmd[1] == WfWorkflowPrototype.KEY) {
+
+            WfWorkflowPrototype.withTransaction { TransactionStatus ts ->
+
+                try {
+                    result.prototype    = WfWorkflowPrototype.get(params.id)
+                    result.workflow     = result.prototype.instantiate()
+
+                    if (! result.workflow.save()) {
+                        result.status = OP_STATUS_ERROR
+
+                        log.debug( 'initWorkflow() -> ' + result.workflow.getErrors().toString() )
+
+                        log.debug( 'TransactionStatus.setRollbackOnly()' )
+                        ts.setRollbackOnly()
+                    }
+                    else {
+                        result.status = OP_STATUS_DONE
+                    }
+                }
+                catch (Exception e) {
+                    result.status = OP_STATUS_ERROR
+
+                    log.debug( 'initWorkflow() -> ' + e.getMessage() )
+                    e.printStackTrace()
+
+                    log.debug( 'TransactionStatus.setRollbackOnly()' )
+                    ts.setRollbackOnly()
+                }
+            }
+        }
+
+        result
+    }
+
 }

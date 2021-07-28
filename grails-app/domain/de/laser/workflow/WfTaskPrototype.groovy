@@ -1,6 +1,11 @@
 package de.laser.workflow
 
+
+import de.laser.helper.RDStore
+
 class WfTaskPrototype extends WfTaskBase {
+
+    def contextService
 
     static final String KEY = 'WF_TASK_PROTOTYPE'
 
@@ -32,14 +37,43 @@ class WfTaskPrototype extends WfTaskBase {
         next        (nullable: true)
     }
 
-    List<WfTaskPrototype> getStructure() {
-        List<WfTaskPrototype> struct = []
+    boolean inUse() {
+        return child != null || next != null || getWorkflow() || getParent() || getPrevious()
+    }
+
+    List<WfTaskPrototype> getSequence() {
+        List<WfTaskPrototype> sequence = []
 
         WfTaskPrototype t = this
         while (t) {
-            struct.add( t ); t = t.next
+            sequence.add( t ); t = t.next
         }
-        struct
+        sequence
+    }
+
+    WfTask instantiate() throws Exception {
+
+        WfTask task = new WfTask(
+                title:       this.title,
+                description: this.description,
+                prototype:   this,
+                priority:    this.priority,
+                status:      RDStore.WF_TASK_STATUS_OPEN
+        )
+        if (this.child) {
+            task.child = this.child.instantiate()
+        }
+        if (this.next) {
+            task.next = this.next.instantiate()
+        }
+        if (this.condition) {
+            task.condition = this.condition.instantiate()
+        }
+        if (! task.validate()) {
+            log.debug( '[ ' + this.id + ' ].instantiate() : ' + task.getErrors().toString() )
+        }
+
+        task
     }
 
     WfWorkflowPrototype getWorkflow() {
@@ -73,9 +107,5 @@ class WfTaskPrototype extends WfTaskBase {
         if (result) {
             return result.first() as WfTaskPrototype
         }
-    }
-
-    boolean inStructure() {
-        return getWorkflow() || getParent() || getPrevious()
     }
 }
