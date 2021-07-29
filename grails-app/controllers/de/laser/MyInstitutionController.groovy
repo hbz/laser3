@@ -795,7 +795,7 @@ join sub.orgRelations or_sub where
             titles.addAll([g.message(code: 'subscription.memberCount.label'),g.message(code: 'subscription.memberCostItemsCount.label')])
         }
         //Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP],contextOrg)
-        Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where (sp.owner in (:subscriptions) or sp.owner.instanceOf in (:subscriptions)) and sp.tenant = :ctx",[subscriptions:subscriptions,ctx:contextOrg])
+        Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where (sp.owner in (:subscriptions) or sp.owner.instanceOf in (:subscriptions)) and (sp.tenant = :ctx or sp.isPublic = true)",[subscriptions: subscriptions, ctx:contextOrg])
         titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
         Map<Subscription,Set> licenseReferences = [:], subChildMap = [:]
         Map<Long,Integer> costItemCounts = [:]
