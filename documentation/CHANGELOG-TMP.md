@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3705    29.07.2021  dev     2.2         Andreas Bug         Zählvariable inkorrekt gesetzt
+
+3704    29.07.2021  dev     2.2         Andreas Bug         Sortierung der Lizenzkosten bei Nichtkonsortialsichten wurde nicht durchgereicht
+
+3703    29.07.2021  dev     2.2         Andreas Bug         Referenzfehler beim Teilen von Dokumenten über die Tabelle behoben
+
 3702    28.07.2021  dev     2.2         Andreas Bug         Tippfehler in Übersetzungstexten korrigiert
 
 3700    28.07.2021  dev     2.2         Andreas Bug         Lizenzexport berücksichtigte Merkmale nicht, die von der Konsortialstelle eingetragen wurden

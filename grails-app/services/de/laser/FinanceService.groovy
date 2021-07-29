@@ -500,13 +500,12 @@ class FinanceService {
                         ownFilter.remove('filterConsMembers')
                         Set<Long> ownCostItems = CostItem.executeQuery(
                                 'select ci.id from CostItem ci where ci.owner = :owner and ci.sub = :sub '+
-                                        genericExcludes + subFilter + filterQuery.ciFilter +
-                                        ' order by '+configMap.sortConfig.ownSort+' '+configMap.sortConfig.ownOrder,
+                                        genericExcludes + subFilter + filterQuery.ciFilter,
                                 [owner:org,sub:sub]+genericExcludeParams+ownFilter)
                         pu.setBenchmark("assembling map")
                         result.own = [count:ownCostItems.size()]
                         if(ownCostItems){
-                            result.own.costItems = CostItem.findAllByIdInList(ownCostItems,[max:configMap.max,offset:configMap.offsets.ownOffset])
+                            result.own.costItems = CostItem.findAllByIdInList(ownCostItems,[max:configMap.max,offset:configMap.offsets.ownOffset, sort: configMap.sortConfig.ownSort, order: configMap.sortConfig.ownOrder])
                             result.own.sums = calculateResults(ownCostItems)
                         }
                         break
@@ -527,13 +526,12 @@ class FinanceService {
                     case "consAtSubscr":
                         pu.setBenchmark("before cons at subscr")
                         Set<Long> consCostItems = CostItem.executeQuery('select ci.id from CostItem as ci right join ci.sub sub join sub.orgRelations oo where ci.owner = :owner and sub = :sub'+
-                            filterQuery.subFilter + genericExcludes + filterQuery.ciFilter +
-                            ' order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,
+                            filterQuery.subFilter + genericExcludes + filterQuery.ciFilter,
                             [owner:org,sub:sub]+genericExcludeParams+filterQuery.filterData)
                         pu.setBenchmark("assembling map")
                         result.cons = [count:consCostItems.size()]
                         if(consCostItems) {
-                            result.cons.costItems = CostItem.findAllByIdInList(consCostItems,[max:configMap.max,offset:configMap.offsets.consOffset])
+                            result.cons.costItems = CostItem.findAllByIdInList(consCostItems,[max:configMap.max,offset:configMap.offsets.consOffset, sort: configMap.sortConfig.consSort, order: configMap.sortConfig.consOrder])
                             result.cons.sums = calculateResults(consCostItems)
                         }
                         break
@@ -541,13 +539,12 @@ class FinanceService {
                         pu.setBenchmark("before subscr")
                         List<CostItem> subscrCostItems = CostItem.executeQuery(
                                 'select ci.id from CostItem as ci join ci.sub sub where ci.owner in :owner and sub = :sub and ci.isVisibleForSubscriber = true'+
-                                 genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
-                                 ' order by '+configMap.sortConfig.subscrSort+' '+configMap.sortConfig.subscrOrder,
+                                 genericExcludes + filterQuery.subFilter + filterQuery.ciFilter,
                                  [owner:[sub.getConsortia()],sub:sub]+genericExcludeParams+filterQuery.filterData)
                         pu.setBenchmark("assembling map")
                         result.subscr = [count:subscrCostItems.size()]
                         if(subscrCostItems) {
-                            result.subscr.costItems = CostItem.findAllByIdInList(subscrCostItems,[max:configMap.max,offset:configMap.offsets.subscrOffset])
+                            result.subscr.costItems = CostItem.findAllByIdInList(subscrCostItems,[max:configMap.max,offset:configMap.offsets.subscrOffset, sort: configMap.sortConfig.subscrSort, order: configMap.sortConfig.subscrOrder])
                             result.subscr.sums = calculateResults(subscrCostItems)
                         }
                         break
@@ -617,9 +614,9 @@ class FinanceService {
                         [org:org,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
                     result.cons = [count:consortialCostRows.size()]
                     if(consortialCostRows) {
-                        List<Long> consortialCostItems = consortialCostRows
+                        Set<Long> consortialCostItems = consortialCostRows.toSet()
                         pu.setBenchmark("map assembly")
-                        result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consortialCostRows],[max:configMap.max,offset:configMap.offsets.consOffset]).toSet()
+                        result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder,[ids:consortialCostRows],[max:configMap.max,offset:configMap.offsets.consOffset])
                         //very ugly ... any ways to achieve this more elegantly are greatly appreciated!!
                         if(configMap.sortConfig.consSort == 'oo.org.sortname') {
                             result.cons.costItems = result.cons.costItems.sort{ ciA, ciB ->
