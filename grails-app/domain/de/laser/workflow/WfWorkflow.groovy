@@ -5,6 +5,7 @@ import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.annotations.RefdataAnnotation
 import de.laser.helper.RDConstants
+import de.laser.helper.RDStore
 
 class WfWorkflow extends WfWorkflowBase {
 
@@ -46,4 +47,12 @@ class WfWorkflow extends WfWorkflowBase {
     List<WfTask> getSequence() {
         child ? child.getSequence() : []
     }
+
+    void remove() throws Exception {
+        if (this.child) {
+            this.child.remove()
+        }
+        this.delete()
+    }
+
 }

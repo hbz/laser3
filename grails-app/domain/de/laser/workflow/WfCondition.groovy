@@ -11,12 +11,13 @@ class WfCondition extends WfConditionBase {
     @RefdataAnnotation(cat = RDConstants.WF_CONDITION_STATUS)
     RefdataValue status
 
-    // static belongsTo = [ task: WfTask ]
+    WfConditionPrototype prototype
 
     static mapping = {
                      id column: 'wfc_id'
                 version column: 'wfc_version'
                 status  column: 'wfc_status_rv_fk'
+              prototype column: 'wfc_prototype_fk'
                   type  column: 'wfc_type'
                   title column: 'wfc_title'
             description column: 'wfc_description', type: 'text'
@@ -45,5 +46,13 @@ class WfCondition extends WfConditionBase {
         date1_title     (nullable: true)
         date2           (nullable: true)
         date2_title     (nullable: true)
+    }
+
+    void remove() throws Exception {
+        this.delete()
+    }
+
+    WfTask getTask() {
+        WfTask.findByCondition( this )
     }
 }

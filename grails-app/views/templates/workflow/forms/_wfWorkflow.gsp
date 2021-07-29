@@ -13,9 +13,10 @@
         <input type="text" name="${prefix}_description" id="${prefix}_description" value="${workflow?.description}" />
     </div>
 
-    <div class="fields two">
+    <g:if test="${prefix == WfWorkflowPrototype.KEY}">
+
         <div class="field required">
-            <label for="${prefix}_type">Zustand</label>
+            <label for="${prefix}_type>">State</label>
             <laser:select class="ui dropdown" id="${prefix}_state" name="${prefix}_state"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATE )}"
@@ -23,67 +24,73 @@
                           optionKey="id"
                           optionValue="value" />
         </div>
-    </div>
 
-    <g:if test="${prefix == WfWorkflow.KEY}">
-
-        <div class="fields two">
-            <div class="field required">
-                <label for="${prefix}_status">Status</label>
-                <laser:select class="ui dropdown" id="${prefix}_status" name="${prefix}_status"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"
-                              from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATUS )}"
-                              value="${workflow?.status?.id}"
-                              optionKey="id"
-                              optionValue="value" />
-            </div>
-
-            <div class="field">
-                <label for="${prefix}_comment">Kommentar</label>
-                <input type="text" name="${prefix}_comment" id="${prefix}_comment" value="${workflow?.comment}" />
-            </div>
+        <div class="field">
+            <label for="${prefix}_child">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} &darr;</label>
+            <g:select class="ui dropdown" id="${prefix}_child" name="${prefix}_child"
+                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                      from="${dd_childList}"
+                      value="${workflow?.child?.id}"
+                      optionKey="id"
+                      optionValue="${{'(' + it.id + ') ' + it.title}}" />
         </div>
 
-        <div class="fields two">
-            <div class="field">
-                <label for="${prefix}_prototype">Prototyp</label>
-                <g:select class="ui dropdown" id="${prefix}_prototype" name="${prefix}_prototype"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"
-                              from="${dd_prototypeList}"
-                              value="${workflow?.prototype?.id}"
-                              optionKey="id"
-                              optionValue="${{'(' + it.id + ') ' + it.title}}" />
-            </div>
+    </g:if>
+    <g:if test="${prefix == WfWorkflow.KEY}">
 
-            <div class="field">
-                <label for="${prefix}_subscription">Subscription</label>
-                <g:select class="ui dropdown" id="${prefix}_subscription" name="${prefix}_subscription"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"
-                              from="${dd_subscriptionList}"
-                              value="${workflow?.subscription?.id}"
-                              optionKey="id"
-                              optionValue="${{'(' + it.id + ') ' + it.name}}" />
-            </div>
+        <div class="field required">
+            <label for="${prefix}_status">Status</label>
+            <laser:select class="ui dropdown" id="${prefix}_status" name="${prefix}_status"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                          from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATUS )}"
+                          value="${workflow?.status?.id}"
+                          optionKey="id"
+                          optionValue="value" />
+        </div>
+
+        <div class="field">
+            <label for="${prefix}_comment">Kommentar</label>
+            <input type="text" name="${prefix}_comment" id="${prefix}_comment" value="${workflow?.comment}" />
+        </div>
+
+
+        <div class="field">
+            <label for="${prefix}_subscription">Subscription</label>
+            <g:select class="ui dropdown disabled" id="${prefix}_subscription" name="${prefix}_subscription"
+                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                      from="${dd_subscriptionList}"
+                      value="${workflow?.subscription?.id}"
+                      optionKey="id"
+                      optionValue="${{'(' + it.id + ') ' + it.name}}" />
+        </div>
+
+        <div class="field">
+            <label for="${prefix}_child">${message(code: 'workflow.object.' + WfTask.KEY)} &darr;</label>
+            <g:select class="ui dropdown disabled" id="${prefix}_child" name="${prefix}_child"
+                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                      from="${dd_childList}"
+                      value="${workflow?.child?.id}"
+                      optionKey="id"
+                      optionValue="${{'(' + it.id + ') ' + it.title}}" />
         </div>
 
     </g:if>
 
-    <div class="fields three">
-        <div class="field">
-            <g:if test="${prefix == WfWorkflow.KEY}">
-                <label for="${prefix}_child">${message(code: 'workflow.object.' + WfTask.KEY)} &darr;</label>
-            </g:if>
-            <g:else>
-                <label for="${prefix}_child">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} &darr;</label>
-            </g:else>
-            <g:select class="ui dropdown" id="${prefix}_child" name="${prefix}_child"
+    %{-- <g:if test="${prefix == WfWorkflow.KEY}">
+
+        <div class="fields two">
+            <div class="field">
+                <label for="${prefix}_prototype">Prototyp</label>
+                <g:select class="ui dropdown disabled" id="${prefix}_prototype" name="${prefix}_prototype"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                          from="${dd_childList}"
-                          value="${workflow?.child?.id}"
+                          from="${dd_prototypeList}"
+                          value="${workflow?.prototype?.id}"
                           optionKey="id"
                           optionValue="${{'(' + it.id + ') ' + it.title}}" />
+            </div>
         </div>
-    </div>
+
+    </g:if> --}%
 
     <input type="hidden" name="cmd" value="${cmd}:${prefix}" />
 

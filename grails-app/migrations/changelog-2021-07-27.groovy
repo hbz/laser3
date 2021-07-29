@@ -315,7 +315,11 @@ databaseChangeLog = {
     }
 
     changeSet(author: "klober (generated)", id: "1627370771106-15") {
-        //addForeignKeyConstraint(baseColumnNames: "wfw_state_rv_fk", baseTableName: "wf_workflow", constraintName: "FKe462lliwak90mgn1ki7fyc8ox", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value")
+        addColumn(tableName: "wf_condition") {
+            column(name: "wfc_prototype_fk", type: "int8") {
+                constraints(nullable: "false")
+            }
+        }
     }
 
     changeSet(author: "klober (generated)", id: "1627370771106-16") {
@@ -356,5 +360,9 @@ databaseChangeLog = {
 
     changeSet(author: "klober (generated)", id: "1627370771106-25") {
         addForeignKeyConstraint(baseColumnNames: "wftp_condition_fk", baseTableName: "wf_task_prototype", constraintName: "FKsw7g3ptk4wvlbj2m78b4as1mx", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "wfcp_id", referencedTableName: "wf_condition_prototype")
+    }
+
+    changeSet(author: "klober (generated)", id: "1627370771106-26") {
+        addForeignKeyConstraint(baseColumnNames: "wfc_prototype_fk", baseTableName: "wf_condition", constraintName: "FKgql6c2h76kqlsf0k3t7p7e9dp", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "wfcp_id", referencedTableName: "wf_condition_prototype")
     }
 }

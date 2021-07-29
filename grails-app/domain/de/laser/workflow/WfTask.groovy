@@ -59,6 +59,23 @@ class WfTask extends WfTaskBase {
         sequence
     }
 
+    void remove() throws Exception {
+        if (this.child) {
+            this.child.remove()
+        }
+        if (this.next) {
+            this.next.remove()
+        }
+        if (this.condition) {
+            this.condition.remove()
+        }
+        this.delete()
+    }
+
+    WfWorkflow getWorkflow() {
+        WfWorkflow.findByChild( this )
+    }
+
     WfTask getParent() {
         WfTask.findByChild( this )
     }

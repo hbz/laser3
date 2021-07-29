@@ -671,13 +671,9 @@ class AjaxHtmlController {
                 result.tmplModalTitle = result.tmplModalTitle + result.workflow.title + ' (' + result.workflow.id + ')'
 
                 if (result.workflow) {
-                    // not: * used as t.next * used as t.child
-                    result.dd_childList = WfTask.executeQuery(
-                            'select t from WfTask wft where ' +
-                            'wft not in (select tt.next from WfTask tt) ' +
-                            'and wft not in (select tt.child from WfTask tt) ' +
-                            'order by id'
-                    )
+                    result.dd_childList         = result.workflow.child ? [ result.workflow.child ] : []
+                    result.dd_prototypeList     = result.workflow.prototype ? [ result.workflow.prototype ] : []
+                    result.dd_subscriptionList  = result.workflow.subscription ? [ result.workflow.subscription ] : []
                 }
             }
             else if (params.key == WfTaskPrototype.KEY) {
@@ -715,27 +711,17 @@ class AjaxHtmlController {
                 result.tmplModalTitle = result.tmplModalTitle + result.task.title + ' (' + result.task.id + ')'
 
                 if (result.task) {
+
+                    result.dd_nextList      = result.task.next ? [ result.task.next ] : []
+                    result.dd_childList     = result.task.child ? [ result.task.child ] : []
+                    result.dd_conditionList = result.task.condition ? [ result.task.condition ] : []
+                    result.dd_prototypeList = result.task.prototype ? [ result.task.prototype ] : []
+
                     String sql = 'select wft from WfTask wft where id != :id order by id'
                     Map<String, Object> sqlParams = [id: params.long('id')]
 
-                    // not: * self * used as t.child * used as sp.child
-                    result.dd_nextList = WfTask.executeQuery(
-                            'select wft from WfTask wft where id != :id ' +
-                            'and wft not in (select t.child from WfTask t) ' +
-                            'and wft not in (select w.child from wfWorkflow w) ' +
-                            'order by id', sqlParams
-                    )
-                    // not: * self * used as t.next * used as sp.child
-                    result.dd_childList = WfTask.executeQuery(
-                            'select wft from WfTask wft where id != :id ' +
-                            'and wft not in (select t.next from WfTask t) ' +
-                            'and wft not in (select w.child from wfWorkflow w) ' +
-                            'order by id', sqlParams
-                    )
                     result.dd_previousList  = WfTask.executeQuery(sql, sqlParams)
                     result.dd_parentList    = WfTask.executeQuery(sql, sqlParams)
-
-                    result.dd_conditionList = WfCondition.executeQuery('select wfc from WfCondition wfc where order by id')
                 }
             }
             else if (params.key == WfConditionPrototype.KEY) {
@@ -754,6 +740,7 @@ class AjaxHtmlController {
 
                 if (result.condition) {
                     result.dd_taskList = WfTask.executeQuery( 'select wft from WfTask wft' )
+                    result.dd_prototypeList = result.condition.prototype ? [ result.condition.prototype ] : []
                 }
             }
 

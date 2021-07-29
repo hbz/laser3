@@ -431,7 +431,7 @@ class AdminController  {
             }
             else if (cmd[0] == 'init') {
                 if (cmd[1] in [WfWorkflowPrototype.KEY ]) {
-                    result = workflowService.initWorkflow(params)
+                    result = workflowService.instantiateCompleteWorkflow(params)
                 }
             }
             else if (cmd[0] == 'delete') {

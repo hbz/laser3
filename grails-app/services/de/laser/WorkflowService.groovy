@@ -118,9 +118,7 @@ class WorkflowService {
         log.debug('deleteWorkflow() ' + params)
         String[] cmd = (params.cmd as String).split(':')
 
-        Map<String, Object> result = [
-            cmd: cmd[0], key: cmd[1]
-        ]
+        Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 
         if (cmd[1] == WfWorkflowPrototype.KEY) {
             WfWorkflowPrototype wf = WfWorkflowPrototype.get(params.id)
@@ -137,11 +135,7 @@ class WorkflowService {
             }
         }
         else if (cmd[1] == WfWorkflow.KEY) {
-            WfWorkflow wf = WfWorkflow.get(params.id)
-            result.workflow = wf
-            result.status = OP_STATUS_ERROR
-
-            println '--- TODO ---'
+            result.putAll( removeCompleteWorkflow(params) )
         }
         result
     }
@@ -150,9 +144,7 @@ class WorkflowService {
         log.debug('deleteTask() ' + params)
         String[] cmd = (params.cmd as String).split(':')
 
-        Map<String, Object> result = [
-            cmd: cmd[0], key: cmd[1]
-        ]
+        Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 
         if (cmd[1] == WfTaskPrototype.KEY) {
             WfTaskPrototype task = WfTaskPrototype.get( params.id )
@@ -173,7 +165,7 @@ class WorkflowService {
             result.task = task
             result.status = OP_STATUS_ERROR
 
-            println '--- TODO ---'
+            println '--- NOT IMPLEMENTED ---'
         }
         result
     }
@@ -182,9 +174,7 @@ class WorkflowService {
         log.debug('deleteCondition() ' + params)
         String[] cmd = (params.cmd as String).split(':')
 
-        Map<String, Object> result = [
-                cmd: cmd[0], key: cmd[1]
-        ]
+        Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 
         if (cmd[1] == WfConditionPrototype.KEY) {
             WfConditionPrototype condition = WfConditionPrototype.get( params.id )
@@ -205,7 +195,7 @@ class WorkflowService {
             result.condition = condition
             result.status = OP_STATUS_ERROR
 
-            println '--- TODO ---'
+            println '--- NOT IMPLEMENTED ---'
         }
         result
     }
@@ -239,9 +229,7 @@ class WorkflowService {
             wf.subscription = Subscription.get(ph.getLong('subscription'))
         }
 
-        Map<String, Object> result = [
-            workflow: wf, cmd: cmd[0], key: cmd[1]
-        ]
+        Map<String, Object> result = [ workflow: wf, cmd: cmd[0], key: cmd[1] ]
 
         if (! wf.save()) {
             result.status = OP_STATUS_ERROR
@@ -289,9 +277,7 @@ class WorkflowService {
             task.status     = RefdataValue.get(ph.getLong('status'))
         }
 
-        Map<String, Object> result = [
-            task: task, cmd: cmd[0], key: cmd[1]
-        ]
+        Map<String, Object> result = [ task: task, cmd: cmd[0], key: cmd[1] ]
 
         if (! task.save()) {
             result.status = OP_STATUS_ERROR
@@ -353,9 +339,7 @@ class WorkflowService {
 
         }
 
-        Map<String, Object> result = [
-                condition: condition, cmd: cmd[0], key: cmd[1]
-        ]
+        Map<String, Object> result = [ condition: condition, cmd: cmd[0], key: cmd[1] ]
 
         if (! condition.save()) {
             result.status = OP_STATUS_ERROR
@@ -369,13 +353,11 @@ class WorkflowService {
         result
     }
 
-    Map<String, Object> initWorkflow(GrailsParameterMap params) {
-        log.debug('initWorkflow() ' + params)
+    Map<String, Object> instantiateCompleteWorkflow(GrailsParameterMap params) {
+        log.debug('instantiateCompleteWorkflow() ' + params)
         String[] cmd = (params.cmd as String).split(':')
 
-        Map<String, Object> result = [
-                cmd: cmd[0], key: cmd[1]
-        ]
+        Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 
         if (cmd[1] == WfWorkflowPrototype.KEY) {
 
@@ -388,7 +370,7 @@ class WorkflowService {
                     if (! result.workflow.save()) {
                         result.status = OP_STATUS_ERROR
 
-                        log.debug( 'initWorkflow() -> ' + result.workflow.getErrors().toString() )
+                        log.debug( 'instantiateCompleteWorkflow() -> ' + result.workflow.getErrors().toString() )
 
                         log.debug( 'TransactionStatus.setRollbackOnly()' )
                         ts.setRollbackOnly()
@@ -400,7 +382,47 @@ class WorkflowService {
                 catch (Exception e) {
                     result.status = OP_STATUS_ERROR
 
-                    log.debug( 'initWorkflow() -> ' + e.getMessage() )
+                    log.debug( 'instantiateCompleteWorkflow() -> ' + e.getMessage() )
+                    e.printStackTrace()
+
+                    log.debug( 'TransactionStatus.setRollbackOnly()' )
+                    ts.setRollbackOnly()
+                }
+            }
+        }
+
+        result
+    }
+
+    Map<String, Object> removeCompleteWorkflow(GrailsParameterMap params) {
+        log.debug('removeCompleteWorkflow() ' + params)
+        String[] cmd = (params.cmd as String).split(':')
+
+        Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
+
+        if (cmd[1] == WfWorkflow.KEY) {
+
+            WfWorkflow.withTransaction { TransactionStatus ts ->
+
+                try {
+                    result.workflow = WfWorkflow.get(params.id).remove()
+
+                    if (result.workflow) {
+                        result.status = OP_STATUS_ERROR
+
+                        log.debug( 'removeCompleteWorkflow() -> ' + result.workflow.getErrors().toString() )
+
+                        log.debug( 'TransactionStatus.setRollbackOnly()' )
+                        ts.setRollbackOnly()
+                    }
+                    else {
+                        result.status = OP_STATUS_DONE
+                    }
+                }
+                catch (Exception e) {
+                    result.status = OP_STATUS_ERROR
+
+                    log.debug( 'removeCompleteWorkflow() -> ' + e.getMessage() )
                     e.printStackTrace()
 
                     log.debug( 'TransactionStatus.setRollbackOnly()' )

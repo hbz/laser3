@@ -13,35 +13,26 @@
         <input type="text" name="${prefix}_description" id="${prefix}_description" value="${condition?.description}" />
     </div>
 
-    <div class="fields two">
-        <div class="field required">
-            <label for="${prefix}_type">Typ</label>
-            <g:select class="ui dropdown" id="${prefix}_type" name="${prefix}_type"
-                          noSelection="${['' : message(code:'default.select.choose.label')]}"
-                          from="${WfConditionBase.TYPES}"
-                          value="${condition?.type}"
-                          optionKey="${{ it }}"
-                          optionValue="${{ RefdataValue.findByOwnerAndValue( RefdataCategory.findByDesc('workflow.condition.type'), 'type_' + it).getI10n('value') }}" />
-        </div>
+    <div class="field required">
+        <label for="${prefix}_type">Typ</label>
+        <g:select class="ui dropdown" id="${prefix}_type" name="${prefix}_type"
+                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                      from="${WfConditionBase.TYPES}"
+                      value="${condition?.type}"
+                      optionKey="${{ it }}"
+                      optionValue="${{ RefdataValue.findByOwnerAndValue( RefdataCategory.findByDesc('workflow.condition.type'), 'type_' + it).getI10n('value') }}" />
     </div>
 
     <g:if test="${prefix == WfCondition.KEY}">
 
-        <div class="fields two">
-            <div class="field required">
-                <label for="${prefix}_status">Status</label>
-                <laser:select class="ui dropdown" id="${prefix}_status" name="${prefix}_status"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"
-                              from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATUS )}"
-                              value="${condition?.status?.id}"
-                              optionKey="id"
-                              optionValue="value" />
-            </div>
-
-            <div class="field">
-                <label for="${prefix}_comment">Kommentar</label>
-                <input type="text" name="${prefix}_comment" id="${prefix}_comment" value="${condition?.comment}" />
-            </div>
+        <div class="field required">
+            <label for="${prefix}_status">Status</label>
+            <laser:select class="ui dropdown" id="${prefix}_status" name="${prefix}_status"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                          from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATUS )}"
+                          value="${condition?.status?.id}"
+                          optionKey="id"
+                          optionValue="value" />
         </div>
 
     </g:if>
@@ -95,6 +86,22 @@
                 </g:if>
             </g:each>
         </div>
+    </g:if>
+
+    <g:if test="${prefix == WfCondition.KEY}">
+
+        <div class="fields two">
+            <div class="field">
+                <label for="${prefix}_prototype">Prototyp</label>
+                <g:select class="ui dropdown disabled" id="${prefix}_prototype" name="${prefix}_prototype"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                          from="${dd_prototypeList}"
+                          value="${condition?.prototype?.id}"
+                          optionKey="id"
+                          optionValue="${{'(' + it.id + ') ' + it.title}}" />
+            </div>
+        </div>
+
     </g:if>
 
     <input type="hidden" name="cmd" value="${cmd}:${prefix}" />
