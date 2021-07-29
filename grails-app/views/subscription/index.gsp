@@ -332,7 +332,7 @@
                                 </td>
 
                                 <td>
-                                    ${ie.medium} <!-- may be subject of sync if issue entitlement medium and TIPP medium may differ -->
+                                    ${ie.tipp.medium}
                                 </td>
                                 <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
 

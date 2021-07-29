@@ -823,6 +823,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processAddEntitlements() {
+
         Map<String,Object> ctrlResult = subscriptionControllerService.processAddEntitlements(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
@@ -834,7 +835,7 @@ class SubscriptionController {
             flash.error = ctrlResult.result.error
             flash.message = ctrlResult.result.message
         }
-        redirect action: 'addEntitlements', id: ctrlResult.result.subscription.id
+        redirect action: 'index', id: ctrlResult.result.subscription.id
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)

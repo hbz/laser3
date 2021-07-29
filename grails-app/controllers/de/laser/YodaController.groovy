@@ -628,7 +628,10 @@ class YodaController {
     def updateData() {
         if(!globalSourceSyncService.running) {
             log.debug("start reloading ...")
-            globalSourceSyncService.updateData(params.dataToLoad)
+            if(params.dataToLoad == "iemedium")
+                yodaService.fillIEMedium()
+            else
+                globalSourceSyncService.updateData(params.dataToLoad)
         }
         else {
             log.debug("process running, lock is set!")
