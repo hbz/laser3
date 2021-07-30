@@ -365,4 +365,10 @@ databaseChangeLog = {
     changeSet(author: "klober (generated)", id: "1627370771106-26") {
         addForeignKeyConstraint(baseColumnNames: "wfc_prototype_fk", baseTableName: "wf_condition", constraintName: "FKgql6c2h76kqlsf0k3t7p7e9dp", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "wfcp_id", referencedTableName: "wf_condition_prototype")
     }
+
+    changeSet(author: "klober (generated)", id: "1627370771106-27") {
+        createIndex(indexName: "se_created_idx", tableName: "system_event") {
+            column(name: "se_created")
+        }
+    }
 }

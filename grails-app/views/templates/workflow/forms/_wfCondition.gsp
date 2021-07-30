@@ -15,7 +15,7 @@
 
     <div class="field required">
         <label for="${prefix}_type">Typ</label>
-        <g:select class="ui dropdown" id="${prefix}_type" name="${prefix}_type"
+        <g:select class="ui dropdown la-not-clearable" id="${prefix}_type" name="${prefix}_type"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                       from="${WfConditionBase.TYPES}"
                       value="${condition?.type}"
@@ -27,7 +27,7 @@
 
         <div class="field required">
             <label for="${prefix}_status">Status</label>
-            <laser:select class="ui dropdown" id="${prefix}_status" name="${prefix}_status"
+            <laser:select class="ui dropdown la-not-clearable" id="${prefix}_status" name="${prefix}_status"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATUS )}"
                           value="${condition?.status?.id}"
@@ -37,39 +37,22 @@
 
     </g:if>
 
-    <div class="fields three">
-        <div class="field">
-            <g:if test="${prefix == WfCondition.KEY}">
-                <label for="${prefix}_parent">${message(code: 'workflow.object.' + WfTask.KEY)}  &uarr;</label> %{-- TODO --}%
-            </g:if>
-            <g:else>
-                <label for="${prefix}_parent">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)}  &uarr;</label> %{-- TODO --}%
-            </g:else>
-            <g:select class="ui dropdown disabled" id="${prefix}_parent" name="${prefix}_parent"
-                      noSelection="${['' : message(code:'default.select.choose.label')]}"
-                      from="${dd_taskList}"
-                      value="${condition?.task?.id}"
-                      optionKey="id"
-                      optionValue="${{'(' + it.id + ') ' + it.title}}" />
-        </div>
-    </div>
-
     <g:if test="${condition?.getFields()}">
-        <div class="ui segment" style="background-color: #d3dae3">
+        <div class="ui blue segment" style="background-color: #f3f3f3">
             <g:each in="${condition?.getFields()}" var="field">
                 <g:if test="${field.startsWith('checkbox')}">
                     <div class="fields two">
                         <div class="field">
                             <label for="${prefix}_${field}_title">Titel für ${condition.getFieldLabel(field)}</label>
-                            <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}">
+                            <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
                         </div>
                         <div class="field">
-                            <label for="${prefix}_${field}_isTrigger">Trigger</label>
+                            <label for="${prefix}_${field}_isTrigger">Status</label>
                             <div class="ui checkbox">
                                 <input type="checkbox" name="${prefix}_${field}_isTrigger" id="${prefix}_${field}_isTrigger"
                                     <% if (condition?.getProperty(field + '_isTrigger')) { print 'checked="checked"' } %>
-                                >
-                                <label>Setzt Status des Tasks auf 'Erledigt'</label>
+                                />
+                                <label>${condition.getFieldLabel(field)}-Status ändert Aufgaben-Status</label>
                             </div>
                         </div>
                     </div>
@@ -78,7 +61,7 @@
                     <div class="fields two">
                         <div class="field">
                             <label for="${prefix}_${field}_title">Titel für ${condition.getFieldLabel(field)}</label>
-                            <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}">
+                            <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
                         </div>
                         <div class="field">
                         </div>
@@ -86,20 +69,70 @@
                 </g:if>
             </g:each>
         </div>
+        <div class="ui teal segment" style="background-color: #f3f3f3">
+            <g:each in="${condition?.getFields()}" var="field" status="fi">
+                <g:if test="${fi == 0 || fi%2 == 0}">
+                    <div class="field">
+                        <div class="fields two">
+                </g:if>
+
+                <g:if test="${field.startsWith('checkbox')}">
+                    <div class="field">
+                        <label for="${prefix}_${field}">${condition.getProperty(field + '_title')}</label>
+                        <div class="ui checkbox">
+                            <input type="checkbox" name="${prefix}_${field}" id="${prefix}_${field}" />
+                        </div>
+                    </div>
+                </g:if>
+                <g:if test="${field.startsWith('date')}">
+                    <div class="field">
+                        <label for="${prefix}_${field}">${condition.getProperty(field + '_title')}</label>
+                        <input type="date" name="${prefix}_${field}" id="${prefix}_${field}" />
+                    </div>
+                </g:if>
+
+                <g:if test="${fi + 1 == condition.getFields().size() || fi%2 == 1}">
+                        </div>
+                    </div>
+                </g:if>
+            </g:each>
+        </div>
+    </g:if>
+
+    <g:if test="${prefix == WfConditionPrototype.KEY}">
+
+        <div class="field">
+            <label for="${prefix}_parent">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)}  &uarr;</label>
+            <g:select class="ui dropdown disabled" id="${prefix}_parent" name="${prefix}_parent"
+                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                      from="${dd_taskList}"
+                      value="${condition?.task?.id}"
+                      optionKey="id"
+                      optionValue="${{'(' + it.id + ') ' + it.title}}" />
+        </div>
+
     </g:if>
 
     <g:if test="${prefix == WfCondition.KEY}">
 
-        <div class="fields two">
-            <div class="field">
-                <label for="${prefix}_prototype">Prototyp</label>
-                <g:select class="ui dropdown disabled" id="${prefix}_prototype" name="${prefix}_prototype"
-                          noSelection="${['' : message(code:'default.select.choose.label')]}"
-                          from="${dd_prototypeList}"
-                          value="${condition?.prototype?.id}"
-                          optionKey="id"
-                          optionValue="${{'(' + it.id + ') ' + it.title}}" />
-            </div>
+        <div class="field">
+            <label for="${prefix}_parent">${message(code: 'workflow.object.' + WfTask.KEY)}  &uarr;</label>
+            <g:select class="ui dropdown disabled" id="${prefix}_parent" name="${prefix}_parent"
+                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                      from="${dd_taskList}"
+                      value="${condition?.task?.id}"
+                      optionKey="id"
+                      optionValue="${{'(' + it.id + ') ' + it.title}}" />
+        </div>
+
+        <div class="field">
+            <label for="${prefix}_prototype">Prototyp</label>
+            <g:select class="ui dropdown disabled" id="${prefix}_prototype" name="${prefix}_prototype"
+                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                      from="${dd_prototypeList}"
+                      value="${condition?.prototype?.id}"
+                      optionKey="id"
+                      optionValue="${{'(' + it.id + ') ' + it.title}}" />
         </div>
 
     </g:if>

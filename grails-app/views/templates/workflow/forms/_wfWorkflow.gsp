@@ -17,7 +17,7 @@
 
         <div class="field required">
             <label for="${prefix}_type>">State</label>
-            <laser:select class="ui dropdown" id="${prefix}_state" name="${prefix}_state"
+            <laser:select class="ui dropdown la-not-clearable" id="${prefix}_state" name="${prefix}_state"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATE )}"
                           value="${workflow?.state?.id}"
@@ -40,7 +40,7 @@
 
         <div class="field required">
             <label for="${prefix}_status">Status</label>
-            <laser:select class="ui dropdown" id="${prefix}_status" name="${prefix}_status"
+            <laser:select class="ui dropdown la-not-clearable" id="${prefix}_status" name="${prefix}_status"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATUS )}"
                           value="${workflow?.status?.id}"
@@ -64,12 +64,24 @@
                       optionValue="${{'(' + it.id + ') ' + it.name}}" />
         </div>
 
+        %{--
         <div class="field">
             <label for="${prefix}_child">${message(code: 'workflow.object.' + WfTask.KEY)} &darr;</label>
             <g:select class="ui dropdown disabled" id="${prefix}_child" name="${prefix}_child"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                       from="${dd_childList}"
                       value="${workflow?.child?.id}"
+                      optionKey="id"
+                      optionValue="${{'(' + it.id + ') ' + it.title}}" />
+        </div>
+        --}%
+
+        <div class="field">
+            <label for="${prefix}_prototype">Prototyp</label>
+            <g:select class="ui dropdown disabled" id="${prefix}_prototype" name="${prefix}_prototype"
+                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                      from="${dd_prototypeList}"
+                      value="${workflow?.prototype?.id}"
                       optionKey="id"
                       optionValue="${{'(' + it.id + ') ' + it.title}}" />
         </div>

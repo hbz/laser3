@@ -30,11 +30,11 @@
         <g:link class="ui red icon small button right floated" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflow.KEY}", id: wfw.id]}"><i class="trash alternate icon"></i></g:link>
         <strong>
             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflow.KEY, id: wfw.id]}">
-                <i class="ui icon tasks"></i> (${wfw.id}) ${wfw.title}
+                <div class="ui circular label">${wfw.id}</div> <i class="ui icon tasks"></i> ${wfw.title}
             </g:link>
-            <br /> --->
+            <br />
             <g:link controller="subscription" action="show" params="${[id: wfw.subscription.id]}">
-                <i class="ui icon clipboard"></i> (${wfw.subscription.id}) ${wfw.subscription}
+                <div class="ui circular label">${wfw.subscription.id}</div> <i class="ui icon clipboard"></i> ${wfw.subscription}
             </g:link>
         </strong>
     </p>
