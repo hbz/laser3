@@ -201,7 +201,7 @@
                         <th>${message(code: 'sidewide.number')}</th>
                         <g:sortableColumn class="eight wide" params="${params}" property="tipp.sortName"
                                           title="${message(code: 'title.label')}"/>
-                        <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
+                        <%-- legacy ??? <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>--%>
                         <th class="four wide">${message(code: 'subscription.details.coverage_dates')}</th>
                         <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
                         <th class="two wide"><g:message code="subscription.details.prices"/></th>
@@ -211,7 +211,7 @@
                         <th class="one wide"></th>
                     </tr>
                     <tr>
-                        <th rowspan="2" colspan="4"></th>
+                        <th rowspan="2" colspan="3"></th>
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
                                           title="${message(code: 'default.from')}"/>
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessStartDate"
@@ -253,10 +253,11 @@
                                 </select>
                                 -->
                             </th>
+                            <%-- legacy??
                             <th>
                                 <semui:simpleHiddenValue id="bulk_medium2" name="bulk_medium2" type="refdata"
                                                          category="${RDConstants.IE_MEDIUM}"/>
-                            </th>
+                            </th>--%>
                             <th>
                                 <%--<semui:datepicker hideLabel="true"
                                                   placeholder="${message(code: 'default.from')}"
@@ -330,10 +331,11 @@
                                                         showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
                                     <!-- END TEMPLATE -->
                                 </td>
-
+                                <%-- legacy???
                                 <td>
                                     ${ie.tipp.medium}
                                 </td>
+                                --%>
                                 <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
 
                                     <g:render template="/templates/tipps/coverages" model="${[ie: ie, tipp: ie.tipp]}"/>

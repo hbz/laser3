@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3709    30.07.2021  dev     2.2         Andreas Bug         Inkonsistenz bei der Befüllug des Titelgruppendropdowns behoben
+
+3708    30.07.2021  dev     2.2         Andreas Bug         Legacy-Spalte aus Lizenzbestandstabelle entfernt
+
+3707    30.07.2021  dev     2.2         Andreas Bug         entfallenen Funktionstyp bei Anbieter wieder hergestellt
+
+3689    30.07.2021  dev     2.2         Andreas Bug         technischen Support nach Absprache wieder eingeblendet
+
 3702    28.07.2021  dev     2.2         Andreas Bug         Tippfehler in Übersetzungstexten korrigiert
 
 3700    28.07.2021  dev     2.2         Andreas Bug         Lizenzexport berücksichtigte Merkmale nicht, die von der Konsortialstelle eingetragen wurden
