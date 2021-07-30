@@ -39,7 +39,7 @@
 
     <g:if test="${condition?.getFields()}">
         <div class="ui blue segment" style="background-color: #f3f3f3">
-            <g:each in="${condition?.getFields()}" var="field">
+            <g:each in="${condition.getFields()}" var="field">
                 <g:if test="${field.startsWith('checkbox')}">
                     <div class="fields two">
                         <div class="field">
@@ -70,7 +70,7 @@
             </g:each>
         </div>
         <div class="ui teal segment" style="background-color: #f3f3f3">
-            <g:each in="${condition?.getFields()}" var="field" status="fi">
+            <g:each in="${condition.getFields()}" var="field" status="fi">
                 <g:if test="${fi == 0 || fi%2 == 0}">
                     <div class="field">
                         <div class="fields two">

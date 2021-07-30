@@ -215,23 +215,22 @@ class WorkflowService {
         if (cmd[1] == WfWorkflowPrototype.KEY) {
             wf = wf as WfWorkflowPrototype
 
-            wf.child        = WfTaskPrototype.get(ph.getLong('child'))
-            wf.description  = ph.getString('description')
-            wf.state        = RefdataValue.get(ph.getLong('state'))
             wf.title        = ph.getString('title')
+            wf.description  = ph.getString('description')
+            wf.child        = WfTaskPrototype.get(ph.getLong('child'))
+            wf.state        = RefdataValue.get(ph.getLong('state'))
         }
         else if (cmd[1] == WfWorkflow.KEY) {
             wf = wf as WfWorkflow
 
-            wf.child        = WfTask.get(ph.getLong('child'))
-            wf.description  = ph.getString('description')
-            wf.state        = RefdataValue.get(ph.getLong('state'))
             wf.title        = ph.getString('title')
-
+            wf.description  = ph.getString('description')
             wf.comment      = ph.getString('comment')
-            wf.prototype    = WfWorkflowPrototype.get(ph.getLong('prototype'))
             wf.status       = RefdataValue.get(ph.getLong('status'))
-            wf.subscription = Subscription.get(ph.getLong('subscription'))
+
+            // wf.child        = WfTask.get(ph.getLong('child'))
+            // wf.prototype    = WfWorkflowPrototype.get(ph.getLong('prototype'))
+            // wf.subscription = Subscription.get(ph.getLong('subscription'))
         }
 
         Map<String, Object> result = [ workflow: wf, cmd: cmd[0], key: cmd[1] ]
@@ -258,28 +257,27 @@ class WorkflowService {
         if (cmd[1] == WfTaskPrototype.KEY) {
             task = task as WfTaskPrototype
 
-            task.child          = WfTaskPrototype.get(ph.getLong('child'))
-            task.condition      = WfConditionPrototype.get(ph.getLong('condition'))
-            task.description    = ph.getString('description')
-            task.next           = WfTaskPrototype.get(ph.getLong('next'))
-            task.priority       = RefdataValue.get(ph.getLong('priority'))
             task.title          = ph.getString('title')
-            //task.type = RefdataValue.get(ph.getLongParam('type'))
+            task.description    = ph.getString('description')
+            task.priority       = RefdataValue.get(ph.getLong('priority'))
+            task.condition      = WfConditionPrototype.get(ph.getLong('condition'))
+            task.child          = WfTaskPrototype.get(ph.getLong('child'))
+            task.next           = WfTaskPrototype.get(ph.getLong('next'))
+
         }
         else if (cmd[1] == WfTask.KEY) {
             task = task as WfTask
 
-            task.child          = WfTask.get(ph.getLong('child'))
-            task.condition      = WfCondition.get(ph.getLong('condition'))
-            task.description    = ph.getString('description')
-            task.next           = WfTask.get(ph.getLong('next'))
-            task.priority       = RefdataValue.get(ph.getLong('priority'))
             task.title          = ph.getString('title')
-            //task.type = RefdataValue.get(ph.getLongParam('type'))
+            task.description    = ph.getString('description')
+            task.priority       = RefdataValue.get(ph.getLong('priority'))
+            task.comment        = ph.getString('comment')
+            task.status         = RefdataValue.get(ph.getLong('status'))
 
-            task.comment    = ph.getString('comment')
-            task.prototype  = WfTaskPrototype.get(ph.getLong('prototype'))
-            task.status     = RefdataValue.get(ph.getLong('status'))
+            // task.condition      = WfCondition.get(ph.getLong('condition'))
+            // task.child          = WfTask.get(ph.getLong('child'))
+            // task.next           = WfTask.get(ph.getLong('next'))
+            // task.prototype      = WfTaskPrototype.get(ph.getLong('prototype'))
         }
 
         Map<String, Object> result = [ task: task, cmd: cmd[0], key: cmd[1] ]
@@ -307,8 +305,8 @@ class WorkflowService {
         if (cmd[1] == WfConditionPrototype.KEY) {
             condition = condition as WfConditionPrototype
 
-            condition.description   = ph.getString('description')
             condition.title         = ph.getString('title')
+            condition.description   = ph.getString('description')
             condition.type          = ph.getInt('type') ?: 0
 
             // values
@@ -333,8 +331,8 @@ class WorkflowService {
         else if (cmd[1] == WfCondition.KEY) {
             condition = condition as WfCondition
 
-            condition.description   = ph.getString('description')
             condition.title         = ph.getString('title')
+            condition.description   = ph.getString('description')
             condition.type          = ph.getInt('type') ?: 0
 
             // values
