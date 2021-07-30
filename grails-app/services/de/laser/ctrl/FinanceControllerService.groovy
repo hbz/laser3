@@ -45,7 +45,7 @@ class FinanceControllerService {
             result.sortConfig.ownOrder = params.order
         }
         if(params.consSort) {
-            result.sortConfig.consSort = params.sort
+            result.sortConfig.consSort = (params.sort.contains("oo.org") || params.sort.contains("ci.")) ? params.sort : 'ci.'+params.sort
             result.sortConfig.consOrder = params.order
         }
         if(params.subscrSort) {
