@@ -789,6 +789,7 @@ class SubscriptionService {
                             status: tipp.status,
                             subscription: subscription,
                             tipp: tipp,
+                            medium: tipp.medium,
                             accessStartDate:tipp.accessStartDate,
                             accessEndDate:tipp.accessEndDate,
                             acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED)
@@ -847,6 +848,7 @@ class SubscriptionService {
                         status: statusCurrent,
                         subscription: target,
                         tipp: ie.tipp,
+                        medium: ie.medium ?: ie.tipp.medium,
                         accessStartDate: ie.tipp.accessStartDate,
                         accessEndDate: ie.tipp.accessEndDate,
                         acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED
@@ -1011,6 +1013,7 @@ class SubscriptionService {
 					status: tipp.status,
                     subscription: sub,
                     tipp: tipp,
+                    medium: tipp.medium,
                     accessStartDate: issueEntitlementOverwrite?.accessStartDate ? DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessStartDate) : tipp.accessStartDate,
                     accessEndDate: issueEntitlementOverwrite?.accessEndDate ? DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessEndDate) : tipp.accessEndDate,
                     ieReason: 'Manually Added by User',

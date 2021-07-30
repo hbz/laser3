@@ -17,6 +17,7 @@ import grails.web.mapping.LinkGenerator
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChildren
 import groovyx.net.http.HTTPBuilder
+import org.hibernate.Session
 import org.springframework.transaction.TransactionStatus
 
 //@CompileStatic
@@ -34,6 +35,19 @@ class YodaService {
     boolean showDebugInfo() {
         //enhanced as of ERMS-829
         return ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || ConfigUtils.getShowDebugInfo() )
+    }
+
+    void fillIEMedium() {
+        IssueEntitlement.withSession { Session sess ->
+            IssueEntitlement.executeQuery("select ie from IssueEntitlement ie join ie.tipp tipp where ie.medium = null and tipp.medium != null").eachWithIndex { IssueEntitlement ie, int ctr ->
+                ie.medium = ie.tipp.medium
+                println "${ie.save()} saved"
+                if(ctr > 0 && ctr % 10000 == 0) {
+                    println "interim flush after ${ctr}"
+                    sess.flush()
+                }
+            }
+        }
     }
 
     Map<String,Object> listDuplicatePackages() {
