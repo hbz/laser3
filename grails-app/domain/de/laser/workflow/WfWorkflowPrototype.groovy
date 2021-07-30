@@ -43,7 +43,7 @@ class WfWorkflowPrototype extends WfWorkflowBase {
         child ? child.getSequence() : []
     }
 
-    WfWorkflow instantiate() throws Exception {
+    WfWorkflow instantiate(Long subId) throws Exception {
 
         WfWorkflow workflow = new WfWorkflow(
                 title:       this.title,
@@ -51,13 +51,13 @@ class WfWorkflowPrototype extends WfWorkflowBase {
                 prototype:   this,
                 owner:       contextService.getOrg(),
                 status:      RDStore.WF_WORKFLOW_STATUS_OPEN,
-                subscription: Subscription.get(9542)
+                subscription: Subscription.get(subId)
         )
         if (this.child) {
             workflow.child = this.child.instantiate()
         }
         if (! workflow.validate()) {
-            log.debug( '[ ' + this.id + ' ].instantiate() : ' + workflow.getErrors().toString() )
+            log.debug( '[ ' + this.id + ' ].instantiate(' + subId + ') : ' + workflow.getErrors().toString() )
         }
 
         workflow

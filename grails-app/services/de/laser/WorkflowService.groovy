@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.DateUtils
 import de.laser.workflow.*
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -33,6 +34,10 @@ class WorkflowService {
         }
         Integer getInt(String key) {
             params.int(cmpKey + key)
+        }
+        Date getDate(String key) {
+            params.get(cmpKey + key) ? DateUtils.parseDateGeneric(params.get(cmpKey + key)) : null
+
         }
     }
 
@@ -306,8 +311,15 @@ class WorkflowService {
             condition.title         = ph.getString('title')
             condition.type          = ph.getInt('type') ?: 0
 
+            // values
+
             condition.checkbox1 = ph.getString('checkbox1') == 'on'
             condition.checkbox2 = ph.getString('checkbox2') == 'on'
+
+            condition.date1 = ph.getDate('date1')
+            condition.date2 = ph.getDate('date2')
+
+            // meta
 
             condition.checkbox1_title = ph.getString('checkbox1_title')
             condition.checkbox2_title = ph.getString('checkbox2_title')
@@ -325,8 +337,15 @@ class WorkflowService {
             condition.title         = ph.getString('title')
             condition.type          = ph.getInt('type') ?: 0
 
+            // values
+
             condition.checkbox1 = ph.getString('checkbox1') == 'on'
             condition.checkbox2 = ph.getString('checkbox2') == 'on'
+
+            condition.date1 = ph.getDate('date1')
+            condition.date2 = ph.getDate('date2')
+
+            // meta
 
             condition.checkbox1_title = ph.getString('checkbox1_title')
             condition.checkbox2_title = ph.getString('checkbox2_title')
@@ -365,7 +384,7 @@ class WorkflowService {
 
                 try {
                     result.prototype    = WfWorkflowPrototype.get(params.id)
-                    result.workflow     = result.prototype.instantiate()
+                    result.workflow     = result.prototype.instantiate( params.long('subId') ) // TODO
 
                     if (! result.workflow.save()) {
                         result.status = OP_STATUS_ERROR

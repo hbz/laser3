@@ -219,7 +219,7 @@
                         <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflowPrototype.KEY}", id: wp.id]}"><i class="trash alternate icon"></i></g:link>
                     </g:if>
                     <g:if test="${wp.state == RDStore.WF_WORKFLOW_STATE_ACTIVE}">
-                        <g:link class="ui green icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "init:${WfWorkflowPrototype.KEY}", id: wp.id]}"><i class="step forward icon"></i></g:link>
+                        <g:link class="ui green icon small button tmpJSPrompt" controller="admin" action="manageWorkflows" params="${[cmd: "instantiate:${WfWorkflowPrototype.KEY}", id: wp.id]}"><i class="step forward icon"></i></g:link>
                     </g:if>
                 </td>
             </tr>
@@ -394,6 +394,14 @@
         e.preventDefault();
         var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), true);
         func();
+    });
+
+    $('.tmpJSPrompt').on('click', function(e) {
+        e.preventDefault();
+        var subId = prompt('Subscription-ID ?')
+        if (subId) {
+            window.location = $(this).attr('href') + '&subId=' + subId;
+        }
     });
 </laser:script>
 

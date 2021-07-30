@@ -16,7 +16,7 @@
         <semui:errors bean="${obj}" />
     </g:else>
 </g:if>
-<g:if test="${cmd == 'init'}">
+<g:if test="${cmd == 'instantiate'}">
     <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
         <semui:msg class="positive" text="(${obj.id} : ${obj.title}) wurde erfolgreich instanziiert." />
     </g:if>

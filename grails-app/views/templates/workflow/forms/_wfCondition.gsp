@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
+<%@ page import="de.laser.helper.DateUtils; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
 
 <g:form controller="admin" action="manageWorkflows" method="POST" class="ui form">
     <g:if test="${! tmplIsModal}"><div class="ui segment"></g:if>
@@ -80,14 +80,18 @@
                     <div class="field">
                         <label for="${prefix}_${field}">${condition.getProperty(field + '_title')}</label>
                         <div class="ui checkbox">
-                            <input type="checkbox" name="${prefix}_${field}" id="${prefix}_${field}" />
+                            <input type="checkbox" name="${prefix}_${field}" id="${prefix}_${field}"
+                                <% print condition.getProperty(field) == true ? 'checked="checked"' : '' %>
+                            />
                         </div>
                     </div>
                 </g:if>
                 <g:if test="${field.startsWith('date')}">
                     <div class="field">
                         <label for="${prefix}_${field}">${condition.getProperty(field + '_title')}</label>
-                        <input type="date" name="${prefix}_${field}" id="${prefix}_${field}" />
+                        <input type="date" name="${prefix}_${field}" id="${prefix}_${field}"
+                            <% print condition.getProperty(field) ? 'value="' + DateUtils.getSDF_ymd().format(condition.getProperty(field)) + '"' : '' %>
+                        />
                     </div>
                 </g:if>
 

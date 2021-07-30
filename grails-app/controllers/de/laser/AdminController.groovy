@@ -429,7 +429,7 @@ class AdminController  {
                     result = workflowService.handleCondition(params)
                 }
             }
-            else if (cmd[0] == 'init') {
+            else if (cmd[0] == 'instantiate') {
                 if (cmd[1] in [WfWorkflowPrototype.KEY ]) {
                     result = workflowService.instantiateCompleteWorkflow(params)
                 }
