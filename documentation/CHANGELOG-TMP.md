@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3694    30.07.2021  dev     2.2         David   Feature     Workflows: Generische Datenkomponente erstellen
+
 3705    29.07.2021  dev     2.2         Andreas Bug         Zählvariable inkorrekt gesetzt
 
 3704    29.07.2021  dev     2.2         Andreas Bug         Sortierung der Lizenzkosten bei Nichtkonsortialsichten wurde nicht durchgereicht
