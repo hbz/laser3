@@ -174,7 +174,7 @@ workflow.condition.status,Status,Status
 workflow.condition.type,Typ,Type
 workflow.task.priority,Priorität,Priority
 workflow.task.status,Status,Status
-workflow.workflow.state,Zustand,Zustand
+workflow.workflow.state,Zustand,State
 workflow.workflow.status,Status,Status
 y.n,Ja/Nein,Yes/No
 y.n.l,Ja/Nein/Eingeschränkt/Keine Angaben,Yes/No/limited/no statement
