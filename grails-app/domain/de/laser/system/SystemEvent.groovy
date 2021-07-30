@@ -106,10 +106,10 @@ class SystemEvent {
         id          column:'se_id'
         version     false
         token       column:'se_token'
-        payload     column:'se_payload', type: 'text'
+        payload     column:'se_payload',   type: 'text'
         category    column:'se_category'
         relevance   column:'se_relevance'
-        created     column:'se_created'
+        created     column:'se_created',   index: 'se_created_idx'
     }
 
     static constraints = {

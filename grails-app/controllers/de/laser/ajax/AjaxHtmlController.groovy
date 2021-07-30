@@ -41,6 +41,12 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.export.QueryExportManager
 import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.workflow.WfCondition
+import de.laser.workflow.WfConditionPrototype
+import de.laser.workflow.WfWorkflow
+import de.laser.workflow.WfWorkflowPrototype
+import de.laser.workflow.WfTask
+import de.laser.workflow.WfTaskPrototype
 import grails.plugin.springsecurity.annotation.Secured
 
 import javax.servlet.ServletOutputStream
@@ -613,6 +619,132 @@ class AjaxHtmlController {
             response.outputStream.withStream { it << pdf }
 
 //                render view: '/myInstitution/reporting/export/pdf/generic_query', model: model
+        }
+    }
+
+    @Secured(['ROLE_USER'])
+    def createWfXModal() {
+        Map<String, Object> result = [
+                tmplCmd: 'create',
+                tmplModalTitle: g.message(code: 'workflow.object.' + params.key),
+                prefix: params.key
+        ]
+
+        if (params.key in [WfWorkflowPrototype.KEY, WfWorkflow.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfWorkflow'
+        }
+        else if (params.key in [WfTaskPrototype.KEY, WfTask.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfTask'
+        }
+        else if (params.key in [WfConditionPrototype.KEY, WfCondition.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfCondition'
+        }
+        render template: '/templates/workflow/forms/modalWrapper', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def editWfXModal() {
+        Map<String, Object> result = [ tmplCmd : 'edit' ]
+
+        if (params.key) {
+            result.prefix = params.key
+            result.tmplModalTitle = g.message(code: 'workflow.object.' + params.key) + ' : '
+
+            if (params.key == WfWorkflowPrototype.KEY) {
+                result.workflow       = WfWorkflowPrototype.get( params.id )
+                result.tmpl           = '/templates/workflow/forms/wfWorkflow'
+                result.tmplModalTitle = result.tmplModalTitle + '(' + result.workflow.id + ') ' + result.workflow.title
+
+                if (result.workflow) {
+                    // not: * used as tp.next * used as tp.child
+                    result.dd_childList = WfTaskPrototype.executeQuery(
+                            'select wftp from WfTaskPrototype wftp where ' +
+                            'wftp not in (select tp.next from WfTaskPrototype tp) ' +
+                            'and wftp not in (select tp.child from WfTaskPrototype tp) ' +
+                            'order by id'
+                    )
+                }
+            }
+            else if (params.key == WfWorkflow.KEY) {
+                result.workflow       = WfWorkflow.get( params.id )
+                result.tmpl           = '/templates/workflow/forms/wfWorkflow'
+                result.tmplModalTitle = result.tmplModalTitle + '(' + result.workflow.id + ') ' + result.workflow.title
+
+                if (result.workflow) {
+                    result.dd_childList         = result.workflow.child ? [ result.workflow.child ] : []
+                    result.dd_prototypeList     = result.workflow.prototype ? [ result.workflow.prototype ] : []
+                    result.dd_subscriptionList  = result.workflow.subscription ? [ result.workflow.subscription ] : []
+                }
+            }
+            else if (params.key == WfTaskPrototype.KEY) {
+                result.task           = WfTaskPrototype.get( params.id )
+                result.tmpl           = '/templates/workflow/forms/wfTask'
+                result.tmplModalTitle = result.tmplModalTitle + '(' + result.task.id + ') ' + result.task.title
+
+                if (result.task) {
+                    String sql = 'select wftp from WfTaskPrototype wftp where id != :id order by id'
+                    Map<String, Object> sqlParams = [id: params.long('id')]
+
+                    // not: * self * used as tp.child * used as sp.child
+                    result.dd_nextList = WfTaskPrototype.executeQuery(
+                            'select wftp from WfTaskPrototype wftp where id != :id ' +
+                            'and wftp not in (select tp.child from WfTaskPrototype tp) ' +
+                            'and wftp not in (select wp.child from WfWorkflowPrototype wp) ' +
+                            'order by id', sqlParams
+                    )
+                    // not: * self * used as tp.next * used as sp.child
+                    result.dd_childList = WfTaskPrototype.executeQuery(
+                            'select wftp from WfTaskPrototype wftp where id != :id ' +
+                            'and wftp not in (select tp.next from WfTaskPrototype tp) ' +
+                            'and wftp not in (select wp.child from WfWorkflowPrototype wp) ' +
+                            'order by id', sqlParams
+                    )
+                    result.dd_previousList  = WfTaskPrototype.executeQuery(sql, sqlParams)
+                    result.dd_parentList    = WfTaskPrototype.executeQuery(sql, sqlParams)
+
+                    result.dd_conditionList = WfConditionPrototype.executeQuery('select wfcp from WfConditionPrototype wfcp')
+                }
+            }
+            else if (params.key == WfTask.KEY) {
+                result.task           = WfTask.get( params.id )
+                result.tmpl           = '/templates/workflow/forms/wfTask'
+                result.tmplModalTitle = result.tmplModalTitle + '(' + result.task.id + ') ' + result.task.title
+
+                if (result.task) {
+
+                    result.dd_nextList      = result.task.next ? [ result.task.next ] : []
+                    result.dd_childList     = result.task.child ? [ result.task.child ] : []
+                    result.dd_conditionList = result.task.condition ? [ result.task.condition ] : []
+                    result.dd_prototypeList = result.task.prototype ? [ result.task.prototype ] : []
+
+                    String sql = 'select wft from WfTask wft where id != :id order by id'
+                    Map<String, Object> sqlParams = [id: params.long('id')]
+
+                    result.dd_previousList  = WfTask.executeQuery(sql, sqlParams)
+                    result.dd_parentList    = WfTask.executeQuery(sql, sqlParams)
+                }
+            }
+            else if (params.key == WfConditionPrototype.KEY) {
+                result.condition      = WfConditionPrototype.get( params.id )
+                result.tmpl           = '/templates/workflow/forms/wfCondition'
+                result.tmplModalTitle = result.tmplModalTitle + '(' + result.condition.id + ') ' + result.condition.title
+
+                if (result.condition) {
+                    result.dd_taskList = WfTaskPrototype.executeQuery( 'select wftp from WfTaskPrototype wftp' )
+                }
+            }
+            else if (params.key == WfCondition.KEY) {
+                result.condition      = WfCondition.get( params.id )
+                result.tmpl           = '/templates/workflow/forms/wfCondition'
+                result.tmplModalTitle = result.tmplModalTitle + '(' + result.condition.id + ') ' + result.condition.title
+
+                if (result.condition) {
+                    result.dd_taskList = WfTask.executeQuery( 'select wft from WfTask wft' )
+                    result.dd_prototypeList = result.condition.prototype ? [ result.condition.prototype ] : []
+                }
+            }
+
+            render template: '/templates/workflow/forms/modalWrapper', model: result
         }
     }
 }

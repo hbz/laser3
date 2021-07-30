@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3694    30.07.2021  dev     2.2         David   Feature     Workflows: Generische Datenkomponente erstellen
+
 3705    29.07.2021  dev     2.2         Andreas Bug         Zählvariable inkorrekt gesetzt
 
 3704    29.07.2021  dev     2.2         Andreas Bug         Sortierung der Lizenzkosten bei Nichtkonsortialsichten wurde nicht durchgereicht
@@ -36,6 +38,8 @@
 3664    13.07.2021  dev     2.2         David   Feature     Reporting: Bestandsinformationen exportieren
 
 3674    13.07.2021  dev     2.2         Andreas Feature     neuer Identifier-Namensraum und neue Merkmale für FID-Daten
+
+3663    13.07.2021  dev     2.2         David   Feature     Workflows: Datenmodell und Strukturen
 
 3673    12.07.2021  dev     2.2         Andreas Bug         Alle Titel: ID-Verarbeitung korrigiert
 
