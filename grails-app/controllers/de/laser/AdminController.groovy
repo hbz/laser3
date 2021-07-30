@@ -14,13 +14,18 @@ import de.laser.properties.PropertyDefinitionGroupItem
 import de.laser.api.v0.ApiToolkit
  
 import de.laser.exceptions.CleanupException
-import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import de.laser.helper.SessionCacheWrapper
 import de.laser.system.SystemAnnouncement
 import de.laser.system.SystemEvent
 import de.laser.system.SystemMessage
+import de.laser.workflow.WfCondition
+import de.laser.workflow.WfConditionPrototype
+import de.laser.workflow.WfWorkflow
+import de.laser.workflow.WfWorkflowPrototype
+import de.laser.workflow.WfTask
+import de.laser.workflow.WfTaskPrototype
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -58,6 +63,7 @@ class AdminController  {
     def dataConsistencyService
     def organisationService
     def apiService
+    def workflowService
 
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
@@ -405,6 +411,47 @@ class AdminController  {
   }
 
     @Secured(['ROLE_ADMIN'])
+    def manageWorkflows() {
+        Map<String, Object> result = [:]
+        //log.debug( params.toMapString() )
+
+        if (params.cmd) {
+            String[] cmd = (params.cmd as String).split(':')
+
+            if (cmd[0] in [ 'create', 'edit' ]) {
+                if (cmd[1] in [WfWorkflowPrototype.KEY, WfWorkflow.KEY ]) {
+                    result = workflowService.handleWorkflow(params)
+                }
+                else if (cmd[1] in [ WfTaskPrototype.KEY, WfTask.KEY ]) {
+                    result = workflowService.handleTask(params)
+                }
+                else if (cmd[1] in [ WfConditionPrototype.KEY, WfCondition.KEY ]) {
+                    result = workflowService.handleCondition(params)
+                }
+            }
+            else if (cmd[0] == 'instantiate') {
+                if (cmd[1] in [WfWorkflowPrototype.KEY ]) {
+                    result = workflowService.instantiateCompleteWorkflow(params)
+                }
+            }
+            else if (cmd[0] == 'delete') {
+                if (cmd[1] in [WfWorkflowPrototype.KEY, WfWorkflow.KEY ]) {
+                    result = workflowService.deleteWorkflow(params)
+                }
+                else if (cmd[1] in [ WfTaskPrototype.KEY, WfTask.KEY ]) {
+                    result = workflowService.deleteTask(params)
+                }
+                else if (cmd[1] in [ WfConditionPrototype.KEY, WfCondition.KEY ]) {
+                    result = workflowService.deleteCondition(params)
+                }
+            }
+        }
+
+        log.debug( result.toMapString() )
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
     def showAffiliations() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
@@ -443,10 +490,9 @@ class AdminController  {
 
         params.sort =   params.sort ?: 'created'
         params.order =  params.order ?: 'desc'
-        params.max =    params.max ?: 300
+        params.max =    params.max ?: 200
 
         result.events = SystemEvent.list(params)
-
         result
     }
 
