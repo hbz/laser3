@@ -341,6 +341,13 @@
         </div><!-- three fields -->
 
 <laser:script file="${this.getGroovyPageFileName()}">
+    <%
+        String contextSub = ""
+        if(costItem && costItem.sub)
+            contextSub = genericOIDService.getOID(costItem.sub)
+        else if(subscription)
+            contextSub = genericOIDService.getOID(subscription)
+    %>
     JSPC.app.finance${idSuffix} = {
         userLang: "${contextService.getUser().getSettingsValue(UserSetting.KEYS.LANGUAGE,null)}",
         currentForm: $("#editCost_${idSuffix}"),
@@ -368,7 +375,6 @@
         costElems: $("#newCostInLocalCurrency_${idSuffix}, #newCostCurrencyRate_${idSuffix}, #newCostInBillingCurrency_${idSuffix}"),
         calc: $(".calc"),
         newSubscription: $("#newSubscription_${idSuffix}"),
-        selectedMembers: $("[name='newLicenseeTarget']~a"),
         costItemElementConfigurations: {
         <%
             costItemElements.eachWithIndex { CostItemElementConfiguration ciec, int i ->
@@ -382,14 +388,7 @@
         selLinks: {
             newSubscription_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?query={query}",
         <g:if test="${costItem?.sub || subscription}">
-            <%
-                String contextSub = ""
-                if(costItem && costItem.sub)
-                    contextSub = genericOIDService.getOID(costItem.sub)
-                else if(subscription)
-                    contextSub = genericOIDService.getOID(subscription)
-            %>
-            newPackage_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}&sub=${contextSub}",
+            newPackage_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}&ctx=${contextSub}",
                 newIE_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub=${contextSub}",
                 newTitleGroup_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}&sub=${contextSub}"
         </g:if>
@@ -434,8 +433,7 @@
             let values = [];
             for(let i = 0;i < fields.length;i++) {
                 let value = fields[i];
-                if(!value.getAttribute("data-value").match(/:null|:for/))
-                            values.push(value.getAttribute("data-value"));
+                values.push(value.getAttribute("data-value"));
             }
             //console.log(values);
             return values;
@@ -450,11 +448,13 @@
         },
         onSubscriptionUpdate: function () {
             let context;
-            if(JSPC.app.finance${idSuffix}.selectedMembers.length === 1){
-                let values = JSPC.app.finance${idSuffix}.collect(JSPC.app.finance${idSuffix}.selectedMembers);
-                    if(!values[0].match(/:null|:for/)) {
-                    context = values[0];
+            selectedMembers = $("[name='newLicenseeTarget']~a");
+            if(selectedMembers.length === 1){
+                let values = JSPC.app.finance${idSuffix}.collect(selectedMembers);
+                if(!values[0].match(/:null|:for/)) {
+                     context = values[0];
                 }
+                else context = "${contextSub}";
             }
             else if(JSPC.app.finance${idSuffix}.newLicenseeTarget.length === 0)
                 context = JSPC.app.finance${idSuffix}.newSubscription.dropdown('get value');
@@ -468,8 +468,9 @@
         },
         checkPackageBelongings: function () {
             var subscription = $("#newSubscription_${idSuffix}, #pickedSubscription_${idSuffix}").val();
-            let values = JSPC.app.finance${idSuffix}.collect(JSPC.app.finance${idSuffix}.selectedMembers);
-            if(values.length === 1) {
+            let selectedMembers = $("[name='newLicenseeTarget']~a");
+            let values = JSPC.app.finance${idSuffix}.collect(selectedMembers);
+            if(values.length === 1 && !values[0].match(/:null|:for/)) {
                 subscription = values[0];
                 $.ajax({
                     url: "<g:createLink controller="ajaxJson" action="checkCascade"/>?subscription="+subscription+"&package="+JSPC.app.finance${idSuffix}.newPackage.val()+"&issueEntitlement="+JSPC.app.finance${idSuffix}.newIE.val(),
@@ -568,13 +569,15 @@
             });
             this.newPackage.change(function(){
                 let context;
-                if(JSPC.app.finance${idSuffix}.selectedMembers.length === 1) {
-                    let values = JSPC.app.finance${idSuffix}.collect(JSPC.app.finance${idSuffix}.selectedMembers);
+                let selectedMembers = $("[name='newLicenseeTarget']~a");
+                if(selectedMembers.length === 1) {
+                    let values = JSPC.app.finance${idSuffix}.collect(selectedMembers);
                     if(!values[0].match(/:null|:for/)) {
                         context = values[0];
                     }
+                    else context = "${contextSub}";
                 }
-                else if(JSPC.app.finance${idSuffix}.selectedMembers.length === 0)
+                else if(selectedMembers.length === 0)
                     context = JSPC.app.finance${idSuffix}.newSubscription.val();
                 JSPC.app.finance${idSuffix}.selLinks.newIE = "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub="+context+"&pkg="+JSPC.app.finance${idSuffix}.newPackage.val();
                 JSPC.app.finance${idSuffix}.newIE.dropdown('clear');

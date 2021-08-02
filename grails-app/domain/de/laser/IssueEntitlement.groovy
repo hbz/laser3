@@ -28,8 +28,8 @@ class IssueEntitlement extends AbstractBase implements Comparable {
   @RefdataAnnotation(cat = RDConstants.CORE_STATUS)
   RefdataValue coreStatus // core Status is really core Medium.. dont ask
 
-  @RefdataAnnotation(cat = RDConstants.IE_MEDIUM)
-  RefdataValue medium
+  @RefdataAnnotation(cat = RDConstants.TITLE_MEDIUM)
+  RefdataValue medium // legacy; was distinguished back then; I see no reason why I should still do so. Is legacy.
     
   @RefdataAnnotation(cat = RDConstants.IE_ACCEPT_STATUS)
   RefdataValue acceptStatus
