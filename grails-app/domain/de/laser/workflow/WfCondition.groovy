@@ -8,15 +8,15 @@ class WfCondition extends WfConditionBase {
 
     static final String KEY = 'WF_CONDITION'
 
-    @RefdataAnnotation(cat = RDConstants.WF_CONDITION_STATUS)
-    RefdataValue status
+    //@RefdataAnnotation(cat = RDConstants.WF_CONDITION_STATUS)
+    //RefdataValue status
 
     WfConditionPrototype prototype
 
     static mapping = {
                      id column: 'wfc_id'
                 version column: 'wfc_version'
-                status  column: 'wfc_status_rv_fk'
+               // status  column: 'wfc_status_rv_fk'
               prototype column: 'wfc_prototype_fk'
                   type  column: 'wfc_type'
                   title column: 'wfc_title'

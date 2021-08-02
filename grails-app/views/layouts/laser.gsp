@@ -111,6 +111,11 @@
                         </g:if>
 
                                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                                    %{--
+                                    <div class="divider"></div>
+                                    <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" text="Meine Workflows" />
+                                    --}%
+
                                     <div class="divider"></div>
                                     <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
 

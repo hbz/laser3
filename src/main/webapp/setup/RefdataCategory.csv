@@ -170,7 +170,6 @@ transform.type,Transform Type,Transform Type
 usage.status,UsageStatus,UsageStatus
 user.setting.dashboard.tab,Dashbord Tab,Dashboard Tab
 user.setting.theme,Theme,Theme
-workflow.condition.status,Status,Status
 workflow.condition.type,Typ,Type
 workflow.task.priority,Priorität,Priority
 workflow.task.status,Status,Status
