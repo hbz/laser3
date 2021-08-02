@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3710    02.08.2021  dev     2.2         Andreas Feature     allgemeines Merkmal Kostenträger auf mehrfach vergebbar geschaltet
+
+3581    02.08.2021  dev     2.2         Andreas Feature     Adressen direkt bei Anlegen von Kontakten anlegen
+
 3709    30.07.2021  dev     2.2         Andreas Bug         Inkonsistenz bei der Befüllug des Titelgruppendropdowns behoben
 
 3708    30.07.2021  dev     2.2         Andreas Bug         Legacy-Spalte aus Lizenzbestandstabelle entfernt
