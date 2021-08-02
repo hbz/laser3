@@ -120,7 +120,7 @@ ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor, org) {
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=false&showContacts=true';
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=true&showContacts=true';
         JSPC.app.createPersonModal(url)
     }
     JSPC.app.createPersonModal = function (url) {

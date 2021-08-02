@@ -324,6 +324,7 @@
 
                 <br />
                 <br />
+                <g:render template="/templates/cpa/addressFields" model="[multipleAddresses: true]"/>
 
                 <div id="addressElements"></div>
             </g:if>

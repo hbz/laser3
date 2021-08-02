@@ -185,7 +185,7 @@ Subscription Property,Collective billing,Sammelrechnung,Collective billing,de.la
 Subscription Property,Content data format,Format Inhaltsdaten,Content data format,java.lang.String,,,true,,,,,,,
 Subscription Property,Content options,Inhaltsoptionen,Content options,java.lang.String,,,,,Welche inhaltlichen Optionen stehen den Konsorten zur Verfügung?,,,,,
 Subscription Property,Content scope,Inhaltszuschnitt,Content scope,java.lang.String,,,,,Welchen inhaltlichen Zuschnitt des Gesamtpakets hat der Teilnehmer lizenziert?,,,,,
-Subscription Property,Cost unit,Kostenträger,Cost unit,java.lang.String,,,,,Wer trägt die Kosten in welchem Umfang?,Who bears the costs and to which extent?,,,,
+Subscription Property,Cost unit,Kostenträger,Cost unit,java.lang.String,,,true,,Wer trägt die Kosten in welchem Umfang?,Who bears the costs and to which extent?,,,,
 Subscription Property,Credentials for users (per journal),Zugangskennungen für Nutzer (pro Zeitschrift),Credentials for users (per journal),java.lang.String,,,,,Zugangskennungen für Nutzer (pro Zeitschrift).,,,,,
 Subscription Property,Currency,Währung,Currency,java.lang.String,,,,,In welcher Währung erfolgt die Rechnungsstellung zum Produkt?,In which currency has the billing for the product been done?,,,,
 Subscription Property,Data delivery: volume,Datenlieferung: Volumen,Data delivery: volume,java.lang.String,,,true,,Umfang der erwarteten Gesamtlieferung / jährlichen Lieferung in GByte,Volume of expected total delivery / yearly delivery in GBytes,,,,
