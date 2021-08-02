@@ -267,6 +267,8 @@ class AjaxHtmlController {
         result.presetFunctionType = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         result.showContacts = params.showContacts == "true" ? true : ''
         result.addContacts = params.showContacts == "true" ? true : ''
+        result.showAddresses = params.showAddresses == "true" ? true : ''
+        result.addAddresses = params.showAddresses == "true" ? true : ''
         result.org = params.org ? Org.get(Long.parseLong(params.org)) : null
         result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
         if(result.contextOrg.getCustomerType() == 'ORG_CONSORTIUM'){
