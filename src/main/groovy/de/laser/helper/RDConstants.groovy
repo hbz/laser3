@@ -176,7 +176,7 @@ class RDConstants {
     public static final String WF_TASK_STATUS       = 'workflow.task.status'
     //public static final String WF_TASK_TYPE         = 'workflow.task.type'
 
-    public static final String WF_CONDITION_STATUS  = 'workflow.condition.status'
+    //public static final String WF_CONDITION_STATUS  = 'workflow.condition.status'
     //public static final String WF_CONDITION_TYPE    = 'workflow.condition.type'
 
     public static final String Y_N                    = 'y.n'

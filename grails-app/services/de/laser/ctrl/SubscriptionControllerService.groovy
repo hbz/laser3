@@ -2095,11 +2095,12 @@ class SubscriptionControllerService {
                         if (params.bulk_access_end_date && (params.bulk_access_end_date.trim().length() > 0)) {
                             ie.accessEndDate = formatter.parse(params.bulk_access_end_date)
                         }
+                        /* legacy???
                         if (params.bulk_medium.trim().length() > 0) {
                             RefdataValue selected_refdata = (RefdataValue) genericOIDService.resolveOID(params.bulk_medium.trim())
                             log.debug("Selected medium is ${selected_refdata}");
                             ie.medium = selected_refdata
-                        }
+                        }*/
                         if (params.titleGroup && (params.titleGroup.trim().length() > 0)) {
                             IssueEntitlementGroup entitlementGroup = IssueEntitlementGroup.get(Long.parseLong(params.titleGroup))
                             if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie) && !IssueEntitlementGroupItem.findByIe(ie)){

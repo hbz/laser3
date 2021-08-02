@@ -371,4 +371,13 @@ databaseChangeLog = {
             column(name: "se_created")
         }
     }
+
+    changeSet(author: "klober (generated)", id: "1627370771106-28") {
+        dropForeignKeyConstraint(baseTableName: "wf_condition", constraintName: "FKieraavh2bmih79ky23kx7c4nd")
+    }
+
+    changeSet(author: "klober (generated)", id: "1627370771106-29") {
+        dropColumn(columnName: "wfc_status_rv_fk", tableName: "wf_condition")
+    }
+
 }

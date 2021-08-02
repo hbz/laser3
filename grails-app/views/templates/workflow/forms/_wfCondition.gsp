@@ -23,7 +23,7 @@
                       optionValue="${{ RefdataValue.findByOwnerAndValue( RefdataCategory.findByDesc('workflow.condition.type'), 'type_' + it).getI10n('value') }}" />
     </div>
 
-    <g:if test="${prefix == WfCondition.KEY}">
+    %{--<g:if test="${prefix == WfCondition.KEY}">
 
         <div class="field required">
             <label for="${prefix}_status">Status</label>
@@ -35,7 +35,7 @@
                           optionValue="value" />
         </div>
 
-    </g:if>
+    </g:if> --}%
 
     <g:if test="${condition?.getFields()}">
         <div class="ui blue segment" style="background-color: #f3f3f3">

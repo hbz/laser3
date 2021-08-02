@@ -1142,7 +1142,7 @@ class FilterService {
             qry_params.pkgId = Long.parseLong(params.pkgfilter)
             filterSet = true
         }
-        if (params.titleGroup && (params.titleGroup != '')) {
+        if (params.titleGroup && (params.titleGroup != '') && !params.forCount) {
             base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) "
             qry_params.titleGroup = Long.parseLong(params.titleGroup)
         }
