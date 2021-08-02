@@ -49,7 +49,7 @@ class WfConditionPrototype extends WfConditionBase {
                 title:              this.title,
                 description:        this.description,
                 prototype:          this,
-                status:             RDStore.WF_CONDITION_STATUS_OPEN,
+                // status:             RDStore.WF_CONDITION_STATUS_OPEN,
                 type:               this.type,
                 checkbox1:              this.checkbox1,
                 checkbox1_title:        this.checkbox1_title,

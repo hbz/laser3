@@ -2233,6 +2233,16 @@ join sub.orgRelations or_sub where
     }
 
     @Secured(['ROLE_USER'])
+    def currentWorkflows() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        // TODO - TMP
+        // println result
+
+        result
+    }
+
+    @Secured(['ROLE_USER'])
     def currentConsortia() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
