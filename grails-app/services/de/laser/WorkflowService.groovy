@@ -26,6 +26,10 @@ class WorkflowService {
         String cmpKey
         GrailsParameterMap params
 
+        boolean containsKey(String key) {
+            params.containsKey(cmpKey + key)
+        }
+
         String getString(String key) {
             params.get(cmpKey + key) ? params.get(cmpKey + key).toString().trim() : null
         }
@@ -39,6 +43,14 @@ class WorkflowService {
             params.get(cmpKey + key) ? DateUtils.parseDateGeneric(params.get(cmpKey + key)) : null
 
         }
+        RefdataValue getRefdataValue(String key) {
+            Long id = getLong(key)
+            RefdataValue.findById(id)
+        }
+    }
+
+    ParamsHelper getNewParamsHelper(String cmpKey, GrailsParameterMap params) {
+        new ParamsHelper(cmpKey, params)
     }
 
     Map<String, Object> handleWorkflow(GrailsParameterMap params) {

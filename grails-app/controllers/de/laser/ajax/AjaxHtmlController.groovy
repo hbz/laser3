@@ -643,6 +643,30 @@ class AjaxHtmlController {
     }
 
     @Secured(['ROLE_USER'])
+    def useWfXModal() {
+        Map<String, Object> result = [ tmplCmd: 'usage' ]
+
+        if (params.key) {
+            String[] cmd = (params.key as String).split(':')
+            result.prefix = cmd[0]
+
+            if (cmd[0] == WfWorkflow.KEY) {
+                result.workflow       = WfWorkflow.get( cmd[1] )
+                result.tmpl           = '/templates/workflow/forms/wfUsage'
+                result.tmplModalTitle = 'Workflow: ' + result.workflow.title
+
+            }
+            else if (cmd[0] == WfTask.KEY) {
+                result.task           = WfTask.get( cmd[1] )
+                result.tmpl           = '/templates/workflow/forms/wfUsage'
+                result.tmplModalTitle = 'Workflow > Aufgabe: ' + result.task.title
+            }
+        }
+
+        render template: '/templates/workflow/forms/modalWrapper', model: result
+    }
+
+    @Secured(['ROLE_USER'])
     def editWfXModal() {
         Map<String, Object> result = [ tmplCmd : 'edit' ]
 

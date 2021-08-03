@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
+<%@ page import="de.laser.helper.WorkflowHelper; de.laser.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
 <!doctype html>
 <html>
 <head>
@@ -46,17 +46,15 @@
                 <g:if test="${! wft.child}">
                     <div class="content">
                         <div class="title">
+
                             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTask.KEY, id: wft.id]}">
+                                <i class="ui icon large ${WorkflowHelper.getCssColorByStatus(wft.status)} ${WorkflowHelper.getCssIconByTaskPriority(wft.priority)}"></i>
                                 ${wft.title}
-                                <g:if test="${wft.priority == RDStore.WF_TASK_PRIORITY_IMPORTANT}">
-                                    <i class="ui icon large exclamation circle orange"></i>
-                                </g:if>
-                                <g:if test="${wft.priority == RDStore.WF_TASK_PRIORITY_OPTIONAL}">
-                                    <i class="ui icon large minus circle grey"></i>
-                                </g:if>
                             </g:link>
                             <g:if test="${wft.condition}">
-                                - <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfCondition.KEY, id: wft.condition.id]}">${wft.condition.title}</g:link>
+                                - <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfCondition.KEY, id: wft.condition.id]}">
+                                    ${wft.condition.title}
+                                </g:link>
                             </g:if>
                         </div>
                     </div>
@@ -69,16 +67,13 @@
                                 <div class="content">
                                     <div class="title">
                                         <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTask.KEY, id: wft.id]}">
+                                            <i class="ui icon large ${WorkflowHelper.getCssColorByStatus(wft.status)} ${WorkflowHelper.getCssIconByTaskPriority(wft.priority)}"></i>
                                             ${wft.title}
-                                            <g:if test="${wft.priority == RDStore.WF_TASK_PRIORITY_IMPORTANT}">
-                                                <i class="ui icon large exclamation circle orange"></i>
-                                            </g:if>
-                                            <g:if test="${wft.priority == RDStore.WF_TASK_PRIORITY_OPTIONAL}">
-                                                <i class="ui icon large minus circle grey"></i>
-                                            </g:if>
                                         </g:link>
                                         <g:if test="${wft.condition}">
-                                            - <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfCondition.KEY, id: wft.condition.id]}">${wft.condition.title}</g:link>
+                                            - <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfCondition.KEY, id: wft.condition.id]}">
+                                                ${wft.condition.title}
+                                            </g:link>
                                         </g:if>
                                     </div>
                                 </div>
@@ -88,16 +83,13 @@
                                     <div class="content">
                                         <div class="title">
                                             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTask.KEY, id: ch.id]}">
+                                                <i class="ui icon large ${WorkflowHelper.getCssColorByStatus(ch.status)} ${WorkflowHelper.getCssIconByTaskPriority(ch.priority)}"></i>
                                                 ${ch.title}
-                                                <g:if test="${ch.priority == RDStore.WF_TASK_PRIORITY_IMPORTANT}">
-                                                    <i class="ui icon large exclamation circle orange"></i>
-                                                </g:if>
-                                                <g:if test="${ch.priority == RDStore.WF_TASK_PRIORITY_OPTIONAL}">
-                                                    <i class="ui icon large minus circle grey"></i>
-                                                </g:if>
                                             </g:link>
                                             <g:if test="${ch.condition}">
-                                                - <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfCondition.KEY, id: ch.condition.id]}">${ch.condition.title}</g:link>
+                                                - <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfCondition.KEY, id: ch.condition.id]}">
+                                                    ${ch.condition.title}
+                                                </g:link>
                                             </g:if>
                                         </div>
                                     </div>
@@ -130,12 +122,7 @@
                         <div class="title">
                             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: wftp.id]}">
                                 <span class="ui blue circular label" data-wftp="${wftp.id}">${wftp.id}</span>
-                                <g:if test="${wftp.priority == RDStore.WF_TASK_PRIORITY_IMPORTANT}">
-                                    <i class="ui icon large exclamation circle orange"></i>
-                                </g:if>
-                                <g:if test="${wftp.priority == RDStore.WF_TASK_PRIORITY_OPTIONAL}">
-                                    <i class="ui icon large minus circle grey"></i>
-                                </g:if>
+                                <i class="ui icon grey large ${WorkflowHelper.getCssIconByTaskPriority(wftp.priority)}"></i>
                             </g:link>
                             <g:if test="${wftp.condition}">
                                 -
@@ -155,12 +142,7 @@
                                     <div class="title">
                                         <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: wftp.id]}">
                                             <span class="ui blue circular label" data-wftp="${wftp.id}">${wftp.id}</span>
-                                            <g:if test="${wftp.priority == RDStore.WF_TASK_PRIORITY_IMPORTANT}">
-                                                <i class="ui icon large exclamation circle orange"></i>
-                                            </g:if>
-                                            <g:if test="${wftp.priority == RDStore.WF_TASK_PRIORITY_OPTIONAL}">
-                                                <i class="ui icon large minus circle grey"></i>
-                                            </g:if>
+                                            <i class="ui icon grey large ${WorkflowHelper.getCssIconByTaskPriority(wftp.priority)}"></i>
                                         </g:link>
                                         <g:if test="${wftp.condition}">
                                             -
@@ -177,12 +159,7 @@
                                         <div class="title">
                                             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: ch.id]}">
                                                 <span class="ui blue circular label" data-wftp="${ch.id}">${ch.id}</span>
-                                                <g:if test="${ch.priority == RDStore.WF_TASK_PRIORITY_IMPORTANT}">
-                                                    <i class="ui icon large exclamation circle orange"></i>
-                                                </g:if>
-                                                <g:if test="${ch.priority == RDStore.WF_TASK_PRIORITY_OPTIONAL}">
-                                                    <i class="ui icon large minus circle grey"></i>
-                                                </g:if>
+                                                <i class="ui icon grey large ${WorkflowHelper.getCssIconByTaskPriority(ch.priority)}"></i>
                                             </g:link>
                                             <g:if test="${ch.condition}">
                                                 -
