@@ -208,7 +208,7 @@
                                 </div>
 
                                 <div class="eight wide column">
-                                    ${message(code: 'subscription.details.coverage_dates')}
+                                    ${message(code: 'subscription.details.date_header')}
                                     <br/>
                                     ${message(code: 'default.from')}
                                     <br/>

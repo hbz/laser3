@@ -1491,8 +1491,9 @@ class SubscriptionControllerService {
             }
 
             if(result.subscription.ieGroups.size() > 0) {
-                params.forCount = true
-                def query2 = filterService.getIssueEntitlementQuery(params, result.subscription)
+                Map configMap = params.clone()
+                configMap.forCount = true
+                def query2 = filterService.getIssueEntitlementQuery(configMap, result.subscription)
                 result.num_ies = IssueEntitlement.executeQuery("select count(ie.id) " + query2.query, query2.queryParams)[0]
             }
             result.num_ies_rows = entitlements.size()
@@ -1507,6 +1508,7 @@ class SubscriptionControllerService {
                         orderClause = "order by ${params.sort} ${params.order} "
                 }
                 result.entitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp left join ie.coverages ic where ie.id in (:entIDs) '+orderClause,[entIDs:entitlements.drop(result.offset).take(result.max)])
+                result.journalsOnly = result.entitlements.find { IssueEntitlement ie -> ie.tipp.titleType != RDStore.TITLE_TYPE_JOURNAL.value } == null
             }
             else result.entitlements = []
             Set<SubscriptionPackage> deletedSPs = result.subscription.packages.findAll { SubscriptionPackage sp -> sp.pkg.packageStatus == RDStore.PACKAGE_STATUS_DELETED}
