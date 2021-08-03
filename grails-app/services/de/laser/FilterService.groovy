@@ -1080,7 +1080,7 @@ class FilterService {
             result.editable = false
         }
         if (params.filter) {
-            base_qry = " from IssueEntitlement as ie left join ie.coverages ic where ie.subscription = :subscription "
+            base_qry = " from IssueEntitlement as ie left join ie.coverages ic join ie.tipp tipp where ie.subscription = :subscription "
             if (date_filter) {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
                 // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
@@ -1096,7 +1096,7 @@ class FilterService {
             filterSet = true
         }
         else {
-            base_qry = " from IssueEntitlement as ie left join ie.coverages ic where ie.subscription = :subscription "
+            base_qry = " from IssueEntitlement as ie left join ie.coverages ic join ie.tipp tipp where ie.subscription = :subscription "
             /*if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
 
@@ -1138,7 +1138,7 @@ class FilterService {
         }
 
         if (params.pkgfilter && (params.pkgfilter != '')) {
-            base_qry += " and ie.tipp.pkg.id = :pkgId "
+            base_qry += " and tipp.pkg.id = :pkgId "
             qry_params.pkgId = Long.parseLong(params.pkgfilter)
             filterSet = true
         }
@@ -1148,19 +1148,19 @@ class FilterService {
         }
 
         if (params.ddcs && params.ddcs != "" && params.list('ddcs')) {
-            base_qry += " and exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = ie.tipp and ddc.ddc.id in (:ddcs) ) "
+            base_qry += " and exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = tipp and ddc.ddc.id in (:ddcs) ) "
             qry_params.ddcs = params.list('ddcs').collect { String key -> Long.parseLong(key) }
             filterSet = true
         }
 
         if (params.languages && params.languages != "" && params.list('languages')) {
-            base_qry += " and exists ( select lang.id from Language lang where lang.tipp = ie.tipp and lang.language.id in (:languages) ) "
+            base_qry += " and exists ( select lang.id from Language lang where lang.tipp = tipp and lang.language.id in (:languages) ) "
             qry_params.languages = params.list('languages').collect { String key -> Long.parseLong(key) }
             filterSet = true
         }
 
         if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
-            base_qry += " and lower(ie.tipp.subjectReference) in (:subject_references)"
+            base_qry += " and lower(tipp.subjectReference) in (:subject_references)"
             qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
             filterSet = true
         }
@@ -1172,55 +1172,59 @@ class FilterService {
         }
 
         if(params.summaryOfContent) {
-            base_qry += " and lower(ie.tipp.summaryOfContent) like :summaryOfContent "
+            base_qry += " and lower(tipp.summaryOfContent) like :summaryOfContent "
             qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
         }
 
         if(params.ebookFirstAutorOrFirstEditor) {
-            base_qry += " and (lower(ie.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
+            base_qry += " and (lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
             qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
         }
 
         if(params.dateFirstOnlineFrom) {
-            base_qry += " and (ie.tipp.dateFirstOnline is not null AND ie.tipp.dateFirstOnline >= :dateFirstOnlineFrom) "
+            base_qry += " and (tipp.dateFirstOnline is not null AND tipp.dateFirstOnline >= :dateFirstOnlineFrom) "
             qry_params.dateFirstOnlineFrom = sdf.parse(params.dateFirstOnlineFrom)
 
         }
         if(params.dateFirstOnlineTo) {
-            base_qry += " and (ie.tipp.dateFirstOnline is not null AND ie.tipp.dateFirstOnline <= :dateFirstOnlineTo) "
+            base_qry += " and (tipp.dateFirstOnline is not null AND tipp.dateFirstOnline <= :dateFirstOnlineTo) "
             qry_params.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
         }
 
         if(params.yearsFirstOnline) {
-            base_qry += " and (Year(ie.tipp.dateFirstOnline) in (:yearsFirstOnline)) "
+            base_qry += " and (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
             qry_params.yearsFirstOnline = params.list('yearsFirstOnline').collect { Integer.parseInt(it) }
         }
 
         if (params.identifier) {
-            base_qry += "and ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) "
+            base_qry += "and ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
             qry_params.identifier = "${params.identifier}"
             filterSet = true
         }
 
         if (params.publishers) {
             //(exists (select orgRole from OrgRole orgRole where orgRole.tipp = ie.tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) )
-            base_qry += "and lower(ie.tipp.publisherName) in (:publishers) "
+            base_qry += "and lower(tipp.publisherName) in (:publishers) "
             qry_params.publishers = params.list('publishers').collect { it.toLowerCase() }
             filterSet = true
         }
 
 
         if (params.title_types && params.title_types != "" && params.list('title_types')) {
-            base_qry += " and lower(ie.tipp.titleType) in (:title_types)"
+            base_qry += " and lower(tipp.titleType) in (:title_types)"
             qry_params.title_types = params.list('title_types').collect { ""+it.toLowerCase()+"" }
             filterSet = true
         }
 
+        if(!params.forCount)
+            base_qry += " group by tipp, ic, ie.id "
+        else base_qry += " group by tipp, ic "
+
         if ((params.sort != null) && (params.sort.length() > 0)) {
             if(params.sort == 'startDate')
-                base_qry += "order by ic.startDate ${params.order}, lower(ie.tipp.sortName) asc "
+                base_qry += "order by ic.startDate ${params.order}, lower(tipp.sortName) asc "
             else if(params.sort == 'endDate')
-                base_qry += "order by ic.endDate ${params.order}, lower(ie.tipp.sortName) asc "
+                base_qry += "order by ic.endDate ${params.order}, lower(tipp.sortName) asc "
             else
                 base_qry += "order by ie.${params.sort} ${params.order} "
         }
