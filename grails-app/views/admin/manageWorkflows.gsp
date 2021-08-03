@@ -27,9 +27,9 @@
 
 <g:each in="${WfWorkflow.executeQuery('select wfw from WfWorkflow wfw order by id')}" var="wfw">
     <p>
-        <g:link class="ui red icon small button right floated" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflow.KEY}", id: wfw.id]}"><i class="trash alternate icon"></i></g:link>
+        <g:link class="ui red icon small button right floated" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflow.KEY}:${wfw.id}"]}"><i class="trash alternate icon"></i></g:link>
         <strong>
-            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflow.KEY, id: wfw.id]}">
+            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflow.KEY + ':' + wfw.id]}">
                 <div class="ui circular label">${wfw.id}</div> <i class="ui icon tasks"></i> ${wfw.title}
             </g:link>
             <br />
@@ -47,12 +47,12 @@
                     <div class="content">
                         <div class="title">
 
-                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTask.KEY, id: wft.id]}">
+                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTask.KEY + ':' + wft.id]}">
                                 <i class="ui icon large ${WorkflowHelper.getCssColorByStatus(wft.status)} ${WorkflowHelper.getCssIconByTaskPriority(wft.priority)}"></i>
                                 ${wft.title}
                             </g:link>
                             <g:if test="${wft.condition}">
-                                - <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfCondition.KEY, id: wft.condition.id]}">
+                                - <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfCondition.KEY + ':' + wft.condition.id]}">
                                     ${wft.condition.title}
                                 </g:link>
                             </g:if>
@@ -66,12 +66,12 @@
                             <div class="step">
                                 <div class="content">
                                     <div class="title">
-                                        <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTask.KEY, id: wft.id]}">
+                                        <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTask.KEY + ':' + wft.id]}">
                                             <i class="ui icon large ${WorkflowHelper.getCssColorByStatus(wft.status)} ${WorkflowHelper.getCssIconByTaskPriority(wft.priority)}"></i>
                                             ${wft.title}
                                         </g:link>
                                         <g:if test="${wft.condition}">
-                                            - <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfCondition.KEY, id: wft.condition.id]}">
+                                            - <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfCondition.KEY + ':' + wft.condition.id]}">
                                                 ${wft.condition.title}
                                             </g:link>
                                         </g:if>
@@ -82,12 +82,12 @@
                                 <div class="step">
                                     <div class="content">
                                         <div class="title">
-                                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTask.KEY, id: ch.id]}">
+                                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTask.KEY + ':' + ch.id]}">
                                                 <i class="ui icon large ${WorkflowHelper.getCssColorByStatus(ch.status)} ${WorkflowHelper.getCssIconByTaskPriority(ch.priority)}"></i>
                                                 ${ch.title}
                                             </g:link>
                                             <g:if test="${ch.condition}">
-                                                - <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfCondition.KEY, id: ch.condition.id]}">
+                                                - <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfCondition.KEY + ':' + ch.condition.id]}">
                                                     ${ch.condition.title}
                                                 </g:link>
                                             </g:if>
@@ -107,7 +107,7 @@
 
 <g:each in="${WfWorkflowPrototype.executeQuery('select wfwp from WfWorkflowPrototype wfwp order by id')}" var="wfwp">
     <p><strong>
-        <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY, id: wfwp.id]}">
+        <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + wfwp.id]}">
             <span class="ui purple circular label" data-wfwp="${wfwp.id}">${wfwp.id}</span>
             ${wfwp.title}
         </g:link>
@@ -120,13 +120,13 @@
                 <g:if test="${! wftp.child}">
                     <div class="content">
                         <div class="title">
-                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: wftp.id]}">
+                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + wftp.id]}">
                                 <span class="ui blue circular label" data-wftp="${wftp.id}">${wftp.id}</span>
                                 <i class="ui icon grey large ${WorkflowHelper.getCssIconByTaskPriority(wftp.priority)}"></i>
                             </g:link>
                             <g:if test="${wftp.condition}">
                                 -
-                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY, id: wftp.condition.id]}">
+                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + wftp.condition.id]}">
                                     <span class="ui teal circular label" data-wfcp="${wftp.condition.id}">${wftp.condition.id}</span>
                                 </g:link>
                             </g:if>
@@ -140,13 +140,13 @@
                             <div class="step">
                                 <div class="content">
                                     <div class="title">
-                                        <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: wftp.id]}">
+                                        <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' +  wftp.id]}">
                                             <span class="ui blue circular label" data-wftp="${wftp.id}">${wftp.id}</span>
                                             <i class="ui icon grey large ${WorkflowHelper.getCssIconByTaskPriority(wftp.priority)}"></i>
                                         </g:link>
                                         <g:if test="${wftp.condition}">
                                             -
-                                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY, id: wftp.condition.id]}">
+                                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + wftp.condition.id]}">
                                                 <span class="ui teal circular label" data-wfcp="${wftp.condition.id}">${wftp.condition.id}</span>
                                             </g:link>
                                         </g:if>
@@ -157,13 +157,13 @@
                                 <div class="step">
                                     <div class="content">
                                         <div class="title">
-                                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: ch.id]}">
+                                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + ch.id]}">
                                                 <span class="ui blue circular label" data-wftp="${ch.id}">${ch.id}</span>
                                                 <i class="ui icon grey large ${WorkflowHelper.getCssIconByTaskPriority(ch.priority)}"></i>
                                             </g:link>
                                             <g:if test="${ch.condition}">
                                                 -
-                                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY, id: ch.condition.id]}">
+                                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + ch.condition.id]}">
                                                     <span class="ui teal circular label" data-wfcp="${ch.condition.id}">${ch.condition.id}</span>
                                                 </g:link>
                                             </g:if>
@@ -196,7 +196,7 @@
         <g:each in="${WfWorkflowPrototype.executeQuery('select wp from WfWorkflowPrototype wp order by id')}" var="wp">
             <tr data-wfwp="${wp.id}">
                 <td>
-                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY, id: wp.id]}">
+                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + wp.id]}">
                         <span class="ui purple circular label" data-wfwp="${wp.id}">${wp.id}</span>
                         ${wp.title}
                     </g:link>
@@ -204,7 +204,7 @@
                 <td>
                     <g:if test="${wp.child}">
                         <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${wp.child.title} (${wp.child.priority.getI10n('value')})">
-                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: wp.child.id]}">
+                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + wp.child.id]}">
                                 <span class="ui blue circular label" data-wftp="${wp.child.id}">${wp.child.id}</span>
                             </g:link>
                         </span>
@@ -215,10 +215,10 @@
                 </td>
                 <td class="x">
                     <g:if test="${! wp.inUse()}">
-                        <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflowPrototype.KEY}", id: wp.id]}"><i class="trash alternate icon"></i></g:link>
+                        <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflowPrototype.KEY}:${wp.id}"]}"><i class="trash alternate icon"></i></g:link>
                     </g:if>
                     <g:if test="${wp.state == RDStore.WF_WORKFLOW_STATE_ACTIVE}">
-                        <g:link class="ui green icon small button tmpJSPrompt" controller="admin" action="manageWorkflows" params="${[cmd: "instantiate:${WfWorkflowPrototype.KEY}", id: wp.id]}"><i class="step forward icon"></i></g:link>
+                        <g:link class="ui green icon small button tmpJSPrompt" controller="admin" action="manageWorkflows" params="${[cmd: "instantiate:${WfWorkflowPrototype.KEY}:${wp.id}"]}"><i class="step forward icon"></i></g:link>
                     </g:if>
                 </td>
             </tr>
@@ -255,7 +255,7 @@
         <g:each in="${WfTaskPrototype.executeQuery('select tp from WfTaskPrototype tp order by id')}" var="tp">
             <tr data-wftp="${tp.id}">
                 <td>
-                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: tp.id]}">
+                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + tp.id]}">
                         <span class="ui blue circular label" data-wftp="${tp.id}">${tp.id}</span>
                         ${tp.title}
                     </g:link>
@@ -263,7 +263,7 @@
                 <td>
                     <g:if test="${tp.condition}">
                         <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${tp.condition.title} (${tp.condition.getTypeAsRefdataValue().getI10n('value')})">
-                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY, id: tp.condition.id]}">
+                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + tp.condition.id]}">
                                 <span class="ui teal circular label" data-wfcp="${tp.condition.id}">${tp.condition.id}</span>
                             </g:link>
                         </span>
@@ -272,7 +272,7 @@
                 <td>
                     <g:each in="${WfWorkflowPrototype.executeQuery('select wp from WfWorkflowPrototype wp where wp.child = :tp order by id', [tp: tp])}" var="wp">
                         <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${wp.title}">
-                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY, id: wp.id]}">
+                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + wp.id]}">
                                 <span class="ui purple circular label" data-wfwp="${wp.id}">${wp.id}</span>
                             </g:link>
                         </span>
@@ -284,7 +284,7 @@
                 <td>
                     <g:if test="${tp.next}">
                         <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${tp.next.title} (${tp.next.priority.getI10n('value')})">
-                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: tp.next.id]}">
+                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + tp.next.id]}">
                                 <span class="ui blue circular label" data-wftp="${tp.next.id}">${tp.next.id}</span>
                             </g:link>
                         </span>
@@ -293,7 +293,7 @@
                 <td>
                     <g:if test="${tp.child}">
                         <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${tp.child.title} (${tp.child.priority.getI10n('value')})">
-                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: tp.child.id]}">
+                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + tp.child.id]}">
                                 <span class="ui blue circular label" data-wftp="${tp.child.id}">${tp.child.id}</span>
                             </g:link>
                         </span>
@@ -305,7 +305,7 @@
                 <td>
                     <g:each in="${WfTaskPrototype.findByNext(tp)}" var="prev">
                         <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${prev.title} (${prev.priority.getI10n('value')})">
-                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: prev.id]}">
+                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + prev.id]}">
                                 <span class="ui blue circular label" data-wftp="${prev.id}">${prev.id}</span>
                             </g:link>
                         </span>
@@ -314,7 +314,7 @@
                 <td>
                     <g:each in="${WfTaskPrototype.findByChild(tp)}" var="sup">
                         <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${sup.title} (${sup.priority.getI10n('value')})">
-                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: sup.id]}">
+                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + sup.id]}">
                                 <span class="ui blue circular label" data-wftp="${sup.id}">${sup.id}</span>
                             </g:link>
                         </span>
@@ -322,7 +322,7 @@
                 </td>
                 <td class="x">
                     <g:if test="${! tp.inUse()}">
-                        <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfTaskPrototype.KEY}", id: tp.id]}"><i class="trash alternate icon"></i></g:link>
+                        <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfTaskPrototype.KEY}:${tp.id}"]}"><i class="trash alternate icon"></i></g:link>
                     </g:if>
                 </td>
             </tr>
@@ -353,7 +353,7 @@
         <g:each in="${WfConditionPrototype.executeQuery('select cp from WfConditionPrototype cp order by id')}" var="cp">
             <tr data-wfcp="${cp.id}">
                 <td>
-                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY, id: cp.id]}">
+                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + cp.id]}">
                         <span class="ui teal circular label" data-wfcp="${cp.id}">${cp.id}</span>
                         ${cp.title}
                     </g:link>
@@ -361,7 +361,7 @@
                 <td>
                     <g:each in="${WfTaskPrototype.executeQuery('select wp from WfTaskPrototype wp where wp.condition = :cp order by id', [cp: cp])}" var="tp">
                         <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${tp.title} (${tp.priority.getI10n('value')})">
-                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY, id: tp.id]}">
+                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + tp.id]}">
                                 <span class="ui blue circular label" data-wftp="${tp.id}">${tp.id}</span>
                             </g:link>
                         </span>
@@ -372,7 +372,7 @@
                 </td>
                 <td class="x">
                     <g:if test="${! cp.inUse()}">
-                        <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfConditionPrototype.KEY}", id: cp.id]}"><i class="trash alternate icon"></i></g:link>
+                        <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfConditionPrototype.KEY}:${cp.id}"]}"><i class="trash alternate icon"></i></g:link>
                     </g:if>
                 </td>
             </tr>

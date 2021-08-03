@@ -63,7 +63,7 @@ class WorkflowService {
                 internalEditWorkflow(wf, params)
             }
             else if (cmd[0] == 'edit') {
-                WfWorkflowPrototype wf = WfWorkflowPrototype.get(params.id)
+                WfWorkflowPrototype wf = WfWorkflowPrototype.get( cmd[2] )
                 internalEditWorkflow(wf, params)
             }
         }
@@ -73,7 +73,7 @@ class WorkflowService {
                 internalEditWorkflow(wf, params)
             }
             else if (cmd[0] == 'edit') {
-                WfWorkflow wf = WfWorkflow.get(params.id)
+                WfWorkflow wf = WfWorkflow.get( cmd[2] )
                 internalEditWorkflow(wf, params)
             }
         }
@@ -89,7 +89,7 @@ class WorkflowService {
                 internalEditTask(task, params)
             }
             else if (cmd[0] == 'edit') {
-                WfTaskPrototype task = WfTaskPrototype.get( params.id )
+                WfTaskPrototype task = WfTaskPrototype.get( cmd[2] )
                 internalEditTask(task, params)
             }
         }
@@ -99,7 +99,7 @@ class WorkflowService {
                 internalEditTask(task, params)
             }
             else if (cmd[0] == 'edit') {
-                WfTask task = WfTask.get( params.id )
+                WfTask task = WfTask.get( cmd[2] )
                 internalEditTask(task, params)
             }
         }
@@ -115,7 +115,7 @@ class WorkflowService {
                 internalEditCondition(condition, params)
             }
             else if (cmd[0] == 'edit') {
-                WfConditionPrototype condition = WfConditionPrototype.get( params.id )
+                WfConditionPrototype condition = WfConditionPrototype.get( cmd[2] )
                 internalEditCondition(condition, params)
             }
         }
@@ -125,7 +125,7 @@ class WorkflowService {
                 internalEditCondition(condition, params)
             }
             else if (cmd[0] == 'edit') {
-                WfCondition condition = WfCondition.get( params.id )
+                WfCondition condition = WfCondition.get( cmd[2] )
                 internalEditCondition(condition, params)
             }
         }
@@ -138,7 +138,7 @@ class WorkflowService {
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 
         if (cmd[1] == WfWorkflowPrototype.KEY) {
-            WfWorkflowPrototype wf = WfWorkflowPrototype.get(params.id)
+            WfWorkflowPrototype wf = WfWorkflowPrototype.get( cmd[2] )
             result.workflow = wf
 
             if (! wf.inUse()) {
@@ -164,7 +164,7 @@ class WorkflowService {
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 
         if (cmd[1] == WfTaskPrototype.KEY) {
-            WfTaskPrototype task = WfTaskPrototype.get( params.id )
+            WfTaskPrototype task = WfTaskPrototype.get( cmd[2] )
             result.task = task
 
             if (! task.inUse()) {
@@ -178,7 +178,7 @@ class WorkflowService {
             }
         }
         else if (cmd[1] == WfTask.KEY) {
-            WfTask task = WfTask.get( params.id )
+            WfTask task = WfTask.get( cmd[2] )
             result.task = task
             result.status = OP_STATUS_ERROR
 
@@ -194,7 +194,7 @@ class WorkflowService {
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 
         if (cmd[1] == WfConditionPrototype.KEY) {
-            WfConditionPrototype condition = WfConditionPrototype.get( params.id )
+            WfConditionPrototype condition = WfConditionPrototype.get( cmd[2] )
             result.condition = condition
 
             if (! condition.inUse()) {
@@ -208,7 +208,7 @@ class WorkflowService {
             }
         }
         else if (cmd[1] == WfCondition.KEY) {
-            WfCondition condition = WfCondition.get( params.id )
+            WfCondition condition = WfCondition.get( cmd[2] )
             result.condition = condition
             result.status = OP_STATUS_ERROR
 
@@ -393,7 +393,7 @@ class WorkflowService {
             WfWorkflowPrototype.withTransaction { TransactionStatus ts ->
 
                 try {
-                    result.prototype    = WfWorkflowPrototype.get(params.id)
+                    result.prototype    = WfWorkflowPrototype.get( cmd[2] )
                     result.workflow     = result.prototype.instantiate( params.long('subId') ) // TODO
 
                     if (! result.workflow.save()) {
@@ -434,7 +434,7 @@ class WorkflowService {
             WfWorkflow.withTransaction { TransactionStatus ts ->
 
                 try {
-                    result.workflow = WfWorkflow.get(params.id).remove()
+                    result.workflow = WfWorkflow.get( cmd[2] ).remove()
 
                     if (result.workflow) {
                         result.status = OP_STATUS_ERROR

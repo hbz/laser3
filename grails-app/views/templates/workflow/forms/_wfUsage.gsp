@@ -137,6 +137,9 @@
                                     <input type="checkbox" name="${prefixOverride}_${field}" id="${prefixOverride}_${field}"
                                         <% print task.condition.getProperty(field) == true ? 'checked="checked"' : '' %>
                                     />
+                                    <g:if test="${task.condition.getProperty(field + '_isTrigger')}">
+                                        <label>Angabe ändert Aufgaben-Status</label>
+                                    </g:if>
                                 </div>
                             </div>
                         </g:if>

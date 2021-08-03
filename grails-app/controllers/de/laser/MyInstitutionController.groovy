@@ -2238,7 +2238,7 @@ join sub.orgRelations or_sub where
 
     @Secured(['ROLE_USER'])
     def currentWorkflows() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        Map<String, Object> result = [:]
 
         // TODO -> Service
 

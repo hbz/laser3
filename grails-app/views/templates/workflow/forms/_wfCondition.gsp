@@ -47,7 +47,7 @@
                             <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
                         </div>
                         <div class="field">
-                            <label for="${prefix}_${field}_isTrigger">Status</label>
+                            <label for="${prefix}_${field}_isTrigger">Automatische Status-Änderung</label>
                             <div class="ui checkbox">
                                 <input type="checkbox" name="${prefix}_${field}_isTrigger" id="${prefix}_${field}_isTrigger"
                                     <% if (condition?.getProperty(field + '_isTrigger')) { print 'checked="checked"' } %>
@@ -83,6 +83,9 @@
                             <input type="checkbox" name="${prefix}_${field}" id="${prefix}_${field}"
                                 <% print condition.getProperty(field) == true ? 'checked="checked"' : '' %>
                             />
+                            <g:if test="${condition.getProperty(field + '_isTrigger')}">
+                                <label>Angabe ändert Aufgaben-Status</label>
+                            </g:if>
                         </div>
                     </div>
                 </g:if>
@@ -141,11 +144,12 @@
 
     </g:if>
 
-    <input type="hidden" name="cmd" value="${cmd}:${prefix}" />
-
     <g:if test="${cmd == 'edit'}">
-        <input type="hidden" name="id" value="${condition?.id}" />
+        <input type="hidden" name="cmd" value="${cmd}:${prefix}:${condition.id}" />
     </g:if>
+    <g:else>
+        <input type="hidden" name="cmd" value="${cmd}:${prefix}" />
+    </g:else>
 
     <g:if test="${! tmplIsModal}">
         <div class="field">

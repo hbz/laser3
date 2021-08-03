@@ -104,11 +104,12 @@
 
     </g:if> --}%
 
-    <input type="hidden" name="cmd" value="${cmd}:${prefix}" />
-
     <g:if test="${cmd == 'edit'}">
-        <input type="hidden" name="id" value="${workflow?.id}" />
+        <input type="hidden" name="cmd" value="${cmd}:${prefix}:${workflow.id}" />
     </g:if>
+    <g:else>
+        <input type="hidden" name="cmd" value="${cmd}:${prefix}" />
+    </g:else>
 
     <g:if test="${! tmplIsModal}">
         <div class="field">

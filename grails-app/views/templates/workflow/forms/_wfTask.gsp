@@ -163,11 +163,12 @@
 
     </g:if>
 
-    <input type="hidden" name="cmd" value="${cmd}:${prefix}" />
-
     <g:if test="${cmd == 'edit'}">
-        <input type="hidden" name="id" value="${task?.id}" />
+        <input type="hidden" name="cmd" value="${cmd}:${prefix}:${task.id}" />
     </g:if>
+    <g:else>
+        <input type="hidden" name="cmd" value="${cmd}:${prefix}" />
+    </g:else>
 
     <g:if test="${! tmplIsModal}">
             <div class="field">
