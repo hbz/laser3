@@ -275,7 +275,7 @@
                                       optionKey="id"
                                       optionValue="value"
                                       value="${contactInstance?.language?.id}"
-                                      noSelection="['null': '']"/>
+                                      noSelection="['null': message(code: 'default.select.choose.label')]"/>
                     </div>
 
 

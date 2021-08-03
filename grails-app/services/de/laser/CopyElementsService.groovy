@@ -1033,14 +1033,14 @@ class CopyElementsService {
 
     boolean deleteProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties) {
         properties.each { AbstractPropertyWithCalculatedLastUpdated prop ->
+            def owner = prop.owner
             if (AuditConfig.getConfig(prop, AuditConfig.COMPLETE_OBJECT)) {
-
                 AuditConfig.removeAllConfigs(prop)
-
                 prop.getClass().findAllByInstanceOf(prop).each { prop2 ->
                     prop2.delete()
                 }
             }
+            owner.propertySet.remove(prop)
             prop.delete()
         }
     }
