@@ -43,7 +43,6 @@
                     <g:set var="tasks" value="${wf.getSequence()}" />
                     <g:each in="${tasks}" var="task" status="ti">
                         <g:if test="${task.child}">
-                            [
                                 <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: WfTask.KEY + ':' + task.id]}">
                                     <div class="ui ${WorkflowHelper.getCssColorByStatus(task.status)} label">
                                         <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
@@ -59,7 +58,6 @@
                                         </div>
                                     </g:link>
                                 </g:each>
-                            ]
                         </g:if>
                         <g:else>
                             <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: WfTask.KEY + ':' + task.id]}">

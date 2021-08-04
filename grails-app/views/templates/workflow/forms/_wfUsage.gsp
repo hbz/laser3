@@ -21,57 +21,104 @@
             </div>
         </div>
 
-        <div class="ui list">
+        <div class="ui segments">
             <g:set var="tasks" value="${workflow.getSequence()}" />
             <g:each in="${tasks}" var="task" status="ti">
-                <div class="item">
-                    <i class="ui icon ${WorkflowHelper.getCssIconAndColorByStatus(task.status)}"></i>
-                    <div class="content">
-                        <div class="header">
-                            ${task.title}
-                            &nbsp;-
-                            <span style="font-weight: normal">
-                                <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
-                                ${task.priority.getI10n('value')}
-                            </span>
+                <div class="ui horizontal segments">
+                    <div class="ui segment">
+                        <div class="content">
+                            <div class="header">
+                                <i class="ui icon ${WorkflowHelper.getCssIconAndColorByStatus(task.status)}"></i> ${task.title}
+                                <span style="margin-left: 1em; color: darkgrey; font-weight: normal">(
+                                    <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
+                                    ${task.priority.getI10n('value')}
+                                    )</span>
+                            </div>
+                            <div class="description">${task.description}</div>
                         </div>
-                        <div class="description">${task.description}</div>
-
+                    </div>
+                    <div class="ui segment">
                         <g:if test="${task.condition}">
-                            <div class="list">
-                                <div class="item">
-                                    <i class="ui icon caret right"></i>
-                                    <div class="content">
-                                        <div class="header">${task.condition.title}</div>
-                                        <div class="description">${task.condition.description}</div>
-                                    </div>
+
+                            <div class="content">
+                                <div class="header">
+                                    <i class="ui icon caret right grey"></i> ${task.condition.title}
+                                </div>
+                                <div class="description">
+                                    ${task.condition.description} <br />
+                                    <!-- -->
+                                    <g:each in="${task.condition.getFields()}" var="field" status="fi">
+                                        <br/> - ${task.condition.getProperty(field + '_title')}:
+
+                                        <g:if test="${field.startsWith('checkbox')}">
+                                            <g:if test="${task.condition.getProperty(field) == true}">
+                                                <i class="ui icon green check square outline"></i>
+                                            </g:if>
+                                            <g:else>
+                                                <i class="ui icon square outline"></i>
+                                            </g:else>
+                                        </g:if>
+                                        <g:if test="${field.startsWith('date') && task.condition.getProperty(field)}">
+                                            ${DateUtils.getSDF_NoTime().format(task.condition.getProperty(field))}
+                                        </g:if>
+                                    </g:each>
+                                    <!-- -->
                                 </div>
                             </div>
-                        </g:if>
 
-                        <g:if test="${task.child}">
-                            <div class="list">
-                                <g:each in="${task.child.getSequence()}" var="child" status="ci">
-
-                                    <div class="item">
-                                        <i class="ui icon ${WorkflowHelper.getCssIconAndColorByStatus(child.status)}"></i>
-                                        <div class="content">
-                                            <div class="header">
-                                                ${child.title}
-                                                &nbsp;-
-                                                <span style="font-weight: normal">
-                                                    <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i>
-                                                    ${child.priority.getI10n('value')}
-                                                </span>
-                                            </div>
-                                            <div class="description">${child.description}</div>
-                                        </div>
-                                    </div>
-                                </g:each>
-                            </div>
                         </g:if>
                     </div>
                 </div>
+
+                <g:if test="${task.child}">
+                    <g:each in="${task.child.getSequence()}" var="child" status="ci">
+                        <div class="ui horizontal segments">
+                            <div class="ui segment">
+                                <div class="content">
+                                    <div class="header">
+                                        <i class="ui icon ${WorkflowHelper.getCssIconAndColorByStatus(child.status)}"></i> ${child.title}
+                                        <span style="margin-left: 1em; color: darkgrey; font-weight: normal">(
+                                            <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i>
+                                            ${child.priority.getI10n('value')}
+                                            )</span>
+                                    </div>
+                                    <div class="description">${child.description}</div>
+                                </div>
+                            </div>
+                            <div class="ui segment">
+                                <g:if test="${child.condition}">
+
+                                    <div class="content">
+                                        <div class="header">
+                                            <i class="ui icon caret right grey"></i> ${child.condition.title}
+                                        </div>
+                                        <div class="description">
+                                            ${child.condition.description} <br />
+                                            <!-- -->
+                                            <g:each in="${child.condition.getFields()}" var="field" status="fi">
+                                                <br/> - ${child.condition.getProperty(field + '_title')}:
+
+                                                <g:if test="${field.startsWith('checkbox')}">
+                                                    <g:if test="${child.condition.getProperty(field) == true}">
+                                                        <i class="ui icon green check square outline"></i>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <i class="ui icon square outline"></i>
+                                                    </g:else>
+                                                </g:if>
+                                                <g:if test="${field.startsWith('date') && child.condition.getProperty(field)}">
+                                                    ${DateUtils.getSDF_NoTime().format(child.condition.getProperty(field))}
+                                                </g:if>
+                                            </g:each>
+                                            <!-- -->
+                                        </div>
+                                    </div>
+
+                                </g:if>
+                            </div>
+                        </div>
+                    </g:each>
+                </g:if>
             </g:each>
         </div>
 
