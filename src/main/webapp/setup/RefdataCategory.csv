@@ -68,6 +68,7 @@ license.arc.payment.note,Zugriffsrechte Kosten,Archive Payment Note
 license.arc.title.transfer.regulation,Titeltransfer Regeln,Titletransfer Regulation
 license.category,Vertragskategorie,LicenseCategory
 license.content,Vertrag: Inhaltsdaten,License: content data
+license.metadata,Vertrag: Metadaten,License: metadata
 license.oa.corresponding.author.identification,Autorenindentifikation,Corresponding Author Identification
 license.oa.earc.version,License.OA.eArcVersion,License.OA.eArcVersion
 license.oa.license.to.publish,Publikationslizenz,License to Publish
