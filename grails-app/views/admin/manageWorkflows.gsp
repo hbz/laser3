@@ -3,24 +3,24 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : DEMO - Workflows</title>
+    <title>${message(code:'laser')} : ${message(code:'workflow.plural.label')} (DEMO)</title>
 </head>
 
 <body>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
-    <semui:crumb text="DEMO - Workflows" class="active"/>
+    <semui:crumb text="${message(code:'workflow.plural.label')} (DEMO)" class="active"/>
 </semui:breadcrumbs>
 
 <h1 class="ui header la-clear-before la-noMargin-top">
-    <i class="ui icon tasks"></i> Workflows (DEMO)
+    <i class="ui icon tasks"></i> ${message(code:'workflow.plural.label')} (DEMO)
 </h1>
 
 <g:set var="tmplTab" value="${tab ?: 'prototypes'}" />
 
 <div class="ui secondary stackable pointing tabular menu">
-    <a data-tab="workflows" class="item <% if (tmplTab == 'workflows') { print 'active' } %>">Workflows</a>
+    <a data-tab="workflows" class="item <% if (tmplTab == 'workflows') { print 'active' } %>">${message(code:'workflow.plural.label')}</a>
     %{-- <a data-tab="templates" class="item <% if (tmplTab == 'templates') { print 'active' } %>">Templates</a> --}%
     <a data-tab="prototypes" class="item <% if (tmplTab == 'prototypes') { print 'active' } %>">Prototypen</a>
 </div>
@@ -203,7 +203,7 @@
     <table class="ui celled la-table compact table">
         <thead>
             <tr>
-                <th>Workflow</th>
+                <th>${message(code:'workflow.label')}</th>
                 <th>Aufgabe &darr;</th>
                 <th>Zustand</th>
                 <th></th>
@@ -258,7 +258,7 @@
             <tr>
                 <th>Aufgabe</th>
                 <th>Bedingung &darr;</th>
-                <th>Workflow &uarr;</th>
+                <th>${message(code:'workflow.label')} &uarr;</th>
                 %{-- <th>Typ</th> --}%
                 <th>Nachfolger &rarr;</th>
                 <th>Child &darr;</th>
@@ -362,7 +362,7 @@
         <tr>
             <th>Bedingung</th>
             <th>Aufgabe &uarr;</th>
-            <th>Typ</th>
+            <th>${message(code:'default.type.label')}</th>
             <th></th>
         </tr>
         </thead>

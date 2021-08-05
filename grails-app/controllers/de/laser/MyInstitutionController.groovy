@@ -2240,85 +2240,14 @@ join sub.orgRelations or_sub where
     def currentWorkflows() {
         Map<String, Object> result = [:]
 
-        // TODO -> Service
-
         if (params.cmd) {
-            String[] cmd = (params.cmd as String).split(':')
-            WorkflowService.ParamsHelper ph = workflowService.getNewParamsHelper( cmd[1], params )
-
-            if (cmd[1] == WfWorkflow.KEY) {
-                WfWorkflow workflow = WfWorkflow.get( cmd[2] )
-
-                if (cmd[0] == 'delete') {
-                    workflow.delete()
-                }
-                else {
-                    RefdataValue status = ph.getRefdataValue('status')
-                    if (status != workflow.status) {
-                        workflow.status = status
-                        workflow.save()
-                    }
-                }
-            }
-            if (cmd[1] == WfTask.KEY) {
-                WfTask task = WfTask.get( cmd[2] )
-                boolean tChanged
-
-                RefdataValue status = ph.getRefdataValue('status')
-                if (status != task.status) {
-                    task.status = status
-                    tChanged = true
-                }
-                String comment = ph.getString('comment')
-                if (comment != task.comment) {
-                    task.comment = comment
-                    tChanged = true
-                }
-                if (tChanged) {
-                    task.save()
-                }
-
-                if (task.condition) {
-                    ph = workflowService.getNewParamsHelper( WfCondition.KEY, params )
-
-                    WfCondition condition = task.condition
-                    List<String> cFields = condition.getFields()
-                    boolean cChanged
-
-                    if (cFields.contains('checkbox1')) {
-                        String checkbox1 = ph.getString('checkbox1')
-                        if ((checkbox1 == 'on') != condition.checkbox1) {
-                            condition.checkbox1 = (checkbox1 == 'on')
-                        }
-                    }
-                    if (cFields.contains('checkbox2')) {
-                        String checkbox2 = ph.getString('checkbox2')
-                        if ((checkbox2 == 'on') != condition.checkbox2) {
-                            condition.checkbox2 = (checkbox2 == 'on')
-                        }
-                    }
-                    if (cFields.contains('date1')) {
-                        Date date1 = ph.getDate('date1')
-                        if (date1 != condition.date1) {
-                            condition.date1 = date1
-                        }
-                    }
-                    if (cFields.contains('date2')) {
-                        Date date2 = ph.getDate('date2')
-                        if (date2 != condition.date2) {
-                            condition.date2 = date2
-                        }
-                    }
-                    if (cChanged) {
-                        condition.save()
-                    }
-                }
-            }
+            result.putAll( workflowService.handleUsage(params) )
         }
-
         result.currentWorkflows = WfWorkflow.executeQuery(
-                'select wf from WfWorkflow wf where wf.owner = :ctxOrg order by id', [ctxOrg: contextService.getOrg()]
+                'select wf from WfWorkflow wf where wf.owner = :ctxOrg order by id',
+                [ctxOrg: contextService.getOrg()]
         )
+
         result
     }
 

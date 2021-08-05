@@ -4,17 +4,17 @@
     <g:if test="${! tmplIsModal}"><div class="ui segment"></g:if>
 
     <div class="field required">
-        <label for="${prefix}_title">Titel</label>
+        <label for="${prefix}_title">${message(code:'default.title.label')}</label>
         <input type="text" name="${prefix}_title" id="${prefix}_title" value="${condition?.title}" required="required" />
     </div>
 
     <div class="field">
-        <label for="${prefix}_description">Beschreibung</label>
+        <label for="${prefix}_description">${message(code:'default.description.label')}</label>
         <input type="text" name="${prefix}_description" id="${prefix}_description" value="${condition?.description}" />
     </div>
 
     <div class="field required">
-        <label for="${prefix}_type">Typ</label>
+        <label for="${prefix}_type">${message(code:'default.type.label')}</label>
         <g:select class="ui dropdown la-not-clearable" id="${prefix}_type" name="${prefix}_type"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                       required="required"
@@ -155,7 +155,7 @@
         </div>
         --}%
         <div class="field">
-            <label for="${prefix}_prototype">Prototyp</label>
+            <label for="${prefix}_prototype">${message(code:'default.prototype.label')}</label>
             <p>
                 <g:if test="${condition?.prototype}">
                     <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + condition.prototype.id]}">

@@ -1,8 +1,13 @@
-<g:if test="${tmplCmd == 'create'}">
+<g:if test="${tmplCmd == 'usage'}">
+    <semui:modal id="wfModal" text="${tmplModalTitle}" isEditModal="true">
+        <g:render template="/templates/workflow/forms/wfUsage" model="${[formUrl: "${tmplFormUrl}"]}"/>
+    </semui:modal>
+</g:if>
+<g:elseif test="${tmplCmd == 'create'}">
     <semui:modal id="wfModal" text="${tmplModalTitle}">
         <g:render template="${tmpl}" model="${[tmplIsModal: true, cmd: "${tmplCmd}"]}"/>
     </semui:modal>
-</g:if>
+</g:elseif>
 <g:else>
     <semui:modal id="wfModal" text="${tmplModalTitle}" isEditModal="true">
         <g:render template="${tmpl}" model="${[tmplIsModal: true, cmd: "${tmplCmd}"]}"/>

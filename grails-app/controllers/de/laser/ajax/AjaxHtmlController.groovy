@@ -644,21 +644,26 @@ class AjaxHtmlController {
 
     @Secured(['ROLE_USER'])
     def useWfXModal() {
-        Map<String, Object> result = [ tmplCmd: 'usage' ]
+        Map<String, Object> result = [
+                tmplCmd:    'usage',
+                tmplFormUrl: createLink(controller: 'myInstitution', action: 'currentWorkflows')
+        ]
 
         if (params.key) {
             String[] key = (params.key as String).split(':')
-            result.prefix = key[0]
 
-            if (key[0] == WfWorkflow.KEY) {
-                result.workflow       = WfWorkflow.get( key[1] )
-                result.tmpl           = '/templates/workflow/forms/wfUsage'
+            if (key[0] == 'subscription') {
+                result.tmplFormUrl = createLink(controller: 'subscription', action: 'workflows', id: key[1])
+            }
+            result.prefix = key[2]
+
+            if (result.prefix == WfWorkflow.KEY) {
+                result.workflow       = WfWorkflow.get( key[3] )
                 result.tmplModalTitle = 'Workflow: ' + result.workflow.title
 
             }
-            else if (key[0] == WfTask.KEY) {
-                result.task           = WfTask.get( key[1] )
-                result.tmpl           = '/templates/workflow/forms/wfUsage'
+            else if (result.prefix == WfTask.KEY) {
+                result.task           = WfTask.get( key[3] )
                 result.tmplModalTitle = 'Workflow > Aufgabe: ' + result.task.title
             }
         }
@@ -674,7 +679,7 @@ class AjaxHtmlController {
             String[] key = (params.key as String).split(':')
             result.prefix = key[0]
 
-            result.tmplModalTitle = g.message(code: 'workflow.object.' + key[0]) + ' : '
+            result.tmplModalTitle = g.message(code: 'workflow.object.' + result.prefix) + ' : '
 
             if (key[0] == WfWorkflowPrototype.KEY) {
                 result.workflow       = WfWorkflowPrototype.get( key[1] )
@@ -691,7 +696,7 @@ class AjaxHtmlController {
                     )
                 }
             }
-            else if (key[0] == WfWorkflow.KEY) {
+            else if (result.prefix == WfWorkflow.KEY) {
                 result.workflow       = WfWorkflow.get( key[1] )
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.workflow.id + ') ' + result.workflow.title
@@ -702,7 +707,7 @@ class AjaxHtmlController {
                     result.dd_subscriptionList  = result.workflow.subscription ? [ result.workflow.subscription ] : []
                 }
             }
-            else if (key[0] == WfTaskPrototype.KEY) {
+            else if (result.prefix == WfTaskPrototype.KEY) {
                 result.task           = WfTaskPrototype.get( key[1] )
                 result.tmpl           = '/templates/workflow/forms/wfTask'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.task.id + ') ' + result.task.title
@@ -731,7 +736,7 @@ class AjaxHtmlController {
                     result.dd_conditionList = WfConditionPrototype.executeQuery('select wfcp from WfConditionPrototype wfcp')
                 }
             }
-            else if (key[0] == WfTask.KEY) {
+            else if (result.prefix == WfTask.KEY) {
                 result.task           = WfTask.get( key[1] )
                 result.tmpl           = '/templates/workflow/forms/wfTask'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.task.id + ') ' + result.task.title
@@ -750,7 +755,7 @@ class AjaxHtmlController {
                     result.dd_parentList    = WfTask.executeQuery(sql, sqlParams)
                 }
             }
-            else if (key[0] == WfConditionPrototype.KEY) {
+            else if (result.prefix == WfConditionPrototype.KEY) {
                 result.condition      = WfConditionPrototype.get( key[1] )
                 result.tmpl           = '/templates/workflow/forms/wfCondition'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.condition.id + ') ' + result.condition.title
@@ -759,7 +764,7 @@ class AjaxHtmlController {
                     result.dd_taskList = WfTaskPrototype.executeQuery( 'select wftp from WfTaskPrototype wftp' )
                 }
             }
-            else if (key[0] == WfCondition.KEY) {
+            else if (result.prefix == WfCondition.KEY) {
                 result.condition      = WfCondition.get( key[1] )
                 result.tmpl           = '/templates/workflow/forms/wfCondition'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.condition.id + ') ' + result.condition.title

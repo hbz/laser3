@@ -4,12 +4,12 @@
     <g:if test="${! tmplIsModal}"><div class="ui segment"></g:if>
 
     <div class="field required">
-        <label for="${prefix}_title">Titel</label>
+        <label for="${prefix}_title">${message(code:'default.title.label')}</label>
         <input type="text" name="${prefix}_title" id="${prefix}_title" value="${workflow?.title}" required="required" />
     </div>
 
     <div class="field">
-        <label for="${prefix}_description">Beschreibung</label>
+        <label for="${prefix}_description">${message(code:'default.description.label')}</label>
         <input type="text" name="${prefix}_description" id="${prefix}_description" value="${workflow?.description}" />
     </div>
 
@@ -40,7 +40,7 @@
     <g:if test="${prefix == WfWorkflow.KEY}">
 
         <div class="field required">
-            <label for="${prefix}_status">Status</label>
+            <label for="${prefix}_status">${message(code:'default.status.label')}</label>
             <laser:select class="ui dropdown la-not-clearable" id="${prefix}_status" name="${prefix}_status"
                           required="required"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
@@ -51,13 +51,13 @@
         </div>
 
         <div class="field">
-            <label for="${prefix}_comment">Kommentar</label>
+            <label for="${prefix}_comment">${message(code:'default.comment.label')}</label>
             <input type="text" name="${prefix}_comment" id="${prefix}_comment" value="${workflow?.comment}" />
         </div>
 
 
         <div class="field">
-            <label for="${prefix}_subscription">Subscription</label>
+            <label for="${prefix}_subscription">${message(code:'subscription.label')}</label>
             <p>
                 <g:if test="${workflow?.subscription}">
                     <g:link controller="subscription" action="show" params="${[id: workflow.subscription.id]}">
@@ -88,7 +88,7 @@
         --}%
 
         <div class="field">
-            <label for="${prefix}_prototype">Prototyp</label>
+            <label for="${prefix}_prototype">${message(code:'default.prototype.label')}</label>
             <p>
                 <g:if test="${workflow?.prototype}">
                     <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + workflow.prototype.id]}">

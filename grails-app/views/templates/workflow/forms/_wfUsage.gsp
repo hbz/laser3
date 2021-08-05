@@ -1,7 +1,6 @@
 <%@ page import="de.laser.helper.WorkflowHelper; de.laser.helper.DateUtils; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
 
-<g:form controller="myInstitution" action="currentWorkflows" method="POST" class="ui form">
-
+<g:form url="${formUrl}" method="POST" class="ui form">
     <g:if test="${workflow}">
         <g:set var="prefixOverride" value="${WfWorkflow.KEY}" />
 
@@ -17,7 +16,7 @@
 
         <div class="field">
             <div class="field">
-                <label for="${prefixOverride}_status">Status</label>
+                <label for="${prefixOverride}_status">${message(code:'default.status.label')}</label>
                 <laser:select class="ui dropdown la-not-clearable" id="${prefixOverride}_status" name="${prefixOverride}_status"
                               from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATUS )}"
                               value="${workflow.status?.id}"
@@ -127,7 +126,7 @@
             </g:each>
         </div>
 
-        <input type="hidden" name="cmd" value="${cmd}:${prefix}:${workflow.id}" />
+        <input type="hidden" name="cmd" value="usage:${prefix}:${workflow.id}" />
     </g:if>
 
 
@@ -149,7 +148,7 @@
                     </p>
                 </div>
                 <div class="field">
-                    <label for="${prefixOverride}_status">Status</label>
+                    <label for="${prefixOverride}_status">${message(code:'default.status.label')}</label>
                     <laser:select class="ui dropdown la-not-clearable" id="${prefixOverride}_status" name="${prefixOverride}_status"
                                   from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_STATUS )}"
                                   value="${task.status?.id}"
@@ -160,7 +159,7 @@
         </div>
 
         <div class="field">
-            <label for="${prefixOverride}_comment">Kommentar</label>
+            <label for="${prefixOverride}_comment">${message(code:'default.comment.label')}</label>
             <textarea id="${prefixOverride}_comment" name="${prefixOverride}_comment" rows="2">${task.comment}</textarea>
         </div>
 
@@ -213,7 +212,7 @@
             </div>
         </g:if>
 
-        <input type="hidden" name="cmd" value="${cmd}:${prefix}:${task.id}" />
+        <input type="hidden" name="cmd" value="usage:${prefix}:${task.id}" />
     </g:if>
 
  </g:form>

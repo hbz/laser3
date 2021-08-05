@@ -4,12 +4,12 @@
     <g:if test="${! tmplIsModal}"><div class="ui segment"></g:if>
 
     <div class="field required">
-        <label for="${prefix}_title">Titel</label>
+        <label for="${prefix}_title">${message(code:'default.title.label')}</label>
         <input type="text" name="${prefix}_title" id="${prefix}_title" value="${task?.title}" required="required" />
     </div>
 
     <div class="field">
-        <label for="${prefix}_description">Beschreibung</label>
+        <label for="${prefix}_description">${message(code:'default.description.label')}</label>
         <input type="text" name="${prefix}_description" id="${prefix}_description" value="${task?.description}" />
     </div>
 
@@ -74,7 +74,7 @@
     <g:if test="${prefix == WfTask.KEY}">
 
         <div class="field required">
-            <label for="${prefix}_status">Status</label>
+            <label for="${prefix}_status">${message(code:'default.status.label')}</label>
             <laser:select class="ui dropdown la-not-clearable" id="${prefix}_status" name="${prefix}_status"
                           required="required"
                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_STATUS )}"
@@ -84,7 +84,7 @@
         </div>
 
         <div class="field">
-            <label for="${prefix}_comment">Kommentar</label>
+            <label for="${prefix}_comment">${message(code:'default.comment.label')}</label>
             <input type="text" name="${prefix}_comment" id="${prefix}_comment" value="${task?.comment}" />
         </div>
 
@@ -171,7 +171,7 @@
             <div class="field">
                 <div class="fields two">
                     <div class="field">
-                        <label for="${prefix}_workflow">Workflow &uarr;</label> %{-- TODO --}%
+                        <label for="${prefix}_workflow">${message(code:'workflow.label')} &uarr;</label> %{-- TODO --}%
                         <p>
                             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + task.getWorkflow().id]}">
                                 <i class="ui icon circle purple"></i> ${task.getWorkflow().title}
@@ -186,7 +186,7 @@
     <g:if test="${prefix == WfTask.KEY}">
 
         <div class="field">
-            <label for="${prefix}_prototype">Prototyp</label>
+            <label for="${prefix}_prototype">${message(code:'default.prototype.label')}</label>
             <p>
                 <g:if test="${task?.prototype}">
                     <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + task.prototype.id]}">
