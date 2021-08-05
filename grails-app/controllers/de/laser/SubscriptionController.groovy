@@ -9,6 +9,7 @@ import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.workflow.WfWorkflow
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
@@ -1520,6 +1521,21 @@ class SubscriptionController {
 
             render view: 'reporting/index', model: ctrlResult.result
         }
+    }
+
+    //--------------------------------------------- workflows -------------------------------------------------
+
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    def workflows() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.workflows( params )
+
+        ctrlResult.result.workflows = WfWorkflow.executeQuery(
+                'select wf from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg order by id',
+                [sub: ctrlResult.result.subscription, ctxOrg: ctrlResult.result.contextOrg]
+        )
+
+        render view: 'workflows', model: ctrlResult.result
     }
 
     //--------------------------------------------- helper section -------------------------------------------------

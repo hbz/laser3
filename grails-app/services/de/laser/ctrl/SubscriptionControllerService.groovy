@@ -15,6 +15,7 @@ import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import de.laser.reporting.local.SubscriptionReporting
+import de.laser.workflow.WfWorkflow
 import grails.doc.internal.StringEscapeCategory
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -60,6 +61,7 @@ class SubscriptionControllerService {
     ExecutorWrapperService executorWrapperService
     GenericOIDService genericOIDService
     MessageSource messageSource
+    WorkflowService workflowService
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
@@ -2693,6 +2695,19 @@ class SubscriptionControllerService {
         result.token         = params.token ?: RandomStringUtils.randomAlphanumeric(16)
         result.cfgQueryList  = SubscriptionReporting.CONFIG.base.query.default
         result.cfgQueryList2 = SubscriptionReporting.getCurrentQuery2Config( sub )
+
+        [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
+    }
+
+    Map<String,Object> workflows(GrailsParameterMap params) {
+        Map<String, Object> result = [
+                subscription:   Subscription.get(params.id),
+                contextOrg:     contextService.getOrg()
+        ]
+
+        if (params.cmd) {
+            result.putAll( workflowService.handleUsage(params) )
+        }
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }

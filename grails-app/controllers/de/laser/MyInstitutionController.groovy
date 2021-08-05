@@ -25,6 +25,9 @@ import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
+import de.laser.workflow.WfCondition
+import de.laser.workflow.WfTask
+import de.laser.workflow.WfWorkflow
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -82,6 +85,7 @@ class MyInstitutionController  {
     UserControllerService userControllerService
     GokbService gokbService
     ExportClickMeService exportClickMeService
+    WorkflowService workflowService
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
@@ -2234,10 +2238,15 @@ join sub.orgRelations or_sub where
 
     @Secured(['ROLE_USER'])
     def currentWorkflows() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        Map<String, Object> result = [:]
 
-        // TODO - TMP
-        // println result
+        if (params.cmd) {
+            result.putAll( workflowService.handleUsage(params) )
+        }
+        result.currentWorkflows = WfWorkflow.executeQuery(
+                'select wf from WfWorkflow wf where wf.owner = :ctxOrg order by id',
+                [ctxOrg: contextService.getOrg()]
+        )
 
         result
     }

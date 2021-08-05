@@ -26,6 +26,10 @@ class WorkflowService {
         String cmpKey
         GrailsParameterMap params
 
+        boolean containsKey(String key) {
+            params.containsKey(cmpKey + key)
+        }
+
         String getString(String key) {
             params.get(cmpKey + key) ? params.get(cmpKey + key).toString().trim() : null
         }
@@ -39,6 +43,14 @@ class WorkflowService {
             params.get(cmpKey + key) ? DateUtils.parseDateGeneric(params.get(cmpKey + key)) : null
 
         }
+        RefdataValue getRefdataValue(String key) {
+            Long id = getLong(key)
+            RefdataValue.findById(id)
+        }
+    }
+
+    ParamsHelper getNewParamsHelper(String cmpKey, GrailsParameterMap params) {
+        new ParamsHelper(cmpKey, params)
     }
 
     Map<String, Object> handleWorkflow(GrailsParameterMap params) {
@@ -51,7 +63,7 @@ class WorkflowService {
                 internalEditWorkflow(wf, params)
             }
             else if (cmd[0] == 'edit') {
-                WfWorkflowPrototype wf = WfWorkflowPrototype.get(params.id)
+                WfWorkflowPrototype wf = WfWorkflowPrototype.get( cmd[2] )
                 internalEditWorkflow(wf, params)
             }
         }
@@ -61,7 +73,7 @@ class WorkflowService {
                 internalEditWorkflow(wf, params)
             }
             else if (cmd[0] == 'edit') {
-                WfWorkflow wf = WfWorkflow.get(params.id)
+                WfWorkflow wf = WfWorkflow.get( cmd[2] )
                 internalEditWorkflow(wf, params)
             }
         }
@@ -77,7 +89,7 @@ class WorkflowService {
                 internalEditTask(task, params)
             }
             else if (cmd[0] == 'edit') {
-                WfTaskPrototype task = WfTaskPrototype.get( params.id )
+                WfTaskPrototype task = WfTaskPrototype.get( cmd[2] )
                 internalEditTask(task, params)
             }
         }
@@ -87,7 +99,7 @@ class WorkflowService {
                 internalEditTask(task, params)
             }
             else if (cmd[0] == 'edit') {
-                WfTask task = WfTask.get( params.id )
+                WfTask task = WfTask.get( cmd[2] )
                 internalEditTask(task, params)
             }
         }
@@ -103,7 +115,7 @@ class WorkflowService {
                 internalEditCondition(condition, params)
             }
             else if (cmd[0] == 'edit') {
-                WfConditionPrototype condition = WfConditionPrototype.get( params.id )
+                WfConditionPrototype condition = WfConditionPrototype.get( cmd[2] )
                 internalEditCondition(condition, params)
             }
         }
@@ -113,7 +125,7 @@ class WorkflowService {
                 internalEditCondition(condition, params)
             }
             else if (cmd[0] == 'edit') {
-                WfCondition condition = WfCondition.get( params.id )
+                WfCondition condition = WfCondition.get( cmd[2] )
                 internalEditCondition(condition, params)
             }
         }
@@ -126,7 +138,7 @@ class WorkflowService {
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 
         if (cmd[1] == WfWorkflowPrototype.KEY) {
-            WfWorkflowPrototype wf = WfWorkflowPrototype.get(params.id)
+            WfWorkflowPrototype wf = WfWorkflowPrototype.get( cmd[2] )
             result.workflow = wf
 
             if (! wf.inUse()) {
@@ -152,7 +164,7 @@ class WorkflowService {
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 
         if (cmd[1] == WfTaskPrototype.KEY) {
-            WfTaskPrototype task = WfTaskPrototype.get( params.id )
+            WfTaskPrototype task = WfTaskPrototype.get( cmd[2] )
             result.task = task
 
             if (! task.inUse()) {
@@ -166,7 +178,7 @@ class WorkflowService {
             }
         }
         else if (cmd[1] == WfTask.KEY) {
-            WfTask task = WfTask.get( params.id )
+            WfTask task = WfTask.get( cmd[2] )
             result.task = task
             result.status = OP_STATUS_ERROR
 
@@ -182,7 +194,7 @@ class WorkflowService {
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 
         if (cmd[1] == WfConditionPrototype.KEY) {
-            WfConditionPrototype condition = WfConditionPrototype.get( params.id )
+            WfConditionPrototype condition = WfConditionPrototype.get( cmd[2] )
             result.condition = condition
 
             if (! condition.inUse()) {
@@ -196,7 +208,7 @@ class WorkflowService {
             }
         }
         else if (cmd[1] == WfCondition.KEY) {
-            WfCondition condition = WfCondition.get( params.id )
+            WfCondition condition = WfCondition.get( cmd[2] )
             result.condition = condition
             result.status = OP_STATUS_ERROR
 
@@ -217,7 +229,7 @@ class WorkflowService {
 
             wf.title        = ph.getString('title')
             wf.description  = ph.getString('description')
-            wf.child        = WfTaskPrototype.get(ph.getLong('child'))
+            wf.child        = WfTaskPrototype.get(ph.getLong('child')) // TODO - xyz
             wf.state        = RefdataValue.get(ph.getLong('state'))
         }
         else if (cmd[1] == WfWorkflow.KEY) {
@@ -228,22 +240,14 @@ class WorkflowService {
             wf.comment      = ph.getString('comment')
             wf.status       = RefdataValue.get(ph.getLong('status'))
 
-            // wf.child        = WfTask.get(ph.getLong('child'))
+            // wf.child        = WfTask.get(ph.getLong('child'))  // TODO - xyz
             // wf.prototype    = WfWorkflowPrototype.get(ph.getLong('prototype'))
             // wf.subscription = Subscription.get(ph.getLong('subscription'))
         }
 
         Map<String, Object> result = [ workflow: wf, cmd: cmd[0], key: cmd[1] ]
 
-        if (! wf.save()) {
-            result.status = OP_STATUS_ERROR
-            log.debug( 'changes: ' + result.changes.toString() )
-            log.debug( 'validation: ' + wf.validate() )
-            log.debug( wf.getErrors().toString() )
-        }
-        else {
-            result.status = OP_STATUS_DONE
-        }
+        result.status = wf.save() ? OP_STATUS_DONE : OP_STATUS_ERROR
         result
     }
 
@@ -282,15 +286,7 @@ class WorkflowService {
 
         Map<String, Object> result = [ task: task, cmd: cmd[0], key: cmd[1] ]
 
-        if (! task.save()) {
-            result.status = OP_STATUS_ERROR
-            log.debug( 'changes: ' + result.changes.toString() )
-            log.debug( 'validation: ' + task.validate() )
-            log.debug( task.getErrors().toString() )
-        }
-        else {
-            result.status = OP_STATUS_DONE
-        }
+        result.status = task.save() ? OP_STATUS_DONE : OP_STATUS_ERROR
         result
     }
 
@@ -358,15 +354,7 @@ class WorkflowService {
 
         Map<String, Object> result = [ condition: condition, cmd: cmd[0], key: cmd[1] ]
 
-        if (! condition.save()) {
-            result.status = OP_STATUS_ERROR
-            log.debug( 'changes: ' + result.changes.toString() )
-            log.debug( 'validation: ' + condition.validate() )
-            log.debug( condition.getErrors().toString() )
-        }
-        else {
-            result.status = OP_STATUS_DONE
-        }
+        result.status = condition.save() ? OP_STATUS_DONE : OP_STATUS_ERROR
         result
     }
 
@@ -381,7 +369,7 @@ class WorkflowService {
             WfWorkflowPrototype.withTransaction { TransactionStatus ts ->
 
                 try {
-                    result.prototype    = WfWorkflowPrototype.get(params.id)
+                    result.prototype    = WfWorkflowPrototype.get( cmd[2] )
                     result.workflow     = result.prototype.instantiate( params.long('subId') ) // TODO
 
                     if (! result.workflow.save()) {
@@ -422,7 +410,7 @@ class WorkflowService {
             WfWorkflow.withTransaction { TransactionStatus ts ->
 
                 try {
-                    result.workflow = WfWorkflow.get(params.id).remove()
+                    result.workflow = WfWorkflow.get( cmd[2] ).remove()
 
                     if (result.workflow) {
                         result.status = OP_STATUS_ERROR
@@ -451,4 +439,84 @@ class WorkflowService {
         result
     }
 
+    Map<String, Object> handleUsage(GrailsParameterMap params) {
+        log.debug('handleUsage() ' + params)
+        String[] cmd = (params.cmd as String).split(':')
+
+        Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
+
+        if (cmd[0] == 'usage') {  // TODO return msg
+
+            ParamsHelper ph = getNewParamsHelper( cmd[1], params )
+
+            if (cmd[1] == WfWorkflow.KEY) {
+                WfWorkflow workflow = WfWorkflow.get( cmd[2] )
+
+                RefdataValue status = ph.getRefdataValue('status')
+                if (status != workflow.status) {
+                    workflow.status = status
+                    result.status = workflow.save() ? OP_STATUS_DONE : OP_STATUS_ERROR
+                }
+            }
+            if (cmd[1] == WfTask.KEY) {
+                WfTask task = WfTask.get( cmd[2] )
+                boolean tChanged
+
+                RefdataValue status = ph.getRefdataValue('status')
+                if (status != task.status) {
+                    task.status = status
+                    tChanged = true
+                }
+                String comment = ph.getString('comment')
+                if (comment != task.comment) {
+                    task.comment = comment
+                    tChanged = true
+                }
+                if (tChanged) {
+                    result.status = task.save() ? OP_STATUS_DONE : OP_STATUS_ERROR
+                }
+
+                if (task.condition) {
+                    ph = getNewParamsHelper( WfCondition.KEY, params )
+
+                    WfCondition condition = task.condition
+                    List<String> cFields = condition.getFields()
+                    boolean cChanged
+
+                    if (cFields.contains('checkbox1')) {
+                        String checkbox1 = ph.getString('checkbox1')
+                        if ((checkbox1 == 'on') != condition.checkbox1) {
+                            condition.checkbox1 = (checkbox1 == 'on')
+                        }
+                    }
+                    if (cFields.contains('checkbox2')) {
+                        String checkbox2 = ph.getString('checkbox2')
+                        if ((checkbox2 == 'on') != condition.checkbox2) {
+                            condition.checkbox2 = (checkbox2 == 'on')
+                        }
+                    }
+                    if (cFields.contains('date1')) {
+                        Date date1 = ph.getDate('date1')
+                        if (date1 != condition.date1) {
+                            condition.date1 = date1
+                        }
+                    }
+                    if (cFields.contains('date2')) {
+                        Date date2 = ph.getDate('date2')
+                        if (date2 != condition.date2) {
+                            condition.date2 = date2
+                        }
+                    }
+                    if (cChanged) {
+                        result.status = condition.save() ? OP_STATUS_DONE : OP_STATUS_ERROR
+                    }
+                }
+            }
+        }
+        else if (cmd[0] == 'delete') {
+            result.putAll( removeCompleteWorkflow( params ) )
+        }
+
+        result
+    }
 }
