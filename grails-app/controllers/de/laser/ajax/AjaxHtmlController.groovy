@@ -681,7 +681,7 @@ class AjaxHtmlController {
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.workflow.id + ') ' + result.workflow.title
 
-                if (result.workflow) {
+                if (result.workflow) {   // TODO - xyz
                     // not: * used as tp.next * used as tp.child
                     result.dd_childList = WfTaskPrototype.executeQuery(
                             'select wftp from WfTaskPrototype wftp where ' +
@@ -696,7 +696,7 @@ class AjaxHtmlController {
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.workflow.id + ') ' + result.workflow.title
 
-                if (result.workflow) {
+                if (result.workflow) {   // TODO - xyz
                     result.dd_childList         = result.workflow.child ? [ result.workflow.child ] : []
                     result.dd_prototypeList     = result.workflow.prototype ? [ result.workflow.prototype ] : []
                     result.dd_subscriptionList  = result.workflow.subscription ? [ result.workflow.subscription ] : []

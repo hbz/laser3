@@ -36,7 +36,7 @@
                 </td>
                 <td>
                     <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
-                        <i class="ui icon clipboard"></i>${wf.subscription}
+                        <i class="ui icon clipboard"></i>${wf.subscription.name}
                     </g:link>
                 </td>
                 <td>

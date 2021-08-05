@@ -8,6 +8,11 @@
         <div class="field">
             <p><strong>${workflow.title}</strong></p>
             <p>${workflow.description}</p>
+            <p>
+                <g:link controller="subscription" action="show" params="${[id: workflow.subscription.id]}">
+                    <i class="ui icon clipboard"></i>${workflow.subscription.name}
+                </g:link>
+            </p>
         </div>
 
         <div class="field">

@@ -1,11 +1,11 @@
-<%@ page import="de.laser.helper.DateUtils; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
+<%@ page import="de.laser.helper.WorkflowHelper; de.laser.helper.DateUtils; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
 
 <g:form controller="admin" action="manageWorkflows" method="POST" class="ui form">
     <g:if test="${! tmplIsModal}"><div class="ui segment"></g:if>
 
     <div class="field required">
         <label for="${prefix}_title">Titel</label>
-        <input type="text" name="${prefix}_title" id="${prefix}_title" value="${condition?.title}" />
+        <input type="text" name="${prefix}_title" id="${prefix}_title" value="${condition?.title}" required="required" />
     </div>
 
     <div class="field">
@@ -17,6 +17,7 @@
         <label for="${prefix}_type">Typ</label>
         <g:select class="ui dropdown la-not-clearable" id="${prefix}_type" name="${prefix}_type"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"
+                      required="required"
                       from="${WfConditionBase.TYPES}"
                       value="${condition?.type}"
                       optionKey="${{ it }}"
@@ -29,6 +30,7 @@
             <label for="${prefix}_status">Status</label>
             <laser:select class="ui dropdown la-not-clearable" id="${prefix}_status" name="${prefix}_status"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
+                          required="required"
                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATUS )}"
                           value="${condition?.status?.id}"
                           optionKey="id"
@@ -118,37 +120,49 @@
     <g:if test="${prefix == WfConditionPrototype.KEY}">
 
         <div class="field">
-            <label for="${prefix}_parent">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)}  &uarr;</label>
-            <g:select class="ui dropdown disabled" id="${prefix}_parent" name="${prefix}_parent"
+            <label for="${prefix}_task">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)}</label>
+            <p>
+                <g:if test="${condition?.task}">
+                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + condition.task.id]}">
+                        <i class="ui icon circle blue"></i> ${condition.task.title}
+                    </g:link>
+                </g:if>
+            </p>
+            %{--
+            <g:select class="ui dropdown disabled" id="${prefix}_task" name="${prefix}_task"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                       from="${dd_taskList}"
                       value="${condition?.task?.id}"
                       optionKey="id"
                       optionValue="${{'(' + it.id + ') ' + it.title}}" />
+            --}%
         </div>
 
     </g:if>
 
     <g:if test="${prefix == WfCondition.KEY}">
+        %{--
+            <div class="field">
+                <label for="${prefix}_parent">${message(code: 'workflow.object.' + WfTask.KEY)} <i class="ui icon angle double up"></i></label>
+                <p>${condition?.task?.title}</p>
+                <g:select class="ui dropdown disabled" id="${prefix}_parent" name="${prefix}_parent"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                          from="${dd_taskList}"
+                          value="${condition?.task?.id}"
+                          optionKey="id"
+                          optionValue="${{'(' + it.id + ') ' + it.title}}" />
 
-        <div class="field">
-            <label for="${prefix}_parent">${message(code: 'workflow.object.' + WfTask.KEY)}  &uarr;</label>
-            <g:select class="ui dropdown disabled" id="${prefix}_parent" name="${prefix}_parent"
-                      noSelection="${['' : message(code:'default.select.choose.label')]}"
-                      from="${dd_taskList}"
-                      value="${condition?.task?.id}"
-                      optionKey="id"
-                      optionValue="${{'(' + it.id + ') ' + it.title}}" />
         </div>
-
+        --}%
         <div class="field">
             <label for="${prefix}_prototype">Prototyp</label>
-            <g:select class="ui dropdown disabled" id="${prefix}_prototype" name="${prefix}_prototype"
-                      noSelection="${['' : message(code:'default.select.choose.label')]}"
-                      from="${dd_prototypeList}"
-                      value="${condition?.prototype?.id}"
-                      optionKey="id"
-                      optionValue="${{'(' + it.id + ') ' + it.title}}" />
+            <p>
+                <g:if test="${condition?.prototype}">
+                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + condition.prototype.id]}">
+                        <i class="ui icon clone outline"></i> ${condition.prototype.title}
+                    </g:link>
+                </g:if>
+            </p>
         </div>
 
     </g:if>
@@ -161,9 +175,9 @@
     </g:else>
 
     <g:if test="${! tmplIsModal}">
-        <div class="field">
-            <button type="submit" class="ui button"><% if (prefix == WfConditionPrototype.KEY) { print 'Prototyp anlegen' } else { print 'Anlegen' } %></button>
-        </div>
+            <div class="field">
+                <button type="submit" class="ui button"><% if (prefix == WfConditionPrototype.KEY) { print 'Prototyp anlegen' } else { print 'Anlegen' } %></button>
+            </div>
         </div>
     </g:if>
 

@@ -229,7 +229,7 @@ class WorkflowService {
 
             wf.title        = ph.getString('title')
             wf.description  = ph.getString('description')
-            wf.child        = WfTaskPrototype.get(ph.getLong('child'))
+            wf.child        = WfTaskPrototype.get(ph.getLong('child')) // TODO - xyz
             wf.state        = RefdataValue.get(ph.getLong('state'))
         }
         else if (cmd[1] == WfWorkflow.KEY) {
@@ -240,7 +240,7 @@ class WorkflowService {
             wf.comment      = ph.getString('comment')
             wf.status       = RefdataValue.get(ph.getLong('status'))
 
-            // wf.child        = WfTask.get(ph.getLong('child'))
+            // wf.child        = WfTask.get(ph.getLong('child'))  // TODO - xyz
             // wf.prototype    = WfWorkflowPrototype.get(ph.getLong('prototype'))
             // wf.subscription = Subscription.get(ph.getLong('subscription'))
         }

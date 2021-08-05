@@ -261,10 +261,10 @@
                 <th>Workflow &uarr;</th>
                 %{-- <th>Typ</th> --}%
                 <th>Nachfolger &rarr;</th>
-                <th>Kind &darr;</th>
+                <th>Child &darr;</th>
                 <th>Priorität</th>
                 <th>Vorgänger &larr;</th>
-                <th>Super &uarr;</th>
+                <th>Parent &uarr;</th>
                 <th></th>
             </tr>
         </thead>
