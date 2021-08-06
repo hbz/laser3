@@ -1,6 +1,7 @@
 package de.laser.ajax
 
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
 import de.laser.ContextService
@@ -26,11 +27,14 @@ import de.laser.SurveyOrg
 import de.laser.SurveyResult
 import de.laser.Task
 import de.laser.TaskService
+import de.laser.UserSetting
 import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
+import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
+import de.laser.helper.SwissKnife
 import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.myInstitution.QueryExport
@@ -62,13 +66,12 @@ class AjaxHtmlController {
 
     AddressbookService addressbookService
     ContextService contextService
-    FinanceService financeService
-    FinanceControllerService financeControllerService
+    MyInstitutionControllerService myInstitutionControllerService
+    PendingChangeService pendingChangeService
     GenericOIDService genericOIDService
     TaskService taskService
     LinksGenerationService linksGenerationService
     AccessService accessService
-    GokbService gokbService
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
@@ -90,6 +93,41 @@ class AjaxHtmlController {
     def loadGeneralFilter() {
         Map<String,Object> result = [entry:params.entry,queried:params.queried]
         render view: '/reporting/_displayConfigurations', model: result
+    }
+
+    //-------------------------------------------------- myInstitution/dashboard ---------------------------------------
+
+    @Secured(['ROLE_USER'])
+    def getChanges() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+        result.acceptedOffset = result.offset
+        def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
+        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
+        Map<String, Object> changes = pendingChangeService.getChanges(pendingChangeConfigMap)
+        changes.editable = result.editable
+        render template: '/myInstitution/changesWrapper', model: changes
+    }
+
+    @Secured(['ROLE_USER'])
+    def getSurveys() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+        List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null AND surConfig.surveyInfo.status = :status) " +
+                " order by surConfig.surveyInfo.endDate",
+                [org: result.institution,
+                 status: RDStore.SURVEY_SURVEY_STARTED])
+
+        if(accessService.checkPerm('ORG_CONSORTIUM')){
+            activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
+                    " order by surConfig.surveyInfo.endDate",
+                    [org: result.institution,
+                     status: RDStore.SURVEY_SURVEY_STARTED])
+        }
+
+        result.surveys = activeSurveyConfigs.groupBy {it?.id}
+        result.countSurvey = result.surveys.size()
+        render template: '/myInstitution/surveys', model: result
     }
 
     //-------------------------------------------------- subscription/show ---------------------------------------------
