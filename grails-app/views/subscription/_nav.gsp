@@ -21,7 +21,10 @@
     </g:if>
 
     <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_INST']}">
-            <semui:subNavItem controller="subscription" action="reporting" params="${[id:params.id]}" message="myinst.reporting" />
+        <semui:subNavItem controller="subscription" action="reporting" params="${[id:params.id]}" message="myinst.reporting" />
+    </g:if>
+    <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM']}">
+        <semui:subNavItem controller="subscription" action="workflows" params="${[id:params.id]}" message="workflow.plural.label" />
     </g:if>
 
     <g:if test="${((contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM']) && subscription.instanceOf)}">

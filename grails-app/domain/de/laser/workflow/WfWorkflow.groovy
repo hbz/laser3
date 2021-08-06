@@ -48,6 +48,39 @@ class WfWorkflow extends WfWorkflowBase {
         task ? task.getSequence() : []
     }
 
+    Map<String, Object> getInfo() {
+
+        Map<String, Object> info = [
+            tasksOpen: 0,
+            tasksCanceled: 0,
+            tasksDone: 0,
+            tasksNormal: 0,
+            tasksOptional: 0,
+            tasksImportant: 0
+        ]
+
+        List<WfTask> sequence = []
+
+        getSequence().each{ task ->
+            sequence.add(task)
+            if (task.child) {
+                sequence.addAll( task.child.getSequence() )
+            }
+        }
+
+        sequence.each{task ->
+            if (task.status == RDStore.WF_TASK_STATUS_OPEN)     { info.tasksOpen++ }
+            if (task.status == RDStore.WF_TASK_STATUS_CANCELED) { info.tasksCanceled++ }
+            if (task.status == RDStore.WF_TASK_STATUS_DONE)     { info.tasksDone++ }
+
+            if (task.priority == RDStore.WF_TASK_PRIORITY_NORMAL)       { info.tasksNormal++ }
+            if (task.priority == RDStore.WF_TASK_PRIORITY_OPTIONAL)     { info.tasksOptional++ }
+            if (task.priority == RDStore.WF_TASK_PRIORITY_IMPORTANT)    { info.tasksImportant++ }
+        }
+
+        info
+    }
+
     void remove() throws Exception {
         if (this.task) {
             this.task.remove()

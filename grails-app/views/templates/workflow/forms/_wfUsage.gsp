@@ -45,14 +45,12 @@
                         <g:if test="${task.condition}">
 
                             <div class="content">
-                                <div class="header">
-                                    <i class="ui icon caret right grey"></i> ${task.condition.title}
-                                </div>
+                                <div class="header">${task.condition.title}</div>
                                 <div class="description">
                                     ${task.condition.description} <br />
                                     <!-- -->
                                     <g:each in="${task.condition.getFields()}" var="field" status="fi">
-                                        <br/> * ${task.condition.getProperty(field + '_title')}:
+                                        <br/>${task.condition.getProperty(field + '_title')}:
 
                                         <g:if test="${field.startsWith('checkbox')}">
                                             <g:if test="${task.condition.getProperty(field) == true}">
@@ -93,14 +91,12 @@
                                 <g:if test="${child.condition}">
 
                                     <div class="content">
-                                        <div class="header">
-                                            <i class="ui icon caret right grey"></i> ${child.condition.title}
-                                        </div>
+                                        <div class="header">${child.condition.title}</div>
                                         <div class="description">
                                             ${child.condition.description} <br />
                                             <!-- -->
                                             <g:each in="${child.condition.getFields()}" var="field" status="fi">
-                                                <br/> - ${child.condition.getProperty(field + '_title')}:
+                                                <br/>${child.condition.getProperty(field + '_title')}:
 
                                                 <g:if test="${field.startsWith('checkbox')}">
                                                     <g:if test="${child.condition.getProperty(field) == true}">

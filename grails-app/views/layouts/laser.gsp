@@ -115,7 +115,6 @@
                                     <div class="divider"></div>
                                     <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
 
-
                                     <div class="divider"></div>
                                     <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
 
@@ -297,6 +296,7 @@
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="user" action="list">${message(code:'menu.institutions.users')}</semui:link>
 
                                 <sec:ifAnyGranted roles="ROLE_YODA">
+                                    <!-- YODA -->
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageWorkflows">${message(code:'menu.admin.manageWorkflows')}</semui:link>
                                 </sec:ifAnyGranted>
 

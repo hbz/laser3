@@ -114,89 +114,7 @@
 %{-- <div data-tab="templates" class="ui bottom attached tab <% if (tmplTab == 'templates') { print 'active' } %>" style="margin-top:2em;"> --}%
 <div data-tab="prototypes" class="ui bottom attached tab <% if (tmplTab == 'prototypes') { print 'active' } %>" style="margin-top:2em;">
 
-    <g:set var="workflowTemplates" value="${WfWorkflowPrototype.executeQuery('select wfwp from WfWorkflowPrototype wfwp order by id')}" />
-    <p class="ui header">${message(code: 'workflow.templates')} : ${workflowTemplates.size()}</p>
-
-    <g:each in="${workflowTemplates}" var="wfwp">
-        <p><strong>
-            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + wfwp.id]}">
-                <span class="ui purple circular label" data-wfwp="${wfwp.id}">${wfwp.id}</span>
-                ${wfwp.title}
-            </g:link>
-        </strong></p>
-
-        <div class="ui mini steps">
-            <g:set var="tasks" value="${wfwp.getSequence()}" />
-            <g:each in="${tasks}" var="wftp">
-                <div class="step">
-                    <g:if test="${! wftp.child}">
-                        <div class="content">
-                            <div class="title">
-                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + wftp.id]}">
-                                    <span class="ui blue circular label" data-wftp="${wftp.id}">
-                                        <i class="ui icon large ${WorkflowHelper.getCssIconByTaskPriority(wftp.priority)}"></i>
-                                        ${wftp.id}
-                                    </span>
-                                </g:link>
-                                <g:if test="${wftp.condition}">
-                                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + wftp.condition.id]}">
-                                        <span class="ui teal circular label" data-wfcp="${wftp.condition.id}">${wftp.condition.id}</span>
-                                    </g:link>
-                                </g:if>
-                            </div>
-                        </div>
-                    </g:if>
-                    <g:else>
-                        <g:set var="children" value="${wftp.child.getSequence()}" />
-                        <g:if test="${children}">
-                            <div class="ui mini vertical steps" style="width: 100% !important;">
-                                <div class="step">
-                                    <div class="content">
-                                        <div class="title">
-                                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' +  wftp.id]}">
-                                                <span class="ui blue circular label" data-wftp="${wftp.id}">
-                                                    <i class="ui icon large ${WorkflowHelper.getCssIconByTaskPriority(wftp.priority)}"></i>
-                                                    ${wftp.id}
-                                                </span>
-                                            </g:link>
-                                            <g:if test="${wftp.condition}">
-                                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + wftp.condition.id]}">
-                                                    <span class="ui teal circular label" data-wfcp="${wftp.condition.id}">${wftp.condition.id}</span>
-                                                </g:link>
-                                            </g:if>
-                                        </div>
-                                    </div>
-                                </div>
-                                <g:each in="${children}" var="ch" status="ci">
-                                    <div class="step">
-                                        <div class="content">
-                                            <div class="title">
-                                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + ch.id]}">
-                                                    <span class="ui blue circular label" data-wftp="${ch.id}">
-                                                        <i class="ui icon large ${WorkflowHelper.getCssIconByTaskPriority(ch.priority)}"></i>
-                                                        ${ch.id}
-                                                    </span>
-                                                </g:link>
-                                                <g:if test="${ch.condition}">
-                                                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + ch.condition.id]}">
-                                                        <span class="ui teal circular label" data-wfcp="${ch.condition.id}">${ch.condition.id}</span>
-                                                    </g:link>
-                                                </g:if>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </g:each>
-                            </div>
-                        </g:if>
-                    </g:else>
-                </div>
-            </g:each>
-        </div>
-    </g:each>
-
-%{-- </div><!-- .templates --> --}%
-
-%{-- <div data-tab="prototypes" class="ui bottom attached tab <% if (tmplTab == 'prototypes') { print 'active' } %>" style="margin-top:2em;"> --}%
+    <!-- .prototypes -->
 
     <p class="ui header">${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} : ${WfWorkflowPrototype.findAll().size()}</p>
 
@@ -403,10 +321,92 @@
 
     <g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfConditionPrototype.KEY]}">${message(code: 'workflow.object.' + WfConditionPrototype.KEY)} erstellen</g:link>
 
-%{-- </div><!-- .prototypes --> --}%
+    <!-- .templates -->
+
+    <g:set var="workflowTemplates" value="${WfWorkflowPrototype.executeQuery('select wfwp from WfWorkflowPrototype wfwp order by id')}" />
+    <p class="ui header">${message(code: 'workflow.templates')} : ${workflowTemplates.size()}</p>
+
+    <g:each in="${workflowTemplates}" var="wfwp">
+        <p><strong>
+            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + wfwp.id]}">
+                <span class="ui purple circular label" data-wfwp="${wfwp.id}">${wfwp.id}</span>
+                ${wfwp.title}
+            </g:link>
+        </strong></p>
+
+        <div class="ui mini steps">
+            <g:set var="tasks" value="${wfwp.getSequence()}" />
+            <g:each in="${tasks}" var="wftp">
+                <div class="step">
+                    <g:if test="${! wftp.child}">
+                        <div class="content">
+                            <div class="title">
+                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + wftp.id]}">
+                                    <span class="ui blue circular label" data-wftp="${wftp.id}">
+                                        <i class="ui icon large ${WorkflowHelper.getCssIconByTaskPriority(wftp.priority)}"></i>
+                                        ${wftp.id}
+                                    </span>
+                                </g:link>
+                                <g:if test="${wftp.condition}">
+                                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + wftp.condition.id]}">
+                                        <span class="ui teal circular label" data-wfcp="${wftp.condition.id}">${wftp.condition.id}</span>
+                                    </g:link>
+                                </g:if>
+                            </div>
+                        </div>
+                    </g:if>
+                    <g:else>
+                        <g:set var="children" value="${wftp.child.getSequence()}" />
+                        <g:if test="${children}">
+                            <div class="ui mini vertical steps" style="width: 100% !important;">
+                                <div class="step">
+                                    <div class="content">
+                                        <div class="title">
+                                            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' +  wftp.id]}">
+                                                <span class="ui blue circular label" data-wftp="${wftp.id}">
+                                                    <i class="ui icon large ${WorkflowHelper.getCssIconByTaskPriority(wftp.priority)}"></i>
+                                                    ${wftp.id}
+                                                </span>
+                                            </g:link>
+                                            <g:if test="${wftp.condition}">
+                                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + wftp.condition.id]}">
+                                                    <span class="ui teal circular label" data-wfcp="${wftp.condition.id}">${wftp.condition.id}</span>
+                                                </g:link>
+                                            </g:if>
+                                        </div>
+                                    </div>
+                                </div>
+                                <g:each in="${children}" var="ch" status="ci">
+                                    <div class="step">
+                                        <div class="content">
+                                            <div class="title">
+                                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + ch.id]}">
+                                                    <span class="ui blue circular label" data-wftp="${ch.id}">
+                                                        <i class="ui icon large ${WorkflowHelper.getCssIconByTaskPriority(ch.priority)}"></i>
+                                                        ${ch.id}
+                                                    </span>
+                                                </g:link>
+                                                <g:if test="${ch.condition}">
+                                                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + ch.condition.id]}">
+                                                        <span class="ui teal circular label" data-wfcp="${ch.condition.id}">${ch.condition.id}</span>
+                                                    </g:link>
+                                                </g:if>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </g:each>
+                            </div>
+                        </g:if>
+                    </g:else>
+                </div>
+            </g:each>
+        </div>
+    </g:each>
+
 </div><!-- .templates -->
 
 <div id="wfModal" class="ui modal"></div>
+
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.secondary.menu > a').tab();

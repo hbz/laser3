@@ -12,7 +12,7 @@ class WorkflowHelper {
             case    RDStore.WF_WORKFLOW_STATUS_OPEN :
             case    RDStore.WF_TASK_STATUS_OPEN :
             //case    RDStore.WF_CONDITION_STATUS_OPEN :
-                return ''
+                return 'la-light-grey'
                 break
             case    RDStore.WF_WORKFLOW_STATUS_CANCELED :
             case    RDStore.WF_TASK_STATUS_CANCELED :
@@ -35,7 +35,7 @@ class WorkflowHelper {
             case    RDStore.WF_WORKFLOW_STATUS_OPEN :
             case    RDStore.WF_TASK_STATUS_OPEN :
             //case    RDStore.WF_CONDITION_STATUS_OPEN :
-                return 'caret right grey'
+                return 'tasks la-light-grey'
                 break
             case    RDStore.WF_WORKFLOW_STATUS_CANCELED :
             case    RDStore.WF_TASK_STATUS_CANCELED :

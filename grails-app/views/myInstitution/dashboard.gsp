@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.WorkflowHelper; de.laser.workflow.WfWorkflow; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.helper.RDConstants; de.laser.AccessService; de.laser.helper.SqlDateUtils; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.helper.DateUtils; de.laser.helper.WorkflowHelper; de.laser.workflow.WfWorkflow; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.helper.RDConstants; de.laser.AccessService; de.laser.helper.SqlDateUtils; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 
 <!doctype html>
 <html>
@@ -381,26 +381,44 @@
                 <div>
                     <table class="ui celled table la-table">
                         <thead>
-                        <tr>
-                            <th>${message(code:'workflow.label')}</th>
-                            <th>${message(code:'subscription.label')}</th>
-                        </tr>
+                            <tr>
+                                <th>${message(code:'workflow.label')}</th>
+                                <th>${message(code:'subscription.label')}</th>
+                                <th>Fortschritt</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <g:each in="${currentWorkflows}" var="wf">
-                            <tr>
-                                <td>
-                                    <g:link controller="myInstitution" action="currentWorkflows" params="${[key: 'myInstitution::' + WfWorkflow.KEY + ':' + wf.id]}">
-                                        <i class="ui icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i> ${wf.title}
-                                    </g:link>
-                                </td>
-                                <td>
-                                    <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
-                                        <i class="ui icon clipboard"></i>${wf.subscription.name}
-                                    </g:link>
-                                </td>
-                            </tr>
-                        </g:each>
+                            <g:each in="${currentWorkflows}" var="wf">
+                                <tr>
+                                    <td>
+                                        <g:link controller="myInstitution" action="currentWorkflows" params="${[key: 'myInstitution::' + WfWorkflow.KEY + ':' + wf.id]}">
+                                            <i class="ui icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i> ${wf.title}
+                                        </g:link>
+                                    </td>
+                                    <td>
+                                        <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
+                                            <i class="ui icon clipboard"></i>${wf.subscription.name}
+                                            <g:if test="${wf.subscription.startDate || wf.subscription.endDate}">
+                                                (${wf.subscription.startDate ? DateUtils.getSDF_NoTime().format(wf.subscription.startDate) : ''} -
+                                                ${wf.subscription.endDate ? DateUtils.getSDF_NoTime().format(wf.subscription.endDate) : ''})
+                                            </g:if>
+                                        </g:link>
+                                    </td>
+                                    <td>
+                                        <g:set var="wfInfo" value="${wf.getInfo()}" />
+                                        <g:if test="${wfInfo.tasksOpen}">
+                                            <span class="ui label circular">${wfInfo.tasksOpen}</span>
+                                        </g:if>
+                                        <g:if test="${wfInfo.tasksCanceled}">
+                                            <span class="ui label circular orange">${wfInfo.tasksCanceled}</span>
+                                        </g:if>
+                                        <g:if test="${wfInfo.tasksDone}">
+                                            <span class="ui label circular green">${wfInfo.tasksDone}</span>
+                                        </g:if>
+
+                                    </td>
+                                </tr>
+                            </g:each>
                         </tbody>
                     </table>
                 </div>
