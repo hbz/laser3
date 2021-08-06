@@ -52,7 +52,7 @@
                                     ${task.condition.description} <br />
                                     <!-- -->
                                     <g:each in="${task.condition.getFields()}" var="field" status="fi">
-                                        <br/> - ${task.condition.getProperty(field + '_title')}:
+                                        <br/> * ${task.condition.getProperty(field + '_title')}:
 
                                         <g:if test="${field.startsWith('checkbox')}">
                                             <g:if test="${task.condition.getProperty(field) == true}">

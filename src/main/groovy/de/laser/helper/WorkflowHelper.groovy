@@ -1,6 +1,8 @@
 package de.laser.helper
 
 import de.laser.RefdataValue
+import de.laser.workflow.WfCondition
+import de.laser.workflow.WfTask
 
 class WorkflowHelper {
 
@@ -66,5 +68,47 @@ class WorkflowHelper {
             default:
                 return ' '
         }
+    }
+
+    static String getTaskTooltipMarkup(WfTask task) {
+
+        String html = "<p><strong>${task.title}</strong></p>"
+
+        if (task.description) {
+            html = html + "<p>${task.description}</p>"
+        }
+        if (task.condition) {
+            WfCondition cnd = task.condition
+
+            if (cnd.type != 0) {
+                List<String> fields = []
+                cnd.getFields().each { f ->
+                    String fstr = (cnd.getProperty( f + '_title') ?: 'Feld ohne Titel')
+
+                    if (f.startsWith('checkbox')) {
+                        if (cnd.getProperty( f ) == true) {
+                            fstr = fstr + ': <i class="ui icon green check square outline"></i>'
+                        }
+                        else {
+                            fstr = fstr + ': <i class="ui icon square outline"></i>'
+                        }
+                    }
+                    else if (f.startsWith('date')) {
+                        if (cnd.getProperty( f )) {
+                            fstr = fstr + ': ' + DateUtils.getSDF_NoTime().format(cnd.getProperty(f))
+                        }
+                        else {
+                            fstr = fstr + ': '
+                        }
+                    }
+                    fields.add( '* ' + fstr )
+                }
+                html = html + '<p>' + fields.join('<br/>') + '</p>'
+            }
+            else {
+                html = html + "<p><em>${task.condition.getTypeAsRefdataValue().getI10n('value')}</em></p>"
+            }
+        }
+        html
     }
 }
