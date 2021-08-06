@@ -15,7 +15,7 @@ class WfWorkflow extends WfWorkflowBase {
     RefdataValue status
 
     WfWorkflowPrototype prototype
-    WfTask child
+    WfTask task
     Subscription subscription
     Org owner
 
@@ -26,7 +26,7 @@ class WfWorkflow extends WfWorkflowBase {
             version column: 'wfw_version'
              status column: 'wfw_status_rv_fk'
           prototype column: 'wfw_prototype_fk'
-              child column: 'wfw_child_fk'
+               task column: 'wfw_task_fk'
        subscription column: 'wfw_subscription_fk'
               owner column: 'wfw_owner_fk'
               title column: 'wfw_title'
@@ -39,20 +39,19 @@ class WfWorkflow extends WfWorkflowBase {
 
     static constraints = {
         title       (blank: false)
-        child       (nullable: true)
+        task        (nullable: true)
         description (nullable: true)
         comment     (nullable: true)
     }
 
     List<WfTask> getSequence() {
-        child ? child.getSequence() : []
+        task ? task.getSequence() : []
     }
 
     void remove() throws Exception {
-        if (this.child) {
-            this.child.remove()
+        if (this.task) {
+            this.task.remove()
         }
         this.delete()
     }
-
 }

@@ -688,9 +688,9 @@ class AjaxHtmlController {
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.workflow.id + ') ' + result.workflow.title
 
-                if (result.workflow) {   // TODO - xyz
+                if (result.workflow) {
                     // not: * used as tp.next * used as tp.child
-                    result.dd_childList = WfTaskPrototype.executeQuery(
+                    result.dd_taskList = WfTaskPrototype.executeQuery(
                             'select wftp from WfTaskPrototype wftp where ' +
                             'wftp not in (select tp.next from WfTaskPrototype tp) ' +
                             'and wftp not in (select tp.child from WfTaskPrototype tp) ' +
@@ -703,8 +703,8 @@ class AjaxHtmlController {
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.workflow.id + ') ' + result.workflow.title
 
-                if (result.workflow) {   // TODO - xyz
-                    result.dd_childList         = result.workflow.child ? [ result.workflow.child ] : []
+                if (result.workflow) {
+                    result.dd_taskList          = result.workflow.task ? [ result.workflow.task ] : []
                     result.dd_prototypeList     = result.workflow.prototype ? [ result.workflow.prototype ] : []
                     result.dd_subscriptionList  = result.workflow.subscription ? [ result.workflow.subscription ] : []
                 }
@@ -718,18 +718,18 @@ class AjaxHtmlController {
                     String sql = 'select wftp from WfTaskPrototype wftp where id != :id order by id'
                     Map<String, Object> sqlParams = [id: key[1] as Long]
 
-                    // not: * self * used as tp.child * used as sp.child
+                    // not: * self * used as tp.child * used as wp.task
                     result.dd_nextList = WfTaskPrototype.executeQuery(
                             'select wftp from WfTaskPrototype wftp where id != :id ' +
                             'and wftp not in (select tp.child from WfTaskPrototype tp) ' +
-                            'and wftp not in (select wp.child from WfWorkflowPrototype wp) ' +
+                            'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
                             'order by id', sqlParams
                     )
-                    // not: * self * used as tp.next * used as sp.child
+                    // not: * self * used as tp.next * used as wp.task
                     result.dd_childList = WfTaskPrototype.executeQuery(
                             'select wftp from WfTaskPrototype wftp where id != :id ' +
                             'and wftp not in (select tp.next from WfTaskPrototype tp) ' +
-                            'and wftp not in (select wp.child from WfWorkflowPrototype wp) ' +
+                            'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
                             'order by id', sqlParams
                     )
                     result.dd_previousList  = WfTaskPrototype.executeQuery(sql, sqlParams)

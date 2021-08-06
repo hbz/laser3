@@ -15,13 +15,13 @@ class WfWorkflowPrototype extends WfWorkflowBase {
     @RefdataAnnotation(cat = RDConstants.WF_WORKFLOW_STATE)
     RefdataValue state
 
-    WfTaskPrototype child
+    WfTaskPrototype task
 
     static mapping = {
                  id column: 'wfwp_id'
             version column: 'wfwp_version'
               state column: 'wfwp_state_rv_fk'
-              child column: 'wfwp_child_fk'
+               task column: 'wfwp_task_fk'
               title column: 'wfwp_title'
         description column: 'wfwp_description', type: 'text'
 
@@ -31,16 +31,16 @@ class WfWorkflowPrototype extends WfWorkflowBase {
 
     static constraints = {
         title       (blank: false)
-        child       (nullable: true)
+        task        (nullable: true)
         description (nullable: true)
     }
 
     boolean inUse() {
-        child != null
+        task != null
     }
 
     List<WfTaskPrototype> getSequence() {
-        child ? child.getSequence() : []
+        task ? task.getSequence() : []
     }
 
     WfWorkflow instantiate(Long subId) throws Exception {
@@ -53,8 +53,8 @@ class WfWorkflowPrototype extends WfWorkflowBase {
                 status:      RDStore.WF_WORKFLOW_STATUS_OPEN,
                 subscription: Subscription.get(subId)
         )
-        if (this.child) {
-            workflow.child = this.child.instantiate()
+        if (this.task) {
+            workflow.task = this.task.instantiate()
         }
         if (! workflow.validate()) {
             log.debug( '[ ' + this.id + ' ].instantiate(' + subId + ') : ' + workflow.getErrors().toString() )

@@ -77,7 +77,7 @@ class WfTaskPrototype extends WfTaskBase {
     }
 
     WfWorkflowPrototype getWorkflow() {
-        List<WfWorkflowPrototype> result = WfWorkflowPrototype.executeQuery('select wp from WfWorkflowPrototype wp where child = :current order by id', [current: this] )
+        List<WfWorkflowPrototype> result = WfWorkflowPrototype.executeQuery('select wp from WfWorkflowPrototype wp where task = :current order by id', [current: this] )
 
         if (result.size() > 1) {
             log.warn( 'MULTIPLE MATCHES - getWorkflow()')

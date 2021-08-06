@@ -219,10 +219,10 @@
                         </g:link>
                     </td>
                     <td>
-                        <g:if test="${wp.child}">
-                            <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${wp.child.title} (${wp.child.priority.getI10n('value')})">
-                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + wp.child.id]}">
-                                    <span class="ui blue circular label" data-wftp="${wp.child.id}">${wp.child.id}</span>
+                        <g:if test="${wp.task}">
+                            <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${wp.task.title} (${wp.task.priority.getI10n('value')})">
+                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + wp.task.id]}">
+                                    <span class="ui blue circular label" data-wftp="${wp.task.id}">${wp.task.id}</span>
                                 </g:link>
                             </span>
                         </g:if>
@@ -287,7 +287,7 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:each in="${WfWorkflowPrototype.executeQuery('select wp from WfWorkflowPrototype wp where wp.child = :tp order by id', [tp: tp])}" var="wp">
+                        <g:each in="${WfWorkflowPrototype.executeQuery('select wp from WfWorkflowPrototype wp where wp.task = :tp order by id', [tp: tp])}" var="wp">
                             <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${wp.title}">
                                 <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + wp.id]}">
                                     <span class="ui purple circular label" data-wfwp="${wp.id}">${wp.id}</span>
