@@ -58,33 +58,43 @@
                     <g:set var="tasks" value="${wf.getSequence()}" />
                     <g:each in="${tasks}" var="task" status="ti">
                         <g:if test="${task.child}">
-                            <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}">
-                                <div class="ui ${WorkflowHelper.getCssColorByStatus(task.status)} label">
-                                    <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
-                                    ${ti + 1}.1
-                                </div>
-                            </g:link>
+                            <span class="la-popup-tooltip la-delay" data-position="top center" data-html="${WorkflowHelper.getTaskTooltipMarkup(task)}">
+
+                                <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}">
+                                    <span class="ui ${WorkflowHelper.getCssColorByStatus(task.status)} label">
+                                        <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
+                                        ${ti + 1}.1
+                                    </span>
+                                </g:link>
+                            </span>
                             <g:set var="children" value="${task.child.getSequence()}" />
                             <g:each in="${children}" var="child" status="ci">
-                                <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + child.id]}">
-                                    <div class="ui ${WorkflowHelper.getCssColorByStatus(child.status)} label">
-                                        <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i>
-                                        ${ti + 1}.${ci + 2}
-                                    </div>
-                                </g:link>
+                                <span class="la-popup-tooltip la-delay" data-position="top center" data-html="${WorkflowHelper.getTaskTooltipMarkup(child)}">
+
+                                    <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + child.id]}">
+                                        <span class="ui ${WorkflowHelper.getCssColorByStatus(child.status)} label">
+                                            <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i>
+                                            ${ti + 1}.${ci + 2}
+                                        </span>
+                                    </g:link>
+                                </span>
                             </g:each>
                         </g:if>
                         <g:else>
-                            <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}">
-                                <div class="ui ${WorkflowHelper.getCssColorByStatus(task.status)} label">
-                                    <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
-                                    ${ti + 1}
-                                </div>
-                            </g:link>
+                            <span class="la-popup-tooltip la-delay" data-position="top center" data-html="${WorkflowHelper.getTaskTooltipMarkup(task)}">
+
+                                <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}">
+                                    <span class="ui ${WorkflowHelper.getCssColorByStatus(task.status)} label">
+                                        <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
+                                        ${ti + 1}
+                                    </span>
+                                </g:link>
+                            </span>
                         </g:else>
                     </g:each>
                 </td>
                 <td>
+                    %{-- <g:link class="ui positive icon small button right floated" controller="admin" action="manageWorkflows" params="${[cmd: "todo"]}"><i class="edit icon"></i></g:link> --}%
                     <g:link class="ui red icon small button right floated" controller="subscription" action="workflows" params="${[id: "${subscription.id}", cmd: "delete:${WfWorkflow.KEY}:${wf.id}"]}"><i class="trash alternate icon"></i></g:link>
                 </td>
             </tr>
