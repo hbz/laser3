@@ -4,17 +4,17 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'workflow.my')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.my.workflows')}</title>
 </head>
 
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb message="workflow.my" class="active"/>
+    <semui:crumb message="menu.my.workflows" class="active"/>
 </semui:breadcrumbs>
 
 <h1 class="ui header la-clear-before la-noMargin-top">
-    <i class="ui icon tasks"></i> ${message(code:'workflow.my')}
+    <i class="ui icon tasks"></i> ${message(code:'menu.my.workflows')}
 </h1>
 
 <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
@@ -111,6 +111,11 @@
         var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), true);
         func();
     });
+
+    <g:if test="${forwardedKey}">
+        /* forwarded */
+        $('.wfModalLink[href="${g.createLink(controller:'ajaxHtml', action:'useWfXModal', params:[key: forwardedKey])}"]').trigger('click');
+    </g:if>
 </laser:script>
 
 

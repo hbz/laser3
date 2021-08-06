@@ -2240,7 +2240,10 @@ join sub.orgRelations or_sub where
     def currentWorkflows() {
         Map<String, Object> result = [:]
 
-        if (params.cmd) {
+        if (params.key) {
+            result.forwardedKey = params.key // dashboard
+        }
+        else if (params.cmd) {
             result.putAll( workflowService.handleUsage(params) )
         }
         result.currentWorkflows = WfWorkflow.executeQuery(

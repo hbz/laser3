@@ -3,18 +3,18 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'workflow.plural.label')} (DEMO)</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.admin.manageWorkflows')}</title>
 </head>
 
 <body>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
-    <semui:crumb text="${message(code:'workflow.plural.label')} (DEMO)" class="active"/>
+    <semui:crumb text="${message(code:'menu.admin.manageWorkflows')}" class="active"/>
 </semui:breadcrumbs>
 
 <h1 class="ui header la-clear-before la-noMargin-top">
-    <i class="ui icon tasks"></i> ${message(code:'workflow.plural.label')} (DEMO)
+    <i class="ui icon tasks"></i> ${message(code:'menu.admin.manageWorkflows')}
 </h1>
 
 <g:set var="tmplTab" value="${tab ?: 'prototypes'}" />
