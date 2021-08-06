@@ -1,10 +1,10 @@
-<%@ page import="de.laser.PendingChangeConfiguration; de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.helper.RDStore; de.laser.RefdataValue;" %>
+<%@ page import="grails.converters.JSON; de.laser.PendingChangeConfiguration; de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.helper.RDStore; de.laser.RefdataValue;" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.pendingChanges.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'myinst.menu.pendingChanges.label')}</title>
 </head>
 
 <body>
@@ -27,7 +27,7 @@
 <div class="ui top attached tabular menu">
     <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}" params="[tab: 'changes']"
             class="item ${params.tab == "changes" ? 'active' : ''}">
-        <g:message code="myinst.pendingChanges.label"/>
+        <g:message code="myinst.menu.pendingChanges.label"/>
         <span class="ui circular label">
             ${countPendingChanges}
         </span>
@@ -36,7 +36,7 @@
     <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}"
             params="[tab: 'acceptedChanges']"
             class="item ${params.tab == "acceptedChanges" ? 'active' : ''}">
-        <g:message code="myinst.acceptedChanges.label"/>
+        <g:message code="myinst.menu.acceptedChanges.label"/>
         <span class="ui circular label">
             ${countAcceptedChanges}
         </span>
@@ -160,12 +160,23 @@
                             <g:set var="newValue" value="${entry.newValue}"/>
                         </g:else>
 
-                        <g:if test="${oldValue != null || newValue != null}">
-                            ${(message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty) ?: '') + ': ' + message(code: 'pendingChange.change', args: [oldValue, newValue])}
+                        <g:if test="${entry.msgToken == PendingChangeConfiguration.TITLE_DELETED}">
+                            <g:message code="subscription.packages.${entry.msgToken}"/>
                         </g:if>
-                        <g:elseif test="${entry.targetProperty}">
-                            ${message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty)}
+                        <g:elseif test="${entry.msgToken == PendingChangeConfiguration.COVERAGE_DELETED}">
+                            <g:set var="oldValue" value="${JSON.parse(entry.oldValue)}"/>
+                            <g:if test="${oldValue.startDate}">
+                                ${oldValue.startDate} - ${oldValue.startVolume}/${oldValue.startIssue} – ${oldValue.endDate} - ${oldValue.endVolume}/${oldValue.endIssue}
+                            </g:if>
                         </g:elseif>
+                        <g:else>
+                            <g:if test="${oldValue != null || newValue != null}">
+                                ${(message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty) ?: '') + ': ' + message(code: 'pendingChange.change', args: [oldValue, newValue])}
+                            </g:if>
+                            <g:elseif test="${entry.targetProperty}">
+                                ${message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty)}
+                            </g:elseif>
+                        </g:else>
 
                     </td>
                     <td>

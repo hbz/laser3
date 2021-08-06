@@ -1,5 +1,5 @@
 <%@ page import="de.laser.SurveyConfig; de.laser.OrgRole" %>
-
+<laser:serviceInjection/>
 <h3 class="ui header"><g:message code="surveys.active"/></h3>
 
 <div class="ui divided items">
@@ -54,7 +54,7 @@
                                     params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                                 <strong>${message(code: 'surveyParticipants.label')}:</strong>
                                 <span class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
-                                    ${surveyConfig.orgs?.size() ?: 0}
+                                    ${surveyConfig.orgs.size()}
                                 </span>
                             </g:link>
 
@@ -114,3 +114,6 @@
     </g:each>
 
 </div>
+<laser:script file="${this.getGroovyPageFileName()}">
+    $("#surveyCount").text("${message(code:'myinst.dash.survey.label', args: [countSurvey])}")
+</laser:script>
