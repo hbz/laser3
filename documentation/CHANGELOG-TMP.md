@@ -55,8 +55,6 @@
 
 3682    23.07.2021  dev     2.2         Andreas Bug         gelöscht markierte und erloschene Organisationen waren in kontrollierter Liste
 
-3680    14.07.2021  dev     2.2         David   Feature     Reporting: Session-Handling verbessern
-
 3664    13.07.2021  dev     2.2         David   Feature     Reporting: Bestandsinformationen exportieren
 
 3674    13.07.2021  dev     2.2         Andreas Feature     neuer Identifier-Namensraum und neue Merkmale für FID-Daten
