@@ -28,7 +28,7 @@
     int colspan2 = 7
     int wideColspan2 = 15
     Map sorting
-    int offset = 0
+    int offset
     if(showView == "cons") {
         colspan1 = 6
         colspan2 = 9
@@ -36,6 +36,11 @@
         sorting = [consSort: true]
         offset = offsets.consOffset
     }
+    else {
+        sorting = [subscrSort: true]
+        offset = offsets.subscrOffset
+    }
+
     if(fixedSubscription) {
         colspan1 = 3
         colspan2 = 6
