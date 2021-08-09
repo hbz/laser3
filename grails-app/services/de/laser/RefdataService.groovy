@@ -101,6 +101,7 @@ class RefdataService {
 
         AppUtils.getAllDomainClasses().each { dc ->
             def cls = dc.clazz
+            String dcClassName = cls.simpleName
 
             // find all rdv_fk from superclasses
             while (cls != Object.class) {
@@ -112,7 +113,7 @@ class RefdataService {
 
                             RefdataAnnotation anno = it.getAnnotation(RefdataAnnotation)
                             if (anno && ! [RefdataAnnotation.GENERIC, RefdataAnnotation.UNKOWN].contains(anno.cat()) ) {
-                                String query = "SELECT DISTINCT dummy.${it.name}, rdc FROM ${cls.simpleName} dummy JOIN dummy.${it.name}.owner rdc"
+                                String query = "SELECT DISTINCT dummy.${it.name}, rdc FROM ${dcClassName} dummy JOIN dummy.${it.name}.owner rdc"
                                 List fieldCats = RefdataValue.executeQuery( query )
                                 Map fieldCheck = [:]
 
