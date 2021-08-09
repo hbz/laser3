@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3721    09.08.2021  dev     2.2         Andreas Bug         falsche Darstellung der Kontaktnamen bei der Merkmalsverwaltung korrigiert
+
 3719    06.08.2021  dev     2.2         Andreas Bug         Verarbeitungsfehler bei der Vererbung von Merkmalen behoben
 
 3718    06.08.2021  dev     2.2         Andreas Bug         Tippfehler in Merkmalsdefinition korrigiert
