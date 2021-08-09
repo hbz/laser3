@@ -1,22 +1,8 @@
 package de.laser.reporting.myInstitution.base
 
-import de.laser.ContextService
-import de.laser.helper.SessionCacheWrapper
-import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 
 class BaseFilter {
-
-    static Map<String, Object> getFilterCache(String token) {
-        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
-
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
-        Map<String, Object> cacheMap = sessionCache.get("MyInstitutionController/reporting/" + token)
-
-        cacheMap.filterCache as Map<String, Object>
-    }
-
-    // ----- ----- -----
 
     static String getFilterSourceLabel(Map<String, Object> objConfig, String key) {
         objConfig.source.get(key)

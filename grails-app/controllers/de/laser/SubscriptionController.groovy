@@ -10,6 +10,7 @@ import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.workflow.WfWorkflow
+import de.laser.reporting.ReportingCacheHelper
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
@@ -1502,23 +1503,7 @@ class SubscriptionController {
                 return
         }
         else {
-            Subscription sub = Subscription.get(params.id)
-            String filterResult = sub.name
-
-            if (sub.startDate || sub.endDate) {
-                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                filterResult += ' (' + (sub.startDate ? sdf.format(sub.startDate) : '') + ' - ' + (sub.endDate ? sdf.format(sub.endDate) : '')  + ')'
-            }
-
-            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String, Object> cacheMap = [
-                    filterCache: [
-                        result: filterResult
-                    ],
-                    queryCache: [:]
-            ]
-            sessionCache.put("SubscriptionController/reporting" /* + ctrlResult.result.token */, cacheMap)
-
+            ReportingCacheHelper.initSubscriptionCache(params.long('id'))
             render view: 'reporting/index', model: ctrlResult.result
         }
     }

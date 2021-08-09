@@ -1,7 +1,7 @@
 package de.laser
 
 import de.laser.finance.CostItem
-import de.laser.helper.SessionCacheWrapper
+import de.laser.reporting.ReportingCache
 import de.laser.reporting.myInstitution.*
 import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.reporting.myInstitution.base.BaseQuery
@@ -101,7 +101,7 @@ class ReportingGlobalService {
 
     // ----- 2 - chart
 
-    void doChart(Map<String, Object> result, GrailsParameterMap params) {
+    void doChart(Map<String, Object> result, GrailsParameterMap params) throws Exception {
 
         if (params.query) {
 
@@ -119,8 +119,10 @@ class ReportingGlobalService {
 
             GrailsParameterMap clone = params.clone() as GrailsParameterMap // clone.put() ..
 
-            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String, Object> cacheMap = sessionCache.get("MyInstitutionController/reporting/" + params.token)
+            ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
+            Map<String, Object> cacheMap = rCache.get()
+
+            // TODO -- SESSION TIMEOUT
             if (cacheMap) {
                 clone.put('filterCache', cacheMap.filterCache)
             }
@@ -175,13 +177,13 @@ class ReportingGlobalService {
             cacheMap.queryCache = [:]
             cacheMap.queryCache.putAll(result)
 
-            sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)
+            rCache.put( cacheMap )
         }
     }
 
     // ----- 3 - details
 
-    void doChartDetails(Map<String, Object> result, GrailsParameterMap params) {
+    void doChartDetails(Map<String, Object> result, GrailsParameterMap params) throws Exception {
 
         if (params.query) {
 
@@ -189,11 +191,10 @@ class ReportingGlobalService {
             String suffix = params.query.split('-')[1]
             List idList = []
 
-            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String, Object> cacheMap = sessionCache.get("MyInstitutionController/reporting/" + params.token)
+            ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
 
             //println 'AjaxHtmlController.chartDetails()'
-            cacheMap.queryCache.dataDetails.each{ it ->
+            rCache.readQueryCache().dataDetails.each{ it ->
                 if (it.get('id') == params.long('id')) {
                     idList = it.get('idList')
                     return
@@ -246,16 +247,16 @@ class ReportingGlobalService {
                     }
                 }
             }
-            cacheMap.queryCache.labels.put('labels', result.labels)
+            rCache.intoQueryCache( 'labels', [labels: result.labels] )
 
-            cacheMap.detailsCache = [
+            Map<String, Object> detailsCache = [
                     query   : params.query,
                     tmpl    : result.tmpl,
                     id      : params.long('id'),
                     idList  : result.list.collect{ it.id }, // only existing ids
             ]
 
-            sessionCache.put("MyInstitutionController/reporting/" + params.token, cacheMap)
+            rCache.writeDetailsCache( detailsCache )
         }
     }
 }

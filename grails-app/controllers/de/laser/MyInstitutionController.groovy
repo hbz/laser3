@@ -13,6 +13,7 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.properties.PersonProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
+import de.laser.reporting.ReportingCache
 import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -100,8 +101,6 @@ class MyInstitutionController  {
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
-
         result.cfgFilterList = BaseConfig.FILTER
         result.cfgChartsList = BaseConfig.CHARTS
 
@@ -130,7 +129,8 @@ class MyInstitutionController  {
                     model: [ filter: params.filter, filterResult: result.filterResult ]
             ).replaceAll('\\s+', ' ').trim()
 
-            sessionCache.put("MyInstitutionController/reporting/" + result.token, cacheMap)
+            ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, result.token as String)
+            rCache.put( cacheMap )
         }
         //result.filterHistory = sessionCache.list().keySet().findAll{it.startsWith("MyInstitutionController/reporting/")}
 
