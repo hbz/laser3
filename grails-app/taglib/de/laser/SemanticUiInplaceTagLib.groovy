@@ -70,6 +70,9 @@ class SemanticUiInplaceTagLib {
             if (attrs.maxlength) {
                 out << " data-maxlength=\"${attrs.maxlength}\" "
             }
+            if (attrs.noMaxLength) {
+                out << " data-noMaxLength=\"true\" "
+            }
 
             switch (attrs.type) {
                 case 'date':

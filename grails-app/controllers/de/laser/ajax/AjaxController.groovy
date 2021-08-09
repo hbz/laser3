@@ -443,7 +443,7 @@ class AjaxController {
           if(params.pkgFilter)
               pkgFilter << params.long('pkgFilter')
           else pkgFilter.addAll(SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp where sp.subscription.id = :sub',[sub:params.long("sub")]))
-          Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg.id in (:pkgFilter) and not exists (select ie.id from IssueEntitlement ie where ie.subscription.id = :sub and ie.tipp.id = tipp.id)',[pkgFilter:pkgFilter, sub: params.long("sub")])
+          Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg.id in (:pkgFilter) and not exists (select ie.id from IssueEntitlement ie join ie.tipp tipp2 where ie.subscription.id = :sub and tipp.id = tipp2.id and ie.status = tipp2.status)',[pkgFilter: pkgFilter, sub: params.long("sub")])
 		  tippUUIDs.each { String e ->
 			  newChecked[e] = params.checked == 'true' ? 'checked' : null
 		  }
