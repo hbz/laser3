@@ -1,11 +1,15 @@
 package de.laser
 
 import de.laser.annotations.DebugAnnotation
+import de.laser.auth.User
 import de.laser.ctrl.SubscriptionControllerService
 
+import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
+import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.workflow.WfWorkflow
 import de.laser.reporting.ReportingCacheHelper
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -821,6 +825,7 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processAddEntitlements() {
+
         Map<String,Object> ctrlResult = subscriptionControllerService.processAddEntitlements(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
@@ -832,7 +837,7 @@ class SubscriptionController {
             flash.error = ctrlResult.result.error
             flash.message = ctrlResult.result.message
         }
-        redirect action: 'addEntitlements', id: ctrlResult.result.subscription.id
+        redirect action: 'index', id: ctrlResult.result.subscription.id
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
@@ -1501,6 +1506,21 @@ class SubscriptionController {
             ReportingCacheHelper.initSubscriptionCache(params.long('id'))
             render view: 'reporting/index', model: ctrlResult.result
         }
+    }
+
+    //--------------------------------------------- workflows -------------------------------------------------
+
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    def workflows() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.workflows( params )
+
+        ctrlResult.result.workflows = WfWorkflow.executeQuery(
+                'select wf from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg order by id',
+                [sub: ctrlResult.result.subscription, ctxOrg: ctrlResult.result.contextOrg]
+        )
+
+        render view: 'workflows', model: ctrlResult.result
     }
 
     //--------------------------------------------- helper section -------------------------------------------------

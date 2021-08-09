@@ -7,11 +7,61 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3719    06.08.2021  dev     2.2         Andreas Bug         Verarbeitungsfehler bei der Vererbung von Merkmalen behoben
+
+3718    06.08.2021  dev     2.2         Andreas Bug         Tippfehler in Merkmalsdefinition korrigiert
+
+3715    06.08.2021  dev     2.2         Andreas Feature     teilweise Umstrukturierung des Dashboards auf AJAX
+
+3276    03.08.2021  dev     2.2         Andreas Bug         Sortierspalten der Abdeckung angepasst
+
+3710    02.08.2021  dev     2.2         Andreas Feature     allgemeines Merkmal Kostenträger auf mehrfach vergebbar geschaltet
+
+3581    02.08.2021  dev     2.2         Andreas Feature     Adressen direkt bei Anlegen von Kontakten anlegen
+
+3709    30.07.2021  dev     2.2         Andreas Bug         Inkonsistenz bei der Befüllug des Titelgruppendropdowns behoben
+
+3708    30.07.2021  dev     2.2         Andreas Bug         Legacy-Spalte aus Lizenzbestandstabelle entfernt
+
+3707    30.07.2021  dev     2.2         Andreas Bug         entfallenen Funktionstyp bei Anbieter wieder hergestellt
+
+3689    30.07.2021  dev     2.2         Andreas Bug         technischen Support nach Absprache wieder eingeblendet
+
+3694    30.07.2021  dev     2.2         David   Feature     Workflows: Generische Datenkomponente erstellen
+
+3705    29.07.2021  dev     2.2         Andreas Bug         Zählvariable inkorrekt gesetzt
+
+3704    29.07.2021  dev     2.2         Andreas Bug         Sortierung der Lizenzkosten bei Nichtkonsortialsichten wurde nicht durchgereicht
+
+3703    29.07.2021  dev     2.2         Andreas Bug         Referenzfehler beim Teilen von Dokumenten über die Tabelle behoben
+
+3702    28.07.2021  dev     2.2         Andreas Bug         Tippfehler in Übersetzungstexten korrigiert
+
+3700    28.07.2021  dev     2.2         Andreas Bug         Lizenzexport berücksichtigte Merkmale nicht, die von der Konsortialstelle eingetragen wurden
+
+3676    28.07.2021  dev     2.2         Andreas Feature     Umstrukturierungen bei Titel hinzufügen
+
+3691    26.07.2021  dev     2.2         Andreas Bug         verschiedene Ausbesserungen an Titel- und Anbieterdaten und am we:kb-Sync
+
+3669    26.07.2021  dev     2.2         Andreas Bug         Übertragung eigener Merkmale hakte wegen Legacy-Brücke
+
+3654    26.07.2021  dev     2.2         Andreas Bug         Fehlermeldung bei fehlender Position/Funktion nachgereicht
+
+3697    23.07.2021  rc2.1   2.1.2       Andreas Bug         Umfragekosten waren nicht übertragbar, wenn mindestens eine Auftragsnummer belegt ist
+
+3689    23.07.2021  dev     2.2         Andreas Bug         technischer Support und Service-Support aus Einrichtungen abgeblendet
+
+3683    23.07.2021  dev     2.2         Andreas Bug         Zugriffsfehler unter "Alle Plattformen" korrigiert
+
+3682    23.07.2021  dev     2.2         Andreas Bug         gelöscht markierte und erloschene Organisationen waren in kontrollierter Liste
+
 3680    14.07.2021  dev     2.2         David   Feature     Reporting: Session-Handling verbessern
 
 3664    13.07.2021  dev     2.2         David   Feature     Reporting: Bestandsinformationen exportieren
 
 3674    13.07.2021  dev     2.2         Andreas Feature     neuer Identifier-Namensraum und neue Merkmale für FID-Daten
+
+3663    13.07.2021  dev     2.2         David   Feature     Workflows: Datenmodell und Strukturen
 
 3673    12.07.2021  dev     2.2         Andreas Bug         Alle Titel: ID-Verarbeitung korrigiert
 

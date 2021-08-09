@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.AlternativeName
 import de.laser.ApiSource
 import de.laser.Contact
 import de.laser.DeweyDecimalClassification
@@ -231,7 +232,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     max = 5000
                     break
-                case "language": triggeredTypes = ['TitleInstancePackagePlatform']
+                case "language":
+                case "editionStatement":
+                    triggeredTypes = ['TitleInstancePackagePlatform']
                     max = 5000
                     break
                 default: triggeredTypes = []
@@ -341,6 +344,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                                 }
                                                             }
                                                         }
+                                                        break
+                                                    case "editionStatement":
+                                                        tipp.editionStatement = result.records.find { record -> record.uuid == tipp.gokbId }.editionStatement
+                                                        tipp.save()
                                                         break
                                                 }
                                             }
@@ -488,12 +495,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 Map<String,Object> updatedTIPP = [
                     titleType: tipp.titleType,
                     name: tipp.name,
+                    altnames: [],
                     packageUUID: tipp.tippPackageUuid ?: null,
                     platformUUID: tipp.hostPlatformUuid ?: null,
                     titlePublishers: [],
                     publisherName: tipp.publisherName,
                     firstAuthor: tipp.firstAuthor ?: null,
                     firstEditor: tipp.firstEditor ?: null,
+                    editionStatement: tipp.editionStatement ?: null,
                     dateFirstInPrint: tipp.dateFirstInPrint ? DateUtils.parseDateGeneric(tipp.dateFirstInPrint) : null,
                     dateFirstOnline: tipp.dateFirstOnline ? DateUtils.parseDateGeneric(tipp.dateFirstOnline) : null,
                     imprint: tipp.titleImprint ?: null,
@@ -542,6 +551,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 tipp.identifiers.each { identifier ->
                     updatedTIPP.identifiers << [namespace:identifier.namespace, value: identifier.value, name_de: identifier.namespaceName]
+                }
+                tipp.altname.each { altname ->
+                    updatedTIPP.altnames << altname
                 }
                 tipp.ddcs.each { ddcData ->
                     updatedTIPP.ddcs << ddc.get(ddcData.value)
@@ -920,6 +932,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         createOrUpdateSupport(provider, contact)
                 }
             }
+            if(providerRecord.altname) {
+                List<String> oldAltNames = provider.altnames.collect { AlternativeName altname -> altname.name }
+                providerRecord.altname.each { String newAltName ->
+                    if(!oldAltNames.contains(newAltName)) {
+                        if(!AlternativeName.construct([org: provider, name: newAltName]))
+                            throw new SyncException("error on creating new alternative name for provider ${provider}")
+                    }
+                }
+            }
             Date lastUpdatedTime = DateUtils.parseDateGeneric(providerRecord.lastUpdatedDisplay)
             if(lastUpdatedTime.getTime() > maxTimestamp) {
                 maxTimestamp = lastUpdatedTime.getTime()
@@ -1109,8 +1130,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
             //process central differences which are without effect to issue entitlements
             tippA.titleType = tippB.titleType
             tippA.name = tippB.name //TODO include name, sortName in IssueEntitlements, then, this property may move to the controlled ones
+            if(tippA.altnames) {
+                List<String> oldAltNames = tippA.altnames.collect { AlternativeName altname -> altname.name }
+                tippB.altnames.each { String newAltName ->
+                    if(!oldAltNames.contains(newAltName)) {
+                        if(!AlternativeName.construct([tipp: tippA, name: newAltName]))
+                            throw new SyncException("error on creating new alternative name for title ${tippA}")
+                    }
+                }
+            }
             tippA.firstAuthor = tippB.firstAuthor
             tippA.firstEditor = tippB.firstEditor
+            tippA.editionStatement = tippB.editionStatement
             tippA.publisherName = tippB.publisherName
             tippA.hostPlatformURL = tippB.hostPlatformURL
             tippA.dateFirstInPrint = (Date) tippB.dateFirstInPrint
@@ -1260,6 +1291,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 name: tippData.name,
                 firstAuthor: tippData.firstAuthor,
                 firstEditor: tippData.firstEditor,
+                editionStatement: tippData.editionStatement,
                 dateFirstInPrint: (Date) tippData.dateFirstInPrint,
                 dateFirstOnline: (Date) tippData.dateFirstOnline,
                 imprint: tippData.imprint,
@@ -1329,6 +1361,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippData.languages.each { langB ->
                 if(!Language.construct(language: langB, tipp: newTIPP))
                     throw new SyncException("Error on saving language! See stack trace as follows:")
+            }
+            tippData.altnames.each { String altName ->
+                if(!AlternativeName.construct([tipp: newTIPP, name: altName]))
+                    throw new SyncException("error on creating alternative name for title ${newTIPP}")
             }
             tippData.history.each { historyEvent ->
                 historyEvent.from.each { from ->

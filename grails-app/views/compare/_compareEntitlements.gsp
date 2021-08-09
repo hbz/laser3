@@ -15,7 +15,7 @@
         </tr>
         <tr>
             <g:each in="${objects}" var="object">
-                <th>${message(code: 'subscription.details.coverage_dates')}</th>
+                <th>${message(code: 'subscription.details.date_header')}</th>
                 <th>${message(code: 'subscription.details.access_dates')}</th>
                 <th>${message(code: 'tipp.price')}</th></g:each>
         </tr>

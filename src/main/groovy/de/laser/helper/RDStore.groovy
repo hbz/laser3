@@ -235,6 +235,22 @@ class RDStore {
     public static final ACCESS_POINT_TYPE_SHIBBOLETH   = getRefdataValue('shibboleth', RDConstants.ACCESS_POINT_TYPE)
     public static final ACCESS_POINT_TYPE_VPN          = getRefdataValue('vpn', RDConstants.ACCESS_POINT_TYPE)
 
+    //public static final WF_CONDITION_STATUS_OPEN    = getRefdataValue('open', RDConstants.WF_CONDITION_STATUS)
+    //public static final WF_CONDITION_STATUS_DONE    = getRefdataValue('done', RDConstants.WF_CONDITION_STATUS)
+
+    public static final WF_TASK_PRIORITY_NORMAL     = getRefdataValue('normal', RDConstants.WF_TASK_PRIORITY)
+    public static final WF_TASK_PRIORITY_IMPORTANT  = getRefdataValue('important', RDConstants.WF_TASK_PRIORITY)
+    public static final WF_TASK_PRIORITY_OPTIONAL   = getRefdataValue('optional', RDConstants.WF_TASK_PRIORITY)
+
+    public static final WF_TASK_STATUS_OPEN         = getRefdataValue('open', RDConstants.WF_TASK_STATUS)
+    public static final WF_TASK_STATUS_CANCELED     = getRefdataValue('canceled', RDConstants.WF_TASK_STATUS)
+    public static final WF_TASK_STATUS_DONE         = getRefdataValue('done', RDConstants.WF_TASK_STATUS)
+
+    public static final WF_WORKFLOW_STATE_ACTIVE    = getRefdataValue('active', RDConstants.WF_WORKFLOW_STATE)
+    public static final WF_WORKFLOW_STATUS_OPEN     = getRefdataValue('open', RDConstants.WF_WORKFLOW_STATUS)
+    public static final WF_WORKFLOW_STATUS_CANCELED = getRefdataValue('canceled', RDConstants.WF_WORKFLOW_STATUS)
+    public static final WF_WORKFLOW_STATUS_DONE     = getRefdataValue('done', RDConstants.WF_WORKFLOW_STATUS)
+
     public static final YN_YES              = getRefdataValue('Yes', RDConstants.Y_N)
     public static final YN_NO               = getRefdataValue('No', RDConstants.Y_N)
     public static final YNO_YES             = getRefdataValue('Yes', RDConstants.Y_N_O)

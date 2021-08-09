@@ -1,6 +1,7 @@
 package de.laser.ajax
 
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
 import de.laser.ContextService
@@ -26,11 +27,14 @@ import de.laser.SurveyOrg
 import de.laser.SurveyResult
 import de.laser.Task
 import de.laser.TaskService
+import de.laser.UserSetting
 import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
+import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
+import de.laser.helper.SwissKnife
 import de.laser.reporting.ReportingCache
 import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.export.base.BaseExportHelper
@@ -42,6 +46,12 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.reporting.export.QueryExportManager
 import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.workflow.WfCondition
+import de.laser.workflow.WfConditionPrototype
+import de.laser.workflow.WfWorkflow
+import de.laser.workflow.WfWorkflowPrototype
+import de.laser.workflow.WfTask
+import de.laser.workflow.WfTaskPrototype
 import grails.plugin.springsecurity.annotation.Secured
 
 import javax.servlet.ServletOutputStream
@@ -57,13 +67,12 @@ class AjaxHtmlController {
 
     AddressbookService addressbookService
     ContextService contextService
-    FinanceService financeService
-    FinanceControllerService financeControllerService
+    MyInstitutionControllerService myInstitutionControllerService
+    PendingChangeService pendingChangeService
     GenericOIDService genericOIDService
     TaskService taskService
     LinksGenerationService linksGenerationService
     AccessService accessService
-    GokbService gokbService
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
@@ -85,6 +94,41 @@ class AjaxHtmlController {
     def loadGeneralFilter() {
         Map<String,Object> result = [entry:params.entry,queried:params.queried]
         render view: '/reporting/_displayConfigurations', model: result
+    }
+
+    //-------------------------------------------------- myInstitution/dashboard ---------------------------------------
+
+    @Secured(['ROLE_USER'])
+    def getChanges() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+        result.acceptedOffset = result.offset
+        def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
+        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
+        Map<String, Object> changes = pendingChangeService.getChanges(pendingChangeConfigMap)
+        changes.editable = result.editable
+        render template: '/myInstitution/changesWrapper', model: changes
+    }
+
+    @Secured(['ROLE_USER'])
+    def getSurveys() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+        List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null AND surConfig.surveyInfo.status = :status) " +
+                " order by surConfig.surveyInfo.endDate",
+                [org: result.institution,
+                 status: RDStore.SURVEY_SURVEY_STARTED])
+
+        if(accessService.checkPerm('ORG_CONSORTIUM')){
+            activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
+                    " order by surConfig.surveyInfo.endDate",
+                    [org: result.institution,
+                     status: RDStore.SURVEY_SURVEY_STARTED])
+        }
+
+        result.surveys = activeSurveyConfigs.groupBy {it?.id}
+        result.countSurvey = result.surveys.size()
+        render template: '/myInstitution/surveys', model: result
     }
 
     //-------------------------------------------------- subscription/show ---------------------------------------------
@@ -262,6 +306,8 @@ class AjaxHtmlController {
         result.presetFunctionType = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         result.showContacts = params.showContacts == "true" ? true : ''
         result.addContacts = params.showContacts == "true" ? true : ''
+        result.showAddresses = params.showAddresses == "true" ? true : ''
+        result.addAddresses = params.showAddresses == "true" ? true : ''
         result.org = params.org ? Org.get(Long.parseLong(params.org)) : null
         result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
         if(result.contextOrg.getCustomerType() == 'ORG_CONSORTIUM'){
@@ -281,7 +327,7 @@ class AjaxHtmlController {
                 break
             case 'contactPersonForProviderAgency':
                 result.isPublic    = false
-                result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FUNC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FUNC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FUNC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_FUNC_DELIVERY_ADDRESS]
+                result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FUNC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FUNC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FUNC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FUNC_DELIVERY_ADDRESS]
                 result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
                 if (result.org) {
                     result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label") + ' (' + result.org.toString() + ')'
@@ -641,6 +687,163 @@ class AjaxHtmlController {
             response.outputStream.withStream { it << pdf }
 
 //                render view: '/myInstitution/reporting/export/pdf/generic_query', model: model
+        }
+    }
+
+    @Secured(['ROLE_USER'])
+    def createWfXModal() {
+        Map<String, Object> result = [
+                tmplCmd: 'create',
+                tmplModalTitle: g.message(code: 'workflow.object.' + params.key),
+                prefix: params.key
+        ]
+
+        if (params.key in [WfWorkflowPrototype.KEY, WfWorkflow.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfWorkflow'
+        }
+        else if (params.key in [WfTaskPrototype.KEY, WfTask.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfTask'
+        }
+        else if (params.key in [WfConditionPrototype.KEY, WfCondition.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfCondition'
+        }
+        render template: '/templates/workflow/forms/modalWrapper', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def useWfXModal() {
+        Map<String, Object> result = [
+                tmplCmd:    'usage',
+                tmplFormUrl: createLink(controller: 'myInstitution', action: 'currentWorkflows')
+        ]
+
+        if (params.key) {
+            String[] key = (params.key as String).split(':')
+
+            if (key[0] == 'subscription') {
+                result.tmplFormUrl = createLink(controller: 'subscription', action: 'workflows', id: key[1])
+            }
+            result.prefix = key[2]
+
+            if (result.prefix == WfWorkflow.KEY) {
+                result.workflow       = WfWorkflow.get( key[3] )
+                result.tmplModalTitle = 'Workflow: ' + result.workflow.title
+
+            }
+            else if (result.prefix == WfTask.KEY) {
+                result.task           = WfTask.get( key[3] )
+                result.tmplModalTitle = 'Workflow > Aufgabe: ' + result.task.title
+            }
+        }
+
+        render template: '/templates/workflow/forms/modalWrapper', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def editWfXModal() {
+        Map<String, Object> result = [ tmplCmd : 'edit' ]
+
+        if (params.key) {
+            String[] key = (params.key as String).split(':')
+            result.prefix = key[0]
+
+            result.tmplModalTitle = g.message(code: 'workflow.object.' + result.prefix) + ' : '
+
+            if (key[0] == WfWorkflowPrototype.KEY) {
+                result.workflow       = WfWorkflowPrototype.get( key[1] )
+                result.tmpl           = '/templates/workflow/forms/wfWorkflow'
+                result.tmplModalTitle = result.tmplModalTitle + '(' + result.workflow.id + ') ' + result.workflow.title
+
+                if (result.workflow) {   // TODO - xyz
+                    // not: * used as tp.next * used as tp.child
+                    result.dd_childList = WfTaskPrototype.executeQuery(
+                            'select wftp from WfTaskPrototype wftp where ' +
+                            'wftp not in (select tp.next from WfTaskPrototype tp) ' +
+                            'and wftp not in (select tp.child from WfTaskPrototype tp) ' +
+                            'order by id'
+                    )
+                }
+            }
+            else if (result.prefix == WfWorkflow.KEY) {
+                result.workflow       = WfWorkflow.get( key[1] )
+                result.tmpl           = '/templates/workflow/forms/wfWorkflow'
+                result.tmplModalTitle = result.tmplModalTitle + '(' + result.workflow.id + ') ' + result.workflow.title
+
+                if (result.workflow) {   // TODO - xyz
+                    result.dd_childList         = result.workflow.child ? [ result.workflow.child ] : []
+                    result.dd_prototypeList     = result.workflow.prototype ? [ result.workflow.prototype ] : []
+                    result.dd_subscriptionList  = result.workflow.subscription ? [ result.workflow.subscription ] : []
+                }
+            }
+            else if (result.prefix == WfTaskPrototype.KEY) {
+                result.task           = WfTaskPrototype.get( key[1] )
+                result.tmpl           = '/templates/workflow/forms/wfTask'
+                result.tmplModalTitle = result.tmplModalTitle + '(' + result.task.id + ') ' + result.task.title
+
+                if (result.task) {
+                    String sql = 'select wftp from WfTaskPrototype wftp where id != :id order by id'
+                    Map<String, Object> sqlParams = [id: key[1] as Long]
+
+                    // not: * self * used as tp.child * used as sp.child
+                    result.dd_nextList = WfTaskPrototype.executeQuery(
+                            'select wftp from WfTaskPrototype wftp where id != :id ' +
+                            'and wftp not in (select tp.child from WfTaskPrototype tp) ' +
+                            'and wftp not in (select wp.child from WfWorkflowPrototype wp) ' +
+                            'order by id', sqlParams
+                    )
+                    // not: * self * used as tp.next * used as sp.child
+                    result.dd_childList = WfTaskPrototype.executeQuery(
+                            'select wftp from WfTaskPrototype wftp where id != :id ' +
+                            'and wftp not in (select tp.next from WfTaskPrototype tp) ' +
+                            'and wftp not in (select wp.child from WfWorkflowPrototype wp) ' +
+                            'order by id', sqlParams
+                    )
+                    result.dd_previousList  = WfTaskPrototype.executeQuery(sql, sqlParams)
+                    result.dd_parentList    = WfTaskPrototype.executeQuery(sql, sqlParams)
+
+                    result.dd_conditionList = WfConditionPrototype.executeQuery('select wfcp from WfConditionPrototype wfcp')
+                }
+            }
+            else if (result.prefix == WfTask.KEY) {
+                result.task           = WfTask.get( key[1] )
+                result.tmpl           = '/templates/workflow/forms/wfTask'
+                result.tmplModalTitle = result.tmplModalTitle + '(' + result.task.id + ') ' + result.task.title
+
+                if (result.task) {
+
+                    result.dd_nextList      = result.task.next ? [ result.task.next ] : []
+                    result.dd_childList     = result.task.child ? [ result.task.child ] : []
+                    result.dd_conditionList = result.task.condition ? [ result.task.condition ] : []
+                    result.dd_prototypeList = result.task.prototype ? [ result.task.prototype ] : []
+
+                    String sql = 'select wft from WfTask wft where id != :id order by id'
+                    Map<String, Object> sqlParams = [id: key[1] as Long]
+
+                    result.dd_previousList  = WfTask.executeQuery(sql, sqlParams)
+                    result.dd_parentList    = WfTask.executeQuery(sql, sqlParams)
+                }
+            }
+            else if (result.prefix == WfConditionPrototype.KEY) {
+                result.condition      = WfConditionPrototype.get( key[1] )
+                result.tmpl           = '/templates/workflow/forms/wfCondition'
+                result.tmplModalTitle = result.tmplModalTitle + '(' + result.condition.id + ') ' + result.condition.title
+
+                if (result.condition) {
+                    result.dd_taskList = WfTaskPrototype.executeQuery( 'select wftp from WfTaskPrototype wftp' )
+                }
+            }
+            else if (result.prefix == WfCondition.KEY) {
+                result.condition      = WfCondition.get( key[1] )
+                result.tmpl           = '/templates/workflow/forms/wfCondition'
+                result.tmplModalTitle = result.tmplModalTitle + '(' + result.condition.id + ') ' + result.condition.title
+
+                if (result.condition) {
+                    result.dd_taskList = WfTask.executeQuery( 'select wft from WfTask wft' )
+                    result.dd_prototypeList = result.condition.prototype ? [ result.condition.prototype ] : []
+                }
+            }
+
+            render template: '/templates/workflow/forms/modalWrapper', model: result
         }
     }
 }

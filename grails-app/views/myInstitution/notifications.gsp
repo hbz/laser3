@@ -3,7 +3,7 @@
 <html>
     <head>
         <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'myinst.acceptedChanges.label')}</title>
+        <title>${message(code:'laser')} : ${message(code:'myinst.menu.acceptedChanges.label')}</title>
     </head>
 
     <body>
@@ -13,7 +13,7 @@
         </semui:breadcrumbs>
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-            ${message(code:'myinst.acceptedChanges.label')}
+            ${message(code:'myinst.menu.acceptedChanges.label')}
         </h1>
 
         <%--<g:if test="${changes != null}" >

@@ -27,10 +27,14 @@
     int colspan1 = 4
     int colspan2 = 7
     int wideColspan2 = 15
+    Map sorting
+    int offset = 0
     if(showView == "cons") {
         colspan1 = 6
         colspan2 = 9
         wideColspan2 = 15
+        sorting = [consSort: true]
+        offset = offsets.consOffset
     }
     if(fixedSubscription) {
         colspan1 = 3
@@ -40,11 +44,19 @@
             colspan1 = 5
             colspan2 = 8
             wideColspan2 = 13
+            sorting = [consSort: true]
+            offset = offsets.consOffset
         }
         else if(showView == "consAtSubscr") {
             colspan1 = 4
             colspan2 = 7
             wideColspan2 = 13
+            sorting = [consSort: true]
+            offset = offsets.consOffset
+        }
+        else {
+            sorting = [subscrSort: true]
+            offset = offsets.subscrOffset
         }
     }
 %>
@@ -61,18 +73,18 @@
             <g:if test="${!fixedSubscription}">
                 <th>${message(code:'sidewide.number')}</th>
                 <g:if test="${showView == "cons"}">
-                    <g:sortableColumn property="oo.org.sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true]"/>
+                    <g:sortableColumn property="oo.org.sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="${sorting}"/>
                 </g:if>
-                <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[consSort: true]"/>
-                <g:sortableColumn property="sub.name" title="${message(code:'default.subscription.label')}" params="[consSort: true]"/>
+                <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="${sorting}"/>
+                <g:sortableColumn property="sub.name" title="${message(code:'default.subscription.label')}" params="${sorting}"/>
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
-                <g:sortableColumn property="ci.billingCurrency" title="${message(code:'financials.currency')}" params="[consSort:true]"/>
-                <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[consSort: true]"/>
-                <g:sortableColumn property="ci.taxKey.taxRate" title="${message(code:'financials.taxRate')}" params="[consSort: true]"/>
+                <g:sortableColumn property="ci.billingCurrency" title="${message(code:'financials.currency')}" params="${sorting}"/>
+                <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="${sorting}"/>
+                <g:sortableColumn property="ci.taxKey.taxRate" title="${message(code:'financials.taxRate')}" params="${sorting}"/>
                 <th>${message(code:'financials.amountFinal')}</th>
-                <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[consSort: true]"/>
-                <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[consSort: true]"/>
-                <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[consSort: true]"/>
+                <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="${sorting}"/>
+                <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="${sorting}"/>
+                <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting}"/>
                 <%-- editable must be checked here as well because of the consortia preview! --%>
                 <g:if test="${editable && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST","INST_EDITOR")}">
                     <th class="la-action-info"><g:message code="default.actions.label"/></th>
@@ -81,17 +93,17 @@
             <g:else>
                 <th>${message(code:'sidewide.number')}</th>
                 <g:if test="${showView == "cons"}">
-                    <g:sortableColumn property="oo.org.sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                    <g:sortableColumn property="oo.org.sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
                 </g:if>
-                <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
-                <g:sortableColumn property="ci.billingCurrency" title="${message(code:'financials.currency')}" params="[consSort:true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <g:sortableColumn property="ci.taxKey.taxRate" title="${message(code:'financials.taxRate')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="billingCurrency" title="${message(code:'financials.currency')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
+                <g:sortableColumn property="costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
+                <g:sortableColumn property="taxKey.taxRate" title="${message(code:'financials.taxRate')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
                 <th>${message(code:'financials.amountFinal')}</th>
-                <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
+                <g:sortableColumn property="startDate" title="${message(code:'financials.dateFrom')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
+                <g:sortableColumn property="costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
                 <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST","INST_EDITOR") && !params.orgBasicMemberView}">
                     <th class="la-action-info"><g:message code="default.actions.label"/></th>
                 </g:if>
@@ -184,7 +196,6 @@
                     </g:if>
                     <td>
                         <%
-                            int offset = consOffset ?: 0
                             Set<Long> memberRoles = [RDStore.OR_SUBSCRIBER_CONS.id,RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id]
                         %>
                         ${ jj + 1 + offset }

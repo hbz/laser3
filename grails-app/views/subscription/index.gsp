@@ -153,7 +153,7 @@
                     class="item ${params.titleGroup ? '' : 'active'}">
                 Alle
                 <span class="ui circular label">
-                    ${num_ies}
+                    ${num_ies_rows}
                 </span>
             </g:link>
 
@@ -201,8 +201,8 @@
                         <th>${message(code: 'sidewide.number')}</th>
                         <g:sortableColumn class="eight wide" params="${params}" property="tipp.sortName"
                                           title="${message(code: 'title.label')}"/>
-                        <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
-                        <th class="four wide">${message(code: 'subscription.details.coverage_dates')}</th>
+                        <%-- legacy ??? <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>--%>
+                        <th class="four wide">${message(code: 'subscription.details.date_header')}</th>
                         <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
                         <th class="two wide"><g:message code="subscription.details.prices"/></th>
                         <g:if test="${subscription.ieGroups.size() > 0}">
@@ -211,17 +211,28 @@
                         <th class="one wide"></th>
                     </tr>
                     <tr>
-                        <th rowspan="2" colspan="4"></th>
-                        <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
-                                          title="${message(code: 'default.from')}"/>
+                        <th rowspan="2" colspan="3"></th>
+                        <g:if test="${journalsOnly}">
+                            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
+                                              title="${message(code: 'default.from')}"/>
+                        </g:if>
+                        <g:else>
+                            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.dateFirstInPrint"
+                                              title="${message(code: 'tipp.dateFirstInPrint')}"/>
+                        </g:else>
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessStartDate"
                                           title="${message(code: 'default.from')}"/>
-
                         <th rowspan="2" colspan="2"></th>
                     </tr>
                     <tr>
-                        <g:sortableColumn class="la-smaller-table-head" property="endDate"
-                                          title="${message(code: 'default.to')}"/>
+                        <g:if test="${journalsOnly}">
+                            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="endDate"
+                                              title="${message(code: 'default.to')}"/>
+                        </g:if>
+                        <g:else>
+                            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.dateFirstOnline"
+                                              title="${message(code: 'tipp.dateFirstOnline')}"/>
+                        </g:else>
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessEndDate"
                                           title="${message(code: 'default.to')}"/>
                     </tr>
@@ -253,10 +264,11 @@
                                 </select>
                                 -->
                             </th>
+                            <%-- legacy??
                             <th>
                                 <semui:simpleHiddenValue id="bulk_medium2" name="bulk_medium2" type="refdata"
                                                          category="${RDConstants.IE_MEDIUM}"/>
-                            </th>
+                            </th>--%>
                             <th>
                                 <%--<semui:datepicker hideLabel="true"
                                                   placeholder="${message(code: 'default.from')}"
@@ -330,10 +342,11 @@
                                                         showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
                                     <!-- END TEMPLATE -->
                                 </td>
-
+                                <%-- legacy???
                                 <td>
-                                    ${ie.medium} <!-- may be subject of sync if issue entitlement medium and TIPP medium may differ -->
+                                    ${ie.tipp.medium}
                                 </td>
+                                --%>
                                 <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
 
                                     <g:render template="/templates/tipps/coverages" model="${[ie: ie, tipp: ie.tipp]}"/>

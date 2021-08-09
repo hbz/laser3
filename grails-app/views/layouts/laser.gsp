@@ -111,6 +111,11 @@
                         </g:if>
 
                                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                                    %{--
+                                    <div class="divider"></div>
+                                    <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" text="Meine Workflows" />
+                                    --}%
+
                                     <div class="divider"></div>
                                     <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />
 
@@ -290,6 +295,11 @@
                                 </div>
 
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="user" action="list">${message(code:'menu.institutions.users')}</semui:link>
+
+                                <sec:ifAnyGranted roles="ROLE_YODA">
+                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageWorkflows">DEMO: Workflows</semui:link>
+                                </sec:ifAnyGranted>
+
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="showAffiliations">${message(code:'menu.admin.showAffiliations')}</semui:link>
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="usage">${message(code:'menu.admin.manageUsageStats')}</semui:link>
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="updateQASubscriptionDates">${message(code:'menu.admin.updateTestSubscriptionDates')}</semui:link>
@@ -394,6 +404,8 @@
                                             </div>
                                             <div class="menu" role="menu">
                                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'identifier']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIdentifiers')}</semui:link>
+                                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'editionStatement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateEditionStatement')}</semui:link>
+                                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'iemedium']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIEMedium')}</semui:link>
                                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'ddc']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateDDC')}</semui:link>
                                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'language']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateLanguage')}</semui:link>
                                             </div>

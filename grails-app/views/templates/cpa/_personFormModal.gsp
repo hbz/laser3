@@ -275,7 +275,7 @@
                                       optionKey="id"
                                       optionValue="value"
                                       value="${contactInstance?.language?.id}"
-                                      noSelection="['null': '']"/>
+                                      noSelection="['null': message(code: 'default.select.choose.label')]"/>
                     </div>
 
 
@@ -324,6 +324,7 @@
 
                 <br />
                 <br />
+                <g:render template="/templates/cpa/addressFields" model="[multipleAddresses: true]"/>
 
                 <div id="addressElements"></div>
             </g:if>
