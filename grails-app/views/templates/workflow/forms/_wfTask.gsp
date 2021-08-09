@@ -133,7 +133,7 @@
                     <p>
                         <g:if test="${task?.getPrevious()}">
                             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + task.getPrevious().id]}">
-                                <i class="ui icon circle blue"></i> ${task.getPrevious().title}
+                                <i class="icon circle blue"></i> ${task.getPrevious().title}
                             </g:link>
                         </g:if>
                     </p>
@@ -151,7 +151,7 @@
                     <p>
                         <g:if test="${task?.getParent()}">
                             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + task.getParent().id]}">
-                                <i class="ui icon circle blue"></i> ${task.getParent().title}
+                                <i class="icon circle blue"></i> ${task.getParent().title}
                             </g:link>
                         </g:if>
                     </p>
@@ -174,7 +174,7 @@
                         <label for="${prefix}_workflow">${message(code:'workflow.label')} &uarr;</label> %{-- TODO --}%
                         <p>
                             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + task.getWorkflow().id]}">
-                                <i class="ui icon circle purple"></i> ${task.getWorkflow().title}
+                                <i class="icon circle purple"></i> ${task.getWorkflow().title}
                             </g:link>
                         </p>
                     </div>
@@ -190,7 +190,7 @@
             <p>
                 <g:if test="${task?.prototype}">
                     <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + task.prototype.id]}">
-                        <i class="ui icon clone outline"></i> ${task.prototype.title}
+                        <i class="icon clone outline"></i> ${task.prototype.title}
                     </g:link>
                 </g:if>
             </p>

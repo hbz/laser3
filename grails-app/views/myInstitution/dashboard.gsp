@@ -1,4 +1,4 @@
-<%@ page import="de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.helper.RDConstants; de.laser.AccessService; de.laser.helper.SqlDateUtils; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.helper.DateUtils; de.laser.helper.WorkflowHelper; de.laser.workflow.WfWorkflow; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.helper.RDConstants; de.laser.AccessService; de.laser.helper.SqlDateUtils; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 
 <!doctype html>
 <html>
@@ -88,6 +88,12 @@
             <span id="notificationsCount">${message(code:'myinst.acceptedChanges.label', args: [message(code:'myinst.loadPending')])}</span>
         </a>
 
+        <a class="${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
+            <i class="warning circle icon large"></i>
+            ${systemAnnouncements.size()}
+            ${message(code:'announcement.plural')}
+        </a>
+
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
             <a class="${us_dashboard_tab.getValue().value=='Tasks' || us_dashboard_tab.getValue()=='Tasks' ? 'active item':'item'}" data-tab="tasks">
                 <i class="checked calendar icon large"></i>
@@ -96,27 +102,20 @@
             </a>
         </g:if>
 
-
         <a class="${us_dashboard_tab.getValue().value=='Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active item':'item'}" data-tab="surveys">
             <i class="chart pie icon large"></i>
             <span id="surveyCount">${message(code:'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
         </a>
 
-
-        <a class="${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
-            <i class="warning circle icon large"></i>
-            ${systemAnnouncements.size()}
-            ${message(code:'announcement.plural')}
-        </a>
-
-       %{-- <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-            <a class="${us_dashboard_tab.getValue().value=='Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active item':'item'}" data-tab="six">
-                <i class="checked tasks icon large"></i>
-                ${surveysConsortia?.size()}
-                ${message(code:'myinst.dash.surveyConsortia.label')}
-            </a>
-        </g:if>--}%
-
+        <sec:ifAnyGranted roles="ROLE_YODA"><!-- TODO -->
+            <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                <a class="${us_dashboard_tab.getValue().value=='Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
+                    <i class="tasks icon large"></i>
+                    ${currentWorkflows.size()}
+                    ${message(code:'workflow.plural.label')}
+                </a>
+            </g:if>
+        </sec:ifAnyGranted>
 
     </div><!-- secondary -->
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'Due Dates' || us_dashboard_tab.getValue()=='Due Dates' ? 'active':''}" data-tab="duedates">
@@ -169,57 +168,6 @@
                 </div>
             </g:if>
         </div>
-
-        <%--<div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active':''}" data-tab="news">
-            %{--
-            <g:if test="${editable}">
-                <div class="la-float-right">
-                    <g:link action="announcements" class="ui button">${message(code:'myinst.ann.view.label')}</g:link>
-                </div>
-            </g:if>
-            --}%
-
-            <g:message code="profile.dashboardItemsTimeWindow"
-                       default="You see events from the last {0} days."
-                       args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
-
-            <br />
-
-            <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
-                <g:each in="${recentAnnouncements}" var="ra">
-                    <div class="item">
-
-                        <div class="ui internally celled grid">
-                            <div class="row">
-                                <div class="three wide column">
-
-                                    <strong>${message(code:'myinst.ann.posted_by')}</strong>
-                                    <g:link controller="user" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link>
-                                    <br /><br />
-                                    <g:formatDate date="${ra.dateCreated}" formatName="default.date.format.noZ"/>
-
-                                </div><!-- .column -->
-                                <div class="thirteen wide column">
-
-                                    <div class="header" style="margin:0 0 1em 0">
-                                        <g:set var="ann_nws" value="${ra.title?.replaceAll(' ', '')}"/>
-                                        ${message(code:"announcement.${ann_nws}", default:"${ra.title}")}
-                                    </div>
-                                    <div>
-                                        <div class="widget-content"><% print ra.content; /* avoid auto encodeAsHTML() */ %></div>
-                                    </div>
-
-                                </div><!-- .column -->
-                            </div><!-- .row -->
-                        </div><!-- .grid -->
-
-                    </div>
-                </g:each>
-            </div>
-            <div>
-                <semui:paginate offset="${announcementOffset ? announcementOffset : '0'}" max="${contextService.getUser().getDefaultPageSize()}" params="${[view:'announcementsView']}" total="${recentAnnouncementsCount}"/>
-            </div>
-        </div>--%>
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Tasks' || us_dashboard_tab.getValue() == 'Tasks' ? 'active':''}" data-tab="tasks">
@@ -315,6 +263,57 @@
                 <%--<g:render template="surveys"/>--%>
             </div>
         </div>
+
+        <sec:ifAnyGranted roles="ROLE_YODA"><!-- TODO -->
+        <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+            <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active':''}" data-tab="workflows">
+                <div>
+                    <table class="ui celled table la-table">
+                        <thead>
+                            <tr>
+                                <th>${message(code:'workflow.label')}</th>
+                                <th>${message(code:'subscription.label')}</th>
+                                <th>${message(code:'default.progress.label')}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <g:each in="${currentWorkflows}" var="wf">
+                                <tr>
+                                    <td>
+                                        <g:link controller="myInstitution" action="currentWorkflows" params="${[key: 'myInstitution::' + WfWorkflow.KEY + ':' + wf.id]}">
+                                            <i class="ui icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i> ${wf.title}
+                                        </g:link>
+                                    </td>
+                                    <td>
+                                        <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
+                                            <i class="ui icon clipboard"></i>${wf.subscription.name}
+                                            <g:if test="${wf.subscription.startDate || wf.subscription.endDate}">
+                                                (${wf.subscription.startDate ? DateUtils.getSDF_NoTime().format(wf.subscription.startDate) : ''} -
+                                                ${wf.subscription.endDate ? DateUtils.getSDF_NoTime().format(wf.subscription.endDate) : ''})
+                                            </g:if>
+                                        </g:link>
+                                    </td>
+                                    <td>
+                                        <g:set var="wfInfo" value="${wf.getInfo()}" />
+                                        <g:if test="${wfInfo.tasksOpen}">
+                                            <span class="ui label circular">${wfInfo.tasksOpen}</span>
+                                        </g:if>
+                                        <g:if test="${wfInfo.tasksCanceled}">
+                                            <span class="ui label circular orange">${wfInfo.tasksCanceled}</span>
+                                        </g:if>
+                                        <g:if test="${wfInfo.tasksDone}">
+                                            <span class="ui label circular green">${wfInfo.tasksDone}</span>
+                                        </g:if>
+
+                                    </td>
+                                </tr>
+                            </g:each>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </g:if>
+        </sec:ifAnyGranted>
 
     <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.app.taskcreate = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);

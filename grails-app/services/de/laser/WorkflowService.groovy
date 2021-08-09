@@ -229,7 +229,7 @@ class WorkflowService {
 
             wf.title        = ph.getString('title')
             wf.description  = ph.getString('description')
-            wf.child        = WfTaskPrototype.get(ph.getLong('child')) // TODO - xyz
+            wf.task         = WfTaskPrototype.get(ph.getLong('task'))
             wf.state        = RefdataValue.get(ph.getLong('state'))
         }
         else if (cmd[1] == WfWorkflow.KEY) {
@@ -240,7 +240,7 @@ class WorkflowService {
             wf.comment      = ph.getString('comment')
             wf.status       = RefdataValue.get(ph.getLong('status'))
 
-            // wf.child        = WfTask.get(ph.getLong('child'))  // TODO - xyz
+            // wf.task         = WfTask.get(ph.getLong('task'))
             // wf.prototype    = WfWorkflowPrototype.get(ph.getLong('prototype'))
             // wf.subscription = Subscription.get(ph.getLong('subscription'))
         }
@@ -515,6 +515,16 @@ class WorkflowService {
         }
         else if (cmd[0] == 'delete') {
             result.putAll( removeCompleteWorkflow( params ) )
+        }
+        else if (cmd[0] == 'instantiate') {
+            result.status = OP_STATUS_ERROR
+
+            if (params.subId && params.workflowId) {
+                GrailsParameterMap clone = params.clone()
+                clone.setProperty( 'cmd', params.cmd + ':' + params.workflowId )
+
+                result = instantiateCompleteWorkflow( clone )
+            }
         }
 
         result

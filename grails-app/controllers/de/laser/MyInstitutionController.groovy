@@ -2236,11 +2236,15 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = 1)
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
     def currentWorkflows() {
         Map<String, Object> result = [:]
 
-        if (params.cmd) {
+        if (params.key) {
+            result.forwardedKey = params.key // dashboard
+        }
+        else if (params.cmd) {
             result.putAll( workflowService.handleUsage(params) )
         }
         result.currentWorkflows = WfWorkflow.executeQuery(

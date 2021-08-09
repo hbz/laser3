@@ -7,6 +7,7 @@ import de.laser.helper.ProfilerUtils
 import de.laser.helper.RDStore
 import de.laser.helper.SwissKnife
 import de.laser.system.SystemAnnouncement
+import de.laser.workflow.WfWorkflow
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -89,6 +90,8 @@ class MyInstitutionControllerService {
                     " order by surConfig.surveyInfo.endDate",
                     [org: result.institution,
                      status: RDStore.SURVEY_SURVEY_STARTED])
+
+            result.currentWorkflows = WfWorkflow.executeQuery( 'select wf from WfWorkflow wf where wf.owner = :ctxOrg order by id', [ctxOrg: result.institution] )
         }
 
         result.surveys = activeSurveyConfigs.groupBy {it?.id}

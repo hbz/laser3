@@ -42,7 +42,7 @@
         <thead>
         <tr>
             <th>${message(code:'workflow.label')}</th>
-            <th></th>
+            <th>${message(code:'default.progress.label')}</th>
             <th></th>
         </tr>
         </thead>
@@ -59,35 +59,29 @@
                     <g:each in="${tasks}" var="task" status="ti">
                         <g:if test="${task.child}">
                             <span class="la-popup-tooltip la-delay" data-position="top center" data-html="${WorkflowHelper.getTaskTooltipMarkup(task)}">
-
-                                <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}">
-                                    <span class="ui ${WorkflowHelper.getCssColorByStatus(task.status)} label">
-                                        <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
-                                        ${ti + 1}.1
-                                    </span>
+                                <g:link class="ui compact button ${WorkflowHelper.getCssColorByStatus(task.status)} wfModalLink"
+                                        controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}">
+                                            <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
+                                            ${(char) (65 + ti)}.1
                                 </g:link>
                             </span>
                             <g:set var="children" value="${task.child.getSequence()}" />
                             <g:each in="${children}" var="child" status="ci">
                                 <span class="la-popup-tooltip la-delay" data-position="top center" data-html="${WorkflowHelper.getTaskTooltipMarkup(child)}">
-
-                                    <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + child.id]}">
-                                        <span class="ui ${WorkflowHelper.getCssColorByStatus(child.status)} label">
-                                            <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i>
-                                            ${ti + 1}.${ci + 2}
-                                        </span>
+                                    <g:link class="ui compact button ${WorkflowHelper.getCssColorByStatus(child.status)} wfModalLink"
+                                            controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + child.id]}">
+                                                <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i>
+                                                ${(char) (65 + ti)}.${ci + 2}
                                     </g:link>
                                 </span>
                             </g:each>
                         </g:if>
                         <g:else>
                             <span class="la-popup-tooltip la-delay" data-position="top center" data-html="${WorkflowHelper.getTaskTooltipMarkup(task)}">
-
-                                <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}">
-                                    <span class="ui ${WorkflowHelper.getCssColorByStatus(task.status)} label">
-                                        <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
-                                        ${ti + 1}
-                                    </span>
+                                <g:link class="ui compact button ${WorkflowHelper.getCssColorByStatus(task.status)} wfModalLink"
+                                        controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}">
+                                            <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
+                                            ${(char) (65 + ti)}
                                 </g:link>
                             </span>
                         </g:else>

@@ -2702,8 +2702,12 @@ class SubscriptionControllerService {
     Map<String,Object> workflows(GrailsParameterMap params) {
         Map<String, Object> result = [
                 subscription:   Subscription.get(params.id),
-                contextOrg:     contextService.getOrg()
+                contextOrg:     contextService.getOrg(),
+                user:           contextService.getUser()
         ]
+
+        result.contextCustomerType = result.contextOrg.getCustomerType()
+        result.editable = result.subscription.isEditableBy(result.user)
 
         if (params.cmd) {
             result.putAll( workflowService.handleUsage(params) )

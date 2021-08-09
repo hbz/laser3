@@ -1,9 +1,5 @@
 package de.laser.workflow
 
-import de.laser.RefdataValue
-import de.laser.annotations.RefdataAnnotation
-import de.laser.helper.RDConstants
-
 class WfCondition extends WfConditionBase {
 
     static final String KEY = 'WF_CONDITION'

@@ -11,6 +11,10 @@
     <body>
         <g:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
+        <semui:controlButtons>
+            <g:render template="actions" />
+        </semui:controlButtons>
+    
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
             <semui:xEditable owner="${subscription}" field="name" />
         </h1>

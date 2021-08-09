@@ -27,11 +27,11 @@
         </div>
 
         <div class="field">
-            <label for="${prefix}_child">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} &darr;</label>
-            <g:select class="ui dropdown" id="${prefix}_child" name="${prefix}_child"
+            <label for="${prefix}_task">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} &darr;</label>
+            <g:select class="ui dropdown" id="${prefix}_task" name="${prefix}_task"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"
-                      from="${dd_childList}"
-                      value="${workflow?.child?.id}"
+                      from="${dd_taskList}"
+                      value="${workflow?.task?.id}"
                       optionKey="id"
                       optionValue="${{'(' + it.id + ') ' + it.title}}" />
         </div>
@@ -61,7 +61,7 @@
             <p>
                 <g:if test="${workflow?.subscription}">
                     <g:link controller="subscription" action="show" params="${[id: workflow.subscription.id]}">
-                        <i class="ui icon clipboard"></i> ${workflow.subscription.name}
+                        <i class="icon clipboard"></i> ${workflow.subscription.name}
                     </g:link>
                 </g:if>
             </p>
@@ -77,11 +77,11 @@
 
         %{--
         <div class="field">
-            <label for="${prefix}_child">${message(code: 'workflow.object.' + WfTask.KEY)} &darr;</label>
-            <g:select class="ui dropdown disabled" id="${prefix}_child" name="${prefix}_child"
+            <label for="${prefix}_task">${message(code: 'workflow.object.' + WfTask.KEY)} &darr;</label>
+            <g:select class="ui dropdown disabled" id="${prefix}_task" name="${prefix}_task"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"
-                      from="${dd_childList}"
-                      value="${workflow?.child?.id}"
+                      from="${dd_taskList}"
+                      value="${workflow?.task?.id}"
                       optionKey="id"
                       optionValue="${{'(' + it.id + ') ' + it.title}}" />
         </div>
@@ -92,7 +92,7 @@
             <p>
                 <g:if test="${workflow?.prototype}">
                     <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + workflow.prototype.id]}">
-                        <i class="ui icon clone outline"></i> ${workflow.prototype.title}
+                        <i class="icon clone outline"></i> ${workflow.prototype.title}
                     </g:link>
                 </g:if>
             </p>

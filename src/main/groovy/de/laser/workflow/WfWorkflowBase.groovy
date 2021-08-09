@@ -1,14 +1,11 @@
 package de.laser.workflow
 
-import de.laser.RefdataValue
-import de.laser.annotations.RefdataAnnotation
-import de.laser.helper.RDConstants
 import grails.gorm.dirty.checking.DirtyCheck
 
 @DirtyCheck
 class WfWorkflowBase {
 
-    WfTaskBase child
+    WfTaskBase task
 
     String title
     String description
