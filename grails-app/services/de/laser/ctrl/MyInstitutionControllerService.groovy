@@ -13,6 +13,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import java.text.SimpleDateFormat
+import java.util.concurrent.ExecutorService
 
 @Transactional
 class MyInstitutionControllerService {
@@ -21,7 +22,6 @@ class MyInstitutionControllerService {
     def contextService
     def dashboardDueDatesService
     def filterService
-    def pendingChangeService
     def surveyService
     def taskService
 
@@ -51,11 +51,11 @@ class MyInstitutionControllerService {
 
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
 
-        // changes
+        // changes -> to AJAX
 
-        Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
-        pu.setBenchmark('pending changes')
-        result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
+        //Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
+        //pu.setBenchmark('pending changes')
+        //result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 
         // systemAnnouncements
         pu.setBenchmark('system announcements')
@@ -78,6 +78,7 @@ class MyInstitutionControllerService {
         pu.setBenchmark('due dates')
         result.dueDates = dashboardDueDatesService.getDashboardDueDates( result.user, result.institution, false, false, result.max, result.dashboardDueDatesOffset)
         result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates( result.user, result.institution, false, false).size()
+        /* -> to AJAX
         pu.setBenchmark('surveys')
         List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null AND surConfig.surveyInfo.status = :status) " +
                 " order by surConfig.surveyInfo.endDate",
@@ -94,7 +95,7 @@ class MyInstitutionControllerService {
         }
 
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
-        result.countSurvey = result.surveys.size()
+        result.countSurvey = result.surveys.size()*/
 
         result.benchMark = pu.stopBenchmark()
         [status: STATUS_OK, result: result]
@@ -129,6 +130,8 @@ class MyInstitutionControllerService {
             case 'currentLicenses':
             case 'currentSurveys':
             case 'dashboard':
+            case 'getChanges':
+            case 'getSurveys':
             case 'emptyLicense': //to be moved to LicenseController
             case 'surveyInfoFinish':
             case 'surveyResultFinish':

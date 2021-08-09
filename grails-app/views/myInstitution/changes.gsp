@@ -4,7 +4,7 @@
 <html>
     <head>
         <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'myinst.pendingChanges.label')}</title>
+        <title>${message(code:'laser')} : ${message(code:'myinst.menu.pendingChanges.label')}</title>
     </head>
 
     <body>
@@ -13,7 +13,7 @@
             <semui:crumb message="myinst.pendingChanges.label" class="active" />
         </semui:breadcrumbs>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'myinst.pendingChanges.label')}</h1>
+        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'myinst.menu.pendingChanges.label')}</h1>
 
             <g:if test="${packages}">
                 <g:form controller="pendingChange" action="processAll">

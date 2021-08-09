@@ -61,7 +61,7 @@ class PendingChangeController  {
             pendingChangeService.performReject(pc)
         }
         else if (!pc.payload) {
-            pendingChangeService.reject(pc)
+            pendingChangeService.reject(pc, params.subId)
         }
         redirect(url: request.getHeader('referer'))
     }
@@ -85,11 +85,12 @@ class PendingChangeController  {
                         log.info("processing change ${pc}")
                         if(acceptAll) {
                             //log.info("is rejectAll simultaneously set? ${params.rejectAll}")
-                            pendingChangeService.accept(pc)
+                            pendingChangeService.applyPendingChange(pc, sp, contextService.getOrg())
                         }
                         else if(rejectAll) {
                             //log.info("is acceptAll simultaneously set? ${params.acceptAll}")
-                            pendingChangeService.reject(pc, params.subId)
+                            //PendingChange toReject = PendingChange.construct([target: target, oid: genericOIDService.getOID(sp.subscription), newValue: pc.newValue, oldValue: pc.oldValue, prop: pc.targetProperty, msgToken: pc.msgToken, status: RDStore.PENDING_CHANGE_PENDING, owner: contextService.getOrg()])
+                            pendingChangeService.reject(pc, sp.subscription.id)
                         }
                     }
                 }

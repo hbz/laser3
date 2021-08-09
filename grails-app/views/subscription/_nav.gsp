@@ -37,7 +37,7 @@
         <semui:securedSubNavItem orgPerm="ORG_BASIC_MEMBER" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
 
-    <semui:subNavItem controller="subscription" action="entitlementChanges" params="${[id:params.id]}" message="myinst.pendingChanges.label" />
+    <semui:subNavItem controller="subscription" action="entitlementChanges" params="${[id:params.id]}" message="myinst.menu.pendingChanges.label" />
 
     <semui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="subscription" action="tasks" params="${[id:params.id]}" message="task.plural" />
 
