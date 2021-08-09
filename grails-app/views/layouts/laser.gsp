@@ -112,8 +112,10 @@
 
                                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
 
-                                    <div class="divider"></div>
-                                    <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
+                                    <sec:ifAnyGranted roles="ROLE_YODA"><!-- TODO -->
+                                        <div class="divider"></div>
+                                        <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
+                                    </sec:ifAnyGranted>
 
                                     <div class="divider"></div>
                                     <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="survey" action="currentSurveysConsortia" message="menu.my.surveys" />

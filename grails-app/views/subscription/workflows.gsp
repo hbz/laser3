@@ -42,7 +42,7 @@
         <thead>
         <tr>
             <th>${message(code:'workflow.label')}</th>
-            <th></th>
+            <th>${message(code:'default.progress.label')}</th>
             <th></th>
         </tr>
         </thead>

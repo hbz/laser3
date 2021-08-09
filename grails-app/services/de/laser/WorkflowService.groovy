@@ -516,6 +516,16 @@ class WorkflowService {
         else if (cmd[0] == 'delete') {
             result.putAll( removeCompleteWorkflow( params ) )
         }
+        else if (cmd[0] == 'instantiate') {
+            result.status = OP_STATUS_ERROR
+
+            if (params.subId && params.workflowId) {
+                GrailsParameterMap clone = params.clone()
+                clone.setProperty( 'cmd', params.cmd + ':' + params.workflowId )
+
+                result = instantiateCompleteWorkflow( clone )
+            }
+        }
 
         result
     }

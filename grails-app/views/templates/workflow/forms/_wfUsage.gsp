@@ -9,7 +9,7 @@
             <p>${workflow.description}</p>
             <p>
                 <g:link controller="subscription" action="show" params="${[id: workflow.subscription.id]}">
-                    <i class="ui icon clipboard"></i>${workflow.subscription.name}
+                    <i class="icon clipboard"></i>${workflow.subscription.name}
                 </g:link>
             </p>
         </div>
@@ -32,9 +32,9 @@
                     <div class="ui segment">
                         <div class="content">
                             <div class="header">
-                                <i class="ui icon ${WorkflowHelper.getCssIconAndColorByStatus(task.status)}"></i> ${task.title}
+                                <i class="icon ${WorkflowHelper.getCssIconAndColorByStatus(task.status)}"></i> ${task.title}
                                 <span style="margin-left: 1em; color: darkgrey; font-weight: normal">(
-                                    <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
+                                    <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
                                     ${task.priority.getI10n('value')}
                                     )</span>
                             </div>
@@ -54,10 +54,10 @@
 
                                         <g:if test="${field.startsWith('checkbox')}">
                                             <g:if test="${task.condition.getProperty(field) == true}">
-                                                <i class="ui icon green check square outline"></i>
+                                                <i class="icon green check square outline"></i>
                                             </g:if>
                                             <g:else>
-                                                <i class="ui icon square outline"></i>
+                                                <i class="icon square outline"></i>
                                             </g:else>
                                         </g:if>
                                         <g:if test="${field.startsWith('date') && task.condition.getProperty(field)}">
@@ -78,9 +78,9 @@
                             <div class="ui segment">
                                 <div class="content">
                                     <div class="header">
-                                        <i class="ui icon ${WorkflowHelper.getCssIconAndColorByStatus(child.status)}"></i> ${child.title}
+                                        <i class="icon ${WorkflowHelper.getCssIconAndColorByStatus(child.status)}"></i> ${child.title}
                                         <span style="margin-left: 1em; color: darkgrey; font-weight: normal">(
-                                            <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i>
+                                            <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i>
                                             ${child.priority.getI10n('value')}
                                             )</span>
                                     </div>
@@ -100,10 +100,10 @@
 
                                                 <g:if test="${field.startsWith('checkbox')}">
                                                     <g:if test="${child.condition.getProperty(field) == true}">
-                                                        <i class="ui icon green check square outline"></i>
+                                                        <i class="icon green check square outline"></i>
                                                     </g:if>
                                                     <g:else>
-                                                        <i class="ui icon square outline"></i>
+                                                        <i class="icon square outline"></i>
                                                     </g:else>
                                                 </g:if>
                                                 <g:if test="${field.startsWith('date') && child.condition.getProperty(field)}">
@@ -139,7 +139,7 @@
                 <div class="field">
                     <label for="${prefixOverride}_priority">Priorität</label>
                     <p>
-                        <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
+                        <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
                         ${task.priority.getI10n('value')}
                     </p>
                 </div>

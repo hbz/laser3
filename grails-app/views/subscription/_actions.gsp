@@ -68,7 +68,13 @@
         <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
         <div class="divider"></div>
         <g:if test="${editable}">
-            <g:if test="${(contextCustomerType == 'ORG_INST' && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
+            <sec:ifAnyGranted roles="ROLE_YODA"><!-- TODO -->
+                <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
+                    <semui:actionsDropdownItem message="workflow.instantiate" data-semui="modal" href="#modalInstantiateWorkflow" />
+                    <div class="divider"></div>
+                </g:if>
+            </sec:ifAnyGranted>
+        <g:if test="${(contextCustomerType == 'ORG_INST' && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
                 <semui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
             <g:else>
@@ -190,3 +196,8 @@
 <g:if test="${accessService.checkMinUserOrgRole(user,contextOrg,'INST_EDITOR')}">
     <g:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
+<sec:ifAnyGranted roles="ROLE_YODA"><!-- TODO -->
+    <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
+        <g:render template="/templates/workflow/instantiate" model="${[subscription: subscription]}"/>
+    </g:if>
+</sec:ifAnyGranted>

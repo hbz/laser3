@@ -124,7 +124,7 @@
             <p>
                 <g:if test="${condition?.task}">
                     <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + condition.task.id]}">
-                        <i class="ui icon circle blue"></i> ${condition.task.title}
+                        <i class="icon circle blue"></i> ${condition.task.title}
                     </g:link>
                 </g:if>
             </p>
@@ -143,7 +143,7 @@
     <g:if test="${prefix == WfCondition.KEY}">
         %{--
             <div class="field">
-                <label for="${prefix}_parent">${message(code: 'workflow.object.' + WfTask.KEY)} <i class="ui icon angle double up"></i></label>
+                <label for="${prefix}_parent">${message(code: 'workflow.object.' + WfTask.KEY)} <i class="icon angle double up"></i></label>
                 <p>${condition?.task?.title}</p>
                 <g:select class="ui dropdown disabled" id="${prefix}_parent" name="${prefix}_parent"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
@@ -159,7 +159,7 @@
             <p>
                 <g:if test="${condition?.prototype}">
                     <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + condition.prototype.id]}">
-                        <i class="ui icon clone outline"></i> ${condition.prototype.title}
+                        <i class="icon clone outline"></i> ${condition.prototype.title}
                     </g:link>
                 </g:if>
             </p>

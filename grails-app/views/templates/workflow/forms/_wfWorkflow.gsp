@@ -61,7 +61,7 @@
             <p>
                 <g:if test="${workflow?.subscription}">
                     <g:link controller="subscription" action="show" params="${[id: workflow.subscription.id]}">
-                        <i class="ui icon clipboard"></i> ${workflow.subscription.name}
+                        <i class="icon clipboard"></i> ${workflow.subscription.name}
                     </g:link>
                 </g:if>
             </p>
@@ -92,7 +92,7 @@
             <p>
                 <g:if test="${workflow?.prototype}">
                     <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + workflow.prototype.id]}">
-                        <i class="ui icon clone outline"></i> ${workflow.prototype.title}
+                        <i class="icon clone outline"></i> ${workflow.prototype.title}
                     </g:link>
                 </g:if>
             </p>

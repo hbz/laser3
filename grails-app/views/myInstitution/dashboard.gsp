@@ -110,13 +110,15 @@
                 ${message(code:'myinst.dash.survey.label')}
         </a>
 
-        <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-            <a class="${us_dashboard_tab.getValue().value=='Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
-                <i class="tasks icon large"></i>
-                ${currentWorkflows.size()}
-                ${message(code:'workflow.plural.label')}
-            </a>
-        </g:if>
+        <sec:ifAnyGranted roles="ROLE_YODA"><!-- TODO -->
+            <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                <a class="${us_dashboard_tab.getValue().value=='Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
+                    <i class="tasks icon large"></i>
+                    ${currentWorkflows.size()}
+                    ${message(code:'workflow.plural.label')}
+                </a>
+            </g:if>
+        </sec:ifAnyGranted>
 
     </div><!-- secondary -->
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'Due Dates' || us_dashboard_tab.getValue()=='Due Dates' ? 'active':''}" data-tab="duedates">
@@ -376,6 +378,7 @@
                     <g:render template="surveys"/>
         </div>
 
+        <sec:ifAnyGranted roles="ROLE_YODA"><!-- TODO -->
         <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
             <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active':''}" data-tab="workflows">
                 <div>
@@ -384,7 +387,7 @@
                             <tr>
                                 <th>${message(code:'workflow.label')}</th>
                                 <th>${message(code:'subscription.label')}</th>
-                                <th>Fortschritt</th>
+                                <th>${message(code:'default.progress.label')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -424,6 +427,7 @@
                 </div>
             </div>
         </g:if>
+        </sec:ifAnyGranted>
 
     <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.app.taskcreate = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);

@@ -15,6 +15,7 @@
 
 <h1 class="ui header la-clear-before la-noMargin-top">
     <i class="ui icon tasks"></i> ${message(code:'menu.my.workflows')}
+    %{-- <semui:totalNumber total="${currentWorkflows.size()}"/> --}%
 </h1>
 
 <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
@@ -39,7 +40,7 @@
     <tr>
         <th>${message(code:'workflow.label')}</th>
         <th>${message(code:'subscription.label')}</th>
-        <th></th>
+        <th>${message(code:'default.progress.label')}</th>
         <th></th>
     </tr>
     </thead>
