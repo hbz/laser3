@@ -84,19 +84,20 @@ class MyInstitutionControllerService {
                 " order by surConfig.surveyInfo.endDate",
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
+        */
 
         if(accessService.checkPerm('ORG_CONSORTIUM')){
-            activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
+            /*activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
                     " order by surConfig.surveyInfo.endDate",
                     [org: result.institution,
-                     status: RDStore.SURVEY_SURVEY_STARTED])
+                     status: RDStore.SURVEY_SURVEY_STARTED])*/
 
             result.currentWorkflows = WfWorkflow.executeQuery( 'select wf from WfWorkflow wf where wf.owner = :ctxOrg order by id', [ctxOrg: result.institution] )
         }
-
+        /*
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
-        result.countSurvey = result.surveys.size()*/
-
+        result.countSurvey = result.surveys.size()
+        */
         result.benchMark = pu.stopBenchmark()
         [status: STATUS_OK, result: result]
     }
