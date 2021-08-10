@@ -56,7 +56,8 @@ class WfWorkflow extends WfWorkflowBase {
             tasksDone: 0,
             tasksNormal: 0,
             tasksOptional: 0,
-            tasksImportant: 0
+            tasksImportant: 0,
+            lastUpdated: lastUpdated
         ]
 
         List<WfTask> sequence = []
@@ -76,6 +77,9 @@ class WfWorkflow extends WfWorkflowBase {
             if (task.priority == RDStore.WF_TASK_PRIORITY_NORMAL)       { info.tasksNormal++ }
             if (task.priority == RDStore.WF_TASK_PRIORITY_OPTIONAL)     { info.tasksOptional++ }
             if (task.priority == RDStore.WF_TASK_PRIORITY_IMPORTANT)    { info.tasksImportant++ }
+
+            if (task.lastUpdated > info.lastUpdated) { info.lastUpdated = task.lastUpdated }
+            if (task.condition && task.condition.lastUpdated > info.lastUpdated) { info.lastUpdated = task.condition.lastUpdated }
         }
 
         info

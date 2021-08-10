@@ -92,7 +92,9 @@ class MyInstitutionControllerService {
                     [org: result.institution,
                      status: RDStore.SURVEY_SURVEY_STARTED])*/
 
-            result.currentWorkflows = WfWorkflow.executeQuery( 'select wf from WfWorkflow wf where wf.owner = :ctxOrg order by id', [ctxOrg: result.institution] )
+            result.currentWorkflows = WfWorkflow.executeQuery(
+                    'select wf from WfWorkflow wf where wf.owner = :ctxOrg and wf.status = :status order by id desc',
+                    [ctxOrg: result.institution, status: RDStore.WF_WORKFLOW_STATUS_OPEN] )
         }
         /*
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
