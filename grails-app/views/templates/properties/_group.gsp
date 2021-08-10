@@ -73,7 +73,7 @@
                             <semui:xEditable owner="${prop}" type="number" field="intValue" overwriteEditable="${overwriteEditable}"/>
                         </g:if>
                         <g:elseif test="${prop.type.isStringType()}">
-                            <semui:xEditable owner="${prop}" type="text" noMaxLength="true" field="stringValue" overwriteEditable="${overwriteEditable}"/>
+                            <semui:xEditable owner="${prop}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.isBigDecimalType()}">
                             <semui:xEditable owner="${prop}" type="text" field="decValue" overwriteEditable="${overwriteEditable}"/>
