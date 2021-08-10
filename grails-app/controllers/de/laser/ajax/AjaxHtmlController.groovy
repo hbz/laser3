@@ -698,6 +698,8 @@ class AjaxHtmlController {
                 prefix: params.key
         ]
 
+        if (params.tab) { result.tmplTab = params.tab }
+
         if (params.key in [WfWorkflowPrototype.KEY, WfWorkflow.KEY]) {
             result.tmpl = '/templates/workflow/forms/wfWorkflow'
         }
@@ -742,6 +744,8 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def editWfXModal() {
         Map<String, Object> result = [ tmplCmd : 'edit' ]
+
+        if (params.tab) { result.tmplTab = params.tab }
 
         if (params.key) {
             String[] key = (params.key as String).split(':')

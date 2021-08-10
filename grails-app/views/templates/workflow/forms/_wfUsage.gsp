@@ -25,27 +25,31 @@
             </div>
         </div>
 
-        <div class="ui segments">
+        <div class="ui segment internally celled grid">
             <g:set var="tasks" value="${workflow.getSequence()}" />
             <g:each in="${tasks}" var="task" status="ti">
-                <div class="ui horizontal segments">
-                    <div class="ui segment">
+                <div class="row">
+                    <div class="eight wide column">
                         <div class="content">
                             <div class="header">
-                                <i class="icon ${WorkflowHelper.getCssIconAndColorByStatus(task.status)}"></i> ${task.title}
-                                <span style="margin-left: 1em; color: darkgrey; font-weight: normal">(
-                                    <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
-                                    ${task.priority.getI10n('value')}
-                                    )</span>
+                                <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(task.status)}"></i>
+                                <strong>${task.title}</strong>
+                                <span style="color: darkgrey">
+                                ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i> ${task.priority.getI10n('value')} )
+                            </span>
                             </div>
-                            <div class="description">${task.description}</div>
+                            <div class="description" style="margin:1em 0 0 0">
+                                ${task.description}
+                            </div>
                         </div>
                     </div>
-                    <div class="ui segment">
+                    <div class="eight wide column">
                         <g:if test="${task.condition}">
 
                             <div class="content">
-                                <div class="header">${task.condition.title}</div>
+                                <div class="header">
+                                    <strong>${task.condition.title}</strong>
+                                </div>
                                 <div class="description">
                                     ${task.condition.description} <br />
                                     <!-- -->
@@ -74,24 +78,28 @@
 
                 <g:if test="${task.child}">
                     <g:each in="${task.child.getSequence()}" var="child" status="ci">
-                        <div class="ui horizontal segments">
-                            <div class="ui segment">
+                        <div class="row">
+                            <div class="eight wide column">
                                 <div class="content">
                                     <div class="header">
-                                        <i class="icon ${WorkflowHelper.getCssIconAndColorByStatus(child.status)}"></i> ${child.title}
-                                        <span style="margin-left: 1em; color: darkgrey; font-weight: normal">(
-                                            <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i>
-                                            ${child.priority.getI10n('value')}
-                                            )</span>
+                                        <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(child.status)}"></i>
+                                        <strong>${child.title}</strong>
+                                        <span style="color: darkgrey">
+                                        ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i> ${child.priority.getI10n('value')} )
+                                    </span>
                                     </div>
-                                    <div class="description">${child.description}</div>
+                                    <div class="description" style="margin:1em 0 0 0">
+                                        ${child.description}
+                                    </div>
                                 </div>
                             </div>
-                            <div class="ui segment">
+                            <div class="eight wide column">
                                 <g:if test="${child.condition}">
 
                                     <div class="content">
-                                        <div class="header">${child.condition.title}</div>
+                                        <div class="header">
+                                            <strong>${child.condition.title}</strong>
+                                        </div>
                                         <div class="description">
                                             ${child.condition.description} <br />
                                             <!-- -->
