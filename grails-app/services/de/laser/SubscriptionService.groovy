@@ -716,7 +716,7 @@ class SubscriptionService {
         ies
     }
 
-    List getIssueEntitlementIDsNotFixed(Subscription subscription) {
+    List<Long> getIssueEntitlementIDsNotFixed(Subscription subscription) {
         List<Long> ies = subscription?
                 IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus order by ie.tipp.sortName",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
@@ -742,8 +742,8 @@ class SubscriptionService {
         ies
     }
 
-    List getIssueEntitlementIDsFixed(Subscription subscription) {
-        List<IssueEntitlement> ies = subscription?
+    List<Long> getIssueEntitlementIDsFixed(Subscription subscription) {
+        List<Long> ies = subscription?
                 IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []

@@ -1188,8 +1188,8 @@ class SubscriptionControllerService {
 
             Map query = filterService.getIssueEntitlementQuery(params, newSub)
             List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
-            List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementIDsFixed(baseSub)
-            List<IssueEntitlement> notFixedIEs = subscriptionService.getIssueEntitlementIDsNotFixed(newSub)
+            List<Long> allIEs = subscriptionService.getIssueEntitlementIDsFixed(baseSub)
+            List<Long> notFixedIEs = subscriptionService.getIssueEntitlementIDsNotFixed(newSub)
 
             result.countSelectedIEs = notFixedIEs.size()
             result.countAllIEs = allIEs.size()
