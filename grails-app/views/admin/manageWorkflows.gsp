@@ -20,9 +20,9 @@
 <g:set var="tmplTab" value="${tab ?: 'prototypes'}" />
 
 <div class="ui secondary stackable pointing tabular menu">
-    <a data-tab="workflows" class="item <% if (tmplTab == 'workflows') { print 'active' } %>">${message(code:'workflow.plural.label')}</a>
+    <a data-tab="workflows" class="item <% if (tmplTab == 'workflows') { print 'active' } %>">${message(code:'workflow.plural')}</a>
     %{-- <a data-tab="templates" class="item <% if (tmplTab == 'templates') { print 'active' } %>">Templates</a> --}%
-    <a data-tab="prototypes" class="item <% if (tmplTab == 'prototypes') { print 'active' } %>">Prototypen</a>
+    <a data-tab="prototypes" class="item <% if (tmplTab == 'prototypes') { print 'active' } %>">${message(code:'default.prototype.plural')}</a>
 </div>
 
 <div data-tab="workflows" class="ui bottom attached tab <% if (tmplTab == 'workflows') { print 'active' } %>" style="margin-top:2em;">
@@ -32,12 +32,12 @@
             <div class="item">
                 <span>
                     <i class="icon circle large"></i>
-                    ${message(code: 'workflow.object.' + WfTask.KEY)} ( ${message(code: 'workflow.object.' + WfCondition.KEY)} )
+                    <strong>${message(code: 'workflow.task.label')}</strong> ( ${message(code: 'workflow.condition.label')} )
                 </span>
             </div>
             <div class="item">
                 <span>
-                    Priorität:
+                    <strong>${message(code:'default.priority.label')}:</strong>
                     <i class="icon circle large"></i>Normal -
                     <i class="icon arrow alternate circle up large"></i>Wichtig -
                     <i class="icon arrow alternate circle down large"></i>Optional
@@ -45,7 +45,7 @@
             </div>
             <div class="item">
                 <span>
-                    Status:
+                    <strong>${message(code:'default.status.label')}:</strong>
                     <i class="icon la-light-grey circle large"></i>Offen -
                     <i class="icon green circle large"></i>Erledigt -
                     <i class="icon orange circle large"></i>Abgebrochen
@@ -79,7 +79,8 @@
                 <strong><i class="icon university"></i> ${wfw.owner}</strong>
             </g:link>
             <br />
-            Erstellt am: ${DateUtils.getSDF_NoTime().format(wfw.dateCreated)}
+            <g:set var="wfInfo" value="${wfw.getInfo()}" />
+            Bearbeitet: ${DateUtils.getSDF_NoTime().format(wfInfo.lastUpdated)} - Erstellt: ${DateUtils.getSDF_NoTime().format(wfw.dateCreated)}
         </div>
 
         <div class="ui mini steps">
@@ -183,7 +184,7 @@
         <thead>
             <tr>
                 <th>${message(code:'workflow.label')}</th>
-                <th>Aufgabe &darr;</th>
+                <th>${message(code:'workflow.task.label')} &darr;</th>
                 <th>Zustand</th>
                 <th></th>
             </tr>
@@ -237,8 +238,8 @@
     <table class="ui celled la-table compact table">
         <thead>
             <tr>
-                <th>Aufgabe</th>
-                <th>Bedingung &darr;</th>
+                <th>${message(code:'workflow.task.label')}</th>
+                <th>${message(code:'workflow.condition.label')} &darr;</th>
                 <th>${message(code:'workflow.label')} &uarr;</th>
                 %{-- <th>Typ</th> --}%
                 <th>Nachfolger &rarr;</th>
@@ -343,8 +344,8 @@
     <table class="ui celled la-table compact table">
         <thead>
         <tr>
-            <th>Bedingung</th>
-            <th>Aufgabe &uarr;</th>
+            <th>${message(code:'workflow.condition.label')}</th>
+            <th>${message(code:'workflow.task.label')} &uarr;</th>
             <th>${message(code:'default.type.label')}</th>
             <th></th>
         </tr>
@@ -391,7 +392,7 @@
     <g:set var="workflowTemplates" value="${WfWorkflowPrototype.executeQuery('select wfwp from WfWorkflowPrototype wfwp order by id')}" />
 
     <p class="ui header">
-        ${message(code: 'workflow.templates')} <semui:totalNumber total="${workflowTemplates.size()}"/>
+        ${message(code: 'workflow.template.plural')} <semui:totalNumber total="${workflowTemplates.size()}"/>
     </p>
 
     <g:each in="${workflowTemplates}" var="wfwp">

@@ -112,7 +112,7 @@
                 <a class="${us_dashboard_tab.getValue().value=='Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                     <i class="tasks icon large"></i>
                     ${currentWorkflows.size()}
-                    ${message(code:'workflow.plural.label')}
+                    ${message(code:'workflow.plural')}
                 </a>
             </g:if>
         </sec:ifAnyGranted>
@@ -274,16 +274,19 @@
                                 <th>${message(code:'workflow.label')}</th>
                                 <th>${message(code:'subscription.label')}</th>
                                 <th>${message(code:'default.progress.label')}</th>
+                                <th>${message(code:'workflow.dates.plural')}</th>
                             </tr>
                         </thead>
                         <tbody>
                             <g:each in="${currentWorkflows}" var="wf">
+                                <g:set var="wfInfo" value="${wf.getInfo()}" />
                                 <tr>
                                     <td>
                                         <g:link controller="myInstitution" action="currentWorkflows" params="${[key: 'myInstitution::' + WfWorkflow.KEY + ':' + wf.id]}">
                                             <i class="ui icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i> ${wf.title}
                                         </g:link>
                                     </td>
+
                                     <td>
                                         <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
                                             <i class="ui icon clipboard"></i>${wf.subscription.name}
@@ -294,7 +297,6 @@
                                         </g:link>
                                     </td>
                                     <td>
-                                        <g:set var="wfInfo" value="${wf.getInfo()}" />
                                         <g:if test="${wfInfo.tasksOpen}">
                                             <span class="ui label circular">${wfInfo.tasksOpen}</span>
                                         </g:if>
@@ -304,7 +306,11 @@
                                         <g:if test="${wfInfo.tasksDone}">
                                             <span class="ui label circular green">${wfInfo.tasksDone}</span>
                                         </g:if>
-
+                                    </td>
+                                    <td>
+                                        ${DateUtils.getSDF_NoTime().format(wfInfo.lastUpdated)}
+                                        <br />
+                                        ${DateUtils.getSDF_NoTime().format(wf.dateCreated)}
                                     </td>
                                 </tr>
                             </g:each>

@@ -14,7 +14,7 @@
     </div>
 
     <div class="field required">
-        <label for="${prefix}_priority">Priorität</label>
+        <label for="${prefix}_priority">${message(code:'default.priority.label')}</label>
         <laser:select class="ui dropdown la-not-clearable" id="${prefix}_priority" name="${prefix}_priority"
                       required="required"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"

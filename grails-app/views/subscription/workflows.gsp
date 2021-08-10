@@ -1,10 +1,10 @@
-<%@ page import="de.laser.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService; de.laser.helper.WorkflowHelper" %>
+<%@ page import="de.laser.helper.DateUtils; de.laser.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService; de.laser.helper.WorkflowHelper" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
     <head>
         <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'workflow.plural.label')}</title>
+        <title>${message(code:'laser')} : ${message(code:'workflow.plural')}</title>
     </head>
 <body>
 
@@ -43,11 +43,13 @@
         <tr>
             <th>${message(code:'workflow.label')}</th>
             <th>${message(code:'default.progress.label')}</th>
+            <th>${message(code:'workflow.dates.plural')}</th>
             <th></th>
         </tr>
         </thead>
         <tbody>
         <g:each in="${workflows}" var="wf">
+            <g:set var="wfInfo" value="${wf.getInfo()}" />
             <tr>
                 <td>
                     <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
@@ -58,34 +60,24 @@
                     <g:set var="tasks" value="${wf.getSequence()}" />
                     <g:each in="${tasks}" var="task" status="ti">
                         <g:if test="${task.child}">
-                            <span class="la-popup-tooltip la-delay" data-position="top center" data-html="${WorkflowHelper.getTaskTooltipMarkup(task)}">
-                                <g:link class="ui compact button ${WorkflowHelper.getCssColorByStatus(task.status)} wfModalLink"
-                                        controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}">
-                                            <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
-                                            ${(char) (65 + ti)}.1
-                                </g:link>
-                            </span>
-                            <g:set var="children" value="${task.child.getSequence()}" />
-                            <g:each in="${children}" var="child" status="ci">
-                                <span class="la-popup-tooltip la-delay" data-position="top center" data-html="${WorkflowHelper.getTaskTooltipMarkup(child)}">
-                                    <g:link class="ui compact button ${WorkflowHelper.getCssColorByStatus(child.status)} wfModalLink"
-                                            controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + child.id]}">
-                                                <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i>
-                                                ${(char) (65 + ti)}.${ci + 2}
-                                    </g:link>
-                                </span>
-                            </g:each>
+                            [
+                                <laser:workflowTask task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
+
+                                <g:set var="children" value="${task.child.getSequence()}" />
+                                <g:each in="${children}" var="child" status="ci">
+                                    <laser:workflowTask task="${child}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + child.id]}" />
+                                </g:each>
+                            ]
                         </g:if>
                         <g:else>
-                            <span class="la-popup-tooltip la-delay" data-position="top center" data-html="${WorkflowHelper.getTaskTooltipMarkup(task)}">
-                                <g:link class="ui compact button ${WorkflowHelper.getCssColorByStatus(task.status)} wfModalLink"
-                                        controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}">
-                                            <i class="ui icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
-                                            ${(char) (65 + ti)}
-                                </g:link>
-                            </span>
+                            <laser:workflowTask task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
                         </g:else>
                     </g:each>
+                </td>
+                <td>
+                    ${DateUtils.getSDF_NoTime().format(wfInfo.lastUpdated)}
+                    <br />
+                    ${DateUtils.getSDF_NoTime().format(wf.dateCreated)}
                 </td>
                 <td>
                     %{-- <g:link class="ui positive icon small button right floated" controller="admin" action="manageWorkflows" params="${[cmd: "todo"]}"><i class="edit icon"></i></g:link> --}%

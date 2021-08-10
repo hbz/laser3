@@ -25,7 +25,7 @@
     </g:if>
     <sec:ifAnyGranted roles="ROLE_YODA"><!-- TODO -->
         <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM']}">
-            <semui:subNavItem controller="subscription" action="workflows" params="${[id:params.id]}" message="workflow.plural.label" />
+            <semui:subNavItem controller="subscription" action="workflows" params="${[id:params.id]}" message="workflow.plural" />
         </g:if>
     </sec:ifAnyGranted>
 
