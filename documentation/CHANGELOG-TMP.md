@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3376    10.08.2021  dev     2.2         Andreas Feature     Ausbau von Start- und Enddatum aus den Preisangaben
+
+2906    10.08.2021  dev     2.2         Andreas Feature     Code-Duplikate entfernen
+
 3722    09.08.2021  dev     2.2         Andreas Bug         irreführende Anzeige einer Zeichenbegrenzung ausgeblendet
 
 3721    09.08.2021  dev     2.2         Andreas Bug         falsche Darstellung der Kontaktnamen bei der Merkmalsverwaltung korrigiert

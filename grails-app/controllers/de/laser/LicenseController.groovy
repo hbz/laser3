@@ -717,13 +717,10 @@ class LicenseController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def notes() {
-        log.debug("license id:${params.id}");
-
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
-
         result
     }
 
@@ -732,8 +729,6 @@ class LicenseController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def documents() {
-        log.debug("license id:${params.id}");
-
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return

@@ -142,13 +142,13 @@
                                             <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
                                                                                                   owner="${priceItem}"/> <semui:xEditableRefData
                                                     field="localCurrency" owner="${priceItem}" config="Currency"/>
-                                            <br/>
+                                            <%--<br/>
                                             (<g:message code="tipp.price.startDate"/> <semui:xEditable field="startDate"
                                                                                                       type="date"
                                                                                                       owner="${priceItem}"/>-
                                             <g:message code="tipp.price.endDate"/> <semui:xEditable field="endDate"
                                                                                                    type="date"
-                                                                                                   owner="${priceItem}"/>)
+                                                                                                   owner="${priceItem}"/>)--%>
                                         </div>
                                     </div>
                                 </div>
