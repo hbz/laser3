@@ -7,7 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3722    09.08.2021  dev     2.2         Andreas Bug         irreführende Anzeige einer Zeichenbegrenzung ausgeblendet
+
 3721    09.08.2021  dev     2.2         Andreas Bug         falsche Darstellung der Kontaktnamen bei der Merkmalsverwaltung korrigiert
+
+3720    09.08.2021  dev     2.2         Andreas Bug         "Titel hinzufügen" korrigiert Titel mit falschem Status
 
 3719    06.08.2021  dev     2.2         Andreas Bug         Verarbeitungsfehler bei der Vererbung von Merkmalen behoben
 

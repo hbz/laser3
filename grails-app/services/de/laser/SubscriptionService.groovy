@@ -1008,7 +1008,14 @@ class SubscriptionService {
         }
         else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_CURRENT)) {
             throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
-        } else {
+        }
+        else if(IssueEntitlement.findBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_EXPECTED)) {
+            IssueEntitlement expected = IssueEntitlement.findBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_EXPECTED)
+            expected.status = RDStore.TIPP_STATUS_CURRENT
+            if(!expected.save())
+                throw new EntitlementCreationException(expected.errors.getAllErrors().toListString())
+        }
+        else {
             IssueEntitlement new_ie = new IssueEntitlement(
 					status: tipp.status,
                     subscription: sub,

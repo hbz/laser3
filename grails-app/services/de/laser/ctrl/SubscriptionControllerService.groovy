@@ -260,16 +260,8 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-
             int offset = params.offset ? Integer.parseInt(params.offset) : 0
-            result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
-            result.taskInstanceCount = result.taskInstanceList.size()
-            result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
-
-            result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.subscription)
-            result.myTaskInstanceCount = result.myTaskInstanceList.size()
-            result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
-
+            result.putAll(taskService.getTasks(offset, (User) result.user, (Org) result.institution, result.subscription))
             [result:result,status:STATUS_OK]
         }
     }

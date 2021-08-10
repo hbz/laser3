@@ -2186,11 +2186,11 @@ join sub.orgRelations or_sub where
         result.myTaskInstanceCount = result.myTaskInstanceList.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
-        def preCon = taskService.getPreconditions(contextService.getOrg())
+        def preCon = taskService.getPreconditions(result.institution)
         result << preCon
 
-        log.debug(result.taskInstanceList.toString())
-        log.debug(result.myTaskInstanceList.toString())
+        //log.debug(result.taskInstanceList.toString())
+        //log.debug(result.myTaskInstanceList.toString())
         result
     }
 
