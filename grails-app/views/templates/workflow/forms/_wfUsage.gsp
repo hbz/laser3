@@ -137,7 +137,7 @@
         <div class="field">
             <div class="fields two">
                 <div class="field">
-                    <label for="${prefixOverride}_priority">Priorität</label>
+                    <label for="${prefixOverride}_priority">${message(code:'default.priority.label')}</label>
                     <p>
                         <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
                         ${task.priority.getI10n('value')}
@@ -163,7 +163,7 @@
             <g:set var="prefixOverride" value="${WfCondition.KEY}" />
 
             <div class="field">
-                <label>Bedingung</label>
+                <label>${message(code:'workflow.condition.label')}</label>
 
                 <div class="ui segment">
                     <div class="field">
