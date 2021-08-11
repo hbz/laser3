@@ -54,7 +54,7 @@
         <semui:messages data="${flash}" />
 
     <div id="collapseableSubDetails" class="ui stackable grid">
-        <div class="twelve wide column">
+        <div class="ten wide column">
             <div class="la-inline-lists">
                 <div class="ui two stackable cards">
                     <div class="ui card la-time-card">
@@ -380,8 +380,10 @@
                <div class="clear-fix"></div>
             </div>
         </div><!-- .twelve -->
-        <aside class="four wide column la-sidekick">
-            <g:render template="/templates/aside1" model="${[ownobj:subscription, owntp:'subscription']}" />
+        <aside class="six wide column la-sidekick">
+            <div class="ui one cards">
+                <g:render template="/templates/aside1" model="${[ownobj:subscription, owntp:'subscription']}" />
+            </div>
         </aside><!-- .four -->
     </div><!-- .grid -->
 

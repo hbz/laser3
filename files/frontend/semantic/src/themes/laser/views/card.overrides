@@ -136,3 +136,12 @@
     }
   }
 }
+.ui.one.cards .card {
+  width: 100%;
+}
+#container-tasks,
+#container-documents,
+#container-notes,
+{
+  width: 100%;
+}

@@ -28835,7 +28835,7 @@ Floated Menu / Item
   -webkit-box-direction: normal;
   -ms-flex-direction: column;
   flex-direction: column;
-  width: 271px;
+  width: 290px;
   min-height: 0px;
   background: #FFFFFF;
   padding: 0em;
@@ -29912,7 +29912,7 @@ a.ui.card:hover,
 
 .ui.cards > .card,
 .ui.card {
-  width: 271px;
+  width: 290px;
   min-height: 0px;
   background: #FFFFFF;
   padding: 0em;
@@ -30086,6 +30086,16 @@ a.ui.card:hover,
   -webkit-box-pack: justify;
   -ms-flex-pack: justify;
   justify-content: space-between;
+}
+
+.ui.one.cards .card {
+  width: 100%;
+}
+
+#container-tasks,
+#container-documents,
+#container-notes {
+  width: 100%;
 }
 /*!
  * # Semantic UI 2.4.2 - Comment
