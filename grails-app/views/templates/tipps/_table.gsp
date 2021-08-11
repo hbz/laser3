@@ -54,10 +54,10 @@
                         field="listCurrency" owner="${priceItem}"
                         config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
                 <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                    <semui:xEditable field="startDate" type="date"
-                                     owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
-                        field="endDate" type="date"
-                        owner="${priceItem}"/>  <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
+                <%--<semui:xEditable field="startDate" type="date"
+                                 owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
+                    field="endDate" type="date"
+                    owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
                     <g:if test="${i < tipp.priceItems.size() - 1}"><hr></g:if>
                 </g:each>
             </td>

@@ -516,10 +516,10 @@
                 </g:if></td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('wibid')}">
-                <td>${org.getIdentifiersByType('wibid')?.value?.join(', ')}</td>
+                <td>${org.getIdentifiersByType('wibid') && !org.getIdentifiersByType('wibid').value.contains('Unknown') ? org.getIdentifiersByType('wibid').value.join(', ') : ''}</td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isil')}">
-                <td>${org.getIdentifiersByType('isil')?.value?.join(', ')}</td>
+                <td>${org.getIdentifiersByType('isil') && !org.getIdentifiersByType('isil').value.contains('Unknown') ? org.getIdentifiersByType('isil').value.join(', ') : ''}</td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
                 <td>
