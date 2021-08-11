@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3714    10.08.2021  dev     2.2         Moe     Bug         ClickMe-Excel Meine Einrichtungen nicht auf eigene "Eigene Merkmale" abgesichert
+
 3706    10.08.2021  dev     2.2         Moe     Feature     Typo in Betreff Umfragebestätigungsmail 
 
 3376    10.08.2021  dev     2.2         Andreas Feature     Ausbau von Start- und Enddatum aus den Preisangaben
