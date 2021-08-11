@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3534    11.08.2021  dev     2.2         Moe     Feature     SurveyResult finishDate löschen
+
 3661    11.08.2021  dev     2.2         Moe     Feature     Umfrage unterjährige Einstiege farbl. markieren Kosten
 
 3714    10.08.2021  dev     2.2         Moe     Bug         ClickMe-Excel Meine Einrichtungen nicht auf eigene "Eigene Merkmale" abgesichert

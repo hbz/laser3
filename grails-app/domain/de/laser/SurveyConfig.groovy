@@ -254,18 +254,11 @@ class SurveyConfig {
                     if (pickAndChoose) {
                         boolean finish = false
 
-                        if (surveyResults) {
-                            finish = (surveyOrg.finishDate && surveyResults.finishDate.contains(null)) || surveyOrg.finishDate
-                        } else {
-                            finish = surveyOrg.finishDate ? true : false
-                        }
+                        finish = surveyOrg.finishDate ? true : false
+
                         return finish
                     }else{
-                        if (surveyResults?.finishDate.contains(null)) {
-                            return false
-                        } else {
-                            return true
-                        }
+                       surveyOrg.finishDate ? true : false
                     }*/
 
                     surveyOrg.finishDate ? true : false
