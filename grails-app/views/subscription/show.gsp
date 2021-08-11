@@ -188,6 +188,7 @@
               <g:if test="${subscription.packages}">
                   <div id="packages"></div>
               </g:if>
+
                 <div class="ui card la-js-hideable hidden">
                     <div class="content">
                         <g:render template="/templates/links/orgLinksAsList"
@@ -383,6 +384,49 @@
         <aside class="six wide column la-sidekick">
             <div class="ui one cards">
                 <g:render template="/templates/aside1" model="${[ownobj:subscription, owntp:'subscription']}" />
+
+                <div class="ui card la-js-hideable hidden">
+                <div class="content">
+                    <g:render template="/templates/links/orgLinksAsList"
+                              model="${[roleLinks: visibleOrgRelations,
+                                        roleObject: subscription,
+                                        roleRespValue: 'Specific subscription editor',
+                                        editmode: editable,
+                                        showPersons: true
+                              ]}" />
+                    <div class="ui la-vertical buttons la-js-hide-this-card">
+
+                        <g:render template="/templates/links/orgLinksSimpleModal"
+                                  model="${[linkType: subscription.class.name,
+                                            parent: genericOIDService.getOID(subscription),
+                                            property: 'orgs',
+                                            recip_prop: 'sub',
+                                            tmplRole: RDStore.OR_PROVIDER,
+                                            tmplType: RDStore.OT_PROVIDER,
+                                            tmplEntity:message(code:'subscription.details.linkProvider.tmplEntity'),
+                                            tmplText:message(code:'subscription.details.linkProvider.tmplText'),
+                                            tmplButtonText:message(code:'subscription.details.linkProvider.tmplButtonText'),
+                                            tmplModalID:'modal_add_provider',
+                                            editmode: editable
+                                  ]}" />
+                        <g:render template="/templates/links/orgLinksSimpleModal"
+                                  model="${[linkType: subscription.class.name,
+                                            parent: genericOIDService.getOID(subscription),
+                                            property: 'orgs',
+                                            recip_prop: 'sub',
+                                            tmplRole: RDStore.OR_AGENCY,
+                                            tmplType: RDStore.OT_AGENCY,
+                                            tmplEntity: message(code:'subscription.details.linkAgency.tmplEntity'),
+                                            tmplText: message(code:'subscription.details.linkAgency.tmplText'),
+                                            tmplButtonText: message(code:'subscription.details.linkAgency.tmplButtonText'),
+                                            tmplModalID:'modal_add_agency',
+                                            editmode: editable
+                                  ]}" />
+
+                    </div><!-- la-js-hide-this-card -->
+
+                </div>
+            </div>
             </div>
         </aside><!-- .four -->
     </div><!-- .grid -->
