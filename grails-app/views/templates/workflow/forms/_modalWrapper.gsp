@@ -5,12 +5,22 @@
 </g:if>
 <g:elseif test="${tmplCmd == 'create'}">
     <semui:modal id="wfModal" text="${tmplModalTitle}">
-        <g:render template="${tmpl}" model="${[tmplIsModal: true, cmd: "${tmplCmd}"]}"/>
+        <g:if test="${tmplTab}">
+            <g:render template="${tmpl}" model="${[tmplIsModal: true, cmd: "${tmplCmd}", tab: "${tmplTab}"]}"/>
+        </g:if>
+        <g:else>
+            <g:render template="${tmpl}" model="${[tmplIsModal: true, cmd: "${tmplCmd}"]}"/>
+        </g:else>
     </semui:modal>
 </g:elseif>
 <g:else>
     <semui:modal id="wfModal" text="${tmplModalTitle}" isEditModal="true">
-        <g:render template="${tmpl}" model="${[tmplIsModal: true, cmd: "${tmplCmd}"]}"/>
+        <g:if test="${tmplTab}">
+            <g:render template="${tmpl}" model="${[tmplIsModal: true, cmd: "${tmplCmd}", tab: "${tmplTab}"]}"/>
+        </g:if>
+        <g:else>
+            <g:render template="${tmpl}" model="${[tmplIsModal: true, cmd: "${tmplCmd}"]}"/>
+        </g:else>
     </semui:modal>
 </g:else>
 

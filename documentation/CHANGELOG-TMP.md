@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3712    13.08.2021  dev     2.2         David   Feature     Workflows: Detailansicht für Lizenzen
+
+3711    13.08.2021  dev     2.2         David   Feature     Workflows: Übersichts- und Verwaltungsseiten
+
 3376    10.08.2021  dev     2.2         Andreas Feature     Ausbau von Start- und Enddatum aus den Preisangaben
 
 3369    10.08.2021  dev     2.2         Andreas Feature     Umstellung der Ladelogik der Titel in der Titelumfrage

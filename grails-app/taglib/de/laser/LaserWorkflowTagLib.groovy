@@ -25,10 +25,24 @@ class LaserWorkflowTagLib {
                     String fstr = (cnd.getProperty( f + '_title') ?: 'Feld ohne Titel')
 
                     if (f.startsWith('checkbox')) {
-                        fstr = fstr + ': ' + ( cnd.getProperty( f ) == true ? '<i class="ui icon green check square outline"></i>' : '<i class="ui icon square outline"></i>' )
+                        fstr = fstr + ': ' + ( cnd.getProperty( f ) == true ? '<i class="ui icon check square outline"></i>' : '<i class="ui icon square outline"></i>' )
                     }
                     else if (f.startsWith('date')) {
-                        fstr = fstr + ': ' + ( cnd.getProperty( f ) ? DateUtils.getSDF_NoTime().format(cnd.getProperty(f)) : '' )
+                        fstr = fstr + ': ' + ( cnd.getProperty( f ) ?  '<strong>' + DateUtils.getSDF_NoTime().format(cnd.getProperty(f)) + '</strong>' : '' )
+                    }
+                    else if (f.startsWith('file')) {
+                        DocContext docctx = cnd.getProperty( f ) as DocContext
+                        String docStr = message(code:'template.documents.missing')
+
+                        if (docctx) {
+                            if (docctx.owner?.title) {
+                                docStr = docctx.owner.title
+                            }
+                            else if (docctx.owner?.filename) {
+                                docStr = docctx.owner.filename
+                            }
+                        }
+                        fstr = fstr + ': ' + ( docctx ? '<strong>' + docStr + '</strong>' : '' )
                     }
                     fields.add( fstr )
                 }
@@ -43,7 +57,7 @@ class LaserWorkflowTagLib {
         String cssIcon = WorkflowHelper.getCssIconByTaskPriority( task.priority )
 
         out << '<span class="la-popup-tooltip la-delay" data-position="top center" data-html="' + tooltip.encodeAsHTML() + '">'
-        out <<   '<a href="' + g.createLink( controller:'ajaxHtml', action:'useWfXModal', params:attrs.params ) + '" class="ui compact button wfModalLink ' + cssColor + '">'
+        out <<   '<a href="' + g.createLink( controller:'ajaxHtml', action:'useWfXModal', params:attrs.params ) + '" class="ui circular compact button wfModalLink ' + cssColor + '">'
         out <<     '<i class="ui icon ' + cssIcon + '" style="margin-left:0;"></i>'
         out <<   '</a>'
         out << '</span>'

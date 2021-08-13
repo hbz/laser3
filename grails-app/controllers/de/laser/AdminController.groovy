@@ -446,6 +446,7 @@ class AdminController  {
                 }
             }
         }
+        if (params.tab) { result.tab = params.tab }
 
         log.debug( result.toMapString() )
         result
