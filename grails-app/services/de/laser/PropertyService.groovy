@@ -284,7 +284,14 @@ class PropertyService {
         }
         else if(obj instanceof Person) {
             Person p = (Person) obj
-            objMap.name = "${p.title} ${p.last_name}, ${p.first_name}"
+            String name = ""
+            if(p.title)
+                name += p.title+' '
+            if(p.last_name)
+                name += p.last_name
+            if(p.first_name)
+                name += ', '+p.first_name
+            objMap.name = name
             objMap.displayController = "person"
         }
         objMap

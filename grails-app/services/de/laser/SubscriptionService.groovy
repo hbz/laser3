@@ -22,6 +22,7 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.MultipartFile
 
+import java.util.Date
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 
@@ -715,7 +716,7 @@ class SubscriptionService {
         ies
     }
 
-    List getIssueEntitlementIDsNotFixed(Subscription subscription) {
+    List<Long> getIssueEntitlementIDsNotFixed(Subscription subscription) {
         List<Long> ies = subscription?
                 IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus order by ie.tipp.sortName",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
@@ -738,6 +739,14 @@ class SubscriptionService {
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
         ies.sort {it.tipp.sortName}
+        ies
+    }
+
+    List<Long> getIssueEntitlementIDsFixed(Subscription subscription) {
+        List<Long> ies = subscription?
+                IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                : []
         ies
     }
 
@@ -1008,16 +1017,42 @@ class SubscriptionService {
         }
         else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_CURRENT)) {
             throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
-        } else {
+        }
+        else if(IssueEntitlement.findBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_EXPECTED)) {
+            IssueEntitlement expected = IssueEntitlement.findBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_EXPECTED)
+            expected.status = RDStore.TIPP_STATUS_CURRENT
+            if(!expected.save())
+                throw new EntitlementCreationException(expected.errors.getAllErrors().toListString())
+        }
+        else {
             IssueEntitlement new_ie = new IssueEntitlement(
 					status: tipp.status,
                     subscription: sub,
                     tipp: tipp,
                     medium: tipp.medium,
-                    accessStartDate: issueEntitlementOverwrite?.accessStartDate ? DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessStartDate) : tipp.accessStartDate,
-                    accessEndDate: issueEntitlementOverwrite?.accessEndDate ? DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessEndDate) : tipp.accessEndDate,
                     ieReason: 'Manually Added by User',
                     acceptStatus: acceptStatus)
+            Date accessStartDate, accessEndDate
+            if(issueEntitlementOverwrite) {
+                if(issueEntitlementOverwrite.accessStartDate) {
+                    if(issueEntitlementOverwrite.accessStartDate instanceof String)
+                        accessStartDate = DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessStartDate)
+                    else if(issueEntitlementOverwrite instanceof Date)
+                        accessStartDate = issueEntitlementOverwrite.accessStartDate
+                    else accessStartDate = tipp.accessStartDate
+                }
+                if(issueEntitlementOverwrite.accessEndDate) {
+                    if(issueEntitlementOverwrite.accessEndDate instanceof String) {
+                        accessEndDate = DateUtils.parseDateGeneric(issueEntitlementOverwrite.accessEndDate)
+                    }
+                    else if(issueEntitlementOverwrite.accessEndDate instanceof Date) {
+                        accessEndDate = issueEntitlementOverwrite.accessEndDate
+                    }
+                    else accessEndDate = tipp.accessEndDate
+                }
+            }
+            new_ie.accessStartDate = accessStartDate
+            new_ie.accessEndDate = accessEndDate
             if (new_ie.save()) {
                 Set coverageStatements
                 Set fallback = tipp.coverages
@@ -1045,7 +1080,7 @@ class SubscriptionService {
                     }
                 }
                 if(withPriceData && issueEntitlementOverwrite) {
-                    if(issueEntitlementOverwrite instanceof IssueEntitlement && issueEntitlementOverwrite.priceItems) {
+                    if(issueEntitlementOverwrite instanceof IssueEntitlement) {
                         issueEntitlementOverwrite.priceItems.each { PriceItem priceItem ->
                             PriceItem pi = new PriceItem(
                                     startDate: priceItem.startDate ?: null,
@@ -1066,7 +1101,6 @@ class SubscriptionService {
 
                     }
                     else {
-
                         PriceItem pi = new PriceItem(startDate: DateUtils.parseDateGeneric(issueEntitlementOverwrite.startDate),
                                 listPrice: issueEntitlementOverwrite.listPrice,
                                 listCurrency: RefdataValue.getByValueAndCategory(issueEntitlementOverwrite.listCurrency, 'Currency'),

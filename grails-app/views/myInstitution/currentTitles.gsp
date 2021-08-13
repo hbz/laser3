@@ -208,7 +208,7 @@
                                 </div>
 
                                 <div class="eight wide column">
-                                    ${message(code: 'subscription.details.coverage_dates')}
+                                    ${message(code: 'subscription.details.date_header')}
                                     <br/>
                                     ${message(code: 'default.from')}
                                     <br/>
@@ -305,10 +305,10 @@
                                                                                                       owner="${priceItem}"/> <semui:xEditableRefData
                                                     field="localCurrency" owner="${priceItem}"
                                                     config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                                                <semui:xEditable field="startDate" type="date"
-                                                                 owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
-                                                    field="endDate" type="date"
-                                                    owner="${priceItem}"/>  <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
+                                            <%--<semui:xEditable field="startDate" type="date"
+                                                             owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
+                                                field="endDate" type="date"
+                                                owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
                                                 <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
                                             </g:each>
                                         </div>

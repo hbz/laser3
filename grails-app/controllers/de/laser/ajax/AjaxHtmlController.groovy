@@ -1,6 +1,7 @@
 package de.laser.ajax
 
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
 import de.laser.ContextService
@@ -26,11 +27,15 @@ import de.laser.SurveyOrg
 import de.laser.SurveyResult
 import de.laser.Task
 import de.laser.TaskService
+import de.laser.UserSetting
 import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
+import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
+import de.laser.helper.SwissKnife
+import de.laser.reporting.ReportingCache
 import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.myInstitution.QueryExport
@@ -62,13 +67,12 @@ class AjaxHtmlController {
 
     AddressbookService addressbookService
     ContextService contextService
-    FinanceService financeService
-    FinanceControllerService financeControllerService
+    MyInstitutionControllerService myInstitutionControllerService
+    PendingChangeService pendingChangeService
     GenericOIDService genericOIDService
     TaskService taskService
     LinksGenerationService linksGenerationService
     AccessService accessService
-    GokbService gokbService
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
@@ -90,6 +94,41 @@ class AjaxHtmlController {
     def loadGeneralFilter() {
         Map<String,Object> result = [entry:params.entry,queried:params.queried]
         render view: '/reporting/_displayConfigurations', model: result
+    }
+
+    //-------------------------------------------------- myInstitution/dashboard ---------------------------------------
+
+    @Secured(['ROLE_USER'])
+    def getChanges() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+        result.acceptedOffset = result.offset
+        def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
+        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
+        Map<String, Object> changes = pendingChangeService.getChanges(pendingChangeConfigMap)
+        changes.editable = result.editable
+        render template: '/myInstitution/changesWrapper', model: changes
+    }
+
+    @Secured(['ROLE_USER'])
+    def getSurveys() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+        List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null AND surConfig.surveyInfo.status = :status) " +
+                " order by surConfig.surveyInfo.endDate",
+                [org: result.institution,
+                 status: RDStore.SURVEY_SURVEY_STARTED])
+
+        if(accessService.checkPerm('ORG_CONSORTIUM')){
+            activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
+                    " order by surConfig.surveyInfo.endDate",
+                    [org: result.institution,
+                     status: RDStore.SURVEY_SURVEY_STARTED])
+        }
+
+        result.surveys = activeSurveyConfigs.groupBy {it?.id}
+        result.countSurvey = result.surveys.size()
+        render template: '/myInstitution/surveys', model: result
     }
 
     //-------------------------------------------------- subscription/show ---------------------------------------------
@@ -419,6 +458,8 @@ class AjaxHtmlController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def chartDetails() {
+        // TODO - SESSION TIMEOUTS
+
         Map<String, Object> result = [
             token:  params.token,
             query:  params.query
@@ -452,16 +493,33 @@ class AjaxHtmlController {
 
         String filename = params.filename ?: BaseExportHelper.getFileName(['Reporting'])
 
+        ReportingCache rCache
         BaseExport export
         Map<String, Object> detailsCache
 
         if (params.context == BaseConfig.KEY_MYINST) {
-            detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
-            export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
+            rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
+
+            if (rCache.exists()) {
+                detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
+                export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
+            }
+            else {
+                redirect(url: request.getHeader('referer')) // TODO
+                return
+            }
         }
         else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
-            detailsCache = ExportLocalHelper.getDetailsCache(params.token)
-            export = DetailsExportManager.createLocalExport(params.token, selectedFields)
+            rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
+
+            if (rCache.exists()) {
+                detailsCache = ExportLocalHelper.getDetailsCache(params.token)
+                export = DetailsExportManager.createLocalExport(params.token, selectedFields)
+            }
+            else {
+                redirect(url: request.getHeader('referer')) // TODO
+                return
+            }
         }
 
         if (export && detailsCache) {
@@ -543,6 +601,14 @@ class AjaxHtmlController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def chartQueryExport() {
+
+        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
+
+        if (! rCache.exists()) {
+            redirect (url: request.getHeader('referer')) // TODO
+            return
+        }
+
         QueryExport export = QueryExportManager.createExport( params.token )
 
         List<String> queryLabels = ExportGlobalHelper.getIncompleteQueryLabels( params.token )
@@ -645,21 +711,52 @@ class AjaxHtmlController {
     }
 
     @Secured(['ROLE_USER'])
+    def useWfXModal() {
+        Map<String, Object> result = [
+                tmplCmd:    'usage',
+                tmplFormUrl: createLink(controller: 'myInstitution', action: 'currentWorkflows')
+        ]
+
+        if (params.key) {
+            String[] key = (params.key as String).split(':')
+
+            if (key[0] == 'subscription') {
+                result.tmplFormUrl = createLink(controller: 'subscription', action: 'workflows', id: key[1])
+            }
+            result.prefix = key[2]
+
+            if (result.prefix == WfWorkflow.KEY) {
+                result.workflow       = WfWorkflow.get( key[3] )
+                result.tmplModalTitle = 'Workflow: ' + result.workflow.title
+
+            }
+            else if (result.prefix == WfTask.KEY) {
+                result.task           = WfTask.get( key[3] )
+                result.tmplModalTitle = 'Workflow > Aufgabe: ' + result.task.title
+            }
+        }
+
+        render template: '/templates/workflow/forms/modalWrapper', model: result
+    }
+
+    @Secured(['ROLE_USER'])
     def editWfXModal() {
         Map<String, Object> result = [ tmplCmd : 'edit' ]
 
         if (params.key) {
-            result.prefix = params.key
-            result.tmplModalTitle = g.message(code: 'workflow.object.' + params.key) + ' : '
+            String[] key = (params.key as String).split(':')
+            result.prefix = key[0]
 
-            if (params.key == WfWorkflowPrototype.KEY) {
-                result.workflow       = WfWorkflowPrototype.get( params.id )
+            result.tmplModalTitle = g.message(code: 'workflow.object.' + result.prefix) + ' : '
+
+            if (key[0] == WfWorkflowPrototype.KEY) {
+                result.workflow       = WfWorkflowPrototype.get( key[1] )
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.workflow.id + ') ' + result.workflow.title
 
                 if (result.workflow) {
                     // not: * used as tp.next * used as tp.child
-                    result.dd_childList = WfTaskPrototype.executeQuery(
+                    result.dd_taskList = WfTaskPrototype.executeQuery(
                             'select wftp from WfTaskPrototype wftp where ' +
                             'wftp not in (select tp.next from WfTaskPrototype tp) ' +
                             'and wftp not in (select tp.child from WfTaskPrototype tp) ' +
@@ -667,38 +764,38 @@ class AjaxHtmlController {
                     )
                 }
             }
-            else if (params.key == WfWorkflow.KEY) {
-                result.workflow       = WfWorkflow.get( params.id )
+            else if (result.prefix == WfWorkflow.KEY) {
+                result.workflow       = WfWorkflow.get( key[1] )
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.workflow.id + ') ' + result.workflow.title
 
                 if (result.workflow) {
-                    result.dd_childList         = result.workflow.child ? [ result.workflow.child ] : []
+                    result.dd_taskList          = result.workflow.task ? [ result.workflow.task ] : []
                     result.dd_prototypeList     = result.workflow.prototype ? [ result.workflow.prototype ] : []
                     result.dd_subscriptionList  = result.workflow.subscription ? [ result.workflow.subscription ] : []
                 }
             }
-            else if (params.key == WfTaskPrototype.KEY) {
-                result.task           = WfTaskPrototype.get( params.id )
+            else if (result.prefix == WfTaskPrototype.KEY) {
+                result.task           = WfTaskPrototype.get( key[1] )
                 result.tmpl           = '/templates/workflow/forms/wfTask'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.task.id + ') ' + result.task.title
 
                 if (result.task) {
                     String sql = 'select wftp from WfTaskPrototype wftp where id != :id order by id'
-                    Map<String, Object> sqlParams = [id: params.long('id')]
+                    Map<String, Object> sqlParams = [id: key[1] as Long]
 
-                    // not: * self * used as tp.child * used as sp.child
+                    // not: * self * used as tp.child * used as wp.task
                     result.dd_nextList = WfTaskPrototype.executeQuery(
                             'select wftp from WfTaskPrototype wftp where id != :id ' +
                             'and wftp not in (select tp.child from WfTaskPrototype tp) ' +
-                            'and wftp not in (select wp.child from WfWorkflowPrototype wp) ' +
+                            'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
                             'order by id', sqlParams
                     )
-                    // not: * self * used as tp.next * used as sp.child
+                    // not: * self * used as tp.next * used as wp.task
                     result.dd_childList = WfTaskPrototype.executeQuery(
                             'select wftp from WfTaskPrototype wftp where id != :id ' +
                             'and wftp not in (select tp.next from WfTaskPrototype tp) ' +
-                            'and wftp not in (select wp.child from WfWorkflowPrototype wp) ' +
+                            'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
                             'order by id', sqlParams
                     )
                     result.dd_previousList  = WfTaskPrototype.executeQuery(sql, sqlParams)
@@ -707,8 +804,8 @@ class AjaxHtmlController {
                     result.dd_conditionList = WfConditionPrototype.executeQuery('select wfcp from WfConditionPrototype wfcp')
                 }
             }
-            else if (params.key == WfTask.KEY) {
-                result.task           = WfTask.get( params.id )
+            else if (result.prefix == WfTask.KEY) {
+                result.task           = WfTask.get( key[1] )
                 result.tmpl           = '/templates/workflow/forms/wfTask'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.task.id + ') ' + result.task.title
 
@@ -720,14 +817,14 @@ class AjaxHtmlController {
                     result.dd_prototypeList = result.task.prototype ? [ result.task.prototype ] : []
 
                     String sql = 'select wft from WfTask wft where id != :id order by id'
-                    Map<String, Object> sqlParams = [id: params.long('id')]
+                    Map<String, Object> sqlParams = [id: key[1] as Long]
 
                     result.dd_previousList  = WfTask.executeQuery(sql, sqlParams)
                     result.dd_parentList    = WfTask.executeQuery(sql, sqlParams)
                 }
             }
-            else if (params.key == WfConditionPrototype.KEY) {
-                result.condition      = WfConditionPrototype.get( params.id )
+            else if (result.prefix == WfConditionPrototype.KEY) {
+                result.condition      = WfConditionPrototype.get( key[1] )
                 result.tmpl           = '/templates/workflow/forms/wfCondition'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.condition.id + ') ' + result.condition.title
 
@@ -735,8 +832,8 @@ class AjaxHtmlController {
                     result.dd_taskList = WfTaskPrototype.executeQuery( 'select wftp from WfTaskPrototype wftp' )
                 }
             }
-            else if (params.key == WfCondition.KEY) {
-                result.condition      = WfCondition.get( params.id )
+            else if (result.prefix == WfCondition.KEY) {
+                result.condition      = WfCondition.get( key[1] )
                 result.tmpl           = '/templates/workflow/forms/wfCondition'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.condition.id + ') ' + result.condition.title
 

@@ -7,6 +7,26 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3376    10.08.2021  dev     2.2         Andreas Feature     Ausbau von Start- und Enddatum aus den Preisangaben
+
+3369    10.08.2021  dev     2.2         Andreas Feature     Umstellung der Ladelogik der Titel in der Titelumfrage
+
+2906    10.08.2021  dev     2.2         Andreas Feature     Code-Duplikate entfernen
+
+3722    09.08.2021  dev     2.2         Andreas Bug         irreführende Anzeige einer Zeichenbegrenzung ausgeblendet
+
+3721    09.08.2021  dev     2.2         Andreas Bug         falsche Darstellung der Kontaktnamen bei der Merkmalsverwaltung korrigiert
+
+3720    09.08.2021  dev     2.2         Andreas Bug         "Titel hinzufügen" korrigiert Titel mit falschem Status
+
+3719    06.08.2021  dev     2.2         Andreas Bug         Verarbeitungsfehler bei der Vererbung von Merkmalen behoben
+
+3718    06.08.2021  dev     2.2         Andreas Bug         Tippfehler in Merkmalsdefinition korrigiert
+
+3715    06.08.2021  dev     2.2         Andreas Feature     teilweise Umstrukturierung des Dashboards auf AJAX
+
+3276    03.08.2021  dev     2.2         Andreas Bug         Sortierspalten der Abdeckung angepasst
+
 3710    02.08.2021  dev     2.2         Andreas Feature     allgemeines Merkmal Kostenträger auf mehrfach vergebbar geschaltet
 
 3581    02.08.2021  dev     2.2         Andreas Feature     Adressen direkt bei Anlegen von Kontakten anlegen

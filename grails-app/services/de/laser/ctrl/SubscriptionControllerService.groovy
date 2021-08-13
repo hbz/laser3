@@ -15,6 +15,7 @@ import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import de.laser.reporting.local.SubscriptionReporting
+import de.laser.workflow.WfWorkflow
 import grails.doc.internal.StringEscapeCategory
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -63,6 +64,7 @@ class SubscriptionControllerService {
     ExecutorWrapperService executorWrapperService
     GenericOIDService genericOIDService
     MessageSource messageSource
+    WorkflowService workflowService
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
@@ -281,16 +283,8 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-
             int offset = params.offset ? Integer.parseInt(params.offset) : 0
-            result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
-            result.taskInstanceCount = result.taskInstanceList.size()
-            result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
-
-            result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.subscription)
-            result.myTaskInstanceCount = result.myTaskInstanceList.size()
-            result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
-
+            result.putAll(taskService.getTasks(offset, (User) result.user, (Org) result.institution, result.subscription))
             [result:result,status:STATUS_OK]
         }
     }
@@ -1216,9 +1210,9 @@ class SubscriptionControllerService {
             }
 
             Map query = filterService.getIssueEntitlementQuery(params, newSub)
-            List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams+[max: 5000, offset: 0])
-            List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
-            List<IssueEntitlement> notFixedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub)
+            List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
+            List<Long> allIEs = subscriptionService.getIssueEntitlementIDsFixed(baseSub)
+            List<Long> notFixedIEs = subscriptionService.getIssueEntitlementIDsNotFixed(newSub)
 
             result.countSelectedIEs = notFixedIEs.size()
             result.countAllIEs = allIEs.size()
@@ -1226,8 +1220,11 @@ class SubscriptionControllerService {
             result.num_ies_rows = sourceIEs.size()
             //subscriptionService.getIssueEntitlementsFixed(baseSub).size()
             result.sourceIEIDs = sourceIEs
-            result.sourceIEs = IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max))
-            result.targetIEs = IssueEntitlement.findAllByIdInList(targetIEs)
+            result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max)) : []
+            result.targetIEs = []
+            targetIEs.collate(32767).each {
+                result.targetIEs.addAll(IssueEntitlement.findAllByIdInList(targetIEs.take(32768)))
+            }
             result.newSub = newSub
             result.subscription = baseSub
             result.subscriber = result.newSub.getSubscriber()
@@ -1514,8 +1511,9 @@ class SubscriptionControllerService {
             }
 
             if(result.subscription.ieGroups.size() > 0) {
-                params.forCount = true
-                def query2 = filterService.getIssueEntitlementQuery(params, result.subscription)
+                Map configMap = params.clone()
+                configMap.forCount = true
+                def query2 = filterService.getIssueEntitlementQuery(configMap, result.subscription)
                 result.num_ies = IssueEntitlement.executeQuery("select count(ie.id) " + query2.query, query2.queryParams)[0]
             }
             result.num_ies_rows = entitlements.size()
@@ -1530,6 +1528,7 @@ class SubscriptionControllerService {
                         orderClause = "order by ${params.sort} ${params.order} "
                 }
                 result.entitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp left join ie.coverages ic where ie.id in (:entIDs) '+orderClause,[entIDs:entitlements.drop(result.offset).take(result.max)])
+                result.journalsOnly = result.entitlements.find { IssueEntitlement ie -> ie.tipp.titleType != RDStore.TITLE_TYPE_JOURNAL.value } == null
             }
             else result.entitlements = []
             Set<SubscriptionPackage> deletedSPs = result.subscription.packages.findAll { SubscriptionPackage sp -> sp.pkg.packageStatus == RDStore.PACKAGE_STATUS_DELETED}
@@ -1596,7 +1595,7 @@ class SubscriptionControllerService {
                            query1b = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.status in (:pendingStatus)) and pc.status = :packageHistory',
                            query2b = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pc.status in (:pendingStatus)) and pc.status = :packageHistory',
                     //query3b = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg = :package and pc.oid = (:subOid) and pc.status not in (:pendingStatus)',
-                           query1c = 'select pc.id from PendingChange pc where pc.subscription = :subscription and pc.status not in (:pendingStatus)'
+                           query1c = 'select pc.id from PendingChange pc where pc.subscription = :subscription and pc.msgToken = :eventType and pc.status not in (:pendingStatus)'
                     subscriptionHistory.addAll(PendingChange.executeQuery(query,[package: pkg, history: RDStore.PENDING_CHANGE_HISTORY]))
                     subscriptionHistory.addAll(PendingChange.executeQuery(query1a,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
                     subscriptionHistory.addAll(PendingChange.executeQuery(query2a,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
@@ -1604,7 +1603,7 @@ class SubscriptionControllerService {
                     changesOfPage.addAll(PendingChange.executeQuery(query1b,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
                     changesOfPage.addAll(PendingChange.executeQuery(query2b,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
                     //changesOfPage.addAll(PendingChange.executeQuery(query3b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
-                    changesOfPage.addAll(PendingChange.executeQuery(query1c,[pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subscription: result.subscription]))
+                    changesOfPage.addAll(PendingChange.executeQuery(query1c,[pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], eventType: params.eventType, subscription: result.subscription]))
                 }
             }
 
@@ -2304,7 +2303,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> processRenewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -2714,6 +2713,23 @@ class SubscriptionControllerService {
         result.token         = params.token ?: RandomStringUtils.randomAlphanumeric(16)
         result.cfgQueryList  = SubscriptionReporting.CONFIG.base.query.default
         result.cfgQueryList2 = SubscriptionReporting.getCurrentQuery2Config( sub )
+
+        [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
+    }
+
+    Map<String,Object> workflows(GrailsParameterMap params) {
+        Map<String, Object> result = [
+                subscription:   Subscription.get(params.id),
+                contextOrg:     contextService.getOrg(),
+                user:           contextService.getUser()
+        ]
+
+        result.contextCustomerType = result.contextOrg.getCustomerType()
+        result.editable = result.subscription.isEditableBy(result.user)
+
+        if (params.cmd) {
+            result.putAll( workflowService.handleUsage(params) )
+        }
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }

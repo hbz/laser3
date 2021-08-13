@@ -2,6 +2,7 @@ package de.laser.reporting.export.myInstitution
 
 import de.laser.IdentifierNamespace
 import de.laser.RefdataValue
+import de.laser.reporting.ReportingCache
 import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.myInstitution.GenericHelper
@@ -31,14 +32,22 @@ class ExportGlobalHelper extends BaseExportHelper {
 
     // ----- Cache -----
 
+    static Map<String, Object> getFilterCache(String token) {
+
+        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, token )
+        rCache.readFilterCache()
+    }
+
     static Map<String, Object> getQueryCache(String token) {
 
-        BaseQuery.getQueryCache(token)
+        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, token )
+        rCache.readQueryCache()
     }
     
     static Map<String, Object> getDetailsCache(String token) {
 
-        BaseDetails.getDetailsCache(token)
+        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, token )
+        rCache.readDetailsCache()
     }
 
     static String getCachedExportStrategy(String token) {
@@ -65,13 +74,13 @@ class ExportGlobalHelper extends BaseExportHelper {
 
     static Map<String, Object> getCachedFilterLabels(String token) {
 
-        Map<String, Object> filterCache = BaseFilter.getFilterCache(token)
+        Map<String, Object> filterCache = getFilterCache(token)
         filterCache.labels as Map<String, Object>
     }
 
     static String getCachedFilterResult(String token) {
 
-        Map<String, Object> filterCache = BaseFilter.getFilterCache(token)
+        Map<String, Object> filterCache = getFilterCache(token)
         filterCache.result
     }
 

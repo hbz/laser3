@@ -9,6 +9,8 @@ import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.workflow.WfWorkflow
+import de.laser.reporting.ReportingCacheHelper
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
@@ -1041,13 +1043,13 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def showEntitlementsRenewWithSurvey() {
-        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]//subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         SwissKnife.setPaginationParams(result,params,result.user)
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
         result.subscription =  result.surveyConfig.subscription
-        result.ieIDs = subscriptionService.getIssueEntitlementIDsNotFixed(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.contextOrg))
-        result.ies = IssueEntitlement.findAllByIdInList(result.ieIDs.take(32767)) //TODO
+        result.ieIDs = subscriptionService.getIssueEntitlementIDsNotFixed(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution))
+        result.ies = result.ieIDs ? IssueEntitlement.findAllByIdInList(result.ieIDs.drop(result.offset).take(result.max)) : []
         result.filename = "renewEntitlements_${escapeService.escapeString(result.subscription.dropdownNamingConvention())}"
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${result.filename}.tsv")
@@ -1501,25 +1503,24 @@ class SubscriptionController {
                 return
         }
         else {
-            Subscription sub = Subscription.get(params.id)
-            String filterResult = sub.name
-
-            if (sub.startDate || sub.endDate) {
-                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                filterResult += ' (' + (sub.startDate ? sdf.format(sub.startDate) : '') + ' - ' + (sub.endDate ? sdf.format(sub.endDate) : '')  + ')'
-            }
-
-            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String, Object> cacheMap = [
-                    filterCache: [
-                        result: filterResult
-                    ],
-                    queryCache: [:]
-            ]
-            sessionCache.put("SubscriptionController/reporting" /* + ctrlResult.result.token */, cacheMap)
-
+            ReportingCacheHelper.initSubscriptionCache(params.long('id'))
             render view: 'reporting/index', model: ctrlResult.result
         }
+    }
+
+    //--------------------------------------------- workflows -------------------------------------------------
+
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    def workflows() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.workflows( params )
+
+        ctrlResult.result.workflows = WfWorkflow.executeQuery(
+                'select wf from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg order by id',
+                [sub: ctrlResult.result.subscription, ctxOrg: ctrlResult.result.contextOrg]
+        )
+
+        render view: 'workflows', model: ctrlResult.result
     }
 
     //--------------------------------------------- helper section -------------------------------------------------

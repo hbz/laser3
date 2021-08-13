@@ -13,6 +13,7 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.properties.PersonProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.SubscriptionProperty
+import de.laser.reporting.ReportingCache
 import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -25,6 +26,9 @@ import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
+import de.laser.workflow.WfCondition
+import de.laser.workflow.WfTask
+import de.laser.workflow.WfWorkflow
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -82,6 +86,7 @@ class MyInstitutionController  {
     UserControllerService userControllerService
     GokbService gokbService
     ExportClickMeService exportClickMeService
+    WorkflowService workflowService
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
@@ -95,8 +100,6 @@ class MyInstitutionController  {
     })
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
 
         result.cfgFilterList = BaseConfig.FILTER
         result.cfgChartsList = BaseConfig.CHARTS
@@ -126,7 +129,8 @@ class MyInstitutionController  {
                     model: [ filter: params.filter, filterResult: result.filterResult ]
             ).replaceAll('\\s+', ' ').trim()
 
-            sessionCache.put("MyInstitutionController/reporting/" + result.token, cacheMap)
+            ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, result.token as String)
+            rCache.put( cacheMap )
         }
         //result.filterHistory = sessionCache.list().keySet().findAll{it.startsWith("MyInstitutionController/reporting/")}
 
@@ -2182,11 +2186,11 @@ join sub.orgRelations or_sub where
         result.myTaskInstanceCount = result.myTaskInstanceList.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
-        def preCon = taskService.getPreconditions(contextService.getOrg())
+        def preCon = taskService.getPreconditions(result.institution)
         result << preCon
 
-        log.debug(result.taskInstanceList.toString())
-        log.debug(result.myTaskInstanceList.toString())
+        //log.debug(result.taskInstanceList.toString())
+        //log.debug(result.myTaskInstanceList.toString())
         result
     }
 
@@ -2232,12 +2236,21 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = 1)
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
     def currentWorkflows() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        Map<String, Object> result = [:]
 
-        // TODO - TMP
-        // println result
+        if (params.key) {
+            result.forwardedKey = params.key // dashboard
+        }
+        else if (params.cmd) {
+            result.putAll( workflowService.handleUsage(params) )
+        }
+        result.currentWorkflows = WfWorkflow.executeQuery(
+                'select wf from WfWorkflow wf where wf.owner = :ctxOrg order by id',
+                [ctxOrg: contextService.getOrg()]
+        )
 
         result
     }

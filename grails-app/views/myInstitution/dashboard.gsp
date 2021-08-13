@@ -1,4 +1,4 @@
-<%@ page import="de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.helper.RDConstants; de.laser.AccessService; de.laser.helper.SqlDateUtils; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.helper.DateUtils; de.laser.helper.WorkflowHelper; de.laser.workflow.WfWorkflow; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.helper.RDConstants; de.laser.AccessService; de.laser.helper.SqlDateUtils; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 
 <!doctype html>
 <html>
@@ -41,7 +41,7 @@
                         %{-- <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="myinst.reporting" /> --}%
                         <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
                         <div class="item">
-                            <g:link controller="myInstitution" action="changes">${message(code: 'myinst.pendingChanges.label')}</g:link>
+                            <g:link controller="myInstitution" action="changes">${message(code: 'myinst.menu.pendingChanges.label')}</g:link>
                         </div>
                     </div>
                 </div>
@@ -80,14 +80,18 @@
         <g:if test="${editable}">
             <a class="${us_dashboard_tab.getValue().value == 'PendingChanges' || us_dashboard_tab.getValue() == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">
                 <i class="history icon large"></i>
-                ${pendingCount}
-                ${message(code:'myinst.pendingChanges.label')}
+                <span id="pendingCount">${message(code:'myinst.pendingChanges.label', args: [message(code:'myinst.loadPending')])}</span>
             </a>
         </g:if>
         <a class="${us_dashboard_tab.getValue().value == 'AcceptedChanges' || us_dashboard_tab.getValue() == 'AcceptedChanges' ? 'active item':'item'}" data-tab="acceptedchanges">
             <i class="bullhorn icon large"></i>
-            ${notificationsCount}
-            ${message(code:'myinst.acceptedChanges.label')}
+            <span id="notificationsCount">${message(code:'myinst.acceptedChanges.label', args: [message(code:'myinst.loadPending')])}</span>
+        </a>
+
+        <a class="${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
+            <i class="warning circle icon large"></i>
+            ${systemAnnouncements.size()}
+            ${message(code:'announcement.plural')}
         </a>
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
@@ -98,28 +102,20 @@
             </a>
         </g:if>
 
-
         <a class="${us_dashboard_tab.getValue().value=='Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active item':'item'}" data-tab="surveys">
-                <i class="chart pie icon large"></i>
-                ${surveys.size()}
-                ${message(code:'myinst.dash.survey.label')}
+            <i class="chart pie icon large"></i>
+            <span id="surveyCount">${message(code:'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
         </a>
 
-
-        <a class="${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
-            <i class="warning circle icon large"></i>
-            ${systemAnnouncements.size()}
-            ${message(code:'announcement.plural')}
-        </a>
-
-       %{-- <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-            <a class="${us_dashboard_tab.getValue().value=='Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active item':'item'}" data-tab="six">
-                <i class="checked tasks icon large"></i>
-                ${surveysConsortia?.size()}
-                ${message(code:'myinst.dash.surveyConsortia.label')}
-            </a>
-        </g:if>--}%
-
+        <sec:ifAnyGranted roles="ROLE_YODA"><!-- TODO -->
+            <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                <a class="${us_dashboard_tab.getValue().value=='Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
+                    <i class="tasks icon large"></i>
+                    ${currentWorkflows.size()}
+                    ${message(code:'workflow.plural')}
+                </a>
+            </g:if>
+        </sec:ifAnyGranted>
 
     </div><!-- secondary -->
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'Due Dates' || us_dashboard_tab.getValue()=='Due Dates' ? 'active':''}" data-tab="duedates">
@@ -130,125 +126,12 @@
         </div>
 
         <g:if test="${editable}">
-            <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'PendingChanges' || us_dashboard_tab.getValue() == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges">
-                <%--<div class="la-float-right">
-                    <g:if test="${packages}">
-                        <g:form controller="pendingChange" action="processAll">
-                            <g:select from="${packages}" noSelection="${['':message(code:'default.select.choose.label')]}" name="acceptChangesForPackages" class="ui select search multiple dropdown" optionKey="${{it.id}}" optionValue="${{it.pkg.name}}"/>
-                            <div class="ui buttons">
-                                <g:submitButton class="ui button positive" name="acceptAll" value="${message(code:'pendingChange.takeAll')}"/>
-                                <div class="or" data-text="${message(code:'default.or')}"></div>
-                                <g:submitButton class="ui button negative" name="rejectAll" value="${message(code:'pendingChange.rejectAll')}"/>
-                            </div>
-                        </g:form>
-                    </g:if>
-                </div>--%>
-                <div class="ui internally celled grid">
-                    <div class="row">
-                        <div class="six wide column">
-                            <g:message code="profile.dashboard.changes.object"/>
-                        </div><!-- .column -->
-                        <div class="seven wide column">
-                            <g:message code="profile.dashboard.changes.event"/>
-                        </div><!-- .column -->
-                        <div class="three wide column">
-                            <g:message code="profile.dashboard.changes.action"/>
-                        </div><!-- .column -->
-                    </div>
-                    <g:each in="${pending}" var="entry">
-                        <div class="row">
-                            <%--${entry}--%>
-                            <div class="six wide column">
-                                <g:if test="${entry.subPkg}">
-                                    <g:link controller="subscription" action="index" id="${entry.subPkg.subscription.id}">${entry.subPkg.subscription.dropdownNamingConvention()}</g:link>
-                                </g:if>
-                                <g:elseif test="${entry.costItem}">
-                                    <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.costItem.sub.id]}">${entry.costItem.sub.dropdownNamingConvention()}</g:link>
-                                </g:elseif>
-                                <g:elseif test="${entry.subscription}">
-                                    <div class="right aligned wide column">
-                                        <g:link controller="subscription" action="show" id="${entry.subscription._getCalculatedPrevious().id}">
-                                            ${entry.subscription._getCalculatedPrevious().dropdownNamingConvention(institution)}
-                                        </g:link>
-                                    </div>
-                                </g:elseif>
-                            </div><!-- .column -->
-                            <div class="seven wide column">
-                                <g:if test="${entry.subPkg}">
-                                    <g:link controller="subscription" action="entitlementChanges" id="${entry.subPkg.subscription.id}" params="[tab: 'changes', eventType: entry.msgToken]">${raw(entry.eventString)}</g:link>
-                                </g:if>
-                                <g:else>
-                                    ${raw(entry.eventString)}
-                                </g:else>
+            <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'PendingChanges' || us_dashboard_tab.getValue() == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges" id="pendingChanges">
 
-                                <g:if test="${entry.subscription}">
-                                    <div class="right aligned wide column">
-                                        <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(entry.subscription._getCalculatedPrevious()), targetObjectId: genericOIDService.getOID(entry.subscription)]}">
-                                            <g:message code="myinst.copyMyElements"/>
-                                        </g:link>
-                                    </div>
-                                </g:if>
-                            </div><!-- .column -->
-                            <div class="three wide column">
-                                <g:if test="${entry.changeId}">
-                                    <div class="ui buttons">
-                                        <g:link class="ui positive button" controller="pendingChange" action="accept" id="${entry.changeId}"><g:message code="default.button.accept.label"/></g:link>
-                                        <div class="or" data-text="${message(code:'default.or')}"></div>
-                                        <g:link class="ui negative button" controller="pendingChange" action="reject" id="${entry.changeId}"><g:message code="default.button.reject.label"/></g:link>
-                                    </div>
-                                </g:if>
-                            </div><!-- .column -->
-                        </div><!-- .row -->
-                    </g:each>
-                </div><!-- .grid -->
             </div>
         </g:if>
-        <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'AcceptedChanges' || us_dashboard_tab.getValue() == 'AcceptedChanges' ? 'active':''}" data-tab="acceptedchanges">
-            <div class="la-float-right">
-                <%--<g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>--%>
-            </div>
-            <div class="ui internally celled grid">
-                <div class="row">
-                    <div class="six wide column">
-                        <g:message code="profile.dashboard.changes.object"/>
-                    </div><!-- .column -->
-                    <div class="ten wide column">
-                        <g:message code="profile.dashboard.changes.event"/>
-                    </div><!-- .column -->
-                </div>
-                <g:each in="${notifications}" var="entry">
-                    <div class="row">
-                        <%--${entry}--%>
-                        <div class="six wide column">
-                            <g:if test="${entry.subPkg}">
-                                <g:link controller="subscription" action="index" id="${entry.subPkg.subscription.id}">${entry.subPkg.subscription.dropdownNamingConvention()}</g:link>
-                            </g:if>
-                            <g:elseif test="${entry.costItem}">
-                                <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.costItem.sub.id]}">${entry.costItem.sub.dropdownNamingConvention()}</g:link>
-                            </g:elseif>
-                        </div><!-- .column -->
-                        <div class="ten wide column">
-                            <g:if test="${entry.subPkg}">
-                                <g:link controller="subscription" action="entitlementChanges" id="${entry.subPkg.subscription.id}" params="[tab: 'acceptedChanges', eventType: entry.msgToken]">${raw(entry.eventString)}</g:link>
-                            </g:if>
-                            <g:else>
-                                ${raw(entry.eventString)}
-                            </g:else>
+        <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'AcceptedChanges' || us_dashboard_tab.getValue() == 'AcceptedChanges' ? 'active':''}" data-tab="acceptedchanges" id="acceptedChanges">
 
-                            <g:if test="${entry.subscription}">
-                                <div class="right aligned wide column">
-                                    <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(entry.subscription._getCalculatedPrevious()), targetObjectId: genericOIDService.getOID(entry.subscription)]}">
-                                        <g:message code="myinst.copyMyElements"/>
-                                    </g:link>
-                                </div>
-                            </g:if>
-                        </div><!-- .column -->
-                    </div><!-- .row -->
-                </g:each>
-            </div><!-- .grid -->
-            <div>
-                <semui:paginate offset="${acceptedOffset ? acceptedOffset : '0'}" max="${max}" params="${[view:'AcceptedChanges']}" total="${notifications.size()}"/>
-            </div>
         </div>
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active':''}" data-tab="news">
 
@@ -285,57 +168,6 @@
                 </div>
             </g:if>
         </div>
-
-        <%--<div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active':''}" data-tab="news">
-            %{--
-            <g:if test="${editable}">
-                <div class="la-float-right">
-                    <g:link action="announcements" class="ui button">${message(code:'myinst.ann.view.label')}</g:link>
-                </div>
-            </g:if>
-            --}%
-
-            <g:message code="profile.dashboardItemsTimeWindow"
-                       default="You see events from the last {0} days."
-                       args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
-
-            <br />
-
-            <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
-                <g:each in="${recentAnnouncements}" var="ra">
-                    <div class="item">
-
-                        <div class="ui internally celled grid">
-                            <div class="row">
-                                <div class="three wide column">
-
-                                    <strong>${message(code:'myinst.ann.posted_by')}</strong>
-                                    <g:link controller="user" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link>
-                                    <br /><br />
-                                    <g:formatDate date="${ra.dateCreated}" formatName="default.date.format.noZ"/>
-
-                                </div><!-- .column -->
-                                <div class="thirteen wide column">
-
-                                    <div class="header" style="margin:0 0 1em 0">
-                                        <g:set var="ann_nws" value="${ra.title?.replaceAll(' ', '')}"/>
-                                        ${message(code:"announcement.${ann_nws}", default:"${ra.title}")}
-                                    </div>
-                                    <div>
-                                        <div class="widget-content"><% print ra.content; /* avoid auto encodeAsHTML() */ %></div>
-                                    </div>
-
-                                </div><!-- .column -->
-                            </div><!-- .row -->
-                        </div><!-- .grid -->
-
-                    </div>
-                </g:each>
-            </div>
-            <div>
-                <semui:paginate offset="${announcementOffset ? announcementOffset : '0'}" max="${contextService.getUser().getDefaultPageSize()}" params="${[view:'announcementsView']}" total="${recentAnnouncementsCount}"/>
-            </div>
-        </div>--%>
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
         <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Tasks' || us_dashboard_tab.getValue() == 'Tasks' ? 'active':''}" data-tab="tasks">
@@ -427,8 +259,67 @@
                     </g:else>
 
                 </div>
-                    <g:render template="surveys"/>
+            <div id="surveyWrapper">
+                <%--<g:render template="surveys"/>--%>
+            </div>
         </div>
+
+        <sec:ifAnyGranted roles="ROLE_YODA"><!-- TODO -->
+        <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+            <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active':''}" data-tab="workflows">
+                <div>
+                    <table class="ui celled table la-table">
+                        <thead>
+                            <tr>
+                                <th>${message(code:'workflow.label')}</th>
+                                <th>${message(code:'subscription.label')}</th>
+                                <th>${message(code:'default.progress.label')}</th>
+                                <th>${message(code:'workflow.dates.plural')}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <g:each in="${currentWorkflows}" var="wf">
+                                <g:set var="wfInfo" value="${wf.getInfo()}" />
+                                <tr>
+                                    <td>
+                                        <g:link controller="myInstitution" action="currentWorkflows" params="${[key: 'myInstitution::' + WfWorkflow.KEY + ':' + wf.id]}">
+                                            <i class="ui icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i> ${wf.title}
+                                        </g:link>
+                                    </td>
+
+                                    <td>
+                                        <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
+                                            <i class="ui icon clipboard"></i>${wf.subscription.name}
+                                            <g:if test="${wf.subscription.startDate || wf.subscription.endDate}">
+                                                (${wf.subscription.startDate ? DateUtils.getSDF_NoTime().format(wf.subscription.startDate) : ''} -
+                                                ${wf.subscription.endDate ? DateUtils.getSDF_NoTime().format(wf.subscription.endDate) : ''})
+                                            </g:if>
+                                        </g:link>
+                                    </td>
+                                    <td>
+                                        <g:if test="${wfInfo.tasksOpen}">
+                                            <span class="ui label circular">${wfInfo.tasksOpen}</span>
+                                        </g:if>
+                                        <g:if test="${wfInfo.tasksCanceled}">
+                                            <span class="ui label circular orange">${wfInfo.tasksCanceled}</span>
+                                        </g:if>
+                                        <g:if test="${wfInfo.tasksDone}">
+                                            <span class="ui label circular green">${wfInfo.tasksDone}</span>
+                                        </g:if>
+                                    </td>
+                                    <td>
+                                        ${DateUtils.getSDF_NoTime().format(wfInfo.lastUpdated)}
+                                        <br />
+                                        ${DateUtils.getSDF_NoTime().format(wf.dateCreated)}
+                                    </td>
+                                </tr>
+                            </g:each>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </g:if>
+        </sec:ifAnyGranted>
 
     <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.app.taskcreate = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);
@@ -436,6 +327,27 @@
         JSPC.app.taskedit = function(id) {
             var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
             func();
+        }
+
+        JSPC.app.loadChanges = function() {
+            $.ajax({
+                url: "<g:createLink controller="ajaxHtml" action="getChanges"/>",
+                data: {
+                    max: ${max},
+                    offset: ${acceptedOffset}
+                }
+            }).done(function(response){
+                $("#pendingChanges").html($(response).filter("#pendingChangesWrapper"));
+                $("#acceptedChanges").html($(response).filter("#acceptedChangesWrapper"));
+            })
+        }
+
+        JSPC.app.loadSurveys = function() {
+            $.ajax({
+                url: "<g:createLink controller="ajaxHtml" action="getSurveys"/>"
+            }).done(function(response){
+                $("#surveyWrapper").html(response);
+            })
         }
 
                 /* $('.item .widget-content').readmore({
@@ -450,6 +362,8 @@
                         //location.reload();
                 });
 
+        JSPC.app.loadChanges();
+        JSPC.app.loadSurveys();
     </laser:script>
 
     <semui:debugInfo>

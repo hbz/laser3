@@ -88,7 +88,7 @@
                         <g:sortableColumn class="eight wide" params="${params}" property="tipp.sortName"
                                           title="${message(code: 'title.label')}"/>
                         <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
-                        <th class="four wide">${message(code: 'subscription.details.coverage_dates')}</th>
+                        <th class="four wide">${message(code: 'subscription.details.date_header')}</th>
                         <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
                         <th class="two wide"><g:message code="subscription.details.prices"/></th>
                         <th class="one wide"></th>
@@ -166,10 +166,10 @@
                                                                                                   owner="${priceItem}"/> <semui:xEditableRefData
                                                 field="localCurrency" owner="${priceItem}"
                                                 config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                                            <semui:xEditable field="startDate" type="date"
-                                                             owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
-                                                field="endDate" type="date"
-                                                owner="${priceItem}"/>  <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
+                                        <%--<semui:xEditable field="startDate" type="date"
+                                                         owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
+                                            field="endDate" type="date"
+                                            owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
                                             <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
                                         </g:each>
                                     </g:if>

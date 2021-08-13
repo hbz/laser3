@@ -26,6 +26,7 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
+import de.laser.reporting.ReportingCache
 import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
@@ -669,6 +670,33 @@ class AjaxJsonController {
 
     // ----- reporting -----
 
+    @Secured(['ROLE_USER'])
+    def checkReportingCache() {
+
+        Map<String, Object> result = [
+            exists: false
+        ]
+
+        if (params.context in [ BaseConfig.KEY_MYINST, BaseConfig.KEY_SUBSCRIPTION ]) {
+            ReportingCache rCache
+
+            if (params.token) {
+                rCache = new ReportingCache( params.context, params.token )
+                result.token = params.token
+            }
+            else {
+                rCache = new ReportingCache( params.context )
+            }
+
+            result.exists       = rCache.exists()
+            result.filterCache  = rCache.get().filterCache ? true : false
+            result.queryCache   = rCache.get().queryCache ? true : false
+            result.detailsCache = rCache.get().detailsCache ? true : false
+        }
+
+        render result as JSON
+    }
+
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -676,11 +704,16 @@ class AjaxJsonController {
     def chart() {
         Map<String, Object> result = [:]
 
-        if (params.context == BaseConfig.KEY_MYINST) {
-            reportingGlobalService.doChart( result, params ) // manipulates result
-        }
-        else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
-            reportingLocalService.doChart( result, params ) // manipulates result
+        try {
+            if (params.context == BaseConfig.KEY_MYINST) {
+                reportingGlobalService.doChart(result, params) // manipulates result
+            }
+            else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
+                reportingLocalService.doChart(result, params) // manipulates result
+            }
+        } catch (Exception e) {
+            log.error( e.getMessage() )
+            e.printStackTrace()
         }
 
         if (result.tmpl) {

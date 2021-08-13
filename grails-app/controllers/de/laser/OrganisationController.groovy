@@ -825,15 +825,8 @@ class OrganisationController  {
         }
 
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.orgInstance)
-        result.taskInstanceCount = result.taskInstanceList.size()
-        result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
+        result.putAll(taskService.getTasks(offset, (User) result.user, (Org) result.institution, result.orgInstance))
 
-        result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.orgInstance)
-        result.myTaskInstanceCount = result.myTaskInstanceList.size()
-        result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
-
-        log.debug(result.taskInstanceList.toString())
         result
     }
 

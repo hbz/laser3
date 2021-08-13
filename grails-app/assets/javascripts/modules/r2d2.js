@@ -361,7 +361,7 @@ r2d2 = {
                 });
             }else {
                 var dType = $(this).attr('data-type')
-                if (dType == "text") {
+                if (dType == "text" && $(this).attr('data-validation')?.includes("maxlength")) {
                     var maxLength = 255;
                     $('input').keyup(function () {
                         if($(this).attr('type') == 'text') {

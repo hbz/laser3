@@ -73,7 +73,7 @@ class WfTask extends WfTaskBase {
     }
 
     WfWorkflow getWorkflow() {
-        WfWorkflow.findByChild( this )
+        WfWorkflow.findByTask( this )
     }
 
     WfTask getParent() {
