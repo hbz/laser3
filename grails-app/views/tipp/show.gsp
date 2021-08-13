@@ -99,14 +99,14 @@
                                                 config="Currency"
                                                 overwriteEditable="false"/>
                                         <br />
-                                        (<g:message code="tipp.price.startDate"/> <semui:xEditable field="startDate"
+                                        <%--(<g:message code="tipp.price.startDate"/> <semui:xEditable field="startDate"
                                                                                                   type="date"
                                                                                                   owner="${priceItem}"
                                                                                                   overwriteEditable="false"/>-
                                         <g:message code="tipp.price.endDate"/> <semui:xEditable field="endDate"
                                                                                                type="date"
                                                                                                owner="${priceItem}"
-                                                                                               overwriteEditable="false"/>)
+                                                                                               overwriteEditable="false"/>)--%>
                                     </div>
                                 </div>
                             </div>

@@ -16,6 +16,7 @@ import de.laser.SurveyOrg
 import de.laser.SurveyResult
 import de.laser.Task
 import de.laser.TaskService
+import de.laser.auth.User
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
@@ -68,19 +69,13 @@ class SurveyControllerService {
     }
 
     Map<String,Object> tasks(SurveyController controller, GrailsParameterMap params) {
-        Locale locale = LocaleContextHolder.getLocale()
         Map<String,Object> result = getResultGenericsAndCheckAccess(params)
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
         else {
             int offset = params.offset ? Integer.parseInt(params.offset) : 0
-            result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.surveyConfig)
-            result.taskInstanceCount = result.taskInstanceList.size()
-            result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
-            result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.surveyConfig)
-            result.myTaskInstanceCount = result.myTaskInstanceList.size()
-            result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
+            result.putAll(taskService.getTasks(offset, (User) result.user, (Org) result.institution, result.surveyConfig))
             [result:result,status:STATUS_OK]
         }
     }

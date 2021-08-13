@@ -882,6 +882,7 @@ class PackageController {
         result
     }
 
+/*
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def tasks() {
@@ -905,6 +906,7 @@ class PackageController {
 
         result
     }
+    */
 
     @Secured(['ROLE_ADMIN'])
     @Transactional

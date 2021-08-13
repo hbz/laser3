@@ -16,10 +16,20 @@ class TaskService {
 
     def accessService
     def contextService
-    def filterService
     def messageSource
 
     private static final String select_with_join = 'select t from Task t LEFT JOIN t.responsibleUser ru '
+
+    Map<String, Object> getTasks(int offset, User user, Org contextOrg, object) {
+        Map<String, Object> result = [:]
+        result.taskInstanceList = getTasksByResponsiblesAndObject(user, contextOrg, object)
+        result.taskInstanceCount = result.taskInstanceList.size()
+        result.taskInstanceList = chopOffForPageSize(result.taskInstanceList, user, offset)
+        result.myTaskInstanceList = getTasksByCreatorAndObject(user,  object)
+        result.myTaskInstanceCount = result.myTaskInstanceList.size()
+        result.myTaskInstanceList = chopOffForPageSize(result.myTaskInstanceList, user, offset)
+        result
+    }
 
     List<Task> getTasksByObject(obj) {
         List<Task> tasks = []

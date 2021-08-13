@@ -103,13 +103,13 @@
             console.log('dynPostFunc @ tasks/_modal_edit.gsp');
 
         $("#radioresponsibleOrgEdit").change(function () {
-            JSPC.app.toggleResponsibleUser();
+            JSPC.app.toggleResponsibleUserEdit();
         });
         $("#radioresponsibleUserEdit").change(function () {
-            JSPC.app.toggleResponsibleUser();
+            JSPC.app.toggleResponsibleUserEdit();
         });
 
-        JSPC.app.toggleResponsibleUser = function () {
+        JSPC.app.toggleResponsibleUserEdit = function () {
             if ($("#radioresponsibleUserEdit").is(':checked')) {
                 $("#responsibleUserEdit").show();
             } else {
@@ -117,7 +117,7 @@
             }
         }
 
-        JSPC.app.toggleResponsibleUser();
+        JSPC.app.toggleResponsibleUserEdit();
 
             $('#edit_task')
                 .form({
@@ -152,7 +152,7 @@
                                 ]
                             },
                             responsibleUser: {
-                                identifier: 'responsibleUserInput',
+                                identifier: 'responsibleUser',
                                 rules: [
                                     {
                                         type: 'responsibleUser',

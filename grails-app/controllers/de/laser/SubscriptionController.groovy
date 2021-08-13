@@ -1043,13 +1043,13 @@ class SubscriptionController {
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def showEntitlementsRenewWithSurvey() {
-        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]//subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         SwissKnife.setPaginationParams(result,params,result.user)
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
         result.subscription =  result.surveyConfig.subscription
-        result.ieIDs = subscriptionService.getIssueEntitlementIDsNotFixed(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.contextOrg))
-        result.ies = IssueEntitlement.findAllByIdInList(result.ieIDs.take(32767)) //TODO
+        result.ieIDs = subscriptionService.getIssueEntitlementIDsNotFixed(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution))
+        result.ies = result.ieIDs ? IssueEntitlement.findAllByIdInList(result.ieIDs.drop(result.offset).take(result.max)) : []
         result.filename = "renewEntitlements_${escapeService.escapeString(result.subscription.dropdownNamingConvention())}"
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${result.filename}.tsv")
