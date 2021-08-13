@@ -722,10 +722,15 @@ class AjaxHtmlController {
         if (params.key) {
             String[] key = (params.key as String).split(':')
 
-            if (key[0] == 'subscription') {
-                result.tmplFormUrl = createLink(controller: 'subscription', action: 'workflows', id: key[1])
-            }
             result.prefix = key[2]
+
+            if (key[0] == 'subscription') {
+                result.subscription = Subscription.get( key[1] )
+                result.tmplFormUrl  = createLink(controller: 'subscription', action: 'workflows', id: key[1])
+            }
+            else if (key[0] == 'myInstitution') {
+                result.workflow = WfWorkflow.get (key[1] ) // TODO
+            }
 
             if (result.prefix == WfWorkflow.KEY) {
                 result.workflow       = WfWorkflow.get( key[3] )

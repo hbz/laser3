@@ -15,6 +15,8 @@
 
     <div class="field required">
         <label for="${prefix}_type">${message(code:'default.type.label')}</label>
+        <div style="text-align:right; color:#ee1111">Die Änderung des Typs löscht ALLE typabhängigen Datenfelder</div>
+
         <g:select class="ui dropdown la-not-clearable" id="${prefix}_type" name="${prefix}_type"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                       required="required"
@@ -44,7 +46,7 @@
             <div class="ui top attached header" style="background-color: #f9fafb;">
                 Typabhängige Datenfelder
             </div>
-            <div class="ui bottom attached segment">
+            <div class="ui attached segment">
                 <g:each in="${condition.getFields()}" var="field">
                     <g:if test="${field.startsWith('checkbox')}">
                         <div class="fields two">
@@ -53,12 +55,12 @@
                                 <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
                             </div>
                             <div class="field">
-                                <label for="${prefix}_${field}_isTrigger">Automatische Status-Änderung</label>
+                                <label for="${prefix}_${field}_isTrigger">Statusänderung</label>
                                 <div class="ui checkbox">
                                     <input type="checkbox" name="${prefix}_${field}_isTrigger" id="${prefix}_${field}_isTrigger"
                                         <% if (condition?.getProperty(field + '_isTrigger')) { print 'checked="checked"' } %>
                                     />
-                                    <label>${condition.getFieldLabel(field)}-Status ändert Aufgaben-Status</label>
+                                    <label>Diese Angabe setzt den Aufgaben-Status auf 'Erledigt'</label>
                                 </div>
                             </div>
                         </div>
@@ -73,13 +75,19 @@
                             </div>
                         </div>
                     </g:if>
+                    <g:if test="${field.startsWith('file')}">
+                        <div class="fields two">
+                            <div class="field">
+                                <label for="${prefix}_${field}_title">Titel für ${condition.getFieldLabel(field)}</label>
+                                <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
+                            </div>
+                            <div class="field">
+                            </div>
+                        </div>
+                    </g:if>
                 </g:each>
             </div>
-
-            <div class="ui top attached header" style="background-color: #f9fafb;">
-                Vorschau
-            </div>
-            <div class="ui bottom attached segment">
+            <div class="ui bottom attached segment" style="background-color: #f9fafb;">
                 <g:each in="${condition.getFields()}" var="field" status="fi">
                     <g:if test="${fi == 0 || fi%2 == 0}">
                         <div class="field">
@@ -94,7 +102,7 @@
                                     <% print condition.getProperty(field) == true ? 'checked="checked"' : '' %>
                                 />
                                 <g:if test="${condition.getProperty(field + '_isTrigger')}">
-                                    <label>Angabe ändert Aufgaben-Status</label>
+                                    <label>Diese Angabe setzt den Aufgaben-Status auf 'Erledigt'</label>
                                 </g:if>
                             </div>
                         </div>
@@ -105,6 +113,40 @@
                             <input type="date" name="${prefix}_${field}" id="${prefix}_${field}"
                                 <% print condition.getProperty(field) ? 'value="' + DateUtils.getSDF_ymd().format(condition.getProperty(field)) + '"' : '' %>
                             />
+                        </div>
+                    </g:if>
+                    <g:if test="${field.startsWith('file')}">
+                        <div class="field">
+                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title')}</label>
+
+                            <g:set var="docctx" value="${condition.getProperty(field)}" />
+                            <g:if test="${docctx}">
+                                <g:link controller="docstore" id="${docctx.owner.uuid}">
+                                    <i class="icon file"></i>
+                                    <g:if test="${docctx.owner?.title}">
+                                        ${docctx.owner.title}
+                                    </g:if>
+                                    <g:elseif test="${docctx.owner?.filename}">
+                                        ${docctx.owner?.filename}
+                                    </g:elseif>
+                                    <g:else>
+                                        ${message(code:'template.documents.missing')}
+                                    </g:else>
+                                </g:link> (${docctx.owner?.type?.getI10n("value")})
+                            </g:if>
+                            <g:else>
+                                <input type="text" name="${prefix}_${field}" id="${prefix}_${field}" readonly="readonly" value="<Link zur Datei>" />
+                                %{-- TODO
+
+                                <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
+                                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                                          from="${subscription.documents}"
+                                          value="${task.condition.getProperty(field)?.id}"
+                                          optionKey="id"
+                                          optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
+                                --}%
+
+                            </g:else>
                         </div>
                     </g:if>
 

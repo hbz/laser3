@@ -79,14 +79,219 @@
                     <br />
                     ${DateUtils.getSDF_NoTime().format(wf.dateCreated)}
                 </td>
-                <td>
-                    %{-- <g:link class="ui positive icon small button right floated" controller="admin" action="manageWorkflows" params="${[cmd: "todo"]}"><i class="edit icon"></i></g:link> --}%
-                    <g:link class="ui red icon small button right floated" controller="subscription" action="workflows" params="${[id: "${subscription.id}", cmd: "delete:${WfWorkflow.KEY}:${wf.id}"]}"><i class="trash alternate icon"></i></g:link>
+                <td class="x">
+                    <button class="ui small icon button" data-wfId="${wf.id}"><i class="icon info"></i></button>
+                    <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon pencil"></i></button>
+                    <g:link class="ui red icon small button" controller="subscription" action="workflows" params="${[id: "${subscription.id}", cmd: "delete:${WfWorkflow.KEY}:${wf.id}"]}"><i class="trash alternate icon"></i></g:link>
                 </td>
             </tr>
         </g:each>
         </tbody>
     </table>
+
+
+    <g:each in="${workflows}" var="wf"> %{-- TMP : TODO --}%
+
+        <div data-wfId="${wf.id}" style="margin-top:5em; margin-bottom:5em; position:relative; display:none;">
+
+            <div class="ui header center aligned">Detailansicht</div>
+
+            <table class="ui celled table la-table">
+                <thead>
+                    <tr>
+                        <th style="width:10%"></th>
+                        <th style="width:80%"></th>
+                        <th style="width:10%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="ui center aligned">
+                            <i class="ui icon big ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i>
+                        </td>
+                        <td>
+                            <div class="header"><strong>${wf.title}</strong></div>
+                            <div class="description">
+                                ${wf.description}
+                                <br />
+                                <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
+                                    <i class="icon clipboard"></i>${wf.subscription.name}
+                                </g:link>
+                                <div class="ui right aligned">
+                                    Zuletzt bearbeitet am: ${DateUtils.getSDF_NoTime().format(wfInfo.lastUpdated)}<br />
+                                    Erstellt am: ${DateUtils.getSDF_NoTime().format(wf.dateCreated)}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="x">
+
+                        </td>
+                    </tr>
+
+                    <g:set var="tasks" value="${wf.getSequence()}" />
+                    <g:each in="${tasks}" var="task" status="ti">
+                        <tr>
+                            <td class="ui center aligned">
+                                <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(task.status)}"></i>
+                            </td>
+                            <td>
+                                <div class="header">
+                                    <strong>${task.title}</strong>
+                                    <span style="color: darkgrey">
+                                        ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i> ${task.priority.getI10n('value')} )
+                                    </span>
+                                </div>
+                                <div class="description">${task.description}</div>
+
+                                <g:if test="${task.condition}">
+                                    <div style="margin:1.5em 0 0 5em">
+                                        <div class="header"><strong>${task.condition.title}</strong></div>
+                                        <div class="description">
+                                            <g:if test="${task.condition.description}">
+                                                ${task.condition.description} <br />
+                                            </g:if>
+                                            <!-- -->
+                                            <g:each in="${task.condition.getFields()}" var="field" status="fi">
+                                                <br/>
+                                                <g:if test="${field.startsWith('checkbox')}">
+                                                    ${task.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
+                                                    <g:if test="${task.condition.getProperty(field) == true}">
+                                                        <i class="icon check square outline"></i>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <i class="icon square outline"></i>
+                                                    </g:else>
+                                                </g:if>
+                                                <g:elseif test="${field.startsWith('date')}">
+                                                    ${task.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
+                                                    <g:if test="${task.condition.getProperty(field)}">
+                                                        ${DateUtils.getSDF_NoTime().format(task.condition.getProperty(field))}
+                                                    </g:if>
+                                                    <g:else>
+                                                        -
+                                                    </g:else>
+                                                </g:elseif>
+                                                <g:elseif test="${field.startsWith('file')}">
+                                                    ${task.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
+                                                    <g:set var="docctx" value="${task.condition.getProperty(field)}" />
+                                                    <g:if test="${docctx}">
+                                                        <g:link controller="docstore" id="${docctx.owner.uuid}">
+                                                            <i class="icon file"></i>
+                                                            <g:if test="${docctx.owner?.title}">
+                                                                ${docctx.owner.title}
+                                                            </g:if>
+                                                            <g:elseif test="${docctx.owner?.filename}">
+                                                                ${docctx.owner?.filename}
+                                                            </g:elseif>
+                                                            <g:else>
+                                                                ${message(code:'template.documents.missing')}
+                                                            </g:else>
+                                                        </g:link> (${docctx.owner?.type?.getI10n("value")})
+                                                    </g:if>
+                                                    <g:else>
+                                                        -
+                                                    </g:else>
+                                                </g:elseif>
+                                            </g:each>
+                                            <!-- -->
+                                        </div>
+                                    </div>
+                                </g:if>
+
+                            </td>
+                            <td class="x">
+
+                            </td>
+                        </tr>
+
+                        <g:if test="${task.child}">
+                            <g:each in="${task.child.getSequence()}" var="child" status="ci">
+
+                                <tr>
+                                    <td class="ui center aligned">
+                                        <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(child.status)}"></i>
+                                    </td>
+                                    <td>
+                                        <div class="header">
+                                            <strong>${child.title}</strong>
+                                            <span style="color: darkgrey">
+                                                ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i> ${child.priority.getI10n('value')} )
+                                            </span>
+                                        </div>
+                                        <div class="description">${child.description}</div>
+
+
+                                        <g:if test="${child.condition}">
+                                            <div style="margin:1.5em 0 0 5em">
+                                                <div class="header"><strong>${child.condition.title}</strong></div>
+                                                <div class="description">
+                                                    <g:if test="${child.condition.description}">
+                                                        ${child.condition.description} <br />
+                                                    </g:if>
+                                                    <!-- -->
+                                                    <g:each in="${child.condition.getFields()}" var="field" status="fi">
+                                                        <br/>
+                                                        <g:if test="${field.startsWith('checkbox')}">
+                                                            ${child.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
+                                                            <g:if test="${child.condition.getProperty(field) == true}">
+                                                                <i class="icon check square outline"></i>
+                                                            </g:if>
+                                                            <g:else>
+                                                                <i class="icon square outline"></i>
+                                                            </g:else>
+                                                        </g:if>
+                                                        <g:elseif test="${field.startsWith('date')}">
+                                                            ${child.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
+                                                            <g:if test="${child.condition.getProperty(field)}">
+                                                                ${DateUtils.getSDF_NoTime().format(child.condition.getProperty(field))}
+                                                            </g:if>
+                                                            <g:else>
+                                                                -
+                                                            </g:else>
+                                                        </g:elseif>
+                                                        <g:elseif test="${field.startsWith('file')}">
+                                                            ${child.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
+                                                            <g:set var="docctx" value="${child.condition.getProperty(field)}" />
+                                                            <g:if test="${docctx}">
+                                                                <g:link controller="docstore" id="${docctx.owner.uuid}">
+                                                                    <i class="icon file"></i>
+                                                                    <g:if test="${docctx.owner?.title}">
+                                                                        ${docctx.owner.title}
+                                                                    </g:if>
+                                                                    <g:elseif test="${docctx.owner?.filename}">
+                                                                        ${docctx.owner?.filename}
+                                                                    </g:elseif>
+                                                                    <g:else>
+                                                                        ${message(code:'template.documents.missing')}
+                                                                    </g:else>
+                                                                </g:link> (${docctx.owner?.type?.getI10n("value")})
+                                                            </g:if>
+                                                            <g:else>
+                                                                -
+                                                            </g:else>
+                                                        </g:elseif>
+                                                    </g:each>
+                                                    <!-- -->
+                                                </div>
+                                            </div>
+                                        </g:if>
+
+                                    </td>
+                                    <td class="x">
+
+                                    </td>
+                                </tr>
+
+                            </g:each>
+                        </g:if>
+                    </g:each>
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </g:each>
 
     <div id="wfModal" class="ui modal"></div>
 
@@ -96,6 +301,26 @@
             var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), true);
             func();
         });
+        $('button[data-wfId]').on('click', function(e) {
+            $('div[data-wfId]').hide();
+
+            if (! $(this).hasClass('grey')) {
+                $('button[data-wfId]').removeClass('grey');
+                $('div[data-wfId=' + $(this).addClass('grey').attr('data-wfId') + ']').show();
+            } else {
+                $('button[data-wfId]').removeClass('grey');
+            }
+        });
+
+        <g:if test="${forwardedKey}">
+            /* forwarded */
+            $('button[data-wfId=' + '${forwardedKey}'.split(':')[3] + ']').trigger('click');
+        </g:if>
+        <g:else>
+            if ($('button[data-wfId]').length == 1) {
+                $('button[data-wfId]').trigger('click');
+            }
+        </g:else>
     </laser:script>
 
 </body>
