@@ -2727,6 +2727,9 @@ class SubscriptionControllerService {
         result.contextCustomerType = result.contextOrg.getCustomerType()
         result.editable = result.subscription.isEditableBy(result.user)
 
+        if (params.key) {
+            result.forwardedKey = params.key // currentWorkflows
+        }
         if (params.cmd) {
             result.putAll( workflowService.handleUsage(params) )
         }

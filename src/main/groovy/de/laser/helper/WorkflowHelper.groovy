@@ -33,9 +33,10 @@ class WorkflowHelper {
 
         switch (status) {
             case    RDStore.WF_WORKFLOW_STATUS_OPEN :
-            case    RDStore.WF_TASK_STATUS_OPEN :
-            //case    RDStore.WF_CONDITION_STATUS_OPEN :
                 return 'tasks la-light-grey'
+                break
+            case    RDStore.WF_TASK_STATUS_OPEN :
+                return 'ellipsis horizontal la-light-grey'
                 break
             case    RDStore.WF_WORKFLOW_STATUS_CANCELED :
             case    RDStore.WF_TASK_STATUS_CANCELED :

@@ -41,7 +41,10 @@ class WorkflowService {
         }
         Date getDate(String key) {
             params.get(cmpKey + key) ? DateUtils.parseDateGeneric(params.get(cmpKey + key)) : null
-
+        }
+        DocContext getDocContext(String key) {
+            Long id = getLong(key)
+            DocContext.findById(id)
         }
         RefdataValue getRefdataValue(String key) {
             Long id = getLong(key)
@@ -298,58 +301,74 @@ class WorkflowService {
 
         ParamsHelper ph = new ParamsHelper( cmd[1], params )
 
+        Closure resetValuesAndMeta = { WfConditionBase wfc ->
+
+            wfc.checkbox1 = false
+            wfc.checkbox2 = false
+            wfc.checkbox1_isTrigger = false
+            wfc.checkbox2_isTrigger = false
+
+            wfc.date1 = null
+            wfc.date2 = null
+            wfc.file1 = null
+
+            wfc.checkbox1_title = null
+            wfc.checkbox2_title = null
+            wfc.date1_title = null
+            wfc.date2_title = null
+            wfc.file1_title = null
+        }
+
+        Closure setValuesAndMeta = { WfConditionBase wfc ->
+
+            wfc.checkbox1_title = ph.getString('checkbox1_title')
+            wfc.checkbox2_title = ph.getString('checkbox2_title')
+            wfc.date1_title     = ph.getString('date1_title')
+            wfc.date2_title     = ph.getString('date2_title')
+            wfc.file1_title     = ph.getString('file1_title')
+
+            wfc.checkbox1_isTrigger = ph.getString('checkbox1_isTrigger') == 'on'
+            wfc.checkbox2_isTrigger = ph.getString('checkbox2_isTrigger') == 'on'
+        }
+
         if (cmd[1] == WfConditionPrototype.KEY) {
             condition = condition as WfConditionPrototype
+
+            if (ph.getInt('type') && ph.getInt('type') != condition.type) {
+                resetValuesAndMeta(condition)
+            }
+            else {
+                setValuesAndMeta(condition)
+            }
+
+            // if created
+            //if (condition.checkbox1 == null) { condition.checkbox1 = false }
+            //if (condition.checkbox2 == null) { condition.checkbox2 = false }
 
             condition.title         = ph.getString('title')
             condition.description   = ph.getString('description')
             condition.type          = ph.getInt('type') ?: 0
-
-            // values
-
-            condition.checkbox1 = ph.getString('checkbox1') == 'on'
-            condition.checkbox2 = ph.getString('checkbox2') == 'on'
-
-            condition.date1 = ph.getDate('date1')
-            condition.date2 = ph.getDate('date2')
-
-            // meta
-
-            condition.checkbox1_title = ph.getString('checkbox1_title')
-            condition.checkbox2_title = ph.getString('checkbox2_title')
-
-            condition.date1_title = ph.getString('date1_title')
-            condition.date2_title = ph.getString('date2_title')
-
-            condition.checkbox1_isTrigger = ph.getString('checkbox1_isTrigger') == 'on'
-            condition.checkbox2_isTrigger = ph.getString('checkbox2_isTrigger') == 'on'
         }
         else if (cmd[1] == WfCondition.KEY) {
             condition = condition as WfCondition
 
+            if (ph.getInt('type') && ph.getInt('type') != condition.type) {
+                resetValuesAndMeta(condition)
+            }
+            else {
+                setValuesAndMeta(condition)
+
+                // values
+                condition.checkbox1 = ph.getString('checkbox1') == 'on'
+                condition.checkbox2 = ph.getString('checkbox2') == 'on'
+                condition.date1     = ph.getDate('date1')
+                condition.date2     = ph.getDate('date2')
+                condition.file1     = ph.getDocContext('file1')
+            }
+
             condition.title         = ph.getString('title')
             condition.description   = ph.getString('description')
             condition.type          = ph.getInt('type') ?: 0
-
-            // values
-
-            condition.checkbox1 = ph.getString('checkbox1') == 'on'
-            condition.checkbox2 = ph.getString('checkbox2') == 'on'
-
-            condition.date1 = ph.getDate('date1')
-            condition.date2 = ph.getDate('date2')
-
-            // meta
-
-            condition.checkbox1_title = ph.getString('checkbox1_title')
-            condition.checkbox2_title = ph.getString('checkbox2_title')
-
-            condition.date1_title = ph.getString('date1_title')
-            condition.date2_title = ph.getString('date2_title')
-
-            condition.checkbox1_isTrigger = ph.getString('checkbox1_isTrigger') == 'on'
-            condition.checkbox2_isTrigger = ph.getString('checkbox2_isTrigger') == 'on'
-
         }
 
         Map<String, Object> result = [ condition: condition, cmd: cmd[0], key: cmd[1] ]
@@ -487,24 +506,35 @@ class WorkflowService {
                         String checkbox1 = ph.getString('checkbox1')
                         if ((checkbox1 == 'on') != condition.checkbox1) {
                             condition.checkbox1 = (checkbox1 == 'on')
+                            cChanged = true
                         }
                     }
                     if (cFields.contains('checkbox2')) {
                         String checkbox2 = ph.getString('checkbox2')
                         if ((checkbox2 == 'on') != condition.checkbox2) {
                             condition.checkbox2 = (checkbox2 == 'on')
+                            cChanged = true
                         }
                     }
                     if (cFields.contains('date1')) {
                         Date date1 = ph.getDate('date1')
                         if (date1 != condition.date1) {
                             condition.date1 = date1
+                            cChanged = true
                         }
                     }
                     if (cFields.contains('date2')) {
                         Date date2 = ph.getDate('date2')
                         if (date2 != condition.date2) {
                             condition.date2 = date2
+                            cChanged = true
+                        }
+                    }
+                    if (cFields.contains('file1')) {
+                        DocContext file1 = ph.getDocContext('file1')
+                        if (file1 != condition.file1) {
+                            condition.file1 = file1
+                            cChanged = true
                         }
                     }
                     if (cChanged) {
