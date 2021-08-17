@@ -179,10 +179,10 @@
                                                                                               owner="${priceItem}"/> <semui:xEditableRefData
                                             field="localCurrency" owner="${priceItem}"
                                             config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                                        <semui:xEditable field="startDate" type="date"
+                                        <%--<semui:xEditable field="startDate" type="date"
                                                          owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
                                             field="endDate" type="date"
-                                            owner="${priceItem}"/>  <%--<g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
+                                            owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
                                         <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
                                         <g:set var="sumlistPrice" value="${sumlistPrice + (priceItem.listPrice ?: 0)}"/>
                                         <g:set var="sumlocalPrice" value="${sumlocalPrice + (priceItem.localPrice ?: 0)}"/>

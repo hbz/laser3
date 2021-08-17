@@ -260,16 +260,8 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-
             int offset = params.offset ? Integer.parseInt(params.offset) : 0
-            result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
-            result.taskInstanceCount = result.taskInstanceList.size()
-            result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
-
-            result.myTaskInstanceList = taskService.getTasksByCreatorAndObject(result.user,  result.subscription)
-            result.myTaskInstanceCount = result.myTaskInstanceList.size()
-            result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
-
+            result.putAll(taskService.getTasks(offset, (User) result.user, (Org) result.institution, result.subscription))
             [result:result,status:STATUS_OK]
         }
     }
@@ -1195,9 +1187,9 @@ class SubscriptionControllerService {
             }
 
             Map query = filterService.getIssueEntitlementQuery(params, newSub)
-            List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams+[max: 5000, offset: 0])
-            List<IssueEntitlement> allIEs = subscriptionService.getIssueEntitlementsFixed(baseSub)
-            List<IssueEntitlement> notFixedIEs = subscriptionService.getIssueEntitlementsNotFixed(newSub)
+            List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
+            List<Long> allIEs = subscriptionService.getIssueEntitlementIDsFixed(baseSub)
+            List<Long> notFixedIEs = subscriptionService.getIssueEntitlementIDsNotFixed(newSub)
 
             result.countSelectedIEs = notFixedIEs.size()
             result.countAllIEs = allIEs.size()
@@ -1205,8 +1197,11 @@ class SubscriptionControllerService {
             result.num_ies_rows = sourceIEs.size()
             //subscriptionService.getIssueEntitlementsFixed(baseSub).size()
             result.sourceIEIDs = sourceIEs
-            result.sourceIEs = IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max))
-            result.targetIEs = IssueEntitlement.findAllByIdInList(targetIEs)
+            result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max)) : []
+            result.targetIEs = []
+            targetIEs.collate(32767).each {
+                result.targetIEs.addAll(IssueEntitlement.findAllByIdInList(targetIEs.take(32768)))
+            }
             result.newSub = newSub
             result.subscription = baseSub
             result.subscriber = result.newSub.getSubscriber()
@@ -2285,7 +2280,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> processRenewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
             [result:null,status:STATUS_ERROR]
         }
