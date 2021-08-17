@@ -128,7 +128,7 @@
                 </td>
                 <td class="x">
                     <g:link class="ui icon small button" controller="subscription" action="workflows" id="${wf.subscription.id}" params="${[key: 'subscription:' + wf.subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}"><i class="icon info"></i></g:link>
-                    <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon pencil"></i></button>
+                    <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button>
                     <g:link class="ui red icon small button" controller="myInstitution" action="currentWorkflows" params="${[cmd: "delete:${WfWorkflow.KEY}:${wf.id}"]}"><i class="trash alternate icon"></i></g:link>
                 </td>
             </tr>

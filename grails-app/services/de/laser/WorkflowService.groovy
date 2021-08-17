@@ -470,10 +470,19 @@ class WorkflowService {
 
             if (cmd[1] == WfWorkflow.KEY) {
                 WfWorkflow workflow = WfWorkflow.get( cmd[2] )
+                boolean wChanged
 
+                String comment = ph.getString('comment')
+                if (comment != workflow.comment) {
+                    workflow.comment = comment
+                    wChanged = true
+                }
                 RefdataValue status = ph.getRefdataValue('status')
                 if (status != workflow.status) {
                     workflow.status = status
+                    wChanged = true
+                }
+                if (wChanged) {
                     result.status = workflow.save() ? OP_STATUS_DONE : OP_STATUS_ERROR
                 }
             }

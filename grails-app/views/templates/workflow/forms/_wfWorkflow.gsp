@@ -55,7 +55,6 @@
             <input type="text" name="${prefix}_comment" id="${prefix}_comment" value="${workflow?.comment}" />
         </div>
 
-
         <div class="field">
             <label for="${prefix}_subscription">${message(code:'subscription.label')}</label>
             <p>

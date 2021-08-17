@@ -29,6 +29,11 @@
             </div>
         </div>
 
+        <div class="field">
+            <label for="${prefixOverride}_comment">${message(code:'default.comment.label')}</label>
+            <textarea id="${prefixOverride}_comment" name="${prefixOverride}_comment" rows="2">${workflow.comment}</textarea>
+        </div>
+
         <g:if test="${! subscription}"> %{-- currentWorkflows --}%
 
             <div class="ui segment internally celled grid">
@@ -60,46 +65,8 @@
                                         ${task.condition.description} <br />
                                         <!-- -->
                                         <g:each in="${task.condition.getFields()}" var="field" status="fi">
-
-                                            <g:if test="${field.startsWith('checkbox')}">
-                                                <br/>${task.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
-                                                <g:if test="${task.condition.getProperty(field) == true}">
-                                                    <i class="icon check square outline"></i>
-                                                </g:if>
-                                                <g:else>
-                                                    <i class="icon square outline"></i>
-                                                </g:else>
-                                            </g:if>
-                                            <g:elseif test="${field.startsWith('date')}">
-                                                <br/>${task.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
-                                                <g:if test="${task.condition.getProperty(field)}">
-                                                    ${DateUtils.getSDF_NoTime().format(task.condition.getProperty(field))}
-                                                </g:if>
-                                                <g:else>
-                                                    -
-                                                </g:else>
-                                            </g:elseif>
-                                            <g:elseif test="${field.startsWith('file')}">
-                                                <br/>${task.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
-                                                <g:set var="docctx" value="${task.condition.getProperty(field)}" />
-                                                <g:if test="${docctx}">
-                                                    <g:link controller="docstore" id="${docctx.owner.uuid}">
-                                                        <i class="icon file"></i>
-                                                        <g:if test="${docctx.owner?.title}">
-                                                            ${docctx.owner.title}
-                                                        </g:if>
-                                                        <g:elseif test="${docctx.owner?.filename}">
-                                                            ${docctx.owner?.filename}
-                                                        </g:elseif>
-                                                        <g:else>
-                                                            ${message(code:'template.documents.missing')}
-                                                        </g:else>
-                                                    </g:link> (${docctx.owner?.type?.getI10n("value")})
-                                                </g:if>
-                                                <g:else>
-                                                    -
-                                                </g:else>
-                                            </g:elseif>
+                                            <br />
+                                            <laser:workflowTaskConditionField condition="${task.condition}" field="${field}" />
                                         </g:each>
                                         <!-- -->
                                     </div>
@@ -137,46 +104,8 @@
                                                 ${child.condition.description} <br />
                                                 <!-- -->
                                                 <g:each in="${child.condition.getFields()}" var="field" status="fi">
-
-                                                    <g:if test="${field.startsWith('checkbox')}">
-                                                        <br/>${child.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
-                                                        <g:if test="${child.condition.getProperty(field) == true}">
-                                                            <i class="icon check square outline"></i>
-                                                        </g:if>
-                                                        <g:else>
-                                                            <i class="icon square outline"></i>
-                                                        </g:else>
-                                                    </g:if>
-                                                    <g:elseif test="${field.startsWith('date')}">
-                                                        <br/>${child.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
-                                                        <g:if test="${child.condition.getProperty(field)}">
-                                                            ${DateUtils.getSDF_NoTime().format(child.condition.getProperty(field))}
-                                                        </g:if>
-                                                        <g:else>
-                                                            -
-                                                        </g:else>
-                                                    </g:elseif>
-                                                    <g:elseif test="${field.startsWith('file')}">
-                                                        <br/>${child.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
-                                                        <g:set var="docctx" value="${child.condition.getProperty(field)}" />
-                                                        <g:if test="${docctx}">
-                                                            <g:link controller="docstore" id="${docctx.owner.uuid}">
-                                                                <i class="icon file"></i>
-                                                                <g:if test="${docctx.owner?.title}">
-                                                                    ${docctx.owner.title}
-                                                                </g:if>
-                                                                <g:elseif test="${docctx.owner?.filename}">
-                                                                    ${docctx.owner?.filename}
-                                                                </g:elseif>
-                                                                <g:else>
-                                                                    ${message(code:'template.documents.missing')}
-                                                                </g:else>
-                                                            </g:link> (${docctx.owner?.type?.getI10n("value")})
-                                                        </g:if>
-                                                        <g:else>
-                                                            -
-                                                        </g:else>
-                                                    </g:elseif>
+                                                    <br />
+                                                    <laser:workflowTaskConditionField condition="${child.condition}" field="${field}" />
                                                 </g:each>
                                                 <!-- -->
                                             </div>
@@ -297,7 +226,6 @@
                                               optionKey="id"
                                               optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
                                 </g:else>
-
 
 
                             </div>
