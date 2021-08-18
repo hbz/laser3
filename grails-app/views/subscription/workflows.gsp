@@ -81,7 +81,7 @@
                 </td>
                 <td class="x">
                     <button class="ui small icon button" data-wfId="${wf.id}"><i class="icon info"></i></button>
-                    <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon pencil"></i></button>
+                    <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button>
                     <g:link class="ui red icon small button" controller="subscription" action="workflows" params="${[id: "${subscription.id}", cmd: "delete:${WfWorkflow.KEY}:${wf.id}"]}"><i class="trash alternate icon"></i></g:link>
                 </td>
             </tr>
@@ -117,6 +117,11 @@
                                 <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
                                     <i class="icon clipboard"></i>${wf.subscription.name}
                                 </g:link>
+                                <g:if test="${wf.comment}">
+                                    <div style="margin: 1em; padding-left: 1em; border-left: 5px solid #E0E0E0">
+                                        ${wf.comment}
+                                    </div>
+                                </g:if>
                                 <div class="ui right aligned">
                                     Zuletzt bearbeitet am: ${DateUtils.getSDF_NoTime().format(wfInfo.lastUpdated)}<br />
                                     Erstellt am: ${DateUtils.getSDF_NoTime().format(wf.dateCreated)}
@@ -124,7 +129,10 @@
                             </div>
                         </td>
                         <td class="x">
-
+                            <g:set var="wfKey" value="subscription:${subscription.id}:${WfWorkflow.KEY}:${wf.id}" />
+                            <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal" params="${[key: wfKey, info: wfKey]}">
+                                <i class="ui icon pencil"></i>
+                            </g:link>
                         </td>
                     </tr>
 
@@ -141,8 +149,13 @@
                                         ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i> ${task.priority.getI10n('value')} )
                                     </span>
                                 </div>
-                                <div class="description">${task.description}</div>
-
+                                <div class="description">${task.description}
+                                    <g:if test="${task.comment}">
+                                        <div style="margin: 1em; padding-left: 1em; border-left: 5px solid #E0E0E0">
+                                            ${task.comment}
+                                        </div>
+                                    </g:if>
+                                </div>
                                 <g:if test="${task.condition}">
                                     <div style="margin:1.5em 0 0 5em">
                                         <div class="header"><strong>${task.condition.title}</strong></div>
@@ -153,45 +166,7 @@
                                             <!-- -->
                                             <g:each in="${task.condition.getFields()}" var="field" status="fi">
                                                 <br/>
-                                                <g:if test="${field.startsWith('checkbox')}">
-                                                    ${task.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
-                                                    <g:if test="${task.condition.getProperty(field) == true}">
-                                                        <i class="icon check square outline"></i>
-                                                    </g:if>
-                                                    <g:else>
-                                                        <i class="icon square outline"></i>
-                                                    </g:else>
-                                                </g:if>
-                                                <g:elseif test="${field.startsWith('date')}">
-                                                    ${task.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
-                                                    <g:if test="${task.condition.getProperty(field)}">
-                                                        ${DateUtils.getSDF_NoTime().format(task.condition.getProperty(field))}
-                                                    </g:if>
-                                                    <g:else>
-                                                        -
-                                                    </g:else>
-                                                </g:elseif>
-                                                <g:elseif test="${field.startsWith('file')}">
-                                                    ${task.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
-                                                    <g:set var="docctx" value="${task.condition.getProperty(field)}" />
-                                                    <g:if test="${docctx}">
-                                                        <g:link controller="docstore" id="${docctx.owner.uuid}">
-                                                            <i class="icon file"></i>
-                                                            <g:if test="${docctx.owner?.title}">
-                                                                ${docctx.owner.title}
-                                                            </g:if>
-                                                            <g:elseif test="${docctx.owner?.filename}">
-                                                                ${docctx.owner?.filename}
-                                                            </g:elseif>
-                                                            <g:else>
-                                                                ${message(code:'template.documents.missing')}
-                                                            </g:else>
-                                                        </g:link> (${docctx.owner?.type?.getI10n("value")})
-                                                    </g:if>
-                                                    <g:else>
-                                                        -
-                                                    </g:else>
-                                                </g:elseif>
+                                                <laser:workflowTaskConditionField condition="${task.condition}" field="${field}" />
                                             </g:each>
                                             <!-- -->
                                         </div>
@@ -200,7 +175,10 @@
 
                             </td>
                             <td class="x">
-
+                                <g:set var="tKey" value="subscription:${subscription.id}:${WfTask.KEY}:${task.id}" />
+                                <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
+                                    <i class="ui icon pencil"></i>
+                                </g:link>
                             </td>
                         </tr>
 
@@ -218,8 +196,13 @@
                                                 ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i> ${child.priority.getI10n('value')} )
                                             </span>
                                         </div>
-                                        <div class="description">${child.description}</div>
-
+                                        <div class="description">${child.description}
+                                            <g:if test="${child.comment}">
+                                                <div style="margin: 1em; padding-left: 1em; border-left: 5px solid #E0E0E0">
+                                                    ${child.comment}
+                                                </div>
+                                            </g:if>
+                                        </div>
 
                                         <g:if test="${child.condition}">
                                             <div style="margin:1.5em 0 0 5em">
@@ -231,45 +214,7 @@
                                                     <!-- -->
                                                     <g:each in="${child.condition.getFields()}" var="field" status="fi">
                                                         <br/>
-                                                        <g:if test="${field.startsWith('checkbox')}">
-                                                            ${child.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
-                                                            <g:if test="${child.condition.getProperty(field) == true}">
-                                                                <i class="icon check square outline"></i>
-                                                            </g:if>
-                                                            <g:else>
-                                                                <i class="icon square outline"></i>
-                                                            </g:else>
-                                                        </g:if>
-                                                        <g:elseif test="${field.startsWith('date')}">
-                                                            ${child.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
-                                                            <g:if test="${child.condition.getProperty(field)}">
-                                                                ${DateUtils.getSDF_NoTime().format(child.condition.getProperty(field))}
-                                                            </g:if>
-                                                            <g:else>
-                                                                -
-                                                            </g:else>
-                                                        </g:elseif>
-                                                        <g:elseif test="${field.startsWith('file')}">
-                                                            ${child.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}:
-                                                            <g:set var="docctx" value="${child.condition.getProperty(field)}" />
-                                                            <g:if test="${docctx}">
-                                                                <g:link controller="docstore" id="${docctx.owner.uuid}">
-                                                                    <i class="icon file"></i>
-                                                                    <g:if test="${docctx.owner?.title}">
-                                                                        ${docctx.owner.title}
-                                                                    </g:if>
-                                                                    <g:elseif test="${docctx.owner?.filename}">
-                                                                        ${docctx.owner?.filename}
-                                                                    </g:elseif>
-                                                                    <g:else>
-                                                                        ${message(code:'template.documents.missing')}
-                                                                    </g:else>
-                                                                </g:link> (${docctx.owner?.type?.getI10n("value")})
-                                                            </g:if>
-                                                            <g:else>
-                                                                -
-                                                            </g:else>
-                                                        </g:elseif>
+                                                        <laser:workflowTaskConditionField condition="${child.condition}" field="${field}" />
                                                     </g:each>
                                                     <!-- -->
                                                 </div>
@@ -278,7 +223,10 @@
 
                                     </td>
                                     <td class="x">
-
+                                        <g:set var="tKey" value="subscription:${subscription.id}:${WfTask.KEY}:${child.id}" />
+                                        <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
+                                            <i class="ui icon pencil"></i>
+                                        </g:link>
                                     </td>
                                 </tr>
 
@@ -312,9 +260,8 @@
             }
         });
 
-        <g:if test="${forwardedKey}">
-            /* forwarded */
-            $('button[data-wfId=' + '${forwardedKey}'.split(':')[3] + ']').trigger('click');
+        <g:if test="${info}">
+            $('button[data-wfId=' + '${info}'.split(':')[3] + ']').trigger('click');
         </g:if>
         <g:else>
             if ($('button[data-wfId]').length == 1) {

@@ -1,15 +1,20 @@
 package de.laser
 
+import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtils
+import de.laser.helper.RDConstants
 import de.laser.workflow.*
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.web.util.WebUtils
 import org.springframework.transaction.TransactionStatus
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 
 @Transactional
 class WorkflowService {
 
     def contextService
+    def genericOIDService
 
     static final String OP_STATUS_DONE  = 'OP_STATUS_DONE'
     static final String OP_STATUS_ERROR = 'OP_STATUS_ERROR'
@@ -470,10 +475,19 @@ class WorkflowService {
 
             if (cmd[1] == WfWorkflow.KEY) {
                 WfWorkflow workflow = WfWorkflow.get( cmd[2] )
+                boolean wChanged
 
+                String comment = ph.getString('comment')
+                if (comment != workflow.comment) {
+                    workflow.comment = comment
+                    wChanged = true
+                }
                 RefdataValue status = ph.getRefdataValue('status')
                 if (status != workflow.status) {
                     workflow.status = status
+                    wChanged = true
+                }
+                if (wChanged) {
                     result.status = workflow.save() ? OP_STATUS_DONE : OP_STATUS_ERROR
                 }
             }
@@ -530,7 +544,57 @@ class WorkflowService {
                             cChanged = true
                         }
                     }
-                    if (cFields.contains('file1')) {
+
+                    if (params.get('wfUploadFile-placeholder')) {
+
+                        def file = WebUtils.retrieveGrailsWebRequest().getCurrentRequest().getFile("wfUploadFile")
+                        if (file) {
+                            Doc.withTransaction { TransactionStatus ts ->
+                                try {
+                                    Doc doc = new Doc(
+                                        contentType:    Doc.CONTENT_TYPE_FILE,
+                                        filename:       file.originalFilename,
+                                        mimeType:       file.contentType,
+                                        title:          params.wfUploadTitle ?: file.originalFilename,
+                                        type:           RefdataValue.get(params.wfUploadDoctype),
+                                        creator:        contextService.getUser(),
+                                        owner:          contextService.getOrg()
+                                    )
+                                    doc.save()
+
+                                    String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
+                                    String fName = doc.uuid
+
+                                    File folder = new File("${fPath}")
+                                    if (!folder.exists()) {
+                                        folder.mkdirs()
+                                    }
+                                    File newFile = new File("${fPath}/${fName}")
+                                    file.transferTo(newFile)
+
+                                    Subscription sub = genericOIDService.resolveOID(params.wfUploadOwner) as Subscription
+
+                                    DocContext docctx = new DocContext(
+                                        subscription: sub,
+                                        owner: doc,
+                                        doctype: RefdataValue.get(params.wfUploadDoctype)
+                                    )
+                                    docctx.save()
+
+                                    condition.file1 = docctx
+                                    cChanged = true
+                                }
+                                catch (Exception e) {
+                                    cChanged = false
+                                    result.status = OP_STATUS_ERROR
+
+                                    e.printStackTrace()
+                                    ts.setRollbackOnly()
+                                }
+                            }
+                        }
+                    }
+                    else if (cFields.contains('file1')) {
                         DocContext file1 = ph.getDocContext('file1')
                         if (file1 != condition.file1) {
                             condition.file1 = file1
