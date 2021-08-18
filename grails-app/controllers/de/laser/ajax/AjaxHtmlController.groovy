@@ -734,13 +734,17 @@ class AjaxHtmlController {
 
             if (result.prefix == WfWorkflow.KEY) {
                 result.workflow       = WfWorkflow.get( key[3] )
-                result.tmplModalTitle = 'Workflow: ' + result.workflow.title
+                result.tmplModalTitle = '<i class="icon tasks"></i> ' + result.workflow.title
 
             }
             else if (result.prefix == WfTask.KEY) {
                 result.task           = WfTask.get( key[3] )
-                result.tmplModalTitle = 'Workflow > Aufgabe: ' + result.task.title
+                result.tmplModalTitle = '<i class="icon ellipsis horizontal"></i> ' + result.task.title
             }
+        }
+
+        if (params.info) {
+            result.info = params.info
         }
 
         render template: '/templates/workflow/forms/modalWrapper', model: result
