@@ -4,15 +4,11 @@ class WfCondition extends WfConditionBase {
 
     static final String KEY = 'WF_CONDITION'
 
-    //@RefdataAnnotation(cat = RDConstants.WF_CONDITION_STATUS)
-    //RefdataValue status
-
     WfConditionPrototype prototype
 
     static mapping = {
                      id column: 'wfc_id'
                 version column: 'wfc_version'
-               // status  column: 'wfc_status_rv_fk'
               prototype column: 'wfc_prototype_fk'
                   type  column: 'wfc_type'
                   title column: 'wfc_title'
@@ -28,6 +24,8 @@ class WfCondition extends WfConditionBase {
             date1_title column: 'wfc_date1_title'
                   date2 column: 'wfc_date2'
             date2_title column: 'wfc_date2_title'
+                  file1 column: 'wfc_file1'
+            file1_title column: 'wfc_file1_title'
 
             dateCreated column: 'wfc_date_created'
             lastUpdated column: 'wfc_last_updated'
@@ -42,6 +40,8 @@ class WfCondition extends WfConditionBase {
         date1_title     (nullable: true)
         date2           (nullable: true)
         date2_title     (nullable: true)
+        file1           (nullable: true)
+        file1_title     (nullable: true)
     }
 
     void remove() throws Exception {

@@ -55,7 +55,6 @@
             <input type="text" name="${prefix}_comment" id="${prefix}_comment" value="${workflow?.comment}" />
         </div>
 
-
         <div class="field">
             <label for="${prefix}_subscription">${message(code:'subscription.label')}</label>
             <p>
@@ -106,6 +105,9 @@
     <g:else>
         <input type="hidden" name="cmd" value="${cmd}:${prefix}" />
     </g:else>
+    <g:if test="${tab}">
+        <input type="hidden" name="tab" value="${tab}" />
+    </g:if>
 
     <g:if test="${! tmplIsModal}">
             <div class="field">

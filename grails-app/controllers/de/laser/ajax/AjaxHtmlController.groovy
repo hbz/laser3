@@ -698,6 +698,8 @@ class AjaxHtmlController {
                 prefix: params.key
         ]
 
+        if (params.tab) { result.tmplTab = params.tab }
+
         if (params.key in [WfWorkflowPrototype.KEY, WfWorkflow.KEY]) {
             result.tmpl = '/templates/workflow/forms/wfWorkflow'
         }
@@ -720,20 +722,29 @@ class AjaxHtmlController {
         if (params.key) {
             String[] key = (params.key as String).split(':')
 
-            if (key[0] == 'subscription') {
-                result.tmplFormUrl = createLink(controller: 'subscription', action: 'workflows', id: key[1])
-            }
             result.prefix = key[2]
+
+            if (key[0] == 'subscription') {
+                result.subscription = Subscription.get( key[1] )
+                result.tmplFormUrl  = createLink(controller: 'subscription', action: 'workflows', id: key[1])
+            }
+            else if (key[0] == 'myInstitution') {
+                result.workflow = WfWorkflow.get (key[1] ) // TODO
+            }
 
             if (result.prefix == WfWorkflow.KEY) {
                 result.workflow       = WfWorkflow.get( key[3] )
-                result.tmplModalTitle = 'Workflow: ' + result.workflow.title
+                result.tmplModalTitle = '<i class="icon tasks"></i> ' + result.workflow.title
 
             }
             else if (result.prefix == WfTask.KEY) {
                 result.task           = WfTask.get( key[3] )
-                result.tmplModalTitle = 'Workflow > Aufgabe: ' + result.task.title
+                result.tmplModalTitle = '<i class="icon ellipsis horizontal"></i> ' + result.task.title
             }
+        }
+
+        if (params.info) {
+            result.info = params.info
         }
 
         render template: '/templates/workflow/forms/modalWrapper', model: result
@@ -742,6 +753,8 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def editWfXModal() {
         Map<String, Object> result = [ tmplCmd : 'edit' ]
+
+        if (params.tab) { result.tmplTab = params.tab }
 
         if (params.key) {
             String[] key = (params.key as String).split(':')

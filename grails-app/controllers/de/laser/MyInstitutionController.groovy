@@ -2241,17 +2241,53 @@ join sub.orgRelations or_sub where
     def currentWorkflows() {
         Map<String, Object> result = [:]
 
-        if (params.key) {
-            result.forwardedKey = params.key // dashboard
-        }
-        else if (params.cmd) {
+        if (params.cmd) {
             result.putAll( workflowService.handleUsage(params) )
         }
-        result.currentWorkflows = WfWorkflow.executeQuery(
-                'select wf from WfWorkflow wf where wf.owner = :ctxOrg order by id',
+        result.currentSubscriptions = WfWorkflow.executeQuery(
+                'select distinct sub from WfWorkflow wf join wf.subscription sub where wf.owner = :ctxOrg order by sub.name',
                 [ctxOrg: contextService.getOrg()]
         )
 
+        String query = 'select wf from WfWorkflow wf where wf.owner = :ctxOrg'
+        Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
+
+        if (params.filterStatus) {
+            query = query + ' and wf.status = :status'
+            queryParams.put('status', RefdataValue.get(params.filterStatus))
+        }
+        if (params.filterSubscription) {
+            query = query + ' and wf.subscription = :subscription'
+            queryParams.put('subscription', Subscription.get(params.filterSubscription))
+        }
+        result.currentWorkflows = WfWorkflow.executeQuery( query, queryParams )
+
+        if (params.filterPriority) {
+            List<WfWorkflow> matches = []
+            RefdataValue priority = RefdataValue.get(params.filterPriority)
+
+            result.currentWorkflows.each{ wf ->
+                boolean match = false
+                wf.getSequence().each { t ->
+                    if (t.priority == priority) {
+                        match = true
+                    }
+                    else {
+                        if (t.child) {
+                            t.child.getSequence().each { c ->
+                                if (c.priority == priority) {
+                                    match = true
+                                }
+                            }
+                        }
+                    }
+                }
+                if (match) {
+                    matches.add(wf)
+                }
+                result.currentWorkflows = matches
+            }
+        }
         result
     }
 
