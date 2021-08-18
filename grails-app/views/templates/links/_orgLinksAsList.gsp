@@ -1,17 +1,25 @@
 <%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.helper.RDConstants; de.laser.helper.RDStore" %>
 <laser:serviceInjection />
-<table class="ui four column table">
+<table class="ui table">
     <g:each in="${roleLinks}" var="role">
         <g:if test="${role.org}">
             <g:set var="cssId" value="prsLinksModal-${role.org.id}-${role.roleType.id}" />
 
             <tr>
-                <th scope="row" class="control-label la-js-dont-hide-this-card">${role.roleType.getI10n("value")}</th>
-                <td colspan="2">
-                    <g:link controller="organisation" action="show" id="${role.org.id}">${role.org.name}</g:link>
+                <td>
+                    <span class="la-flexbox la-minor-object">
+                        <g:if test="${role.roleType.value=="Provider"}">
+                            <i class="handshake outline icon"></i>
+                        </g:if>
+                        <g:elseif test="${role.roleType.value =="Agency"}">
+                            <i class="shipping fast icon"></i>
+                        </g:elseif>
+                        <g:link controller="organisation" action="show" id="${role.org.id}">${role.org.name}</g:link>
+                    </span>
+
                 </td>
 
-                <td class="right aligned">
+                <td class="right aligned eight wide column">
                     <g:if test="${editmode}">
                         <g:if test="${roleObject.showUIShareButton()}">
                             <g:if test="${role.isShared}">
@@ -77,8 +85,8 @@
                             Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg) ||
                             Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg))}">
                 <tr>
-                    <td></td>
-                    <td colspan="2">
+
+                    <td colspan="3">
                         <%-- public --%>
                         <g:if test="${ Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
                                 Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)  }">
@@ -86,7 +94,7 @@
                                 <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'General contact person')}" var="func">
                                     <div class="item">
                                         <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
-                                            <i class="address card icon"></i>
+                                            <i class="circular big address card icon"></i>
                                         </span>
                                         <div class="content">
                                             <g:link controller="organisation" action="${contextOrg.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]">${func}</g:link> (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
@@ -108,7 +116,7 @@
                                 <g:each in="${Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)}" var="resp">
                                     <div class="item">
                                         <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
-                                            <i class="address card icon"></i>
+                                            <i class="circular big address card icon"></i>
                                         </span>
                                         <div class="content">
                                             <g:link controller="organisation" action="${contextOrg.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]">${resp}</g:link> (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
@@ -147,11 +155,12 @@
                             <div class="ui divided middle la-flex-list list">
                                 <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg)}" var="func">
                                     <div class="item">
-                                        <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
-                                            <i class="address card outline icon"></i>
+                                        <span  class="la-popup-tooltip la-delay" style="margin-top:30px; color: gray" data-content="${message(code:'address.private')}" data-position="top right">
+                                            <i class="circular big address card outline icon" ></i>
                                         </span>
                                         <div class="content">
-                                            <g:link controller="organisation" action="${contextOrg.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]">${func}</g:link> (${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')})
+                                            <div class="ui label">${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')}</div>
+                                            <div class="ui header" style="margin-top:10px; font-size:1.1em"><g:link controller="organisation" action="${contextOrg.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]">${func}</g:link></div>
                                             <g:each in="${Contact.findAllByPrsAndContentType(
                                                     func,
                                                     RDStore.CCT_EMAIL
@@ -170,7 +179,7 @@
                                 <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}" var="resp">
                                     <div class="item">
                                         <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
-                                            <i class="address card outline icon"></i>
+                                            <i class="circular big address card outline icon"></i>
                                         </span>
                                         <div class="content">
                                             <g:link controller="organisation" action="${contextOrg.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]">${resp}</g:link> (${(RefdataValue.getByValue(roleRespValue)).getI10n('value')})
@@ -204,7 +213,6 @@
                         </g:if><%-- private --%>
 
                     </td>
-                    <td></td>
                 </tr>
             </g:if>
         </g:if>
