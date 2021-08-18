@@ -1,7 +1,5 @@
 package de.laser.workflow
 
-import de.laser.helper.RDStore
-
 class WfConditionPrototype extends WfConditionBase {
 
     static final String KEY = 'WF_CONDITION_PROTOTYPE'
@@ -23,6 +21,8 @@ class WfConditionPrototype extends WfConditionBase {
             date1_title column: 'wfcp_date1_title'
                   date2 column: 'wfcp_date2'
             date2_title column: 'wfcp_date2_title'
+                  file1 column: 'wfcp_file1'
+            file1_title column: 'wfcp_file1_title'
 
             dateCreated column: 'wfcp_date_created'
             lastUpdated column: 'wfcp_last_updated'
@@ -37,6 +37,8 @@ class WfConditionPrototype extends WfConditionBase {
         date1_title     (nullable: true)
         date2           (nullable: true)
         date2_title     (nullable: true)
+        file1           (nullable: true)
+        file1_title     (nullable: true)
     }
 
     boolean inUse() {
@@ -61,6 +63,8 @@ class WfConditionPrototype extends WfConditionBase {
                 date1_title:            this.date1_title,
                 date2:                  this.date2,
                 date2_title:            this.date2_title,
+                file1:                  this.file1,
+                file1_title:            this.file1_title,
         )
         if (! condition.validate()) {
             log.debug( '[ ' + this.id + ' ].instantiate() : ' + condition.getErrors().toString() )

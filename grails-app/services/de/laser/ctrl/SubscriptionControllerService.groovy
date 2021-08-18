@@ -2704,6 +2704,9 @@ class SubscriptionControllerService {
         result.contextCustomerType = result.contextOrg.getCustomerType()
         result.editable = result.subscription.isEditableBy(result.user)
 
+        if (params.info) {
+            result.info = params.info // @ currentWorkflows @ dashboard
+        }
         if (params.cmd) {
             result.putAll( workflowService.handleUsage(params) )
         }

@@ -282,7 +282,7 @@
                                 <g:set var="wfInfo" value="${wf.getInfo()}" />
                                 <tr>
                                     <td>
-                                        <g:link controller="myInstitution" action="currentWorkflows" params="${[key: 'myInstitution::' + WfWorkflow.KEY + ':' + wf.id]}">
+                                        <g:link controller="subscription" action="workflows" id="${wf.subscription.id}" params="${[info: 'subscription:' + wf.subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
                                             <i class="ui icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i> ${wf.title}
                                         </g:link>
                                     </td>
