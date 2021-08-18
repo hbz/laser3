@@ -129,8 +129,8 @@
                             </div>
                         </td>
                         <td class="x">
-                            <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal"
-                                    params="${[key: 'subscription:' + subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
+                            <g:set var="wfKey" value="subscription:${subscription.id}:${WfWorkflow.KEY}:${wf.id}" />
+                            <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal" params="${[key: wfKey, info: wfKey]}">
                                 <i class="ui icon pencil"></i>
                             </g:link>
                         </td>
@@ -175,8 +175,8 @@
 
                             </td>
                             <td class="x">
-                                <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal"
-                                        params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}">
+                                <g:set var="tKey" value="subscription:${subscription.id}:${WfTask.KEY}:${task.id}" />
+                                <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
                                     <i class="ui icon pencil"></i>
                                 </g:link>
                             </td>
@@ -223,8 +223,8 @@
 
                                     </td>
                                     <td class="x">
-                                        <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal"
-                                                params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + child.id]}">
+                                        <g:set var="tKey" value="subscription:${subscription.id}:${WfTask.KEY}:${child.id}" />
+                                        <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
                                             <i class="ui icon pencil"></i>
                                         </g:link>
                                     </td>
@@ -260,9 +260,8 @@
             }
         });
 
-        <g:if test="${forwardedKey}">
-            /* forwarded */
-            $('button[data-wfId=' + '${forwardedKey}'.split(':')[3] + ']').trigger('click');
+        <g:if test="${info}">
+            $('button[data-wfId=' + '${info}'.split(':')[3] + ']').trigger('click');
         </g:if>
         <g:else>
             if ($('button[data-wfId]').length == 1) {

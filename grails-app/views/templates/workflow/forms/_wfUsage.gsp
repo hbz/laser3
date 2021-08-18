@@ -142,7 +142,11 @@
 
         </div>
         %{--</g:if>--}%
+        <g:if test="${info}">
+            <input type="hidden" name="info" value="${info}" />
+        </g:if>
         <input type="hidden" name="cmd" value="usage:${prefix}:${workflow.id}" />
+
     </g:if>
 
     %{-- TASK --}%
@@ -223,7 +227,7 @@
                         <g:elseif test="${field.startsWith('file')}">
                             <div class="field">
                                 <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: 'Feld ohne Titel'}
-                                    <a id="fileUploadWrapper_toggle" class="ui label" href="#" style="float:right">Auswahl &hArr; Upload</a>
+                                    <a id="fileUploadWrapper_toggle" href="#" style="float:right"><span class="ui active label">Auswahl</span> &hArr; <span class="ui label">Upload</span></a>
                                 </label>
                                 <g:set var="docctx" value="${task.condition.getProperty(field)}" />
                                 %{-- <g:if test="${docctx}">
@@ -250,7 +254,7 @@
 
                                     </g:else>
                                 </div>
-                                <div id="fileUploadWrapper_upload" class="fileUploadWrapper ui segment" style="margin:0; display:none;">
+                                <div id="fileUploadWrapper_upload" class="fileUploadWrapper ui segment" style="margin:8px 0 0 0; display:none;">
                                     %{--<g:form class="ui form" url="${formUrl}" method="post" enctype="multipart/form-data">--}%
                                         <g:if test="${workflow}"> %{-- currentWorkflows --}%
                                             <input type="hidden" name="wfUploadOwner" value="${workflow.subscription.class.name}:${workflow.subscription.id}"/>
@@ -283,6 +287,7 @@
                                             $('#fileUploadWrapper_toggle').click( function(e) {
                                                 e.preventDefault();
                                                 $('.fileUploadWrapper').toggle();
+                                                $('#fileUploadWrapper_toggle > .label').toggleClass('active');
                                             });
                                             $('#wfUploadFile').on('change', function(e) {
                                                 var name = e.target.files[0].name;
@@ -317,6 +322,9 @@
             </div>
         </g:if>
 
+        <g:if test="${info}">
+            <input type="hidden" name="info" value="${info}" />
+        </g:if>
         <input type="hidden" name="cmd" value="usage:${prefix}:${task.id}" />
     </g:if>
 
