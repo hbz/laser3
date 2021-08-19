@@ -22,12 +22,12 @@
     <form class="ui form">
         <div class="three fields">
             <div class="field">
-                <label>${message(code: 'default.subscription.label')}</label>
-                <g:select class="ui dropdown" name="filterSubscription"
-                          from="${ currentSubscriptions }"
+                <label>${message(code: 'workflow.label')}</label>
+                <g:select class="ui dropdown" name="filterPrototype"
+                          from="${ currentPrototypes }"
                           optionKey="id"
-                          optionValue="name"
-                          value="${params.filterSubscription}"
+                          optionValue="title"
+                          value="${params.filterPrototype}"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
             <div class="field">
@@ -47,6 +47,26 @@
                               optionValue="value"
                               value="${params.filterPriority}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+        </div>
+        <div class="three fields">
+            <div class="field">
+                <label>${message(code: 'default.provider.label')}</label>
+                <g:select class="ui dropdown" name="filterProvider"
+                          from="${ currentProviders }"
+                          optionKey="id"
+                          optionValue="name"
+                          value="${params.filterProvider}"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+            <div class="field">
+                <label>${message(code: 'default.subscription.label')}</label>
+                <g:select class="ui dropdown" name="filterSubscription"
+                          from="${ currentSubscriptions }"
+                          optionKey="id"
+                          optionValue="name"
+                          value="${params.filterSubscription}"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
         </div>
         <div class="field la-field-right-aligned">

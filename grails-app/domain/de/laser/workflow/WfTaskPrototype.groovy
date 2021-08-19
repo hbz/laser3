@@ -56,7 +56,6 @@ class WfTaskPrototype extends WfTaskBase {
         WfTask task = new WfTask(
                 title:       this.title,
                 description: this.description,
-                prototype:   this,
                 priority:    this.priority,
                 status:      RDStore.WF_TASK_STATUS_OPEN
         )
