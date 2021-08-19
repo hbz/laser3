@@ -1288,6 +1288,16 @@ class OrganisationController  {
         }
     }
 
+    def linkOrgs() {
+        organisationControllerService.linkOrgs(params)
+        redirect action: 'show', id: params.context
+    }
+
+    def unlinkOrg() {
+        organisationControllerService.unlinkOrg(params)
+        redirect action: 'show', id: params.id
+    }
+
     @Transactional
     def addOrgType() {
         Map<String, Object> result = [:]
