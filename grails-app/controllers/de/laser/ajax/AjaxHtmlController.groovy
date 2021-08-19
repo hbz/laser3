@@ -700,13 +700,47 @@ class AjaxHtmlController {
 
         if (params.tab) { result.tmplTab = params.tab }
 
-        if (params.key in [WfWorkflowPrototype.KEY, WfWorkflow.KEY]) {
+        if (params.key in [WfWorkflow.KEY]) {
             result.tmpl = '/templates/workflow/forms/wfWorkflow'
         }
-        else if (params.key in [WfTaskPrototype.KEY, WfTask.KEY]) {
+        else if (params.key in [WfTask.KEY]) {
             result.tmpl = '/templates/workflow/forms/wfTask'
         }
-        else if (params.key in [WfConditionPrototype.KEY, WfCondition.KEY]) {
+        else if (params.key in [WfCondition.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfCondition'
+        }
+        else if (params.key in [WfWorkflowPrototype.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfWorkflow'
+
+            // not: * used as tp.next * used as tp.child
+            result.dd_taskList = WfTaskPrototype.executeQuery(
+                    'select wftp from WfTaskPrototype wftp where ' +
+                            'wftp not in (select tp.next from WfTaskPrototype tp) ' +
+                            'and wftp not in (select tp.child from WfTaskPrototype tp) ' +
+                            'order by id'
+            )
+        }
+        else if (params.key in [WfTaskPrototype.KEY]) {
+            result.tmpl = '/templates/workflow/forms/wfTask'
+
+            // not: * used as tp.child * used as wp.task
+            result.dd_nextList = WfTaskPrototype.executeQuery(
+                    'select wftp from WfTaskPrototype wftp where ' +
+                            'wftp not in (select tp.child from WfTaskPrototype tp) ' +
+                            'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
+                            'order by id'
+            )
+            // not: * used as tp.next * used as wp.task
+            result.dd_childList = WfTaskPrototype.executeQuery(
+                    'select wftp from WfTaskPrototype wftp where ' +
+                            'wftp not in (select tp.next from WfTaskPrototype tp) ' +
+                            'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
+                            'order by id'
+            )
+
+            result.dd_conditionList = WfConditionPrototype.executeQuery('select wfcp from WfConditionPrototype wfcp')
+        }
+        else if (params.key in [WfConditionPrototype.KEY]) {
             result.tmpl = '/templates/workflow/forms/wfCondition'
         }
         render template: '/templates/workflow/forms/modalWrapper', model: result
@@ -782,11 +816,11 @@ class AjaxHtmlController {
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.workflow.id + ') ' + result.workflow.title
 
-                if (result.workflow) {
-                    result.dd_taskList          = result.workflow.task ? [ result.workflow.task ] : []
-                    result.dd_prototypeList     = result.workflow.prototype ? [ result.workflow.prototype ] : []
-                    result.dd_subscriptionList  = result.workflow.subscription ? [ result.workflow.subscription ] : []
-                }
+//                if (result.workflow) {
+//                    result.dd_taskList          = result.workflow.task ? [ result.workflow.task ] : []
+//                    result.dd_prototypeList     = result.workflow.prototype ? [ result.workflow.prototype ] : []
+//                    result.dd_subscriptionList  = result.workflow.subscription ? [ result.workflow.subscription ] : []
+//                }
             }
             else if (result.prefix == WfTaskPrototype.KEY) {
                 result.task           = WfTaskPrototype.get( key[1] )
@@ -794,7 +828,7 @@ class AjaxHtmlController {
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.task.id + ') ' + result.task.title
 
                 if (result.task) {
-                    String sql = 'select wftp from WfTaskPrototype wftp where id != :id order by id'
+//                    String sql = 'select wftp from WfTaskPrototype wftp where id != :id order by id'
                     Map<String, Object> sqlParams = [id: key[1] as Long]
 
                     // not: * self * used as tp.child * used as wp.task
@@ -811,8 +845,8 @@ class AjaxHtmlController {
                             'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
                             'order by id', sqlParams
                     )
-                    result.dd_previousList  = WfTaskPrototype.executeQuery(sql, sqlParams)
-                    result.dd_parentList    = WfTaskPrototype.executeQuery(sql, sqlParams)
+//                    result.dd_previousList  = WfTaskPrototype.executeQuery(sql, sqlParams)
+//                    result.dd_parentList    = WfTaskPrototype.executeQuery(sql, sqlParams)
 
                     result.dd_conditionList = WfConditionPrototype.executeQuery('select wfcp from WfConditionPrototype wfcp')
                 }
@@ -827,13 +861,13 @@ class AjaxHtmlController {
                     result.dd_nextList      = result.task.next ? [ result.task.next ] : []
                     result.dd_childList     = result.task.child ? [ result.task.child ] : []
                     result.dd_conditionList = result.task.condition ? [ result.task.condition ] : []
-                    result.dd_prototypeList = result.task.prototype ? [ result.task.prototype ] : []
+//                    result.dd_prototypeList = result.task.prototype ? [ result.task.prototype ] : []
 
-                    String sql = 'select wft from WfTask wft where id != :id order by id'
-                    Map<String, Object> sqlParams = [id: key[1] as Long]
+//                    String sql = 'select wft from WfTask wft where id != :id order by id'
+//                    Map<String, Object> sqlParams = [id: key[1] as Long]
 
-                    result.dd_previousList  = WfTask.executeQuery(sql, sqlParams)
-                    result.dd_parentList    = WfTask.executeQuery(sql, sqlParams)
+//                    result.dd_previousList  = WfTask.executeQuery(sql, sqlParams)
+//                    result.dd_parentList    = WfTask.executeQuery(sql, sqlParams)
                 }
             }
             else if (result.prefix == WfConditionPrototype.KEY) {
@@ -841,19 +875,19 @@ class AjaxHtmlController {
                 result.tmpl           = '/templates/workflow/forms/wfCondition'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.condition.id + ') ' + result.condition.title
 
-                if (result.condition) {
-                    result.dd_taskList = WfTaskPrototype.executeQuery( 'select wftp from WfTaskPrototype wftp' )
-                }
+//                if (result.condition) {
+//                    result.dd_taskList = WfTaskPrototype.executeQuery( 'select wftp from WfTaskPrototype wftp' )
+//                }
             }
             else if (result.prefix == WfCondition.KEY) {
                 result.condition      = WfCondition.get( key[1] )
                 result.tmpl           = '/templates/workflow/forms/wfCondition'
                 result.tmplModalTitle = result.tmplModalTitle + '(' + result.condition.id + ') ' + result.condition.title
 
-                if (result.condition) {
-                    result.dd_taskList = WfTask.executeQuery( 'select wft from WfTask wft' )
-                    result.dd_prototypeList = result.condition.prototype ? [ result.condition.prototype ] : []
-                }
+//                if (result.condition) {
+//                    result.dd_taskList = WfTask.executeQuery( 'select wft from WfTask wft' )
+//                    result.dd_prototypeList = result.condition.prototype ? [ result.condition.prototype ] : []
+//                }
             }
 
             render template: '/templates/workflow/forms/modalWrapper', model: result
