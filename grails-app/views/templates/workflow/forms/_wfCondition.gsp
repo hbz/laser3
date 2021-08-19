@@ -196,17 +196,6 @@
 
         </div>
         --}%
-        <div class="field">
-            <label for="${prefix}_prototype">${message(code:'default.prototype.label')}</label>
-            <p>
-                <g:if test="${condition?.prototype}">
-                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + condition.prototype.id]}">
-                        <i class="icon clone outline"></i> ${condition.prototype.title}
-                    </g:link>
-                </g:if>
-            </p>
-        </div>
-
     </g:if>
 
     <g:if test="${cmd == 'edit'}">

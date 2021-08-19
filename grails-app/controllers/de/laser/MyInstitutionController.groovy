@@ -29,6 +29,7 @@ import de.laser.properties.PropertyDefinitionGroupItem
 import de.laser.workflow.WfCondition
 import de.laser.workflow.WfTask
 import de.laser.workflow.WfWorkflow
+import de.laser.workflow.WfWorkflowPrototype
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -2244,14 +2245,30 @@ join sub.orgRelations or_sub where
         if (params.cmd) {
             result.putAll( workflowService.handleUsage(params) )
         }
-        result.currentSubscriptions = WfWorkflow.executeQuery(
-                'select distinct sub from WfWorkflow wf join wf.subscription sub where wf.owner = :ctxOrg order by sub.name',
-                [ctxOrg: contextService.getOrg()]
-        )
 
         String query = 'select wf from WfWorkflow wf where wf.owner = :ctxOrg'
         Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
 
+        result.currentSubscriptions = WfWorkflow.executeQuery(
+                'select distinct sub from WfWorkflow wf join wf.subscription sub where wf.owner = :ctxOrg order by sub.name', queryParams
+        )
+        result.currentPrototypes = WfWorkflow.executeQuery(
+                'select distinct wf.prototype from WfWorkflow wf where wf.owner = :ctxOrg', queryParams
+        )
+        result.currentProviders = result.currentSubscriptions ? Org.executeQuery(
+                'select distinct ooo.org from OrgRole ooo where ooo.sub in (:subscriptions) and ooo.roleType = :provider',
+                [subscriptions: result.currentSubscriptions, provider: RDStore.OR_PROVIDER]
+        ) : []
+
+        if (params.filterPrototype) {
+            query = query + ' and wf.prototype = :prototype'
+            queryParams.put('prototype', WfWorkflowPrototype.get(params.filterPrototype))
+        }
+        if (params.filterProvider) {
+            query = query + ' and exists (select ooo from OrgRole ooo join ooo.sub sub where ooo.org = :provider and ooo.roleType = :roleType and sub = wf.subscription)'
+            queryParams.put('roleType', RDStore.OR_PROVIDER)
+            queryParams.put('provider', Org.get(params.filterProvider))
+        }
         if (params.filterStatus) {
             query = query + ' and wf.status = :status'
             queryParams.put('status', RefdataValue.get(params.filterStatus))
@@ -2288,6 +2305,7 @@ join sub.orgRelations or_sub where
                 result.currentWorkflows = matches
             }
         }
+
         result
     }
 

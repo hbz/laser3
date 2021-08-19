@@ -183,21 +183,6 @@
         </g:if>
     </g:if>
 
-    <g:if test="${prefix == WfTask.KEY}">
-
-        <div class="field">
-            <label for="${prefix}_prototype">${message(code:'default.prototype.label')}</label>
-            <p>
-                <g:if test="${task?.prototype}">
-                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + task.prototype.id]}">
-                        <i class="icon clone outline"></i> ${task.prototype.title}
-                    </g:link>
-                </g:if>
-            </p>
-        </div>
-
-    </g:if>
-
     <g:if test="${cmd == 'edit'}">
         <input type="hidden" name="cmd" value="${cmd}:${prefix}:${task.id}" />
     </g:if>
