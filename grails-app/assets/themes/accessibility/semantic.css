@@ -24175,30 +24175,31 @@ legend {
 
 /* Special Grid for Timeline */
 
-.ui.segment.la-dateAnnounceSegment {
+.ui.segment.la-timeLineSegment {
   background-color: #FFFFFF;
   border: none;
 }
 
-.la-dateAnnounceGrid {
-  border-left: 3px dashed #f6f6f6;
+.la-timeLineGrid {
+  border-left: 2px dashed #dcdcdc;
   margin: 0 10px;
 }
 
-.la-dateAnnounceGrid h2.ui.header {
+.la-timeLineGrid h2.ui.header {
   font-size: 1.1rem;
   padding-top: 3px;
 }
 
-.la-dateAnnounceGrid .one.wide.column {
+.la-timeLineGrid .one.wide.column {
   position: relative;
 }
 
-.la-dateAnnounceGrid .arrow.alternate.circle.right.outline.icon {
+.la-timeLineGrid .la-timeLineIcon {
   position: absolute;
   left: 1px;
   top: 0;
   z-index: 9;
+  background-color: #FFFFFF;
 }
 /*
  * # Semantic - Menu
@@ -30246,6 +30247,10 @@ a.ui.card:hover,
 
 .ui.card:last-child {
   margin-bottom: 1em;
+}
+
+.la-sidekick {
+  margin-top: 1rem;
 }
 
 .la-sidekick .hidden + .ui.card {

@@ -419,8 +419,8 @@
     <aside class="six wide column la-sidekick">
         <div class="ui one cards">
             <g:render template="/templates/aside1" model="${[ownobj: subscription, owntp: 'subscription']}"/>
-
-            <div class="ui card la-js-hideable hidden">
+            <div>
+                <div class="ui card ">
                 <div class="content">
                     <h2 class="ui header">Anbieter und Lieferanten</h2>
                     <g:render template="/templates/links/orgLinksAsList"
@@ -462,6 +462,7 @@
                     </div><!-- la-js-hide-this-card -->
 
                 </div>
+            </div>
             </div>
         </div>
     </aside><!-- .four -->

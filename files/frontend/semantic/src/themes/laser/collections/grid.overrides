@@ -11,12 +11,12 @@
 
 
 /* Special Grid for Timeline */
-.ui.segment.la-dateAnnounceSegment {
+.ui.segment.la-timeLineSegment {
   background-color:@white;
   border: none;
 }
-.la-dateAnnounceGrid {
-    border-left: 3px dashed #f6f6f6;
+.la-timeLineGrid {
+    border-left: 2px dashed #dcdcdc;
     margin: 0 10px;
   h2.ui.header{
     font-size: 1.1rem;
@@ -25,10 +25,11 @@
   .one.wide.column {
     position: relative;
   }
-  .arrow.alternate.circle.right.outline.icon {
+  .la-timeLineIcon {
     position: absolute;
     left: 1px;
     top: 0;
     z-index: 9;
+    background-color:@white;
   }
 }
