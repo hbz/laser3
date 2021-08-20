@@ -4,7 +4,6 @@
     <g:each in="${roleLinks}" var="role">
         <g:if test="${role.org}">
             <g:set var="cssId" value="prsLinksModal-${role.org.id}-${role.roleType.id}" />
-
             <tr>
                 <td>
                     <span class="la-flexbox la-minor-object">

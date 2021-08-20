@@ -419,7 +419,7 @@
     <aside class="six wide column la-sidekick">
         <div class="ui one cards">
             <g:render template="/templates/aside1" model="${[ownobj: subscription, owntp: 'subscription']}"/>
-            <div>
+            <div id="container-provider">
                 <div class="ui card ">
                 <div class="content">
                     <h2 class="ui header">Anbieter und Lieferanten</h2>
