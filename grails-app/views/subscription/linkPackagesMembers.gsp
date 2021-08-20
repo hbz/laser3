@@ -92,7 +92,7 @@
 
     </div>
 
-    <g:form action="processLinkPackagesMembers" method="post" class="ui form">
+    <g:form action="processLinkPackagesMembers" data-confirm-id="processLinkPackagesMembers_form" method="post" class="ui form">
         <g:hiddenField id="plpm_id_${params.id}" name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <div class="ui segment">
@@ -130,11 +130,13 @@
                         <button class="ui button negative js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage.confirm')}"
                                 data-confirm-term-how="ok" type="submit" name="processOption"
+                                data-confirm-id="processLinkPackagesMembers"
                                 value="unlinkwithoutIE">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.onlyPackage')}</button>
                         <div class="or" data-text="${message(code:'default.or')}"></div>
                         <button class="ui button negative js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE.confirm')}"
                                 data-confirm-term-how="ok" type="submit" name="processOption"
+                                data-confirm-id="processLinkPackagesMembers"
                                 value="unlinkwithIE">${message(code: 'subscription.linkPackagesMembers.unlinkInfo.withIE')}</button>
                     </div>
                 </div>

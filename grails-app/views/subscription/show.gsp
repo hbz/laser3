@@ -372,14 +372,6 @@
                         </div>
                     </div>
                 </g:if>
-                <g:if test="${subStats}">
-                    <div class="ui card la-dl-no-table">
-                        <div class="content">
-                            ${requestData}
-                            ${tokens}
-                        </div>
-                    </div>
-                </g:if>
 
                 <div id="new-dynamic-properties-block">
                     <g:render template="properties" model="${[ subscription: subscription ]}" />

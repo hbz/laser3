@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import de.laser.*
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractReport
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
@@ -16,6 +17,8 @@ import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import de.laser.reporting.local.SubscriptionReporting
 import de.laser.workflow.WfWorkflow
+import de.laser.stats.Counter4Report
+import de.laser.stats.Counter5Report
 import grails.doc.internal.StringEscapeCategory
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -318,6 +321,139 @@ class SubscriptionControllerService {
             result.todoHistoryLines = todoHistoryLines.drop(result.offset).take(result.max)
 
             [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String, Object> stats(GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        SwissKnife.setPaginationParams(result, params, result.user)
+        if(!result)
+            [result: null, status: STATUS_ERROR]
+        else {
+            Set<Platform> subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: result.subscription])
+            Set<Counter4Report> c4usages = []
+            Set<Counter5Report> c5usages = []
+            List count4check = [], c4sums = [], count5check = [], c5sums = [], monthsInRing = []
+            if(subscribedPlatforms) {
+                String sort, dateRange
+                Map<String, Object> queryParams = [customer: result.subscription.getSubscriber(), platforms: subscribedPlatforms]
+                if(params.sort) {
+                    String secondarySort
+                    switch(params.sort) {
+                        case 'reportType': secondarySort = ", title.name asc, r.reportFrom desc"
+                            break
+                        case 'title.name': secondarySort = ", r.reportType asc, r.reportFrom desc"
+                            break
+                        case 'reportFrom': secondarySort = ", title.name asc, r.reportType asc"
+                            break
+                        default: secondarySort = ", title.name asc, r.reportType asc, r.reportFrom desc"
+                            break
+                    }
+                    sort = "${params.sort} ${params.order} ${secondarySort}"
+                }
+                else {
+                    sort = "title.name asc, r.reportType asc, r.reportFrom desc"
+                }
+                Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance(), now = GregorianCalendar.getInstance()
+                if(result.subscription.startDate && result.subscription.endDate) {
+                    dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+                    if(params.reportMonth) {
+                        Calendar filterTime = GregorianCalendar.getInstance()
+                        Date filterDate = DateUtils.parseDateGeneric(params.reportMonth)
+                        filterTime.setTime(filterDate)
+                        queryParams.startDate = filterDate
+                        filterTime.set(Calendar.DATE,filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
+                        queryParams.endDate = filterTime.getTime()
+                    }
+                    else {
+                        queryParams.startDate = result.subscription.startDate
+                        queryParams.endDate = result.subscription.endDate
+                    }
+                    startTime.setTime(result.subscription.startDate)
+                    if(result.subscription.endDate < new Date())
+                        endTime.setTime(result.subscription.endDate)
+                }
+                else if(result.subscription.startDate) {
+                    dateRange = " and r.reportFrom >= :startDate "
+                    if(params.reportMonth) {
+                        dateRange += "and r.reportTo <= :endDate "
+                        Calendar filterTime = GregorianCalendar.getInstance()
+                        Date filterDate = DateUtils.parseDateGeneric(params.reportMonth)
+                        filterTime.setTime(filterDate)
+                        queryParams.startDate = filterDate
+                        filterTime.set(Calendar.MONTH,filterTime.getActualMaximum(Calendar.MONTH))
+                        queryParams.endDate = filterTime.getTime()
+                    }
+                    else
+                        queryParams.startDate = result.subscription.startDate
+                    startTime.setTime(result.subscription.startDate)
+                }
+                else {
+                    if(params.reportMonth) {
+                        dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+                        Calendar filterTime = GregorianCalendar.getInstance()
+                        Date filterDate = DateUtils.parseDateGeneric(params.reportMonth)
+                        filterTime.setTime(filterDate)
+                        queryParams.startDate = filterDate
+                        filterTime.set(Calendar.MONTH,filterTime.getActualMaximum(Calendar.MONTH))
+                        queryParams.endDate = filterTime.getTime()
+                    }
+                    else
+                        dateRange = ''
+                    startTime.set(2018, 1, 1)
+                }
+                while(startTime.before(endTime)) {
+                    monthsInRing << startTime.getTime()
+                    startTime.add(Calendar.MONTH, 1)
+                }
+                String filter = ""
+                if(params.series_names) {
+                    filter += " and title.seriesName in (:seriesName) "
+                    queryParams.seriesName = params.list("series_names")
+                }
+                if(params.subject_references) {
+                    filter += " and title.subjectReference in (:subjectReference) "
+                    queryParams.subjectReference = params.list("subject_references")
+                }
+                if(params.ddcs && params.list("ddcs").size() > 0) {
+                    filter += " and exists (select ddc.id from title.ddcs ddc where ddc.ddc.id in (:ddcs)) "
+                    queryParams.ddcs = []
+                    params.list("ddcs").each { String ddc ->
+                        queryParams.ddcs << Long.parseLong(ddc)
+                    }
+                }
+                if(params.languages && params.list("languages").size() > 0) {
+                    filter += " and exists (select lang.id from title.languages lang where lang.language.id in (:languages)) "
+                    queryParams.languages = []
+                    params.list("languages").each { String lang ->
+                        queryParams.languages << Long.parseLong(lang)
+                    }
+                }
+                c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
+                c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter4Report r join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.reportType, r.metricType order by r.reportFrom asc, r.reportType asc', queryParams))
+                count4check.addAll(Counter4Report.executeQuery('select count(r.id) from Counter4Report r join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange, queryParams))
+                c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter4Report r join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.reportType, r.metricType order by r.reportFrom asc, r.reportType asc', queryParams))
+                c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
+                count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange, queryParams))
+            }
+            result.c4usages = c4usages
+            result.c4total = count4check.size() > 0 ? count4check[0] as int : 0
+            result.c5usages = c5usages
+            result.c5total = count5check.size() > 0 ? count5check[0] as int : 0
+            result.monthsInRing = monthsInRing
+            if(!params.tab)
+                params.tab = 'counter4'
+            switch(params.tab) {
+                case 'counter4': result.total = result.c4total
+                    result.sums = c4sums
+                    result.usages = result.c4usages
+                    break
+                case 'counter5': result.total = result.c5total
+                    result.sums = c5sums
+                    result.usages = result.c5usages
+                    break
+            }
+            [result: result, status: STATUS_OK]
         }
     }
 
@@ -793,6 +929,14 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
+            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+            threadArray.each {
+                if (it.name == 'linkPackageMembers_'+result.subscription.id) {
+                    result.message = messageSource.getMessage('subscription.details.linkPackagesMembers.thread.running',null,LocaleContextHolder.getLocale())
+                    result.isLinkingRunning = true
+                }
+            }
             result.validPackages = result.subscription.packages
             result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
             result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubChildren) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution,deleted:RDStore.COST_ITEM_DELETED,filteredSubChildren:result.filteredSubChilds.collect { row -> row.sub }])
@@ -811,28 +955,32 @@ class SubscriptionControllerService {
                 List selectedMembers = params.list("selectedMembers")
                 if(selectedMembers && params.package_All){
                     Package pkg_to_link = SubscriptionPackage.get(params.package_All).pkg
-                    selectedMembers.each { id ->
-                        Subscription subChild = Subscription.get(Long.parseLong(id))
-                        if (params.processOption == 'linkwithIE' || params.processOption == 'linkwithoutIE') {
-                            if (!(pkg_to_link in subChild.packages.pkg)) {
-                                if (params.processOption == 'linkwithIE') {
-                                    subscriptionService.addToSubscriptionCurrentStock(subChild, result.subscription, pkg_to_link)
-
-                                } else {
-                                    subscriptionService.addToSubscription(subChild, pkg_to_link, false)
+                    executorService.execute({
+                        IssueEntitlement.withNewTransaction { TransactionStatus ts ->
+                            Thread.currentThread().setName("linkPackageMembers_${result.subscription.id}")
+                            selectedMembers.each { id ->
+                                Subscription subChild = Subscription.get(Long.parseLong(id))
+                                if (params.processOption == 'linkwithIE' || params.processOption == 'linkwithoutIE') {
+                                    if (!(pkg_to_link in subChild.packages.pkg)) {
+                                        if (params.processOption == 'linkwithIE') {
+                                            subscriptionService.addToSubscriptionCurrentStock(subChild, result.subscription, pkg_to_link)
+                                        } else {
+                                            subscriptionService.addToSubscription(subChild, pkg_to_link, false)
+                                        }
+                                    }
+                                }
+                                if (params.processOption == 'unlinkwithIE' || params.processOption == 'unlinkwithoutIE') {
+                                    if (pkg_to_link in subChild.packages.pkg) {
+                                        if (params.processOption == 'unlinkwithIE') {
+                                            pkg_to_link.unlinkFromSubscription(subChild, result.institution, true)
+                                        } else {
+                                            pkg_to_link.unlinkFromSubscription(subChild, result.institution, false)
+                                        }
+                                    }
                                 }
                             }
                         }
-                        if (params.processOption == 'unlinkwithIE' || params.processOption == 'unlinkwithoutIE') {
-                            if (pkg_to_link in subChild.packages.pkg) {
-                                if (params.processOption == 'unlinkwithIE') {
-                                    pkg_to_link.unlinkFromSubscription(subChild, result.institution, true)
-                                } else {
-                                    pkg_to_link.unlinkFromSubscription(subChild, result.institution, false)
-                                }
-                            }
-                        }
-                    }
+                    })
                     [result:result,status:STATUS_OK]
                 }
                 else {

@@ -16,8 +16,8 @@ abstract class AbstractCounterApiSource {
 
     static AbstractCounterApiSource construct(Map<String, Object> configMap) throws CreationException {
         AbstractCounterApiSource result
-        Org provider = Org.get(configMap.provider)
-        Platform platform = Platform.get(configMap.platform)
+        Org provider = configMap.provider as Org
+        Platform platform = configMap.platform as Platform
         switch(configMap.version) {
             case "counter4": result = Counter4ApiSource.findByProviderAndPlatform(provider, platform) //TODO further differentiators, check documentation!
                 if(!result)

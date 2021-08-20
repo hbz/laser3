@@ -5,6 +5,7 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.auth.UserRole
+import de.laser.base.AbstractCounterApiSource
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.helper.*
@@ -13,6 +14,8 @@ import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
+import de.laser.stats.Counter4ApiSource
+import de.laser.stats.Counter5ApiSource
 import de.laser.system.SystemActivityProfiler
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemSetting
@@ -48,6 +51,7 @@ class YodaController {
     StatusUpdateService statusUpdateService
     SystemService systemService
     FinanceService financeService
+    FormService formService
     def quartzScheduler
     def identifierService
     def deletionService
@@ -539,8 +543,11 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def fillStatsSources() {
-        List<Map<String, Object>> testSources = []
+    Map<String, Object> manageStatsSources() {
+        Map<String, Object> result = [c4sources: Counter4ApiSource.findAll(),
+                                      c5sources: Counter5ApiSource.findAll(),
+                                      platforms: Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')]
+        /*List<Map<String, Object>> testSources = []
         //Bloomsbury
         //https://api-fivestar.highwire.org/sushi/reports/tr?customer_id=1000000001&begin_date=2018-10&end_date=2018-11&attributes_to_show=YOP&api_key=xxxxx-xxxxx-xxxxx&platform=SiteA
         testSources << [version: "counter5",
@@ -554,11 +561,37 @@ class YodaController {
                         provider: 1051,
                         platform: 127,
                         baseUrl: "https://content-select.com/stats/soap/"
-        ]
-        testSources.each { Map<String, Object> src ->
-            statsSyncService.createOrUpdateSushiSource(src)
+        ]*/
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def newStatsSource() {
+        Map<String, Object> newSource = [:], arguments = [:]
+        Platform plat = Platform.get(params.platform)
+        newSource.platform = plat
+        newSource.provider = plat.org
+        newSource.version = params.version
+        newSource.baseUrl = params.baseUrl
+        params.list("arg[]")?.eachWithIndex { String arg, int i ->
+            arguments[arg] = [value: params.list("val[]")[i]]
         }
-        redirect(controller:'home')
+        if(arguments)
+            newSource.arguments = arguments
+        statsSyncService.createSushiSource(newSource)
+        redirect(action: 'manageStatsSources')
+    }
+
+    @Secured(['ROLE_YODA'])
+    def editStatsSource() {
+        statsSyncService.updateStatsSource(params)
+        redirect(action: 'manageStatsSources')
+    }
+
+    @Secured(['ROLE_YODA'])
+    def deleteStatsSource() {
+        statsSyncService.deleteStatsSource(params)
+        redirect(action: 'manageStatsSources')
     }
 
     @Secured(['ROLE_YODA'])
@@ -570,9 +603,14 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def fetchStats() {
-        log.debug("fetchStats()")
-        statsSyncService.doFetch()
-        redirect(controller:'home')
+        if(formService.validateToken(params) && !StatsSyncService.running) {
+            log.debug("fetchStats()")
+            statsSyncService.doFetch(params.incremental == "true")
+        }
+        else if(StatsSyncService.running)
+            log.info("sync is already running, not starting again ...")
+        else log.info("form token expired, doing nothing ...")
+        redirect(controller: 'yoda', action: 'appThreads')
     }
 
     @Secured(['ROLE_YODA'])
