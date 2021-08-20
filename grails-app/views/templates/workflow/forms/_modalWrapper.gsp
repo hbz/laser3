@@ -5,22 +5,21 @@
 </g:if>
 <g:elseif test="${tmplCmd == 'create'}">
     <semui:modal id="wfModal" text="${tmplModalTitle}">
-        <g:if test="${tmplTab}">
-            <g:render template="${tmpl}" model="${[tmplIsModal: true, cmd: "${tmplCmd}", tab: "${tmplTab}"]}"/>
-        </g:if>
-        <g:else>
-            <g:render template="${tmpl}" model="${[tmplIsModal: true, cmd: "${tmplCmd}"]}"/>
-        </g:else>
+        <%
+            Map model1 = [formUrl: "${tmplFormUrl}", cmd: "${tmplCmd}"]
+            if (tmplTab) { model1.tab = tmplTab }
+        %>
+        <g:render template="${tmpl}" model="${model1}"/>
     </semui:modal>
 </g:elseif>
 <g:else>
     <semui:modal id="wfModal" text="${tmplModalTitle}" isEditModal="true">
-        <g:if test="${tmplTab}">
-            <g:render template="${tmpl}" model="${[tmplIsModal: true, cmd: "${tmplCmd}", tab: "${tmplTab}"]}"/>
-        </g:if>
-        <g:else>
-            <g:render template="${tmpl}" model="${[tmplIsModal: true, cmd: "${tmplCmd}"]}"/>
-        </g:else>
+        <%
+            Map model2 = [formUrl: "${tmplFormUrl}", cmd: "${tmplCmd}"]
+            if (tmplTab) { model2.tab = tmplTab }
+            if (tmplInfo) { model2.info = tmplInfo }
+        %>
+        <g:render template="${tmpl}" model="${model2}"/>
     </semui:modal>
 </g:else>
 

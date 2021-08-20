@@ -26,8 +26,6 @@ import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
-import de.laser.workflow.WfCondition
-import de.laser.workflow.WfTask
 import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WfWorkflowPrototype
 import grails.converters.JSON
@@ -2243,7 +2241,7 @@ join sub.orgRelations or_sub where
         Map<String, Object> result = [:]
 
         if (params.cmd) {
-            result.putAll( workflowService.handleUsage(params) )
+            result.putAll( workflowService.usage(params) )
         }
 
         String query = 'select wf from WfWorkflow wf where wf.owner = :ctxOrg'

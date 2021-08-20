@@ -1,7 +1,6 @@
 <%@ page import="de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*;" %>
 
-<g:form controller="admin" action="manageWorkflows" method="POST" class="ui form">
-    <g:if test="${! tmplIsModal}"><div class="ui segment"></g:if>
+<g:form url="${formUrl}" method="POST" class="ui form">
 
     <div class="field required">
         <label for="${prefix}_title">${message(code:'default.title.label')}</label>
@@ -192,12 +191,8 @@
     <g:if test="${tab}">
         <input type="hidden" name="tab" value="${tab}" />
     </g:if>
-
-    <g:if test="${! tmplIsModal}">
-            <div class="field">
-                <button type="submit" class="ui button"><% if (prefix == WfTaskPrototype.KEY) { print 'Prototyp anlegen' } else { print 'Anlegen' } %></button>
-            </div>
-        </div>
+    <g:if test="${info}">
+        <input type="hidden" name="info" value="${info}" />
     </g:if>
 
 </g:form>
