@@ -8,10 +8,10 @@
                 <td>
                     <span class="la-flexbox la-minor-object">
                         <g:if test="${role.roleType.value=="Provider"}">
-                            <i class="handshake outline icon"></i>
+                            <i class="la-popup-tooltip la-delay handshake outline icon" data-content="${message(code:'default.provider.label')}"></i>
                         </g:if>
                         <g:elseif test="${role.roleType.value =="Agency"}">
-                            <i class="shipping fast icon"></i>
+                            <i class="la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'default.agency.label')}"></i>
                         </g:elseif>
                         <g:link controller="organisation" action="show" id="${role.org.id}">${role.org.name}</g:link>
                     </span>
