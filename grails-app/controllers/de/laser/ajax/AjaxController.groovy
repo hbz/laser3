@@ -38,6 +38,7 @@ class AjaxController {
     def formService
     def dashboardDueDatesService
     IdentifierService identifierService
+    FilterService filterService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -435,27 +436,73 @@ class AjaxController {
   @Secured(['ROLE_USER'])
   def updateChecked() {
       Map success = [success:false]
-      EhcacheWrapper cache = contextService.getCache("/subscription/${params.referer}/${params.sub}", contextService.USER_SCOPE)
+      SessionCacheWrapper sessionCache = contextService.getSessionCache()
+      Map<String,Object> cache = sessionCache.get("/subscription/${params.referer}/${params.sub}")
+
+      if(!cache) {
+          sessionCache.put("/subscription/${params.referer}/${params.sub}",["checked":[:]])
+          cache = sessionCache.get("/subscription/${params.referer}/${params.sub}")
+      }
+
       Map checked = cache.get('checked')
+
       if(params.index == 'all') {
 		  Map<String, String> newChecked = checked ?: [:]
-          Set<Long> pkgFilter = []
-          if(params.pkgFilter)
-              pkgFilter << params.long('pkgFilter')
-          else pkgFilter.addAll(SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp where sp.subscription.id = :sub',[sub:params.long("sub")]))
-          Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg.id in (:pkgFilter) and not exists (select ie.id from IssueEntitlement ie join ie.tipp tipp2 where ie.subscription.id = :sub and tipp.id = tipp2.id and ie.status = tipp2.status)',[pkgFilter: pkgFilter, sub: params.long("sub")])
-		  tippUUIDs.each { String e ->
-			  newChecked[e] = params.checked == 'true' ? 'checked' : null
-		  }
+          if(params.referer == 'renewEntitlementsWithSurvey'){
+
+              Subscription baseSub = Subscription.get(params.baseSubID)
+              Subscription newSub = Subscription.get(params.newSubID)
+
+              List<Long> sourceTipps
+
+              Map query = filterService.getIssueEntitlementQuery(params, baseSub)
+              List<Long> allIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams)
+
+              Map query2 = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
+              List<Long> selectedIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query2.query, query2.queryParams)
+
+              Map query3 = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], newSub)
+              List<Long> targetIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query3.query, query3.queryParams)
+
+              List<IssueEntitlement> sourceIEs
+              if(params.tab == 'allIEs') {
+                  sourceTipps = allIETipps
+                  sourceTipps = sourceTipps.minus(selectedIETipps)
+                  sourceTipps = sourceTipps.minus(targetIETipps)
+                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatus(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), baseSub, RDStore.TIPP_STATUS_CURRENT) : []
+              }
+              if(params.tab == 'selectedIEs') {
+                  sourceTipps = selectedIETipps
+                  sourceTipps = sourceTipps.minus(targetIETipps)
+                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), newSub, RDStore.TIPP_STATUS_DELETED) : []
+              }
+
+              sourceIEs.each { IssueEntitlement ie ->
+                  newChecked[ie.id.toString()] = params.checked == 'true' ? 'checked' : null
+              }
+
+          }else {
+              Set<Long> pkgFilter = []
+              if (params.pkgFilter)
+                  pkgFilter << params.long('pkgFilter')
+              else pkgFilter.addAll(SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp where sp.subscription.id = :sub', [sub: params.long("sub")]))
+              Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg.id in (:pkgFilter) and not exists (select ie.id from IssueEntitlement ie join ie.tipp tipp2 where ie.subscription.id = :sub and tipp.id = tipp2.id and ie.status = tipp2.status)', [pkgFilter: pkgFilter, sub: params.long("sub")])
+              tippUUIDs.each { String e ->
+                  newChecked[e] = params.checked == 'true' ? 'checked' : null
+              }
+          }
           cache.put('checked',newChecked)
+          success.checkedCount = params.checked == 'true' ? newChecked.size() : 0
 	  }
 	  else {
           Map<String, String> newChecked = checked ?: [:]
 		  newChecked[params.index] = params.checked == 'true' ? 'checked' : null
-		  if(cache.put('checked',newChecked))
-			  success.success = true
-	  }
+		  if(cache.put('checked',newChecked)){
+              success.success = true
+          }
+          success.checkedCount = newChecked.findAll {it.value == 'checked'}.size()
 
+	  }
       render success as JSON
   }
 
