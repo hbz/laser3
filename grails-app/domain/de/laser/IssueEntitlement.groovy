@@ -7,6 +7,8 @@ import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 
 import javax.persistence.Transient
 import java.text.Normalizer
@@ -40,6 +42,8 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     Date dateCreated
     Date lastUpdated
+
+    static Log static_logger = LogFactory.getLog(IssueEntitlement)
 
     static belongsTo = [subscription: Subscription, tipp: TitleInstancePackagePlatform]
 
@@ -107,7 +111,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
   static IssueEntitlement construct(Map<String,Object> configMap) throws EntitlementCreationException {
     if(configMap.subscription instanceof Subscription && configMap.tipp instanceof TitleInstancePackagePlatform) {
-        log.debug("creating new issue entitlement for ${configMap.tipp} and ${configMap.subscription}")
+        static_logger.debug("creating new issue entitlement for ${configMap.tipp} and ${configMap.subscription}")
       Subscription subscription = (Subscription) configMap.subscription
       TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
       IssueEntitlement ie = findBySubscriptionAndTipp(subscription,tipp)
