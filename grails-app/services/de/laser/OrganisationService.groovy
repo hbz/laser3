@@ -9,6 +9,7 @@ import de.laser.helper.RDStore
 import de.laser.helper.ServerUtils
 import de.laser.properties.PropertyDefinition
 import grails.gorm.transactions.Transactional
+import org.apache.commons.lang.RandomStringUtils
 import org.springframework.context.i18n.LocaleContextHolder
 
 @Transactional
@@ -36,6 +37,9 @@ class OrganisationService {
         }
         if (OrgSetting.get(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS) == OrgSetting.SETTING_NOT_FOUND) {
             OrgSetting.add(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS, RDStore.YN_NO)
+        }
+        if (OrgSetting.get(org, OrgSetting.KEYS.LASERSTAT_SERVER_KEY) == OrgSetting.SETTING_NOT_FOUND) {
+            OrgSetting.add(org, OrgSetting.KEYS.LASERSTAT_SERVER_KEY, RandomStringUtils.randomAlphanumeric(24))
         }
 
         // called after

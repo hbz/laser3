@@ -172,7 +172,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
         if (! ident) {
             Identifier identifierInDB = Identifier.findByNsAndValue(ns, value)
-			if (ns.isUnique && identifierInDB) {
+			if (ns.isUnique && identifierInDB && value != "Unknown") {
                 static_logger.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
                 factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ
 //                factoryResult.result = identifierInDB
