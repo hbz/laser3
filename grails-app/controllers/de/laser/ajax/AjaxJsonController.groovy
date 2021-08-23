@@ -465,6 +465,11 @@ class AjaxJsonController {
     }
 
     @Secured(['ROLE_USER'])
+    def lookupOrgs() {
+        render controlledListService.getOrgs(params) as JSON
+    }
+
+    @Secured(['ROLE_USER'])
     def lookupProviderAndPlatforms() {
         List result = []
 

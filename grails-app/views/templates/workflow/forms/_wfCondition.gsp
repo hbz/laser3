@@ -1,7 +1,6 @@
 <%@ page import="de.laser.helper.WorkflowHelper; de.laser.helper.DateUtils; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
 
-<g:form controller="admin" action="manageWorkflows" method="POST" class="ui form">
-    <g:if test="${! tmplIsModal}"><div class="ui segment"></g:if>
+<g:form url="${formUrl}" method="POST" class="ui form">
 
     <div class="field required">
         <label for="${prefix}_title">${message(code:'default.title.label')}</label>
@@ -44,7 +43,7 @@
     <g:if test="${condition?.getFields()}">
 
             <div class="ui top attached header" style="background-color: #f9fafb;">
-                Typabhängige Datenfelder
+                Typabhängige Datenfelder - Definition / Vorschau
             </div>
             <div class="ui attached segment">
                 <g:each in="${condition.getFields()}" var="field">
@@ -196,17 +195,6 @@
 
         </div>
         --}%
-        <div class="field">
-            <label for="${prefix}_prototype">${message(code:'default.prototype.label')}</label>
-            <p>
-                <g:if test="${condition?.prototype}">
-                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + condition.prototype.id]}">
-                        <i class="icon clone outline"></i> ${condition.prototype.title}
-                    </g:link>
-                </g:if>
-            </p>
-        </div>
-
     </g:if>
 
     <g:if test="${cmd == 'edit'}">
@@ -218,12 +206,8 @@
     <g:if test="${tab}">
         <input type="hidden" name="tab" value="${tab}" />
     </g:if>
-
-    <g:if test="${! tmplIsModal}">
-            <div class="field">
-                <button type="submit" class="ui button"><% if (prefix == WfConditionPrototype.KEY) { print 'Prototyp anlegen' } else { print 'Anlegen' } %></button>
-            </div>
-        </div>
+    <g:if test="${info}">
+        <input type="hidden" name="info" value="${info}" />
     </g:if>
 
 </g:form>

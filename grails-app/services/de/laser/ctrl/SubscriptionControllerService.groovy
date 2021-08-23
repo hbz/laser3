@@ -16,10 +16,9 @@ import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import de.laser.reporting.local.SubscriptionReporting
-import de.laser.workflow.WfWorkflow
+import grails.doc.internal.StringEscapeCategory
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
-import grails.doc.internal.StringEscapeCategory
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -27,14 +26,11 @@ import groovy.time.TimeCategory
 import org.apache.commons.lang3.RandomStringUtils
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.hibernate.Session
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.MultipartFile
 
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorService
@@ -2866,20 +2862,19 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> workflows(GrailsParameterMap params) {
-        Map<String, Object> result = [
-                subscription:   Subscription.get(params.id),
-                contextOrg:     contextService.getOrg(),
-                user:           contextService.getUser()
-        ]
+        Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
 
-        result.contextCustomerType = result.contextOrg.getCustomerType()
-        result.editable = result.subscription.isEditableBy(result.user)
-
+        if (params.cmd) {
+            String[] cmd = params.cmd.split(':')
+            if (cmd[0] == 'usage') {
+                result.putAll( workflowService.usage(params) ) // @ workflows
+            }
+            else {
+                result.putAll( workflowService.cmd(params) ) // @ workflows
+            }
+        }
         if (params.info) {
             result.info = params.info // @ currentWorkflows @ dashboard
-        }
-        if (params.cmd) {
-            result.putAll( workflowService.handleUsage(params) )
         }
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]

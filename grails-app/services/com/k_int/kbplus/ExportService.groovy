@@ -681,7 +681,7 @@ class ExportService {
 					cell.setCellValue(ci?.subPkg ? ci.subPkg.pkg.name:'')
 					//issue entitlement
 					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.issueEntitlement ? ci.issueEntitlement.tipp.name:'')
+					cell.setCellValue(ci?.issueEntitlement ? ci.issueEntitlement.name:'')
 					//date paid
 					cell = row.createCell(cellnum++)
 					cell.setCellValue(paid_date ?: '')

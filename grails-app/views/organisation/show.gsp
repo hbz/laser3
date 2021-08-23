@@ -245,6 +245,74 @@
                 </div><!-- .card -->
             </g:if>
 
+            <div class="ui card">
+                <div class="content">
+                    <h2 class="ui header"><g:message code="org.retirementLinking.label"/></h2>
+                    <g:if test="${links}">
+                        <table class="ui three column table">
+                            <g:each in="${links}" var="row">
+                                <%
+                                    String[] linkTypes = RDStore.COMBO_TYPE_FOLLOWS.getI10n('value').split('\\|')
+                                    int perspectiveIndex
+                                    Org pair
+                                    if(orgInstance == row.fromOrg) {
+                                        perspectiveIndex = 0
+                                        pair = row.toOrg
+                                    }
+                                    else if(orgInstance == row.toOrg) {
+                                        perspectiveIndex = 1
+                                        pair = row.fromOrg
+                                    }
+                                %>
+                                <g:if test="${pair != null}">
+                                    <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
+                                    <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
+                                    <td class="right aligned">
+                                        <%--<g:render template="/templates/links/subLinksModal"
+                                                  model="${[tmplText:message(code:'org.details.editLink'),
+                                                            tmplIcon:'write',
+                                                            tmplCss: 'icon la-selectable-button la-popup-tooltip la-delay',
+                                                            tmplID:'editLink',
+                                                            tmplModalID:"org_edit_link_${row.id}",
+                                                            editmode: editable,
+                                                            context: orgInstance,
+                                                            linkInstanceType: row.class.name,
+                                                            link: row
+                                                  ]}" />--%>
+                                        <g:if test="${editable}">
+                                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
+                                                <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
+                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
+                                                        data-confirm-term-how="unlink"
+                                                        action="unlinkOrg" params="[id: orgInstance.id, combo: row.id]"
+                                                        role="button"
+                                                        aria-label="${message(code: 'ariaLabel.unlink.universal')}">
+                                                    <i class="unlink icon"></i>
+                                                </g:link>
+                                            </span>
+                                        </g:if>
+                                    </td>
+                                </g:if>
+                            </g:each>
+                        </table>
+                    </g:if>
+                    <div class="ui la-vertical buttons">
+                        <%
+                            Map<String,Object> model = [tmplText:message(code: 'org.linking.addLink'),
+                                                        tmplID:'addLink',
+                                                        tmplButtonText:message(code: 'org.linking.addLink'),
+                                                        tmplModalID:'org_add_link',
+                                                        editmode: editable,
+                                                        linkInstanceType: Combo.class.name,
+                                                        context: orgInstance
+                            ]
+                        %>
+                        <g:render template="/templates/links/subLinksModal"
+                                  model="${model}" />
+                    </div>
+                </div>
+            </div>
+
             <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                 <div class="ui card">
                     <div class="content">

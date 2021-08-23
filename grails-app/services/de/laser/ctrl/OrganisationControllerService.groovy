@@ -23,6 +23,33 @@ class OrganisationControllerService {
     MessageSource messageSource
     GenericOIDService genericOIDService
     GokbService gokbService
+    LinksGenerationService linksGenerationService
+
+    //---------------------------------------- linking section -------------------------------------------------
+
+    boolean linkOrgs(GrailsParameterMap params) {
+        log.debug(params.toMapString())
+        Combo c
+        if(params.linkType_new) {
+            c = new Combo()
+            int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
+            c.type = RDStore.COMBO_TYPE_FOLLOWS
+            if(perspectiveIndex == 0) {
+                c.fromOrg = Org.get(params.context)
+                c.toOrg = Org.get(params.pair_new)
+            }
+            else if(perspectiveIndex == 1) {
+                c.fromOrg = Org.get(params.pair_new)
+                c.toOrg = Org.get(params.context)
+            }
+        }
+        c.save()
+    }
+
+    boolean unlinkOrg(GrailsParameterMap params) {
+        int del = Combo.executeUpdate('delete from Combo c where c.id = :id',[id: params.long("combo")])
+        return del > 0
+    }
 
     //--------------------------------------------- member section -------------------------------------------------
 
@@ -68,7 +95,7 @@ class OrganisationControllerService {
         switch(params.direction) {
             case 'add':
                 Map map = [toOrg: result.institution, fromOrg: Org.get(params.fromOrg), type: RDStore.COMBO_TYPE_CONSORTIUM]
-                if (! Combo.findWhere(map)) {
+                if (! Combo.findByToOrgAndFromOrgAndType(result.institution, Org.get(params.fromOrg), RDStore.COMBO_TYPE_CONSORTIUM)) {
                     Combo cmb = new Combo(map)
                     cmb.save()
                 }
@@ -83,9 +110,9 @@ class OrganisationControllerService {
                     return [result:result, status:STATUS_ERROR]
                 }
                 else {
-                    Combo cmb = Combo.findWhere(toOrg: result.institution,
-                            fromOrg: Org.get(params.fromOrg),
-                            type:RDStore.COMBO_TYPE_CONSORTIUM)
+                    Combo cmb = Combo.findByFromOrgAndToOrgAndType(result.institution,
+                            Org.get(params.fromOrg),
+                            RDStore.COMBO_TYPE_CONSORTIUM)
                     cmb.delete()
                 }
                 break
@@ -176,6 +203,7 @@ class OrganisationControllerService {
             result.orgInstance = result.institution
             result.inContextOrg = true
         }
+        result.links = linksGenerationService.getOrgLinks(result.orgInstance)
         result.targetCustomerType = result.orgInstance.getCustomerType()
         result.allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
         result.isProviderOrAgency = (RDStore.OT_PROVIDER.id in result.allOrgTypeIds) || (RDStore.OT_AGENCY.id in result.allOrgTypeIds)
