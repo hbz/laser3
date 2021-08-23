@@ -258,7 +258,8 @@ class StatsSyncService {
                                             //log.debug(identifiers.toListString())
                                             int[] resultCount = sql.withBatch( "insert into counter4report (c4r_version, c4r_title_fk, c4r_publisher, c4r_platform_fk, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
                                                     "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount)") { stmt ->
-                                                titles.each { row ->
+                                                titles.eachWithIndex { row, int t ->
+                                                    int ctr = 0
                                                     String identifier = row.identifier as String
                                                     TitleInstancePackagePlatform title = row.title as TitleInstancePackagePlatform
                                                     GPathResult reportItem = reportItems.findAll { reportItem -> identifier == reportItem.'ns2:ItemIdentifier'.'ns2:Value'.text() }
@@ -267,6 +268,7 @@ class StatsSyncService {
                                                         performance.'ns2:Instance'.each { instance ->
                                                             //findAll seems to be less performant than loop processing
                                                             if (instance.'ns2:MetricType'.text() == "ft_total") {
+                                                                log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t}")
                                                                 String category = performance.'ns2:Category'.text()
                                                                 String metricType = instance.'ns2:MetricType'.text()
                                                                 String publisher = reportItem.'ns2:ItemPublisher'.text()
@@ -298,12 +300,13 @@ class StatsSyncService {
                                                                     log.error(e.message)
                                                                 }
                                                                 */
+                                                                ctr++
                                                             }
                                                         }
                                                     }
                                                 }
                                             }
-                                            log.debug("success: ${resultCount.length}")
+                                            log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
                                         }
                                     }
                                     /*
@@ -334,7 +337,6 @@ class StatsSyncService {
                 }
             }
         }
-        sql.close()
         c5SushiSources.each { Counter5ApiSource c5as ->
             //grasp all customer numbers with requestor keys
             List<CustomerIdentifier> keyPairs = CustomerIdentifier.findAllByPlatform(c5as.platform)
