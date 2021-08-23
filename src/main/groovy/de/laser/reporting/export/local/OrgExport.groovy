@@ -7,6 +7,8 @@ import de.laser.oap.*
 import de.laser.reporting.export.base.BaseExport
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -89,6 +91,7 @@ class OrgExport extends BaseExport {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
 
         Org org = obj as Org
         List<String> content = []
@@ -176,29 +179,64 @@ class OrgExport extends BaseExport {
                 }
                 else if (key == '@ae-org-contact') {
 
-                    List personList = []
-                    List<RefdataValue> funcTypes = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT]
+                    List coList = []
 
-                    funcTypes.each{ ft ->
-                        List<Person> persons = org.getContactPersonsByFunctionType(true, ft)
-                        persons.each {p ->
-                            String p1 = [
-                                    ft.getI10n('value') + ':',
-                                    p.title,
-                                    p.first_name,
-                                    p.middle_name,
-                                    p.last_name
-                            ].findAll().join(' ')
+                    if (RDStore.REPORTING_CONTACT_TYPE_CONTACTS.id in f.value) {
+                        List<RefdataValue> functionTypes = Person.executeQuery(
+                                "select distinct pr.functionType from Person p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org", [org: org]
+                        )
+                        List personList = []
+                        // List<RefdataValue> funcTypes = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT]
 
-                            String p2 = p.contacts.toSorted().collect{
-                                it.contentType.getI10n('value')  + ': ' + it.content
-                            }.join(', ')
+                        functionTypes.each{ ft ->
+                            List<Person> persons = org.getContactPersonsByFunctionType(true, ft)
+                            persons.each {p ->
+                                String p1 = [
+                                        ft.getI10n('value') + ':',
+                                        p.title,
+                                        p.first_name,
+                                        p.middle_name,
+                                        p.last_name
+                                ].findAll().join(' ')
 
-                            personList.add( p1 + (p2 ? ', ' + p2 : ''))
+                                String p2 = p.contacts.toSorted().collect{
+                                    it.contentType.getI10n('value')  + ': ' + it.content
+                                }.join(', ')
+
+                                personList.add( p1 + (p2 ? ', ' + p2 : ''))
+                            }
                         }
+                        coList.addAll( personList )
+                    }
+                    if (RDStore.REPORTING_CONTACT_TYPE_ADDRESSES.id in f.value) {
+                        String sql = "select distinct type from Address addr join addr.type type join addr.org org where org = :org order by type.value_" + I10nTranslation.decodeLocale( LocaleContextHolder.getLocale() )
+                        List<RefdataValue> addressTypes = Address.executeQuery( sql, [org: org] )
+                        List addressList = []
+
+                        String pob = messageSource.getMessage('address.pob.label',null, LocaleContextHolder.getLocale())
+
+                        addressTypes.each { at ->
+                            List<Address> addresses = Address.executeQuery(
+                                    "select distinct addr from Address addr join addr.org org join addr.type addrType where org = :org and addrType = :at", [org: org, at: at]
+                            )
+                            addresses.each{ addr ->
+                                String a1 = [
+                                        addr.name,
+                                        [addr.street_1, addr.street_2].findAll().join(' '),
+                                        [addr.zipcode, addr.city].findAll().join(' '),
+                                        addr.country ? addr.country.getI10n('value') + (addr.region ? ' (' + addr.region.getI10n('value') + ')' : '') : addr.region?.getI10n('value'),
+                                        [addr.pob ? (pob + ' ' + addr.pob + ' -') : null, addr.pobZipcode, addr.pobCity].findAll().join(' ')
+                                ].findAll().join(', ')
+
+                                String a2 = addr.type.collect{ it.getI10n('value') }.join(', ') + ': ' + a1
+                                println a2
+                                addressList.add( a2 )
+                            }
+                        }
+                        coList.addAll( addressList )
                     }
 
-                    content.add( personList.join( CSV_VALUE_SEPARATOR ) )
+                    content.add( coList.join( CSV_VALUE_SEPARATOR ) )
                 }
                 else if (key == '@ae-org-readerNumber') {
 

@@ -121,6 +121,7 @@ regions.ch,Kantone der Schweiz,Cantons of Switzerland
 reminder.method,ReminderMethod,ReminderMethod
 reminder.trigger,ReminderTrigger,ReminderTrigger
 reminder.unit,ReminderUnit,ReminderUnit
+reporting.contact.type,Art des Kontaktes,Contact Type
 semester,Semester,Semester
 share.configuration,Share Configuration,Share Configuration
 sim.user.number,Sim User Zahl,Sim-User Number
