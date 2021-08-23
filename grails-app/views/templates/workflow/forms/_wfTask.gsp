@@ -1,7 +1,6 @@
 <%@ page import="de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*;" %>
 
-<g:form controller="admin" action="manageWorkflows" method="POST" class="ui form">
-    <g:if test="${! tmplIsModal}"><div class="ui segment"></g:if>
+<g:form url="${formUrl}" method="POST" class="ui form">
 
     <div class="field required">
         <label for="${prefix}_title">${message(code:'default.title.label')}</label>
@@ -183,21 +182,6 @@
         </g:if>
     </g:if>
 
-    <g:if test="${prefix == WfTask.KEY}">
-
-        <div class="field">
-            <label for="${prefix}_prototype">${message(code:'default.prototype.label')}</label>
-            <p>
-                <g:if test="${task?.prototype}">
-                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + task.prototype.id]}">
-                        <i class="icon clone outline"></i> ${task.prototype.title}
-                    </g:link>
-                </g:if>
-            </p>
-        </div>
-
-    </g:if>
-
     <g:if test="${cmd == 'edit'}">
         <input type="hidden" name="cmd" value="${cmd}:${prefix}:${task.id}" />
     </g:if>
@@ -207,12 +191,8 @@
     <g:if test="${tab}">
         <input type="hidden" name="tab" value="${tab}" />
     </g:if>
-
-    <g:if test="${! tmplIsModal}">
-            <div class="field">
-                <button type="submit" class="ui button"><% if (prefix == WfTaskPrototype.KEY) { print 'Prototyp anlegen' } else { print 'Anlegen' } %></button>
-            </div>
-        </div>
+    <g:if test="${info}">
+        <input type="hidden" name="info" value="${info}" />
     </g:if>
 
 </g:form>

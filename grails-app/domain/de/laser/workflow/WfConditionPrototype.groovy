@@ -50,7 +50,6 @@ class WfConditionPrototype extends WfConditionBase {
         WfCondition condition = new WfCondition(
                 title:              this.title,
                 description:        this.description,
-                prototype:          this,
                 // status:             RDStore.WF_CONDITION_STATUS_OPEN,
                 type:               this.type,
                 checkbox1:              this.checkbox1,

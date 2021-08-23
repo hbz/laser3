@@ -48,6 +48,7 @@
     <g:link class="item${controllerName == 'finance' ? ' active':''}" mapping="subfinance" controller="finance" action="index" params="${[sub:params.id]}">
         ${message(code:'subscription.details.financials.label')}
     </g:link>
+    <semui:subNavItem controller="subscription" action="stats" params="${[id:params.id]}" message="default.stats.label" />
     <semui:subNavItem controller="subscription" action="changes" params="${[id:params.id]}" message="license.nav.todo_history" />
 
     <sec:ifAnyGranted roles="ROLE_ADMIN">

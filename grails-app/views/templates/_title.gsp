@@ -3,7 +3,7 @@
     <semui:listIcon type="${tipp.titleType}"/>
     <g:if test="${ie}">
         <g:link controller="issueEntitlement" id="${ie.id}"
-                action="show"><strong>${ie.tipp.name}</strong>
+                action="show"><strong>${ie.name}</strong>
         </g:link>
     </g:if>
     <g:else>

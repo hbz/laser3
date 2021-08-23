@@ -397,7 +397,8 @@ class OrganisationController  {
             CustomerIdentifier ci = new CustomerIdentifier(
                     customer: org,
                     platform: plt,
-                    value: params.value.trim(),
+                    value: params.value?.trim(),
+                    requestorKey: params.requestorKey?.trim(),
                     note: params.note?.trim(),
                     owner: contextService.getOrg(),
                     isPublic: true,
@@ -407,7 +408,7 @@ class OrganisationController  {
                 log.error("error on inserting customer identifier: ${ci.getErrors().getAllErrors().toListString()}")
         }
 
-        redirect(url: request.getHeader('referer'))
+        redirect action: 'ids', id: params.orgid, params: [tab: 'customerIdentifiers']
     }
 
     @Transactional
@@ -482,6 +483,7 @@ class OrganisationController  {
             return
         }
         customeridentifier.value = params.value
+        customeridentifier.requestorKey = params.requestorKey?.trim()
         customeridentifier.note = params.note?.trim()
         customeridentifier.save()
 
@@ -738,6 +740,8 @@ class OrganisationController  {
 
         //this is a flag to check whether the page has been called directly after creation
         result.fromCreate = params.fromCreate ? true : false
+        if(!params.tab)
+            params.tab = 'identifier'
 
         pu.setBenchmark('editable_identifier')
 
@@ -758,11 +762,11 @@ class OrganisationController  {
                 result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
         }
 
-      if (!result.orgInstance) {
-        flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
-        redirect action: 'list'
-        return
-      }
+          if (!result.orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            redirect action: 'list'
+            return
+          }
 
         pu.setBenchmark('create Identifiers if necessary')
 
@@ -773,7 +777,6 @@ class OrganisationController  {
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
-//------------------------orgSettings --------------------
         pu.setBenchmark('orgsettings')
         Boolean inContextOrg = result.inContextOrg
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
@@ -791,51 +794,22 @@ class OrganisationController  {
 
             // adding default settings
             organisationService.initMandatorySettings(result.orgInstance)
-
-            // collecting visible settings by customer type, role and/or combo
-            List<OrgSetting> allSettings = OrgSetting.findAllByOrg(result.orgInstance)
-
-            List<OrgSetting.KEYS> ownerSet = [
-                    OrgSetting.KEYS.API_LEVEL,
-                    OrgSetting.KEYS.API_KEY,
-                    OrgSetting.KEYS.API_PASSWORD,
-                    OrgSetting.KEYS.CUSTOMER_TYPE,
-                    OrgSetting.KEYS.GASCO_ENTRY
-            ]
-            List<OrgSetting.KEYS> accessSet = [
-                    OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS,
-                    OrgSetting.KEYS.NATSTAT_SERVER_ACCESS
-            ]
-            List<OrgSetting.KEYS> credentialsSet = [
-                    OrgSetting.KEYS.NATSTAT_SERVER_API_KEY,
-                    OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID
-            ]
-
-            result.settings = []
-
-            if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
-                result.settings.addAll(allSettings.findAll { it.key in ownerSet })
-                result.settings.addAll(allSettings.findAll { it.key in accessSet })
-                result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
-                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
-            } else if (inContextOrg) {
-                log.debug('settings for own org')
-                result.settings.addAll(allSettings.findAll { it.key in ownerSet })
-
-                if (result.institution.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
-                    result.settings.addAll(allSettings.findAll { it.key in accessSet })
-                    result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
+            if(params.tab == 'customerIdentifiers') {
+                if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
                     result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
-                } else if (['ORG_BASIC_MEMBER'].contains(result.institution.getCustomerType())) {
-                    result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
+                } else if (inContextOrg) {
+
+                    if (result.institution.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
+                        result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
+                    } else if (['ORG_BASIC_MEMBER'].contains(result.institution.getCustomerType())) {
+                        result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
+                    }
+                } else if (isComboRelated) {
+                    log.debug('settings for combo related org: consortia')
                     result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
-                } else if (['FAKE'].contains(result.institution.getCustomerType())) {
-                    result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
                 }
-            } else if (isComboRelated) {
-                log.debug('settings for combo related org: consortia')
-                result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
             }
+
         }
         List bm = pu.stopBenchmark()
         result.benchMark = bm
@@ -918,7 +892,7 @@ class OrganisationController  {
         Map<String,Object> ctrlResult = organisationControllerService.deleteCustomerIdentifier(this,params)
         if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR)
             flash.error = ctrlResult.result.error
-        redirect action: 'ids', id: params.id
+        redirect action: 'ids', id: params.id, params: [tab: 'customerIdentifiers']
     }
 
     @DebugAnnotation(ctrlService = 2)
@@ -1286,6 +1260,16 @@ class OrganisationController  {
         }else {
             result
         }
+    }
+
+    def linkOrgs() {
+        organisationControllerService.linkOrgs(params)
+        redirect action: 'show', id: params.context
+    }
+
+    def unlinkOrg() {
+        organisationControllerService.unlinkOrg(params)
+        redirect action: 'show', id: params.id
     }
 
     @Transactional

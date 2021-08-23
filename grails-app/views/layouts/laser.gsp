@@ -1,4 +1,4 @@
-<%@ page import="de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.helper.ProfilerUtils; de.laser.helper.ServerUtils; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.grails.web.util.GrailsApplicationAttributes;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage" %>
+<%@ page import="de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.helper.ProfilerUtils; de.laser.helper.ServerUtils; de.laser.helper.RDStore;de.laser.helper.RDConstants;org.grails.web.util.GrailsApplicationAttributes;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -297,11 +297,6 @@
 
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="user" action="list">${message(code:'menu.institutions.users')}</semui:link>
 
-                                <sec:ifAnyGranted roles="ROLE_YODA">
-                                    <!-- YODA -->
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageWorkflows">${message(code:'menu.admin.manageWorkflows')}</semui:link>
-                                </sec:ifAnyGranted>
-
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="showAffiliations">${message(code:'menu.admin.showAffiliations')}</semui:link>
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="usage">${message(code:'menu.admin.manageUsageStats')}</semui:link>
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="updateQASubscriptionDates">${message(code:'menu.admin.updateTestSubscriptionDates')}</semui:link>
@@ -323,6 +318,11 @@
                                     </div>
                                 </div>
                                 <div class="divider"></div>
+
+                                <sec:ifAnyGranted roles="ROLE_YODA">
+                                    <!-- YODA -->
+                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageWorkflows">${message(code:'menu.admin.manageWorkflows')}</semui:link>
+                                </sec:ifAnyGranted>
 
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageNamespaces">${message(code:'menu.admin.manageIdentifierNamespaces')}</semui:link>
                                 <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="managePropertyDefinitions">${message(code:'menu.admin.managePropertyDefinitions')}</semui:link>
@@ -389,7 +389,10 @@
                                     </div>
                                 </div>
                                 <div class="divider"></div>
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="statsSync">${message(code:'menu.admin.stats.sync')}</semui:link>
+                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="statsSync">${message(code:'menu.admin.stats.sync')}</semui:link>
+                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageStatsSources">SUSHI-Quellen bearbeiten</semui:link>
+                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: true]">${message(code:'menu.admin.stats.fetch.incremental')}</semui:link>
+                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: false]">${message(code:'menu.admin.stats.fetch')}</semui:link>
                                 <div class="divider"></div>
 
                                 <div class="item" role="menuitem" aria-haspopup="true">

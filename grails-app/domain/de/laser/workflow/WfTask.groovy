@@ -11,8 +11,6 @@ class WfTask extends WfTaskBase {
     @RefdataAnnotation(cat = RDConstants.WF_TASK_STATUS)
     RefdataValue status
 
-    WfTaskPrototype prototype
-
     WfCondition condition
 
     WfTask child
@@ -28,7 +26,6 @@ class WfTask extends WfTaskBase {
            priority column: 'wft_priority_rv_fk'
              status column: 'wft_status_rv_fk'
                //type column: 'wft_type_rv_fk'
-          prototype column: 'wft_prototype_fk'
               title column: 'wft_title'
         description column: 'wft_description', type: 'text'
             comment column: 'wft_comment', type: 'text'

@@ -93,7 +93,7 @@ class LaserWorkflowTagLib {
                 else {
                     out << '<i class="icon calendar alternate outline la-light-grey"></i> '
                     out << condition.getProperty(field + '_title') ?: 'Feld ohne Titel'
-                    out << ': -'
+                    out << ': '
                 }
             }
             else if (field.startsWith('file')) {

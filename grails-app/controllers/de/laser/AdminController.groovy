@@ -413,40 +413,13 @@ class AdminController  {
     @Secured(['ROLE_ADMIN'])
     def manageWorkflows() {
         Map<String, Object> result = [:]
-        //log.debug( params.toMapString() )
 
         if (params.cmd) {
-            String[] cmd = (params.cmd as String).split(':')
-
-            if (cmd[0] in [ 'create', 'edit' ]) {
-                if (cmd[1] in [WfWorkflowPrototype.KEY, WfWorkflow.KEY ]) {
-                    result = workflowService.handleWorkflow(params)
-                }
-                else if (cmd[1] in [ WfTaskPrototype.KEY, WfTask.KEY ]) {
-                    result = workflowService.handleTask(params)
-                }
-                else if (cmd[1] in [ WfConditionPrototype.KEY, WfCondition.KEY ]) {
-                    result = workflowService.handleCondition(params)
-                }
-            }
-            else if (cmd[0] == 'instantiate') {
-                if (cmd[1] in [WfWorkflowPrototype.KEY ]) {
-                    result = workflowService.instantiateCompleteWorkflow(params)
-                }
-            }
-            else if (cmd[0] == 'delete') {
-                if (cmd[1] in [WfWorkflowPrototype.KEY, WfWorkflow.KEY ]) {
-                    result = workflowService.deleteWorkflow(params)
-                }
-                else if (cmd[1] in [ WfTaskPrototype.KEY, WfTask.KEY ]) {
-                    result = workflowService.deleteTask(params)
-                }
-                else if (cmd[1] in [ WfConditionPrototype.KEY, WfCondition.KEY ]) {
-                    result = workflowService.deleteCondition(params)
-                }
-            }
+            result = workflowService.cmd(params)
         }
-        if (params.tab) { result.tab = params.tab }
+        if (params.tab) {
+            result.tab = params.tab
+        }
 
         log.debug( result.toMapString() )
         result
@@ -515,13 +488,6 @@ class AdminController  {
         }
         else flash.error = message(code:'subscription.qaTestDateUpdate.wrongServer')
         redirect(url: request.getHeader('referer'))
-    }
-
-    @Secured(['ROLE_ADMIN'])
-    def statsSync() {
-        log.debug("statsSync()")
-        statsSyncService.doSync()
-        redirect(controller:'home')
     }
 
   @Secured(['ROLE_ADMIN'])
