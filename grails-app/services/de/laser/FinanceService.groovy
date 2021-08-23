@@ -1168,7 +1168,7 @@ class FinanceService {
                             if(!ieMatches)
                                 mappingErrorBag.noValidEntitlement = ieIdentifier
                             else if(ieMatches.size() > 1)
-                                mappingErrorBag.multipleEntitlementError = ieMatches.collect { entMatch -> "${entMatch.subscription.dropdownNamingConvention(contextOrg)} - ${entMatch.tipp.name}" }
+                                mappingErrorBag.multipleEntitlementError = ieMatches.collect { entMatch -> "${entMatch.subscription.dropdownNamingConvention(contextOrg)} - ${entMatch.name}" }
                             else if(ieMatches.size() == 1) {
                                 ie = ieMatches[0]
                                 if(ie.tipp.pkg.gokbId != subPkg.pkg.gokbId)

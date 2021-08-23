@@ -1240,7 +1240,7 @@ class CopyElementsService {
                             def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ie.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
                             if (list.size() > 0) {
                                 // mich gibts schon! Fehlermeldung ausgeben!
-                                Object[] args = [ie.tipp.name]
+                                Object[] args = [ie.name]
                                 flash.error += messageSource.getMessage('subscription.err.titleAlreadyExistsInTargetSub', args, locale)
                             } else {
                                 def properties = ie.properties
@@ -1306,7 +1306,7 @@ class CopyElementsService {
                 def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ieToTake.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
                 if (list.size() > 0) {
                     // mich gibts schon! Fehlermeldung ausgeben!
-                    Object[] args = [ieToTake.tipp.name]
+                    Object[] args = [ieToTake.name]
                     flash.error += messageSource.getMessage('subscription.err.titleAlreadyExistsInTargetSub', args, locale)
                 } else {
                     def properties = ieToTake.properties

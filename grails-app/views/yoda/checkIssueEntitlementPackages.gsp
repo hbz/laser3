@@ -21,7 +21,7 @@
                     <tr>
                         <td>${issueEntitlement.subscription} (${issueEntitlement.subscription.id})</td>
                         <td>${issueEntitlement.tipp.pkg.gokbId}</td>
-                        <td>${issueEntitlement.tipp.name}</td>
+                        <td>${issueEntitlement.name}</td>
                         <td>${issueEntitlement.subscription.packages.collect{ it.pkg.gokbId }}</td>
                     </tr>
                 </g:each>
