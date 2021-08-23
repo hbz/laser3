@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-3032    23.08.2021  dev     2.2         Moe    Feature      Titelumfrage: Auswahl-Box über mehrere Seiten speichern bei Bestandsauswahl
+3741    23.08.2021  dev     2.2         Moe     Feature     Export Renewal
+
+3032    23.08.2021  dev     2.2         Moe     Feature      Titelumfrage: Auswahl-Box über mehrere Seiten speichern bei Bestandsauswahl
 
 3736    20.08.2021  dev     2.2         David   Feature     Workflows: Erweiterte Editierfunktion für INST-Admins
 
