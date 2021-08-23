@@ -207,7 +207,7 @@ class SubscriptionControllerService {
                         }
                     } else
                         log.info('institutional usage identifier not available')
-                }
+                }/*
                 if(SpringSecurityUtils.ifAnyGranted("ROLE_YODA")) {
                     result.tokens = []
                     Org requestee = result.subscription.getSubscriber()
@@ -227,7 +227,7 @@ class SubscriptionControllerService {
                     }
                     if(result.tokens.size() > 0)
                         result.subStats = true //development only
-                }
+                }*/
             }
             //}
             pu.setBenchmark('costs')
