@@ -420,7 +420,7 @@
                 });
             });
         <% if(costItem?.issueEntitlement) {
-            String ieTitleName = costItem.issueEntitlement.tipp.name
+            String ieTitleName = costItem.issueEntitlement.name
             String ieTitleTypeString = costItem.issueEntitlement.tipp.titleType %>
         JSPC.app.finance${idSuffix}.newIE.dropdown('set text',"${ieTitleName} (${ieTitleTypeString}) (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})");
         <%  }

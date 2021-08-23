@@ -245,7 +245,6 @@ class ExportClickMeService {
                 .list(sort: 'ns').each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
         }
-
         List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
         if(childSubs) {
             String localizedName
@@ -275,6 +274,8 @@ class ExportClickMeService {
                 .list(sort: 'ns').each {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
         }
+
+        fields.participantSubProperties.fields.clear()
 
         List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
         if(childSubs) {
@@ -328,6 +329,8 @@ class ExportClickMeService {
                 .list(sort: 'ns').each {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
         }
+
+        fields.participantProperties.fields.clear()
 
         PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).each { PropertyDefinition propertyDefinition ->
             fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition.getI10n('name'), privateProperty: (propertyDefinition.tenant != null)]]

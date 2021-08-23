@@ -22,7 +22,7 @@
                 <g:each in="${tipps}" var="entry">
                     <tr>
                         <td>${entry.tipp.id}</td>
-                        <td>${entry.tipp.name}</td>
+                        <td>${entry.name}</td>
                         <td>
                             <g:if test="${entry.tipp.altTIPP}">
                                 alternatives TIPP im gleichen Paket: ${entry.altTIPP.id}, verfügt über we:kb ID ${entry.altTIPP.gokbId}

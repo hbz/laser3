@@ -2,13 +2,11 @@ package de.laser
 
 import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtils
-import de.laser.helper.RDConstants
 import de.laser.workflow.*
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.util.WebUtils
 import org.springframework.transaction.TransactionStatus
-import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 
 @Transactional
 class WorkflowService {
@@ -61,82 +59,85 @@ class WorkflowService {
         new ParamsHelper(cmpKey, params)
     }
 
-    Map<String, Object> handleWorkflow(GrailsParameterMap params) {
-        log.debug('handleWorkflow() ' + params)
-        String[] cmd = (params.cmd as String).split(':')
+    Map<String, Object> cmd(GrailsParameterMap params) {
+        log.debug('cmd() ' + params)
+        Map<String, Object> result = [:]
 
-        if (cmd[1] == WfWorkflowPrototype.KEY) {
-            if (cmd[0] == 'create') {
-                WfWorkflowPrototype wf = new WfWorkflowPrototype()
-                internalEditWorkflow(wf, params)
-            }
-            else if (cmd[0] == 'edit') {
-                WfWorkflowPrototype wf = WfWorkflowPrototype.get( cmd[2] )
-                internalEditWorkflow(wf, params)
-            }
-        }
-        else if (cmd[1] == WfWorkflow.KEY) {
-            if (cmd[0] == 'create') {
-                WfWorkflow wf = new WfWorkflow()
-                internalEditWorkflow(wf, params)
-            }
-            else if (cmd[0] == 'edit') {
-                WfWorkflow wf = WfWorkflow.get( cmd[2] )
-                internalEditWorkflow(wf, params)
-            }
-        }
-    }
+        if (params.cmd) {
+            String[] cmd = (params.cmd as String).split(':')
+            String wfObjKey = cmd[1]
+            Long wfObjId = cmd[2] as Long
 
-    Map<String, Object> handleTask(GrailsParameterMap params) {
-        log.debug('handleTask() ' + params)
-        String[] cmd = (params.cmd as String).split(':')
-
-        if (cmd[1] == WfTaskPrototype.KEY) {
             if (cmd[0] == 'create') {
-                WfTaskPrototype task = new WfTaskPrototype()
-                internalEditTask(task, params)
+                if (wfObjKey == WfWorkflowPrototype.KEY) {
+                    WfWorkflowPrototype wf = new WfWorkflowPrototype()
+                    result = internalEditWorkflow(wf, params)
+                }
+                else if (wfObjKey == WfTaskPrototype.KEY) {
+                    WfTaskPrototype task = new WfTaskPrototype()
+                    result = internalEditTask(task, params)
+                }
+                else if (wfObjKey == WfConditionPrototype.KEY) {
+                    WfConditionPrototype condition = new WfConditionPrototype()
+                    result = internalEditCondition(condition, params)
+                }
+                else if (wfObjKey == WfWorkflow.KEY) {
+                    WfWorkflow wf = new WfWorkflow()
+                    result = internalEditWorkflow(wf, params)
+                }
+                else if (wfObjKey == WfTask.KEY) {
+                    WfTask task = new WfTask()
+                    result = internalEditTask(task, params)
+                }
+                else if (wfObjKey == WfCondition.KEY) {
+                    WfCondition condition = new WfCondition()
+                    result = internalEditCondition(condition, params)
+                }
             }
             else if (cmd[0] == 'edit') {
-                WfTaskPrototype task = WfTaskPrototype.get( cmd[2] )
-                internalEditTask(task, params)
+                if (wfObjKey == WfWorkflowPrototype.KEY) {
+                    WfWorkflowPrototype wf = WfWorkflowPrototype.get( wfObjId )
+                    result = internalEditWorkflow(wf, params)
+                }
+                else if (wfObjKey == WfTaskPrototype.KEY) {
+                    WfTaskPrototype task = WfTaskPrototype.get( wfObjId )
+                    result = internalEditTask(task, params)
+                }
+                else if (wfObjKey == WfConditionPrototype.KEY) {
+                    WfConditionPrototype condition = WfConditionPrototype.get( wfObjId )
+                    result = internalEditCondition(condition, params)
+                }
+                else if (wfObjKey == WfWorkflow.KEY) {
+                    WfWorkflow wf = WfWorkflow.get( wfObjId )
+                    result = internalEditWorkflow(wf, params)
+                }
+                else if (wfObjKey == WfTask.KEY) {
+                    WfTask task = WfTask.get( wfObjId )
+                    result = internalEditTask(task, params)
+                }
+                else if (wfObjKey == WfCondition.KEY) {
+                    WfCondition condition = WfCondition.get( wfObjId )
+                    result = internalEditCondition(condition, params)
+                }
+            }
+            else if (cmd[0] == 'delete') {
+                if (wfObjKey in [ WfWorkflowPrototype.KEY, WfWorkflow.KEY ]) {
+                    result = deleteWorkflow(params)
+                }
+                else if (wfObjKey in [ WfTaskPrototype.KEY, WfTask.KEY ]) {
+                    result = deleteTask(params)
+                }
+                else if (wfObjKey in [ WfConditionPrototype.KEY, WfCondition.KEY ]) {
+                    result = deleteCondition(params)
+                }
+            }
+            else if (cmd[0] == 'instantiate') {
+                if (wfObjKey == WfWorkflowPrototype.KEY) {
+                    result = instantiateCompleteWorkflow(params)
+                }
             }
         }
-        else if (cmd[1] == WfTask.KEY) {
-            if (cmd[0] == 'create') {
-                WfTask task = new WfTask()
-                internalEditTask(task, params)
-            }
-            else if (cmd[0] == 'edit') {
-                WfTask task = WfTask.get( cmd[2] )
-                internalEditTask(task, params)
-            }
-        }
-    }
-
-    Map<String, Object> handleCondition(GrailsParameterMap params) {
-        log.debug('handleCondition() ' + params)
-        String[] cmd = (params.cmd as String).split(':')
-
-        if (cmd[1] == WfConditionPrototype.KEY) {
-            if (cmd[0] == 'create') {
-                WfConditionPrototype condition = new WfConditionPrototype()
-                internalEditCondition(condition, params)
-            }
-            else if (cmd[0] == 'edit') {
-                WfConditionPrototype condition = WfConditionPrototype.get( cmd[2] )
-                internalEditCondition(condition, params)
-            }
-        }
-        else if (cmd[1] == WfCondition.KEY) {
-            if (cmd[0] == 'create') {
-                WfCondition condition = new WfCondition()
-                internalEditCondition(condition, params)
-            }
-            else if (cmd[0] == 'edit') {
-                WfCondition condition = WfCondition.get( cmd[2] )
-                internalEditCondition(condition, params)
-            }
-        }
+        result
     }
 
     Map<String, Object> deleteWorkflow(GrailsParameterMap params) {
@@ -463,8 +464,8 @@ class WorkflowService {
         result
     }
 
-    Map<String, Object> handleUsage(GrailsParameterMap params) {
-        log.debug('handleUsage() ' + params)
+    Map<String, Object> usage(GrailsParameterMap params) {
+        log.debug('usage() ' + params)
         String[] cmd = (params.cmd as String).split(':')
 
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]

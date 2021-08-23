@@ -443,7 +443,7 @@
                                             <g:link action="removeEntitlementWithIEGroups" class="ui icon negative button js-open-confirm-modal"
                                                     params="${[ieid: ie.id, sub: subscription.id]}"
                                                     role="button"
-                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.tipp.name])}"
+                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.name])}"
                                                     data-confirm-term-how="delete"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                 <i class="trash alternate icon"></i>
@@ -453,7 +453,7 @@
                                             <g:link action="removeEntitlement" class="ui icon negative button js-open-confirm-modal"
                                                     params="${[ieid: ie.id, sub: subscription.id]}"
                                                     role="button"
-                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.tipp.name])}"
+                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.name])}"
                                                     data-confirm-term-how="delete"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                 <i class="trash alternate icon"></i>

@@ -22,12 +22,12 @@
     <form class="ui form">
         <div class="three fields">
             <div class="field">
-                <label>${message(code: 'default.subscription.label')}</label>
-                <g:select class="ui dropdown" name="filterSubscription"
-                          from="${ currentSubscriptions }"
+                <label>${message(code: 'workflow.label')}</label>
+                <g:select class="ui dropdown" name="filterPrototype"
+                          from="${ currentPrototypes }"
                           optionKey="id"
-                          optionValue="name"
-                          value="${params.filterSubscription}"
+                          optionValue="title"
+                          value="${params.filterPrototype}"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
             <div class="field">
@@ -47,6 +47,26 @@
                               optionValue="value"
                               value="${params.filterPriority}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+        </div>
+        <div class="three fields">
+            <div class="field">
+                <label>${message(code: 'default.provider.label')}</label>
+                <g:select class="ui dropdown" name="filterProvider"
+                          from="${ currentProviders }"
+                          optionKey="id"
+                          optionValue="name"
+                          value="${params.filterProvider}"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+            <div class="field">
+                <label>${message(code: 'default.subscription.label')}</label>
+                <g:select class="ui dropdown" name="filterSubscription"
+                          from="${ currentSubscriptions }"
+                          optionKey="id"
+                          optionValue="name"
+                          value="${params.filterSubscription}"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
         </div>
         <div class="field la-field-right-aligned">
@@ -128,7 +148,7 @@
                 </td>
                 <td class="x">
                     <g:link class="ui icon small button" controller="subscription" action="workflows" id="${wf.subscription.id}" params="${[info: 'subscription:' + wf.subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}"><i class="icon info"></i></g:link>
-                    <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button>
+                    %{-- <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button> --}%
                     <g:link class="ui red icon small button" controller="myInstitution" action="currentWorkflows" params="${[cmd: "delete:${WfWorkflow.KEY}:${wf.id}"]}"><i class="trash alternate icon"></i></g:link>
                 </td>
             </tr>

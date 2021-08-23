@@ -53,7 +53,7 @@
             <tr>
                 <td>
                     <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
-                        <i class="ui icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i> ${wf.title}
+                        <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i> ${wf.title}
                     </g:link>
                 </td>
                 <td>
@@ -81,7 +81,7 @@
                 </td>
                 <td class="x">
                     <button class="ui small icon button" data-wfId="${wf.id}"><i class="icon info"></i></button>
-                    <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button>
+                    %{-- <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button> --}%
                     <g:link class="ui red icon small button" controller="subscription" action="workflows" params="${[id: "${subscription.id}", cmd: "delete:${WfWorkflow.KEY}:${wf.id}"]}"><i class="trash alternate icon"></i></g:link>
                 </td>
             </tr>
@@ -107,7 +107,7 @@
                 <tbody>
                     <tr>
                         <td class="ui center aligned">
-                            <i class="ui icon big ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i>
+                            <i class="icon big ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i>
                         </td>
                         <td>
                             <div class="header"><strong>${wf.title}</strong></div>
@@ -130,8 +130,16 @@
                         </td>
                         <td class="x">
                             <g:set var="wfKey" value="subscription:${subscription.id}:${WfWorkflow.KEY}:${wf.id}" />
+                            <sec:ifAnyGranted roles="ROLE_YODA">
+                                <!-- YODA -->
+                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
+                                    <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="editWfXModal" params="${[key: wfKey, info: wfKey]}">
+                                        <i class="icon cogs"></i>
+                                    </g:link>
+                                </span>
+                            </sec:ifAnyGranted>
                             <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal" params="${[key: wfKey, info: wfKey]}">
-                                <i class="ui icon pencil"></i>
+                                <i class="icon pencil"></i>
                             </g:link>
                         </td>
                     </tr>
@@ -169,6 +177,17 @@
                                                 <laser:workflowTaskConditionField condition="${task.condition}" field="${field}" />
                                             </g:each>
                                             <!-- -->
+                                            <sec:ifAnyGranted roles="ROLE_YODA">
+                                                <!-- YODA -->
+                                                <g:set var="cKey" value="subscription:${subscription.id}:${WfCondition.KEY}:${task.condition.id}" />
+                                                <span style="float:right">
+                                                    <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
+                                                        <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="editWfXModal" params="${[key: cKey, info: wfKey]}">
+                                                            <i class="icon cogs"></i>
+                                                        </g:link>
+                                                    </span>
+                                                </span>
+                                            </sec:ifAnyGranted>
                                         </div>
                                     </div>
                                 </g:if>
@@ -176,8 +195,16 @@
                             </td>
                             <td class="x">
                                 <g:set var="tKey" value="subscription:${subscription.id}:${WfTask.KEY}:${task.id}" />
+                                <sec:ifAnyGranted roles="ROLE_YODA">
+                                    <!-- YODA -->
+                                    <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
+                                        <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
+                                            <i class="icon cogs"></i>
+                                        </g:link>
+                                    </span>
+                                </sec:ifAnyGranted>
                                 <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
-                                    <i class="ui icon pencil"></i>
+                                    <i class="icon pencil"></i>
                                 </g:link>
                             </td>
                         </tr>
@@ -217,6 +244,17 @@
                                                         <laser:workflowTaskConditionField condition="${child.condition}" field="${field}" />
                                                     </g:each>
                                                     <!-- -->
+                                                    <sec:ifAnyGranted roles="ROLE_YODA">
+                                                        <!-- YODA -->
+                                                        <g:set var="cKey" value="subscription:${subscription.id}:${WfCondition.KEY}:${child.condition.id}" />
+                                                        <span style="float:right">
+                                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
+                                                                <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="editWfXModal" params="${[key: cKey, info: wfKey]}">
+                                                                    <i class="icon cogs"></i>
+                                                                </g:link>
+                                                            </span>
+                                                        </span>
+                                                    </sec:ifAnyGranted>
                                                 </div>
                                             </div>
                                         </g:if>
@@ -224,8 +262,16 @@
                                     </td>
                                     <td class="x">
                                         <g:set var="tKey" value="subscription:${subscription.id}:${WfTask.KEY}:${child.id}" />
+                                        <sec:ifAnyGranted roles="ROLE_YODA">
+                                            <!-- YODA -->
+                                            <span data-position="top center" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
+                                                <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
+                                                    <i class="icon cogs"></i>
+                                                </g:link>
+                                            </span>
+                                        </sec:ifAnyGranted>
                                         <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
-                                            <i class="ui icon pencil"></i>
+                                            <i class="icon pencil"></i>
                                         </g:link>
                                     </td>
                                 </tr>

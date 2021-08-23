@@ -67,6 +67,27 @@ class ControlledListService {
     }
 
     /**
+     * Retrieves a list of organisations
+     * @param params - eventual request params
+     * @return a map containing a sorted list of organisations, an empty one if no orgainsations match the filter
+     */
+    Map getOrgs(Map params) {
+        LinkedHashMap result = [results:[]]
+        Org org = genericOIDService.resolveOID(params.ctx)
+        String queryString = 'select o from Org o where o.status != :deleted and o != :context'
+        LinkedHashMap filter = [deleted: RDStore.ORG_STATUS_DELETED, context: org]
+        if(params.query && params.query.length() > 0) {
+            filter.put("query",params.query)
+            queryString += " and genfunc_filter_matcher(o.name,:query) = true " //taking also sortname and shortname into consideration causes GC overhead
+        }
+        Set<Org> orgs = Org.executeQuery(queryString+" order by o.name asc",filter)
+        orgs.each { Org o ->
+            result.results.add([name:o.name,value:o.id])
+        }
+        result
+    }
+
+    /**
      * Retrieves a list of subscriptions owned by the context organisation matching given parameters
      * @param params - eventual request params
      * @return a map containing a sorted list of subscriptions, an empty one if no subscriptions match the filter
@@ -254,15 +275,15 @@ class ControlledListService {
             }
         }
         if(params.query && params.query.length() > 0) {
-            filter += ' and genfunc_filter_matcher(ie.tipp.name,:query) = true '
+            filter += ' and genfunc_filter_matcher(ie.name,:query) = true '
             filterParams.put('query',params.query)
         }
-        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' order by ie.tipp.name asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
+        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' order by ie.name asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
         if(result.size() > 0) {
             result.each { res ->
                 Subscription s = (Subscription) res.subscription
 
-                issueEntitlements.results.add([name:"${res.tipp.name} (${res.tipp.titleType}) (${s.dropdownNamingConvention(org)})",value:genericOIDService.getOID(res)])
+                issueEntitlements.results.add([name:"${res.name} (${res.tipp.titleType}) (${s.dropdownNamingConvention(org)})",value:genericOIDService.getOID(res)])
             }
         }
         issueEntitlements
