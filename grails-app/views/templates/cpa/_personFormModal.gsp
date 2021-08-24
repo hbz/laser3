@@ -275,7 +275,7 @@
                                       optionKey="id"
                                       optionValue="value"
                                       value="${contactInstance?.language?.id}"
-                                      noSelection="['null': message(code: 'default.select.choose.label')]"/>
+                                      noSelection="['null': message(code: 'person.contacts.selectLang.default')]"/>
                     </div>
 
 
@@ -360,6 +360,9 @@
     </g:if>
 
     <laser:script file="${this.getGroovyPageFileName()}">
+        $.fn.form.settings.rules.functionOrPosition = function() {
+                return $('#functionType').dropdown('get value').length > 0 || $('#positionType').dropdown('get value').length > 0
+             };
             $('#person_form').form({
                 on: 'blur',
                 inline: true,
@@ -371,6 +374,24 @@
                                 type: 'empty',
                                 prompt: '{name} <g:message code="validation.needsToBeFilledOut"
                                                         default=" muss ausgefüllt werden"/>'
+                            }
+                        ]
+                    },
+                    functionType: {
+                        identifier: 'functionType',
+                        rules: [
+                            {
+                                type: 'functionOrPosition',
+                                prompt: '{name} <g:message code="person.create.missing_function"/>'
+                            }
+                        ]
+                    },
+                    positionType: {
+                        identifier: 'positionType',
+                        rules: [
+                            {
+                                type: 'functionOrPosition',
+                                prompt: '{name} <g:message code="person.create.missing_function"/>'
                             }
                         ]
                     }
