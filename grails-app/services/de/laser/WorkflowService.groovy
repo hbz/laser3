@@ -66,7 +66,6 @@ class WorkflowService {
         if (params.cmd) {
             String[] cmd = (params.cmd as String).split(':')
             String wfObjKey = cmd[1]
-            Long wfObjId = cmd[2] as Long
 
             if (cmd[0] == 'create') {
                 if (wfObjKey == WfWorkflowPrototype.KEY) {
@@ -95,6 +94,8 @@ class WorkflowService {
                 }
             }
             else if (cmd[0] == 'edit') {
+                Long wfObjId = cmd[2] as Long
+
                 if (wfObjKey == WfWorkflowPrototype.KEY) {
                     WfWorkflowPrototype wf = WfWorkflowPrototype.get( wfObjId )
                     result = internalEditWorkflow(wf, params)
