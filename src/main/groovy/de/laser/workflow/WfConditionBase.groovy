@@ -9,7 +9,6 @@ import grails.gorm.dirty.checking.DirtyCheck
 class WfConditionBase {
 
     final static TYPES = [
-            0, //: 'TEST',
             1, //: '1 Checkbox',
             2, //: '1 Checkbox + 1 Date',
             3, //: '2 Checkboxes',
