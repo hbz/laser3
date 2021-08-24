@@ -33,7 +33,6 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
     String participantComment
     String ownerComment
 
-    Date finishDate
     Date startDate
     Date endDate
 

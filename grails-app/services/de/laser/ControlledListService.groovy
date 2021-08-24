@@ -275,15 +275,15 @@ class ControlledListService {
             }
         }
         if(params.query && params.query.length() > 0) {
-            filter += ' and genfunc_filter_matcher(ie.tipp.name,:query) = true '
+            filter += ' and genfunc_filter_matcher(ie.name,:query) = true '
             filterParams.put('query',params.query)
         }
-        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' order by ie.tipp.name asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
+        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' order by ie.name asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
         if(result.size() > 0) {
             result.each { res ->
                 Subscription s = (Subscription) res.subscription
 
-                issueEntitlements.results.add([name:"${res.tipp.name} (${res.tipp.titleType}) (${s.dropdownNamingConvention(org)})",value:genericOIDService.getOID(res)])
+                issueEntitlements.results.add([name:"${res.name} (${res.tipp.titleType}) (${s.dropdownNamingConvention(org)})",value:genericOIDService.getOID(res)])
             }
         }
         issueEntitlements

@@ -15,4 +15,9 @@ databaseChangeLog = {
     changeSet(author: "klober (generated)", id: "1629371303717-4") {
         dropColumn(columnName: "wft_prototype_fk", tableName: "wf_task")
     }
+  
+   changeSet(author: "djebeniani (generated)", id: "1629371303717-5") {
+        dropColumn(columnName: "surre_finish_date", tableName: "survey_result")
+    }
 }
+

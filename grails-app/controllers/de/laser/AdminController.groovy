@@ -490,13 +490,6 @@ class AdminController  {
         redirect(url: request.getHeader('referer'))
     }
 
-    @Secured(['ROLE_ADMIN'])
-    def statsSync() {
-        log.debug("statsSync()")
-        statsSyncService.doSync()
-        redirect(controller:'home')
-    }
-
   @Secured(['ROLE_ADMIN'])
   def manageContentItems() {
     Map<String, Object> result = [:]

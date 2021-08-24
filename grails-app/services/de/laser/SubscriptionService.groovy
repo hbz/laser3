@@ -600,7 +600,7 @@ class SubscriptionService {
                     qry_params.startDate = date_filter
                     qry_params.endDate = date_filter
                 }
-                base_qry += "and ( ( lower(ie.tipp.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) ) "
+                base_qry += "and ( ( lower(ie.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) ) "
                 qry_params.title = "%${params.filter.trim().toLowerCase()}%"
                 qry_params.identifier = "%${params.filter}%"
             } else {
@@ -798,10 +798,12 @@ class SubscriptionService {
                             status: tipp.status,
                             subscription: subscription,
                             tipp: tipp,
+                            name: tipp.name,
                             medium: tipp.medium,
                             accessStartDate:tipp.accessStartDate,
                             accessEndDate:tipp.accessEndDate,
                             acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED)
+                    new_ie.generateSortTitle()
                     if(new_ie.save()) {
                         log.debug("${new_ie} saved")
                         TIPPCoverage.findAllByTipp(tipp).each { TIPPCoverage covStmt ->
@@ -857,11 +859,13 @@ class SubscriptionService {
                         status: statusCurrent,
                         subscription: target,
                         tipp: ie.tipp,
+                        name: ie.name,
                         medium: ie.medium ?: ie.tipp.medium,
                         accessStartDate: ie.tipp.accessStartDate,
                         accessEndDate: ie.tipp.accessEndDate,
                         acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED
                 )
+                newIe.generateSortTitle()
                 if(newIe.save()) {
                     ie.tipp.coverages.each { TIPPCoverage covStmt ->
                         IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(
@@ -1029,9 +1033,11 @@ class SubscriptionService {
 					status: tipp.status,
                     subscription: sub,
                     tipp: tipp,
+                    name: tipp.name,
                     medium: tipp.medium,
                     ieReason: 'Manually Added by User',
                     acceptStatus: acceptStatus)
+            new_ie.generateSortTitle()
             Date accessStartDate, accessEndDate
             if(issueEntitlementOverwrite) {
                 if(issueEntitlementOverwrite.accessStartDate) {

@@ -120,7 +120,7 @@
                         <g:if test="${tipp}">
 
                             <g:if test="${ie}">
-                                <g:link controller="issueEntitlement" action="show" id="${ie.id}">${ie.tipp.name}</g:link>
+                                <g:link controller="issueEntitlement" action="show" id="${ie.id}">${ie.name}</g:link>
                             </g:if>
                             <g:else>
                                 ${tipp.name}

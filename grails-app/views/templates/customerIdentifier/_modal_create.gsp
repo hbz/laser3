@@ -31,7 +31,13 @@
         <div class="field">
             <label for="value">${message(code: 'org.customerIdentifier')}:</label>
 
-            <input type="text" id="value" name="value" value="${customeridentifier?.value}" required/>
+            <input type="text" id="value" name="value" value="${customeridentifier?.value}"/>
+        </div>
+
+        <div class="field">
+            <label for="value">${message(code: 'org.requestorKey')}:</label>
+
+            <input type="text" id="requestorKey" name="requestorKey" value="${customeridentifier?.requestorKey}"/>
         </div>
 
         <div class="field">

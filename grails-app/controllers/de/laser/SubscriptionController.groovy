@@ -96,6 +96,21 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+    })
+    def stats() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.stats(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }
+        else ctrlResult.result
+    }
+
     /*@DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -407,8 +422,10 @@ class SubscriptionController {
                 return
             }
         }
-        else
+        else {
+            flash.message = ctrlResult.result.message
             ctrlResult.result
+        }
     }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
