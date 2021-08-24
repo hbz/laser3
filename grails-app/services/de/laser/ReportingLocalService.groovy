@@ -104,11 +104,11 @@ class ReportingLocalService {
                     result.tmpl      = '/subscription/reporting/details/timeline/organisation'
                 }
             }
-            else if (params.query == 'timeline-annualMember') {
+            else if (params.query == 'timeline-annualMember-subscription') {
                 result.labels = SubscriptionReporting.getTimelineQueryLabelsForAnnual(params)
 
                 result.list = Subscription.executeQuery( 'select sub from Subscription sub where sub.id in (:idList) order by sub.name, sub.startDate, sub.endDate', [idList: idList])
-                result.tmpl = '/subscription/reporting/details/timeline/annualMember'
+                result.tmpl = '/subscription/reporting/details/timeline/subscription'
             }
             else {
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap

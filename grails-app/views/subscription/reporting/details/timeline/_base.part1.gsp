@@ -1,7 +1,7 @@
 <%@ page import="de.laser.reporting.export.local.ExportLocalHelper;" %>
 <br />
 
-<g:if test="${! (ExportLocalHelper.getDetailsCache(token).query in ['timeline-cost', 'timeline-annualMember'])}"> %{-- TODO --}%
+<g:if test="${! (ExportLocalHelper.getDetailsCache(token).query in ['timeline-cost'])}"> %{-- TODO --}%
     <div class="ui right aligned">
         <button id="details-export-button" class="ui icon button" href="#detailsExportModal" data-semui="modal">
             <i class="ui icon download"></i>

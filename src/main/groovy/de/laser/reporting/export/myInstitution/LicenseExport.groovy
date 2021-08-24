@@ -30,8 +30,8 @@ class LicenseExport extends BaseExport {
                                     'endDate'           : FIELD_TYPE_PROPERTY,
                                     'status'            : FIELD_TYPE_REFDATA,
                                     'licenseCategory'   : FIELD_TYPE_REFDATA,
-                                    '@ae-license-subscription' : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@ae-license-member'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@ae-license-subscriptionCount' : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@ae-license-memberCount'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
                                     'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                             ]
@@ -147,14 +147,14 @@ class LicenseExport extends BaseExport {
                     }
                     content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '@ae-license-subscription') { // TODO: query
+                else if (key == '@ae-license-subscriptionCount') { // TODO: query
                     Long count = License.executeQuery(
                             'select count(distinct li.destinationSubscription) from Links li where li.sourceLicense = :lic and li.linkType = :linkType',
                             [lic: lic, linkType: RDStore.LINKTYPE_LICENSE]
                     )[0]
                     content.add( count as String )
                 }
-                else if (key == '@ae-license-member') {
+                else if (key == '@ae-license-memberCount') {
                     Long count = License.executeQuery('select count(l) from License l where l.instanceOf = :parent', [parent: lic])[0]
                     content.add( count as String )
                 }

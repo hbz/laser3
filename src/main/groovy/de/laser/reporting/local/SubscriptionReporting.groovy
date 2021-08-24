@@ -69,7 +69,7 @@ class SubscriptionReporting {
                                                     chart : '1axis3values',
                                                     chartLabels : [ 'Titel entfernt', 'Neue Titel', 'Aktuelle Titel' ]
                                             ],
-                                            'timeline-annualMember' : [
+                                            'timeline-annualMember-subscription' : [
                                                     label       : 'Jahresring → Teilnehmerlizenz',
                                                     chart       : 'annualMember',
                                                     chartLabels : ['Teilnehmerlizenzen']
@@ -197,8 +197,6 @@ class SubscriptionReporting {
                             d[7] = dd.minusIdList.size()
                         }
                     }
-
-                    println result
                 }
                 else if (params.query == 'timeline-entitlement') {
                     List<List<Long>> ieIdLists = []
@@ -283,7 +281,7 @@ class SubscriptionReporting {
                         ])
                     }
                 }
-                else if (params.query == 'timeline-annualMember') {
+                else if (params.query == 'timeline-annualMember-subscription') {
                     List<Long> subIdLists = []
 
                     if (timeline) {

@@ -18,6 +18,9 @@ class ExportLocalHelper extends BaseExportHelper {
         else if (tmpl == IssueEntitlementExport.KEY) {
             return new IssueEntitlementExport( token, selectedFields )
         }
+        else if (tmpl == SubscriptionExport.KEY) {
+            return new SubscriptionExport( token, selectedFields )
+        }
     }
 
     // ----- Cache -----
@@ -98,6 +101,10 @@ class ExportLocalHelper extends BaseExportHelper {
                 }.join(', ') : '')
             }
             else if (fieldName == '@ae-org-accessPoint') {
+                List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
+                label += (selList ? ': ' + selList.collect{it -> RefdataValue.get(it).getI10n('value') }.join(', ') : '') // TODO - export
+            }
+            else if (fieldName == '@ae-org-contact') {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
                 label += (selList ? ': ' + selList.collect{it -> RefdataValue.get(it).getI10n('value') }.join(', ') : '') // TODO - export
             }
