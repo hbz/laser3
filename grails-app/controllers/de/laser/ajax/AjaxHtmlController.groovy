@@ -695,6 +695,7 @@ class AjaxHtmlController {
         Map<String, Object> result = [
                 tmplCmd: 'create',
                 tmplModalTitle: g.message(code: 'workflow.object.' + params.key),
+                tmplFormUrl: createLink(controller: 'admin', action: 'manageWorkflows'),
                 prefix: params.key
         ]
 

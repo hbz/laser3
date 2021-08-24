@@ -47,7 +47,6 @@
                         id: ${subscription.id},
                         query: value,
                         context: '${BaseConfig.KEY_SUBSCRIPTION}',
-                        chart: 'default',
                         token: '${token}'
                     }
                     JSPC.app.reporting.requestChartJsonData();
@@ -55,7 +54,7 @@
             })
 
             JSPC.app.reporting.requestChartJsonData = function() {
-                if ( JSPC.app.reporting.current.request.query && JSPC.app.reporting.current.request.chart ) {
+                if ( JSPC.app.reporting.current.request.query ) {
                     JSPC.app.reporting.current.chart = {};
 
                     $.ajax({

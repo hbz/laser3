@@ -126,6 +126,9 @@ class RDStore {
     public static final PRS_RESP_SPEC_SUB_EDITOR       = getRefdataValue('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
     public static final PRS_RESP_SPEC_LIC_EDITOR       = getRefdataValue('Specific license editor', RDConstants.PERSON_RESPONSIBILITY)
 
+    public static final REPORTING_CONTACT_TYPE_CONTACTS     = getRefdataValue('contacts', RDConstants.REPORTING_CONTACT_TYPE)
+    public static final REPORTING_CONTACT_TYPE_ADDRESSES    = getRefdataValue('addresses', RDConstants.REPORTING_CONTACT_TYPE)
+
     public static final SHARE_CONF_ALL                 = getRefdataValue('everyone', RDConstants.SHARE_CONFIGURATION)
     public static final SHARE_CONF_UPLOADER_ORG        = getRefdataValue('only for author organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
     public static final SHARE_CONF_UPLOADER_AND_TARGET = getRefdataValue('only for author and target organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!

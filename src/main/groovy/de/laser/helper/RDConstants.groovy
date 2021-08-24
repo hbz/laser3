@@ -131,6 +131,8 @@ class RDConstants {
     public static final String REMINDER_TRIGGER       = 'reminder.trigger'
     public static final String REMINDER_UNIT          = 'reminder.unit'
 
+    public static final String REPORTING_CONTACT_TYPE   = 'reporting.contact.type'
+
     public static final String SEMESTER               = 'semester'
     public static final String SHARE_CONFIGURATION    = 'share.configuration'
     public static final String SIM_USER_NUMBER        = 'sim.user.number'
@@ -171,6 +173,8 @@ class RDConstants {
 
     public static final String WF_WORKFLOW_STATE    = 'workflow.workflow.state'
     public static final String WF_WORKFLOW_STATUS   = 'workflow.workflow.status'
+
+    public static final String WF_CONDITION_TYPE    = 'workflow.condition.type'
 
     public static final String WF_TASK_PRIORITY     = 'workflow.task.priority'
     public static final String WF_TASK_STATUS       = 'workflow.task.status'

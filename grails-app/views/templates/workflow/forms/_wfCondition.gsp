@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.WorkflowHelper; de.laser.helper.DateUtils; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.helper.WorkflowHelper; de.laser.helper.DateUtils; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
 
 <g:form url="${formUrl}" method="POST" class="ui form">
 
@@ -15,7 +15,6 @@
     <div class="field required">
         <label for="${prefix}_type">${message(code:'default.type.label')}</label>
         <div style="text-align:right; color:#ee1111">Die Änderung des Typs löscht ALLE typabhängigen Datenfelder</div>
-
         <g:select class="ui dropdown la-not-clearable" id="${prefix}_type" name="${prefix}_type"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                       required="required"
