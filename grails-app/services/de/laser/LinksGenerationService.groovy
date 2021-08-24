@@ -329,4 +329,7 @@ class LinksGenerationService {
         else false
     }
 
+    Set<Combo> getOrgLinks(Org org) {
+        Combo.executeQuery('select c from Combo c where (c.fromOrg = :context or c.toOrg = :context) and c.type = :follows', [follows: RDStore.COMBO_TYPE_FOLLOWS, context: org])
+    }
 }

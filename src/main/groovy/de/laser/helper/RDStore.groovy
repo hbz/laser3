@@ -51,6 +51,7 @@ class RDStore {
     public static final CIEC_NEUTRAL               = getRefdataValue('neutral', RDConstants.COST_CONFIGURATION)
 
     public static final COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium', RDConstants.COMBO_TYPE)
+    public static final COMBO_TYPE_FOLLOWS         = getRefdataValue('follows', RDConstants.COMBO_TYPE)
 
     public static final COMBO_STATUS_ACTIVE        = getRefdataValue('Active', RDConstants.COMBO_STATUS)
     public static final COMBO_STATUS_INACTIVE      = getRefdataValue('Inactive', RDConstants.COMBO_STATUS)

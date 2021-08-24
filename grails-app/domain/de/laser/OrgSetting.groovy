@@ -22,7 +22,8 @@ class OrgSetting {
         OAMONITOR_SERVER_ACCESS     (RefdataValue, RDConstants.Y_N),
         NATSTAT_SERVER_ACCESS       (RefdataValue, RDConstants.Y_N),
         NATSTAT_SERVER_API_KEY      (String),
-        NATSTAT_SERVER_REQUESTOR_ID (String)
+        NATSTAT_SERVER_REQUESTOR_ID (String),
+        LASERSTAT_SERVER_KEY        (String)
 
         KEYS(type, rdc) {
             this.type = type

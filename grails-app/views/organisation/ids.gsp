@@ -52,67 +52,61 @@
 <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
 <semui:messages data="${flash}"/>
+
+<semui:tabs actionName="ids">
+    <semui:tabsItem controller="org" action="ids" params="[id: orgInstance.id, tab: 'identifier']" tab="identifier" text="${message(code:'default.identifiers.label')}"/>
+    <g:if test="${hasAccessToCustomeridentifier}">
+        <semui:tabsItem controller="org" action="ids" params="[id: orgInstance.id, tab: 'customerIdentifiers']" tab="customerIdentifiers" text="${message(code:'org.customerIdentifier.plural')}"/>
+    </g:if>
+</semui:tabs>
+
 %{---------------IDENTIFIERS-----------------------}%
-<div class="ui stackable grid">
-    <div class="sixteen wide column">
+<div class="ui bottom attached tab active segment">
 
-        <div class="la-inline-lists">
-
-<%-- orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM") && ((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) --%>
-    <div class="ui card">
-        <div class="content">
-            <div class="header"><g:message code="default.identifiers.label"/></div>
-        </div>
-
-        <div class="content">
-            <table class="ui table la-table">
-                <thead>
-                    <tr>
-                        <th class="one wide">${message(code:'default.number')}</th>
-                        <th class="five wide">${message(code:'identifier.namespace.label')}</th>
-                        <th class="four wide">${message(code:'identifier')}</th>
-                        <th class="four wide">${message(code:'default.notes.label')}</th>
-                        <th class="two wide">${message(code:'default.aktions')}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <g:render template="idTableRow"
-                              model="[orgInstance:orgInstance, tableRowNr:1, showGlobalUid:true, editable:false]"
-                    />
-                    <g:if test="${orgInstance.gokbId}">
-                        <g:render template="idTableRow" model="[orgInstance:orgInstance, tableRowNr:2, showWekbId:true, editable:false]"/>
-                        <g:set var="globalCount" value="${2}"/>
-                    </g:if>
-                    <g:else>
-                        <g:set var="globalCount" value="${1}"/>
-                    </g:else>
-                    <g:each in="${orgInstance.ids?.toSorted{it.ns?.ns?.toLowerCase()}}" var="id" status="rowno">
-                        <g:if test="${rowno == 0}"><g:set var="rowno" value="${rowno+=globalCount}"/></g:if>
-                        <g:render template="idTableRow"
-                                  model="[orgInstance:orgInstance, tableRowNr:rowno+1, id:id, editable:editable_identifier]"
-                         />
-                </g:each>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <g:if test="${params.tab == 'identifier'}">
+    <%-- orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM") && ((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) --%>
+        <table class="ui table la-table">
+            <thead>
+            <tr>
+                <th class="one wide">${message(code:'default.number')}</th>
+                <th class="five wide">${message(code:'identifier.namespace.label')}</th>
+                <th class="four wide">${message(code:'identifier')}</th>
+                <th class="four wide">${message(code:'default.notes.label')}</th>
+                <th class="two wide">${message(code:'default.aktions')}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <g:render template="idTableRow"
+                      model="[orgInstance:orgInstance, tableRowNr:1, showGlobalUid:true, editable:false]"
+            />
+            <g:if test="${orgInstance.gokbId}">
+                <g:render template="idTableRow" model="[orgInstance:orgInstance, tableRowNr:2, showWekbId:true, editable:false]"/>
+                <g:set var="globalCount" value="${2}"/>
+            </g:if>
+            <g:else>
+                <g:set var="globalCount" value="${1}"/>
+            </g:else>
+            <g:each in="${orgInstance.ids?.toSorted{it.ns?.ns?.toLowerCase()}}" var="id" status="rowno">
+                <g:if test="${rowno == 0}"><g:set var="rowno" value="${rowno+=globalCount}"/></g:if>
+                <g:render template="idTableRow"
+                          model="[orgInstance:orgInstance, tableRowNr:rowno+1, id:id, editable:editable_identifier]"
+                />
+            </g:each>
+            </tbody>
+        </table>
+    </g:if>
 
 %{--------------CUSTOMER IDENTIFIERS------------------------}%
-        <g:if test="${hasAccessToCustomeridentifier}">
-
-            <div class="ui card">
-                <div class="content">
-                    <div class="header"><g:message code="org.customerIdentifier.plural"/></div>
-                </div>
-                <div class="content">
+        <g:if test="${params.tab == 'customerIdentifiers'}">
 
                     <table class="ui la-table table">
                         <thead>
                         <tr>
                             <th class="one wide">${message(code:'default.number')}</th>
                             <th class="five wide">${message(code:'default.provider.label')} : ${message(code:'platform.label')}</th>
-                            <th class="four wide">${message(code:'org.customerIdentifier')}</th>
-                            <th class="four wide">${message(code:'default.note.label')}</th>
+                            <th class="three wide">${message(code:'org.customerIdentifier')}</th>
+                            <th class="three wide">${message(code:'org.requestorKey')}</th>
+                            <th class="two wide">${message(code:'default.note.label')}</th>
                             %{--<th>${message(code:'default.isPublic.label')}</th>--}%
                             <th class="two wide">${message(code:'default.aktions')}</th>
                         </tr>
@@ -126,6 +120,7 @@
                                         ${ci.getProvider()} : ${ci.platform}
                                     </td>
                                     <td>${ci.value}</td>
+                                    <td>${ci.requestorKey}</td>
                                     <td>${ci.note}</td>
                                     <td>
                                         <%  boolean editable_this_ci = (ci.owner.id == institution.id) &&
@@ -154,9 +149,8 @@
                         </g:each>
                         </tbody>
                 </table>
-                </div>
-            </div>
         </g:if>
+    </div>
 </body>
 </html>
 <g:if test="${actionName == 'ids'}">

@@ -8,6 +8,7 @@ class CustomerIdentifier {
     @RefdataAnnotation(cat = 'CustomerIdentifierType')
     RefdataValue type
     String value
+    String requestorKey
     String note
 
     Org customer        // target org
@@ -23,7 +24,8 @@ class CustomerIdentifier {
            version column:'cid_version'
               type column:'cid_type_rv_fk'
              value column:'cid_value'
-             note  column:'cid_note', type:'text'
+      requestorKey column:'cid_requestor_key', type: 'text'
+             note  column:'cid_note', type: 'text'
           customer column:'cid_customer_fk'
           platform column:'cid_platform_fk'
              owner column:'cid_owner_fk'
@@ -31,7 +33,8 @@ class CustomerIdentifier {
     }
 
     static constraints = {
-        value    (blank:true)
+        value           (nullable: true)
+        requestorKey    (nullable: true)
         note     (nullable:true, blank:true)
     }
 

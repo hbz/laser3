@@ -84,14 +84,14 @@
                                                     <g:if test="${ie.tipp.status == RDStore.TIPP_STATUS_DELETED}">
                                                         <div class="item willBeReplaced willBeReplacedStrong">
                                                             <semui:listIcon hideTooltip="true" type="${ie.tipp.titleType}"/>
-                                                            <strong><g:link controller="tipp" action="show" id="${ie.tipp.id}">${ie.tipp.name}</g:link></strong>
+                                                            <strong><g:link controller="tipp" action="show" id="${ie.tipp.id}">${ie.name}</g:link></strong>
                                                         </div>
                                                         <i><g:message code="issueEntitlement.missingSource"/></i>
                                                     </g:if>
                                                     <g:else>
                                                         <div class="item">
                                                             <semui:listIcon hideTooltip="true" type="${ie.tipp.titleType}"/>
-                                                            <strong><g:link controller="tipp" action="show" id="${ie.tipp.id}">${ie.tipp.name}</g:link></strong>
+                                                            <strong><g:link controller="tipp" action="show" id="${ie.tipp.id}">${ie.name}</g:link></strong>
                                                         </div>
                                                     </g:else>
                                                     <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
@@ -184,7 +184,7 @@
                                                         <semui:listIcon hideTooltip="true"
                                                                         type="${ie.tipp.titleType}"/>
                                                         <strong><g:link controller="tipp" action="show"
-                                                                        id="${ie.tipp.id}">${ie.tipp.name}</g:link></strong>
+                                                                        id="${ie.tipp.id}">${ie.name}</g:link></strong>
                                                         <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
                                                     </div>
                                                 </g:each>
@@ -274,7 +274,7 @@
                                                     <div class="item">
                                                         <semui:listIcon hideTooltip="true" type="${item.ie.tipp.titleType}"/>
                                                         <strong>
-                                                            <g:link controller="tipp" action="show" id="${item.ie.tipp.id}">${item.ie.tipp.name}</g:link>
+                                                            <g:link controller="tipp" action="show" id="${item.ie.tipp.id}">${item.ie.name}</g:link>
                                                         </strong>
                                                     </div>
                                                 </g:each>
@@ -322,7 +322,7 @@
                                                         <semui:listIcon hideTooltip="true"
                                                                         type="${item.ie.tipp.titleType}"/>
                                                         <strong><g:link controller="tipp" action="show"
-                                                                        id="${item.ie.tipp.id}">${item.ie.tipp.name}</g:link></strong>
+                                                                        id="${item.ie.tipp.id}">${item.ie.name}</g:link></strong>
                                                     </div>
                                                 </g:each>
                                             </div>
