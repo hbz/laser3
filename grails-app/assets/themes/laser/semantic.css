@@ -1061,7 +1061,11 @@ aside.ui.accordion .title:not(.ui) {
   display: inline-flex;
 }
 
-.la-list-icon:before {
+i.icon.la-list-icon {
+  margin: 0 0.5rem 0 0;
+}
+
+i.icon.la-list-icon:before {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
@@ -17286,6 +17290,30 @@ ol.ui.horizontal.list li:before,
   opacity: 1;
 }
 
+.la-timeLineSegment-contact .row .button {
+  opacity: 0;
+  -webkit-transition: opacity 1s;
+  transition: opacity 1s;
+}
+
+.la-timeLineSegment-contact .row .button.disabled {
+  opacity: 0!important;
+  -webkit-transition: opacity 1s;
+  transition: opacity 1s;
+}
+
+.la-timeLineSegment-contact .row:hover .button {
+  opacity: 1;
+}
+
+.la-timeLineSegment-contact .row:hover .button.disabled {
+  opacity: 0.3 !important;
+}
+
+.la-timeLineSegment-contact .row .button:focus {
+  opacity: 1;
+}
+
 td .la-list-border-around {
   border: 1px solid #d3dae3;
 }
@@ -23949,14 +23977,20 @@ legend {
 
 /* Special Grid for Timeline */
 
-.ui.segment.la-timeLineSegment {
+.ui.segment.la-timeLineSegment-contact {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+.ui.segment.la-timeLineSegment-announcement {
   background-color: #FFFFFF;
   border: none;
+  padding: 0;
 }
 
 .la-timeLineGrid {
   border-left: 2px dashed #dcdcdc;
-  margin: 0 10px;
 }
 
 .la-timeLineGrid h2.ui.header {
@@ -23970,10 +24004,18 @@ legend {
 
 .la-timeLineGrid .la-timeLineIcon {
   position: absolute;
-  left: 1px;
   top: 0;
   z-index: 9;
+}
+
+.la-timeLineGrid .la-timeLineIcon-announcement {
+  left: 1px;
   background-color: #FFFFFF;
+}
+
+.la-timeLineGrid .la-timeLineIcon-contact {
+  left: -7px;
+  background-color: #fffaf5;
 }
 /*
  * # Semantic - Menu

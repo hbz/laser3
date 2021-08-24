@@ -138,13 +138,13 @@
             <g:message code="profile.dashboardSysAnnTimeWindow"
                        args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
             <g:if test="${systemAnnouncements.size() > 0 }">
-                <div class="ui segment la-timeLineSegment">
+                <div class="ui segment la-timeLineSegment-announcement">
                     <div class="la-timeLineGrid">
                         <div class="ui grid stackable">
                             <g:each in="${systemAnnouncements}" var="sa">
                                 <div class="row">
                                     <div class="one wide column">
-                                        <i class="arrow alternate circle right outline large icon la-timeLineIcon"></i>
+                                        <i class="arrow alternate circle right outline large icon la-timeLineIcon la-timeLineIcon-announcement"></i>
                                     </div><!-- .column -->
                                     <div class="two wide column">
                                         <h2 class="ui header">

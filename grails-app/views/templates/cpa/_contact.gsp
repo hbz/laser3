@@ -1,7 +1,7 @@
 <%@ page import="de.laser.helper.RDStore" %>
 <laser:serviceInjection/>
 <g:if test="${contact}">
-	<div class="ui js-copyTriggerParent item contact-details">
+	<div class="ui js-copyTriggerParent item contact-details" style="display: flex;">
         <div style="display: flex">
             <semui:contactIcon type="${contact.contentType.('value')}" />
             <div class="content la-space-right">
