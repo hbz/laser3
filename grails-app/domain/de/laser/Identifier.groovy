@@ -82,7 +82,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
     @Override
     Collection<String> getLogIncluded() {
-        [ 'value' ]
+        [ 'value', 'note' ]
     }
     @Override
     Collection<String> getLogExcluded() {
@@ -120,6 +120,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         def namespace    = map.get('namespace')
         String name_de   = map.get('name_de')
         String nsType    = map.get('nsType')
+        String note      = map.get('note')
         Identifier parent = map.get('parent')
         boolean isUnique = true
         if(map.containsKey('isUnique') && map.get('isUnique') == false)
@@ -183,6 +184,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
                 if(parent)
                     ident.instanceOf = parent
 				ident.setReference(reference)
+                ident.note = note
 				boolean success = ident.save()
                 if (success){
                     factoryResult.status += FactoryResult.STATUS_OK
