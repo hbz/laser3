@@ -11,7 +11,7 @@
 }
 .ui.card .ui.label {
   margin: 0;
-  background-color: #d3dae3;
+  //background-color: #d3dae3;
 }
 // annual rings
 

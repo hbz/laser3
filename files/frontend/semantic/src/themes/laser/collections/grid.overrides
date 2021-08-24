@@ -14,7 +14,15 @@
 .ui.segment.la-timeLineSegment-contact {
   background-color:transparent;
   border: none;
-  padding: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  .ui.header {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  i.circular.icon {
+    box-shadow: 0 0 0 0.1em rgb(159 158 156) inset;
+  }
 }
 .ui.segment.la-timeLineSegment-announcement {
   background-color:@white;

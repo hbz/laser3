@@ -85,7 +85,7 @@
                             Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg))}">
                 <tr>
 
-                    <td colspan="3">
+                    <td colspan="3" style="padding-bottom:0;">
                         <%-- public --%>
                         <g:if test="${ Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
                                 Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)  }">
@@ -98,7 +98,7 @@
                                                     <i class="circular large address card icon la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                 </div>
                                                 <div class="twelve wide column">
-                                                    <div class="ui label">
+                                                    <div class="ui blue label">
                                                         ${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
@@ -170,7 +170,7 @@
                                                     <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                 </div>
                                                 <div class="twelve wide column">
-                                                    <div class="ui label">
+                                                    <div class="ui blue label">
                                                         ${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
@@ -197,7 +197,7 @@
                                                     <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" ></i>
                                                </div>
                                                 <div class="twelve wide column">
-                                                    <div class="ui label">
+                                                    <div class="ui blue label">
                                                         ${(RefdataValue.getByValue(roleRespValue)).getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
@@ -216,17 +216,21 @@
                                                         </g:render>
                                                     </g:each>
 
-                                                    <g:if test="${editmode}">
-                                                        <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
-                                                        <div class="ui mini icon buttons">
-                                                            <g:link class="ui negative button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
-                                                                    data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
-                                                                    data-confirm-how = "unlink">
-                                                                <i class="unlink icon"></i>
-                                                            </g:link>
-                                                        </div>
-                                                    </g:if>
+
                                         </div>
+
+                                        <g:if test="${editmode}">
+                                            <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
+                                            <div class="two wide column">
+                                                <div class="ui mini icon buttons">
+                                                    <g:link class="ui negative button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
+                                                            data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
+                                                            data-confirm-how = "unlink">
+                                                        <i class="unlink icon"></i>
+                                                    </g:link>
+                                                </div>
+                                            </div>
+                                        </g:if>
                                     </div>
                                 </g:each>
                                     </div>

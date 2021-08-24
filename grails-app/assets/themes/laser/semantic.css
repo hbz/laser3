@@ -15965,7 +15965,6 @@ a.ui.basic.label:hover {
 
 .ui.card .ui.label {
   margin: 0;
-  background-color: #d3dae3;
 }
 
 .ui.label.la-annual-rings {
@@ -23980,7 +23979,18 @@ legend {
 .ui.segment.la-timeLineSegment-contact {
   background-color: transparent;
   border: none;
-  padding: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.ui.segment.la-timeLineSegment-contact .ui.header {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.ui.segment.la-timeLineSegment-contact i.circular.icon {
+  -webkit-box-shadow: 0 0 0 0.1em rgb(159 158 156) inset;
+  box-shadow: 0 0 0 0.1em rgb(159 158 156) inset;
 }
 
 .ui.segment.la-timeLineSegment-announcement {
