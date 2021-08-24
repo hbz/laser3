@@ -67,6 +67,12 @@ class DateUtils {
 
     // --
 
+    static int getYearAsInteger(Date date) {
+        date ? new SimpleDateFormat('yyyy').format(date).toInteger() : null
+    }
+
+    // --
+
     static Date parseDateGeneric(String value) {
         Date parsed_date
 

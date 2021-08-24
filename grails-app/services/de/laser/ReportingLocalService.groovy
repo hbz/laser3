@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.RDStore
 import de.laser.reporting.ReportingCache
 import de.laser.reporting.ReportingCacheHelper
 import de.laser.reporting.myInstitution.base.BaseQuery
@@ -104,10 +105,10 @@ class ReportingLocalService {
                 }
             }
             else if (params.query == 'timeline-annualMember') {
-                result.labels = SubscriptionReporting.getTimelineQueryLabels(params)
+                result.labels = SubscriptionReporting.getTimelineQueryLabelsForAnnual(params)
 
-                result.list = Subscription.executeQuery( 'select sub from Subscription sub where sub.id in (:idList) order by sub.name, sub.startDate, sub.endDate', [idList: idList] )
-                result.tmpl = '/subscription/reporting/details/timeline/subscription'
+                result.list = Subscription.executeQuery( 'select sub from Subscription sub where sub.id in (:idList) order by sub.name, sub.startDate, sub.endDate', [idList: idList])
+                result.tmpl = '/subscription/reporting/details/timeline/annualMember'
             }
             else {
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
