@@ -120,8 +120,9 @@ class IssueEntitlement extends AbstractBase implements Comparable {
           ie.generateSortTitle()
       }
       if(ie.save()) {
-        if(tipp.coverages) {
-          tipp.coverages.each { TIPPCoverage tc ->
+          Set<TIPPCoverage> tippCoverages = TIPPCoverage.findAllByTipp(tipp)
+        if(tippCoverages) {
+          tippCoverages.each { TIPPCoverage tc ->
             IssueEntitlementCoverage ic = new IssueEntitlementCoverage(issueEntitlement: ie)
             ic.startDate = tc.startDate
             ic.startVolume = tc.startVolume
@@ -136,13 +137,16 @@ class IssueEntitlement extends AbstractBase implements Comparable {
               throw new EntitlementCreationException(ic.errors)
           }
         }
-        if(tipp.priceItems) {
-            tipp.priceItems.each { PriceItem tp ->
+          static_logger.debug("creating price items for ${tipp}")
+          Set<PriceItem> tippPriceItems = PriceItem.findAllByTipp(tipp)
+        if(tippPriceItems) {
+            tippPriceItems.each { PriceItem tp ->
                 PriceItem ip = new PriceItem(issueEntitlement: ie)
                 ip.startDate = tp.startDate
                 ip.endDate = tp.endDate
                 ip.listPrice = tp.listPrice
                 ip.listCurrency = tp.listCurrency
+                ip.setGlobalUID()
                 if(!ip.save())
                     throw new EntitlementCreationException(ip.errors)
             }
