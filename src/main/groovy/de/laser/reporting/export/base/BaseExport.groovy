@@ -40,7 +40,7 @@ abstract class BaseExport {
             '@ae-license-member'        : 'Anzahl Teilnehmerverträge',
 
             '@ae-org-accessPoint'       : 'Zugangskonfigurationen (ohne Links)',    // dyn.value
-            '@ae-org-contact'           : 'Kontaktdaten',
+            '@ae-org-contact'           : 'Kontaktdaten',                           // dyn.value
             '@ae-org-readerNumber'      : 'Nutzerzahlen und Stichtage',             // dyn.value
 
             '@ae-entitlement-priceItem'                         : 'Preise',
