@@ -247,7 +247,6 @@ class OrgExport extends BaseExport {
                                 ].findAll().join(', ')
 
                                 String a2 = addr.type.collect{ it.getI10n('value') }.join(', ') + ': ' + a1
-                                println a2
                                 addressList.add( a2 )
                             }
                         }

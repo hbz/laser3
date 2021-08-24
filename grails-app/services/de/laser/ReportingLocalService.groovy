@@ -30,21 +30,16 @@ class ReportingLocalService {
             Subscription sub = Subscription.get( params.id )
 
             if (prefix in ['timeline']) {
-                result.putAll( SubscriptionReporting.query(clone) )
-                result.labels.chart = SubscriptionReporting.getCurrentQuery2Config( sub ).getAt('Entwicklung').getAt(clone.query).getAt('chartLabels')
+                Map<String, Object> queryCfg = SubscriptionReporting.getCurrentQuery2Config( sub ).getAt('Entwicklung').getAt(clone.query) as Map
 
-                if (clone.query in ['timeline-cost']) {
-                    result.tmpl = '/subscription/reporting/chart/timeline-cost'
-                }
-                else {
-                    result.tmpl = '/subscription/reporting/chart/generic-timeline'
-                }
+                result.putAll( SubscriptionReporting.query(clone) )
+                result.labels.chart = queryCfg.getAt('chartLabels')
+                result.tmpl = '/subscription/reporting/chart/timeline/' + queryCfg.getAt('chart')
             }
             else {
                 result.putAll( SubscriptionReporting.query(clone) )
                 result.labels.tooltip = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone).get(1)
-
-                result.tmpl = '/subscription/reporting/chart/generic-bar'
+                result.tmpl = '/subscription/reporting/chart/default'
             }
 
             ReportingCache rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION )
@@ -107,6 +102,12 @@ class ReportingLocalService {
                     result.minusList = minusIdList ? Org.executeQuery( hql, [idList: minusIdList] ) : []
                     result.tmpl      = '/subscription/reporting/details/timeline/organisation'
                 }
+            }
+            else if (params.query == 'timeline-annualMember') {
+                result.labels = SubscriptionReporting.getTimelineQueryLabels(params)
+
+                result.list = Subscription.executeQuery( 'select sub from Subscription sub where sub.id in (:idList) order by sub.name, sub.startDate, sub.endDate', [idList: idList] )
+                result.tmpl = '/subscription/reporting/details/timeline/subscription'
             }
             else {
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
