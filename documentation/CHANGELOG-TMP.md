@@ -7,7 +7,17 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3743    24.08.2021  dev     2.2         Andreas Feature     Menüoption umbenennen
+
+3740    24.08.2021  dev     2.2         Andreas Feature     Identifier können für Lizenzen und Verträge mit Notizen versehen werden
+
+3739    24.08.2021  dev     2.2         Andreas Feature     neue Lizenzform eingefügt
+
+3730    24.08.2021  dev     2.2         Andreas Feature     neue Option für Nutzerzahlen eingefügt
+
 3728    24.08.2021  dev     2.2         Andreas Bug         Preisangaben wurden nicht mit Bestandsangaben angelegt
+
+3727    24.08.2021  dev     2.2         Andreas Bug         Als Zielobjekt konnte das Quellobjekt ausgewählt werden
 
 3314    24.08.2021  dev     2.2         Andreas Feature     Titelname gehört zu den überwachten Eigenschaften
 

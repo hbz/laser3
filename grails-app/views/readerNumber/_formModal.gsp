@@ -13,6 +13,8 @@
             break
         case 'newForResearchInstitute': preloadGroups = ReaderNumber.CONSTANTS_RESEARCH_INSTITUTE
             break
+        case 'newForScientificLibrary': preloadGroups = ReaderNumber.CONSTANTS_SCIENTIFIC_LIBRARY
+            break
     }
     if(formId.contains("newForSemester"))
         preloadGroups = ReaderNumber.CONSTANTS_HIGH_SCHOOL

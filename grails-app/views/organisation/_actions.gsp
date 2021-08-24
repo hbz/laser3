@@ -44,6 +44,7 @@
                 <semui:actionsDropdownItem data-semui="modal" href="#newForPublic" message="readerNumber.createForPublic.label" />
                 <semui:actionsDropdownItem data-semui="modal" href="#newForState" message="readerNumber.createForState.label" />
                 <semui:actionsDropdownItem data-semui="modal" href="#newForResearchInstitute" message="readerNumber.createForResearchInstitute.label" />
+                <semui:actionsDropdownItem data-semui="modal" href="#newForScientificLibrary" message="readerNumber.createForScientificLibrary.label" />
             </g:if>
 
         </g:if>
