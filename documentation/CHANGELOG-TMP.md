@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3728    24.08.2021  dev     2.2         Andreas Bug         Preisangaben wurden nicht mit Bestandsangaben angelegt
+
+3314    24.08.2021  dev     2.2         Andreas Feature     Titelname gehört zu den überwachten Eigenschaften
+
 3742    23.08.2021  dev     2.2         David   Feature     Reporting: Kontaktdaten exportieren
 
 3736    20.08.2021  dev     2.2         David   Feature     Workflows: Erweiterte Editierfunktion für INST-Admins
