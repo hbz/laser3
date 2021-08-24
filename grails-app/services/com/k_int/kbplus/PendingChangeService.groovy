@@ -495,7 +495,7 @@ class PendingChangeService extends AbstractLockableService {
 
                         log.debug("Update identifier ${targetIdentifier.ns.getI10n("name")}")
 
-                        targetIdentifier.value = changeDoc.new
+                        targetIdentifier[changeDoc.prop] = changeDoc.new
 
                         log.debug("Setting value for ${changeDoc.name}.${changeDoc.prop} to ${changeDoc.new}")
                         targetIdentifier.save()
