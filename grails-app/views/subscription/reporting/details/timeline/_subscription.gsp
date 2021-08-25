@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.helper.RDStore; de.laser.Org;" %>
+<%@ page import="de.laser.Links; de.laser.Subscription; de.laser.helper.RDStore; de.laser.Org;" %>
 <laser:serviceInjection />
 
 <g:render template="/subscription/reporting/details/timeline/base.part1" />
@@ -20,6 +20,7 @@
         <tr>
             <th></th>
             <th>${message(code:'subscription.label')}</th>
+            <th></th>
             <th>${message(code:'consortium.subscriber')}</th>
             <th>${message(code:'org.sortname.label')}</th>
             <th>${message(code:'default.status.label')}</th>
@@ -35,6 +36,22 @@
                     <td style="text-align: center">${i + 1}.</td>
                     <td>
                         <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
+                    </td>
+                    <td>
+                        <%
+                            List<Subscription> prevList = Links.executeQuery( 'select li.destinationSubscription from Links li where li.sourceSubscription = :sub and li.linkType = :linkType',
+                                    [sub:sub, linkType:RDStore.LINKTYPE_FOLLOWS] )
+                            prevList.each { prevSub ->
+                                print g.link([controller: 'subscription', action: 'show', id: prevSub.id], '<i class="icon arrow left"></i>' )
+                            }
+                        %>
+                        <%
+                            List<Subscription> nextList = Links.executeQuery( 'select li.sourceSubscription from Links li where li.destinationSubscription = :sub and li.linkType = :linkType',
+                                    [sub:sub, linkType:RDStore.LINKTYPE_FOLLOWS] )
+                            nextList.each { nextSub ->
+                                print g.link([controller: 'subscription', action: 'show', id: nextSub.id], '<i class="icon arrow right"></i>' )
+                            }
+                        %>
                     </td>
                     <td>
                         <g:link controller="organisation" action="show" id="${org.id}" target="_blank">${org.name}</g:link>

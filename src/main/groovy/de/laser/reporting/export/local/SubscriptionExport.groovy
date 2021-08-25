@@ -2,6 +2,7 @@ package de.laser.reporting.export.local
 
 import de.laser.ContextService
 import de.laser.Identifier
+import de.laser.Links
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.helper.DateUtils
@@ -33,7 +34,8 @@ class SubscriptionExport extends BaseExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-                                    '@ae-subscription-member' : FIELD_TYPE_CUSTOM_IMPL,     // virtual
+                                    '@ae-subscription-member'   : FIELD_TYPE_CUSTOM_IMPL,     // virtual
+                                    '@ae-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,     // virtual
                                     'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
@@ -61,6 +63,7 @@ class SubscriptionExport extends BaseExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
+                                    '@ae-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,     // virtual
                                     'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
@@ -171,6 +174,19 @@ class SubscriptionExport extends BaseExport {
                             [sub: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
                     )
                     content.add( members.collect{ it.name }.join( CSV_VALUE_SEPARATOR ) )
+                }
+                else if (key == '@ae-subscription-prevNext') {
+
+                    List<Subscription> prevList = Links.executeQuery( 'select li.destinationSubscription from Links li where li.sourceSubscription = :sub and li.linkType = :linkType',
+                            [sub:sub, linkType:RDStore.LINKTYPE_FOLLOWS] )
+                    List<Subscription> nextList = Links.executeQuery( 'select li.sourceSubscription from Links li where li.destinationSubscription = :sub and li.linkType = :linkType',
+                            [sub:sub, linkType:RDStore.LINKTYPE_FOLLOWS] )
+
+                    content.add(
+                            (prevList ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value'))
+                            + ' / ' +
+                            (nextList ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value'))
+                    )
                 }
             }
             // --> custom query depending filter implementation
