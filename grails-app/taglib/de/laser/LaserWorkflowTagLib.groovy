@@ -22,13 +22,13 @@ class LaserWorkflowTagLib {
             if (cnd.type != 0) {
                 List<String> fields = []
                 cnd.getFields().each { f ->
-                    String fstr = (cnd.getProperty( f + '_title') ?: 'Feld ohne Titel')
+                    String fstr = (cnd.getProperty( f + '_title') ?: '[ohne Titel]')
 
                     if (f.startsWith('checkbox')) {
                         fstr = ( cnd.getProperty( f ) == true ? '<i class="ui icon check square outline"></i> ' : '<i class="ui icon square outline la-light-grey"></i> ' ) + fstr
                     }
                     else if (f.startsWith('date')) {
-                        fstr = ( cnd.getProperty( f ) ?
+                        fstr = ( cnd.getProperty( f )  ?
                                 '<i class="icon calendar alternate outline"></i> ' + fstr + ': <strong>' + DateUtils.getSDF_NoTime().format(cnd.getProperty(f)) + '</strong>' :
                                 '<i class="icon calendar alternate outline la-light-grey"></i> ' + fstr  )
                     }
@@ -82,18 +82,17 @@ class LaserWorkflowTagLib {
                 else {
                     out << '<i class="icon square outline la-light-grey"></i> '
                 }
-                out << condition.getProperty(field + '_title') ?: 'Feld ohne Titel'
+                out << (condition.getProperty(field + '_title') ?: '[ohne Titel]')
             }
             else if (field.startsWith('date')) {
                 if (condition.getProperty(field)) {
                     out << '<i class="icon calendar alternate outline"></i> '
-                    out << condition.getProperty(field + '_title') ?: 'Feld ohne Titel'
+                    out << (condition.getProperty(field + '_title') ?: '[ohne Titel]')
                     out << ': ' + DateUtils.getSDF_NoTime().format(condition.getProperty(field))
                 }
                 else {
                     out << '<i class="icon calendar alternate outline la-light-grey"></i> '
-                    out << condition.getProperty(field + '_title') ?: 'Feld ohne Titel'
-                    out << ': '
+                    out << (condition.getProperty(field + '_title') ?: '[ohne Titel]')
                 }
             }
             else if (field.startsWith('file')) {
