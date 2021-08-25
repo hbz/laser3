@@ -111,7 +111,7 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
     def afterDelete() {
         super.afterDeleteHandler()
 
-        deletionService.deleteDocumentFromIndex(this.globalUID)
+        deletionService.deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
     }
     @Override
     def afterInsert() {

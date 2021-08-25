@@ -435,6 +435,8 @@
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</semui:link>
                                         <div class="divider"></div>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="killDataloadService">Kill ES Update Index</semui:link>
+                                        <div class="divider"></div>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="createESIndices">Create ES Indices</semui:link>
                                     </div>
                                 </div>
 

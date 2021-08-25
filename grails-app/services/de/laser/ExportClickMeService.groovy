@@ -561,14 +561,14 @@ class ExportClickMeService {
                     if (onlySubscription) {
                         if (fieldKey.startsWith('subscription.') || fieldKey.startsWith('participant.')) {
                             def fieldValue = getFieldValue(participantResult, field, sdf)
-                            row.add([field: fieldValue ?: '', style: null])
+                            row.add([field: fieldValue != null ? fieldValue : '', style: null])
                         } else {
                             row.add([field: '', style: null])
                         }
 
                     } else {
                         def fieldValue = getFieldValue(participantResult, field, sdf)
-                        row.add([field: fieldValue ?: '', style: null])
+                        row.add([field: fieldValue != null ? fieldValue : '', style: null])
                     }
                 }
             }
@@ -611,7 +611,7 @@ class ExportClickMeService {
                 }
                 else {
                         def fieldValue = getFieldValue(result, field, sdf)
-                        row.add([field: fieldValue ?: '', style: null])
+                        row.add([field: fieldValue != null ? fieldValue : '', style: null])
                     }
                 }
             }
