@@ -341,7 +341,7 @@ class PackageController {
 
         result.user = contextService.getUser()
         Package packageInstance
-        if(params.id.isLong())
+        if(params.id instanceof Long || params.id.isLong())
             packageInstance = Package.get(params.id)
         else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
             packageInstance = Package.findByGokbId(params.id)

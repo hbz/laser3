@@ -23,7 +23,7 @@ class TippController  {
     result.editable = false
 
     TitleInstancePackagePlatform tipp
-    if(params.id.isLong())
+    if(params.id instanceof Long || params.id.isLong())
       tipp = TitleInstancePackagePlatform.get(params.id)
     else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
       tipp = TitleInstancePackagePlatform.findByGokbId(params.id)
