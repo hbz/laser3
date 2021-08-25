@@ -1149,8 +1149,6 @@ class SubscriptionService {
     boolean deleteEntitlementbyID(sub, id) {
         IssueEntitlement ie = IssueEntitlement.findWhere(id: Long.parseLong(id), subscription: sub)
         if(ie == null) {
-            println(id)
-            println(sub.id)
             return false
         }
         else {
