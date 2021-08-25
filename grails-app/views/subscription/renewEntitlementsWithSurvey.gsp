@@ -93,10 +93,9 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 </div>
 
 <g:form name="renewEntitlements" id="${newSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
-    <g:hiddenField id="iesToAdd" name="iesToAdd"/>
-
     <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
     <g:hiddenField name="surveyConfigID" value="${surveyConfig?.id}"/>
+    <g:hiddenField name="tab" value="${params.tab}"/>
 
     <div class="ui segment">
 
@@ -145,13 +144,13 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 
             <div class="eight wide field" style="text-align: left;">
                 <g:if test="${editable && params.tab == 'allIEs'}">
-                    <button type="submit" name="process" value="preliminary" class="ui green button"><g:message
-                            code="renewEntitlementsWithSurvey.preliminary"/></button>
+                    <button type="submit" name="process" id="processButton" value="preliminary" class="ui green button">
+                        ${checkedCount} <g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
                 </g:if>
 
                 <g:if test="${editable && params.tab == 'selectedIEs'}">
-                    <button type="submit" name="process" value="remove" class="ui red button"><g:message
-                            code="renewEntitlementsWithSurvey.remove"/></button>
+                    <button type="submit" name="process" id="processButton" value="remove" class="ui red button">
+                        ${checkedCount}  <g:message code="renewEntitlementsWithSurvey.remove"/></button>
                 </g:if>
             </div>
 
@@ -178,34 +177,57 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 
 </body>
 <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.app.iesToAdd = [];
 
-        $(".select-all").click(function () {
-            var id = $(this).parents("table").attr("id");
-            if (this.checked) {
-                $("#" + id).find('.bulkcheck').prop('checked', true);
-                console.log($(this).parents('div.column').siblings('div'));
-                $(this).parents('div.column').siblings('div').find('.select-all').prop('checked', false);
-            } else {
-                $("#" + id).find('.bulkcheck').prop('checked', false);
-            }
-            $("#" + id + " .bulkcheck").trigger("change");
-        });
+        JSPC.app.selectAll = function () {
+            $('#select-all').is( ":checked") ? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
+            $('#select-all').is( ":checked") ? $("#surveyEntitlements tr").addClass("positive") : $("#surveyEntitlements tr").removeClass("positive");
+            JSPC.app.updateSelectionCache("all",$('#select-all').prop('checked'));
+        }
 
-        $("#surveyEntitlements .bulkcheck").change(function () {
-            var index = $(this).parents("tr").attr("data-index");
+        JSPC.app.updateSelectionCache = function (index,checked) {
+            $.ajax({
+                url: "<g:createLink controller="ajax" action="updateChecked" />",
+                data: {
+                    sub: "${newSub.id}?${params.tab}",
+                    index: index,
+                    <g:if test="${params.pkgfilter}">
+                        packages: ${params.pkgfilter},
+                    </g:if>
+                    referer: "${actionName}",
+                    checked: checked,
+                    tab: "${params.tab}",
+                    baseSubID: "${subscription.id}",
+                    newSubID: "${newSub.id}"
+                },
+                success: function (data) {
+                        <g:if test="${editable && params.tab == 'allIEs'}">
+                            $("#processButton").html(data.checkedCount + " ${g.message(code: 'renewEntitlementsWithSurvey.preliminary')}");
+                        </g:if>
+
+                        <g:if test="${editable && params.tab == 'selectedIEs'}">
+                            $("#processButton").html(data.checkedCount + " ${g.message(code: 'renewEntitlementsWithSurvey.remove')}");
+                        </g:if>
+                    }
+            }).done(function(result){
+
+            }).fail(function(xhr,status,message){
+                console.log("error occurred, consult logs!");
+            });
+    }
+
+    $("#select-all").change(function() {
+        JSPC.app.selectAll();
+    });
+
+    $(".bulkcheck").change(function() {
+        var index = $(this).parents("tr").attr("data-index");
             if (this.checked) {
                 $("tr[data-index='" + index + "'").addClass("positive");
-                JSPC.app.iesToAdd.push($(this).parents("tr").attr("data-ieId"));
             } else {
                 $("tr[data-index='" + index + "'").removeClass("positive");
-                var delIdx = JSPC.app.iesToAdd.indexOf($(this).parents("tr").attr("data-ieId"));
-                if (~delIdx) JSPC.app.iesToAdd.splice(delIdx, 1);
             }
-        });
+        JSPC.app.updateSelectionCache($(this).parents("tr").attr("data-ieId"), $(this).prop('checked'));
+    });
 
-        $("#renewEntitlements").submit(function () {
-            $("#iesToAdd").val(JSPC.app.iesToAdd.join(','));
-        });
 </laser:script>
 </html>

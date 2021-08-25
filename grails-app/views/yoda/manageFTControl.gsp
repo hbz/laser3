@@ -55,5 +55,30 @@
           </g:each>
         </tbody>
       </table>
+
+    <h3>Indices</h3>
+
+    <table class="ui celled la-table table">
+      <thead>
+      <tr>
+        <th>index</th>
+        <th>type</th>
+        <th>countIndex</th>
+        <th>countDB</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      <g:each in="${indices.sort{it.type}}" var="indexInfo">
+        <tr>
+          <td>${indexInfo.name}</td>
+          <td>${indexInfo.type}</td>
+          <td>${indexInfo.countIndex}</td>
+          <td>${indexInfo.countDB}</td>
+          <td><g:link action="deleteAndRefillIndex" params="[name: indexInfo.name]">Delete and refill Index</g:link></td>
+        </tr>
+      </g:each>
+      </tbody>
+    </table>
   </body>
 </html>

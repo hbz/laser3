@@ -119,7 +119,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     def afterDelete() {
         super.afterDeleteHandler()
 
-        deletionService.deleteDocumentFromIndex(genericOIDService.getOID(this))
+        deletionService.deleteDocumentFromIndex(genericOIDService.getOID(this, this.class.simpleName))
     }
 
     @Override

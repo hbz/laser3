@@ -88,3 +88,19 @@ grails.plugin.springsecurity.filterChain.chainMap = [
 //Mail
 grails.mail.poolSize = 20 //default 5 emails at a time, then que based system (prereq = async true)
 //grails.mail.port = 30//TODO: Diese Zeile nur für Lokal nutzen!!!
+
+aggr_es_indices = [
+        "DocContext": "laser_doc_contexts",
+        "IssueEntitlement": "laser_issue_intitlements",
+        "License": "laser_licenses",
+        "LicenseProperty": "laser_license_propertys",
+        "Org": "laser_orgs",
+        "Package": "laser_packages",
+        "Platform": "laser_platforms",
+        "Subscription": "laser_subscriptions",
+        "SubscriptionProperty": "laser_subscription_propertys",
+        "SurveyConfig": "laser_survey_configs",
+        "SurveyOrg": "laser_survey_orgs",
+        "Task": "laser_tasks",
+        "TitleInstancePackagePlatform": "laser_tipps",
+]

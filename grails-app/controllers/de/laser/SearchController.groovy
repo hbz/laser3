@@ -47,7 +47,7 @@ class SearchController  {
             }
 
             if(params.showMembersObjects && result.contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'){
-                params.consortiaGUID = result.contextOrg.globalUID
+                params.consortiaID = result.contextOrg.id
             }
 
             params.actionName = actionName
