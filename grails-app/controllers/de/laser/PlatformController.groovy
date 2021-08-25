@@ -91,7 +91,7 @@ class PlatformController  {
     def show() {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
         Platform platformInstance
-        if(params.id.isLong())
+        if(params.id instanceof Long || params.id.isLong())
             platformInstance = Platform.get(params.id)
         else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
             platformInstance = Platform.findByGokbId(params.id)
