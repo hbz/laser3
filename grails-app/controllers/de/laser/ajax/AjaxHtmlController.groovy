@@ -492,7 +492,6 @@ class AjaxHtmlController {
         selectedFieldsRaw.each { it -> selectedFields.put(it.key.replaceFirst('cde:', ''), it.value) }
 
         String filename = params.filename ?: BaseExportHelper.getFileName(['Reporting'])
-
         ReportingCache rCache
         BaseExport export
         Map<String, Object> detailsCache

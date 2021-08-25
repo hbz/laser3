@@ -1,7 +1,18 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.Org;" %>
+<%@ page import="de.laser.Subscription; de.laser.helper.RDStore; de.laser.Org;" %>
 <laser:serviceInjection />
 
 <g:render template="/subscription/reporting/details/timeline/base.part1" />
+
+<%
+    List<Long,Long> orgSubList = []
+    if (list) {
+        orgSubList = Org.executeQuery(
+                    'select org.id, sub.id from OrgRole oo join oo.org org join oo.sub sub where sub in (:list) and oo.roleType in :subscriberRoleTypes ' +
+                    'order by org.sortname, org.name, sub.name, sub.startDate, sub.endDate',
+                    [list: list, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
+                )
+    }
+%>
 
 <div class="ui segment">
     <table class="ui table la-table compact">
@@ -10,25 +21,29 @@
             <th></th>
             <th>${message(code:'subscription.label')}</th>
             <th>${message(code:'consortium.subscriber')}</th>
+            <th>${message(code:'org.sortname.label')}</th>
+            <th>${message(code:'default.status.label')}</th>
             <th>${message(code:'subscription.startDate.label')}</th>
             <th>${message(code:'subscription.endDate.label')}</th>
         </tr>
         </thead>
         <tbody>
-            <g:each in="${list}" var="sub" status="i">
+            <g:each in="${orgSubList}" var="orgSub" status="i">
+                <g:set var="org" value="${Org.get(orgSub[0])}" />
+                <g:set var="sub" value="${Subscription.get(orgSub[1])}" />
                 <tr>
                     <td style="text-align: center">${i + 1}.</td>
                     <td>
                         <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                     </td>
                     <td>
-                        <%
-                            Org.executeQuery('select oo.org from Subscription s join s.orgRelations oo where s = :sub and oo.roleType in :subscriberRoleTypes',
-                                    [sub: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
-                            ).each { o ->
-                                println g.link( o.name, controller: 'organisation', action: 'show', id: o.id, ) + '<br />'
-                            }
-                        %>
+                        <g:link controller="organisation" action="show" id="${org.id}" target="_blank">${org.name}</g:link>
+                    </td>
+                    <td>
+                        ${org.sortname}
+                    </td>
+                    <td>
+                        ${sub.status.getI10n('value')}
                     </td>
                     <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}" />
