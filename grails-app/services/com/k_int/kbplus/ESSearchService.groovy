@@ -42,7 +42,7 @@ class ESSearchService{
 
    //List client = getClient()
    RestHighLevelClient esclient = ESWrapperService.getClient()
-   Map<String, String> esSettings =  ESWrapperService.getESSettings()
+   def es_indices =  ESWrapperService.es_indices
 
     try {
       if(ESWrapperService.testConnection()) {
@@ -58,16 +58,13 @@ class ESSearchService{
             params.remove("tempFQ") //remove from GSP access
           }
 
-          //log.debug("index:${esSettings.indexName} query: ${query_str}")
-          //def search
           SearchResponse searchResponse
           try {
 
-            SearchRequest searchRequest = new SearchRequest(esSettings.indexName)
+            SearchRequest searchRequest = new SearchRequest(es_indices.values() as String[])
             SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
 
 
-            //SearchRequestBuilder searchRequestBuilder  = esclient.prepareSearch(esSettings.indexName)
             if (params.sort) {
               SortOrder order = SortOrder.ASC
               if (params.order) {
@@ -89,7 +86,7 @@ class ESSearchService{
             //searchRequestBuilder = searchRequestBuilder.addSort("priority", SortOrder.DESC)
             searchSourceBuilder.sort(new FieldSortBuilder("priority").order(SortOrder.DESC))
 
-            log.debug("index: ${esSettings.indexName} -> searchRequestBuilder: ${query_str}")
+            log.debug("index: ${es_indices as String[]} -> searchRequestBuilder: ${query_str}")
 
             if (params.actionName == 'index') {
 
@@ -119,7 +116,7 @@ class ESSearchService{
             //search = searchRequestBuilder.get()
           }
           catch (Exception ex) {
-            log.error("Error processing ${esSettings.indexName} ${query_str}", ex)
+            log.error("Error processing ${es_indices as String[]} ${query_str}", ex)
           }
 
           if (searchResponse) {
@@ -157,7 +154,7 @@ class ESSearchService{
 
             result.hits = searchResponse.getHits()
             result.resultsTotal = searchResponse.getHits().getTotalHits().value ?: 0
-            result.index = esSettings.indexName
+            result.index = es_indices as String[]
 
           }
 
@@ -243,10 +240,10 @@ class ESSearchService{
 
             if(mapping.value == 'availableToOrgs')
             {
-              if(params.consortiaGUID){
+              if(params.consortiaID){
                 if(sw.toString()) sw.write(" OR ")
 
-                sw.write(" consortiaGUID:\"${params.consortiaGUID}\"")
+                sw.write(" consortiaID:\"${params.consortiaID}\"")
               }
             }
             sw.write(" ) ")

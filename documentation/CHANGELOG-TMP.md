@@ -11,6 +11,8 @@
 
 3425    25.08.2021  dev     2.2         David   Feature     Mikro-Reporting Teilnehmerlaufzeit
 
+2765    24.08.2021  dev     2.2         Moe     Feature     Index Update für einzelne Objekttypen triggern
+
 3743    24.08.2021  dev     2.2         Andreas Feature     Menüoption umbenennen
 
 3740    24.08.2021  dev     2.2         Andreas Feature     Identifier können für Lizenzen und Verträge mit Notizen versehen werden

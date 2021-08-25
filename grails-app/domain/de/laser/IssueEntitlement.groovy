@@ -173,7 +173,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     }
 
   void afterDelete() {
-    deletionService.deleteDocumentFromIndex(this.globalUID)
+    deletionService.deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
   }
 
     void generateSortTitle() {
