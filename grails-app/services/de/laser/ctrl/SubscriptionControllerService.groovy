@@ -1330,8 +1330,8 @@ class SubscriptionControllerService {
 
     boolean deleteCustomerIdentifier(Long id) {
         CustomerIdentifier ci = CustomerIdentifier.get(id)
-        ci.value = ''
-        ci.requestorKey = ''
+        ci.value = null
+        ci.requestorKey = null
         ci.save()
     }
 
