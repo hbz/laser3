@@ -2905,11 +2905,11 @@ class SubscriptionControllerService {
 
         if (params.cmd) {
             String[] cmd = params.cmd.split(':')
-            if (cmd[0] == 'usage') {
-                result.putAll( workflowService.usage(params) ) // @ workflows
+            if (cmd[0] in ['edit']) {
+                result.putAll( workflowService.cmd(params) ) // @ workflows
             }
             else {
-                result.putAll( workflowService.cmd(params) ) // @ workflows
+                result.putAll( workflowService.usage(params) ) // @ workflows
             }
         }
         if (params.info) {

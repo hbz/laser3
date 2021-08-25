@@ -69,7 +69,7 @@
 
                 <div class="fields">
 
-                    <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-readerNumber', '@ae-entitlement-tippIdentifier'].contains( it.key ) }}" var="field" status="fc">%{-- TODO --}%
+                    <g:each in="${formFields.findAll { ['x-identifier','@ae-org-accessPoint','@ae-org-contact','@ae-org-readerNumber', '@ae-entitlement-tippIdentifier'].contains( it.key ) }}" var="field" status="fc">%{-- TODO --}%
                         <div class="wide eight field">
 
                             <g:set var="multiList" value="${ExportLocalHelper.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />

@@ -10,11 +10,13 @@ import de.laser.TitleInstancePackagePlatform
 import de.laser.ctrl.FinanceControllerService
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.reporting.myInstitution.SubscriptionQuery
 import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import java.text.SimpleDateFormat
+import java.time.Year
 
 class SubscriptionReporting {
 
@@ -45,7 +47,7 @@ class SubscriptionReporting {
                                     'Entwicklung' : [
                                             'timeline-entitlement' : [
                                                     label : 'Bestand',
-                                                    chart : 'bar',
+                                                    chart : '1axis3values',
                                                     chartLabels : [ 'Titel entfernt', 'Neue Titel', 'Aktuelle Titel' ]
                                             ]
                                     ]
@@ -54,19 +56,24 @@ class SubscriptionReporting {
                                     'Entwicklung' : [
                                             'timeline-member' : [
                                                     label : 'Teilnehmer',
-                                                    chart : 'bar',
+                                                    chart : '1axis3values',
                                                     chartLabels : [ 'Teilnehmer entfernt', 'Neue Teilnehmer', 'Aktuelle Teilnehmer' ]
                                             ],
                                             'timeline-cost' : [
                                                     label : 'Teilnehmerkosten',
-                                                    chart : 'bar',
+                                                    chart : 'cost',
                                                     chartLabels : [ 'Wert', 'Endpreis (nach Steuer)']
                                             ],
                                             'timeline-entitlement' : [
                                                     label : 'Bestand',
-                                                    chart : 'bar',
+                                                    chart : '1axis3values',
                                                     chartLabels : [ 'Titel entfernt', 'Neue Titel', 'Aktuelle Titel' ]
-                                            ]
+                                            ],
+                                            'timeline-annualMember-subscription' : [
+                                                    label       : 'Jahresring → Teilnehmerlizenz',
+                                                    chart       : 'annualMember',
+                                                    chartLabels : ['Teilnehmerlizenzen']
+                                            ],
                                     ]
                             ],
 
@@ -98,12 +105,23 @@ class SubscriptionReporting {
         Subscription sub = Subscription.get(params.id)
 
         CONFIG.base.query2.each { cats ->
-
             cats.value.each {it ->
                 if (it.value.containsKey(params.query)) {
                     String sd = sub.startDate ? sdf.format(sub.startDate) : NO_STARTDATE
                     String ed = sub.endDate ? sdf.format(sub.endDate) : NO_ENDDATE
                     meta = [ it.key, it.value.get(params.query).label, "${sd} - ${ed}" ]
+                }
+            }
+        }
+        meta
+    }
+    static List<String> getTimelineQueryLabelsForAnnual(GrailsParameterMap params) {
+        List<String> meta = []
+
+        CONFIG.base.query2.each { cats ->
+            cats.value.each {it ->
+                if (it.value.containsKey(params.query)) {
+                    meta = [ it.key, it.value.get(params.query).label, "${params.id}" ]
                 }
             }
         }
@@ -262,6 +280,28 @@ class SubscriptionReporting {
                                 idList: []
                         ])
                     }
+                }
+                else if (params.query == 'timeline-annualMember-subscription') {
+                    List<Long> subIdLists = []
+
+                    if (timeline) {
+                        subIdLists = Subscription.executeQuery(
+                                'select distinct s.id from Subscription s join s.orgRelations oo where s.instanceOf in (:timeline) and oo.roleType in :subscriberRoleTypes',
+                                            [timeline: timeline, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
+                        )
+                    }
+
+                    SubscriptionQuery.handleGenericAnnualXQuery(params.query, 'Subscription', subIdLists, result)
+
+                    List newData = []
+                    result.data.each { d ->
+                        newData.add([
+                            d[0], d[1],
+                            (sub.startDate && sub.endDate) ? DateUtils.getYearAsInteger(sub.startDate) <= d[0] && DateUtils.getYearAsInteger(sub.endDate) >= d[0] : false,
+                            d[1], d[2]
+                        ])
+                    }
+                    result.data = newData
                 }
             }
 

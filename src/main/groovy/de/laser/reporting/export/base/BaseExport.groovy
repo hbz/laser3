@@ -7,7 +7,8 @@ import de.laser.reporting.export.local.OrgExport as OrgExportLocal
 import de.laser.reporting.export.myInstitution.OrgExport as OrgExportGlobal
 import de.laser.reporting.export.myInstitution.ExportGlobalHelper
 import de.laser.reporting.export.myInstitution.LicenseExport
-import de.laser.reporting.export.myInstitution.SubscriptionExport
+import de.laser.reporting.export.local.SubscriptionExport as SubscriptionExportLocal
+import de.laser.reporting.export.myInstitution.SubscriptionExport as SubscriptionExportGlobal
 
 import grails.util.Holders
 
@@ -34,14 +35,16 @@ abstract class BaseExport {
 
             // virtual; without XY.CONFIG.base.x
 
-            '@ae-subscription-member'   : 'Anzahl Teilnehmer',
+            '@ae-subscription-member'       : 'Teilnehmer',
+            '@ae-subscription-memberCount'  : 'Anzahl der Teilnehmer',
+            '@ae-subscription-prevNext'     : 'Vorgänger/Nachfolger',
 
-            '@ae-license-subscription'  : 'Anzahl Lizenzen',
-            '@ae-license-member'        : 'Anzahl Teilnehmerverträge',
+            '@ae-license-subscriptionCount' : 'Anzahl der Lizenzen',
+            '@ae-license-memberCount'       : 'Anzahl der Teilnehmerverträge',
 
-            '@ae-org-accessPoint'       : 'Zugangskonfigurationen (ohne Links)',    // dyn.value
-            '@ae-org-contact'           : 'Kontaktdaten',
-            '@ae-org-readerNumber'      : 'Nutzerzahlen und Stichtage',             // dyn.value
+            '@ae-org-accessPoint'           : 'Zugangskonfigurationen (ohne Links)',    // dyn.value
+            '@ae-org-contact'               : 'Kontaktdaten',                           // dyn.value
+            '@ae-org-readerNumber'          : 'Nutzerzahlen und Stichtage',             // dyn.value
 
             '@ae-entitlement-priceItem'                         : 'Preise',
             '@ae-entitlement-tippName'                          : 'Titel der Ressource',
@@ -95,13 +98,25 @@ abstract class BaseExport {
                 OrgExportLocal.CONFIG_X
             }
         }
-        else if (key == SubscriptionExport.KEY) {
+        else if (key in [SubscriptionExportLocal.KEY, SubscriptionExportGlobal.KEY]) {
 
-            if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
-                SubscriptionExport.CONFIG_ORG_CONSORTIUM
+            String pkg = this.class.package.toString()
+
+            if (pkg.endsWith('.myInstitution')) {
+                if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+                    SubscriptionExportGlobal.CONFIG_ORG_CONSORTIUM
+                }
+                else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+                    SubscriptionExportGlobal.CONFIG_ORG_INST
+                }
             }
-            else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
-                SubscriptionExport.CONFIG_ORG_INST
+            else if (pkg.endsWith('.local')) {
+                if (contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM') {
+                    SubscriptionExportLocal.CONFIG_ORG_CONSORTIUM
+                }
+                else if (contextService.getOrg().getCustomerType() == 'ORG_INST') {
+                    SubscriptionExportLocal.CONFIG_ORG_INST
+                }
             }
         }
         else if (key == IssueEntitlementExport.KEY) {

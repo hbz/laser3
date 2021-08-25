@@ -1560,7 +1560,7 @@ class AjaxController {
         String value = params.value?.trim()
 
         if (owner && namespace && value) {
-            FactoryResult fr = Identifier.constructWithFactoryResult([value: value, reference: owner, namespace: namespace])
+            FactoryResult fr = Identifier.constructWithFactoryResult([value: value, reference: owner, note: params.note.trim(), namespace: namespace])
 
             fr.setFlashScopeByStatus(flash)
         }

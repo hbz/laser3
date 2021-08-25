@@ -118,6 +118,10 @@ class ExportGlobalHelper extends BaseExportHelper {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
                 label += (selList ? ': ' + selList.collect{it -> RefdataValue.get(it).getI10n('value') }.join(', ') : '') // TODO - export
             }
+            else if (fieldName == '@ae-org-contact') {
+                List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
+                label += (selList ? ': ' + selList.collect{it -> RefdataValue.get(it).getI10n('value') }.join(', ') : '') // TODO - export
+            }
             else if (fieldName == '@ae-org-readerNumber') {
                 List selList = export.getSelectedFields().get(fieldName)
                 List semList = selList.findAll{ it.startsWith('sem-') }.collect{ RefdataValue.get( it.replace('sem-', '') ).getI10n('value') }

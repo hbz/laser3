@@ -71,7 +71,7 @@
                         linkTypes.put(genericOIDService.getOID(rv)+"§"+perspective,l)
                     }
                     int perspIndex
-                    if(linkInstanceType == Combo.class.name) {}
+                    if(linkInstanceType == Combo.class.name) {
                         if(link && link.type == rv) {
                             if(context == link.fromOrg)
                                 perspIndex = 0
@@ -80,6 +80,7 @@
                             else perspIndex = 0
                             linkType = "${genericOIDService.getOID(rv)}§${perspIndex}"
                         }
+                    }
                     else {
                         if(link && link.linkType == rv) {
                             if(context in [link.sourceSubscription,link.sourceLicense]) {

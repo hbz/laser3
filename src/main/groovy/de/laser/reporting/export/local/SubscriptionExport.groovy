@@ -1,7 +1,8 @@
-package de.laser.reporting.export.myInstitution
+package de.laser.reporting.export.local
 
 import de.laser.ContextService
 import de.laser.Identifier
+import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.helper.DateUtils
@@ -33,13 +34,14 @@ class SubscriptionExport extends BaseExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
-                                    '@ae-subscription-memberCount'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
+                                    '@ae-subscription-member'   : FIELD_TYPE_CUSTOM_IMPL,     // virtual
+                                    '@ae-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,     // virtual
                                     'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
                                     'isPublicForApi'        : FIELD_TYPE_PROPERTY,
                                     'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   //  qdp
+                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
                             ]
                     ]
             ]
@@ -61,6 +63,7 @@ class SubscriptionExport extends BaseExport {
                                     'kind'                  : FIELD_TYPE_REFDATA,
                                     'form'                  : FIELD_TYPE_REFDATA,
                                     'resource'              : FIELD_TYPE_REFDATA,
+                                    '@ae-subscription-prevNext' : FIELD_TYPE_CUSTOM_IMPL,     // virtual
                                     'x-provider'            : FIELD_TYPE_CUSTOM_IMPL,
                                     'hasPerpetualAccess'    : FIELD_TYPE_PROPERTY,
                                     'hasPublishComponent'   : FIELD_TYPE_PROPERTY,
@@ -72,7 +75,7 @@ class SubscriptionExport extends BaseExport {
             ]
     ]
 
-    SubscriptionExport (String token, Map<String, Object> fields) {
+    SubscriptionExport(String token, Map<String, Object> fields) {
         this.token = token
 
         // keeping order ..
@@ -81,7 +84,7 @@ class SubscriptionExport extends BaseExport {
                 selectedExportFields.put(k, fields.get(k))
             }
         }
-        ExportGlobalHelper.normalizeSelectedMultipleFields( this )
+        ExportLocalHelper.normalizeSelectedMultipleFields( this )
     }
 
     @Override
@@ -91,7 +94,7 @@ class SubscriptionExport extends BaseExport {
 
     @Override
     String getFieldLabel(String fieldName) {
-        ExportGlobalHelper.getFieldLabel( this, fieldName )
+        ExportLocalHelper.getFieldLabel( this, fieldName )
     }
 
     @Override
@@ -99,6 +102,7 @@ class SubscriptionExport extends BaseExport {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+        LinksGenerationService linksGenerationService = (LinksGenerationService) Holders.grailsApplication.mainContext.getBean('linksGenerationService')
 
         Subscription sub = obj as Subscription
         List<String> content = []
@@ -165,18 +169,28 @@ class SubscriptionExport extends BaseExport {
                     )
                     content.add( plts.collect{ it.name }.join( CSV_VALUE_SEPARATOR ))
                 }
-                else if (key == '@ae-subscription-memberCount') {
-                    int members = Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
-                            [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
-                    )[0]
-                    content.add( members as String )
+                else if (key == '@ae-subscription-member') {
+                    List<Org> members = Subscription.executeQuery(
+                            'select distinct oo.org from Subscription sub join sub.orgRelations oo where sub = :sub and oo.roleType in :subscriberRoleTypes',
+                            [sub: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
+                    )
+                    content.add( members.collect{ it.name }.join( CSV_VALUE_SEPARATOR ) )
+                }
+                else if (key == '@ae-subscription-prevNext') {
+
+                    Map<String, List> navMap = linksGenerationService.generateNavigation(sub, false)
+                    content.add(
+                            (navMap.prevLink ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value'))
+                            + ' / ' +
+                            (navMap.nextLink ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value'))
+                    )
                 }
             }
             // --> custom query depending filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
 
                 if (key == 'x-property') {
-                    Long pdId = ExportGlobalHelper.getDetailsCache(token).id as Long
+                    Long pdId = ExportLocalHelper.getDetailsCache(token).id as Long
 
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(sub, pdId, contextService.getOrg())
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values

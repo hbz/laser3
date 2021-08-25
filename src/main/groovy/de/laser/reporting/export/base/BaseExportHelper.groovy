@@ -55,7 +55,7 @@ abstract class BaseExportHelper {
 
     static boolean isFieldMultiple(String fieldName) {
 
-        if (fieldName in [ 'x-identifier', '@ae-org-accessPoint', '@ae-org-readerNumber', '@ae-entitlement-tippIdentifier']) {
+        if (fieldName in [ 'x-identifier', '@ae-org-accessPoint', '@ae-org-contact', '@ae-org-readerNumber', '@ae-entitlement-tippIdentifier']) {
             return true
         }
         return false
@@ -82,6 +82,9 @@ abstract class BaseExportHelper {
         }
         else if (key == '@ae-org-accessPoint') {
             getAccessPointMethodsforDropdown()
+        }
+        else if (key == '@ae-org-contact') {
+            getContactOptionsforDropdown()
         }
         else if (key == '@ae-org-readerNumber') {
             getReaderNumberSemesterAndDueDatesForDropdown()
@@ -114,6 +117,13 @@ abstract class BaseExportHelper {
 
     static List getAccessPointMethodsforDropdown() {
         List<RefdataValue> aptList = RefdataCategory.getAllRefdataValues( RDConstants.ACCESS_POINT_TYPE )
+
+        aptList.collect{ it ->
+            [ it.id, it.getI10n('value') ]
+        }
+    }
+    static List getContactOptionsforDropdown() {
+        List<RefdataValue> aptList = RefdataCategory.getAllRefdataValues( RDConstants.REPORTING_CONTACT_TYPE )
 
         aptList.collect{ it ->
             [ it.id, it.getI10n('value') ]

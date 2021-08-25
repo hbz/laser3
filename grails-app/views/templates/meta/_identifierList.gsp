@@ -8,10 +8,11 @@
 --%>
 <g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 
-<div class="ui three column grid">
+<div class="ui four column grid">
     <div class="ui header row">
         <div class="column">${message(code: 'identifier.namespace.label')}</div>
         <div class="column">${message(code: 'default.identifier.label')}</div>
+        <div class="column">${message(code: 'default.note.label')}</div>
         <g:if test="${editable}">
             <div class="column">${message(code: 'default.actions.label')}</div>
         </g:if>
@@ -61,6 +62,16 @@
                     </g:else>
                 </div>
                 <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
+                    <div class="column">
+                        <g:if test="${ident instanceof Identifier}">
+                            <g:if test="${!ident.instanceOf}">
+                                <semui:xEditable owner="${ident}" field="note"/>
+                            </g:if>
+                            <g:else>
+                                ${ident.note}
+                            </g:else>
+                        </g:if>
+                    </div>
                     <div class="column">
                         <g:if test="${editable && ident instanceof Identifier}">
                             <g:if test="${(object instanceof Subscription || object instanceof License)}">

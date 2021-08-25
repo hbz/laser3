@@ -79,6 +79,7 @@ class AjaxJsonController {
 
         data = subscriptionService.getMySubscriptions_readRights(queryParams)
         if (data) {
+            data = data-Subscription.get(params.context)
             if (params.valueAsOID){
                 data.each { Subscription s ->
                     result.add([value: genericOIDService.getOID(s), text: s.dropdownNamingConvention()])
@@ -110,6 +111,7 @@ class AjaxJsonController {
 
         data =  licenseService.getMyLicenses_writeRights(queryParams)
         if (data) {
+            data = data-License.get(params.context)
             if (params.valueAsOID){
                 data.each { License l ->
                     result.add([value: genericOIDService.getOID(l), text: l.dropdownNamingConvention()])

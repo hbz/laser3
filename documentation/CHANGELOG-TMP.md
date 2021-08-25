@@ -7,9 +7,29 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3749    25.08.2021  dev     2.2         David   Feature     Reporting: Lizenz-Export für Details @ subscription/reporting
+
+3425    25.08.2021  dev     2.2         David   Feature     Mikro-Reporting Teilnehmerlaufzeit
+
+3743    24.08.2021  dev     2.2         Andreas Feature     Menüoption umbenennen
+
+3740    24.08.2021  dev     2.2         Andreas Feature     Identifier können für Lizenzen und Verträge mit Notizen versehen werden
+
+3739    24.08.2021  dev     2.2         Andreas Feature     neue Lizenzform eingefügt
+
+3730    24.08.2021  dev     2.2         Andreas Feature     neue Option für Nutzerzahlen eingefügt
+
+3728    24.08.2021  dev     2.2         Andreas Bug         Preisangaben wurden nicht mit Bestandsangaben angelegt
+
+3727    24.08.2021  dev     2.2         Andreas Bug         Als Zielobjekt konnte das Quellobjekt ausgewählt werden
+
+3314    24.08.2021  dev     2.2         Andreas Feature     Titelname gehört zu den überwachten Eigenschaften
+
 3741    23.08.2021  dev     2.2         Moe     Feature     Export Renewal
 
 3032    23.08.2021  dev     2.2         Moe     Feature      Titelumfrage: Auswahl-Box über mehrere Seiten speichern bei Bestandsauswahl
+
+3742    23.08.2021  dev     2.2         David   Feature     Reporting: Kontaktdaten exportieren
 
 3736    20.08.2021  dev     2.2         David   Feature     Workflows: Erweiterte Editierfunktion für INST-Admins
 
