@@ -11,13 +11,28 @@
 
 
 /* Special Grid for Timeline */
-.ui.segment.la-dateAnnounceSegment {
+.ui.segment.la-timeLineSegment-contact {
+  background-color:transparent;
+  border: none;
+  padding-top: 0;
+  padding-bottom: 0;
+  .ui.header {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  i.circular.icon {
+    box-shadow: 0 0 0 0.1em rgb(159 158 156) inset;
+  }
+}
+.ui.segment.la-timeLineSegment-announcement {
   background-color:@white;
   border: none;
+  padding: 0;
 }
-.la-dateAnnounceGrid {
-    border-left: 3px dashed #f6f6f6;
-    margin: 0 10px;
+
+.la-timeLineGrid {
+    border-left: 2px dashed #dcdcdc;
+    //margin: 0 10px;
   h2.ui.header{
     font-size: 1.1rem;
     padding-top:3px
@@ -25,10 +40,18 @@
   .one.wide.column {
     position: relative;
   }
-  .arrow.alternate.circle.right.outline.icon {
+  .la-timeLineIcon{
     position: absolute;
-    left: 1px;
     top: 0;
     z-index: 9;
+  }
+  .la-timeLineIcon-announcement{
+    left: 1px;
+    background-color:@white;
+  }
+
+  .la-timeLineIcon-contact {
+    left: -7px;
+    background-color:@laSecondaryBackground;
   }
 }

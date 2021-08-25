@@ -5,7 +5,7 @@
 
 <semui:card message="task.plural" class="notes la-js-hideable ${css_class}" href="#modalCreateTask" editable="${overwriteEditable}">
     <g:each in="${tasks}" var="tsk">
-        <div class="ui grid">
+        <div class="ui grid la-js-dont-hide-this-card">
             <div class="twelve wide column summary">
                 <a onclick="JSPC.app.taskedit(${tsk.id});">${tsk.title}</a>
                 <br />

@@ -33,6 +33,27 @@
     opacity: 1;
   }
 }
+// Show Buttons only on hover
+.la-timeLineSegment-contact .row{
+  .button {
+    opacity: 0;
+    transition: opacity 1s;
+    &.disabled {
+      opacity: 0!important;
+      transition: opacity 1s;
+    }
+  }
+
+  &:hover .button {
+    opacity: 1;
+  }
+  &:hover .button.disabled {
+    opacity: 0.3!important;
+  }
+  .button:focus {
+    opacity: 1;
+  }
+}
 
 td .la-list-border-around {
      border: 1px solid @laSecondaryColor;

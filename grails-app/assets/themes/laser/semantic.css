@@ -1061,7 +1061,11 @@ aside.ui.accordion .title:not(.ui) {
   display: inline-flex;
 }
 
-.la-list-icon:before {
+i.icon.la-list-icon {
+  margin: 0 0.5rem 0 0;
+}
+
+i.icon.la-list-icon:before {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
@@ -15961,7 +15965,6 @@ a.ui.basic.label:hover {
 
 .ui.card .ui.label {
   margin: 0;
-  background-color: #d3dae3;
 }
 
 .ui.label.la-annual-rings {
@@ -17283,6 +17286,30 @@ ol.ui.horizontal.list li:before,
 }
 
 .ui.divided.middle.la-flex-list .item .button:focus {
+  opacity: 1;
+}
+
+.la-timeLineSegment-contact .row .button {
+  opacity: 0;
+  -webkit-transition: opacity 1s;
+  transition: opacity 1s;
+}
+
+.la-timeLineSegment-contact .row .button.disabled {
+  opacity: 0!important;
+  -webkit-transition: opacity 1s;
+  transition: opacity 1s;
+}
+
+.la-timeLineSegment-contact .row:hover .button {
+  opacity: 1;
+}
+
+.la-timeLineSegment-contact .row:hover .button.disabled {
+  opacity: 0.3 !important;
+}
+
+.la-timeLineSegment-contact .row .button:focus {
   opacity: 1;
 }
 
@@ -23949,30 +23976,56 @@ legend {
 
 /* Special Grid for Timeline */
 
-.ui.segment.la-dateAnnounceSegment {
+.ui.segment.la-timeLineSegment-contact {
+  background-color: transparent;
+  border: none;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.ui.segment.la-timeLineSegment-contact .ui.header {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.ui.segment.la-timeLineSegment-contact i.circular.icon {
+  -webkit-box-shadow: 0 0 0 0.1em rgb(159 158 156) inset;
+  box-shadow: 0 0 0 0.1em rgb(159 158 156) inset;
+}
+
+.ui.segment.la-timeLineSegment-announcement {
   background-color: #FFFFFF;
   border: none;
+  padding: 0;
 }
 
-.la-dateAnnounceGrid {
-  border-left: 3px dashed #f6f6f6;
-  margin: 0 10px;
+.la-timeLineGrid {
+  border-left: 2px dashed #dcdcdc;
 }
 
-.la-dateAnnounceGrid h2.ui.header {
+.la-timeLineGrid h2.ui.header {
   font-size: 1.1rem;
   padding-top: 3px;
 }
 
-.la-dateAnnounceGrid .one.wide.column {
+.la-timeLineGrid .one.wide.column {
   position: relative;
 }
 
-.la-dateAnnounceGrid .arrow.alternate.circle.right.outline.icon {
+.la-timeLineGrid .la-timeLineIcon {
   position: absolute;
-  left: 1px;
   top: 0;
   z-index: 9;
+}
+
+.la-timeLineGrid .la-timeLineIcon-announcement {
+  left: 1px;
+  background-color: #FFFFFF;
+}
+
+.la-timeLineGrid .la-timeLineIcon-contact {
+  left: -7px;
+  background-color: #fffaf5;
 }
 /*
  * # Semantic - Menu
@@ -28835,7 +28888,7 @@ Floated Menu / Item
   -webkit-box-direction: normal;
   -ms-flex-direction: column;
   flex-direction: column;
-  width: 271px;
+  width: 290px;
   min-height: 0px;
   background: #FFFFFF;
   padding: 0em;
@@ -29912,7 +29965,7 @@ a.ui.card:hover,
 
 .ui.cards > .card,
 .ui.card {
-  width: 271px;
+  width: 290px;
   min-height: 0px;
   background: #FFFFFF;
   padding: 0em;
@@ -30033,6 +30086,10 @@ a.ui.card:hover,
   margin-bottom: 1em;
 }
 
+.la-sidekick {
+  margin-top: 1rem;
+}
+
 .la-sidekick .hidden + .ui.card {
   margin-top: 0em;
 }
@@ -30086,6 +30143,17 @@ a.ui.card:hover,
   -webkit-box-pack: justify;
   -ms-flex-pack: justify;
   justify-content: space-between;
+}
+
+.ui.one.cards .card {
+  width: 100%;
+}
+
+#container-tasks,
+#container-documents,
+#container-notes,
+#container-provider {
+  width: 100%;
 }
 /*!
  * # Semantic UI 2.4.2 - Comment

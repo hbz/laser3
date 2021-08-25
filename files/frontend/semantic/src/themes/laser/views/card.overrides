@@ -108,8 +108,11 @@
   margin-bottom: 1em;
 }
 
-.la-sidekick .hidden + .ui.card {
-  margin-top: 0em;
+.la-sidekick {
+  margin-top: 1rem;
+  .hidden + .ui.card {
+    margin-top: 0em;
+  }
 }
 // card at subscription/index
 .la-tableCard .ui.card, .la-tableCard .ui.cards .ui.card{
@@ -135,4 +138,14 @@
       justify-content: space-between;
     }
   }
+}
+.ui.one.cards .card {
+  width: 100%;
+}
+#container-tasks,
+#container-documents,
+#container-notes,
+#container-provider
+{
+  width: 100%;
 }
