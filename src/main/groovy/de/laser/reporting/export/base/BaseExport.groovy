@@ -36,10 +36,11 @@ abstract class BaseExport {
             // virtual; without XY.CONFIG.base.x
 
             '@ae-subscription-member'       : 'Teilnehmer',
-            '@ae-subscription-memberCount'  : 'Anzahl Teilnehmer',
+            '@ae-subscription-memberCount'  : 'Anzahl der Teilnehmer',
+            '@ae-subscription-prevNext'     : 'Vorgänger/Nachfolger',
 
-            '@ae-license-subscriptionCount' : 'Anzahl Lizenzen',
-            '@ae-license-memberCount'       : 'Anzahl Teilnehmerverträge',
+            '@ae-license-subscriptionCount' : 'Anzahl der Lizenzen',
+            '@ae-license-memberCount'       : 'Anzahl der Teilnehmerverträge',
 
             '@ae-org-accessPoint'           : 'Zugangskonfigurationen (ohne Links)',    // dyn.value
             '@ae-org-contact'               : 'Kontaktdaten',                           // dyn.value

@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3749    25.08.2021  dev     2.2         David   Feature     Reporting: Lizenz-Export für Details @ subscription/reporting
+
+3425    25.08.2021  dev     2.2         David   Feature     Mikro-Reporting Teilnehmerlaufzeit
+
 3743    24.08.2021  dev     2.2         Andreas Feature     Menüoption umbenennen
 
 3740    24.08.2021  dev     2.2         Andreas Feature     Identifier können für Lizenzen und Verträge mit Notizen versehen werden
