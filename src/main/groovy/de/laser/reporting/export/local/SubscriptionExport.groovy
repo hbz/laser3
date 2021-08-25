@@ -2,7 +2,7 @@ package de.laser.reporting.export.local
 
 import de.laser.ContextService
 import de.laser.Identifier
-import de.laser.Links
+import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.helper.DateUtils
@@ -102,6 +102,7 @@ class SubscriptionExport extends BaseExport {
 
         ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+        LinksGenerationService linksGenerationService = (LinksGenerationService) Holders.grailsApplication.mainContext.getBean('linksGenerationService')
 
         Subscription sub = obj as Subscription
         List<String> content = []
@@ -177,15 +178,11 @@ class SubscriptionExport extends BaseExport {
                 }
                 else if (key == '@ae-subscription-prevNext') {
 
-                    List<Subscription> prevList = Links.executeQuery( 'select li.destinationSubscription from Links li where li.sourceSubscription = :sub and li.linkType = :linkType',
-                            [sub:sub, linkType:RDStore.LINKTYPE_FOLLOWS] )
-                    List<Subscription> nextList = Links.executeQuery( 'select li.sourceSubscription from Links li where li.destinationSubscription = :sub and li.linkType = :linkType',
-                            [sub:sub, linkType:RDStore.LINKTYPE_FOLLOWS] )
-
+                    Map<String, List> navMap = linksGenerationService.generateNavigation(sub, false)
                     content.add(
-                            (prevList ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value'))
+                            (navMap.prevLink ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value'))
                             + ' / ' +
-                            (nextList ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value'))
+                            (navMap.nextLink ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value'))
                     )
                 }
             }

@@ -39,17 +39,12 @@
                     </td>
                     <td>
                         <%
-                            List<Subscription> prevList = Links.executeQuery( 'select li.destinationSubscription from Links li where li.sourceSubscription = :sub and li.linkType = :linkType',
-                                    [sub:sub, linkType:RDStore.LINKTYPE_FOLLOWS] )
-                            prevList.each { prevSub ->
-                                print g.link([controller: 'subscription', action: 'show', id: prevSub.id], '<i class="icon arrow left"></i>' )
+                            Map<String, List> navMap = linksGenerationService.generateNavigation(sub, false)
+                            navMap.prevLink.each { prevSub ->
+                                print g.link([controller: 'subscription', action: 'show', id: prevSub], '<i class="icon arrow left"></i>' )
                             }
-                        %>
-                        <%
-                            List<Subscription> nextList = Links.executeQuery( 'select li.sourceSubscription from Links li where li.destinationSubscription = :sub and li.linkType = :linkType',
-                                    [sub:sub, linkType:RDStore.LINKTYPE_FOLLOWS] )
-                            nextList.each { nextSub ->
-                                print g.link([controller: 'subscription', action: 'show', id: nextSub.id], '<i class="icon arrow right"></i>' )
+                            navMap.nextLink.each { nextSub ->
+                                print g.link([controller: 'subscription', action: 'show', id: nextSub], '<i class="icon arrow right"></i>' )
                             }
                         %>
                     </td>
