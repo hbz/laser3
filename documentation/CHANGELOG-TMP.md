@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3504    25.08.2021  dev     2.2         David   Feature     csv Export auch bei Mikroreporting
+
 3749    25.08.2021  dev     2.2         David   Feature     Reporting: Lizenz-Export für Details @ subscription/reporting
 
 3425    25.08.2021  dev     2.2         David   Feature     Mikro-Reporting Teilnehmerlaufzeit

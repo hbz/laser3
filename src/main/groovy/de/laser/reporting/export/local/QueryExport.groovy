@@ -1,4 +1,4 @@
-package de.laser.reporting.export.myInstitution
+package de.laser.reporting.export.local
 
 import de.laser.reporting.export.base.BaseQueryExport
 
@@ -12,7 +12,7 @@ class QueryExport extends BaseQueryExport {
 
     Map<String, Object> getData() {
 
-        Map<String, Object> queryCache = ExportGlobalHelper.getQueryCache( token )
+        Map<String, Object> queryCache = ExportLocalHelper.getQueryCache( token )
 
         println ' ----- queryCache'
         println queryCache
