@@ -1376,6 +1376,11 @@ class FilterService {
             filterSet = true
         }
 
+        if (params.coverageDepth) {
+            base_qry += "and exists (select tc.id from tipp.coverages tc where lower(tc.coverageDepth) in (:coverageDepth))"
+            qry_params.coverageDepth = params.list('coverageDepth').collect { it.toLowerCase() }
+            filterSet = true
+        }
 
         if (params.title_types && params.title_types != "" && params.list('title_types')) {
             base_qry += " and lower(tipp.titleType) in (:title_types)"

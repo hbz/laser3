@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3755    25.08.2021  dev     2.2         Andreas Feature     Umstrukturierung des Lizenzdetail-Menüs
+
+3752    25.08.2021  dev     2.2         Andreas Bug         Default-Einstellung für Änderungs-Subtab definiert
+
+3745    25.08.2021  dev     2.2         Andreas Feature     Filterfeld Umfang für Titelfilter eingeführt
+
+3738    25.08.2021  dev     2.2         Andreas Feature     Lizenzfilteroptionen auf Mehrfachauswahl umgestellt
+
 3743    24.08.2021  dev     2.2         Andreas Feature     Menüoption umbenennen
 
 3740    24.08.2021  dev     2.2         Andreas Feature     Identifier können für Lizenzen und Verträge mit Notizen versehen werden

@@ -56,13 +56,17 @@
             */ %>
             <% /* 1-4 */ %>
             <div class="field">
-                <label>${message(code: 'default.status.label')}</label>
-                <laser:select class="ui dropdown" name="status"
-                              from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.status}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                <legend ><g:message code="default.status.label"/></legend>
+                <select id="status" name="status" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" var="status">
+                        <option <%=(params.list('status').contains(status.id.toString())) ? 'selected="selected"' : ''%>
+                        value="${status.id}" ">
+                        ${status.getI10n('value')}
+                        </option>
+                    </g:each>
+                </select>
             </div>
         </div>
 
@@ -96,23 +100,31 @@
                        --%>
             <% /* 2-3 */ %>
             <div class="field">
-                <label>${message(code:'subscription.form.label')}</label>
-                <laser:select class="ui fluid dropdown" name="form"
-                              from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.form}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                <legend ><g:message code="subscription.form.label"/></legend>
+                <select id="form" name="form" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}" var="form">
+                        <option <%=(params.list('form').contains(form.id.toString())) ? 'selected="selected"' : ''%>
+                        value="${form.id}" ">
+                        ${form.getI10n('value')}
+                        </option>
+                    </g:each>
+                </select>
             </div>
             <% /* 2-4 */ %>
             <div class="field">
-                <label>${message(code:'subscription.resource.label')}</label>
-                <laser:select class="ui fluid dropdown" name="resource"
-                              from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.resource}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                <legend ><g:message code="subscription.resource.label"/></legend>
+                <select id="resource" name="resource" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}" var="resource">
+                        <option <%=(params.list('resource').contains(resource.id.toString())) ? 'selected="selected"' : ''%>
+                        value="${resource.id}" ">
+                        ${resource.getI10n('value')}
+                        </option>
+                    </g:each>
+                </select>
             </div>
 
         </div>
@@ -152,7 +164,7 @@
                 <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND).sort{it.getI10n('value')}}" var="subKind">
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
                         <option <%=(params.list('subKinds').contains(subKind.id.toString())) ? 'selected="selected"' : ''%>
                         value="${subKind.id}" ">
                         ${subKind.getI10n('value')}
