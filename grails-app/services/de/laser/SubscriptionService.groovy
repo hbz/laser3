@@ -91,7 +91,8 @@ class SubscriptionService {
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
-                params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                String[] defaultStatus = [RDStore.SUBSCRIPTION_CURRENT.id.toString()]
+                params.status = defaultStatus
                 result.defaultSet = true
             }
             else {

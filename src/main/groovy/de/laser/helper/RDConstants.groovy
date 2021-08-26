@@ -34,6 +34,7 @@ class RDConstants {
     public static final String COST_ITEM_ELEMENT      = 'cost.item.element'
     public static final String COST_ITEM_STATUS       = 'cost.item.status'
     public static final String COUNTRY                = 'country'
+    public static final String COVERAGE_DEPTH         = 'coverage.depth'
     public static final String CREATOR_TYPE           = 'creator.type'
     public static final String CURRENCY               = 'currency'
     public static final String CUSTOMER_IDENTIFIER_TYPE   = 'customer.identifier.type'

@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3755    25.08.2021  dev     2.2         Andreas Feature     Umstrukturierung des Lizenzdetail-Menüs
+
+3752    25.08.2021  dev     2.2         Andreas Bug         Default-Einstellung für Änderungs-Subtab definiert
+
+3745    25.08.2021  dev     2.2         Andreas Feature     Filterfeld Umfang für Titelfilter eingeführt
+
+3738    25.08.2021  dev     2.2         Andreas Feature     Lizenzfilteroptionen auf Mehrfachauswahl umgestellt
+
 3749    25.08.2021  dev     2.2         David   Feature     Reporting: Lizenz-Export für Details @ subscription/reporting
 
 3425    25.08.2021  dev     2.2         David   Feature     Mikro-Reporting Teilnehmerlaufzeit

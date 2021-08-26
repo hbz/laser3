@@ -26,6 +26,7 @@ cost.item.element,CostItemElement,CostItemElement
 cost.item.status,CostItemStatus,CostItemStatus
 cost.item.type,Typ,Type
 country,Land,Country
+coverage.depth,Umfang,Coverage depth
 currency,Währung,Currency
 customer.identifier.type,Kategorie der Kundennummer,Customer Identifier Type
 delivery.edit.status,Status Bearbeitung,Delivery edit status

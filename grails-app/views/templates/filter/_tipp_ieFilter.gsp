@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.helper.RDConstants; de.laser.RefdataValue;" %>
+<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
 <laser:serviceInjection />
 <g:if test="${controllerName == 'package'}">
     <g:set var="seriesNames"
@@ -183,8 +183,7 @@
             </div>
 
             <div class="field">
-                <label for="publishers">${message(code: 'tipp.publisher')}
-                </label>
+                <label for="publishers">${message(code: 'tipp.publisher')}</label>
                 <select name="publishers" id="publishers" multiple=""
                         class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
@@ -201,7 +200,20 @@
         </div>
 
         <div class="two fields">
-            <div class="field"></div>
+            <div class="field">
+                <label for="coverageDepth"><g:message code="tipp.coverageDepth"/></label>
+                <select name="coverageDepth" id="coverageDepth" multiple=""
+                        class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.COVERAGE_DEPTH)}"
+                            var="coverageDepth">
+                        <option <%=(params.list('coverageDepth')?.contains(coverageDepth.value)) ? 'selected="selected"' : ''%>
+                                value="${coverageDepth}">
+                            ${coverageDepth.getI10n("value")}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
 
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}"

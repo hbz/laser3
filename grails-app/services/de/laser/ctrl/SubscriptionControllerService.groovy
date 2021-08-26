@@ -1298,6 +1298,43 @@ class SubscriptionControllerService {
         }
     }
 
+    Map<String, Object> customerIdentifierMembers(GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        if(!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            result.platforms = Platform.executeQuery('select tipp.platform from TitleInstancePackagePlatform tipp where exists (select ie.id from IssueEntitlement ie where ie.subscription = :parentSub and ie.tipp = tipp and ie.status != :deleted)', [parentSub: result.subscription, deleted: RDStore.TIPP_STATUS_DELETED]) as Set<Platform>
+            result.members = Org.executeQuery("select org from OrgRole oo join oo.sub sub join oo.org org where sub.instanceOf = :parent and oo.roleType in (:subscrTypes) order by org.sortname asc, org.name asc",[parent: result.subscription, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]) as Set<Org>
+            result.keyPairs = []
+            result.platforms.each { Platform platform ->
+                result.members.each { Org customer ->
+                    //create dummies for that they may be xEdited - OBSERVE BEHAVIOR for eventual performance loss!
+                    CustomerIdentifier keyPair = CustomerIdentifier.findByPlatformAndCustomer(platform, customer)
+                    if(!keyPair) {
+                        keyPair = new CustomerIdentifier(platform: platform,
+                                customer: customer,
+                                type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE),
+                                owner: contextService.getOrg(),
+                                isPublic: true)
+                        if(!keyPair.save()) {
+                            log.warn(keyPair.errors.getAllErrors().toListString())
+                        }
+                    }
+                    result.keyPairs << keyPair
+                }
+            }
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    boolean deleteCustomerIdentifier(Long id) {
+        CustomerIdentifier ci = CustomerIdentifier.get(id)
+        ci.value = null
+        ci.requestorKey = null
+        ci.save()
+    }
+
     //--------------------------------------- survey section -------------------------------------------
 
     Map<String,Object> surveys(SubscriptionController controller, GrailsParameterMap params) {
@@ -1771,6 +1808,7 @@ class SubscriptionControllerService {
             }
 
             params.tab = params.tab ?: 'changes'
+            params.eventType = params.eventType ?: PendingChangeConfiguration.TITLE_UPDATED
             params.sort = params.sort ?: 'ts'
             params.order = params.order ?: 'desc'
             params.max = result.max
