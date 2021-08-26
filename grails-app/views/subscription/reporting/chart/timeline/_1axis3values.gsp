@@ -1,8 +1,8 @@
 JSPC.app.reporting.current.chart.option = {
     dataset: {
-        dimensions: ['id', 'name', 'value', 'plus', 'minus', 'startDate', 'endDate', 'isCurrent'],
+        dimensions: ['id', 'name', 'value', 'plus', 'minus', 'annual', 'isCurrent'],
         source: [
-            <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}, ${it[3]}, ${it[4]}, '${it[5]}', '${it[6]}', ${it[7]}]," } %>
+            <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}, ${it[3]}, ${it[4]}, '${it[5]}', ${it[6]}]," } %>
         ]
     },
     grid:  {
@@ -19,8 +19,7 @@ JSPC.app.reporting.current.chart.option = {
         type: 'category',
         axisLabel: {
             formatter: function(id, index) {
-                var elem = JSPC.app.reporting.current.chart.option.dataset.source[ index ]
-                return elem[5] + ' - ' + elem[6]
+                return JSPC.app.reporting.current.chart.option.dataset.source[ index ][ 5 ]
             }
         }
     },
@@ -30,8 +29,8 @@ JSPC.app.reporting.current.chart.option = {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
         formatter (params) {
-            var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.length - 1
-            var str = params[0].data[5] + ' - ' +  params[0].data[6]
+            // var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.length - 1
+            var str = params[0].data[5]
             for (var i=0; i<params.length; i++) {
                 str += JSPC.app.reporting.helper.tooltip.getEntry(params[i].marker, params[i].seriesName, params[i].data[ 4 - params[i].seriesIndex ])
             }
@@ -53,7 +52,7 @@ JSPC.app.reporting.current.chart.option = {
             },
             itemStyle: {
                 color: function(params) {
-                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('red', (params.data[7] == true))
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('red', (params.data[6] == true))
                 }
             }
         },
@@ -71,7 +70,7 @@ JSPC.app.reporting.current.chart.option = {
             },
             itemStyle: {
                 color: function(params) {
-                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('green', (params.data[7] == true))
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('green', (params.data[6] == true))
                 }
             }
         },
@@ -89,7 +88,7 @@ JSPC.app.reporting.current.chart.option = {
             },
             itemStyle: {
                 color: function(params) {
-                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('blue', (params.data[7] == true))
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('blue', (params.data[6] == true))
                 }
             }
         }

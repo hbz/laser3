@@ -14,14 +14,10 @@ class QueryExport extends BaseQueryExport {
 
         Map<String, Object> queryCache = ExportGlobalHelper.getQueryCache( token )
 
-        println ' ----- queryCache'
-        println queryCache
-
         Map<String, Object> result = [
                 cols: [ queryCache.labels.tooltip ],
                 rows: []
         ]
-
         List<Map<String, Object>> data = queryCache.dataDetails as List
         List<String> chart = queryCache.labels.chart
 

@@ -20,7 +20,7 @@ JSPC.app.reporting.current.chart.option = {
         axisLabel: {
             formatter: function(id, index) {
                 var elem = JSPC.app.reporting.current.chart.option.dataset.source[ index ]
-                return elem[3]
+                return elem[1]
             }
         }
     },
