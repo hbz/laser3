@@ -24035,8 +24035,6 @@ legend {
 @media only screen and (max-width: 992px) {
   .ui.stackable.grid {
     width: auto;
-    margin-left: 0em !important;
-    margin-right: 0em !important;
   }
 
   .ui.stackable.grid > .row > .wide.column,
@@ -30290,8 +30288,6 @@ a.ui.card:hover,
 @media only screen and (max-width: 1200px) {
   .ui.two.doubling.cards > .card {
     width: 100%;
-    margin-left: 0em;
-    margin-right: 0em;
   }
 }
 /*!
