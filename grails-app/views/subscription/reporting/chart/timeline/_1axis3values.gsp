@@ -1,8 +1,8 @@
 JSPC.app.reporting.current.chart.option = {
     dataset: {
-        dimensions: ['id', 'name', 'isCurrent', 'startDate', 'endDate', 'value', 'plus', 'minus'],
+        dimensions: ['id', 'name', 'value', 'plus', 'minus', 'startDate', 'endDate', 'isCurrent'],
         source: [
-            <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}, '${it[3]}', '${it[4]}', ${it[5]}, ${it[6]}, ${it[7]}]," } %>
+            <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}, ${it[3]}, ${it[4]}, '${it[5]}', '${it[6]}', ${it[7]}]," } %>
         ]
     },
     grid:  {
@@ -20,7 +20,7 @@ JSPC.app.reporting.current.chart.option = {
         axisLabel: {
             formatter: function(id, index) {
                 var elem = JSPC.app.reporting.current.chart.option.dataset.source[ index ]
-                return elem[3] + ' - ' + elem[4]
+                return elem[5] + ' - ' + elem[6]
             }
         }
     },
@@ -31,9 +31,9 @@ JSPC.app.reporting.current.chart.option = {
         axisPointer: { type: 'shadow' },
         formatter (params) {
             var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.length - 1
-            var str = params[0].data[3] + ' - ' +  params[0].data[4]
+            var str = params[0].data[5] + ' - ' +  params[0].data[6]
             for (var i=0; i<params.length; i++) {
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params[i].marker, params[i].seriesName, params[i].data[ index - params[i].seriesIndex ])
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params[i].marker, params[i].seriesName, params[i].data[ 4 - params[i].seriesIndex ])
             }
             return str
         }
@@ -53,7 +53,7 @@ JSPC.app.reporting.current.chart.option = {
             },
             itemStyle: {
                 color: function(params) {
-                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('red', (params.data[2] == true))
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('red', (params.data[7] == true))
                 }
             }
         },
@@ -71,7 +71,7 @@ JSPC.app.reporting.current.chart.option = {
             },
             itemStyle: {
                 color: function(params) {
-                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('green', (params.data[2] == true))
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('green', (params.data[7] == true))
                 }
             }
         },
@@ -89,7 +89,7 @@ JSPC.app.reporting.current.chart.option = {
             },
             itemStyle: {
                 color: function(params) {
-                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('blue', (params.data[2] == true))
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('blue', (params.data[7] == true))
                 }
             }
         }

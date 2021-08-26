@@ -136,7 +136,13 @@ class SubscriptionReporting {
         String prefix = params.query.split('-')[0]
         Long id = params.long('id')
 
+        final int indexPlusList = 3
+        final int indexMinusList = 4
+
         if (! id) {
+            // 1axis3values ['id', 'name', 'value', 'plus', 'minus', 'startDate', 'endDate', 'isCurrent' ]
+            // annualMember ['id', 'name', 'value', 'annual', 'isCurrent']
+            // cost         ['id', 'name', 'isCurrent', 'startDate', 'endDate', 'valueCons', 'valueConsTax']
         }
         else {
             Subscription sub = Subscription.get(id)
@@ -154,10 +160,12 @@ class SubscriptionReporting {
                         result.data.add([
                                 s.id,
                                 s.name,
-                                sub == s,
+                                subIdLists.get(i).size(),
+                                [],
+                                [],
                                 s.startDate ? sdf.format(s.startDate) : NO_STARTDATE,
                                 s.endDate ? sdf.format(s.endDate) : NO_ENDDATE,
-                                subIdLists.get(i).size()
+                                sub == s
                         ])
                         result.dataDetails.add([
                                 query: params.query,
@@ -183,8 +191,8 @@ class SubscriptionReporting {
                             dd.plusIdList = currMemberIdList.minus(prevMemberIdList)
                             dd.minusIdList = prevMemberIdList.minus(currMemberIdList)
 
-                            d[6] = dd.plusIdList.size()
-                            d[7] = dd.minusIdList.size()
+                            d[indexPlusList] = dd.plusIdList.size()
+                            d[indexMinusList] = dd.minusIdList.size()
                         }
                         else {
                             List<Long> currMemberIdList = subIdLists.get(i) ? Org.executeQuery(orgHql, [idList: subIdLists.get(i), roleTypes: roleTypes]) : []
@@ -193,8 +201,8 @@ class SubscriptionReporting {
                             dd.plusIdList = currMemberIdList
                             dd.minusIdList = []
 
-                            d[6] = dd.plusIdList.size()
-                            d[7] = dd.minusIdList.size()
+                            d[indexPlusList] = dd.plusIdList.size()
+                            d[indexMinusList] = dd.minusIdList.size()
                         }
                     }
                 }
@@ -209,10 +217,12 @@ class SubscriptionReporting {
                         result.data.add([
                                 s.id,
                                 s.name,
-                                sub == s,
+                                ieIdLists.get(i).size(),
+                                [],
+                                [],
                                 s.startDate ? sdf.format(s.startDate) : NO_STARTDATE,
                                 s.endDate ? sdf.format(s.endDate) : NO_ENDDATE,
-                                ieIdLists.get(i).size()
+                                sub == s
                         ])
                         result.dataDetails.add([
                                 query: params.query,
@@ -237,8 +247,8 @@ class SubscriptionReporting {
                             dd.plusIdList = currTippIdList.minus(prevTippIdList)
                             dd.minusIdList = prevTippIdList.minus(currTippIdList)
 
-                            d[6] = dd.plusIdList.size()
-                            d[7] = dd.minusIdList.size()
+                            d[indexPlusList] = dd.plusIdList.size()
+                            d[indexMinusList] = dd.minusIdList.size()
                         }
                         else {
                             List<Long> currTippIdList = ieIdLists.get(i) ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: ieIdLists.get(i)]) : []
@@ -247,8 +257,8 @@ class SubscriptionReporting {
                             dd.plusIdList = currTippIdList
                             dd.minusIdList = []
 
-                            d[6] = dd.plusIdList.size()
-                            d[7] = dd.minusIdList.size()
+                            d[indexPlusList] = dd.plusIdList.size()
+                            d[indexMinusList] = dd.minusIdList.size()
                         }
                     }
 
@@ -296,9 +306,8 @@ class SubscriptionReporting {
                     List newData = []
                     result.data.each { d ->
                         newData.add([
-                            d[0], d[1],
-                            (sub.startDate && sub.endDate) ? DateUtils.getYearAsInteger(sub.startDate) <= d[0] && DateUtils.getYearAsInteger(sub.endDate) >= d[0] : false,
-                            d[1], d[2]
+                            d[0], d[1], d[2],
+                            (sub.startDate && sub.endDate) ? DateUtils.getYearAsInteger(sub.startDate) <= d[0] && DateUtils.getYearAsInteger(sub.endDate) >= d[0] : false
                         ])
                     }
                     result.data = newData

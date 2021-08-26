@@ -1,6 +1,6 @@
 JSPC.app.reporting.current.chart.option = {
     dataset: {
-        dimensions: ['id', 'name', 'isCurrent', 'startDate', 'endDate', 'valueCons', 'valueConsTax' ],
+        dimensions: ['id', 'name', 'isCurrent', 'startDate', 'endDate', 'valueCons', 'valueConsTax'],
         source: [
             <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}, '${it[3]}', '${it[4]}', ${it[5]}, ${it[6]}]," } %>
         ]
