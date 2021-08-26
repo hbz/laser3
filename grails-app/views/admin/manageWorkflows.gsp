@@ -58,7 +58,7 @@
         <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:workflow]}" />
     </g:if>
 
-    <g:each in="${WfWorkflow.executeQuery('select wfw from WfWorkflow wfw order by id')}" var="wfw">
+    <g:each in="${WfWorkflow.executeQuery('select wfw from WfWorkflow wfw order by wfw.id desc')}" var="wfw">
         <div class="ui segment attached top">
             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflow.KEY + ':' + wfw.id, tab: 'workflows']}">
                 <strong><i class="icon tasks"></i> ${wfw.title}</strong>
@@ -395,7 +395,7 @@
     <br />
     <div class="ui divider"></div>
 
-    <g:set var="workflowTemplates" value="${WfWorkflowPrototype.executeQuery('select wfwp from WfWorkflowPrototype wfwp order by id')}" />
+    <g:set var="workflowTemplates" value="${WfWorkflowPrototype.executeQuery('select wfwp from WfWorkflowPrototype wfwp order by wfwp.id desc')}" />
 
     <p class="ui header">
         ${message(code: 'workflow.template.plural')} <semui:totalNumber total="${workflowTemplates.size()}"/>

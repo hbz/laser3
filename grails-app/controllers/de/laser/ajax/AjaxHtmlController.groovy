@@ -5,8 +5,6 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
 import de.laser.ContextService
-import de.laser.FinanceService
-import de.laser.GokbService
 import de.laser.License
 import de.laser.LinksGenerationService
 import de.laser.Org
@@ -30,7 +28,6 @@ import de.laser.TaskService
 import de.laser.UserSetting
 import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
-import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
@@ -38,7 +35,7 @@ import de.laser.helper.SwissKnife
 import de.laser.reporting.ReportingCache
 import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.export.base.BaseExportHelper
-import de.laser.reporting.export.myInstitution.QueryExport
+import de.laser.reporting.export.base.BaseQueryExport
 import de.laser.reporting.export.local.ExportLocalHelper
 import de.laser.reporting.export.myInstitution.ExportGlobalHelper
 import de.laser.reporting.export.DetailsExportManager
@@ -601,17 +598,43 @@ class AjaxHtmlController {
     })
     def chartQueryExport() {
 
-        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
+        ReportingCache rCache
+        BaseQueryExport export
+        List<String> queryLabels
+        String filename
 
-        if (! rCache.exists()) {
-            redirect (url: request.getHeader('referer')) // TODO
-            return
+        if (params.context == BaseConfig.KEY_MYINST) {
+            rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
+
+            if (rCache.exists()) {
+                export      = QueryExportManager.createExport( params.token, BaseConfig.KEY_MYINST )
+                queryLabels = ExportGlobalHelper.getIncompleteQueryLabels( params.token )
+                filename    = ExportGlobalHelper.getFileName( queryLabels )
+
+                //detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
+                //export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
+            }
+            else {
+                redirect(url: request.getHeader('referer')) // TODO
+                return
+            }
         }
+        else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
+            rCache = new ReportingCache( ReportingCache.CTX_SUBSCRIPTION ) // TODO
 
-        QueryExport export = QueryExportManager.createExport( params.token )
+            if (rCache.exists()) {
+                export      = QueryExportManager.createExport( params.token, BaseConfig.KEY_SUBSCRIPTION )
+                queryLabels = ExportLocalHelper.getCachedQueryLabels( params.token )
+                filename    = ExportLocalHelper.getFileName( queryLabels )
 
-        List<String> queryLabels = ExportGlobalHelper.getIncompleteQueryLabels( params.token )
-        String filename = ExportGlobalHelper.getFileName( queryLabels )
+                //detailsCache = ExportLocalHelper.getDetailsCache(params.token)
+                //export = DetailsExportManager.createLocalExport(params.token, selectedFields)
+            }
+            else {
+                redirect(url: request.getHeader('referer')) // TODO
+                return
+            }
+        }
 
         if (params.fileformat == 'csv') {
             response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
@@ -628,6 +651,10 @@ class AjaxHtmlController {
             out.close()
         }
         else if (params.fileformat == 'pdf') {
+            // TODO
+            // TODO
+            // TODO
+            // TODO
             List<List<String>> content = QueryExportManager.export(export, 'pdf')
 
             Map<String, Object> struct = [:]

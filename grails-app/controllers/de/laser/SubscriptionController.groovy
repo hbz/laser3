@@ -1,14 +1,10 @@
 package de.laser
 
 import de.laser.annotations.DebugAnnotation
-import de.laser.auth.User
 import de.laser.ctrl.SubscriptionControllerService
-
-import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
-import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.workflow.WfWorkflow
 import de.laser.reporting.ReportingCacheHelper
 import grails.converters.JSON
@@ -563,6 +559,32 @@ class SubscriptionController {
             }
         }
         redirect(action: 'subscriptionPropertiesMembers', id: params.id)
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def customerIdentifiersMembers() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.customerIdentifierMembers(params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }
+        else {
+            ctrlResult.result
+        }
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def deleteCustomerIdentifier() {
+        subscriptionControllerService.deleteCustomerIdentifier(params.deleteCI)
+        redirect action: 'customerIdentifiersMembers', id: params.id
     }
 
     //-------------------------------- survey section --------------------------------------
@@ -1533,7 +1555,7 @@ class SubscriptionController {
         Map<String,Object> ctrlResult = subscriptionControllerService.workflows( params )
 
         ctrlResult.result.workflows = WfWorkflow.executeQuery(
-                'select wf from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg order by id',
+                'select wf from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg order by wf.id desc',
                 [sub: ctrlResult.result.subscription, ctxOrg: ctrlResult.result.contextOrg]
         )
 

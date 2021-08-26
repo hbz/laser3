@@ -64,6 +64,7 @@
                         data: JSPC.app.reporting.current.request,
                         beforeSend: function (xhr) {
                             //$('#chart-export').attr('disabled', 'disabled');
+                            $('#query-export-button').attr('disabled', 'disabled');
                         }
                     })
                     .done( function (data) {
@@ -91,6 +92,7 @@
 
                             JSPC.app.reporting.current.chart.echart = echart;
                             //$('#chart-export').removeAttr('disabled');
+                            $('#query-export-button').removeAttr('disabled');
                         }
                     })
                     .fail( function (data) {

@@ -248,7 +248,7 @@ class SubscriptionsQueryService {
         if (params.status) {
 
             if (params.status != 'FETCH_ALL') {
-                if(params.status instanceof List){
+                if(params.status instanceof List || params.status instanceof String[]){
                     base_qry += " and s.status.id in (:status) "
                     qry_params.put('status', params.status.collect { it instanceof Long ? it : Long.parseLong(it) })
                     filterSet = true
@@ -262,14 +262,14 @@ class SubscriptionsQueryService {
 
 
         if (params.form) {
-            base_qry += "and s.form.id = :form "
-            qry_params.put('form', (params.form as Long))
+            base_qry += "and s.form.id in (:form) "
+            qry_params.put('form', params.list("form").collect { Long.parseLong(it) })
             filterSet = true
         }
 
         if (params.resource) {
-          base_qry += "and s.resource.id = :resource "
-          qry_params.put('resource', (params.resource as Long))
+          base_qry += "and s.resource.id in (:resources) "
+          qry_params.put('resource', params.list.("resource").collect { Long.parseLong(it) })
             filterSet = true
         }
 

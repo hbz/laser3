@@ -2275,7 +2275,7 @@ join sub.orgRelations or_sub where
             query = query + ' and wf.subscription = :subscription'
             queryParams.put('subscription', Subscription.get(params.filterSubscription))
         }
-        result.currentWorkflows = WfWorkflow.executeQuery( query, queryParams )
+        result.currentWorkflows = WfWorkflow.executeQuery( query + ' order by wf.id desc', queryParams )
 
         if (params.filterPriority) {
             List<WfWorkflow> matches = []

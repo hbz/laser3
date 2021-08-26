@@ -18,11 +18,8 @@
                 <div class="six wide column">
                     <g:message code="profile.dashboard.changes.object"/>
                 </div><!-- .column -->
-                <div class="seven wide column">
+                <div class="ten wide column">
                     <g:message code="profile.dashboard.changes.event"/>
-                </div><!-- .column -->
-                <div class="three wide column">
-                    <g:message code="profile.dashboard.changes.action"/>
                 </div><!-- .column -->
             </div>
             <g:each in="${pending}" var="entry">
@@ -43,7 +40,7 @@
                             </div>
                         </g:elseif>
                     </div><!-- .column -->
-                    <div class="seven wide column">
+                    <div class="ten wide column">
                         <g:if test="${entry.subPkg}">
                             <g:link controller="subscription" action="entitlementChanges" id="${entry.subPkg.subscription.id}" params="[tab: 'changes', eventType: entry.msgToken]">${raw(entry.eventString)}</g:link>
                         </g:if>
@@ -56,15 +53,6 @@
                                 <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(entry.subscription._getCalculatedPrevious()), targetObjectId: genericOIDService.getOID(entry.subscription)]}">
                                     <g:message code="myinst.copyMyElements"/>
                                 </g:link>
-                            </div>
-                        </g:if>
-                    </div><!-- .column -->
-                    <div class="three wide column">
-                        <g:if test="${entry.changeId}">
-                            <div class="ui buttons">
-                                <g:link class="ui positive button" controller="pendingChange" action="accept" id="${entry.changeId}"><g:message code="default.button.accept.label"/></g:link>
-                                <div class="or" data-text="${message(code:'default.or')}"></div>
-                                <g:link class="ui negative button" controller="pendingChange" action="reject" id="${entry.changeId}"><g:message code="default.button.reject.label"/></g:link>
                             </div>
                         </g:if>
                     </div><!-- .column -->
