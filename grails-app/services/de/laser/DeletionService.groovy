@@ -884,8 +884,8 @@ class DeletionService {
         }
     }
 
-    void deleteDocumentFromIndex(id) {
-        String es_index = ESWrapperService.getESSettings().indexName
+    void deleteDocumentFromIndex(id, String className) {
+        String es_index = ESWrapperService.es_indices.get(className)
         RestHighLevelClient esclient = ESWrapperService.getClient()
 
         try {

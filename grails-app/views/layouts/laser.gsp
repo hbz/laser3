@@ -112,7 +112,7 @@
 
                                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
 
-                                    <sec:ifAnyGranted roles="ROLE_YODA"><!-- TODO -->
+                                    <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
                                         <div class="divider"></div>
                                         <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
                                     </sec:ifAnyGranted>
@@ -319,8 +319,7 @@
                                 </div>
                                 <div class="divider"></div>
 
-                                <sec:ifAnyGranted roles="ROLE_YODA">
-                                    <!-- YODA -->
+                                <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageWorkflows">${message(code:'menu.admin.manageWorkflows')}</semui:link>
                                 </sec:ifAnyGranted>
 
@@ -435,6 +434,8 @@
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</semui:link>
                                         <div class="divider"></div>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="killDataloadService">Kill ES Update Index</semui:link>
+                                        <div class="divider"></div>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="createESIndices">Create ES Indices</semui:link>
                                     </div>
                                 </div>
 

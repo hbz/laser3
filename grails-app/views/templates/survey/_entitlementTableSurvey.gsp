@@ -9,9 +9,7 @@
         <thead>
         <tr>
             <th>
-                <g:if test="${editable}">
-                    <input class="select-all" type="checkbox" name="chkall">
-                </g:if>
+                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
             </th>
             <th>${message(code: 'sidewide.number')}</th>
             <g:sortableColumn class="ten wide" params="${params}" property="tipp.sortName"
@@ -27,13 +25,13 @@
             <g:set var="isContainedByTarget"
                    value="${ies.targetIEs.find { it.tipp == tipp && it.status != RDStore.TIPP_STATUS_DELETED }}"/>
             <g:set var="targetIE" value="${ies.targetIEs.find { it.tipp == tipp }}"/>
-            <tr data-gokbId="${tipp.gokbId}" data-ieId="${ie?.id}" data-index="${counter}">
+            <tr data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie.id}" data-index="${counter}" class="${checkedCache ? (checkedCache[ie.id.toString()] ? 'positive' : '') : ''}">
                 <td>
                     <g:if test="${params.tab == 'selectedIEs' && isContainedByTarget && targetIE?.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
-                        <input type="checkbox" name="bulkflag" data-index="${ie.id}" class="bulkcheck">
+                        <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                     </g:if>
                     <g:elseif test="${!isContainedByTarget && editable}">
-                        <input type="checkbox" name="bulkflag" data-index="${ie.id}" class="bulkcheck">
+                        <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                     </g:elseif>
 
                 </td>

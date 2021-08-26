@@ -130,14 +130,13 @@
                         </td>
                         <td class="x">
                             <g:set var="wfKey" value="subscription:${subscription.id}:${WfWorkflow.KEY}:${wf.id}" />
-                            <sec:ifAnyGranted roles="ROLE_YODA">
-                                <!-- YODA -->
+                            <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
                                     <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="editWfXModal" params="${[key: wfKey, info: wfKey]}">
                                         <i class="icon cogs"></i>
                                     </g:link>
                                 </span>
-                            </sec:ifAnyGranted>
+                            </g:if>
                             <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal" params="${[key: wfKey, info: wfKey]}">
                                 <i class="icon pencil"></i>
                             </g:link>
@@ -177,8 +176,7 @@
                                                 <laser:workflowTaskConditionField condition="${task.condition}" field="${field}" />
                                             </g:each>
                                             <!-- -->
-                                            <sec:ifAnyGranted roles="ROLE_YODA">
-                                                <!-- YODA -->
+                                            <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
                                                 <g:set var="cKey" value="subscription:${subscription.id}:${WfCondition.KEY}:${task.condition.id}" />
                                                 <span style="float:right">
                                                     <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
@@ -187,7 +185,7 @@
                                                         </g:link>
                                                     </span>
                                                 </span>
-                                            </sec:ifAnyGranted>
+                                            </g:if>
                                         </div>
                                     </div>
                                 </g:if>
@@ -195,14 +193,13 @@
                             </td>
                             <td class="x">
                                 <g:set var="tKey" value="subscription:${subscription.id}:${WfTask.KEY}:${task.id}" />
-                                <sec:ifAnyGranted roles="ROLE_YODA">
-                                    <!-- YODA -->
+                                <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
                                     <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
                                         <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
                                             <i class="icon cogs"></i>
                                         </g:link>
                                     </span>
-                                </sec:ifAnyGranted>
+                                </g:if>
                                 <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
                                     <i class="icon pencil"></i>
                                 </g:link>
@@ -244,8 +241,7 @@
                                                         <laser:workflowTaskConditionField condition="${child.condition}" field="${field}" />
                                                     </g:each>
                                                     <!-- -->
-                                                    <sec:ifAnyGranted roles="ROLE_YODA">
-                                                        <!-- YODA -->
+                                                    <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
                                                         <g:set var="cKey" value="subscription:${subscription.id}:${WfCondition.KEY}:${child.condition.id}" />
                                                         <span style="float:right">
                                                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
@@ -254,7 +250,7 @@
                                                                 </g:link>
                                                             </span>
                                                         </span>
-                                                    </sec:ifAnyGranted>
+                                                    </g:if>
                                                 </div>
                                             </div>
                                         </g:if>
@@ -262,14 +258,13 @@
                                     </td>
                                     <td class="x">
                                         <g:set var="tKey" value="subscription:${subscription.id}:${WfTask.KEY}:${child.id}" />
-                                        <sec:ifAnyGranted roles="ROLE_YODA">
-                                            <!-- YODA -->
+                                        <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
                                             <span data-position="top center" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
                                                 <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
                                                     <i class="icon cogs"></i>
                                                 </g:link>
                                             </span>
-                                        </sec:ifAnyGranted>
+                                        </g:if>
                                         <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
                                             <i class="icon pencil"></i>
                                         </g:link>

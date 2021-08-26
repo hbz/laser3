@@ -82,7 +82,7 @@ class DocContext implements ShareableTrait {
       dateCreated (nullable: true)
   }
     def afterDelete() {
-        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id)
+        deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
     }
 
     void afterUpdate(PostUpdateEvent event) {

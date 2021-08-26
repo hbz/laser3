@@ -68,7 +68,7 @@
         <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
         <div class="divider"></div>
         <g:if test="${editable}">
-            <sec:ifAnyGranted roles="ROLE_YODA"><!-- TODO -->
+            <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
                 <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
                     <semui:actionsDropdownItem message="workflow.instantiate" data-semui="modal" href="#modalInstantiateWorkflow" />
                     <div class="divider"></div>
@@ -196,7 +196,7 @@
 <g:if test="${accessService.checkMinUserOrgRole(user,contextOrg,'INST_EDITOR')}">
     <g:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
-<sec:ifAnyGranted roles="ROLE_YODA"><!-- TODO -->
+<sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
     <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
         <g:render template="/templates/workflow/instantiate" model="${[subscription: subscription]}"/>
     </g:if>

@@ -5,6 +5,7 @@ package de.laser
 import de.laser.annotations.DebugAnnotation
 import de.laser.exceptions.ChangeAcceptException
 import de.laser.helper.RDStore
+import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -25,6 +26,11 @@ class PendingChangeController  {
             pendingChangeService.performAccept(pc)
         }
         else if (!pc.payload) {
+            SessionCacheWrapper scw = new SessionCacheWrapper()
+            String ctx = 'dashboard/changes'
+            Map<String, Object> changesCache = scw.get(ctx) as Map<String, Object>
+            if(changesCache)
+                scw.remove(ctx)
             if(pc.status == RDStore.PENDING_CHANGE_HISTORY) {
                 Org contextOrg = contextService.getOrg()
                 Package targetPkg
@@ -74,6 +80,11 @@ class PendingChangeController  {
         boolean acceptAll = params.acceptAll != null
         boolean rejectAll = params.rejectAll != null
         if(concernedPackage){
+            SessionCacheWrapper scw = new SessionCacheWrapper()
+            String ctx = 'dashboard/changes'
+            Map<String, Object> changesCache = scw.get(ctx) as Map<String, Object>
+            if(changesCache)
+                scw.remove(ctx)
             concernedPackage.each { String spID ->
                 if(spID) {
                     SubscriptionPackage sp = SubscriptionPackage.get(Long.parseLong(spID))

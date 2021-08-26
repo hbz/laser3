@@ -72,7 +72,7 @@
                 <th class="five wide">${message(code:'identifier.namespace.label')}</th>
                 <th class="four wide">${message(code:'identifier')}</th>
                 <th class="four wide">${message(code:'default.notes.label')}</th>
-                <th class="two wide">${message(code:'default.aktions')}</th>
+                <th class="two wide">${message(code:'default.actions')}</th>
             </tr>
             </thead>
             <tbody>
@@ -108,7 +108,7 @@
                             <th class="three wide">${message(code:'org.requestorKey')}</th>
                             <th class="two wide">${message(code:'default.note.label')}</th>
                             %{--<th>${message(code:'default.isPublic.label')}</th>--}%
-                            <th class="two wide">${message(code:'default.aktions')}</th>
+                            <th class="two wide">${message(code:'default.actions')}</th>
                         </tr>
                         </thead>
                         <tbody>

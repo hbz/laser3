@@ -11,9 +11,19 @@
 
 3504    25.08.2021  dev     2.2         David   Feature     csv Export auch bei Mikroreporting
 
+3755    25.08.2021  dev     2.2         Andreas Feature     Umstrukturierung des Lizenzdetail-Menüs
+
+3752    25.08.2021  dev     2.2         Andreas Bug         Default-Einstellung für Änderungs-Subtab definiert
+
+3745    25.08.2021  dev     2.2         Andreas Feature     Filterfeld Umfang für Titelfilter eingeführt
+
+3738    25.08.2021  dev     2.2         Andreas Feature     Lizenzfilteroptionen auf Mehrfachauswahl umgestellt
+
 3749    25.08.2021  dev     2.2         David   Feature     Reporting: Lizenz-Export für Details @ subscription/reporting
 
 3425    25.08.2021  dev     2.2         David   Feature     Mikro-Reporting Teilnehmerlaufzeit
+
+2765    24.08.2021  dev     2.2         Moe     Feature     Index Update für einzelne Objekttypen triggern
 
 3743    24.08.2021  dev     2.2         Andreas Feature     Menüoption umbenennen
 
@@ -28,6 +38,10 @@
 3727    24.08.2021  dev     2.2         Andreas Bug         Als Zielobjekt konnte das Quellobjekt ausgewählt werden
 
 3314    24.08.2021  dev     2.2         Andreas Feature     Titelname gehört zu den überwachten Eigenschaften
+
+3741    23.08.2021  dev     2.2         Moe     Feature     Export Renewal
+
+3032    23.08.2021  dev     2.2         Moe     Feature      Titelumfrage: Auswahl-Box über mehrere Seiten speichern bei Bestandsauswahl
 
 3742    23.08.2021  dev     2.2         David   Feature     Reporting: Kontaktdaten exportieren
 
