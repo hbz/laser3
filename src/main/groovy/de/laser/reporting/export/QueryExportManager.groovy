@@ -1,15 +1,23 @@
 package de.laser.reporting.export
 
 import de.laser.reporting.export.base.BaseExport
-import de.laser.reporting.export.myInstitution.QueryExport
+import de.laser.reporting.export.base.BaseQueryExport
+import de.laser.reporting.export.local.ExportLocalHelper
+import de.laser.reporting.export.myInstitution.ExportGlobalHelper
+import de.laser.reporting.myInstitution.base.BaseConfig
 
 class QueryExportManager {
 
-    static QueryExport createExport(String token) {
-        return new QueryExport( token )
+    static BaseQueryExport createExport(String token, String context) {
+        if (context == BaseConfig.KEY_MYINST) {
+            new de.laser.reporting.export.myInstitution.QueryExport( token )
+        }
+        else if (context in [ BaseConfig.KEY_SUBSCRIPTION ]) {
+            new de.laser.reporting.export.local.QueryExport( token )
+        }
     }
 
-    static List export(QueryExport export, String format) {
+    static List export(BaseQueryExport export, String format) {
 
         List rows = []
         Map<String, Object> data = export.getData()

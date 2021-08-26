@@ -62,7 +62,7 @@
             </div><!-- .form -->
 
             <input type="hidden" name="token" value="${token}" />
-            <input type="hidden" name="context" value="${BaseConfig.KEY_MYINST}" />
+            <input type="hidden" name="context" value="${BaseConfig.KEY_SUBSCRIPTION}" />
             <%-- ERMS-3614
             <input type="hidden" name="imageData" value="" />
             <input type="hidden" name="imageSize" value="" />
