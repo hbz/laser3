@@ -28,6 +28,8 @@ class ExportClickMeService {
                             label: 'Survey',
                             message: 'survey.label',
                             fields: [
+                                    'participant.sortname'        : [field: 'participant.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                    'participant.name'            : [field: 'participant.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
                                     'survey.participantComment'   : [field: 'resultOfParticipation.comment', label: 'Participant Comment', message: 'surveyResult.participantComment', defaultChecked: 'true'],
                                     'survey.participationProperty': [field: 'resultOfParticipation.result', label: 'Participation', message: 'surveyResult.participationProperty', defaultChecked: 'true'],
                                     'survey.period'               : [field: null, label: 'Period', message: 'renewalEvaluation.period', defaultChecked: 'true'],
@@ -44,8 +46,6 @@ class ExportClickMeService {
                             label: 'Participant',
                             message: 'surveyParticipants.label',
                             fields: [
-                            'participant.sortname'          : [field: 'participant.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                            'participant.name'              : [field: 'participant.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
                             'participant.funderType'        : [field: 'participant.funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'participant.funderHskType'     : [field: 'participant.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'participant.libraryType'       : [field: 'participant.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
@@ -259,7 +259,7 @@ class ExportClickMeService {
             Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet: childSubs, context: institution])
 
             memberProperties.each {PropertyDefinition propertyDefinition ->
-                exportFields.put("participantSubProperty."+propertyDefinition.id, [field: null, label: propertyDefinition.getI10n('name')])
+                exportFields.put("participantSubProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
             }
         }
 
@@ -291,7 +291,7 @@ class ExportClickMeService {
             Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet: childSubs, context: institution])
 
             memberProperties.each {PropertyDefinition propertyDefinition ->
-                fields.participantSubProperties.fields << ["participantSubProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition.getI10n('name'), privateProperty: (propertyDefinition.tenant != null)]]
+                fields.participantSubProperties.fields << ["participantSubProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
             }
         }
 
@@ -301,6 +301,17 @@ class ExportClickMeService {
     Map<String, Object> getExportOrgFields() {
 
         Map<String, Object> exportFields = [:]
+
+        Locale locale = LocaleContextHolder.getLocale()
+
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
 
         EXPORT_ORG_CONFIG.keySet().each {
             EXPORT_ORG_CONFIG.get(it).fields.each {
@@ -313,8 +324,8 @@ class ExportClickMeService {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
         }
 
-        PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).each { PropertyDefinition propertyDefinition ->
-            exportFields.put("participantProperty."+propertyDefinition.id, [field: null, label: propertyDefinition.getI10n('name')])
+        PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+            exportFields.put("participantProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
 
         }
 
@@ -325,6 +336,17 @@ class ExportClickMeService {
 
         Map<String, Object> fields = EXPORT_ORG_CONFIG as Map
 
+        Locale locale = LocaleContextHolder.getLocale()
+
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
         IdentifierNamespace.where{(nsType == Org.class.name)}
                 .list(sort: 'ns').each {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
@@ -332,8 +354,8 @@ class ExportClickMeService {
 
         fields.participantProperties.fields.clear()
 
-        PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).each { PropertyDefinition propertyDefinition ->
-            fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition.getI10n('name'), privateProperty: (propertyDefinition.tenant != null)]]
+        PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+            fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
         }
 
         fields
@@ -342,6 +364,15 @@ class ExportClickMeService {
 
     def exportRenewalResult(Map renewalResult, Map<String, Object> selectedFields) {
         Locale locale = LocaleContextHolder.getLocale()
+
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
 
         Map<String, Object> selectedExportFields = [:]
 
@@ -360,7 +391,7 @@ class ExportClickMeService {
         renewalData.add([[field: messageSource.getMessage('renewalEvaluation.continuetoSubscription.label', null, locale) + " (${renewalResult.orgsContinuetoSubscription.size()})", style: 'positive']])
 
         renewalResult.orgsContinuetoSubscription.sort { it.participant.sortname }.each { participantResult ->
-            setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey)
+            setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey, localizedName)
         }
 
         renewalData.add([[field: '', style: null]])
@@ -372,7 +403,7 @@ class ExportClickMeService {
         renewalResult.orgsWithMultiYearTermSub.each { sub ->
 
             sub.getAllSubscribers().sort{it.sortname}.each{ subscriberOrg ->
-                setRenewalRow([participant: subscriberOrg, sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, properties: renewalResult.properties], selectedExportFields, renewalData, true, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey)
+                setRenewalRow([participant: subscriberOrg, sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, properties: renewalResult.properties], selectedExportFields, renewalData, true, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey, localizedName)
 
             }
         }
@@ -385,7 +416,7 @@ class ExportClickMeService {
 
         renewalResult.orgsWithParticipationInParentSuccessor.each { sub ->
             sub.getAllSubscribers().sort{it.sortname}.each{ subscriberOrg ->
-                setRenewalRow([participant: subscriberOrg, sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, properties: renewalResult.properties], selectedExportFields, renewalData, true, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey)
+                setRenewalRow([participant: subscriberOrg, sub: sub, multiYearTermTwoSurvey: renewalResult.multiYearTermTwoSurvey, multiYearTermThreeSurvey: renewalResult.multiYearTermThreeSurvey, properties: renewalResult.properties], selectedExportFields, renewalData, true, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey, localizedName)
             }
         }
 
@@ -396,7 +427,7 @@ class ExportClickMeService {
 
 
         renewalResult.newOrgsContinuetoSubscription.sort{it.participant.sortname}.each { participantResult ->
-            setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey)
+            setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey, localizedName)
         }
 
         renewalData.add([[field: '', style: null]])
@@ -406,7 +437,7 @@ class ExportClickMeService {
 
 
         renewalResult.orgsWithTermination.sort{it.participant.sortname}.each { participantResult ->
-            setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey)
+            setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey, localizedName)
         }
 
         renewalData.add([[field: '', style: null]])
@@ -416,7 +447,7 @@ class ExportClickMeService {
 
 
         renewalResult.orgsWithoutResult.sort{it.participant.sortname}.each { participantResult ->
-            setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey)
+            setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermThreeSurvey, renewalResult.multiYearTermTwoSurvey, localizedName)
         }
 
 
@@ -458,10 +489,19 @@ class ExportClickMeService {
 
         List titles = exportTitles(selectedExportFields, null, locale)
 
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
         List exportData = []
         List orgList = []
         result.each { memberResult ->
-            setSubRow(memberResult, selectedExportFields, exportData)
+            setSubRow(memberResult, selectedExportFields, exportData, localizedName)
             orgList << memberResult.orgs
         }
 
@@ -501,7 +541,7 @@ class ExportClickMeService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
-    private void setRenewalRow(Map participantResult, Map<String, Object> selectedFields, List renewalData, boolean onlySubscription, PropertyDefinition multiYearTermTwoSurvey, PropertyDefinition multiYearTermThreeSurvey){
+    private void setRenewalRow(Map participantResult, Map<String, Object> selectedFields, List renewalData, boolean onlySubscription, PropertyDefinition multiYearTermTwoSurvey, PropertyDefinition multiYearTermThreeSurvey, String localizedName){
         List row = []
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         selectedFields.keySet().each { String fieldKey ->
@@ -510,12 +550,12 @@ class ExportClickMeService {
             if(!mapSelecetedFields.separateSheet) {
                 if (fieldKey == 'survey.allOtherProperties') {
                         if (onlySubscription) {
-                            participantResult.properties?.sort { it.name }.each { PropertyDefinition propertyDefinition ->
+                            participantResult.properties?.sort { it."${localizedName}" }.each { PropertyDefinition propertyDefinition ->
                                 row.add([field: '', style: null])
                                 row.add([field: '', style: null])
                             }
                         } else {
-                            participantResult.properties?.sort { it.type.name }.each { SurveyResult participantResultProperty ->
+                            participantResult.properties?.sort { it.type."${localizedName}" }.each { SurveyResult participantResultProperty ->
                                 row.add([field: participantResultProperty.getResult() ?: "", style: null])
                                 row.add([field: participantResultProperty.comment ?: "", style: null])
                             }
@@ -577,7 +617,7 @@ class ExportClickMeService {
 
     }
 
-    private void setSubRow(Map result, Map<String, Object> selectedFields, List exportData){
+    private void setSubRow(Map result, Map<String, Object> selectedFields, List exportData, String localizedName){
         List row = []
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         selectedFields.keySet().each { String fieldKey ->
@@ -602,7 +642,7 @@ class ExportClickMeService {
                     setOrgFurtherInformation(result.orgs, row, fieldKey)
                 }else if (fieldKey.startsWith('participantSubProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
-                    List<SubscriptionProperty> subscriptionProperties = SubscriptionProperty.executeQuery("select prop from SubscriptionProperty prop where (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg)",[sub:result.sub, propertyDefs:[id], contextOrg: contextService.getOrg()])
+                    List<SubscriptionProperty> subscriptionProperties = SubscriptionProperty.executeQuery("select prop from SubscriptionProperty prop where (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg) order by prop.type.${localizedName} asc",[sub:result.sub, propertyDefs:[id], contextOrg: contextService.getOrg()])
                     if(subscriptionProperties){
                         row.add([field:  subscriptionProperties.collect { it.getValueInI10n()}.join(";") , style: null])
                     }else{
@@ -821,6 +861,15 @@ class ExportClickMeService {
         RefdataValue billingAdress =RDStore.ADRESS_TYPE_BILLING
         RefdataValue postAdress =RDStore.ADRESS_TYPE_POSTAL
 
+        String localizedName
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                break
+            default: localizedName = "name_en"
+                break
+        }
+
         selectedExportFields.keySet().each {String fieldKey ->
             Map fields = selectedExportFields.get(fieldKey)
             if(!fields.separateSheet) {
@@ -837,9 +886,9 @@ class ExportClickMeService {
                 else if (fieldKey != 'survey.allOtherProperties') {
                     titles << (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label)
                 } else {
-                    propertyDefinitionList.each { surveyProperty ->
-                        titles << (surveyProperty?.getI10n('name'))
-                        titles << (messageSource.getMessage('surveyResult.participantComment', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + surveyProperty?.getI10n('name'))
+                    propertyDefinitionList?.sort { it."${localizedName}" }.each { PropertyDefinition propertyDefinition ->
+                        titles << (propertyDefinition."${localizedName}")
+                        titles << (messageSource.getMessage('surveyResult.participantComment', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + propertyDefinition."${localizedName}")
                     }
                 }
             }

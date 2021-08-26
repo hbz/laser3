@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3758    25.08.2021  dev     2.2         Moe     Bug         Renewal-Export
+
 3755    25.08.2021  dev     2.2         Andreas Feature     Umstrukturierung des Lizenzdetail-Menüs
 
 3752    25.08.2021  dev     2.2         Andreas Bug         Default-Einstellung für Änderungs-Subtab definiert
