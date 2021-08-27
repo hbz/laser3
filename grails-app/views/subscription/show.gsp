@@ -422,7 +422,7 @@
             <div id="container-provider">
                 <div class="ui card ">
                 <div class="content">
-                    <h2 class="ui header">Anbieter und Lieferanten</h2>
+                    <h2 class="ui header">${message(code: 'default.agency.provider.plural.label')}</h2>
                     <g:render template="/templates/links/orgLinksAsList"
                               model="${[roleLinks    : visibleOrgRelations,
                                         roleObject   : subscription,
