@@ -800,7 +800,7 @@ class AjaxHtmlController {
             }
             else if (result.prefix == WfTask.KEY) {
                 result.task           = WfTask.get( key[3] )
-                result.tmplModalTitle = '<i class="icon ellipsis horizontal"></i> ' + result.task.title
+                result.tmplModalTitle = '<i class="icon check circle outline"></i> ' + result.task.title
             }
         }
 
