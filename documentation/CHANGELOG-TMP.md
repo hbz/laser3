@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3607    27.08.2021  dev     2.2         Andreas Feature     Vorgänger-Nachfolger-Beziehung für Einrichtungen implementiert
+
 3761    27.08.2021  dev     2.2         David   Feature     Reporting: QueryCache bzgl. CSV-Export überarbeiten
 
 3750    26.08.2021  dev     2.2         David   Feature     Reporting: Zeitleisteninformationen als CSV exportieren
