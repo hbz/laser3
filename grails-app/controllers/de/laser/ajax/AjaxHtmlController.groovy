@@ -625,7 +625,7 @@ class AjaxHtmlController {
             if (rCache.exists()) {
                 export      = QueryExportManager.createExport( params.token, BaseConfig.KEY_SUBSCRIPTION )
                 queryLabels = ExportLocalHelper.getCachedQueryLabels( params.token )
-                filename    = ExportLocalHelper.getFileName( queryLabels )
+                filename    = ExportLocalHelper.getFileName(['Reporting'])
 
                 //detailsCache = ExportLocalHelper.getDetailsCache(params.token)
                 //export = DetailsExportManager.createLocalExport(params.token, selectedFields)

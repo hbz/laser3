@@ -14,6 +14,7 @@ import de.laser.reporting.myInstitution.SubscriptionQuery
 import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.plugins.web.taglib.ApplicationTagLib
 
 import java.text.SimpleDateFormat
 import java.time.Year
@@ -267,6 +268,7 @@ class SubscriptionReporting {
                 else if (params.query == 'timeline-cost') {
                     GrailsParameterMap clone = params.clone() as GrailsParameterMap
 
+                    ApplicationTagLib g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
                     FinanceService financeService = (FinanceService) Holders.grailsApplication.mainContext.getBean('financeService')
                     FinanceControllerService financeControllerService = (FinanceControllerService) Holders.grailsApplication.mainContext.getBean('financeControllerService')
 
@@ -288,8 +290,8 @@ class SubscriptionReporting {
                                 id    : s.id,
                                 label : data[4],
                                 idList: [],
-                                value1: data[2],
-                                value2: data[3]
+                                value1: g.formatNumber( number: (finance.cons?.sums?.localSums?.localSum ?: 0), type: 'currency',  currencySymbol: '' ).trim(),
+                                value2: g.formatNumber( number: (finance.cons?.sums?.localSums?.localSumAfterTax ?: 0), type: 'currency',  currencySymbol: '' ).trim()
                         ])
                     }
                 }

@@ -120,7 +120,11 @@ class ReportingLocalService {
                 result.tmpl   = '/subscription/reporting/details/entitlement'
             }
 
-            rCache.intoQueryCache( 'labels', [labels: result.labels] )
+            Map<String, Object> currentLabels = rCache.readQueryCache().labels as Map<String, Object>
+            currentLabels.labels = result.labels
+            rCache.intoQueryCache( 'labels', currentLabels )
+
+            //rCache.intoQueryCache( 'labels', [labels: result.labels] )
 
             Map<String, Object> detailsCache = [
                     query   : params.query,

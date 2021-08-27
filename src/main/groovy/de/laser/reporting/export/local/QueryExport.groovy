@@ -36,7 +36,6 @@ class QueryExport extends BaseQueryExport {
         }
         // -- todo
 
-        println result.cols
         result.rows = dd.collect{ Map e ->
             List entry = [e.label.toString()]
             if (queryCache.query == 'timeline-cost') {
