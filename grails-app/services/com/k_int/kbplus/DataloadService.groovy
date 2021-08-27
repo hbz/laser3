@@ -16,6 +16,7 @@ import de.laser.Subscription
 import de.laser.SurveyConfig
 import de.laser.SurveyOrg
 import de.laser.TitleInstancePackagePlatform
+import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.properties.SubscriptionProperty
@@ -30,6 +31,7 @@ import groovy.json.JsonOutput
 import org.elasticsearch.action.bulk.BulkItemResponse
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.bulk.BulkResponse
+import org.elasticsearch.client.indices.GetIndexRequest
 import org.grails.plugins.domain.DomainClassGrailsPlugin
 import org.elasticsearch.ElasticsearchException
 import org.elasticsearch.action.DocWriteResponse
@@ -71,8 +73,6 @@ class DataloadService {
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def grailsApplication
     def globalService
-
-    String es_index
     def dataload_running=false
     def dataload_stage=-1
     def dataload_message=''
@@ -80,10 +80,6 @@ class DataloadService {
     def lastIndexUpdate = null
     Future activeFuture
 
-    @javax.annotation.PostConstruct
-    def init () {
-        es_index = ESWrapperService.getESSettings().indexName
-    }
 
     def updateFTIndexes() {
         //log.debug("updateFTIndexes ${this.hashCode()}")
@@ -249,7 +245,7 @@ class DataloadService {
                 result.visible = 'Public'
                 result.rectype = pkg.getClass().getSimpleName()
 
-                //result.consortiaGUID = pkg.getConsortia()?.globalUID
+                //result.consortiaID = pkg.getConsortia()?.id
                 //result.consortiaName = pkg.getConsortia()?.name
                 result.providerId = pkg.getContentProvider()?.id
                 result.providerName = pkg.getContentProvider()?.name
@@ -321,7 +317,7 @@ class DataloadService {
                 case CalculatedType.TYPE_PARTICIPATION:
                     List orgs = lic.orgRelations.findAll{ OrgRole oo -> oo.roleType.value in [RDStore.OR_LICENSEE_CONS.value]}?.org
                     result.availableToOrgs = orgs.collect{ Org org -> org.id }
-                    result.consortiaGUID = lic.getLicensingConsortium()?.globalUID
+                    result.consortiaID = lic.getLicensingConsortium()?.id
                     result.consortiaName = lic.getLicensingConsortium()?.name
 
                     result.members = []
@@ -385,7 +381,7 @@ class DataloadService {
                     case CalculatedType.TYPE_PARTICIPATION:
                         List orgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org
                         result.availableToOrgs = orgs?.id
-                        result.consortiaGUID = sub.getConsortia()?.globalUID
+                        result.consortiaID = sub.getConsortia()?.id
                         result.consortiaName = sub.getConsortia()?.name
 
                         result.members = []
@@ -874,19 +870,12 @@ class DataloadService {
         }
         */
 
-        RestHighLevelClient esclient = ESWrapperService.getClient()
         update_running = false
         def elapsed = System.currentTimeMillis() - start_time;
         lastIndexUpdate = new Date(System.currentTimeMillis())
-        if(ESWrapperService.testConnection()) {
-            FlushRequest request = new FlushRequest(es_index);
-            FlushResponse flushResponse = esclient.indices().flush(request, RequestOptions.DEFAULT)
-        }
 
         log.debug("IndexUpdateJob completed in ${elapsed}ms at ${new Date()} ")
         SystemEvent.createEvent('FT_INDEX_UPDATE_END')
-
-        esclient.close()
 
         return true
     }
@@ -894,11 +883,12 @@ class DataloadService {
     def updateES( domain, recgen_closure) {
 
     RestHighLevelClient esclient = ESWrapperService.getClient()
+    def esIndices = ESWrapperService.es_indices
 
         def count = 0;
         def total = 0;
         try {
-            if(ESWrapperService.testConnection()) {
+            if(ESWrapperService.testConnection() && esIndices && esIndices.get(domain.simpleName)) {
                 //log.debug("updateES - ${domain.name}")
 
                 def highest_timestamp = 0;
@@ -948,7 +938,7 @@ class DataloadService {
                         def recid = idx_record['_id'].toString()
                         idx_record.remove('_id');
 
-                        IndexRequest request = new IndexRequest(es_index);
+                        IndexRequest request = new IndexRequest(esIndices.get(domain.simpleName));
                         request.id(recid);
                         String jsonString = idx_record as JSON
                         //String jsonString = JsonOutput.toJson(idx_record)
@@ -1041,6 +1031,8 @@ class DataloadService {
         finally {
             log.debug("Completed processing on ${domain.name} - saved ${total} records")
             try {
+                FlushRequest request = new FlushRequest(esIndices.get(domain.simpleName));
+                FlushResponse flushResponse = esclient.indices().flush(request, RequestOptions.DEFAULT)
                 esclient.close()
                 checkESElementswithDBElements(domain.name)
             }
@@ -1154,54 +1146,40 @@ class DataloadService {
         if(ESWrapperService.testConnection()) {
 
             if (!(activeFuture) || (activeFuture && activeFuture.cancel(true))) {
-                try {
-                    // Drop any existing kbplus index
-                    log.debug("Dropping old ES index ..")
-                    DeleteIndexRequest deleteRequest = new DeleteIndexRequest(es_index)
-                    def deleteIndexResponse = client.indices().delete(deleteRequest, RequestOptions.DEFAULT)
-                    boolean acknowledged = deleteIndexResponse.isAcknowledged()
-                    if (acknowledged) {
-                        log.debug("Drop old ES index completed OK")
-                        SystemEvent.createEvent('YODA_ES_RESET_DROP_OK')
+                def esIndices = ESWrapperService.es_indices?.values()
+                esIndices.each { String indexName ->
+                    try {
+                        boolean isDeletedIndex = ESWrapperService.deleteIndex(indexName)
+                        if (isDeletedIndex) {
+                            log.debug("Drop old ES index completed OK")
+                            SystemEvent.createEvent('YODA_ES_RESET_DROP_OK')
+                        } else {
+                            log.error("Index wasn't deleted")
+                        }
+                    }
+                    catch (ElasticsearchException e) {
+                        if (e.status() == RestStatus.NOT_FOUND) {
+                            log.warn("index does not exist ..")
+                        } else {
+                            log.warn("Problem deleting index ..", e)
+                        }
+
+                        SystemEvent.createEvent('FT_INDEX_CLEANUP_ERROR', ["index": indexName])
+                    }
+
+                    boolean isCreatedIndex = ESWrapperService.createIndex(indexName)
+
+                    if (isCreatedIndex) {
+                        SystemEvent.createEvent('YODA_ES_RESET_CREATE_OK')
+                        log.debug("Create ES index completed OK")
+
                     } else {
-                        log.error("Index wasn't deleted")
+                        log.error("Index wasn't created")
                     }
                 }
-                catch (ElasticsearchException e) {
-                    if (e.status() == RestStatus.NOT_FOUND) {
-                        log.warn("index does not exist ..")
-                    } else {
-                        log.warn("Problem deleting index ..", e)
-                    }
 
-                    SystemEvent.createEvent('FT_INDEX_CLEANUP_ERROR', ["index": es_index])
-                }
-
-                log.debug("Create new ES index ..")
-                //def createResponse = client.admin().indices().prepareCreate(es_index).get()
-                CreateIndexRequest createRequest = new CreateIndexRequest(es_index)
-
-                def es_mapping = ESWrapperService.getESMapping()
-                //println(es_mapping)
-
-                createRequest.mapping(JsonOutput.toJson(es_mapping), XContentType.JSON)
-
-                CreateIndexResponse createIndexResponse = client.indices().create(createRequest, RequestOptions.DEFAULT)
-                boolean acknowledgedCreate = createIndexResponse.isAcknowledged()
-                client.close()
-                if (acknowledgedCreate) {
-                    SystemEvent.createEvent('YODA_ES_RESET_CREATE_OK')
-                    log.debug("Create ES index completed OK")
-                    FTControl.withTransaction {
-                        FTControl.executeUpdate("update FTControl set dbElements = :value, esElements = :value, lastTimestamp = :value, dateCreated = :dateValue, lastUpdated = :dateValue", [value: 0, dateValue: new Date()])
-                    }
-                    log.debug("Delete all existing FT Control entries");
-                    log.debug("Do updateFTIndexes");
-                    updateFTIndexes()
-                } else {
-                    log.error("Index wasn't created")
-                }
-
+                log.debug("Do updateFTIndexes");
+                updateFTIndexes()
                 //log.debug("Clear down and init ES completed...")
 
             } else {
@@ -1216,6 +1194,7 @@ class DataloadService {
         log.debug("Begin to check ES Elements with DB Elements")
 
         RestHighLevelClient esclient = ESWrapperService.getClient()
+        def esIndices = ESWrapperService.es_indices
 
         try {
 
@@ -1226,25 +1205,21 @@ class DataloadService {
 
                         Class domainClass = grailsApplication.getDomainClass(ftControl.domainClassName).clazz
 
-                        String query_str = "rectype: '${ftControl.domainClassName.replaceAll("com\\.k_int\\.kbplus.", "").replaceAll("de\\.laser\\.", "")}'"
+                        String indexName =  esIndices.get(domainClass.simpleName)
+                        Integer countIndex = 0
+                        println(indexName)
 
-                        if (ftControl.domainClassName == DocContext.name) {
-                            query_str = "rectype:'Note' OR rectype:'Document'"
+                        GetIndexRequest request = new GetIndexRequest(indexName)
+
+                        if (esclient.indices().exists(request, RequestOptions.DEFAULT)) {
+                            CountRequest countRequest = new CountRequest(indexName)
+                            CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
+                            countIndex = countResponse ? countResponse.getCount().toInteger() : 0
                         }
 
-                        //println(query_str)
-
-                        String index = ESWrapperService.getESSettings().indexName
-
-                        CountRequest countRequest = new CountRequest(index);
-                        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-                        searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
-                        countRequest.source(searchSourceBuilder);
-
-                        CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
                         FTControl.withTransaction {
                             ftControl.dbElements = domainClass.findAll().size()
-                            ftControl.esElements = countResponse ? countResponse.getCount().toInteger() : 0
+                            ftControl.esElements = countIndex
 
                             //println(ft.dbElements +' , '+ ft.esElements)
 
@@ -1278,6 +1253,7 @@ class DataloadService {
         log.debug("Begin to check ES Elements with DB Elements")
 
         RestHighLevelClient esclient = ESWrapperService.getClient()
+        def esIndices = ESWrapperService.es_indices
 
         try {
 
@@ -1288,25 +1264,20 @@ class DataloadService {
 
                         Class domainClass = grailsApplication.getDomainClass(ft.domainClassName).clazz
 
-                        String query_str = "rectype: '${ft.domainClassName.replaceAll("com\\.k_int\\.kbplus.", "").replaceAll("de\\.laser\\.", "")}'"
+                        String indexName = esIndices.get(domainClass.simpleName)
+                        Integer countIndex = 0
 
-                        if (ft.domainClassName == DocContext.name) {
-                            query_str = "rectype:'Note' OR rectype:'Document'"
+                        GetIndexRequest request = new GetIndexRequest(indexName)
+
+                        if (esclient.indices().exists(request, RequestOptions.DEFAULT)) {
+                            CountRequest countRequest = new CountRequest(indexName)
+                            CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
+                            countIndex = countResponse ? countResponse.getCount().toInteger() : 0
                         }
 
-                        //println(query_str)
-
-                        String index = ESWrapperService.getESSettings().indexName
-
-                        CountRequest countRequest = new CountRequest(index);
-                        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-                        searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
-                        countRequest.source(searchSourceBuilder);
-
-                        CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
                         FTControl.withTransaction {
                             ft.dbElements = domainClass.findAll().size()
-                            ft.esElements = countResponse ? countResponse.getCount().toInteger() : 0
+                            ft.esElements = countIndex
 
                             //println(ft.dbElements +' , '+ ft.esElements)
 

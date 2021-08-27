@@ -1298,6 +1298,43 @@ class SubscriptionControllerService {
         }
     }
 
+    Map<String, Object> customerIdentifierMembers(GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        if(!result) {
+            [result:null,status:STATUS_ERROR]
+        }
+        else {
+            result.platforms = Platform.executeQuery('select tipp.platform from TitleInstancePackagePlatform tipp where exists (select ie.id from IssueEntitlement ie where ie.subscription = :parentSub and ie.tipp = tipp and ie.status != :deleted)', [parentSub: result.subscription, deleted: RDStore.TIPP_STATUS_DELETED]) as Set<Platform>
+            result.members = Org.executeQuery("select org from OrgRole oo join oo.sub sub join oo.org org where sub.instanceOf = :parent and oo.roleType in (:subscrTypes) order by org.sortname asc, org.name asc",[parent: result.subscription, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]) as Set<Org>
+            result.keyPairs = []
+            result.platforms.each { Platform platform ->
+                result.members.each { Org customer ->
+                    //create dummies for that they may be xEdited - OBSERVE BEHAVIOR for eventual performance loss!
+                    CustomerIdentifier keyPair = CustomerIdentifier.findByPlatformAndCustomer(platform, customer)
+                    if(!keyPair) {
+                        keyPair = new CustomerIdentifier(platform: platform,
+                                customer: customer,
+                                type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE),
+                                owner: contextService.getOrg(),
+                                isPublic: true)
+                        if(!keyPair.save()) {
+                            log.warn(keyPair.errors.getAllErrors().toListString())
+                        }
+                    }
+                    result.keyPairs << keyPair
+                }
+            }
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    boolean deleteCustomerIdentifier(Long id) {
+        CustomerIdentifier ci = CustomerIdentifier.get(id)
+        ci.value = null
+        ci.requestorKey = null
+        ci.save()
+    }
+
     //--------------------------------------- survey section -------------------------------------------
 
     Map<String,Object> surveys(SubscriptionController controller, GrailsParameterMap params) {
@@ -1360,7 +1397,7 @@ class SubscriptionControllerService {
 
             result.countSelectedIEs = notFixedIEs.size()
             result.countAllIEs = allIEs.size()
-            result.countAllSourceIEs = sourceIEs.size()
+            //result.countAllSourceIEs = sourceIEs.size()
             result.num_ies_rows = sourceIEs.size()
             //subscriptionService.getIssueEntitlementsFixed(baseSub).size()
             result.sourceIEIDs = sourceIEs
@@ -1373,6 +1410,25 @@ class SubscriptionControllerService {
             result.subscription = baseSub
             result.subscriber = result.newSub.getSubscriber()
             result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+
+            SessionCacheWrapper sessionCache = contextService.getSessionCache()
+            Map<String,Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
+
+            if(!checkedCache) {
+                sessionCache.put("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}",["checked":[:]])
+                checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
+            }
+
+            result.checkedCache = checkedCache.get('checked')
+            result.checkedCount = result.checkedCache.findAll {it.value == 'checked'}.size()
+
+            result.allChecked = ""
+            if(params.tab == 'allIEs' && result.countAllIEs > 0 && result.countAllIEs == result.checkedCount) {
+                result.allChecked = "checked"
+            }
+            if(params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
+                result.allChecked = "checked"
+            }
 
             [result:result,status:STATUS_OK]
         }
@@ -1752,6 +1808,7 @@ class SubscriptionControllerService {
             }
 
             params.tab = params.tab ?: 'changes'
+            params.eventType = params.eventType ?: PendingChangeConfiguration.TITLE_UPDATED
             params.sort = params.sort ?: 'ts'
             params.order = params.order ?: 'desc'
             params.max = result.max
@@ -2054,7 +2111,7 @@ class SubscriptionControllerService {
                         selectedTippIds.removeAll(addedTipps)
                     }
                     selectedTippIds.each { String wekbId ->
-                        println("located tipp: ${wekbId}")
+                        //println("located tipp: ${wekbId}")
                         result.checked[wekbId] = "checked"
                     }
                     result.identifiers = identifiers
@@ -2458,21 +2515,29 @@ class SubscriptionControllerService {
             if(!result.editable) {
                 [result:null,status:STATUS_ERROR]
             }
+            SessionCacheWrapper sessionCache = contextService.getSessionCache()
+            Map<String,Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${params.id}?${params.tab}")
 
-            if(!params."iesToAdd"){
+            result.checkedCache = checkedCache.get('checked')
+            result.checked = result.checkedCache.findAll {it.value == 'checked'}
+
+
+            List removeFromCache = []
+
+            if(result.checked.size() < 1){
                 result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps',null,locale)
                 [result:result,status:STATUS_ERROR]
 
-            }else if(params.process == "preliminary" && params."iesToAdd") {
-                List iesToAdd = params."iesToAdd".split(",")
+            }else if(params.process == "preliminary" && result.checked.size() > 0) {
                 Integer countIEsToAdd = 0
-                iesToAdd.each { ieID ->
-                    IssueEntitlement ie = IssueEntitlement.findById(ieID)
+                result.checked.each {
+                    IssueEntitlement ie = IssueEntitlement.findById(it.key)
                     TitleInstancePackagePlatform tipp = ie.tipp
                     try {
-                        if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)) {
+                        if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)) {
                             log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
                             ++countIEsToAdd
+                            removeFromCache << it.key
                         }
                     }
                     catch (EntitlementCreationException e) {
@@ -2485,15 +2550,21 @@ class SubscriptionControllerService {
                     Object[] args = [countIEsToAdd]
                     result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd',args,locale)
                 }
+
+                removeFromCache.each {
+                    result.checked.remove(it)
+                }
+                checkedCache.put('checked',result.checked)
+
                 [result:result,status:STATUS_OK]
 
-            } else if(params.process == "remove" && params."iesToAdd") {
-                List iesToAdd = params."iesToAdd".split(",")
+            } else if(params.process == "remove" && result.checked.size() > 0) {
                 Integer countIEsToDelete = 0
-                iesToAdd.each { ieID ->
+                result.checked.each {
                     try {
-                        if (subscriptionService.deleteEntitlementbyID(result.subscription, ieID)) {
+                        if (subscriptionService.deleteEntitlementbyID(result.subscription, it.key.toString())) {
                             ++countIEsToDelete
+                            removeFromCache << it.key
                         }
                     }
                     catch (EntitlementCreationException e) {
@@ -2505,6 +2576,12 @@ class SubscriptionControllerService {
                     Object[] args = [countIEsToDelete]
                     result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToDelete',args,locale)
                 }
+
+                removeFromCache.each {
+                    result.checked.remove(it)
+                }
+                checkedCache.put('checked',result.checked)
+
                 [result:result,status:STATUS_OK]
             }
         }

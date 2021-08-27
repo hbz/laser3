@@ -107,7 +107,7 @@
             <span id="surveyCount">${message(code:'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
         </a>
 
-        <sec:ifAnyGranted roles="ROLE_YODA"><!-- TODO -->
+        <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                 <a class="${us_dashboard_tab.getValue().value=='Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                     <i class="tasks icon large"></i>
@@ -264,7 +264,7 @@
             </div>
         </div>
 
-        <sec:ifAnyGranted roles="ROLE_YODA"><!-- TODO -->
+        <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
         <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
             <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active':''}" data-tab="workflows">
                 <div>
