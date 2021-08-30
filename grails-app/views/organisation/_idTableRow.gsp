@@ -54,7 +54,7 @@
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [id?.ns?.ns+": "+id.value])}"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="trash alternate icon"></i>
+                    <i class="trash alternate outline icon"></i>
                 </g:link>
             </g:if>
         </td>

@@ -612,7 +612,7 @@ r2d2 = {
 
                 switch (how) {
                     case "delete":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.delete', JSPC.currLanguage) + '<i aria-hidden="true" class="trash alternate icon"></i>');
+                        $jscb.html(JSPC.dict.get('confirm.dialog.delete', JSPC.currLanguage) + '<i aria-hidden="true" class="trash alternate outline icon"></i>');
                         break;
                     case "unlink":
                         $jscb.html(JSPC.dict.get('confirm.dialog.unlink', JSPC.currLanguage) + '<i aria-hidden="true" class="la-chain broken icon"></i>');

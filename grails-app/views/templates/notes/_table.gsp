@@ -62,7 +62,7 @@
                                     params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate icon"></i>
+                                <i class="trash alternate outline icon"></i>
                             </g:link>
                         </g:if>
                     </td>

@@ -143,7 +143,7 @@
                         id="${surveyInfo.id}"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="trash alternate icon"></i> ${message(code:'deletion.survey')}
+                    <i class="trash alternate outline icon"></i> ${message(code:'deletion.survey')}
                 </g:link>
 
             </g:if>

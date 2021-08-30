@@ -8,7 +8,7 @@
     <title>${message(code: 'laser')} : ${surveyInfo.type.getI10n('value')}</title>
 </head>
 
-<body>
+<body>trash alternate outline icon
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>

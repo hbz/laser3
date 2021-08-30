@@ -123,7 +123,7 @@
                                         <g:if test="${! pd.isHardData && ! usedPdList?.contains(pd.id)}">
                                             <g:link controller="admin" action="managePropertyDefinitions"
                                                     params="${[cmd: 'deletePropertyDefinition', pd: PropertyDefinition.class.name +':' + pd.id]}" class="ui icon negative button">
-                                                <i class="trash alternate icon"></i>
+                                                <i class="trash alternate outline icon"></i>
                                             </g:link>
                                         </g:if>
                                         </g:if>

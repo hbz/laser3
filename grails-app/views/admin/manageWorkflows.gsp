@@ -157,7 +157,7 @@
                 </g:link>
             </div>
 
-            <g:link class="ui red icon small button right floated" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflow.KEY}:${wfw.id}", tab: 'workflows']}"><i class="trash alternate icon"></i></g:link>
+            <g:link class="ui red icon small button right floated" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflow.KEY}:${wfw.id}", tab: 'workflows']}"><i class="trash alternate outline icon"></i></g:link>
             <br />
 
             <g:set var="wfInfo" value="${wfw.getInfo()}" />
@@ -229,7 +229,7 @@
                     </td>
                     <td class="x">
                         <g:if test="${! wp.inUse()}">
-                            <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflowPrototype.KEY}:${wp.id}", tab: 'prototypes']}"><i class="trash alternate icon"></i></g:link>
+                            <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflowPrototype.KEY}:${wp.id}", tab: 'prototypes']}"><i class="trash alternate outline icon"></i></g:link>
                         </g:if>
                         <g:if test="${wp.state == RDStore.WF_WORKFLOW_STATE_ACTIVE}">
                             <g:link class="ui green icon small button tmpJSPrompt" controller="admin" action="manageWorkflows" params="${[cmd: "instantiate:${WfWorkflowPrototype.KEY}:${wp.id}", tab: 'prototypes']}"><i class="step forward icon"></i></g:link>
@@ -338,7 +338,7 @@
                     </td>
                     <td class="x">
                         <g:if test="${! tp.inUse()}">
-                            <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfTaskPrototype.KEY}:${tp.id}", tab: 'prototypes']}"><i class="trash alternate icon"></i></g:link>
+                            <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfTaskPrototype.KEY}:${tp.id}", tab: 'prototypes']}"><i class="trash alternate outline icon"></i></g:link>
                         </g:if>
                     </td>
                 </tr>
@@ -390,7 +390,7 @@
                     </td>
                     <td class="x">
                         <g:if test="${! cp.inUse()}">
-                            <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfConditionPrototype.KEY}:${cp.id}", tab: 'prototypes']}"><i class="trash alternate icon"></i></g:link>
+                            <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfConditionPrototype.KEY}:${cp.id}", tab: 'prototypes']}"><i class="trash alternate outline icon"></i></g:link>
                         </g:if>
                     </td>
                 </tr>

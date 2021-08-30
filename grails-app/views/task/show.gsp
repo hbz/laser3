@@ -85,7 +85,7 @@
 							<i aria-hidden="true" class="write icon"></i>
 						</g:link>
 						<button class="ui negative button" type="submit" name="_action_delete">
-							<i class="trash alternate icon"></i>
+							<i class="trash alternate outline icon"></i>
 							<g:message code="default.button.delete.label" />
 						</button>
 					</div>
