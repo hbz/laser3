@@ -7,7 +7,15 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3607    27.08.2021  dev     2.2         Andreas Feature     Vorgänger-Nachfolger-Beziehung für Einrichtungen implementiert
+
+3761    27.08.2021  dev     2.2         David   Feature     Reporting: QueryCache bzgl. CSV-Export überarbeiten
+
+3750    26.08.2021  dev     2.2         David   Feature     Reporting: Zeitleisteninformationen als CSV exportieren
+
 3758    25.08.2021  dev     2.2         Moe     Bug         Renewal-Export
+
+3504    25.08.2021  dev     2.2         David   Feature     csv Export auch bei Mikroreporting
 
 3755    25.08.2021  dev     2.2         Andreas Feature     Umstrukturierung des Lizenzdetail-Menüs
 

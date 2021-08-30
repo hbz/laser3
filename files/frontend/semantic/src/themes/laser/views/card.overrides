@@ -149,3 +149,12 @@
 {
   width: 100%;
 }
+
+
+@media only screen and (max-width : @largeMonitorBreakpoint) {
+  .ui.two.doubling.cards > .card {
+    width: @oneCard;
+    //margin-left: @oneCardSpacing;
+    //margin-right: @oneCardSpacing;
+  }
+}

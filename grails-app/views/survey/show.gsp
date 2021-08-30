@@ -48,7 +48,7 @@
     <div class="sixteen wide column">
 
         <div class="la-inline-lists">
-            <div class="ui two stackable cards">
+            <div class="ui two doubling stackable cards">
                 <div class="ui card la-time-card">
                     <div class="content">
                         <dl>

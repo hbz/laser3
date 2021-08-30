@@ -61,7 +61,7 @@
                 <!--<h4 class="ui header">${message(code:'license.details.information')}</h4>-->
 
                 <div class="la-inline-lists">
-                    <div class="ui two stackable cards">
+                    <div class="ui two doubling stackable cards">
                         <div class="ui card ">
                             <div class="content">
                                 <dl>

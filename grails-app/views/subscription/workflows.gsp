@@ -41,10 +41,11 @@
     <table class="ui celled table la-table">
         <thead>
         <tr>
+            <th>${message(code:'default.status.label')}</th>
             <th>${message(code:'workflow.label')}</th>
             <th>${message(code:'default.progress.label')}</th>
             <th>${message(code:'workflow.dates.plural')}</th>
-            <th></th>
+            <th>${message(code:'default.actions.label')}</th>
         </tr>
         </thead>
         <tbody>
@@ -52,8 +53,11 @@
             <g:set var="wfInfo" value="${wf.getInfo()}" />
             <tr>
                 <td>
+                    <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i>
+                </td>
+                <td>
                     <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
-                        <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i> ${wf.title}
+                         ${wf.title}
                     </g:link>
                 </td>
                 <td>

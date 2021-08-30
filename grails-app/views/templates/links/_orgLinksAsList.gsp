@@ -90,7 +90,7 @@
                                 Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)  }">
                             <div class="ui segment la-timeLineSegment-contact">
                                 <div class="la-timeLineGrid">
-                                    <div class="ui grid stackable">
+                                    <div class="ui grid">
                                         <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'General contact person')}" var="func">
                                             <div class="row">
                                                 <div class="two wide column">
@@ -166,7 +166,7 @@
                                 Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}">
                             <div class="ui segment la-timeLineSegment-contact">
                                 <div class="la-timeLineGrid">
-                                    <div class="ui grid stackable">
+                                    <div class="ui grid">
                                         <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg)}" var="func">
                                             <div class="row">
                                                 <div class="two wide column">

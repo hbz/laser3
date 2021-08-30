@@ -1,6 +1,6 @@
 <div class="ui segment form">
 
-    <div class="fields <laser:numberToString number="${cfgQueryList2.size()}" min="2"/>">
+    <div class="fields <laser:numberToString number="${cfgQueryList2.size() + 2}" min="2"/>">
         <g:each in="${cfgQueryList2}" var="cfgQuery" status="qci">
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
@@ -31,5 +31,11 @@
             </g:each>
         </g:each>
 
+        <div class="field">
+            <label for="query-export-button">Exportieren</label>
+            <button id="query-export-button" class="ui icon button" href="#queryExportModal" data-semui="modal" disabled><i class="ui icon download"></i></button>
+        </div>
     </div>
 </div>
+
+<g:render template="/subscription/reporting/export/queryModal" model="[modalID: 'queryExportModal', token: token]" />

@@ -1,8 +1,8 @@
 JSPC.app.reporting.current.chart.option = {
     dataset: {
-        dimensions: ['id', 'name', 'isCurrent', 'annual', 'value'],
+        dimensions: ['id', 'name', 'value', 'isCurrent'],
         source: [
-            <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}, '${it[3]}', ${it[4]}]," } %>
+            <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}, ${it[3]}]," } %>
         ]
     },
     grid:  {
@@ -20,7 +20,7 @@ JSPC.app.reporting.current.chart.option = {
         axisLabel: {
             formatter: function(id, index) {
                 var elem = JSPC.app.reporting.current.chart.option.dataset.source[ index ]
-                return elem[3]
+                return elem[1]
             }
         }
     },
@@ -31,9 +31,9 @@ JSPC.app.reporting.current.chart.option = {
         axisPointer: { type: 'shadow' },
         formatter (params) {
             var index = JSPC.app.reporting.current.chart.option.dataset.dimensions.length - 1
-            var str = params[0].data[3]
+            var str = params[0].data[1]
             for (var i=0; i<params.length; i++) {
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params[i].marker, params[i].seriesName, params[i].data[ index - params[i].seriesIndex ])
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params[i].marker, params[i].seriesName, params[i].data[ 2 ])
             }
             return str
         }
@@ -53,7 +53,7 @@ JSPC.app.reporting.current.chart.option = {
             },
             itemStyle: {
                 color: function(params) {
-                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('blue', (params.data[2] == true))
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('blue', (params.data[3] == true))
                 }
             }
         }
