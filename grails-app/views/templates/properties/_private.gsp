@@ -110,7 +110,7 @@
                                               data-update="${propertyWrapper}"
                                               role="button"
                                               ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate icon"></i>
+                                <i class="trash alternate outline icon"></i>
                             </laser:remoteLink>
                         </g:if>
                     </td>

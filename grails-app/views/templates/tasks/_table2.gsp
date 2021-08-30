@@ -79,7 +79,7 @@
                                 action="deleteTask" controller="ajax" params="[deleteId:taskInstance.id]"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.task')}">
-                            <i class="trash alternate icon"></i>
+                            <i class="trash alternate outline icon"></i>
                         </g:link>
                 </tr>
                     </td>

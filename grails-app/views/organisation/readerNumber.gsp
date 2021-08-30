@@ -105,7 +105,7 @@
                                             data-confirm-term-how="ok" params="${[semester:numbersInstance.getKey().id,org:params.id]}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate icon"></i>
+                                        <i class="trash alternate outline icon"></i>
                                     </g:link>
                                     <g:render template="/readerNumber/formModal" model="[formId: 'newForSemester'+numbersInstance.getKey().id,semester:numbersInstance.getKey().id,withSemester: true,title:message(code: 'readerNumber.createForUni.label')]"/>
                                 </g:if>
@@ -150,7 +150,7 @@
                                                 data-confirm-term-how="ok" params="${[dueDate:numbersInstance.getKey(),org:params.id]}"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="trash alternate icon"></i>
+                                            <i class="trash alternate outline icon"></i>
                                         </g:link>
                                     </g:if>
                                 </td>

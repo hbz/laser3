@@ -8,7 +8,7 @@
 <g:elseif test="${actionName == 'edit'}">%{-- /user/edit --}%
     <g:if test="${contextService.getUser().hasRole('ROLE_ADMIN')}">
         <semui:actionsDropdown>
-            <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate icon"></i> ${message(code:'deletion.user')}</g:link>
+            <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.user')}</g:link>
         </semui:actionsDropdown>
     </g:if>
 </g:elseif>
@@ -32,14 +32,14 @@
     <g:if test="${controllerName == 'myInstitution'}">%{-- /myInstitution/editUser --}%
         <g:if test="${contextService.getUser().hasRole('ROLE_ADMIN') || contextService.getUser().hasAffiliation("INST_ADM")}">
             <semui:actionsDropdown>
-                <g:link class="item" action="deleteUser" params="${[uoid: params.uoid]}"><i class="trash alternate icon"></i> ${message(code:'deletion.user')}</g:link>
+                <g:link class="item" action="deleteUser" params="${[uoid: params.uoid]}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.user')}</g:link>
             </semui:actionsDropdown>
         </g:if>
     </g:if>
     <g:elseif test="${controllerName == 'organisation'}">%{-- /organisation/editUser - TODO: isAuthorizedComboInstAdmin --}%
         <g:if test="${contextService.getUser().hasRole('ROLE_ADMIN')}">
             <semui:actionsDropdown>
-                <g:link class="item" action="deleteUser" params="${[id:params.id, uoid: params.uoid]}"><i class="trash alternate icon"></i> ${message(code:'deletion.user')}</g:link>
+                <g:link class="item" action="deleteUser" params="${[id:params.id, uoid: params.uoid]}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.user')}</g:link>
             </semui:actionsDropdown>
         </g:if>
     </g:elseif>

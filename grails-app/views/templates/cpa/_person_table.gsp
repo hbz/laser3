@@ -210,7 +210,7 @@
                              data-confirm-id="${person.id}"
                              role="button"
                              aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash alternate icon"></i>
+                            <i class="trash alternate outline icon"></i>
                         </div>
                     </g:form>
                 </g:if>

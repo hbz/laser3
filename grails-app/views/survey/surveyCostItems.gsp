@@ -368,7 +368,7 @@
                         data-confirm-id="processSurveyCostItemsBulk"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="trash alternate icon"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
+                    <i class="trash alternate outline icon"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
                 </button>
 
             </g:form>

@@ -134,13 +134,13 @@
                                                 data-confirm-term-how="delete"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="trash alternate icon"></i>
+                                            <i class="trash alternate outline icon"></i>
                                         </g:link>
                                     </g:if>
                                     <g:else>
                                         <div data-tooltip="${message(code: 'accessPoint.list.deleteDisabledInfo', args: [accessPointItem['platformLinkCount'], accessPointItem['subscriptionLinkCount']])}" data-position="bottom center">
                                             <div class="ui icon button disabled">
-                                                <i class="trash alternate icon"></i>
+                                                <i class="trash alternate outline icon"></i>
                                             </div>
                                         </div>
                                     </g:else>

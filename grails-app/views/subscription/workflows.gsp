@@ -86,7 +86,7 @@
                 <td class="x">
                     <button class="ui small icon button" data-wfId="${wf.id}"><i class="icon info"></i></button>
                     %{-- <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button> --}%
-                    <g:link class="ui red icon small button" controller="subscription" action="workflows" params="${[id: "${subscription.id}", cmd: "delete:${WfWorkflow.KEY}:${wf.id}"]}"><i class="trash alternate icon"></i></g:link>
+                    <g:link class="ui red icon small button" controller="subscription" action="workflows" params="${[id: "${subscription.id}", cmd: "delete:${WfWorkflow.KEY}:${wf.id}"]}"><i class="trash alternate outline icon"></i></g:link>
                 </td>
             </tr>
         </g:each>

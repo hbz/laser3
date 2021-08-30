@@ -170,7 +170,7 @@
                                                                         controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate icon"></i>
+                                                                    <i class="trash alternate outline icon"></i>
                                                                 </g:link>
                                                             </div>
                                                         </g:if>
@@ -185,7 +185,7 @@
                                                                         data-confirm-term-how="delete"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate icon"></i>
+                                                                    <i class="trash alternate outline icon"></i>
                                                                 </g:link>
                                                                 %{--<g:form controller="person" action="delete" data-confirm-id="${personInstance?.id?.toString()+ '_form'}">--}%
                                                                 %{--<g:hiddenField name="id" value="${personInstance?.id}" />--}%
@@ -195,7 +195,7 @@
                                                                 %{--data-confirm-id="${personInstance?.id}" --}%
                                                                 %{--role="button"--}%
                                                                 %{--aria-label="${message(code: 'ariaLabel.delete.universal')}"> --}%
-                                                                %{--<i class="trash alternate icon"></i>--}%
+                                                                %{--<i class="trash alternate outline icon"></i>--}%
                                                                 %{--</div>--}%
                                                                 %{--</g:form>--}%
                                                             </div>
@@ -256,7 +256,7 @@
                                                                         data-confirm-term-how="delete"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate icon"></i>
+                                                                    <i class="trash alternate outline icon"></i>
                                                                 </g:link>
                                                                 %{--<g:form controller="person" action="delete" data-confirm-id="${personInstance?.id?.toString()+ '_form'}">--}%
                                                                     %{--<g:hiddenField name="id" value="${personInstance?.id}" />--}%
@@ -266,7 +266,7 @@
                                                                          %{--data-confirm-id="${personInstance?.id}" --}%
                                                                         %{--role="button"--}%
                                                                         %{--aria-label="${message(code: 'ariaLabel.delete.universal')}"> --}%
-                                                                %{--<i class="trash alternate icon"></i>--}%
+                                                                %{--<i class="trash alternate outline icon"></i>--}%
                                                                     %{--</div>--}%
                                                                 %{--</g:form>--}%
                                                             </div>
@@ -340,7 +340,7 @@
                                                             <g:link class="ui negative button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]"
                                                                     role="button"
                                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                <i class="trash alternate icon"></i>
+                                                                <i class="trash alternate outline icon"></i>
                                                             </g:link>
                                                         </div>
                                                     </g:if>

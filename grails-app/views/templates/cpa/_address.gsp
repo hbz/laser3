@@ -70,7 +70,7 @@
                             controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: oid]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                        <i class="trash alternate icon"></i>
+                        <i class="trash alternate outline icon"></i>
                     </g:link>
                 </div>
             </g:if>

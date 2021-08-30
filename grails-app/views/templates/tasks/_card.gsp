@@ -22,7 +22,7 @@
                         params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="trash alternate icon"></i>
+                    <i class="trash alternate outline icon"></i>
                 </g:link>
             </div>
         </div>
