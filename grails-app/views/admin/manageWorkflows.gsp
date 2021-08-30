@@ -59,32 +59,15 @@
     </g:if>
 
     <g:each in="${WfWorkflow.executeQuery('select wfw from WfWorkflow wfw order by wfw.id desc')}" var="wfw">
+
         <div class="ui segment attached top">
+            <i class="ui icon large ${WorkflowHelper.getCssIconAndColorByStatus(wfw.status)}"></i>
             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflow.KEY + ':' + wfw.id, tab: 'workflows']}">
-                <strong><i class="icon tasks"></i> ${wfw.title}</strong>
+                <strong>${wfw.title}</strong>
             </g:link>
-            <br />
-            <g:link controller="subscription" action="show" params="${[id: wfw.subscription.id]}">
-                <strong><i class="icon clipboard"></i> ${wfw.subscription}
-                    <g:if test="${wfw.subscription.startDate || wfw.subscription.endDate}">
-                        (${wfw.subscription.startDate ? DateUtils.getSDF_NoTime().format(wfw.subscription.startDate) : ''} -
-                        ${wfw.subscription.endDate ? DateUtils.getSDF_NoTime().format(wfw.subscription.endDate) : ''})
-                    </g:if>
-                </strong>
-            </g:link>
-            <br />
-            <g:link controller="organisation" action="show" params="${[id: wfw.owner.id]}">
-                <strong><i class="icon university"></i> ${wfw.owner}</strong>
-            </g:link>
-
-            <g:link class="ui red icon small button right floated" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflow.KEY}:${wfw.id}", tab: 'workflows']}"><i class="trash alternate icon"></i></g:link>
-            <br />
-
-            <g:set var="wfInfo" value="${wfw.getInfo()}" />
-            Bearbeitet: ${DateUtils.getSDF_NoTime().format(wfInfo.lastUpdated)} - Erstellt: ${DateUtils.getSDF_NoTime().format(wfw.dateCreated)}
         </div>
 
-        <div class="ui segment attached bottom">
+        <div class="ui segment attached">
         <div class="ui mini steps">
             <g:set var="tasks" value="${wfw.getSequence()}" />
             <g:each in="${tasks}" var="wft">
@@ -147,6 +130,38 @@
                 </div>
             </g:each>
         </div>
+        </div>
+
+        <div class="ui segment attached bottom" style="background-color: #f9fafb;">
+
+            <div class="la-flexbox">
+                <i class="icon tasks la-list-icon"></i>
+                <g:link controller="subscription" action="workflows" id="${wfw.subscription.id}" params="${[info: 'subscription:' + wfw.subscription.id + ':' + WfWorkflow.KEY + ':' + wfw.id]}">
+                    <strong>${wfw.title}</strong>
+                </g:link>
+            </div>
+            <div class="la-flexbox">
+                <i class="icon clipboard la-list-icon"></i>
+                <g:link controller="subscription" action="show" params="${[id: wfw.subscription.id]}">
+                    ${wfw.subscription}
+                    <g:if test="${wfw.subscription.startDate || wfw.subscription.endDate}">
+                        (${wfw.subscription.startDate ? DateUtils.getSDF_NoTime().format(wfw.subscription.startDate) : ''} -
+                        ${wfw.subscription.endDate ? DateUtils.getSDF_NoTime().format(wfw.subscription.endDate) : ''})
+                    </g:if>
+                </g:link>
+            </div>
+            <div class="la-flexbox">
+                <i class="icon university la-list-icon"></i>
+                <g:link controller="organisation" action="show" params="${[id: wfw.owner.id]}">
+                    ${wfw.owner}
+                </g:link>
+            </div>
+
+            <g:link class="ui red icon small button right floated" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflow.KEY}:${wfw.id}", tab: 'workflows']}"><i class="trash alternate icon"></i></g:link>
+            <br />
+
+            <g:set var="wfInfo" value="${wfw.getInfo()}" />
+            Bearbeitet: ${DateUtils.getSDF_NoTime().format(wfInfo.lastUpdated)} - Erstellt: ${DateUtils.getSDF_NoTime().format(wfw.dateCreated)}
         </div>
 
         <br />

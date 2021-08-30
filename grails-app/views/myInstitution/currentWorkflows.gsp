@@ -96,11 +96,12 @@
 <table class="ui celled table la-table">
     <thead>
     <tr>
+        <th>${message(code:'default.status.label')}</th>
         <th>${message(code:'workflow.label')}</th>
         <th>${message(code:'subscription.label')}</th>
         <th>${message(code:'default.progress.label')}</th>
         <th>${message(code:'workflow.dates.plural')}</th>
-        <th></th>
+        <th>${message(code:'default.actions.label')}</th>
     </tr>
     </thead>
     <tbody>
@@ -108,20 +109,25 @@
             <g:set var="wfInfo" value="${wf.getInfo()}" />
             <tr>
                 <td>
+                    <i class="ui icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i>
+                </td>
+                <td>
                     <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'myInstitution:' + wf.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
-                        <i class="ui icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i><strong>${wf.title}</strong>
+                        <strong>${wf.title}</strong>
                     </g:link>
                 </td>
                 <td>
-                    <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
-                        <i class="ui icon clipboard"></i>${wf.subscription.name}
-                        <br/>
-                        <g:if test="${wf.subscription.startDate || wf.subscription.endDate}">
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            (${wf.subscription.startDate ? DateUtils.getSDF_NoTime().format(wf.subscription.startDate) : ''} -
-                            ${wf.subscription.endDate ? DateUtils.getSDF_NoTime().format(wf.subscription.endDate) : ''})
-                        </g:if>
-                    </g:link>
+                    <div class="la-flexbox">
+                        <i class="ui icon clipboard la-list-icon"></i>
+                        <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
+                            ${wf.subscription.name}
+                            <br/>
+                            <g:if test="${wf.subscription.startDate || wf.subscription.endDate}">
+                                (${wf.subscription.startDate ? DateUtils.getSDF_NoTime().format(wf.subscription.startDate) : ''} -
+                                ${wf.subscription.endDate ? DateUtils.getSDF_NoTime().format(wf.subscription.endDate) : ''})
+                            </g:if>
+                        </g:link>
+                    </div>
                 </td>
                 <td>
                     <g:set var="tasks" value="${wf.getSequence()}" />
