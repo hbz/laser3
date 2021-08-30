@@ -4,7 +4,7 @@
 <!-- _individuallyExportModal.gsp -->
 <g:set var="formFields" value="${exportClickMeService.getExportSubscriptionFieldsForUI(subscription, institution)}"/>
 
-<semui:modal id="${modalID}" text="Excel-Export" hideSubmitButton="true">
+<semui:modal modalSize="large" id="${modalID}" text="Excel-Export" hideSubmitButton="true">
 
     <g:form action="members" controller="subscription" params="${params+[id:params.id, exportClickMeExcel: true]}">
         <div class="ui form">
@@ -26,15 +26,53 @@
                     <div class="fields">
                         <g:each in="${fields.value.fields}" var="field" status="fc">
 
-                            <div class="wide eight field">
-
-                                <div class="ui checkbox">
-                                    <input type="checkbox" name="iex:${field.key}"
-                                           id="iex:${field.key}" ${field.value.defaultChecked ? 'checked="checked"' : ''}>
-                                    <label for="iex:${field.key}">${field.value.message ? message(code: field.value.message) : field.value.label}</label>
+                            <g:if test="${field.key == 'costItemsElements'}">
+                                <g:set var="newFieldsDiv" value="${false}"/>
                                 </div>
 
-                            </div><!-- .field -->
+                                <label for="${field.key}"><g:message code="exportClickMe.costItemsElements.selectCostItems"/> </label>
+                                <div class="fields">
+                                    <g:each in="${field.value}" var="costItemsElements" status="gc">
+                                        <div class="wide eight field">
+
+                                            <div class="ui checkbox ">
+                                                <input type="checkbox" name="iex:${costItemsElements.key}"
+                                                       id="iex:${costItemsElements.key}" ${costItemsElements.value.defaultChecked ? 'checked="checked"' : ''}>
+                                                <label for="iex:${costItemsElements.key}">${costItemsElements.value.message ? message(code: costItemsElements.value.message) : costItemsElements.value.label}</label>
+                                            </div>
+
+                                        </div><!-- .field -->
+
+                                        <g:if test="${gc % 2 == 1}">
+                                            <g:set var="newFieldsDiv" value="${true}"/>
+                                            </div>
+                                            <div class="fields">
+                                        </g:if>
+                                        <g:else>
+                                            <g:set var="newFieldsDiv" value="${false}"/>
+                                        </g:else>
+                                    </g:each>
+                                    <g:if test="${!newFieldsDiv}">
+                                        </div>
+                                        <div class="ui divider"></div>
+                                       <div class="fields">
+                                    </g:if>
+                                    <g:else>
+                                        <div class="ui divider"></div>
+                                    </g:else>
+
+                            </g:if>
+                            <g:else>
+                                <div class="wide eight field">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" name="iex:${field.key}"
+                                               id="iex:${field.key}" ${field.value.defaultChecked ? 'checked="checked"' : ''}>
+                                        <label for="iex:${field.key}">${field.value.message ? message(code: field.value.message) : field.value.label}</label>
+                                    </div>
+                                </div><!-- .field -->
+                            </g:else>
+
+
 
                             <g:if test="${fc % 2 == 1}">
                                 </div>
@@ -55,7 +93,7 @@
                 <div class="wide eight field">
                     <label for="filename"><g:message code="default.fileName.label"/></label>
                     <input name="filename" id="filename"
-                           value="${message(code: 'subscriptionDetails.members.members')}"/>
+                           value="${escapeService.escapeString(subscription.name) + "_" + message(code:'subscriptionDetails.members.members')}"/>
                 </div>
 
                 <div class="wide eight field">
