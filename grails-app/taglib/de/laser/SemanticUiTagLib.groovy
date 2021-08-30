@@ -921,7 +921,7 @@ class SemanticUiTagLib {
 
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         String linkBody = (text && message) ? text + " - " + message : text + message
-        String aClass = ((this.pageScope.variables?.actionName == attrs.action && attrs.tab == params.tab) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+        String aClass = ((this.pageScope.variables?.actionName == attrs.action && (attrs.tab == params.tab || attrs.tab == params[attrs.subTab])) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         String counts = (attrs.counts >= 0) ? '<div class="ui '  + ' circular label">' + attrs.counts + '</div>' : null
 

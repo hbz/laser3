@@ -28,7 +28,7 @@ class LaserStatsCursor {
     }
 
     static constraints = {
-
+        reportID(unique: ['platform', 'customer'])
     }
 
     static LaserStatsCursor construct(Map<String, Object> configMap) throws CreationException {

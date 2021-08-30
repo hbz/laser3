@@ -20,6 +20,7 @@ import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.json.JsonOutput
 import groovy.sql.BatchingPreparedStatementWrapper
+import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import groovy.xml.StreamingMarkupBuilder
@@ -43,7 +44,7 @@ import java.util.concurrent.ExecutorService
 @Transactional
 class StatsSyncService {
 
-    static final THREAD_POOL_SIZE = 10
+    static final THREAD_POOL_SIZE = 8
     static final SYNC_STATS_FROM = '2012-01-01'
 
     ExecutorService executorService
@@ -173,27 +174,30 @@ class StatsSyncService {
     void internalDoFetch(boolean incremental) {
         List<Counter4ApiSource> c4SushiSources = Counter4ApiSource.executeQuery("select c4as from Counter4ApiSource c4as where not exists (select c5as.id from Counter5ApiSource c5as where c5as.provider = c4as.provider and c5as.platform = c4as.platform)")//[]
         List<Counter5ApiSource> c5SushiSources = Counter5ApiSource.findAll()
-        List<String> namespaces = [IdentifierNamespace.EISSN, IdentifierNamespace.ISBN, IdentifierNamespace.DOI]
+        Set<Long> namespaces = [IdentifierNamespace.findByNs(IdentifierNamespace.EISSN).id, IdentifierNamespace.findByNs(IdentifierNamespace.ISBN).id, IdentifierNamespace.findByNs(IdentifierNamespace.DOI).id]
         def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
         //process each platform with a SUSHI API
         c4SushiSources.each { Counter4ApiSource c4as ->
-            List<CustomerIdentifier> keyPairs = CustomerIdentifier.findAllByPlatform(c4as.platform) //[[0]] this strange notation is for debug purposes only!
+            /*Set titles = TitleInstancePackagePlatform.executeQuery('select new map(id.value as identifier, tipp.id as title) from Identifier id  join id.tipp tipp where tipp.platform = :plat and tipp.status != :deleted',
+                    [plat: c4as.platform, deleted: RDStore.TIPP_STATUS_DELETED])*/
+            List<CustomerIdentifier> keyPairs = CustomerIdentifier.findAllByPlatform(c4as.platform) // this strange notation is for debug purposes only!
             GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
                 keyPairs.eachWithIndexParallel { CustomerIdentifier keyPair, int i ->
                     Sql sql = new Sql(dataSource)
-                    TitleInstancePackagePlatform.withNewSession {
-                        Set<TitleInstancePackagePlatform> titles = TitleInstancePackagePlatform.executeQuery('select new map(id.value as identifier, tipp as title) from Identifier id join id.tipp tipp where tipp.platform = :plat and exists (select ie.id from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :customer and ie.tipp = tipp and ie.status != :deleted)', [plat: c4as.platform, customer: keyPair.customer, deleted: RDStore.TIPP_STATUS_DELETED])
-                        //is done here because no thread-safe date classes are available and this is a workaround
+                    //TitleInstancePackagePlatform.withNewSession {
+                    sql.withTransaction {
+                        //List<GroovyRowResult> titles = sql.rows("select id_value as identifier, id_tipp_fk as title from identifier join title_instance_package_platform on id_tipp_fk = tipp_id where tipp_plat_fk = :plat and exists (select or_id from org_role join issue_entitlement on or_sub_fk = ie_subscription_fk where ie_tipp_fk = tipp_id and or_org_fk = :customer and ie_status_rv_fk != :deleted)",
+                        //        [plat: c4as.platform.id, customer: keyPair.customer.id, deleted: RDStore.TIPP_STATUS_DELETED.id]
                         Map<String, Object> calendarConfig = initCalendarConfig(incremental)
                         //DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                         Calendar startTime = GregorianCalendar.getInstance(), currentYearEnd = GregorianCalendar.getInstance()
                         log.debug("${Thread.currentThread().getName()} is now processing key pair ${i}, requesting data for ${keyPair.customer.name}:${keyPair.value}:${keyPair.requestorKey}")
                         Counter4ApiSource.COUNTER_4_REPORTS.each { String reportID ->
-                            sql.withTransaction {
-                                startTime.setTime(calendarConfig.startDate)
-                                currentYearEnd.setTime(calendarConfig.endNextRun)
-                                log.debug("${Thread.currentThread().getName()} is starting ${reportID} for ${keyPair.customer.sortname} at ${startTime.format('yyyy-MM-dd')}-${currentYearEnd.format('yyyy-MM-dd')}")
-                                LaserStatsCursor lsc = LaserStatsCursor.construct([platform: c4as.platform, customer: keyPair.customer, reportID: reportID, latestFrom: calendarConfig.startDate, latestTo: calendarConfig.endNextRun])
+                            startTime.setTime(calendarConfig.startDate)
+                            currentYearEnd.setTime(calendarConfig.endNextRun)
+                            log.debug("${Thread.currentThread().getName()} is starting ${reportID} for ${keyPair.customer.sortname} at ${startTime.format('yyyy-MM-dd')}-${currentYearEnd.format('yyyy-MM-dd')}")
+                            //LaserStatsCursor.withTransaction {
+                                //LaserStatsCursor lsc = LaserStatsCursor.construct([platform: c4as.platform, customer: keyPair.customer, reportID: reportID, latestFrom: calendarConfig.startDate, latestTo: calendarConfig.endNextRun])
                                 boolean more = true
                                 while (more) {
                                     log.debug("${Thread.currentThread().getName()} is getting ${reportID} for ${keyPair.customer.sortname} from ${startTime.format("yyyy-MM-dd")}-${currentYearEnd.format("yyyy-MM-dd")}")
@@ -251,59 +255,68 @@ class StatsSyncService {
                                             //if(wasMissing)
                                             //lsc.missingPeriods.remove(wasMissing)
                                             GPathResult reportItems = reportData.'ns2:Report'.'ns2:Customer'.'ns2:ReportItems'
-                                            List<String> identifiers = []
+                                            Set<String> identifiers = []
                                             reportItems.'ns2:ItemIdentifier'.'ns2:Value'.each { identifier ->
-                                                identifiers.addAll(identifier.text())
+                                                identifiers << identifier.text()
                                             }
                                             //log.debug(identifiers.toListString())
                                             int[] resultCount = sql.withBatch( "insert into counter4report (c4r_version, c4r_title_fk, c4r_publisher, c4r_platform_fk, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
                                                     "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount)") { stmt ->
-                                                titles.eachWithIndex { row, int t ->
+                                                int t = 0
+                                                //titles.each { row ->
+                                                reportItems.each { reportItem ->
                                                     int ctr = 0
-                                                    String identifier = row.identifier as String
-                                                    TitleInstancePackagePlatform title = row.title as TitleInstancePackagePlatform
-                                                    GPathResult reportItem = reportItems.findAll { reportItem -> identifier == reportItem.'ns2:ItemIdentifier'.'ns2:Value'.text() }
+                                                    List<GroovyRowResult> rows = sql.rows("select tipp_id from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :deleted", [identifiers: sql.connection.createArrayOf('varchar', identifiers as Object[]), namespaces: sql.connection.createArrayOf('bigint', namespaces as Object[]), platform: c4as.platform.id, deleted: RDStore.TIPP_STATUS_DELETED.id])
+                                                    //Map row = titles.find { rowMap -> rowMap.identifier == reportItem.'ns2:ItemIdentifier'.'ns2:Value'.text() }
+                                                    //GPathResult reportItem = reportItems.findAll { reportItem -> identifier == reportItem.'ns2:ItemIdentifier'.'ns2:Value'.text() }
                                                     //log.debug("title found: ${performances}")
-                                                    reportItem.'ns2:ItemPerformance'.each { performance ->
-                                                        performance.'ns2:Instance'.each { instance ->
-                                                            //findAll seems to be less performant than loop processing
-                                                            if (instance.'ns2:MetricType'.text() == "ft_total") {
-                                                                log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t}")
-                                                                String category = performance.'ns2:Category'.text()
-                                                                String metricType = instance.'ns2:MetricType'.text()
-                                                                String publisher = reportItem.'ns2:ItemPublisher'.text()
-                                                                Integer count = Integer.parseInt(instance.'ns2:Count'.text())
-                                                                Map<String, Object> configMap = [reportType: reportData.'ns2:Report'.'@Name'.text(), version: 0]
-                                                                configMap.title = title.id
-                                                                configMap.reportInstitution = keyPair.customer.id
-                                                                configMap.platform = c4as.platform.id
-                                                                //log.debug("parsing performance ${performance.'ns2:Period'.'ns2:Begin'.text()}-${performance.'ns2:Period'.'ns2:End'.text()}")
-                                                                /*SimpleDateFormat is not thread-safe, using thread-safe variant to parse date
-                                                                configMap.reportFrom = Date.from(LocalDate.parse(performance.'ns2:Period'.'ns2:Begin'.text(), dateFormatter).atStartOfDay().atZone(ZoneId.of("UTC")).toInstant())
-                                                                configMap.reportTo = Date.from(LocalDate.parse(performance.'ns2:Period'.'ns2:End'.text(), dateFormatter).atStartOfDay().atZone(ZoneId.of("UTC")).toInstant())
-                                                                 */
-                                                                configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text()).getTime())
-                                                                configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:End'.text()).getTime())
-                                                                configMap.category = category
-                                                                configMap.metricType = metricType
-                                                                configMap.publisher = publisher
-                                                                configMap.reportCount = count
-                                                                //c4r_title_fk, c4r_publisher, c4r_platform_fk, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
-                                                                stmt.addBatch(configMap)
-                                                                /*
-                                                                try {
-                                                                    Counter4Report c4report = Counter4Report.construct(configMap)
-                                                                    if (c4report)
-                                                                    log.debug("${Thread.currentThread().getName()} report ${c4report} successfully saved")
+                                                    if(rows) {
+                                                        GroovyRowResult row = rows[0] //this is necessary because the same title may be available in different packages and we do not want duplicates!
+                                                        Long title = row.get('tipp_id') as Long
+                                                        t++
+                                                        reportItem.'ns2:ItemPerformance'.each { performance ->
+                                                            performance.'ns2:Instance'.each { instance ->
+                                                                //findAll seems to be less performant than loop processing
+                                                                if (instance.'ns2:MetricType'.text() == "ft_total") {
+                                                                    log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t}")
+                                                                    String category = performance.'ns2:Category'.text()
+                                                                    String metricType = instance.'ns2:MetricType'.text()
+                                                                    String publisher = reportItem.'ns2:ItemPublisher'.text()
+                                                                    Integer count = Integer.parseInt(instance.'ns2:Count'.text())
+                                                                    Map<String, Object> configMap = [reportType: reportData.'ns2:Report'.'@Name'.text(), version: 0]
+                                                                    configMap.title = title
+                                                                    configMap.reportInstitution = keyPair.customer.id
+                                                                    configMap.platform = c4as.platform.id
+                                                                    //log.debug("parsing performance ${performance.'ns2:Period'.'ns2:Begin'.text()}-${performance.'ns2:Period'.'ns2:End'.text()}")
+                                                                    /*
+                                                                    SimpleDateFormat is not thread-safe, using thread-safe variant to parse date
+                                                                    configMap.reportFrom = Date.from(LocalDate.parse(performance.'ns2:Period'.'ns2:Begin'.text(), dateFormatter).atStartOfDay().atZone(ZoneId.of("UTC")).toInstant())
+                                                                    configMap.reportTo = Date.from(LocalDate.parse(performance.'ns2:Period'.'ns2:End'.text(), dateFormatter).atStartOfDay().atZone(ZoneId.of("UTC")).toInstant())
+                                                                    */
+                                                                    configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text()).getTime())
+                                                                    configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:End'.text()).getTime())
+                                                                    configMap.category = category
+                                                                    configMap.metricType = metricType
+                                                                    configMap.publisher = publisher
+                                                                    configMap.reportCount = count
+                                                                    //c4r_title_fk, c4r_publisher, c4r_platform_fk, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
+                                                                    stmt.addBatch(configMap)
+                                                                    /*
+                                                                    try {
+                                                                        Counter4Report c4report = Counter4Report.construct(configMap)
+                                                                        if (c4report)
+                                                                        log.debug("${Thread.currentThread().getName()} report ${c4report} successfully saved")
+                                                                    }
+                                                                    catch (CreationException e) {
+                                                                        log.error(e.message)
+                                                                    }
+                                                                    */
+                                                                    ctr++
                                                                 }
-                                                                catch (CreationException e) {
-                                                                    log.error(e.message)
-                                                                }
-                                                                */
-                                                                ctr++
                                                             }
                                                         }
                                                     }
+                                                    if(!rows) log.debug("no title found for ${reportItem.'ns2:ItemIdentifier'.'ns2:Value'.text()}")
                                                 }
                                             }
                                             log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
@@ -326,13 +339,20 @@ class StatsSyncService {
                                         log.debug("${Thread.currentThread().getName()} has finished report ${reportID} and gets next report for ${keyPair.customer.sortname}")
                                     }
                                 }
-                                //}
                                 startTime.add(Calendar.YEAR, -1)
+                                //continue here: set lsc to sql transaction, check then memory usage
+                                sql.execute("insert into laser_stats_cursor(lsc_version, lsc_report_id, lsc_platform_fk, lsc_customer_fk, lsc_latest_from_date, lsc_latest_to_date) values " +
+                                        "(0, :reportID, :platform, :customer, :latestFrom, :latestTo) " +
+                                        "on conflict on constraint lsc_unique_report_per_customer do " +
+                                        "update set lsc_latest_from_date = :latestFrom, lsc_latest_to_date = :latestTo",
+                                        [platform: c4as.platform.id, customer: keyPair.customer.id, reportID: reportID, latestFrom: new Timestamp(startTime.getTimeInMillis()), latestTo: new Timestamp(calendarConfig.now.getTimeInMillis())])
+                                /*
                                 lsc.latestFrom = startTime.getTime()
                                 lsc.latestTo = calendarConfig.now.getTime()
-                                lsc.save()
-                            }
+                                lsc.save()*/
+                            //}
                         }
+                    //}
                     }
                 }
             }
