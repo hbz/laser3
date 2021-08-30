@@ -38,7 +38,7 @@
     <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_INST']}">
         <semui:subNavItem controller="subscription" action="reporting" params="${[id:params.id]}" message="myinst.reporting" />
     </g:if>
-    <sec:ifAnyGranted roles="ROLE_YODA"><!-- TODO -->
+    <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
         <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM']}">
             <semui:subNavItem controller="subscription" action="workflows" params="${[id:params.id]}" message="workflow.plural" />
         </g:if>

@@ -1,8 +1,8 @@
 JSPC.app.reporting.current.chart.option = {
     dataset: {
-        dimensions: ['id', 'name', 'isCurrent', 'startDate', 'endDate', 'valueCons', 'valueConsTax' ],
+        dimensions: ['id', 'name', 'valueCons', 'valueConsTax', 'annual', 'isCurrent'],
         source: [
-            <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}, '${it[3]}', '${it[4]}', ${it[5]}, ${it[6]}]," } %>
+            <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]},  ${it[3]}, '${it[4]}', ${it[5]}]," } %>
         ]
     },
     grid:  {
@@ -17,8 +17,7 @@ JSPC.app.reporting.current.chart.option = {
         type: 'category',
         axisLabel: {
             formatter: function(id, index) {
-                var elem = JSPC.app.reporting.current.chart.option.dataset.source[index]
-                return elem[3] + ' - ' + elem[4]
+                return JSPC.app.reporting.current.chart.option.dataset.source[ index ][ 4 ]
             }
         }
     },
@@ -28,9 +27,9 @@ JSPC.app.reporting.current.chart.option = {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
         formatter (params) {
-            var str = params[0].data[3] + ' - ' +  params[0].data[4]
+            var str = params[0].data[4]
             for (var i=0; i<params.length; i++) {
-                var ci = new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params[i].data[ params[i].seriesIndex + 5 ])
+                var ci = new Intl.NumberFormat(JSPC.vars.locale, { style: 'currency', currency: 'EUR' }).format(params[i].data[ params[i].seriesIndex + 2 ])
                 str += JSPC.app.reporting.helper.tooltip.getEntry(params[i].marker, params[i].seriesName, ci)
             }
             return str
@@ -55,7 +54,7 @@ JSPC.app.reporting.current.chart.option = {
             },
             itemStyle: {
                 color: function(params) {
-                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('green', (params.data[2] == true))
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('green', (params.data[5] == true))
                 }
             }
         },
@@ -77,7 +76,7 @@ JSPC.app.reporting.current.chart.option = {
             },
             itemStyle: {
                 color: function(params) {
-                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('blue', (params.data[2] == true))
+                    return JSPC.app.reporting.helper.series.bar.itemStyle.color('blue', (params.data[5] == true))
                 }
             }
         }

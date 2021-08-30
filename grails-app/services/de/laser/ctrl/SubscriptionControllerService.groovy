@@ -1319,7 +1319,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            result.platforms = Platform.executeQuery('select tipp.platform from TitleInstancePackagePlatform tipp where exists (select ie.id from IssueEntitlement ie where ie.subscription = :parentSub and ie.tipp = tipp and ie.status != :deleted)', [parentSub: result.subscription, deleted: RDStore.TIPP_STATUS_DELETED]) as Set<Platform>
+            result.platforms = Platform.executeQuery('select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :parentSub', [parentSub: result.subscription]) as Set<Platform>
             result.members = Org.executeQuery("select org from OrgRole oo join oo.sub sub join oo.org org where sub.instanceOf = :parent and oo.roleType in (:subscrTypes) order by org.sortname asc, org.name asc",[parent: result.subscription, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]) as Set<Org>
             result.keyPairs = []
             result.platforms.each { Platform platform ->

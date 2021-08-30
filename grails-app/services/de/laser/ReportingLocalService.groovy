@@ -32,8 +32,8 @@ class ReportingLocalService {
 
             if (prefix in ['timeline']) {
                 Map<String, Object> queryCfg = SubscriptionReporting.getCurrentQuery2Config( sub ).getAt('Entwicklung').getAt(clone.query) as Map
-
                 result.putAll( SubscriptionReporting.query(clone) )
+                //result.labels.tooltip = queryCfg.getAt('label') // TODO - used for CSV-Export only
                 result.labels.chart = queryCfg.getAt('chartLabels')
                 result.tmpl = '/subscription/reporting/chart/timeline/' + queryCfg.getAt('chart')
             }
@@ -47,6 +47,7 @@ class ReportingLocalService {
             if (! rCache.exists()) {
                 ReportingCacheHelper.initSubscriptionCache(params.long('id'))
             }
+            rCache.writeDetailsCache( null )
             rCache.writeQueryCache(result)
         }
     }
@@ -119,7 +120,11 @@ class ReportingLocalService {
                 result.tmpl   = '/subscription/reporting/details/entitlement'
             }
 
-            rCache.intoQueryCache( 'labels', [labels: result.labels] )
+            Map<String, Object> currentLabels = rCache.readQueryCache().labels as Map<String, Object>
+            currentLabels.labels = result.labels
+            rCache.intoQueryCache( 'labels', currentLabels )
+
+            //rCache.intoQueryCache( 'labels', [labels: result.labels] )
 
             Map<String, Object> detailsCache = [
                     query   : params.query,

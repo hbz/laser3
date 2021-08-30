@@ -1,6 +1,8 @@
 package de.laser.reporting.export.myInstitution
 
-class QueryExport {
+import de.laser.reporting.export.base.BaseQueryExport
+
+class QueryExport extends BaseQueryExport {
 
     String token
 
@@ -16,7 +18,6 @@ class QueryExport {
                 cols: [ queryCache.labels.tooltip ],
                 rows: []
         ]
-
         List<Map<String, Object>> data = queryCache.dataDetails as List
         List<String> chart = queryCache.labels.chart
 
