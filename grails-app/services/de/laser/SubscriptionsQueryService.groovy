@@ -269,7 +269,7 @@ class SubscriptionsQueryService {
 
         if (params.resource) {
           base_qry += "and s.resource.id in (:resources) "
-          qry_params.put('resource', params.list.("resource").collect { Long.parseLong(it) })
+          qry_params.put('resources', params.list("resource").collect { Long.parseLong(it) })
             filterSet = true
         }
 
