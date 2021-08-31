@@ -357,7 +357,7 @@ class SubscriptionReporting {
                                 id    : d[0],
                                 label : d[1],
                                 idList: Subscription.executeQuery(
-                                        'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.platform.id = :d order by tipp.sortName',
+                                        'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.platform.id = :d order by tipp.sortname',
                                         [idList: idList, d: d[0]]
                                 )
                         ])
@@ -374,7 +374,7 @@ class SubscriptionReporting {
                                 id    : d[0],
                                 label : d[1],
                                 idList: Subscription.executeQuery(
-                                        'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.pkg.id = :d order by tipp.sortName',
+                                        'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.pkg.id = :d order by tipp.sortname',
                                         [idList: idList, d: d[0]]
                                 )
                         ])
@@ -414,7 +414,7 @@ class SubscriptionReporting {
         BaseQuery.handleGenericRefdataQuery(
                 query,
                 PROPERTY_QUERY[0] + 'from TitleInstancePackagePlatform tipp join tipp.' + refdata + ' p where tipp.id in (:idList)' + PROPERTY_QUERY[1],
-                'select tipp.id from TitleInstancePackagePlatform tipp join tipp.' + refdata + ' p where tipp.id in (:idList) and p.id = :d order by tipp.sortName',
+                'select tipp.id from TitleInstancePackagePlatform tipp join tipp.' + refdata + ' p where tipp.id in (:idList) and p.id = :d order by tipp.sortname',
                 'select distinct tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.' + refdata + ' is null',
                 idList,
                 result

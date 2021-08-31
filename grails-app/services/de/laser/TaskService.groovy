@@ -267,7 +267,7 @@ class TaskService {
     }
 
     private List<Package> getPackagesDropdown(Org contextOrg) {
-        List<Package> validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by lower(p.sortName) asc") // TODO
+        List<Package> validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by lower(p.sortname) asc") // TODO
         validPackages
     }
 

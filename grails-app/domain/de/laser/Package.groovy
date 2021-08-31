@@ -23,7 +23,7 @@ class Package extends AbstractBaseWithCalculatedLastUpdated {
     def accessService
 
     String name
-    String sortName
+    String sortname
     String gokbId
     String vendorURL
     String cancellationAllowances
@@ -86,12 +86,12 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
 
   static mapping = {
-                    sort sortName: 'asc'
+                    sort sortname: 'asc'
                       id column:'pkg_id'
                  version column:'pkg_version'
                globalUID column:'pkg_guid'
                     name column:'pkg_name'
-                sortName column:'pkg_sort_name'
+                sortname column:'pkg_sort_name'
                   gokbId column:'pkg_gokb_id'
              contentType column:'pkg_content_type_rv_fk'
            packageStatus column:'pkg_status_rv_fk'
@@ -133,7 +133,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     gokbId(blank:false, unique: true, maxSize: 511)
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)
-                  sortName(nullable:true, blank:false)
+                  sortname(nullable:true, blank:false)
       lastUpdatedCascading (nullable:true)
   }
 
@@ -391,7 +391,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     @Override
     def beforeInsert() {
         if ( name != null ) {
-            sortName = generateSortName(name)
+            sortname = generateSortName(name)
         }
 
         super.beforeInsertHandler()
@@ -400,7 +400,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     @Override
     def beforeUpdate() {
         if ( name != null ) {
-            sortName = generateSortName(name)
+            sortname = generateSortName(name)
         }
         super.beforeUpdateHandler()
     }

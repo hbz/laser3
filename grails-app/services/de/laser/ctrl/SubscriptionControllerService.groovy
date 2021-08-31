@@ -1729,12 +1729,12 @@ class SubscriptionControllerService {
             }
             result.num_ies_rows = entitlements.size()
             if(entitlements) {
-                String orderClause = 'order by tipp.sortName asc'
+                String orderClause = 'order by tipp.sortname asc'
                 if(params.sort){
                     if(params.sort == 'startDate')
-                        orderClause = "order by ic.startDate ${params.order}, lower(ie.tipp.sortName) asc "
+                        orderClause = "order by ic.startDate ${params.order}, lower(ie.tipp.sortname) asc "
                     else if(params.sort == 'endDate')
-                        orderClause = "order by ic.endDate ${params.order}, lower(ie.tipp.sortName) asc "
+                        orderClause = "order by ic.endDate ${params.order}, lower(ie.tipp.sortname) asc "
                     else
                         orderClause = "order by ${params.sort} ${params.order} "
                 }
@@ -1894,7 +1894,7 @@ class SubscriptionControllerService {
             if(result.subscription.packages?.pkg) {
                 Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
                 if(tippIds)
-                    tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(tippIds.drop(result.offset).take(result.max),[sort:'sortName']))
+                    tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(tippIds.drop(result.offset).take(result.max),[sort:'sortname']))
                 //now, assemble the identifiers available to highlight
                 Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNs('zdb'),
                                                                eissn: IdentifierNamespace.findByNs('eissn'), isbn: IdentifierNamespace.findByNs('isbn'),

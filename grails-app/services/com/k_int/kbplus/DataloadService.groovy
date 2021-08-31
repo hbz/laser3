@@ -178,7 +178,7 @@ class DataloadService {
             def result = [:]
 
                 if (tipp.name != null && tipp.titleType != null) {
-                    if (!tipp.sortName) {
+                    if (!tipp.sortname) {
                         tipp.generateNormTitle()
                         tipp.generateSortTitle()
                         tipp.save()
@@ -198,7 +198,7 @@ class DataloadService {
                     result.visible = 'Public'
                     result.rectype = tipp.getClass().getSimpleName()
 
-                    result.sortName = tipp.sortName
+                    result.sortname = tipp.sortname
 
                     result.medium = tipp.medium?.getMapForES()
                     RefdataValue titleType = RefdataValue.getByValueAndCategory(tipp.titleType, RDConstants.TITLE_MEDIUM)
@@ -253,7 +253,7 @@ class DataloadService {
 
                 result.isPublic = (pkg?.isPublic) ? 'Yes' : 'No'
 
-                result.sortname = pkg.sortName
+                result.sortname = pkg.sortname
                 result.startDate = pkg.startDate
                 result.endDate = pkg.endDate
 
@@ -1130,8 +1130,8 @@ class DataloadService {
       log.debug("Generate Missing Sort Package Names Rows_updated:: ${rows_updated} ${num_rows_updated}");
       Package.findAllBySortName(null,[max:100]).each {
         log.debug("Normalise Package Name ${it.name}");
-        it.sortName = it.generateSortName(it.name) ?: 'AAA_Error'
-        if ( it.sortName != null ) {
+        it.sortname = it.generateSortName(it.name) ?: 'AAA_Error'
+        if ( it.sortname != null ) {
           it.save(failOnError:true)
           num_rows_updated++
           rows_updated = true

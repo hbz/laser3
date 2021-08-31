@@ -939,7 +939,7 @@ class ExportService {
 				Set<TitleInstancePackagePlatform> titleInstances = []
 				//this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
 				if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
-					titleInstances.addAll(TitleInstancePackagePlatform.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'sortName']))
+					titleInstances.addAll(TitleInstancePackagePlatform.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'sortname']))
 					titleInstances.each { TitleInstancePackagePlatform tipp ->
 						if(!tipp.coverages && !tipp.priceItems) {
 							allRows << tipp
@@ -955,7 +955,7 @@ class ExportService {
 					}
 				}
 				else if(entitlementInstance == IssueEntitlement.class.name) {
-					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'tipp.sortName'])
+					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'tipp.sortname'])
 					issueEntitlements.each { IssueEntitlement entitlement ->
 						titleInstances << entitlement.tipp
 						if(!entitlement.coverages && !entitlement.priceItems) {
@@ -1231,7 +1231,7 @@ class ExportService {
 				Set<TitleInstancePackagePlatform> titleInstances = []
 				//this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
 				if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
-					titleInstances.addAll(TitleInstancePackagePlatform.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'sortName']))
+					titleInstances.addAll(TitleInstancePackagePlatform.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'sortname']))
 					titleInstances.each { TitleInstancePackagePlatform tipp ->
 						if(!tipp.coverages && !tipp.priceItems) {
 							allRows << tipp
@@ -1247,7 +1247,7 @@ class ExportService {
 					}
 				}
 				else if(entitlementInstance == IssueEntitlement.class.name) {
-					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'tipp.sortName'])
+					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'tipp.sortname'])
 					issueEntitlements.each { IssueEntitlement entitlement ->
 						titleInstances << entitlement.tipp
 						if(!entitlement.coverages && !entitlement.priceItems) {
@@ -1549,7 +1549,7 @@ class ExportService {
 				Set<TitleInstancePackagePlatform> titleInstances = []
 				//this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
 				if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
-					titleInstances.addAll(TitleInstancePackagePlatform.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'sortName']))
+					titleInstances.addAll(TitleInstancePackagePlatform.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'sortname']))
 					titleInstances.each { TitleInstancePackagePlatform tipp ->
 						if(!tipp.coverages && !tipp.priceItems) {
 							allRows << tipp
@@ -1565,7 +1565,7 @@ class ExportService {
 					}
 				}
 				else if(entitlementInstance == IssueEntitlement.class.name) {
-					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'tipp.sortName'])
+					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'tipp.sortname'])
 					issueEntitlements.each { IssueEntitlement entitlement ->
 						titleInstances << entitlement.tipp
 						if(!entitlement.coverages && !entitlement.priceItems) {

@@ -199,7 +199,7 @@
                     <thead>
                     <tr>
                         <th>${message(code: 'sidewide.number')}</th>
-                        <g:sortableColumn params="${params}" property="tipp.sortName"
+                        <g:sortableColumn params="${params}" property="tipp.sortname"
                                           title="${message(code: 'title.label')}"/>
                         <th style="width: 50%">
                             <div class="ui three column grid">

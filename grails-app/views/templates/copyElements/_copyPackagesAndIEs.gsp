@@ -269,7 +269,7 @@
 
                                         <div class="content">
                                             <div class="ui list">
-                                                <g:each in="${titleGroup.items?.sort { it.ie.tipp.sortName }}"
+                                                <g:each in="${titleGroup.items?.sort { it.ie.tipp.sortname }}"
                                                         var="item">
                                                     <div class="item">
                                                         <semui:listIcon hideTooltip="true" type="${item.ie.tipp.titleType}"/>

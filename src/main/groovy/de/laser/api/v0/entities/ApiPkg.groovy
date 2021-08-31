@@ -67,7 +67,7 @@ class ApiPkg {
 		result.globalUID        	= pkg.globalUID
 		result.gokbId           	= pkg.gokbId
 		result.name             	= pkg.name
-		result.sortName         	= pkg.sortName
+		result.sortName         	= pkg.sortname
 
 		result.autoAccept       	= pkg.autoAccept ? 'Yes' : 'No'
 		result.cancellationAllowances = pkg.cancellationAllowances

@@ -1222,14 +1222,14 @@ class FilterService {
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
             if(params.sort == 'startDate')
-                base_qry += "order by ic.startDate ${params.order}, lower(tipp.sortName) asc "
+                base_qry += "order by ic.startDate ${params.order}, lower(tipp.sortname) asc "
             else if(params.sort == 'endDate')
-                base_qry += "order by ic.endDate ${params.order}, lower(tipp.sortName) asc "
+                base_qry += "order by ic.endDate ${params.order}, lower(tipp.sortname) asc "
             else
                 base_qry += "order by ie.${params.sort} ${params.order} "
         }
         else if(!params.forCount){
-            base_qry += "order by lower(ie.tipp.sortName) asc"
+            base_qry += "order by lower(ie.tipp.sortname) asc"
         }
 
 
@@ -1392,7 +1392,7 @@ class FilterService {
                 base_qry += "order by ${params.sort} ${params.order} "
         }
         else {
-            base_qry += "order by lower(tipp.sortName) asc"
+            base_qry += "order by lower(tipp.sortname) asc"
         }
 
 
