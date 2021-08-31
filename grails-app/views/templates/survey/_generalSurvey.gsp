@@ -4,7 +4,7 @@
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
 
 <div class="ui stackable grid">
-    <div class="twelve wide column">
+    <div class="ten wide column">
         <g:if test="${controllerName == 'survey' && actionName == 'show'}">
             <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
             <div class="ui horizontal segments">
@@ -211,36 +211,38 @@
             </div>
         </div>
     </div>
+    <aside class="six wide column la-sidekick">
+        <div class="ui one cards">
+            <g:if test="${controllerName == 'survey' && actionName == 'show'}">
+                <div id="container-tasks">
+                    <g:render template="/templates/tasks/card"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+                </div>
 
-    <aside class="four wide column la-sidekick">
-        <g:if test="${controllerName == 'survey' && actionName == 'show'}">
 
-            <g:render template="/templates/tasks/card"
-                      model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
+                <div id="container-notes">
+                    <g:render template="/templates/notes/card"
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')]}"/>
+                </div>
 
+                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
 
-            <div id="container-notes">
-                <g:render template="/templates/notes/card"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')]}"/>
+                    <g:render template="/templates/tasks/modal_create"
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+
+                </g:if>
+                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
+                    <g:render template="/templates/notes/modal_create"
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+                </g:if>
+            </g:if>
+
+            <div id="container-documents">
+                <g:render template="/survey/cardDocuments"
+                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
             </div>
-
-            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
-
-                <g:render template="/templates/tasks/modal_create"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
-
-            </g:if>
-            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
-                <g:render template="/templates/notes/modal_create"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
-            </g:if>
-        </g:if>
-
-        <div id="container-documents">
-            <g:render template="/survey/cardDocuments"
-                      model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
         </div>
-    </aside><!-- .four -->
+    </aside>
 
 </div><!-- .grid -->
 
@@ -317,7 +319,7 @@
                                     id="${surveyProperty.id}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate icon"></i>
+                                <i class="trash alternate outline icon"></i>
                             </g:link>
                         </g:if>
                     </td>

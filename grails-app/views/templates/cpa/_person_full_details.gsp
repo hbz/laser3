@@ -124,7 +124,7 @@
                                             data-confirm-term-how="delete"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate icon"></i>
+                                        <i class="trash alternate outline icon"></i>
                                     </g:link>
                                     %{--<g:form controller="person" action="delete" data-confirm-id="${person.id.toString()+ '_form'}">--}%
                                         %{--<g:hiddenField name="id" value="${person.id}" />--}%
@@ -177,7 +177,7 @@
                                             data-confirm-term-how="delete"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate icon"></i>
+                                        <i class="trash alternate outline icon"></i>
                                     </g:link>
                                 </g:else>
                             </g:if>

@@ -1518,7 +1518,7 @@ class SubscriptionControllerService {
 
             if(params.curatoryGroup) {
                 result.filterSet = true
-                esQuery += "&curatoryGroup=${params.curatoryGroup}"
+                esQuery += "&curatoryGroupExact=${params.curatoryGroup}"
             }
 
             if(params.resourceTyp) {

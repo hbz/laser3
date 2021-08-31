@@ -69,7 +69,7 @@
                                     class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
                                     role="button"
                                     aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                <i aria-hidden="true" class="trash alternate icon"></i>
+                                <i aria-hidden="true" class="trash alternate outline icon"></i>
                             </g:link>
                         </g:if>
                     </td>

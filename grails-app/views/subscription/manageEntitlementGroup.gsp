@@ -72,7 +72,7 @@
                                     params="${[titleGroup: titleGroup.id, sub: subscription.id]}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate icon"></i>
+                                <i class="trash alternate outline icon"></i>
                             </g:link>
                         </g:if>
                         <g:else>
@@ -80,7 +80,7 @@
                                 <button class="ui disabled button la-selectable-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate icon"></i>
+                                    <i class="trash alternate outline icon"></i>
                                 </button>
                             </div>
                         </g:else>

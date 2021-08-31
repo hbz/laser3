@@ -8,6 +8,6 @@
             data-confirm-term-how="delete"
             class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
             role="button">
-        <i aria-hidden="true" class="trash alternate icon"></i>
+        <i aria-hidden="true" class="trash alternate outline icon"></i>
     </g:link>
 </p>
