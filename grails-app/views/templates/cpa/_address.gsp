@@ -55,7 +55,7 @@
         </div>
         <div class="content">
             <g:if test="${editable && tmplShowDeleteButton}">
-                <div class="ui mini icon buttons">
+                <div class="ui icon buttons">
                     <a class="ui icon button"
                        onclick="JSPC.app.editAddress(${address.id});"
                        role="button"

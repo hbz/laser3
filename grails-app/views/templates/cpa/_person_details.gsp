@@ -13,7 +13,7 @@
 
             <g:if test="${overwriteEditable}">
                 <div class="content la-space-right">
-                    <button class="ui mini icon button" type="button" onclick="JSPC.app.editPerson(${person.id})"
+                    <button class="ui icon button" type="button" onclick="JSPC.app.editPerson(${person.id})"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                         <i aria-hidden="true" class="write icon"></i>
@@ -81,7 +81,7 @@
                 <g:if test="${editable && tmplShowDeleteButton}">
 
                     <g:if test="${showAddContacts}">
-                        <input class="ui mini icon button" type="button" data-semui="modal"
+                        <input class="ui icon button" type="button" data-semui="modal"
                                data-href="#contactFormModal${personRole.prs.id}"
                                value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label')])}">
                         <g:render template="/contact/formModal" model="['prsId': personRole.prs.id, modalId: 'contactFormModal'+personRole.prs.id]"/>
@@ -90,7 +90,7 @@
 
                     <g:set var="oid" value="${personRole.class.name}:${personRole.id}"/>
 
-                    <g:link class="ui mini icon negative button js-open-confirm-modal"
+                    <g:link class="ui icon negative button js-open-confirm-modal"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                             data-confirm-term-how="unlink"
                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
