@@ -372,39 +372,12 @@
                                 </div>
                             </g:link>
                         </g:if>--}%
-                        <g:if test="${surveyConfig && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT && surveyConfig.pickAndChoose}">
-
-                           %{-- <g:set var="participantsTitleSurveyFinish"
-                                   value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)}"/>
-
-                            <g:set var="participantsTitleSurveyTotal"
-                                   value="${SurveyOrg.findAllBySurveyConfig(surveyConfig)}"/>--}%
-                            <g:link controller="survey" action="surveyTitlesEvaluation" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig.id]"
-                                    class="ui icon button">
-                                %{--<div class="ui circular ${(participantsTitleSurveyFinish.size() == participantsTitleSurveyTotal.size()) ? "green" : (participantsTitleSurveyFinish.size() > 0) ? "yellow" : ""} label">
-                                    <g:if
-                                            test="${participantsTitleSurveyFinish && participantsTitleSurveyTotal}">
-                                        <g:formatNumber
-                                                number="${(participantsTitleSurveyFinish.size() / participantsTitleSurveyTotal.size()) * 100}"
-                                                minFractionDigits="2"
-                                                maxFractionDigits="2"/>%
-                                    </g:if>
-                                    <g:else>
-                                        0%
-                                    </g:else>
-                                </div>--}%
-                                <i class="icon blue chart pie"></i>
-                            </g:link>
-                        </g:if>
-                        <g:else>
                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]"
                                     class="ui icon button">
                                 <i class="icon blue chart pie"></i>
                                 </div>
                             </g:link>
-                        </g:else>
                     </td>
                     <td>
                         <g:link controller="survey" action="show" id="${surveyInfo.id}"

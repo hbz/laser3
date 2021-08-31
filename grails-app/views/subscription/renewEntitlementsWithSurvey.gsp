@@ -45,11 +45,22 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
     <div class="two fields">
 
         <div class="eight wide field" style="text-align: right;">
-            <g:link controller="myInstitution" action="surveyInfosIssueEntitlements"
-                    id="${surveyConfig?.id}"
-                    class="ui button">
-                <g:message code="surveyInfo.backToSurvey"/>
-            </g:link>
+            <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
+
+                <g:link action="renewEntitlements"
+                        id="${surveyConfig.id}" params="[participant: participant.id]"
+                        class="ui button">
+                    <g:message code="renewEntitlementsWithSurvey.renewEntitlements"/>
+                </g:link>
+
+            </g:if>
+            <g:else>
+                <g:link controller="myInstitution" action="surveyInfosIssueEntitlements"
+                        id="${surveyConfig.id}"
+                        class="ui button">
+                    <g:message code="surveyInfo.backToSurvey"/>
+                </g:link>
+            </g:else>
         </div>
     </div>
 </div>
@@ -73,7 +84,15 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 <g:render template="/templates/filter/tipp_ieFilter"/>
 
 </br>
-<div class="ui pointing two item massive menu">
+<div class="ui pointing three item massive menu">
+
+    <g:link class="item ${params.tab == 'previousIEs' ? 'active' : ''}"
+            controller="subscription" action="renewEntitlementsWithSurvey"
+            id="${newSub.id}"
+            params="[surveyConfigID: surveyConfig.id, tab: 'previousIEs']">
+        <g:message code="renewEntitlementsWithSurvey.previousSelectableTitles"/>
+        <div class="ui circular label">${countPreviousIEs}</div>
+    </g:link>
 
     <g:link class="item ${params.tab == 'allIEs' ? 'active' : ''}"
             controller="subscription" action="renewEntitlementsWithSurvey"
@@ -156,11 +175,22 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 
 
             <div class="eight wide field" style="text-align: right;">
-                <g:link controller="myInstitution" action="surveyInfosIssueEntitlements"
-                        id="${surveyConfig?.id}"
-                        class="ui button">
-                    <g:message code="surveyInfo.backToSurvey"/>
-                </g:link>
+                <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
+
+                    <g:link action="renewEntitlements"
+                            id="${surveyConfig.id}" params="[participant: participant.id]"
+                            class="ui button">
+                        <g:message code="renewEntitlementsWithSurvey.renewEntitlements"/>
+                    </g:link>
+
+                </g:if>
+                <g:else>
+                    <g:link controller="myInstitution" action="surveyInfosIssueEntitlements"
+                            id="${surveyConfig.id}"
+                            class="ui button">
+                        <g:message code="surveyInfo.backToSurvey"/>
+                    </g:link>
+                </g:else>
             </div>
         </div>
     </div>
