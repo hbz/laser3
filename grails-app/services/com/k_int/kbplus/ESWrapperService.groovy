@@ -124,6 +124,7 @@ class ESWrapperService {
         } catch (ConnectTimeoutException e) {
             log.error("Problem with ElasticSearch: Connect Timeout")
             SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["Connect Timeout": "Connect Timeout"])
+            esclient.close()
             return false
         }
         catch (ConnectException e) {
