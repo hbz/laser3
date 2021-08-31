@@ -499,7 +499,7 @@ class OrganisationController  {
             redirect(url: request.getHeader('referer'))
             return
         }
-        List allPlatforms = Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
+        List<Platform> allPlatforms = organisationService.getAllPlatforms()
 
         render template: '/templates/customerIdentifier/modal_create', model: [orgInstance: org, allPlatforms: allPlatforms]
     }
@@ -795,18 +795,34 @@ class OrganisationController  {
             // adding default settings
             organisationService.initMandatorySettings(result.orgInstance)
             if(params.tab == 'customerIdentifiers') {
+                result.allPlatforms = organisationService.getAllPlatforms()
+                Map<String, Object> queryParams = [customer: result.orgInstance]
+                String query = "select ci from CustomerIdentifier ci join ci.platform platform where ci.customer = :customer"
+                if(params.customerIdentifier) {
+                    query += " and ci.value like (:customerIdentifier)"
+                    queryParams.customerIdentifier = "%${params.customerIdentifier.toLowerCase()}%"
+                }
+                if(params.requestorKey) {
+                    query += " and ci.requestorKey like (:requestorKey)"
+                    queryParams.requestorKey = "%${params.requestorKey.toLowerCase()}%"
+                }
+                if(params.ciPlatform) {
+                    query += " and platform.id = :platform"
+                    queryParams.platform = params.long("ciPlatform")
+                }
+                String sort = " order by platform.name asc"
                 if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
-                    result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
+                    result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                 } else if (inContextOrg) {
 
                     if (result.institution.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
-                        result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
+                        result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                     } else if (['ORG_BASIC_MEMBER'].contains(result.institution.getCustomerType())) {
-                        result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
+                        result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                     }
                 } else if (isComboRelated) {
                     log.debug('settings for combo related org: consortia')
-                    result.customerIdentifier = CustomerIdentifier.findAllByCustomer(result.orgInstance, [sort: 'platform'])
+                    result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                 }
             }
 

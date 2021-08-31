@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3684    31.08.2021  dev     2.2         Andreas Feature     Filter für Kundennummer eingebaut
+
 3692    30.08.2021  dev     2.2         Andreas Feature     Umstellung der Kuratorengruppenabfrage auf scharfe Suche
 
 3607    27.08.2021  dev     2.2         Andreas Feature     Vorgänger-Nachfolger-Beziehung für Einrichtungen implementiert
