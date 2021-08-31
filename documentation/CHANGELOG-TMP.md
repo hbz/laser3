@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-3747    30.08.2021  dev     2.2         Moe     Feature/Bug     Click me excel - nicht vererbte merkmale
+3773    31.08.2021  dev     2.2         Moe     Feature     Titelumfrage Überarbeitung
+
+3747    30.08.2021  dev     2.2         Moe     Feature/Bug Click me excel - nicht vererbte merkmale
 
 3692    30.08.2021  dev     2.2         Andreas Feature     Umstellung der Kuratorengruppenabfrage auf scharfe Suche
 
