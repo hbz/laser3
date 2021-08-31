@@ -105,25 +105,25 @@
                                 <g:link controller="profile" action="delete" class="ui icon negative button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate icon"></i></g:link>
+                                <i class="trash alternate outline icon"></i></g:link>
                             </g:if>
                             <g:elseif test="${controllerName == 'user'}">
                                 <g:link controller="${controllerName}" action="${deleteLink}" params="${[id: us.id]}" class="ui icon negative button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate icon"></i></g:link>
+                                <i class="trash alternate outline icon"></i></g:link>
                             </g:elseif>
                             <g:elseif test="${controllerName == 'myInstitution'}">
                                 <g:link controller="${controllerName}" action="${deleteLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate icon"></i></g:link>
+                                <i class="trash alternate outline icon"></i></g:link>
                             </g:elseif>
                             <g:elseif test="${controllerName == 'organisation'}">
                                 <g:link controller="${controllerName}" action="${deleteLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate icon"></i></g:link>
+                                <i class="trash alternate outline icon"></i></g:link>
                             </g:elseif>
 
                         </g:if>
@@ -132,7 +132,7 @@
                                 <button class="ui icon negative button" disabled="disabled"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate icon"></i>
+                                    <i class="trash alternate outline icon"></i>
                                 </button>
                             </span>
                         </g:else>

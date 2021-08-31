@@ -163,19 +163,19 @@
                                                     <g:if test="${editable}">
                                                         <g:set var="oid" value="${link.class.name}:${link.id}" />
                                                         <g:if test="${personInstance.roleLinks?.size() > 1}">
-                                                            <div class="ui mini icon buttons">
+                                                            <div class="ui icon buttons">
                                                                 <g:link class="ui negative button js-open-confirm-modal"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: [link.functionType?.getI10n('value')])}"
                                                                         data-confirm-term-how="delete"
                                                                         controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate icon"></i>
+                                                                    <i class="trash alternate outline icon"></i>
                                                                 </g:link>
                                                             </div>
                                                         </g:if>
                                                         <g:else>
-                                                            <div class="ui mini icon buttons">
+                                                            <div class="ui icon buttons">
                                                                 <g:link class="ui negative button js-open-confirm-modal"
                                                                         controller="person"
                                                                         action="delete"
@@ -185,7 +185,7 @@
                                                                         data-confirm-term-how="delete"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate icon"></i>
+                                                                    <i class="trash alternate outline icon"></i>
                                                                 </g:link>
                                                                 %{--<g:form controller="person" action="delete" data-confirm-id="${personInstance?.id?.toString()+ '_form'}">--}%
                                                                 %{--<g:hiddenField name="id" value="${personInstance?.id}" />--}%
@@ -195,7 +195,7 @@
                                                                 %{--data-confirm-id="${personInstance?.id}" --}%
                                                                 %{--role="button"--}%
                                                                 %{--aria-label="${message(code: 'ariaLabel.delete.universal')}"> --}%
-                                                                %{--<i class="trash alternate icon"></i>--}%
+                                                                %{--<i class="trash alternate outline icon"></i>--}%
                                                                 %{--</div>--}%
                                                                 %{--</g:form>--}%
                                                             </div>
@@ -234,7 +234,7 @@
                                                     <g:if test="${editable}">
                                                         <g:set var="oid" value="${link.class.name}:${link.id}" />
                                                         <g:if test="${personInstance.roleLinks?.size() > 1}">
-                                                            <div class="ui mini icon buttons">
+                                                            <div class="ui icon buttons">
                                                                 <g:link class="ui negative button js-open-confirm-modal"
                                                                         data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.function', args: [link.positionType?.getI10n('value')])}"
                                                                         data-confirm-term-how="unlink"
@@ -246,7 +246,7 @@
                                                             </div>
                                                         </g:if>
                                                         <g:else>K
-                                                            <div class="ui mini icon buttons">
+                                                            <div class="ui icon buttons">
                                                                 <g:link class="ui negative button js-open-confirm-modal"
                                                                         controller="person"
                                                                         action="delete"
@@ -256,7 +256,7 @@
                                                                         data-confirm-term-how="delete"
                                                                         role="button"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate icon"></i>
+                                                                    <i class="trash alternate outline icon"></i>
                                                                 </g:link>
                                                                 %{--<g:form controller="person" action="delete" data-confirm-id="${personInstance?.id?.toString()+ '_form'}">--}%
                                                                     %{--<g:hiddenField name="id" value="${personInstance?.id}" />--}%
@@ -266,7 +266,7 @@
                                                                          %{--data-confirm-id="${personInstance?.id}" --}%
                                                                         %{--role="button"--}%
                                                                         %{--aria-label="${message(code: 'ariaLabel.delete.universal')}"> --}%
-                                                                %{--<i class="trash alternate icon"></i>--}%
+                                                                %{--<i class="trash alternate outline icon"></i>--}%
                                                                     %{--</div>--}%
                                                                 %{--</g:form>--}%
                                                             </div>
@@ -335,12 +335,12 @@
 
                                                 <div class="content">
                                                     <g:if test="${editable}">
-                                                        <div class="ui mini icon buttons">
+                                                        <div class="ui icon buttons">
                                                             <g:set var="oid" value="${link.class.name}:${link.id}" />
                                                             <g:link class="ui negative button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]"
                                                                     role="button"
                                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                <i class="trash alternate icon"></i>
+                                                                <i class="trash alternate outline icon"></i>
                                                             </g:link>
                                                         </div>
                                                     </g:if>

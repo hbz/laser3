@@ -9,6 +9,8 @@
 
 3747    30.08.2021  dev     2.2         Moe     Feature/Bug     Click me excel - nicht vererbte merkmale
 
+3692    30.08.2021  dev     2.2         Andreas Feature     Umstellung der Kuratorengruppenabfrage auf scharfe Suche
+
 3607    27.08.2021  dev     2.2         Andreas Feature     Vorgänger-Nachfolger-Beziehung für Einrichtungen implementiert
 
 3761    27.08.2021  dev     2.2         David   Feature     Reporting: QueryCache bzgl. CSV-Export überarbeiten

@@ -9,14 +9,14 @@
                 <g:if test="${editable}">
                     <g:if test="${subjectGroup.subjectGroup.id in availableSubjectGroupIds}">
                         <div class="content la-space-right">
-                            <div class="ui mini icon buttons">
+                            <div class="ui icon buttons">
                                 <g:link class="ui negative button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.subjectgroup.organisation", args: [subjectGroup.subjectGroup.getI10n('value')])}"
                                         data-confirm-term-how="delete"
                                         controller="organisation" action="deleteSubjectGroup" params="[id: org.id, removeOrgSubjectGroup: subjectGroup.id]"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate icon"></i>
+                                    <i class="trash alternate outline icon"></i>
                                 </g:link>
                             </div>
                         </div>

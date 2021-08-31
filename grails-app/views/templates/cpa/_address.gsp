@@ -55,7 +55,7 @@
         </div>
         <div class="content">
             <g:if test="${editable && tmplShowDeleteButton}">
-                <div class="ui mini icon buttons">
+                <div class="ui icon buttons">
                     <a class="ui icon button"
                        onclick="JSPC.app.editAddress(${address.id});"
                        role="button"
@@ -70,7 +70,7 @@
                             controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: oid]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                        <i class="trash alternate icon"></i>
+                        <i class="trash alternate outline icon"></i>
                     </g:link>
                 </div>
             </g:if>

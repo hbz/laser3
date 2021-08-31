@@ -16,13 +16,13 @@
             </div>
             <div class="right aligned four wide column la-column-left-lessPadding">
                 <g:link action="deleteTask" controller="ajax"
-                        class="ui mini icon negative button js-open-confirm-modal"
+                        class="ui icon negative button js-open-confirm-modal"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                         data-confirm-term-how="delete"
                         params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="trash alternate icon"></i>
+                    <i class="trash alternate outline icon"></i>
                 </g:link>
             </div>
         </div>
