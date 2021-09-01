@@ -127,7 +127,7 @@
                                             (ci.customer.id == institution.id || isComboRelated)
                                         %>
                                         <g:if test="${editable_customeridentifier && editable_this_ci}">
-                                            <button class="ui icon button" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
+                                            <button class="ui icon button la-modern-button" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
                                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                                 <i aria-hidden="true" class="write icon"></i>
                                             </button>

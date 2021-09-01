@@ -68,7 +68,7 @@
                     <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance?.createDate}"/></td>
 
                     <td class="x">
-                        <a onclick="JSPC.app.taskedit(${taskInstance.id});" class="ui icon button"
+                        <a onclick="JSPC.app.taskedit(${taskInstance.id});" class="ui icon button la-modern-button"
                            role="button"
                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="write icon"></i>

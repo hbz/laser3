@@ -68,7 +68,7 @@
                             <g:if test="${ownobj.respondsTo('showUIShareButton') && ownobj.showUIShareButton()}">
                             <%-- START Second Button --%>
                                 <g:if test="${docctx?.isShared}">
-                                    <laser:remoteLink class="ui icon green button js-no-wait-wheel la-popup-tooltip la-delay"
+                                    <laser:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"
                                                       controller="ajax"
                                                       action="toggleShare"
                                                       params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"notes", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'
@@ -81,7 +81,7 @@
                                     </laser:remoteLink>
                                 </g:if>
                                 <g:else>
-                                    <laser:remoteLink class="ui icon button js-no-wait-wheel la-popup-tooltip la-delay js-open-confirm-modal"
+                                    <laser:remoteLink class="ui icon button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay js-open-confirm-modal"
                                                       controller="ajax"
                                                       action="toggleShare"
                                                       params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"notes", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'
@@ -133,7 +133,7 @@
                             <div class="four wide column">
                                 <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id}">
                                     <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                    <button type="button" class="ui icon button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
+                                    <button type="button" class="ui icon button la-modern-button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
                                 </g:if>
                             </div>
                         </div>

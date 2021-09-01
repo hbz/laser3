@@ -176,7 +176,7 @@
 
                                     <g:link action="surveyTitlesSubscriber"
                                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
-                                            class="ui icon button"
+                                            class="ui icon button la-modern-button"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                         <i aria-hidden="true" class="write icon"></i>
@@ -261,7 +261,7 @@
 
                                     <g:link action="surveyTitlesSubscriber"
                                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
-                                            class="ui icon button"
+                                            class="ui icon button la-modern-button"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                         <i aria-hidden="true" class="write icon"></i>
@@ -363,7 +363,7 @@
 
                                     <g:link action="surveyTitlesSubscriber"
                                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
-                                            class="ui icon button"
+                                            class="ui icon button la-modern-button"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                         <i aria-hidden="true" class="write icon"></i>
@@ -448,7 +448,7 @@
 
                                     <g:link action="surveyTitlesSubscriber"
                                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
-                                            class="ui icon button"
+                                            class="ui icon button la-modern-button"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                         <i aria-hidden="true" class="write icon"></i>
@@ -550,7 +550,7 @@
 
                                     <g:link action="surveyTitlesSubscriber"
                                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
-                                            class="ui icon button"
+                                            class="ui icon button la-modern-button"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                         <i aria-hidden="true" class="write icon"></i>
@@ -635,7 +635,7 @@
 
                                     <g:link action="surveyTitlesSubscriber"
                                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
-                                            class="ui icon button"
+                                            class="ui icon button la-modern-button"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                         <i aria-hidden="true" class="write icon"></i>
