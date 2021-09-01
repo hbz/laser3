@@ -21,16 +21,8 @@
                         </g:link>
                     </g:if>
                     <g:else>
-                        <g:if test="${!surveyConfig.pickAndChoose}">
                         <g:link controller="myInstitution" action="surveyInfos" params="[surveyConfigID: surveyConfig.id]"
                                               id="${surveyInfo.id}">${i+1+surveysOffset}: ${surveyConfig.getSurveyName()}</g:link>
-                        </g:if>
-                        <g:if test="${surveyConfig.pickAndChoose}">
-                            <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig.id}"
-                                    params="${[targetObjectId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id]}">
-                                ${i+1+surveysOffset}: ${surveyConfig.getSurveyName()}
-                            </g:link>
-                        </g:if>
                     </g:else>
 
                     <span class="ui label survey-${surveyInfo.type.value}">

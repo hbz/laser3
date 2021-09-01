@@ -91,7 +91,7 @@
 
             result << [
                     "title": "${hit.getSourceAsMap().name}",
-                    "url":   g.createLink(controller:"myInstitution", action: (surveyConfig.pickAndChoose ? "surveyInfosIssueEntitlements" : "surveyInfos"), id:"${surveyConfig.surveyInfo.id}", params:[surveyConfigID: "${surveyConfig.id}"]),
+                    "url":   g.createLink(controller:"myInstitution", action: "surveyInfos", id:"${surveyConfig.surveyInfo.id}", params:[surveyConfigID: "${surveyConfig.id}"]),
                     "category": "${message(code: "spotlight.${hit.getSourceAsMap().rectype.toLowerCase()}")}",
                     "description": ""
             ]
