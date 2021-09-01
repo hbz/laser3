@@ -309,6 +309,7 @@
                             <g:link controller="survey" action="show" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                                 <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
+                                    %{--Titel-Umfrage kann keine Umfrage-Merkmale haben--}%
                                     ${surveyConfig.surveyProperties?.size() ?: 0}
                                 </div>
                             </g:link>
