@@ -108,7 +108,6 @@
                 <td class="x">
 
                     <g:if test="${(contextOrg.getCustomerType() in ['ORG_CONSORTIUM'])}">
-                        <g:if test="${!surveyConfig.pickAndChoose}">
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="survey" action="evaluationParticipant"
@@ -119,20 +118,6 @@
                                     <i aria-hidden="true" class="write icon"></i>
                                 </g:link>
                             </span>
-                        </g:if>
-
-                        <g:if test="${surveyConfig.pickAndChoose}">
-                            <span class="la-popup-tooltip la-delay"
-                                  data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
-                                <g:link controller="survey" action="surveyTitlesSubscriber"
-                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: institution.id]"
-                                        class="ui icon button la-modern-button"
-                                        role="button"
-                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="write icon"></i>
-                                </g:link>
-                            </span>
-                        </g:if>
                     </g:if>
                     <g:else>
 

@@ -1132,7 +1132,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else if(tippA.status != RDStore.TIPP_STATUS_DELETED && status != RDStore.TIPP_STATUS_DELETED) {
             //process central differences which are without effect to issue entitlements
             tippA.titleType = tippB.titleType
-            //tippA.name = tippB.name //TODO include name, sortName in IssueEntitlements, then, this property may move to the controlled ones
+            //tippA.name = tippB.name //TODO include name, sortname in IssueEntitlements, then, this property may move to the controlled ones
             if(tippA.altnames) {
                 List<String> oldAltNames = tippA.altnames.collect { AlternativeName altname -> altname.name }
                 tippB.altnames.each { String newAltName ->

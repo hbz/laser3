@@ -89,7 +89,7 @@ class ReportingLocalService {
                 result.labels = SubscriptionReporting.getTimelineQueryLabels(params)
 
                 if (params.query == 'timeline-entitlement') {
-                    String hql = 'select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name'
+                    String hql = 'select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortname, tipp.name'
 
                     result.list      = idList      ? TitleInstancePackagePlatform.executeQuery( hql, [idList: idList] ) : []
                     result.plusList  = plusIdList  ? TitleInstancePackagePlatform.executeQuery( hql, [idList: plusIdList] ) : []
@@ -116,7 +116,7 @@ class ReportingLocalService {
                 clone.setProperty('label', label) // todo
 
                 result.labels = BaseQuery.getQueryLabels(SubscriptionReporting.CONFIG, clone)
-                result.list   = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortName, tipp.name', [idList: idList])
+                result.list   = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:idList) order by tipp.sortname, tipp.name', [idList: idList])
                 result.tmpl   = '/subscription/reporting/details/entitlement'
             }
 

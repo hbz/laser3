@@ -59,19 +59,6 @@
                             </g:link>
 
                             <span class="la-float-right">
-                                <g:if test="${surveyConfig && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT && surveyConfig.pickAndChoose}">
-
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center"
-                                        data-content="${message(code: "surveyTitlesEvaluation.label")} anzeigen">
-                                            <g:link controller="survey" action="surveyTitlesEvaluation" id="${surveyInfo.id}"
-                                                    params="[surveyConfigID: surveyConfig.id]"
-                                                    class="ui icon button la-modern-button">
-                                                <i class="icon blue chart pie"></i>
-                                            </g:link>
-                                    </span>
-                                </g:if>
-                                <g:else>
-
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center"
                                         data-content="${message(code: "surveyEvaluation.label")} anzeigen">
                                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
@@ -80,7 +67,6 @@
                                                 <i class="icon blue chart pie"></i>
                                             </g:link>
                                     </span>
-                                </g:else>
                             </span>
                         </g:if>
                         <g:else>

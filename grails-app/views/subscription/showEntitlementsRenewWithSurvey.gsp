@@ -56,11 +56,22 @@
 
 
 <semui:form>
-    <g:link controller="myInstitution" action="surveyInfosIssueEntitlements"
-            id="${surveyConfig?.id}"
-            class="ui button">
-        <g:message code="surveyInfo.backToSurvey"/>
-    </g:link>
+    <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
+
+        <g:link action="renewEntitlements"
+                id="${surveyConfig.id}" params="[participant: participant.id]"
+                class="ui button">
+            <g:message code="renewEntitlementsWithSurvey.renewEntitlements"/>
+        </g:link>
+
+    </g:if>
+    <g:else>
+        <g:link controller="myInstitution" action="surveyInfosIssueEntitlements"
+                id="${surveyConfig.id}"
+                class="ui button">
+            <g:message code="surveyInfo.backToSurvey"/>
+        </g:link>
+    </g:else>
     <br />
 
     <h2 class="ui header left aligned aligned"><g:message
@@ -145,11 +156,22 @@
 
     </div>
     <br />
-    <g:link controller="myInstitution" action="surveyInfosIssueEntitlements"
-            id="${surveyConfig?.id}"
-            class="ui button">
-        <g:message code="surveyInfo.backToSurvey"/>
-    </g:link>
+    <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
+
+        <g:link action="renewEntitlements"
+                id="${surveyConfig.id}" params="[participant: participant.id]"
+                class="ui button">
+            <g:message code="renewEntitlementsWithSurvey.renewEntitlements"/>
+        </g:link>
+
+    </g:if>
+    <g:else>
+        <g:link controller="myInstitution" action="surveyInfosIssueEntitlements"
+                id="${surveyConfig.id}"
+                class="ui button">
+            <g:message code="surveyInfo.backToSurvey"/>
+        </g:link>
+    </g:else>
 </semui:form>
 
 </body>

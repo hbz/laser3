@@ -49,7 +49,7 @@ class DataConsistencyService {
         ).findAll{ it -> it[1] > 1}
 
         result.Package.sortName = Package.executeQuery(
-                'SELECT pkg.sortName as sortName, count(pkg.sortName) as cnt FROM Package pkg GROUP BY pkg.sortName ORDER BY pkg.sortName'
+                'SELECT pkg.sortname as sortname, count(pkg.sortname) as cnt FROM Package pkg GROUP BY pkg.sortname ORDER BY pkg.sortname'
         ).findAll{ it -> it[1] > 1}
 
         // Platforms
