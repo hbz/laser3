@@ -14,8 +14,8 @@
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
-        <semui:crumb class="active" controller="survey" action="surveyTitlesEvaluation" id="${surveyInfo.id}"
-                     params="[surveyConfigID: surveyConfig.id]" message="surveyTitlesEvaluation.label"/>
+        <semui:crumb class="active" controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
+                     params="[surveyConfigID: surveyConfig.id]" message="surveyEvaluation.titles.label"/>
     </g:if>
 
 </semui:breadcrumbs>
@@ -23,11 +23,11 @@
 <semui:controlButtons>
     <semui:exportDropdown>
         <semui:exportDropdownItem>
-            <g:link class="item" action="showEntitlementsRenew" id="${surveyConfig.id}"
+            <g:link class="item" action="renewEntitlements" id="${surveyConfig.id}"
                     params="${[exportKBart: true, participant: participant.id]}">KBART Export</g:link>
         </semui:exportDropdownItem>
         <semui:exportDropdownItem>
-            <g:link class="item" action="showEntitlementsRenew" id="${surveyConfig.id}"
+            <g:link class="item" action="renewEntitlements" id="${surveyConfig.id}"
                     params="${[exportXLSX: true, participant: participant.id]}">${message(code: 'default.button.exports.xls')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
@@ -62,7 +62,7 @@
 </g:if>
 
 <div class="eight wide field" style="text-align: right;">
-    <g:link action="surveyTitlesSubscriber"
+    <g:link action="evaluationParticipant"
             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
             class="ui icon button">
         <g:message code="surveyInfo.backToSurvey"/>

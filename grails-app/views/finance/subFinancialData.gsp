@@ -30,6 +30,9 @@
                         </g:link>
                     </semui:exportDropdownItem>
                     <semui:exportDropdownItem>
+                        <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+                    </semui:exportDropdownItem>
+                    <semui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
                                  data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartialCSV')}"
                                  data-confirm-term-how="ok"
@@ -42,6 +45,9 @@
                 <g:else>
                     <semui:exportDropdownItem>
                         <g:link class="item" controller="finance" action="financialsExport" params="${params+[exportXLS:true,sub:subscription.id]}">${message(code:'default.button.exports.xls')}</g:link>
+                    </semui:exportDropdownItem>
+                    <semui:exportDropdownItem>
+                        <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
                     </semui:exportDropdownItem>
                     <semui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
@@ -90,5 +96,7 @@
         </g:if>
 
         <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription]" />
+
+        <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
     </body>
 </html>

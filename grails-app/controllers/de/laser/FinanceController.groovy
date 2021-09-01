@@ -28,6 +28,7 @@ class FinanceController  {
     def exportService
     FinanceControllerService financeControllerService
     PendingChangeService pendingChangeService
+    ExportClickMeService exportClickMeService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
@@ -106,6 +107,24 @@ class FinanceController  {
             catch (IOException e) {
                 log.error("A request was started before the started one was terminated")
             }
+        }
+        else if(params.exportClickMeExcel) {
+            if (params.filename) {
+                filename =params.filename
+            }
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportCostItems(result, selectedFields)
+
+            response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
         }
         else {
             ArrayList titles = []

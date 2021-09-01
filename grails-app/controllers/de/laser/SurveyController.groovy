@@ -1501,49 +1501,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
-     def surveyTitlesEvaluation() {
-        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-
-        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-
-        def orgs = result.surveyConfig.orgs.org.flatten().unique { a, b -> a.id <=> b.id }
-        result.participants = orgs.sort { it.sortname }
-
-        result.participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).org.sort {
-            it.sortname
-        }
-        result.participantsFinish = SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(result.surveyConfig).org.sort {
-            it.sortname
-        }
-
-        if(result.surveyConfig.surveyProperties.size() > 0){
-            result.surveyResult = SurveyResult.findAllByOwnerAndSurveyConfig(result.institution, result.surveyConfig).sort {
-                it.participant.sortname
-            }
-        }
-
-        if ( params.exportXLSX ) {
-            SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + g.message(code: "survey.label")
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys([result.surveyConfig], result.institution)
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-        }else {
-            result
-        }
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = 0)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
-    })
-     def showEntitlementsRenew() {
+     def renewEntitlements() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
@@ -1566,7 +1524,7 @@ class SurveyController {
         result.subscriptionParticipant = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant)
 
         List<Long> ies = subscriptionService.getIssueEntitlementIDsNotFixed(result.subscriptionParticipant)
-        result.ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ies) order by tipp.sortname asc', ies.drop(result.offset).take(result.max))
+        result.ies = ies ? IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ies) order by tipp.sortname asc', [ies: ies.drop(result.offset).take(result.max)]) : []
 
         String filename = "renewEntitlements_${escapeService.escapeString(result.surveyConfig.subscription.dropdownNamingConvention(result.participant))}"
 
@@ -1609,7 +1567,7 @@ class SurveyController {
         Map<String, Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         result.participant = params.participant ? Org.get(params.participant) : null
 
-        result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
+        /*result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
         result.editable = result.surveyInfo.isEditable() ?: false
 
@@ -1662,7 +1620,9 @@ class SurveyController {
 
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig).sort { it.surveyConfig.configOrder }
 
-        result
+        result*/
+
+        redirect(action: 'evaluationParticipant', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
 
     }
 
@@ -1705,7 +1665,7 @@ class SurveyController {
 
         //flash.message = message(code: 'openIssueEntitlementsSurveyAgain.info')
 
-        redirect(action: 'showEntitlementsRenew', id: result.surveyConfig.id, params:[participant: result.participant.id])
+        redirect(action: 'renewEntitlements', id: result.surveyConfig.id, params:[participant: result.participant.id])
 
     }
 
@@ -1843,7 +1803,7 @@ class SurveyController {
 
 
 
-        redirect(action: 'showEntitlementsRenew', id: result.surveyConfig.id, params:[participant: result.participant.id])
+        redirect(action: 'renewEntitlements', id: result.surveyConfig.id, params:[participant: result.participant.id])
 
     }
 
@@ -1902,7 +1862,7 @@ class SurveyController {
 
         flash.message = message(code: 'completeIssueEntitlementsSurvey.forFinishParticipant.info')
 
-        redirect(action: 'surveyTitlesEvaluation', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id])
+        redirect(action: 'surveyEvaluation', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id])
 
     }
 
@@ -1986,6 +1946,33 @@ class SurveyController {
                 result.costItemSums.subscrCosts = costItems.subscr.costItems
             }
             result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
+
+            if (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+
+                    result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscription)
+                    result.iesListPriceSum = 0
+                    result.ies.each { IssueEntitlement ie ->
+                        Double priceSum = 0.0
+
+                        ie.priceItems.each { PriceItem priceItem ->
+                            priceSum = priceItem.listPrice ?: 0.0
+                        }
+                        result.iesListPriceSum = result.iesListPriceSum + priceSum
+                    }
+
+
+                    result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscription)
+                    result.iesFixListPriceSum = 0
+                    result.iesFix.each { IssueEntitlement ie ->
+                        Double priceSum = 0.0
+
+                        ie.priceItems.each { PriceItem priceItem ->
+                            priceSum = priceItem.listPrice ?: 0.0
+                        }
+                        result.iesFixListPriceSum = result.iesListPriceSum + priceSum
+                    }
+                }
+
         }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
@@ -1993,7 +1980,6 @@ class SurveyController {
 
                 result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
             }
-            result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
         }
 
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)

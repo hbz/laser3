@@ -104,7 +104,8 @@
             </div>
 
 
-            <g:render template="evaluationParticipantsView"/>
+            <g:render template="evaluationParticipantsView" model="[showCheckbox: false,
+                                                                    tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner']]"/>
 
         </div>
     </div>

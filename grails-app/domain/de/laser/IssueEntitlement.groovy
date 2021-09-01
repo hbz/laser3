@@ -23,7 +23,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     Date accessEndDate
 
     String name
-    String sortName
+    String sortname
 
     String ieReason
 
@@ -59,8 +59,8 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     int compareTo(obj) {
         int cmp
-        if(sortName && obj.sortName)
-            cmp = sortName <=> obj.sortName
+        if(sortname && obj.sortname)
+            cmp = sortname <=> obj.sortname
         else if(name && obj.name) cmp = name <=> obj.name
         if(cmp == 0)
             return id.compareTo(obj.id)
@@ -74,7 +74,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
          globalUID column:'ie_guid'
            version column:'ie_version'
               name column:'ie_name', type: 'text'
-          sortName column:'ie_sortname', type: 'text'
+          sortname column:'ie_sortname', type: 'text'
             status column:'ie_status_rv_fk'
       subscription column:'ie_subscription_fk', index: 'ie_sub_idx'
               tipp column:'ie_tipp_fk',         index: 'ie_tipp_idx'
@@ -95,7 +95,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         status         (nullable:true)
         ieReason       (nullable:true, blank:true)
         name           (nullable:true)
-        sortName       (nullable:true)
+        sortname       (nullable:true)
         medium         (nullable:true)
         accessStartDate(nullable:true)
         accessEndDate  (nullable:true)
@@ -178,13 +178,13 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     void generateSortTitle() {
         if ( name ) {
-            sortName = Normalizer.normalize(name, Normalizer.Form.NFKD).trim().toLowerCase()
-            sortName = sortName.replaceFirst('^copy of ', '')
-            sortName = sortName.replaceFirst('^the ', '')
-            sortName = sortName.replaceFirst('^a ', '')
-            sortName = sortName.replaceFirst('^der ', '')
-            sortName = sortName.replaceFirst('^die ', '')
-            sortName = sortName.replaceFirst('^das ', '')
+            sortname = Normalizer.normalize(name, Normalizer.Form.NFKD).trim().toLowerCase()
+            sortname = sortname.replaceFirst('^copy of ', '')
+            sortname = sortname.replaceFirst('^the ', '')
+            sortname = sortname.replaceFirst('^a ', '')
+            sortname = sortname.replaceFirst('^der ', '')
+            sortname = sortname.replaceFirst('^die ', '')
+            sortname = sortname.replaceFirst('^das ', '')
         }
     }
 

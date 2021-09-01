@@ -30,7 +30,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
   //Date coreStatusStart
   //Date coreStatusEnd
     String name
-    String sortName
+    String sortname
     String normName
     String seriesName
     String subjectReference
@@ -119,7 +119,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
          titleType column:'tipp_title_type'
             medium column:'tipp_medium_rv_fk'
               name column:'tipp_name', type: 'text'
-          sortName column:'tipp_sort_name', type: 'text'
+          sortname column:'tipp_sort_name', type: 'text'
           normName column:'tipp_norm_name', type: 'text'
      publisherName column:'tipp_publisher_name', type: 'text'
         seriesName column:'tipp_series_name', type: 'text'
@@ -161,7 +161,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         gokbId (blank:false, unique: true, maxSize:511)
         status      (nullable:true)
         name        (nullable:true)
-        sortName    (nullable:true)
+        sortname    (nullable:true)
         normName    (nullable:true)
         seriesName  (nullable:true)
         imprint     (nullable:true)
@@ -224,13 +224,13 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
 
     void generateSortTitle() {
         if ( name ) {
-            sortName = Normalizer.normalize(name, Normalizer.Form.NFKD).trim().toLowerCase()
-            sortName = sortName.replaceFirst('^copy of ', '')
-            sortName = sortName.replaceFirst('^the ', '')
-            sortName = sortName.replaceFirst('^a ', '')
-            sortName = sortName.replaceFirst('^der ', '')
-            sortName = sortName.replaceFirst('^die ', '')
-            sortName = sortName.replaceFirst('^das ', '')
+            sortname = Normalizer.normalize(name, Normalizer.Form.NFKD).trim().toLowerCase()
+            sortname = sortname.replaceFirst('^copy of ', '')
+            sortname = sortname.replaceFirst('^the ', '')
+            sortname = sortname.replaceFirst('^a ', '')
+            sortname = sortname.replaceFirst('^der ', '')
+            sortname = sortname.replaceFirst('^die ', '')
+            sortname = sortname.replaceFirst('^das ', '')
         }
     }
 

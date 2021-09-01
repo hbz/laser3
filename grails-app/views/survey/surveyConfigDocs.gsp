@@ -71,7 +71,7 @@
                 ${SurveyConfig.getLocalizedValue(config?.type)}
 
 
-                <div class="ui floating circular label">${config?.getCurrentDocs()?.size() ?: 0}</div>
+                <div class="ui floating circular label">${config?.getCurrentDocs().size() ?: 0}</div>
             </g:link>
         </g:each>
     </div>
@@ -101,7 +101,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <g:each in="${surveyConfig?.getCurrentDocs()}" var="docctx" status="i">
+                <g:each in="${surveyConfig.getCurrentDocs()}" var="docctx" status="i">
                     <tr>
                         <td>${i + 1}</td>
                         <td>
@@ -146,7 +146,7 @@
                 </tbody>
             </table>
 
-            <g:each in="${surveyConfig?.getCurrentDocs()}" var="docctx">
+            <g:each in="${surveyConfig.getCurrentDocs()}" var="docctx">
                 <g:render template="/templates/documents/modal"
                           model="${[ownobj: surveyConfig, owntp: surveyConfig, docctx: docctx, doc: docctx.owner]}"/>
             </g:each>

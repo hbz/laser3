@@ -246,28 +246,16 @@
                         </td>
                     </g:if>
                     <td>
-                        <g:if test="${!surveyConfig.pickAndChoose}">
-                            <span class="la-popup-tooltip la-delay"
-                                  data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
-                                <g:link controller="survey" action="evaluationParticipant"
-                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]" class="ui icon button"
-                                        role="button"
-                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="write icon"></i>
-                                </g:link>
-                            </span>
-                        </g:if>
-
-                        <g:if test="${surveyConfig.pickAndChoose}">
-                            <g:link controller="survey" action="surveyTitlesSubscriber"
-                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant?.id]"
+                        <span class="la-popup-tooltip la-delay"
+                              data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
+                            <g:link controller="survey" action="evaluationParticipant"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
                                     class="ui icon button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>
                             </g:link>
-                        </g:if>
-
+                        </span>
                     </td>
 
                 </tr>
