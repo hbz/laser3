@@ -375,7 +375,7 @@
                         </g:if>--}%
                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]"
-                                    class="ui icon button">
+                                    class="ui icon button la-modern-button">
                                 <i class="icon blue chart pie"></i>
                                 </div>
                             </g:link>
@@ -383,7 +383,7 @@
                     <td>
                         <g:link controller="survey" action="show" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]"
-                                class="ui button icon"
+                                class="ui button icon la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
                             <i class="pencil icon"></i>

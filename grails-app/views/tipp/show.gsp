@@ -204,7 +204,7 @@
 
             <div class="item">${message(code: 'platform.primaryUrl', default: 'Primary URL')}:               ${tipp.platform.primaryUrl}
                 <g:if test="${tipp.platform.primaryUrl}">
-                    <a role="button" class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                    <a role="button" class="ui icon mini blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                        href="${tipp.platform.primaryUrl?.contains('http') ? tipp.platform.primaryUrl : 'http://' + tipp.platform.primaryUrl}"
                        target="_blank"><i class="share square icon"></i></a>

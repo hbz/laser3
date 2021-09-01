@@ -215,7 +215,7 @@
         <div class="ui top attached label">WCAG-Proof Button</div>
     </div>
     <dd class="la-js-editmode-container">
-        <a  role="button" class="ui icon button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="4 5 6">
+        <a  role="button" class="ui icon button la-audit-button la-popup-tooltip la-delay" href='' data-content="4 5 6">
             <i  class="icon thumbtack la-js-editmode-icon"></i>
         </a>
     </dd><br />

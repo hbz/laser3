@@ -48,7 +48,7 @@
                         controller= 'public'
                         action='wcagTest'
                         data-content="Wert wird nicht vererbt"
-                        class="ui icon mini button la-audit-button la-popup-tooltip la-delay meinToggleButton"
+                        class="ui icon mini button la-audit-button la-audit-button la-popup-tooltip la-delay meinToggleButton"
                         params="['toggle': params.toggle=='true'?false:true]"
                     >
                         <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash "></i>
