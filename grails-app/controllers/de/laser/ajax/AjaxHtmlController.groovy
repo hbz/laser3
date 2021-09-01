@@ -125,6 +125,10 @@ class AjaxHtmlController {
 
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
         result.countSurvey = result.surveys.size()
+        result.surveys = result.surveys.drop((int) result.offset).take((int) result.max)
+
+        result.surveysOffset = result.offset
+
         render template: '/myInstitution/surveys', model: result
     }
 

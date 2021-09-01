@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3751    01.09.2021  dev     2.2         Moe     Feature    Umfrage-Dashboard-Tab: Paginierung einführen
+
 3773    31.08.2021  dev     2.2         Moe     Feature     Titelumfrage Überarbeitung
 
 3747    30.08.2021  dev     2.2         Moe     Feature/Bug Click me excel - nicht vererbte merkmale
