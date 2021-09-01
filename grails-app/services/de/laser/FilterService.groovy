@@ -1229,7 +1229,7 @@ class FilterService {
                 base_qry += "order by ie.${params.sort} ${params.order} "
         }
         else if(!params.forCount){
-            base_qry += "order by lower(ie.tipp.sortname) asc"
+            base_qry += "order by lower(ie.sortname) asc"
         }
 
 
