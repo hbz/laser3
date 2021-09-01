@@ -1189,10 +1189,10 @@ join sub.orgRelations or_sub where
         if(queryFilter)
             qryString += ' and '+queryFilter.join(' and ')
 
-        Set<Long> currentIssueEntitlements = IssueEntitlement.executeQuery(qryString+' group by tipp, ie.id order by ie.tipp.sortname asc',qryParams)
+        Set<Long> currentIssueEntitlements = IssueEntitlement.executeQuery(qryString+' group by tipp, ie.id order by ie.sortname asc',qryParams)
         //second filter needed because double-join on same table does deliver me empty results
         if (filterPvd) {
-            currentIssueEntitlements = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") order by ie.tipp.sortname asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]])
+            currentIssueEntitlements = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") order by ie.sortname asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]])
         }
         Set<TitleInstancePackagePlatform> allTitles = currentIssueEntitlements ? TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) '+orderByClause,[ids:currentIssueEntitlements.drop(result.offset).take(result.max)]) : []
         result.subscriptions = Subscription.executeQuery('select sub from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and sub.status = :current '+instanceFilter+" order by sub.name asc",[
@@ -1201,8 +1201,8 @@ join sub.orgRelations or_sub where
                 orgRoles: orgRoles]).toSet()
         if(result.subscriptions.size() > 0) {
             Set<Long> allIssueEntitlements = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription in (:currentSubs)',[currentSubs:result.subscriptions])
-            result.providers = Org.executeQuery('select org.id,org.name from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo join oo.org org where ie.id in ('+qryString+' group by tipp, ie.id order by ie.tipp.sortname asc) group by org.id order by org.name asc',qryParams)
-            result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.id in ('+qryString+' group by tipp, ie.id order by ie.tipp.sortname asc) group by plat.id order by plat.name asc',qryParams)
+            result.providers = Org.executeQuery('select org.id,org.name from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo join oo.org org where ie.id in ('+qryString+' group by tipp, ie.id order by ie.sortname asc) group by org.id order by org.name asc',qryParams)
+            result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.id in ('+qryString+' group by tipp, ie.id order by ie.sortname asc) group by plat.id order by plat.name asc',qryParams)
         }
         result.num_ti_rows = currentIssueEntitlements.size()
         result.titles = allTitles

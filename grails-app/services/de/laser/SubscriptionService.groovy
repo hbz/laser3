@@ -567,7 +567,7 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
                         [sub: subscription, del: RDStore.TIPP_STATUS_DELETED])
                 : []
-        ies.sort {it.tipp.sortname}
+        ies.sort {it.sortname}
         ies
     }
     @Deprecated
@@ -674,13 +674,13 @@ class SubscriptionService {
             if ((params.sort != null) && (params.sort.length() > 0)) {
                 base_qry += "order by ie.${params.sort} ${params.order} "
             } else {
-                base_qry += "order by lower(ie.tipp.sortname) asc"
+                base_qry += "order by lower(ie.sortname) asc"
             }
 
             List<IssueEntitlement> ies = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: params.max, offset: params.offset])
 
 
-            ies.sort { it.tipp.sortname }
+            ies.sort { it.sortname }
             ies
         }else{
             List<IssueEntitlement> ies = []
@@ -695,7 +695,7 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.sortname}
+        ies.sort {it.sortname}
         ies
     }
     //In Verhandlung
@@ -704,7 +704,7 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.sortname}
+        ies.sort {it.sortname}
         ies
     }
 
@@ -713,13 +713,13 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.sortname}
+        ies.sort {it.sortname}
         ies
     }
 
     List<Long> getIssueEntitlementIDsNotFixed(Subscription subscription) {
         List<Long> ies = subscription?
-                IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus order by ie.tipp.sortname",
+                IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus order by ie.sortname",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
         ies
@@ -730,7 +730,7 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.sortname}
+        ies.sort {it.sortname}
         ies
     }
 
@@ -739,7 +739,7 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.sortname}
+        ies.sort {it.sortname}
         ies
     }
 
@@ -756,7 +756,7 @@ class SubscriptionService {
                 IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur",
                         [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.tipp.sortname}
+        ies.sort {it.sortname}
         ies
     }
 

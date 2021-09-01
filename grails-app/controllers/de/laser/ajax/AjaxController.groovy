@@ -437,11 +437,12 @@ class AjaxController {
   def updateChecked() {
       Map success = [success:false]
       SessionCacheWrapper sessionCache = contextService.getSessionCache()
-      Map<String,Object> cache = sessionCache.get("/subscription/${params.referer}/${params.sub}")
+      String sub = params.sub ?: params.id
+      Map<String,Object> cache = sessionCache.get("/subscription/${params.referer}/${sub}")
 
       if(!cache) {
-          sessionCache.put("/subscription/${params.referer}/${params.sub}",["checked":[:]])
-          cache = sessionCache.get("/subscription/${params.referer}/${params.sub}")
+          sessionCache.put("/subscription/${params.referer}/${sub}",["checked":[:]])
+          cache = sessionCache.get("/subscription/${params.referer}/${sub}")
       }
 
       Map checked = cache.get('checked')
@@ -481,7 +482,8 @@ class AjaxController {
                   newChecked[ie.id.toString()] = params.checked == 'true' ? 'checked' : null
               }
 
-          }else {
+          }
+          else {
               Set<Long> pkgFilter = []
               if (params.pkgFilter)
                   pkgFilter << params.long('pkgFilter')

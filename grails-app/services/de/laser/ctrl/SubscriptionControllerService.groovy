@@ -1732,9 +1732,9 @@ class SubscriptionControllerService {
                 String orderClause = 'order by tipp.sortname asc'
                 if(params.sort){
                     if(params.sort == 'startDate')
-                        orderClause = "order by ic.startDate ${params.order}, lower(ie.tipp.sortname) asc "
+                        orderClause = "order by ic.startDate ${params.order}, lower(ie.sortname) asc "
                     else if(params.sort == 'endDate')
-                        orderClause = "order by ic.endDate ${params.order}, lower(ie.tipp.sortname) asc "
+                        orderClause = "order by ic.endDate ${params.order}, lower(ie.sortname) asc "
                     else
                         orderClause = "order by ${params.sort} ${params.order} "
                 }
@@ -1875,7 +1875,8 @@ class SubscriptionControllerService {
             List<TitleInstancePackagePlatform> tipps = []
             List errorList = []
             boolean filterSet = false
-            EhcacheWrapper checkedCache = contextService.getCache("/subscription/addEntitlements/${params.id}", contextService.USER_SCOPE)
+            SessionCacheWrapper sessionCache = contextService.getSessionCache()
+            Map checkedCache = sessionCache.get("/subscription/addEntitlements/${params.id}")
             Set<String> addedTipps = IssueEntitlement.executeQuery('select tipp.gokbId from IssueEntitlement ie join ie.tipp tipp where ie.status != :deleted and ie.subscription = :sub',[deleted:ie_deleted,sub:result.subscription])
             /*result.subscription.issueEntitlements.each { ie ->
                 if(ie instanceof IssueEntitlement && ie.status != ie_deleted)
@@ -2229,7 +2230,8 @@ class SubscriptionControllerService {
             Locale locale = LocaleContextHolder.getLocale()
             RefdataValue ie_accept_status = RDStore.IE_ACCEPT_STATUS_FIXED
             int addTitlesCount = 0
-            EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscription.id}", contextService.USER_SCOPE)
+            SessionCacheWrapper sessionCache = contextService.getSessionCache()
+            Map cache = sessionCache.get("/subscription/addEntitlements/${result.subscription.id}")
             Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
             if(!params.singleTitle) {
                 Map checked = cache.get('checked')
