@@ -126,7 +126,7 @@
                         <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                             <div class="ui circular label">
-                                ${surveyConfig.getCurrentDocs()?.size() ?: 0}
+                                ${surveyConfig.getCurrentDocs().size() ?: 0}
                             </div>
                         </g:link>
                 </td>
@@ -146,7 +146,7 @@
                         <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                             <div class="ui circular ${surveyConfig.costItemsFinish ? "green" : ""} label">
-                                ${surveyConfig.getSurveyConfigCostItems()?.size() ?: 0}
+                                ${surveyConfig.getSurveyConfigCostItems().size() ?: 0}
                             </div>
                         </g:link>
                     </g:if>

@@ -265,7 +265,7 @@
                            value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)}"/>
 
                     <g:set var="participantsTotal"
-                           value="${surveyConfig.orgs}"/>
+                           value="${surveyConfig.orgs ?: []}"/>
 
                     <tr>
                         <td class="center aligned">
@@ -320,7 +320,7 @@
                             <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                                 <div class="ui circular label">
-                                    ${surveyConfig.getCurrentDocs()?.size() ?: 0}
+                                    ${surveyConfig.getCurrentDocs().size() ?: 0}
                                 </div>
                             </g:link>
 
@@ -330,7 +330,7 @@
                         <td class="center aligned">
                             <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]" class="ui icon">
-                                <div class="ui circular ${participantsFinish.size() == participantsTotal?.size() ? "green" : surveyConfig.configFinish ? "yellow" : ""} label">
+                                <div class="ui circular ${participantsFinish.size() == participantsTotal.size() ? "green" : surveyConfig.configFinish ? "yellow" : ""} label">
                                     ${participantsFinish.size() ?: 0} / ${surveyConfig.orgs?.size() ?: 0}
                                 </div>
                             </g:link>
@@ -342,7 +342,7 @@
                                 <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
                                         params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                                     <div class="ui circular ${surveyConfig.costItemsFinish ? "green" : ""} label">
-                                        ${surveyConfig.getSurveyConfigCostItems()?.size() ?: 0}
+                                        ${surveyConfig.getSurveyConfigCostItems().size() ?: 0}
                                     </div>
                                 </g:link>
                             </g:if>

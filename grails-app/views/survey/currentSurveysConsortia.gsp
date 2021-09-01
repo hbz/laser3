@@ -319,7 +319,7 @@
                                 <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
                                         params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                                     <div class="ui circular label">
-                                        ${surveyConfig.getCurrentDocs()?.size() ?: 0}
+                                        ${surveyConfig.getCurrentDocs().size() ?: 0}
                                     </div>
                                 </g:link>
                             </g:if>
@@ -333,8 +333,8 @@
                                     <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
                                     ${surveyConfig.orgs?.size() ?: 0}
                                     </div>
-                                %{--<div class="ui circular ${participantsFinish?.size() == participantsTotal?.size() ? "green" : surveyConfig.configFinish ? "yellow" : ""} label">
-                                    ${participantsFinish?.size() ?: 0} / ${surveyConfig.orgs?.size() ?: 0}
+                                %{--<div class="ui circular ${participantsFinish.size() == participantsTotal.size() ? "green" : surveyConfig.configFinish ? "yellow" : ""} label">
+                                    ${participantsFinish.size() ?: 0} / ${surveyConfig.orgs?.size() ?: 0}
                                 </div>--}%
                             </g:link>
                         </g:if>
@@ -346,7 +346,7 @@
                             <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                                 <div class="ui circular ${surveyConfig.costItemsFinish ? "green" : ""} label">
-                                    ${surveyConfig.getSurveyConfigCostItems()?.size() ?: 0}
+                                    ${surveyConfig.getSurveyConfigCostItems().size() ?: 0}
                                 </div>
                             </g:link>
                         </g:if>
@@ -357,11 +357,11 @@
                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]"
                                     class="ui icon button">
-                                    --}%%{--<div class="ui circular ${(participantsFinish?.size() == participantsTotal?.size()) ? "green" : (participantsFinish?.size() > 0) ? "yellow" : ""} label">
+                                    --}%%{--<div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" : ""} label">
                                     <g:if
                                             test="${participantsFinish && participantsTotal}">
                                         <g:formatNumber
-                                                number="${(participantsFinish?.size() / participantsTotal?.size()) * 100}"
+                                                number="${(participantsFinish.size() / participantsTotal.size()) * 100}"
                                                 minFractionDigits="2"
                                                 maxFractionDigits="2"/>%
                                     </g:if>
