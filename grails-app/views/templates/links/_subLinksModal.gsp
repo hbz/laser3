@@ -3,7 +3,7 @@
 <g:if test="${editmode}">
 
         <a role="button"
-           class="ui button ${tmplCss}"
+           class="ui button la-modern-button ${tmplCss}"
            data-semui="modal" href="#${tmplModalID}"
            class="la-popup-tooltip la-delay"
            data-content="${message(code:'license.details.editLink')}">

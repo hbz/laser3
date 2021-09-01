@@ -53,7 +53,7 @@
                         </g:if>
 
                         <g:if test="${! docctx.sharedFrom}">
-                            <a onclick="JSPC.app.noteedit(${docctx.owner.id});" class="ui icon button"
+                            <a onclick="JSPC.app.noteedit(${docctx.owner.id});" class="ui icon button la-modern-button"
                                role="button"
                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>

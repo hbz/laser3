@@ -23,7 +23,7 @@
                         <g:if test="${roleObject.showUIShareButton()}">
                             <g:if test="${role.isShared}">
                                 <span class="la-js-editmode-container">
-                                    <g:link id="test" class="ui icon button green la-selectable-button la-popup-tooltip la-delay"
+                                    <g:link id="test" class="ui icon button la-modern-button green la-selectable-button la-popup-tooltip la-delay"
                                             controller="ajax" action="toggleShare"
                                             params="${[owner:genericOIDService.getOID(roleObject), sharedObject:genericOIDService.getOID(role), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]}"
                                             data-position="top right" data-content="${message(code:'property.share.tooltip.on')}"
@@ -34,7 +34,7 @@
                             </g:if>
                             <g:else>
                                 <span class="la-js-editmode-container">
-                                    <g:link  class="ui icon button la-selectable-button la-popup-tooltip la-delay  "
+                                    <g:link  class="ui icon button  la-modern-button la-selectable-button la-popup-tooltip la-delay  "
                                             controller="ajax" action="toggleShare"
                                             params="${[owner:genericOIDService.getOID(roleObject), sharedObject:genericOIDService.getOID(role), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]}"
                                              data-position="top right" data-content="${message(code:'property.share.tooltip.off')}"
@@ -63,7 +63,7 @@
                         </g:if>
 
                         <g:if test="${showPersons}">
-                                <button class="ui icon button la-selectable-button la-popup-tooltip la-delay" data-semui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
+                                <button class="ui icon button la-modern-button la-selectable-button la-popup-tooltip la-delay" data-semui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
                                     <i class="address plus icon"></i>
                                 </button>
 

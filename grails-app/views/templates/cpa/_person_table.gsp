@@ -196,13 +196,13 @@
         </g:each>
             <td class="x">
                 <g:if test="${editable}">
-                    <button type="button" onclick="JSPC.app.editPerson(${person.id})" class="ui icon button"
+                    <button type="button" onclick="JSPC.app.editPerson(${person.id})" class="ui icon button la-modern-button"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                         <i aria-hidden="true" class="write icon"></i>
                     </button>
 
-                    <g:form controller="person" action="delete" data-confirm-id="${person.id.toString() + '_form'}">
+                    <g:form style="display:inline" controller="person" action="delete" data-confirm-id="${person.id.toString() + '_form'}">
                         <g:hiddenField id="person_id_${person.id}" name="id" value="${person.id}"/>
                         <div class="ui icon negative button js-open-confirm-modal"
                              data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact.addressbook", args: [person.toString()])}"

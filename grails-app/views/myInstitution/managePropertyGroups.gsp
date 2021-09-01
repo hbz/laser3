@@ -64,7 +64,7 @@
                             <g:if test="${editable}">
                                 <td class="x">
                                     <g:set var="pdgOID" value="${genericOIDService.getOID(pdGroup)}" />
-                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button trigger-modal"
+                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button la-modern-button trigger-modal"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                         <i aria-hidden="true" class="write icon"></i>

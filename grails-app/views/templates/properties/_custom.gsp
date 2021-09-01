@@ -96,7 +96,7 @@
 
                                     <g:if test="${! AuditConfig.getConfig(prop)}">
                                         <g:if test="${prop.type in memberProperties}">
-                                            <laser:remoteLink class="ui icon button la-popup-tooltip la-delay js-open-confirm-modal"
+                                            <laser:remoteLink class="ui icon button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
                                                               controller="ajax"
                                                               action="togglePropertyAuditConfig"
                                                               params='[propClass: prop.getClass(),
@@ -119,7 +119,7 @@
                                             </laser:remoteLink>
                                         </g:if>
                                         <g:else>
-                                            <laser:remoteLink class="ui icon button la-popup-tooltip la-delay js-open-confirm-modal"
+                                            <laser:remoteLink class="ui icon button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
                                                               controller="ajax"
                                                               action="togglePropertyAuditConfig"
                                                               params='[propClass: prop.getClass(),
@@ -144,7 +144,7 @@
                                     </g:if>
                                     <g:else>
 
-                                        <laser:remoteLink class="ui icon green button la-popup-tooltip la-delay js-open-confirm-modal"
+                                        <laser:remoteLink class="ui icon green button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
                                                           controller="ajax" action="togglePropertyAuditConfig"
                                                           params='[propClass: prop.getClass(),
                                                                    ownerId: "${ownobj.id}",

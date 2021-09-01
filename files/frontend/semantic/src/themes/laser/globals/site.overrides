@@ -426,3 +426,11 @@ i.icon.la-list-icon{
         margin-left: 0.4em;
     }
 }
+
+/*-------------------
+        Links
+--------------------*/
+
+a {
+    font-weight: bold;
+}
