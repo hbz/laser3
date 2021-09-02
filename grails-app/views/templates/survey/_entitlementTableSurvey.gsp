@@ -107,7 +107,7 @@
                         </g:link>
                     </g:if>
                     <g:elseif test="${!isContainedByTarget && editable}">
-                        <g:link class="ui icon positive button la-popup-tooltip la-delay"
+                        <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
                                 action="processAddIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: ie.id, surveyConfigID: surveyConfig?.id]}"
                                 data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">

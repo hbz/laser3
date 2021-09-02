@@ -47,7 +47,7 @@
                             id="${subPkg.pkg.id}">${subPkg.pkg.name} ${raw(subPkg.getIEandPackageSize())}</g:link>
 
                     <div class="right floated content">
-                        <button class="ui negative button la-selectable-button unlinkPackages"
+                        <button class="ui negative button la-modern-button la-selectable-button unlinkPackages"
                                 data-package="${subPkg.pkg.id}" data-subscription="${subPkg.subscription.id}">
                             <i class="unlink icon"></i>
                         </button>
@@ -228,7 +228,7 @@
                         </td>
 
                         <td class="x">
-                            <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button la-modern-button"
+                            <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button blue la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>

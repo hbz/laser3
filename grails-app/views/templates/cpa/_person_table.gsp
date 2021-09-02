@@ -196,7 +196,7 @@
         </g:each>
             <td class="x">
                 <g:if test="${editable}">
-                    <button type="button" onclick="JSPC.app.editPerson(${person.id})" class="ui icon button la-modern-button"
+                    <button type="button" onclick="JSPC.app.editPerson(${person.id})" class="ui icon button blue la-modern-button"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                         <i aria-hidden="true" class="write icon"></i>

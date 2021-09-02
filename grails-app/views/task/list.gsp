@@ -57,7 +57,7 @@
 
 							<td class="x">
 								<g:link action="show" id="${taskInstance.id}"
-									class="ui icon button la-modern-button"
+									class="ui icon button blue la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
 									<i aria-hidden="true" class="write icon"></i>

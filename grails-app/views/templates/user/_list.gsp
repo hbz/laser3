@@ -68,21 +68,21 @@
                     <g:if test="${check}">
 
                         <g:if test="${controllerName == 'user'}">
-                            <g:link controller="${controllerName}" action="${editLink}" params="${[id: us.id]}" class="ui icon button la-modern-button"
+                            <g:link controller="${controllerName}" action="${editLink}" params="${[id: us.id]}" class="ui icon button blue la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>
                             </g:link>
                         </g:if>
                         <g:if test="${controllerName == 'myInstitution'}">
-                            <g:link controller="${controllerName}" action="${editLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon button la-modern-button"
+                            <g:link controller="${controllerName}" action="${editLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon button blue la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>
                             </g:link>
                         </g:if>
                         <g:if test="${controllerName == 'organisation'}">
-                            <g:link controller="${controllerName}" action="${editLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon button la-modern-button"
+                            <g:link controller="${controllerName}" action="${editLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon button blue la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>
@@ -102,25 +102,25 @@
                         <g:if test="${check2}">
 
                             <g:if test="${us.id == editor.id}">
-                                <g:link controller="profile" action="delete" class="ui icon negative button"
+                                <g:link controller="profile" action="delete" class="ui icon negative button la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate outline icon"></i></g:link>
                             </g:if>
                             <g:elseif test="${controllerName == 'user'}">
-                                <g:link controller="${controllerName}" action="${deleteLink}" params="${[id: us.id]}" class="ui icon negative button"
+                                <g:link controller="${controllerName}" action="${deleteLink}" params="${[id: us.id]}" class="ui icon negative button la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate outline icon"></i></g:link>
                             </g:elseif>
                             <g:elseif test="${controllerName == 'myInstitution'}">
-                                <g:link controller="${controllerName}" action="${deleteLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button"
+                                <g:link controller="${controllerName}" action="${deleteLink}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate outline icon"></i></g:link>
                             </g:elseif>
                             <g:elseif test="${controllerName == 'organisation'}">
-                                <g:link controller="${controllerName}" action="${deleteLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button"
+                                <g:link controller="${controllerName}" action="${deleteLink}" id="${orgInstance.id}" params="${[uoid: genericOIDService.getOID(us)]}" class="ui icon negative button la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate outline icon"></i></g:link>
@@ -129,7 +129,7 @@
                         </g:if>
                         <g:else>
                             <span  class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg1', args: [us.getDisplayName()])}">
-                                <button class="ui icon negative button" disabled="disabled"
+                                <button class="ui icon negative button la-modern-button" disabled="disabled"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="trash alternate outline icon"></i>
