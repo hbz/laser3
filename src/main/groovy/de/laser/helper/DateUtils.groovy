@@ -61,6 +61,10 @@ class DateUtils {
         return new SimpleDateFormat('yyyyMMdd-HHmm')
     }
 
+    static SimpleDateFormat getSDF_yearMonth(){
+        return new SimpleDateFormat('yyyy-MM')
+    }
+
     static Date toDate_NoTime(String value) {
         (Date) getSDF_NoTime()?.parseObject(value)
     }
