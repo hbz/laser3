@@ -616,19 +616,19 @@ class PendingChangeService extends AbstractLockableService {
                             def row = tokensNotifications.find { row -> row[1] == sp.pkg.id && row[0] == token }
                             if(row) {
                                 Object[] args = [row[2]]
-                                Map<String,Object> eventRow = [subPkg:sp,eventString:messageSource.getMessage(token,args,locale),msgToken:token]
+                                Map<String,Object> eventRow = [packageSubscription:[id: sp.subscription.id, name: sp.subscription.dropdownNamingConvention()],eventString:messageSource.getMessage(token,args,locale),msgToken:token]
                                 notifications << eventRow
                             }
                         }
                         else if(settingValue == "prompt") {
                             Map<String, String> entity = getEntityFromToken(token)
                             if(entity) {
-                                List newerCount = PendingChange.executeQuery('select count(distinct pc.id) from PendingChange pc where pc.'+entity.entityPackage+' = :package and pc.oid = null and pc.ts >= :entryDate and pc.msgToken = :token and not exists (select pca.id from PendingChange pca where pca.'+entity.entity+' = pc.'+entity.entity+' and pca.oid = :oid and pca.status in (:acceptedStatus))',[package: sp.pkg, entryDate: sp.dateCreated, token: token, oid: genericOIDService.getOID(sp.subscription), acceptedStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED]])
+                                List newerCount = PendingChange.executeQuery('select count(distinct pc.id) from PendingChange pc where pc.'+entity.entityPackage+' = :package and pc.oid = null and pc.ts >= :entryDate and pc.msgToken = :token and not exists (select pca.id from PendingChange pca where pca.'+entity.entity+' = pc.'+entity.entity+' and pca.oid = :oid and pca.status in (:acceptedStatus) and pca.newValue = pc.newValue)',[package: sp.pkg, entryDate: sp.dateCreated, token: token, oid: genericOIDService.getOID(sp.subscription), acceptedStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED]])
                                 log.debug("processing at ${System.currentTimeMillis()-start} msecs")
                                 //List processedCount = PendingChange.executeQuery('',[package:sp.pkg, entity: entity])
                                 if(newerCount && newerCount[0] > 0){
                                     Object[] args = [newerCount[0]]
-                                    Map<String,Object> eventRow = [subPkg:sp,eventString:messageSource.getMessage(token,args,locale),msgToken:token]
+                                    Map<String,Object> eventRow = [packageSubscription:[id: sp.subscription.id, name: sp.subscription.dropdownNamingConvention()],eventString:messageSource.getMessage(token,args,locale),msgToken:token]
                                     //eventRow.changeId = pendingChange1 ? pendingChange1[0] : null
                                     pending << eventRow
                                 }
@@ -641,6 +641,7 @@ class PendingChangeService extends AbstractLockableService {
                 Map<String,Object> eventRow = [event:pc.msgToken]
                 if(pc.costItem) {
                     eventRow.costItem = pc.costItem
+                    eventRow.costItemSubscription = [id: pc.costItem.sub.id, name: pc.costItem.sub.dropdownNamingConvention()]
                     Object[] args = [pc.oldValue,pc.newValue]
                     eventRow.eventString = messageSource.getMessage(pc.msgToken,args,locale)
                     eventRow.changeId = pc.id
@@ -648,7 +649,7 @@ class PendingChangeService extends AbstractLockableService {
                 else {
                     eventRow.eventString = messageSource.getMessage("${pc.msgToken}.eventString", null, locale)
                     eventRow.changeId = pc.id
-                    eventRow.subscription = pc.subscription
+                    eventRow.subscription = [source: genericOIDService.getOID(pc.subscription._getCalculatedPrevious()), target: genericOIDService.getOID(pc.subscription)]
                 }
                 if(pc.status == RDStore.PENDING_CHANGE_PENDING)
                     pending << eventRow
@@ -657,12 +658,12 @@ class PendingChangeService extends AbstractLockableService {
                 }
             }
             changesCache = [notifications: notifications, notificationsCount: notifications.size(),
-                            pending: pending, pendingCount: pending.size(), acceptedOffset: configMap.offset]
+                            pending: pending, pendingCount: pending.size()]
             scw.put(ctx, changesCache)
         }
         //[changes:result,changesCount:result.size(),subscribedPackages:subscribedPackages]
-        [notifications: changesCache.notifications.drop(configMap.offset).take(configMap.max), notificationsCount: changesCache.notifications.size(),
-         pending: changesCache.pending, pendingCount: changesCache.pending.size(), acceptedOffset: configMap.offset]
+        [notifications: changesCache.notifications.drop(configMap.acceptedOffset).take(configMap.max), notificationsCount: changesCache.notificationsCount,
+         pending: changesCache.pending.drop(configMap.pendingOffset).take(configMap.max), pendingCount: changesCache.pendingCount, acceptedOffset: configMap.acceptedOffset, pendingOffset: configMap.pendingOffset]
     }
 
     //called from: dashboard.gsp

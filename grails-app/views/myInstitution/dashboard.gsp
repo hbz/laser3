@@ -343,7 +343,8 @@
                 url: "<g:createLink controller="ajaxHtml" action="getChanges"/>",
                 data: {
                     max: ${max},
-                    offset: ${acceptedOffset}
+                    pendingOffset: ${pendingOffset},
+                    acceptedOffset: ${acceptedOffset}
                 }
             }).done(function(response){
                 $("#pendingChanges").html($(response).filter("#pendingChangesWrapper"));
