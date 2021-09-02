@@ -119,18 +119,20 @@
 /*---------------
     change buttons so the background area is not visible on default
  ----------------*/
-.ui.button.la-modern-button {
-  background-color: transparent;
-}
+
 /*---------------
-     Negative
+    Negativ
 ----------------*/
-.ui.negative.buttons .button,
-.ui.negative.button,
-.ui.red.buttons .button,
-.ui.red.button {
-  background-color: transparent;
+.ui.negative.buttons .button.la-modern-button,
+.ui.negative.button.la-modern-button,
+.ui.red.buttons .button.la-modern-button,
+.ui.red.button.la-modern-button {
   color: @negativeColor;
+  background-color: transparent;
+  &:hover {
+    background-color: @negativeColor;
+    color: @negativeTextColor;
+  }
 }
 
 /*---------------
@@ -141,26 +143,29 @@
 .ui.green.buttons .button.la-modern-button,
 .ui.green.button.la-modern-button {
   color: @positiveColor;
+  background-color: transparent;
+  &:hover {
+    background-color: @positiveColor;
+    color: @positiveTextColor;
+  }
 }
 
-/*---------------
-    NEUTRAL
-----------------*/
-.ui.icon.buttons .button:not(.dropdown) {
-  background-color: transparent;
-}
 /*---------------
     Blue
 ----------------*/
 .ui.blue.buttons .button.la-modern-button,
 .ui.blue.button.la-modern-button {
   color: @blue;
+  background-color: transparent;
+  &:hover {
+    background-color: @blue;
+    color: @white;
+  }
 }
 
 /*--------------
       Hover
 ---------------*/
 .ui.button.la-modern-button:hover {
-  background-color: @hoverBackgroundColor;
-  background-image: @hoverBackgroundImage;
+
 }
