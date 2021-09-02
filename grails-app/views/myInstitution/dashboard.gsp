@@ -66,6 +66,8 @@
             break
             case "AcceptedChanges": us_dashboard_tab = RefdataValue.getByValueAndCategory('AcceptedChanges', RDConstants.USER_SETTING_DASHBOARD_TAB)
             break
+            case "Surveys": us_dashboard_tab = RefdataValue.getByValueAndCategory('Surveys', RDConstants.USER_SETTING_DASHBOARD_TAB)
+                break
             default: us_dashboard_tab = user.getSetting(UserSetting.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))
             break
         }
@@ -351,7 +353,7 @@
 
         JSPC.app.loadSurveys = function() {
             $.ajax({
-                url: "<g:createLink controller="ajaxHtml" action="getSurveys"/>"
+                url: "<g:createLink controller="ajaxHtml" action="getSurveys" params="${params}"/>"
             }).done(function(response){
                 $("#surveyWrapper").html(response);
             })

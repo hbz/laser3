@@ -17,20 +17,12 @@
                 <div class="ui header">
                     <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                         <g:link controller="survey" action="show" params="[surveyConfigID: surveyConfig.id]"
-                                id="${surveyInfo.id}">${surveyConfig.getSurveyName()}
+                                id="${surveyInfo.id}">${i+1+surveysOffset}: ${surveyConfig.getSurveyName()}
                         </g:link>
                     </g:if>
                     <g:else>
-                        <g:if test="${!surveyConfig.pickAndChoose}">
                         <g:link controller="myInstitution" action="surveyInfos" params="[surveyConfigID: surveyConfig.id]"
-                                              id="${surveyInfo.id}">${surveyConfig.getSurveyName()}</g:link>
-                        </g:if>
-                        <g:if test="${surveyConfig.pickAndChoose}">
-                            <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig.id}"
-                                    params="${[targetObjectId: surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(institution)?.id]}">
-                                ${surveyConfig.getSurveyName()}
-                            </g:link>
-                        </g:if>
+                                              id="${surveyInfo.id}">${i+1+surveysOffset}: ${surveyConfig.getSurveyName()}</g:link>
                     </g:else>
 
                     <span class="ui label survey-${surveyInfo.type.value}">
@@ -98,6 +90,8 @@
         </div>
 
     </g:each>
+
+    <semui:paginate action="dashboard" controller="myInstitution" offset="${surveysOffset}" max="${max ?: contextService.getUser().getDefaultPageSize()}" params="${[view:'Surveys']}" total="${countSurvey}"/>
 
 </div>
 <laser:script file="${this.getGroovyPageFileName()}">

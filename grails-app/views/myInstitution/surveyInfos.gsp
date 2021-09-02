@@ -117,6 +117,17 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
                                                                              surveyResults: surveyResults]"/>
             </g:if>
 
+            <g:if test="${surveyInfo && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
+
+                <g:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig        : surveyConfig,
+                                                                                  costItemSums        : costItemSums,
+                                                                                  subscription        : subscription,
+                                                                                  visibleOrgRelations : visibleOrgRelations,
+                                                                                  surveyResults       : surveyResults]"/>
+
+                <g:render template="/templates/survey/entitlementSurvey"/>
+            </g:if>
+
         </div>
     </div>
 </div>

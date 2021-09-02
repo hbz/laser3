@@ -1366,9 +1366,11 @@ class SubscriptionControllerService {
 
     Map<String,Object> renewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
         Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
+        result.contextOrg = contextService.getOrg()
+        result.institution = result.contextOrg
         result.user = contextService.getUser()
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.surveyInfo = result.surveyConfig.surveyInfo
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -1396,20 +1398,21 @@ class SubscriptionControllerService {
                 sourceIEs = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
             }
 
-            Map query = filterService.getIssueEntitlementQuery(params, newSub)
-            List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
-            List<Long> allIEs = subscriptionService.getIssueEntitlementIDsFixed(baseSub)
-            List<Long> notFixedIEs = subscriptionService.getIssueEntitlementIDsNotFixed(newSub)
-            List<Long> previousIEs = subscriptionService.getIssueEntitlementIDsFixed(previousSubscription)
+            result.allIEIDs = subscriptionService.getIssueEntitlementIDsFixed(baseSub)
+            result.notFixedIEIDs = subscriptionService.getIssueEntitlementIDsNotFixed(newSub)
+            result.previousIEIDs = subscriptionService.getIssueEntitlementIDsFixed(previousSubscription)
 
-            result.countSelectedIEs = notFixedIEs.size()
-            result.countPreviousIEs = previousIEs.size()
-            result.countAllIEs = allIEs.size()
+            result.countSelectedIEs = result.notFixedIEIDs.size()
+            result.countPreviousIEs = result.previousIEIDs.size()
+            result.countAllIEs = result.allIEIDs.size()
             //result.countAllSourceIEs = sourceIEs.size()
             result.num_ies_rows = sourceIEs.size()
             //subscriptionService.getIssueEntitlementsFixed(baseSub).size()
-            result.sourceIEIDs = sourceIEs
+
             result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max)) : []
+
+            Map query = filterService.getIssueEntitlementQuery(params, newSub)
+            List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
             result.targetIEs = []
             targetIEs.collate(32767).each {
                 result.targetIEs.addAll(IssueEntitlement.findAllByIdInList(targetIEs.take(32768)))
@@ -1417,7 +1420,7 @@ class SubscriptionControllerService {
             result.newSub = newSub
             result.subscription = baseSub
             result.subscriber = result.newSub.getSubscriber()
-            result.editable = (params.tab == 'previousIEs') ? false : surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+            result.editable = (params.tab == 'previousIEs') ? false : surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
             if(result.editable) {
                 SessionCacheWrapper sessionCache = contextService.getSessionCache()
@@ -2524,7 +2527,7 @@ class SubscriptionControllerService {
         else {
             Locale locale = LocaleContextHolder.getLocale()
             result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-            result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+            result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
             if(!result.editable) {
                 [result:null,status:STATUS_ERROR]
             }
