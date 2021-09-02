@@ -1381,9 +1381,11 @@ class SubscriptionControllerService {
 
     Map<String,Object> renewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
         Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
+        result.contextOrg = contextService.getOrg()
+        result.institution = result.contextOrg
         result.user = contextService.getUser()
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.surveyInfo = result.surveyConfig.surveyInfo
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -1391,6 +1393,7 @@ class SubscriptionControllerService {
             SwissKnife.setPaginationParams(result, params, (User) result.user)
 
             Subscription newSub = params.targetObjectId ? Subscription.get(params.targetObjectId) : Subscription.get(params.id)
+            Subscription previousSubscription = newSub._getCalculatedPrevious()
             Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
             params.id = newSub.id
             params.sourceObjectId = baseSub.id
@@ -1405,18 +1408,26 @@ class SubscriptionControllerService {
                 sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
             }
 
-            Map query = filterService.getIssueEntitlementQuery(params, newSub)
-            List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
-            List<Long> allIEs = subscriptionService.getIssueEntitlementIDsFixed(baseSub)
-            List<Long> notFixedIEs = subscriptionService.getIssueEntitlementIDsNotFixed(newSub)
+            if(params.tab == 'previousIEs') {
+                Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], previousSubscription)
+                sourceIEs = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
+            }
 
-            result.countSelectedIEs = notFixedIEs.size()
-            result.countAllIEs = allIEs.size()
+            result.allIEIDs = subscriptionService.getIssueEntitlementIDsFixed(baseSub)
+            result.notFixedIEIDs = subscriptionService.getIssueEntitlementIDsNotFixed(newSub)
+            result.previousIEIDs = subscriptionService.getIssueEntitlementIDsFixed(previousSubscription)
+
+            result.countSelectedIEs = result.notFixedIEIDs.size()
+            result.countPreviousIEs = result.previousIEIDs.size()
+            result.countAllIEs = result.allIEIDs.size()
             //result.countAllSourceIEs = sourceIEs.size()
             result.num_ies_rows = sourceIEs.size()
             //subscriptionService.getIssueEntitlementsFixed(baseSub).size()
-            result.sourceIEIDs = sourceIEs
+
             result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max)) : []
+
+            Map query = filterService.getIssueEntitlementQuery(params, newSub)
+            List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
             result.targetIEs = []
             targetIEs.collate(32767).each {
                 result.targetIEs.addAll(IssueEntitlement.findAllByIdInList(targetIEs.take(32768)))
@@ -1424,25 +1435,28 @@ class SubscriptionControllerService {
             result.newSub = newSub
             result.subscription = baseSub
             result.subscriber = result.newSub.getSubscriber()
-            result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+            result.editable = (params.tab == 'previousIEs') ? false : surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
-            SessionCacheWrapper sessionCache = contextService.getSessionCache()
-            Map<String,Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
+            if(result.editable) {
+                SessionCacheWrapper sessionCache = contextService.getSessionCache()
+                Map<String, Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
 
-            if(!checkedCache) {
-                sessionCache.put("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}",["checked":[:]])
-                checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
-            }
+                if (!checkedCache) {
+                    sessionCache.put("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}", ["checked": [:]])
+                    checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
+                }
 
-            result.checkedCache = checkedCache.get('checked')
-            result.checkedCount = result.checkedCache.findAll {it.value == 'checked'}.size()
+                result.checkedCache = checkedCache.get('checked')
+                result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
 
-            result.allChecked = ""
-            if(params.tab == 'allIEs' && result.countAllIEs > 0 && result.countAllIEs == result.checkedCount) {
-                result.allChecked = "checked"
-            }
-            if(params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
-                result.allChecked = "checked"
+
+                result.allChecked = ""
+                if (params.tab == 'allIEs' && result.countAllIEs > 0 && result.countAllIEs == result.checkedCount) {
+                    result.allChecked = "checked"
+                }
+                if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
+                    result.allChecked = "checked"
+                }
             }
 
             [result:result,status:STATUS_OK]
@@ -1733,12 +1747,12 @@ class SubscriptionControllerService {
             }
             result.num_ies_rows = entitlements.size()
             if(entitlements) {
-                String orderClause = 'order by tipp.sortName asc'
+                String orderClause = 'order by tipp.sortname asc'
                 if(params.sort){
                     if(params.sort == 'startDate')
-                        orderClause = "order by ic.startDate ${params.order}, lower(ie.tipp.sortName) asc "
+                        orderClause = "order by ic.startDate ${params.order}, lower(ie.sortname) asc "
                     else if(params.sort == 'endDate')
-                        orderClause = "order by ic.endDate ${params.order}, lower(ie.tipp.sortName) asc "
+                        orderClause = "order by ic.endDate ${params.order}, lower(ie.sortname) asc "
                     else
                         orderClause = "order by ${params.sort} ${params.order} "
                 }
@@ -1879,7 +1893,8 @@ class SubscriptionControllerService {
             List<TitleInstancePackagePlatform> tipps = []
             List errorList = []
             boolean filterSet = false
-            EhcacheWrapper checkedCache = contextService.getCache("/subscription/addEntitlements/${params.id}", contextService.USER_SCOPE)
+            SessionCacheWrapper sessionCache = contextService.getSessionCache()
+            Map checkedCache = sessionCache.get("/subscription/addEntitlements/${params.id}")
             Set<String> addedTipps = IssueEntitlement.executeQuery('select tipp.gokbId from IssueEntitlement ie join ie.tipp tipp where ie.status != :deleted and ie.subscription = :sub',[deleted:ie_deleted,sub:result.subscription])
             /*result.subscription.issueEntitlements.each { ie ->
                 if(ie instanceof IssueEntitlement && ie.status != ie_deleted)
@@ -1898,7 +1913,7 @@ class SubscriptionControllerService {
             if(result.subscription.packages?.pkg) {
                 Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
                 if(tippIds)
-                    tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(tippIds.drop(result.offset).take(result.max),[sort:'sortName']))
+                    tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(tippIds.drop(result.offset).take(result.max),[sort:'sortname']))
                 //now, assemble the identifiers available to highlight
                 Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNs('zdb'),
                                                                eissn: IdentifierNamespace.findByNs('eissn'), isbn: IdentifierNamespace.findByNs('isbn'),
@@ -2233,7 +2248,8 @@ class SubscriptionControllerService {
             Locale locale = LocaleContextHolder.getLocale()
             RefdataValue ie_accept_status = RDStore.IE_ACCEPT_STATUS_FIXED
             int addTitlesCount = 0
-            EhcacheWrapper cache = contextService.getCache("/subscription/addEntitlements/${result.subscription.id}", contextService.USER_SCOPE)
+            SessionCacheWrapper sessionCache = contextService.getSessionCache()
+            Map cache = sessionCache.get("/subscription/addEntitlements/${result.subscription.id}")
             Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
             if(!params.singleTitle) {
                 Map checked = cache.get('checked')
@@ -2526,7 +2542,7 @@ class SubscriptionControllerService {
         else {
             Locale locale = LocaleContextHolder.getLocale()
             result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-            result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+            result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
             if(!result.editable) {
                 [result:null,status:STATUS_ERROR]
             }

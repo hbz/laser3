@@ -46,7 +46,7 @@
 <semui:xEditable owner="${subscription}" field="name"/>
 </h1>
 <g:if test="${editable}">
-    <semui:auditButton auditable="[subscription, 'name']" auditConfigs="${auditConfigs}"/>
+    <semui:auditButton class="test" auditable="[subscription, 'name']" auditConfigs="${auditConfigs}"/>
 </g:if>
 <semui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}"
                   navPrev="${navPrevSubscription}"/>

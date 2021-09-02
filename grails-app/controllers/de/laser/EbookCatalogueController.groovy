@@ -149,7 +149,7 @@ class EbookCatalogueController {
 
                     queryParams.put('idv', '%' + idv.toLowerCase() + '%')
                 }
-                query += " order by LOWER(tipp.sortName)"
+                query += " order by LOWER(tipp.sortname)"
                 result.issueEntitlements = IssueEntitlement.executeQuery(query, queryParams)
             }
             else {

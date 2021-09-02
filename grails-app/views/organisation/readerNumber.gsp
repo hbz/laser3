@@ -95,7 +95,7 @@
                             <td class="x">
                                 <g:if test="${editable}">
                                     <g:if test="${missing}">
-                                        <a role="button" class="ui icon button" data-semui="modal" href="#newForSemester${numbersInstance.getKey().id}"
+                                        <a role="button" class="ui icon button la-modern-button" data-semui="modal" href="#newForSemester${numbersInstance.getKey().id}"
                                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                             <i aria-hidden="true" class="write icon"></i>
                                         </a>

@@ -90,7 +90,7 @@
                         <g:form>
                             <g:hiddenField id="doc_id_${docInstance?.id}" name="id" value="${docInstance?.id}" />
                             <div class="ui form-actions">
-                                <g:link class="ui button" action="show" id="${docInstance?.id}">
+                                <g:link class="ui button la-modern-button" action="show" id="${docInstance?.id}">
                                     <i aria-hidden="true" class="write icon"></i>
                                     <g:message code="default.button.edit.label" />
                                 </g:link>

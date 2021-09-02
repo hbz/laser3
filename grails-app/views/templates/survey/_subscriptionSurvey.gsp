@@ -269,7 +269,7 @@
 
                 <div class="field" style="text-align: right;">
                     <button id="subscription-info-toggle"
-                            class="ui button blue">Lizenzinformationen anzeigen <i class="ui angle double down icon"></i></button></button>
+                            class="ui button blue la-modern-button">Lizenzinformationen anzeigen <i class="ui angle double down icon"></i></button></button>
                     <laser:script file="${this.getGroovyPageFileName()}">
                         $('#subscription-info-toggle').on('click', function () {
                             $("#subscription-info").transition('slide down');
@@ -448,7 +448,7 @@
                                                 <td class="right aligned">
                                                     <g:if test="${pair.propertySet}">
                                                         <button id="derived-license-properties-toggle${link.id}"
-                                                                class="ui icon button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                                class="ui icon button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
                                                                 data-content="${message(code:'subscription.details.viewLicenseProperties')}">
                                                             <i class="ui angle double down icon"></i>
                                                         </button>

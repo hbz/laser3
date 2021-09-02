@@ -85,7 +85,7 @@
                     <tr>
 
                         <th>${message(code: 'sidewide.number')}</th>
-                        <g:sortableColumn class="eight wide" params="${params}" property="tipp.sortName"
+                        <g:sortableColumn class="eight wide" params="${params}" property="tipp.sortname"
                                           title="${message(code: 'title.label')}"/>
                         <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
                         <th class="four wide">${message(code: 'subscription.details.date_header')}</th>

@@ -7,7 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3751    01.09.2021  dev     2.2         Moe     Feature    Umfrage-Dashboard-Tab: Paginierung einführen
+
+3773    31.08.2021  dev     2.2         Moe     Feature     Titelumfrage Überarbeitung
+
 3684    31.08.2021  dev     2.2         Andreas Feature     Filter für Kundennummer eingebaut
+
+3747    30.08.2021  dev     2.2         Moe     Feature/Bug Click me excel - nicht vererbte merkmale
 
 3692    30.08.2021  dev     2.2         Andreas Feature     Umstellung der Kuratorengruppenabfrage auf scharfe Suche
 
@@ -16,6 +22,8 @@
 3761    27.08.2021  dev     2.2         David   Feature     Reporting: QueryCache bzgl. CSV-Export überarbeiten
 
 3750    26.08.2021  dev     2.2         David   Feature     Reporting: Zeitleisteninformationen als CSV exportieren
+
+3758    25.08.2021  dev     2.2         Moe     Bug         Renewal-Export
 
 3504    25.08.2021  dev     2.2         David   Feature     csv Export auch bei Mikroreporting
 

@@ -14,7 +14,7 @@
         <div class="content">
             <g:if test="${contact.contentType in [RDStore.CCT_EMAIL]}">
                 <span class="la-popup-tooltip la-delay" data-position="top right" data-content="Mail senden an ..">
-                    <a href="mailto:${contact.content}" class="ui mini icon blue button">
+                    <a href="mailto:${contact.content}" class="ui  icon blue button la-modern-button">
                         <i class="share square icon"></i>
                     </a>
                 </span>
@@ -22,14 +22,14 @@
 
             <g:if test="${contact.contentType in [RDStore.CCT_URL]}">
                 <span class="la-popup-tooltip la-delay" data-position="top right" data-content="Diese URL aufrufen ..">
-                    <a href="${contact.content}" target="_blank" class="ui mini icon blue button">
+                    <a href="${contact.content}" target="_blank" class="ui icon blue button la-modern-button>
                         <i class="share square icon"></i>
                     </a>
                 </span>
             </g:if>
 
             <g:if test="${editable && tmplShowDeleteButton}">
-				<g:link class="ui mini icon negative button js-open-confirm-modal"
+				<g:link class="ui icon negative button js-open-confirm-modal"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contactItems.addressbook")}"
                         data-confirm-term-how="delete"
                         controller="ajax" action="delete" params="[cmd: 'deleteContact', oid: genericOIDService.getOID(contact)]"

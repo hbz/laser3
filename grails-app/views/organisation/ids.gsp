@@ -157,14 +157,16 @@
                         <g:if test="${ci.isPublic || (ci.owner.id == contextService.getOrg().id) || isGrantedOrgRoleAdminOrOrgEditor}">
                             <tr>
                                 <td>${rowno+1}</td>
-                                <td>${ci.getProvider()} : ${ci.platform}</td>
+                                <td>
+                                    ${ci.getProvider()} : ${ci.platform}
+                                </td>
                                 <td>${ci.value}</td>
                                 <td>${ci.requestorKey}</td>
                                 <td>${ci.note}</td>
                                 <td>
                                     <%  boolean editable_this_ci = (ci.owner.id == institution.id) && (ci.customer.id == institution.id || isComboRelated) %>
                                     <g:if test="${editable_customeridentifier && editable_this_ci}">
-                                        <button class="ui icon button" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
+                                        <button class="ui icon button la-modern-button" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
                                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                             <i aria-hidden="true" class="write icon"></i>
                                         </button>
@@ -177,7 +179,7 @@
                                                 data-confirm-term-how="delete"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="trash alternate icon"></i>
+                                            <i class="trash alternate outline icon"></i>
                                         </g:link>
                                     </g:if>
                                 </td>

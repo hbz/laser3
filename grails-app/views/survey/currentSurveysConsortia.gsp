@@ -307,6 +307,7 @@
                                 <g:link controller="survey" action="show" id="${surveyInfo.id}"
                                         params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                                     <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
+                                        %{--Titel-Umfrage kann keine Umfrage-Merkmale haben--}%
                                         ${surveyConfig.surveyProperties?.size() ?: 0}
                                     </div>
                                 </g:link>
@@ -319,7 +320,7 @@
                                 <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
                                         params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                                     <div class="ui circular label">
-                                        ${surveyConfig.getCurrentDocs()?.size() ?: 0}
+                                        ${surveyConfig.getCurrentDocs().size() ?: 0}
                                     </div>
                                 </g:link>
                             </g:if>
@@ -333,8 +334,8 @@
                                     <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
                                     ${surveyConfig.orgs?.size() ?: 0}
                                     </div>
-                                %{--<div class="ui circular ${participantsFinish?.size() == participantsTotal?.size() ? "green" : surveyConfig.configFinish ? "yellow" : ""} label">
-                                    ${participantsFinish?.size() ?: 0} / ${surveyConfig.orgs?.size() ?: 0}
+                                %{--<div class="ui circular ${participantsFinish.size() == participantsTotal.size() ? "green" : surveyConfig.configFinish ? "yellow" : ""} label">
+                                    ${participantsFinish.size() ?: 0} / ${surveyConfig.orgs?.size() ?: 0}
                                 </div>--}%
                             </g:link>
                         </g:if>
@@ -346,7 +347,7 @@
                             <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                                 <div class="ui circular ${surveyConfig.costItemsFinish ? "green" : ""} label">
-                                    ${surveyConfig.getSurveyConfigCostItems()?.size() ?: 0}
+                                    ${surveyConfig.getSurveyConfigCostItems().size() ?: 0}
                                 </div>
                             </g:link>
                         </g:if>
@@ -357,11 +358,11 @@
                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]"
                                     class="ui icon button">
-                                    --}%%{--<div class="ui circular ${(participantsFinish?.size() == participantsTotal?.size()) ? "green" : (participantsFinish?.size() > 0) ? "yellow" : ""} label">
+                                    --}%%{--<div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" : ""} label">
                                     <g:if
                                             test="${participantsFinish && participantsTotal}">
                                         <g:formatNumber
-                                                number="${(participantsFinish?.size() / participantsTotal?.size()) * 100}"
+                                                number="${(participantsFinish.size() / participantsTotal.size()) * 100}"
                                                 minFractionDigits="2"
                                                 maxFractionDigits="2"/>%
                                     </g:if>
@@ -372,44 +373,17 @@
                                 </div>
                             </g:link>
                         </g:if>--}%
-                        <g:if test="${surveyConfig && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT && surveyConfig.pickAndChoose}">
-
-                           %{-- <g:set var="participantsTitleSurveyFinish"
-                                   value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig)}"/>
-
-                            <g:set var="participantsTitleSurveyTotal"
-                                   value="${SurveyOrg.findAllBySurveyConfig(surveyConfig)}"/>--}%
-                            <g:link controller="survey" action="surveyTitlesEvaluation" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig.id]"
-                                    class="ui icon button">
-                                %{--<div class="ui circular ${(participantsTitleSurveyFinish.size() == participantsTitleSurveyTotal.size()) ? "green" : (participantsTitleSurveyFinish.size() > 0) ? "yellow" : ""} label">
-                                    <g:if
-                                            test="${participantsTitleSurveyFinish && participantsTitleSurveyTotal}">
-                                        <g:formatNumber
-                                                number="${(participantsTitleSurveyFinish.size() / participantsTitleSurveyTotal.size()) * 100}"
-                                                minFractionDigits="2"
-                                                maxFractionDigits="2"/>%
-                                    </g:if>
-                                    <g:else>
-                                        0%
-                                    </g:else>
-                                </div>--}%
-                                <i class="icon blue chart pie"></i>
-                            </g:link>
-                        </g:if>
-                        <g:else>
                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]"
-                                    class="ui icon button">
+                                    class="ui icon button la-modern-button">
                                 <i class="icon blue chart pie"></i>
                                 </div>
                             </g:link>
-                        </g:else>
                     </td>
                     <td>
                         <g:link controller="survey" action="show" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]"
-                                class="ui button icon"
+                                class="ui button icon la-modern-button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
                             <i class="pencil icon"></i>

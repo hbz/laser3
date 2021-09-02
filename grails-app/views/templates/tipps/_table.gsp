@@ -4,7 +4,7 @@
     <thead>
     <tr>
         <th></th>
-        <g:sortableColumn class="ten wide" params="${params}" property="tipp.sortName"
+        <g:sortableColumn class="ten wide" params="${params}" property="tipp.sortname"
                           title="${message(code: 'title.label')}"/>
         <th class="two wide">${message(code: 'tipp.coverage')}</th>
         <th class="two wide">${message(code: 'tipp.access')}</th>

@@ -250,19 +250,11 @@
                             </span>
                         </g:if>
 
-
-                        <g:if test="${surveyConfig.pickAndChoose}">
-                                <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig.id}"
-                                        params="${[targetObjectId: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(institution)?.id]}" class="ui">
-                                    ${surveyConfig.getSurveyName()}
-                                </g:link>
-                        </g:if>
-                        <g:else>
-                                <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"
-                                        class="ui">
-                                    ${surveyConfig.getSurveyName()}
-                                </g:link>
-                        </g:else>
+                        <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}"
+                                params="[surveyConfigID: surveyConfig.id]"
+                                class="ui">
+                            ${surveyConfig.getSurveyName()}
+                        </g:link>
                     </div>
                 </td>
                 <td>
@@ -302,28 +294,15 @@
                 <td class="x">
 
                     <g:if test="${editable}">
-                        <g:if test="${surveyConfig.pickAndChoose}">
-                            <span class="la-popup-tooltip la-delay"
-                                  data-content="${message(code: 'surveyInfo.toIssueEntitlementsSurvey')}">
-                                <g:link controller="myInstitution" action="surveyInfosIssueEntitlements" id="${surveyConfig.id}"
-                                        params="${[targetObjectId: surveyConfig.subscription.getDerivedSubscriptionBySubscribers(institution)?.id]}" class="ui icon button"
-                                        role="button"
-                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="write icon"></i>
-                                </g:link>
-                            </span>
-                        </g:if>
-                        <g:else>
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"
-                                        class="ui icon button"
+                                        class="ui icon button la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="write icon"></i>
                                 </g:link>
                             </span>
-                        </g:else>
                     </g:if>
                 </td>
 

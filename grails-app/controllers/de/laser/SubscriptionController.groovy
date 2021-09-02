@@ -897,7 +897,7 @@ class SubscriptionController {
     def processAddIssueEntitlementsSurvey() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+        result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
         if (result.subscription) {
             if(params.singleTitle) {
                 IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
@@ -922,7 +922,7 @@ class SubscriptionController {
     def processRemoveIssueEntitlementsSurvey() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        result.editable = surveyService.isEditableIssueEntitlementsSurvey(result.institution, result.surveyConfig)
+        result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
         if(subscriptionService.deleteEntitlementbyID(result.subscription,params.singleTitle))
             log.debug("Deleted ie ${params.singleTitle} from sub ${result.subscription.id}")
         redirect(url: request.getHeader("referer"))
@@ -1051,6 +1051,7 @@ class SubscriptionController {
         redirect action: 'manageEntitlementGroup', id: params.sub
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     Map renewEntitlements() {
         params.id = params.targetObjectId
@@ -1079,15 +1080,20 @@ class SubscriptionController {
         redirect action: 'index', id: params.id
     }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def showEntitlementsRenewWithSurvey() {
-        Map<String,Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]//subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = [user: contextService.getUser()]//subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        result.contextOrg = contextService.getOrg()
+        result.institution = result.contextOrg
         SwissKnife.setPaginationParams(result,params,result.user)
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
         result.subscription =  result.surveyConfig.subscription
-        result.ieIDs = subscriptionService.getIssueEntitlementIDsNotFixed(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution))
+        result.newSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
+        result.subscriber = result.newSub.getSubscriber()
+        result.ieIDs = subscriptionService.getIssueEntitlementIDsNotFixed(result.newSub)
         result.ies = result.ieIDs ? IssueEntitlement.findAllByIdInList(result.ieIDs.drop(result.offset).take(result.max)) : []
         result.filename = "renewEntitlements_${escapeService.escapeString(result.subscription.dropdownNamingConvention())}"
         if (params.exportKBart) {
@@ -1137,12 +1143,27 @@ class SubscriptionController {
             }
         }
         else {
-            String filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
+            List<Long> exportIEIDs
+            String filename
+            if(params.tab == 'allIEs') {
+                exportIEIDs = ctrlResult.result.allIEIDs
+                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
+            }
+            if(params.tab == 'selectedIEs') {
+                exportIEIDs = ctrlResult.result.notFixedIEIDs
+                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentEntitlements') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
+            }
+
+            if(params.tab == 'previousIEs') {
+                exportIEIDs = ctrlResult.result.previousIEIDs
+                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentFixedEntitlements') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
+            }
+
             if (params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
                 ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.sourceIEIDs,IssueEntitlement.class.name)
+                Map<String, List> tableData = exportService.generateTitleExportKBART(exportIEIDs, IssueEntitlement.class.name)
                 out.withWriter { Writer writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                 }
@@ -1151,7 +1172,7 @@ class SubscriptionController {
             } else if (params.exportXLS) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, List> export = exportService.generateTitleExportXLS(ctrlResult.result.sourceIEIDs,IssueEntitlement.class.name)
+                Map<String, List> export = exportService.generateTitleExportXLS(exportIEIDs, IssueEntitlement.class.name)
                 Map sheetData = [:]
                 sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
                 SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)

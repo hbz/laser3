@@ -116,3 +116,51 @@
     margin-bottom: 14px;
   }
 }
+/*---------------
+    change buttons so the background area is not visible on default
+ ----------------*/
+.ui.button.la-modern-button {
+  background-color: transparent;
+}
+/*---------------
+     Negative
+----------------*/
+.ui.negative.buttons .button,
+.ui.negative.button,
+.ui.red.buttons .button,
+.ui.red.button {
+  background-color: transparent;
+  color: @negativeColor;
+}
+
+/*---------------
+    Positive
+----------------*/
+.ui.positive.buttons .button.la-modern-button,
+.ui.positive.button.la-modern-button,
+.ui.green.buttons .button.la-modern-button,
+.ui.green.button.la-modern-button {
+  color: @positiveColor;
+}
+
+/*---------------
+    NEUTRAL
+----------------*/
+.ui.icon.buttons .button:not(.dropdown) {
+  background-color: transparent;
+}
+/*---------------
+    Blue
+----------------*/
+.ui.blue.buttons .button.la-modern-button,
+.ui.blue.button.la-modern-button {
+  color: @blue;
+}
+
+/*--------------
+      Hover
+---------------*/
+.ui.button.la-modern-button:hover {
+  background-color: @hoverBackgroundColor;
+  background-image: @hoverBackgroundImage;
+}

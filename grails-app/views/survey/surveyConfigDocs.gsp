@@ -71,7 +71,7 @@
                 ${SurveyConfig.getLocalizedValue(config?.type)}
 
 
-                <div class="ui floating circular label">${config?.getCurrentDocs()?.size() ?: 0}</div>
+                <div class="ui floating circular label">${config?.getCurrentDocs().size() ?: 0}</div>
             </g:link>
         </g:each>
     </div>
@@ -101,7 +101,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <g:each in="${surveyConfig?.getCurrentDocs()}" var="docctx" status="i">
+                <g:each in="${surveyConfig.getCurrentDocs()}" var="docctx" status="i">
                     <tr>
                         <td>${i + 1}</td>
                         <td>
@@ -124,7 +124,7 @@
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i
                                         class="download icon"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
-                                    <button type="button" class="ui icon button la-popup-tooltip la-delay" data-semui="modal"
+                                    <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay" data-semui="modal"
                                             href="#modalEditDocument_${docctx.id}"
                                             data-content="${message(code: "template.documents.edit")}"
                                             aria-label="${message(code: 'ariaLabel.change.universal')}">
@@ -146,7 +146,7 @@
                 </tbody>
             </table>
 
-            <g:each in="${surveyConfig?.getCurrentDocs()}" var="docctx">
+            <g:each in="${surveyConfig.getCurrentDocs()}" var="docctx">
                 <g:render template="/templates/documents/modal"
                           model="${[ownobj: surveyConfig, owntp: surveyConfig, docctx: docctx, doc: docctx.owner]}"/>
             </g:each>

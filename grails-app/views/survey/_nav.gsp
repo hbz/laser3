@@ -168,9 +168,9 @@
                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                           message="surveyParticipants.label"/>
 
-        <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyTitlesEvaluation"
+        <semui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyEvaluation"
                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
-                          message="surveyTitlesEvaluation.label"
+                          message="surveyEvaluation.titles.label"
                           class="${(actionName in evalutionsViews) ? "active" : ""}"/>
 
     </g:else>

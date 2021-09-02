@@ -215,7 +215,7 @@
         <div class="ui top attached label">WCAG-Proof Button</div>
     </div>
     <dd class="la-js-editmode-container">
-        <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="4 5 6">
+        <a  role="button" class="ui icon button la-audit-button la-popup-tooltip la-delay" href='' data-content="4 5 6">
             <i  class="icon thumbtack la-js-editmode-icon"></i>
         </a>
     </dd><br />
@@ -233,7 +233,7 @@
         <div class="ui top attached label">WCAG-Proof Button</div>
     </div>
 
-    <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="10 11 12">
+    <a  role="button" class="ui icon button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="10 11 12">
         <i  class="icon thumbtack la-js-editmode-icon"></i>
     </a><br /><br />
     <h4 class="ui header">Funktions-Button, der NICHT ausgeschaltet werden kann, Icon und Button verschwinden NICHT</h4>
