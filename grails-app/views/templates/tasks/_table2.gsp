@@ -68,12 +68,12 @@
                     <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance?.createDate}"/></td>
 
                     <td class="x">
-                        <a onclick="JSPC.app.taskedit(${taskInstance.id});" class="ui icon button la-modern-button"
+                        <a onclick="JSPC.app.taskedit(${taskInstance.id});" class="ui icon button blue la-modern-button"
                            role="button"
                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
                             <i aria-hidden="true" class="write icon"></i>
                         </a>
-                        <g:link class="ui icon negative button js-open-confirm-modal"
+                        <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                 data-confirm-term-how="delete"
                                 action="deleteTask" controller="ajax" params="[deleteId:taskInstance.id]"

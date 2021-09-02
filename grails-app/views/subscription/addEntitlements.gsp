@@ -232,7 +232,7 @@
             </g:if>
             <td>
                 <g:if test="${!blockSubmit}">
-                    <g:link class="ui icon positive button la-popup-tooltip la-delay" action="processAddEntitlements"
+                    <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay" action="processAddEntitlements"
                             params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
                             data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                         <i class="plus icon"></i>
@@ -240,7 +240,7 @@
                 </g:if>
                 <g:else>
                     <div data-tooltip="${message(code: 'subscription.details.addEntitlements.thread.running')}">
-                        <g:link class="ui icon disabled positive button la-popup-tooltip la-delay" action="processAddEntitlements"
+                        <g:link class="ui icon disabled button la-popup-tooltip la-delay" action="processAddEntitlements"
                                 params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}">
                             <i class="plus icon"></i>
                         </g:link>

@@ -5760,20 +5760,24 @@ a {
     change buttons so the background area is not visible on default
  ----------------*/
 
-.ui.button.la-modern-button {
+/*---------------
+    Negativ
+----------------*/
+
+.ui.negative.buttons .button.la-modern-button,
+.ui.negative.button.la-modern-button,
+.ui.red.buttons .button.la-modern-button,
+.ui.red.button.la-modern-button {
+  color: #BB1600;
   background-color: transparent;
 }
 
-/*---------------
-     Negative
-----------------*/
-
-.ui.negative.buttons .button,
-.ui.negative.button,
-.ui.red.buttons .button,
-.ui.red.button {
-  background-color: transparent;
-  color: #BB1600;
+.ui.negative.buttons .button.la-modern-button:hover,
+.ui.negative.button.la-modern-button:hover,
+.ui.red.buttons .button.la-modern-button:hover,
+.ui.red.button.la-modern-button:hover {
+  background-color: #BB1600;
+  color: #FFFFFF;
 }
 
 /*---------------
@@ -5785,15 +5789,24 @@ a {
 .ui.green.buttons .button.la-modern-button,
 .ui.green.button.la-modern-button {
   color: #98B500;
+  background-color: transparent;
+}
+
+.ui.positive.buttons .button.la-modern-button:hover,
+.ui.positive.button.la-modern-button:hover,
+.ui.green.buttons .button.la-modern-button:hover,
+.ui.green.button.la-modern-button:hover {
+  background-color: #98B500;
+  color: #FFFFFF;
 }
 
 /*---------------
     NEUTRAL
 ----------------*/
 
-.ui.icon.buttons .button:not(.dropdown) {
+/*.ui.icon.buttons .button:not(.dropdown) {
   background-color: transparent;
-}
+}*/
 
 /*---------------
     Blue
@@ -5802,16 +5815,18 @@ a {
 .ui.blue.buttons .button.la-modern-button,
 .ui.blue.button.la-modern-button {
   color: #004678;
+  background-color: transparent;
+}
+
+.ui.blue.buttons .button.la-modern-button:hover,
+.ui.blue.button.la-modern-button:hover {
+  background-color: #004678;
+  color: #FFFFFF;
 }
 
 /*--------------
       Hover
 ---------------*/
-
-.ui.button.la-modern-button:hover {
-  background-color: #CACBCD;
-  background-image: none;
-}
 /*!
  * # Semantic UI 2.4.2 - Container
  * http://github.com/semantic-org/semantic-ui/

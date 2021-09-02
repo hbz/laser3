@@ -99,7 +99,7 @@
                     </td>
                     <td class="x la-js-editmode-container">
                         <g:if test="${overwriteEditable == true}">
-                            <laser:remoteLink class="ui icon negative button js-open-confirm-modal"
+                            <laser:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
                                               controller="ajax"
                                               action="deletePrivateProperty"
                                               params='[propClass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]'

@@ -264,7 +264,7 @@
                                 </div>
                             </td>
                             <td class="x">
-                                <g:link controller="${objWithoutProp.displayController}" action="show" id="${objWithoutProp.id}" class="ui icon button la-modern-button"
+                                <g:link controller="${objWithoutProp.displayController}" action="show" id="${objWithoutProp.id}" class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="write icon"></i>
@@ -506,7 +506,7 @@
                             </td>
 
                             <td class="x">
-                                <g:link controller="${row.displayController}" action="${row.displayAction}" id="${row.id}" class="ui icon button la-modern-button"
+                                <g:link controller="${row.displayController}" action="${row.displayAction}" id="${row.id}" class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="write icon"></i>

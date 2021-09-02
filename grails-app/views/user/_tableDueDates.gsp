@@ -97,7 +97,7 @@
                 </td>
                 <td style="text-align: center">
                     <g:if test="${false}">
-                        <laser:remoteLink class="ui icon  negative button  js-open-confirm-modal"
+                        <laser:remoteLink class="ui icon  negative button la-modern-button js-open-confirm-modal"
                                           controller="ajax"
                                           action="deleteDashboardDueDate_does_not_exist_yet"
                                           params=''

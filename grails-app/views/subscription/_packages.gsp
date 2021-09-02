@@ -66,7 +66,7 @@
                                     data-confirm-messageUrl="${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription: sp.subscription.id, package: sp.pkg.id])}"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
                                     data-confirm-term-how="delete"
-                                    class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+                                    class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
                                     role="button"
                                     aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                 <i aria-hidden="true" class="trash alternate outline icon"></i>

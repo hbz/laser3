@@ -82,7 +82,7 @@
         <semui:form>
 
             <div class="four wide column">
-                <button type="button" class="ui icon button right floated" data-semui="modal"
+                <button type="button" class="ui icon button blue la-modern-button right floated" data-semui="modal"
                         data-href="#modalCreateDocument"><i class="plus icon"></i></button>
                 <g:render template="/templates/documents/modal"
                           model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>

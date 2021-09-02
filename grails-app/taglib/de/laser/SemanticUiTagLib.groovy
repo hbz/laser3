@@ -140,7 +140,7 @@ class SemanticUiTagLib {
             out << '            </div>'
             if (attrs.editable && attrs.href) {
                 out << '        <div class="right aligned four wide column">'
-                out << '            <button type="button" class="ui icon button la-modern-button editable-cancel" data-semui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="plus icon"></i></button>'
+                out << '            <button type="button" class="ui icon button blue la-modern-button editable-cancel" data-semui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="plus icon"></i></button>'
                 out << '        </div>'
             }
             out << '        </div>'
@@ -515,7 +515,7 @@ class SemanticUiTagLib {
 
         out << '<div class="actions">'
         out << '<button class="ui deny button">' + msgCancel + '</button>'
-        out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
+        out << '<button id="js-confirmation-button" class="ui positive la-modern-button right labeled icon button">' + msgDelete
         out << '    <i aria-hidden="true" class="trash alternate outline icon"></i>'
         out << '</button>'
         out << '</div>'
