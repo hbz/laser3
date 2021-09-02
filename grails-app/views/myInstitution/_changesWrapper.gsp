@@ -26,11 +26,11 @@
                 <div class="row">
                     <%--${entry}--%>
                     <div class="six wide column">
-                        <g:if test="${entry.subPkg}">
-                            <g:link controller="subscription" action="index" id="${entry.subPkg.subscription.id}">${entry.subPkg.subscription.dropdownNamingConvention()}</g:link>
+                        <g:if test="${entry.packageSubscription}">
+                            <g:link controller="subscription" action="index" id="${entry.packageSubscription.id}">${entry.packageSubscription.name}</g:link>
                         </g:if>
-                        <g:elseif test="${entry.costItem}">
-                            <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.costItem.sub.id]}">${entry.costItem.sub.dropdownNamingConvention()}</g:link>
+                        <g:elseif test="${entry.costItemSubscription}">
+                            <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.costItemSubscription.id]}">${entry.costItemSubscription.name}</g:link>
                         </g:elseif>
                         <g:elseif test="${entry.subscription}">
                             <div class="right aligned wide column">
@@ -59,6 +59,9 @@
                 </div><!-- .row -->
             </g:each>
         </div><!-- .grid -->
+        <div>
+            <semui:paginate controller="myInstitution" action="dashboard" offset="${pendingOffset ? pendingOffset : '0'}" max="${max}" params="${[view:'PendingChanges']}" total="${pendingCount}"/>
+        </div>
     </div>
 </g:if>
 <div id="acceptedChangesWrapper">
@@ -78,16 +81,16 @@
             <div class="row">
                 <%--${entry}--%>
                 <div class="six wide column">
-                    <g:if test="${entry.subPkg}">
-                        <g:link controller="subscription" action="index" id="${entry.subPkg.subscription.id}">${entry.subPkg.subscription.dropdownNamingConvention()}</g:link>
+                    <g:if test="${entry.packageSubscription}">
+                        <g:link controller="subscription" action="index" id="${entry.packageSubscription.id}">${entry.packageSubscription.name}</g:link>
                     </g:if>
-                    <g:elseif test="${entry.costItem}">
-                        <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.costItem.sub.id]}">${entry.costItem.sub.dropdownNamingConvention()}</g:link>
+                    <g:elseif test="${entry.costItemSubscription}">
+                        <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.costItemSubscription.id]}">${entry.costItemSubscription.name}</g:link>
                     </g:elseif>
                 </div><!-- .column -->
                 <div class="ten wide column">
-                    <g:if test="${entry.subPkg}">
-                        <g:link controller="subscription" action="entitlementChanges" id="${entry.subPkg.subscription.id}" params="[tab: 'acceptedChanges', eventType: entry.msgToken]">${raw(entry.eventString)}</g:link>
+                    <g:if test="${entry.packageSubscription}">
+                        <g:link controller="subscription" action="entitlementChanges" id="${entry.packageSubscription.id}" params="[tab: 'acceptedChanges', eventType: entry.msgToken]">${raw(entry.eventString)}</g:link>
                     </g:if>
                     <g:else>
                         ${raw(entry.eventString)}
@@ -95,7 +98,7 @@
 
                     <g:if test="${entry.subscription}">
                         <div class="right aligned wide column">
-                            <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(entry.subscription._getCalculatedPrevious()), targetObjectId: genericOIDService.getOID(entry.subscription)]}">
+                            <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: entry.subscription.source, targetObjectId: entry.subscription.target]}">
                                 <g:message code="myinst.copyMyElements"/>
                             </g:link>
                         </div>
@@ -105,10 +108,10 @@
         </g:each>
     </div><!-- .grid -->
     <div>
-        <semui:paginate offset="${acceptedOffset ? acceptedOffset : '0'}" max="${max}" params="${[view:'AcceptedChanges']}" total="${notifications.size()}"/>
+        <semui:paginate controller="myInstitution" action="dashboard" offset="${acceptedOffset ? acceptedOffset : '0'}" max="${max}" params="${[view:'AcceptedChanges']}" total="${notificationsCount}"/>
     </div>
     <laser:script file="${this.getGroovyPageFileName()}">
-        $("#pendingCount").text("${message(code: 'myinst.pendingChanges.label', args: [pending.size()])}");
-        $("#notificationsCount").text("${message(code: 'myinst.acceptedChanges.label', args: [notifications.size()])}");
+        $("#pendingCount").text("${message(code: 'myinst.pendingChanges.label', args: [pendingCount])}");
+        $("#notificationsCount").text("${message(code: 'myinst.acceptedChanges.label', args: [notificationsCount])}");
     </laser:script>
 </div>

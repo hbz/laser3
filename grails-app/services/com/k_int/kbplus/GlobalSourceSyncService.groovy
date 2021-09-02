@@ -685,29 +685,31 @@ class GlobalSourceSyncService extends AbstractLockableService {
             newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens) and pc.targetProperty = null and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and pca.oid = :oid and pca.targetProperty = null and pca.status = :accepted)',changeParams))*/
             //newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.priceItem pi join pi.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
             packageChanges.each { PendingChange newChange ->
-                boolean processed = false
-                if(newChange.tipp) {
-                    if(newChange.targetProperty)
-                        processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty } != null
-                    else
-                        processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken } != null
-                }
-                else if(newChange.tippCoverage) {
-                    if(newChange.targetProperty)
-                        processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty } != null
-                    else
-                        processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken } != null
-                }
-                /*else if(newChange.priceItem && newChange.priceItem.tipp) {
-                    processed = acceptedChanges.find { PendingChange accepted -> accepted.priceItem == newChange.priceItem && accepted.msgToken == newChange.msgToken } != null
-                }*/
+                if(newChange.msgToken in pendingChangeConfigurations) {
+                    boolean processed = false
+                    if(newChange.tipp) {
+                        if(newChange.targetProperty)
+                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty } != null
+                        else
+                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken } != null
+                    }
+                    else if(newChange.tippCoverage) {
+                        if(newChange.targetProperty)
+                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty } != null
+                        else
+                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken } != null
+                    }
+                    /*else if(newChange.priceItem && newChange.priceItem.tipp) {
+                        processed = acceptedChanges.find { PendingChange accepted -> accepted.priceItem == newChange.priceItem && accepted.msgToken == newChange.msgToken } != null
+                    }*/
 
-                if(!processed) {
-                    /*
-                    get each change for each subscribed package and token, fetch issue entitlement equivalent and process the change
-                    if a change is being accepted, create a copy with target = subscription of subscription package and oid = the target of the processed change
-                     */
-                    pendingChangeService.applyPendingChange(newChange,subPkg,contextOrg)
+                    if(!processed) {
+                        /*
+                        get each change for each subscribed package and token, fetch issue entitlement equivalent and process the change
+                        if a change is being accepted, create a copy with target = subscription of subscription package and oid = the target of the processed change
+                         */
+                        pendingChangeService.applyPendingChange(newChange,subPkg,contextOrg)
+                    }
                 }
             }
         }

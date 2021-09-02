@@ -7,11 +7,15 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3774    02.09.2021  dev     2.2         Andreas Bug         Paginierung auf Dashboard korrigiert
+
 3699    02.09.2021  dev     2.2         Andreas Feature     Laderoutine für COUNTER-Statistiken implementiert
 
 3666    02.09.2021  dev     2.2         Andreas Feature     Umsetzung des Ladens und der Darstellung von COUNTER-Statistiken
 
 3751    01.09.2021  dev     2.2         Moe     Feature     Umfrage-Dashboard-Tab: Paginierung einführen
+
+3775    01.09.2021  dev     2.2         Andreas Feature     Verhalten des Kuratorengruppendropdowns umgestellt
 
 3773    31.08.2021  dev     2.2         Moe     Feature     Titelumfrage Überarbeitung
 
