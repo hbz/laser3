@@ -176,6 +176,7 @@ a.editable-click.editable-disabled:hover {
    color: #585858;
    cursor: default;
    border-bottom: none;
+   font-weight: normal;
 }
 
 .editable-empty, .editable-empty:hover, .editable-empty:focus{

@@ -91,7 +91,7 @@
 }*/
 
 
-.ui.button.la-audit-button {
+.ui.button.la-auditButton-header {
   vertical-align: super;
 }
 
@@ -161,11 +161,4 @@
     background-color: @blue;
     color: @white;
   }
-}
-
-/*--------------
-      Hover
----------------*/
-.ui.button.la-modern-button:hover {
-
 }

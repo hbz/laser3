@@ -5731,7 +5731,7 @@ a {
   -webkit-tap-highlight-color: transparent;
 }*/
 
-.ui.button.la-audit-button {
+.ui.button.la-auditButton-header {
   vertical-align: super;
 }
 
@@ -5815,10 +5815,6 @@ a {
   background-color: #004678;
   color: #FFFFFF;
 }
-
-/*--------------
-      Hover
----------------*/
 /*!
  * # Semantic UI 2.4.2 - Container
  * http://github.com/semantic-org/semantic-ui/
