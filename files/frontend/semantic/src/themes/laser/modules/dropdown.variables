@@ -39,7 +39,7 @@
 @menuBorderRadius: @borderRadius;
 @menuTransition: opacity @defaultDuration @defaultEasing;
 @menuMinWidth: ~"calc(100% + "(@menuBorderWidth * 2)~")";
-@menuZIndex: 11;
+@menuZIndex: 101;
 
 /* Text */
 @textLineHeight: 1em;

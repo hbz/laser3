@@ -33677,7 +33677,7 @@ body.dimmable > .dimmer {
   border-radius: 0;
   -webkit-transition: opacity 0.1s ease;
   transition: opacity 0.1s ease;
-  z-index: 11;
+  z-index: 101;
   will-change: transform, opacity;
 }
 
@@ -34447,7 +34447,7 @@ select.ui.dropdown {
   color: rgba(0, 0, 0, 0.95);
   -webkit-box-shadow: none;
   box-shadow: none;
-  z-index: 12;
+  z-index: 102;
 }
 
 /*--------------------
@@ -34459,7 +34459,7 @@ select.ui.dropdown {
 .ui.dropdown .menu > .item:hover {
   background: rgba(0, 0, 0, 0.05);
   color: rgba(0, 0, 0, 0.95);
-  z-index: 13;
+  z-index: 103;
 }
 
 /*--------------------

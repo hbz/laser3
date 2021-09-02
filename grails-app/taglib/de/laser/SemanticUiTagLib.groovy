@@ -221,7 +221,7 @@ class SemanticUiTagLib {
                         if (hasAuditConfig) {
                             if (obj.isSlaved) {
                                 out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack blue"></i>'
+                                out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
                                 out << '</span>'
                             }
                             else {
@@ -260,7 +260,7 @@ class SemanticUiTagLib {
                             out << '</div>'
                         }
                         else {
-                            out << '<a role="button" data-content="Wert wird nicht vererbt" class="ui icon button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip la-delay" href="'
+                            out << '<a role="button" data-content="Wert wird nicht vererbt" class="ui icon blue button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip la-delay" href="'
                             out << g.createLink(
                                     controller: 'ajax',
                                     action: 'toggleAudit',
