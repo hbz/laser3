@@ -54,6 +54,9 @@ class ConfigUtils {
     static boolean getIsUpdateDashboardTableInDatabase(boolean validate = false) {
         readConfig('isUpdateDashboardTableInDatabase', validate)
     }
+    static String getLaserStatsSyncJobActive(boolean validate = false) {
+        readConfig('laserStatsSyncJobActive', validate)
+    }
     static String getLaserSystemId(boolean validate = false) {
         readConfig('laserSystemId', validate)
     }
