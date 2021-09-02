@@ -52,7 +52,7 @@
                 <label for="curatoryGroup">${message(code: 'package.curatoryGroup.label')}
                 </label>
 
-                <g:select class="ui fluid dropdown" name="curatoryGroup"
+                <g:select class="ui fluid search select dropdown" name="curatoryGroup"
                           from="${curatoryGroups.sort{it.name.toLowerCase()}}"
                           optionKey="name"
                           optionValue="name"
