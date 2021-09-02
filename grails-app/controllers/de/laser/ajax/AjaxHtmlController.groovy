@@ -20,6 +20,7 @@ import de.laser.Person
 import de.laser.PersonRole
 import de.laser.SubscriptionService
 import de.laser.SurveyConfig
+import de.laser.SurveyConfigProperties
 import de.laser.SurveyInfo
 import de.laser.SurveyOrg
 import de.laser.SurveyResult
@@ -32,6 +33,7 @@ import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.helper.SwissKnife
+import de.laser.properties.PropertyDefinition
 import de.laser.reporting.ReportingCache
 import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.export.base.BaseExportHelper
@@ -438,9 +440,13 @@ class AjaxHtmlController {
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextOrg, surveyConfig)
         List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(contextOrg, surveyConfig)
         boolean allResultHaveValue = true
+        List<String> notProcessedMandatoryProperties = []
         surveyResults.each { SurveyResult surre ->
-            if (!surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm())
+            SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
+            if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
                 allResultHaveValue = false
+                notProcessedMandatoryProperties << surre.type.getI10n('name')
+            }
         }
         boolean noParticipation = false
         if(surveyInfo.isMandatory) {
@@ -448,10 +454,13 @@ class AjaxHtmlController {
                 noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextOrg, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
             }
         }
-        if(noParticipation || allResultHaveValue)
-            render message(code: "confirm.dialog.concludeBinding.survey")
-        else if(!noParticipation && !allResultHaveValue)
-            render message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
+            if(notProcessedMandatoryProperties.size() > 0){
+                render message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
+            }
+            else if(noParticipation || allResultHaveValue)
+                render message(code: "confirm.dialog.concludeBinding.survey")
+            else if(!noParticipation && !allResultHaveValue)
+                render message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
     }
 
     // ----- reporting -----
