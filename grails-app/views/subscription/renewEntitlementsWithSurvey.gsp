@@ -10,8 +10,7 @@
 <body>
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
-    <semui:crumb controller="myInstitution" action="surveyInfosIssueEntitlements"
-                 id="${surveyConfig?.id}" message="issueEntitlementsSurvey.label"/>
+    <semui:crumb controller="myInstitution" action="surveyInfos" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]" message="issueEntitlementsSurvey.label"/>
     <semui:crumb controller="subscription" action="index" id="${newSub.id}" class="active" text="${newSub.name}"/>
 </semui:breadcrumbs>
 
@@ -20,14 +19,44 @@
         <semui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"
-                    params="${[surveyConfigID: surveyConfig?.id,
-                               exportKBart   : true]}">KBART Export "${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}"</g:link>
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportKBart   : true,
+                               tab: 'previousIEs']}">KBART Export "${message(code: 'renewEntitlementsWithSurvey.previousSelectableTitles')}"</g:link>
         </semui:exportDropdownItem>
         <semui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"
-                    params="${[surveyConfigID: surveyConfig?.id,
-                               exportXLS     : true]}">${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}"</g:link>
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportXLS     : true,
+                               tab: 'previousIEs']}">${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.previousSelectableTitles')}"</g:link>
+        </semui:exportDropdownItem>
+        <semui:exportDropdownItem>
+            <g:link class="item" action="renewEntitlementsWithSurvey"
+                    id="${newSub.id}"
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportKBart   : true,
+                               tab: 'allIEs']}">KBART Export "${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}"</g:link>
+        </semui:exportDropdownItem>
+        <semui:exportDropdownItem>
+            <g:link class="item" action="renewEntitlementsWithSurvey"
+                    id="${newSub.id}"
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportXLS     : true,
+                               tab: 'allIEs']}">${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}"</g:link>
+        </semui:exportDropdownItem>
+        <semui:exportDropdownItem>
+            <g:link class="item" action="renewEntitlementsWithSurvey"
+                    id="${newSub.id}"
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportKBart   : true,
+                               tab: 'selectedIEs']}">KBART Export "${message(code: 'renewEntitlementsWithSurvey.currentEntitlements')}"</g:link>
+        </semui:exportDropdownItem>
+        <semui:exportDropdownItem>
+            <g:link class="item" action="renewEntitlementsWithSurvey"
+                    id="${newSub.id}"
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportXLS     : true,
+                               tab: 'selectedIEs']}">${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.currentEntitlements')}"</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
 </semui:controlButtons>
@@ -46,17 +75,15 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 
         <div class="eight wide field" style="text-align: right;">
             <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
-
-                <g:link action="renewEntitlements"
-                        id="${surveyConfig.id}" params="[participant: participant.id]"
+                <g:link controller="survey" action="evaluationParticipant"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: subscriber.id]"
                         class="ui button">
-                    <g:message code="renewEntitlementsWithSurvey.renewEntitlements"/>
+                    <g:message code="surveyInfo.backToSurvey"/>
                 </g:link>
-
             </g:if>
             <g:else>
-                <g:link controller="myInstitution" action="surveyInfosIssueEntitlements"
-                        id="${surveyConfig.id}"
+                <g:link controller="myInstitution" action="surveyInfos"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]"
                         class="ui button">
                     <g:message code="surveyInfo.backToSurvey"/>
                 </g:link>
@@ -66,7 +93,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 </div>
 </br>
 
-<g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber)?.finishDate != null}">
+<g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber).finishDate != null}">
     <div class="ui icon positive message">
         <i class="info icon"></i>
 
@@ -113,7 +140,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 
 <g:form name="renewEntitlements" id="${newSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
     <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
-    <g:hiddenField name="surveyConfigID" value="${surveyConfig?.id}"/>
+    <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
     <g:hiddenField name="tab" value="${params.tab}"/>
 
     <div class="ui segment">
@@ -139,9 +166,9 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                         <g:message code="package"/>:
 
                         <div class="ui list">
-                            <g:each in="${newSub.packages.sort { it?.pkg?.name }}" var="subPkg">
+                            <g:each in="${newSub.packages.sort { it.pkg.name }}" var="subPkg">
                                 <div class="item">
-                                    <strong>${subPkg?.pkg?.name}</strong> (<g:message
+                                    <strong>${subPkg.pkg.name}</strong> (<g:message
                                         code="title.plural"/>: ${raw(subPkg.getIEandPackageSize())})
                                 </div>
                             </g:each>
@@ -176,17 +203,15 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 
             <div class="eight wide field" style="text-align: right;">
                 <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
-
-                    <g:link action="renewEntitlements"
-                            id="${surveyConfig.id}" params="[participant: participant.id]"
+                    <g:link controller="survey" action="evaluationParticipant"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: subscriber.id]"
                             class="ui button">
-                        <g:message code="renewEntitlementsWithSurvey.renewEntitlements"/>
+                        <g:message code="surveyInfo.backToSurvey"/>
                     </g:link>
-
                 </g:if>
                 <g:else>
-                    <g:link controller="myInstitution" action="surveyInfosIssueEntitlements"
-                            id="${surveyConfig.id}"
+                    <g:link controller="myInstitution" action="surveyInfos"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]"
                             class="ui button">
                         <g:message code="surveyInfo.backToSurvey"/>
                     </g:link>

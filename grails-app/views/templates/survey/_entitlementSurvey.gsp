@@ -65,8 +65,11 @@
 
                     </g:if>
 
-                    <g:link controller="subscription" action="showEntitlementsRenewWithSurvey"
-                            id="${surveyConfig.id}"
+                    <g:link controller="subscription" action="renewEntitlementsWithSurvey"
+                            id="${subscription.id}"
+                            params="${[targetObjectId: subscription.id,
+                                       surveyConfigID      : surveyConfig.id,
+                                        tab: 'selectedIEs']}"
                             class="ui button">
                         <g:message code="renewEntitlementsWithSurvey.toCurrentEntitlements"/>
                     </g:link>

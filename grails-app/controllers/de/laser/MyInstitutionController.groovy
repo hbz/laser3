@@ -1731,9 +1731,9 @@ join sub.orgRelations or_sub where
 
         result.ownerId = result.surveyResults[0]?.owner?.id
 
-        if(result.surveyConfig?.type == 'Subscription') {
-            result.subscription = result.surveyConfig?.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
-            result.authorizedOrgs = result.user?.authorizedOrgs
+        if(result.surveyConfig.type == 'Subscription') {
+            result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
+            result.authorizedOrgs = result.user.authorizedOrgs
             // restrict visible for templates/links/orgLinksAsList
             result.costItemSums = [:]
             result.visibleOrgRelations = []
@@ -1766,6 +1766,32 @@ join sub.orgRelations or_sub where
                 result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
             }
 
+            if (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+
+                result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscription)
+                result.iesListPriceSum = 0
+                result.ies.each { IssueEntitlement ie ->
+                    Double priceSum = 0.0
+
+                    ie.priceItems.each { PriceItem priceItem ->
+                        priceSum = priceItem.listPrice ?: 0.0
+                    }
+                    result.iesListPriceSum = result.iesListPriceSum + priceSum
+                }
+
+
+                result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscription)
+                result.iesFixListPriceSum = 0
+                result.iesFix.each { IssueEntitlement ie ->
+                    Double priceSum = 0.0
+
+                    ie.priceItems.each { PriceItem priceItem ->
+                        priceSum = priceItem.listPrice ?: 0.0
+                    }
+                    result.iesFixListPriceSum = result.iesListPriceSum + priceSum
+                }
+            }
+
         }
 
         if ( params.exportXLSX ) {
@@ -1792,6 +1818,7 @@ join sub.orgRelations or_sub where
 
     }
 
+    @Deprecated
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
@@ -1802,7 +1829,7 @@ join sub.orgRelations or_sub where
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it.surveyConfig.configOrder }
+        /*result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it.surveyConfig.configOrder }
 
         result.subscription = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
 
@@ -1845,7 +1872,9 @@ join sub.orgRelations or_sub where
             result.visibleOrgRelations.sort { it.org.sortname }
 	        result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
         }
-        result
+        result*/
+
+        redirect(action: 'surveyInfos', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id])
     }
 
 

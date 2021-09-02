@@ -117,8 +117,6 @@ class MyInstitutionControllerService {
 //            case 'currentSurveys':
 //            case 'surveyInfos':
 //            case 'surveyInfoFinish':
-//            case 'surveyInfosIssueEntitlements':
-//            case 'surveyResultFinish':
 //                result.user = user
 //                break
 //            default:
@@ -137,7 +135,6 @@ class MyInstitutionControllerService {
             case 'getSurveys':
             case 'emptyLicense': //to be moved to LicenseController
             case 'surveyInfoFinish':
-            case 'surveyResultFinish':
                 result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')
                 break
             case 'addressbook':
@@ -147,9 +144,6 @@ class MyInstitutionControllerService {
                 break
             case 'surveyInfos':
                 result.editable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
-                break
-            case 'surveyInfosIssueEntitlements':
-                result.editable = surveyService.isEditableIssueEntitlementsSurvey(org, SurveyConfig.get(params.id))
                 break
             case 'users':
                 result.editable = user.hasRole('ROLE_ADMIN') || user.hasAffiliation('INST_ADM')
