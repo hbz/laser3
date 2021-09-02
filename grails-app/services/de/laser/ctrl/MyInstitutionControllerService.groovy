@@ -41,9 +41,12 @@ class MyInstitutionControllerService {
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.acceptedOffset = 0
+        result.pendingOffset = 0
         result.dashboardDueDatesOffset = 0
         switch(params.view) {
             case 'AcceptedChanges': result.acceptedOffset = result.offset
+                break
+            case 'PendingChanges': result.pendingOffset = result.offset
                 break
             case 'dueDatesView': result.dashboardDueDatesOffset = result.offset
                 break

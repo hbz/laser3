@@ -21,7 +21,7 @@ class Counter4ApiSource extends AbstractCounterApiSource{
     static List<String> COUNTER_4_REPORTS       = [JOURNAL_REPORT_1, JOURNAL_REPORT_1_GOA, JOURNAL_REPORT_2, JOURNAL_REPORT_5,
                                                    DATABASE_REPORT_1, DATABASE_REPORT_2,
                                                    PLATFORM_REPORT_1,
-                                                   BOOK_REPORT_1, BOOK_REPORT_2, BOOK_REPORT_5
+                                                   BOOK_REPORT_1, BOOK_REPORT_2, BOOK_REPORT_3, BOOK_REPORT_4, BOOK_REPORT_5
     ]
 
     static mapping = {
