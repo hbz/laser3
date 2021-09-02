@@ -77,7 +77,7 @@
                         </g:if>
                         <g:else>
                             <div class="ui icon negative buttons la-popup-tooltip" data-content="${message(code:'issueEntitlementGroup.delete.existingCostItems')}">
-                                <button class="ui disabled button la-selectable-button"
+                                <button class="ui disabled button la-modern-button  la-selectable-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="trash alternate outline icon"></i>

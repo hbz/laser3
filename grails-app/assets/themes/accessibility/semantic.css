@@ -5908,7 +5908,7 @@ i.icon.la-list-icon:before {
   font-size: 1rem;
 }
 
-.ui.button.la-audit-button {
+.ui.button.la-auditButton-header {
   vertical-align: super;
 }
 
@@ -5931,6 +5931,66 @@ i.icon.la-list-icon:before {
 .ui.button.la-js-filterButton {
   margin-top: 14px;
   margin-bottom: 14px;
+}
+
+/*---------------
+    change buttons so the background area is not visible on default
+ ----------------*/
+
+/*---------------
+    Negativ
+----------------*/
+
+.ui.negative.buttons .button.la-modern-button,
+.ui.negative.button.la-modern-button,
+.ui.red.buttons .button.la-modern-button,
+.ui.red.button.la-modern-button {
+  color: #BB1600;
+  background-color: transparent;
+}
+
+.ui.negative.buttons .button.la-modern-button:hover,
+.ui.negative.button.la-modern-button:hover,
+.ui.red.buttons .button.la-modern-button:hover,
+.ui.red.button.la-modern-button:hover {
+  background-color: #BB1600;
+  color: #FFFFFF;
+}
+
+/*---------------
+    Positive
+----------------*/
+
+.ui.positive.buttons .button.la-modern-button,
+.ui.positive.button.la-modern-button,
+.ui.green.buttons .button.la-modern-button,
+.ui.green.button.la-modern-button {
+  color: #98B500;
+  background-color: transparent;
+}
+
+.ui.positive.buttons .button.la-modern-button:hover,
+.ui.positive.button.la-modern-button:hover,
+.ui.green.buttons .button.la-modern-button:hover,
+.ui.green.button.la-modern-button:hover {
+  background-color: #98B500;
+  color: #FFFFFF;
+}
+
+/*---------------
+    Blue
+----------------*/
+
+.ui.blue.buttons .button.la-modern-button,
+.ui.blue.button.la-modern-button {
+  color: #004678;
+  background-color: transparent;
+}
+
+.ui.blue.buttons .button.la-modern-button:hover,
+.ui.blue.button.la-modern-button:hover {
+  background-color: #004678;
+  color: #FFFFFF;
 }
 /*!
  * # Semantic UI 2.4.2 - Container

@@ -140,7 +140,7 @@ class SemanticUiTagLib {
             out << '            </div>'
             if (attrs.editable && attrs.href) {
                 out << '        <div class="right aligned four wide column">'
-                out << '            <button type="button" class="ui icon button la-modern-button editable-cancel" data-semui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="plus icon"></i></button>'
+                out << '            <button type="button" class="ui icon button blue la-modern-button editable-cancel" data-semui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="plus icon"></i></button>'
                 out << '        </div>'
             }
             out << '        </div>'
@@ -221,7 +221,7 @@ class SemanticUiTagLib {
                         if (hasAuditConfig) {
                             if (obj.isSlaved) {
                                 out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack blue"></i>'
+                                out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
                                 out << '</span>'
                             }
                             else {
@@ -260,7 +260,7 @@ class SemanticUiTagLib {
                             out << '</div>'
                         }
                         else {
-                            out << '<a role="button" data-content="Wert wird nicht vererbt" class="ui icon button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip la-delay" href="'
+                            out << '<a role="button" data-content="Wert wird nicht vererbt" class="ui icon blue button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip la-delay" href="'
                             out << g.createLink(
                                     controller: 'ajax',
                                     action: 'toggleAudit',
@@ -515,7 +515,7 @@ class SemanticUiTagLib {
 
         out << '<div class="actions">'
         out << '<button class="ui deny button">' + msgCancel + '</button>'
-        out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
+        out << '<button id="js-confirmation-button" class="ui positive la-modern-button right labeled icon button">' + msgDelete
         out << '    <i aria-hidden="true" class="trash alternate outline icon"></i>'
         out << '</button>'
         out << '</div>'

@@ -78,7 +78,7 @@
                                 <g:if test="${showConsortiaFunctions}">
                                     <g:if test="${!ident.instanceOf}">
                                         <g:if test="${! AuditConfig.getConfig(ident)}">
-                                            <laser:remoteLink class="ui icon button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                            <laser:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
                                                               controller="ajax"
                                                               action="toggleIdentifierAuditConfig"
                                                               params='[ownerId: "${object.id}",

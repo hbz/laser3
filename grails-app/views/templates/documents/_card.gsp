@@ -83,7 +83,7 @@
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                 <%-- START First Button --%>
                                 <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                <button type="button" class="ui icon button la-modern-button editable-cancel"
+                                <button type="button" class="ui icon blue button la-modern-button editable-cancel"
                                         data-semui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
@@ -181,7 +181,7 @@
                         <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                             <div class="two wide column">
                                 <g:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                <button type="button" class="ui icon button la-modern-button editable-cancel" data-semui="modal"
+                                <button type="button" class="ui icon blue button la-modern-button editable-cancel" data-semui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
                                 <i class="pencil icon"></i></button>

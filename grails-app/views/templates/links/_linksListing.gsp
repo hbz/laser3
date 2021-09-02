@@ -52,7 +52,7 @@
                             <td class="right aligned">
                                 <g:if test="${pair.propertySet && pair instanceof License}">
                                     <button id="derived-license-properties-toggle${link.id}"
-                                            class="ui icon button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                            class="ui icon button  la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
                                             data-content="${message(code:'subscription.details.viewLicenseProperties')}">
                                         <i class="ui angle double down icon"></i>
                                     </button>
@@ -72,7 +72,7 @@
                                 <g:render template="/templates/links/subLinksModal"
                                           model="${[tmplText:message(code:'subscription.details.editLink'),
                                                     tmplIcon:'write',
-                                                    tmplCss: 'icon la-selectable-button la-popup-tooltip la-delay',
+                                                    tmplCss: 'icon blue la-selectable-button la-popup-tooltip la-delay',
                                                     tmplID:'editLink',
                                                     tmplModalID:"sub_edit_link_${link.id}",
                                                     subscriptionLicenseLink: subscriptionLicenseLink,
@@ -85,7 +85,7 @@
                                     <g:if test="${subscriptionLicenseLink}">
                                         <div class="ui icon negative buttons">
                                             <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
-                                                <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
+                                                <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                         data-confirm-term-how="unlink"
                                                         controller="subscription" action="unlinkLicense" params="${[license: link.sourceLicense.id, id:subscription.id]}"
@@ -98,7 +98,7 @@
                                     </g:if>
                                     <g:else>
                                         <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
-                                            <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
+                                            <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                     data-confirm-term-how="unlink"
                                                     controller="myInstitution" action="unlinkObjects" params="${[oid : genericOIDService.getOID(link)]}"
