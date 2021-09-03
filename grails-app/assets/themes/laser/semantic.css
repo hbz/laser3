@@ -1225,11 +1225,7 @@ i.icon.la-list-icon:before {
   display: none;
 }
 
-.la-main-object {
-  font-weight: bold;
-}
-
-.la-minor-object {
+.la-minor-object a {
   font-weight: normal;
 }
 
