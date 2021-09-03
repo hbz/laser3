@@ -393,10 +393,7 @@ i.icon.la-list-icon{
 }
 // most important object in table
 
-.la-main-object {
-    font-weight: bold;
-}
-.la-minor-object {
+.la-minor-object a{
     font-weight: normal;
 }
 // clearing afecting the elements before the element with class 'la-clear-before'
