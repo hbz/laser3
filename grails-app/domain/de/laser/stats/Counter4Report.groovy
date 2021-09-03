@@ -27,7 +27,7 @@ class Counter4Report extends AbstractReport {
     }
 
     static constraints = {
-
+        title(unique: ['reportType', 'platform', 'reportInstitution', 'metricType', 'reportFrom', 'reportTo'])
     }
 
     static Counter4Report construct(Map<String, Object> configMap) throws CreationException {

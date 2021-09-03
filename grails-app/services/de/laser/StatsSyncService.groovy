@@ -288,7 +288,9 @@ class StatsSyncService {
                                             //lsc.missingPeriods.remove(wasMissing)
                                             GPathResult reportItems = reportData.'ns2:Report'.'ns2:Customer'.'ns2:ReportItems'
                                             int[] resultCount = sql.withBatch( "insert into counter4report (c4r_version, c4r_title_fk, c4r_publisher, c4r_platform_fk, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
-                                                    "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount)") { stmt ->
+                                                    "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount) " +
+                                                    "on conflict on constraint unique_counter_4_report do " +
+                                                    "update set c4r_report_count = :reportCount") { stmt ->
                                                 int t = 0
                                                 //titles.each { row ->
                                                 reportItems.each { reportItem ->
@@ -497,7 +499,9 @@ class StatsSyncService {
                                                 }
                                                 else {
                                                     int[] resultCount = sql.withBatch( "insert into counter5report (c5r_version, c5r_title_fk, c5r_publisher, c5r_platform_fk, c5r_report_institution_fk, c5r_report_type, c5r_metric_type, c5r_report_from, c5r_report_to, c5r_report_count) " +
-                                                            "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :metricType, :reportFrom, :reportTo, :reportCount)") { stmt ->
+                                                            "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :metricType, :reportFrom, :reportTo, :reportCount) " +
+                                                            "on conflict on constraint unique_counter_5_report do " +
+                                                            "update set c5r_report_count = :reportCount") { stmt ->
                                                         int t = 0
                                                         report.items.each { Map reportItem ->
                                                             int ctr = 0

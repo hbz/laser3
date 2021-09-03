@@ -33,6 +33,7 @@ class Counter5Report extends AbstractReport {
         publisher           (nullable: true, blank: false) //because of platform reports!
         accessType          (nullable: true, blank: false)
         accessMethod        (nullable: true, blank: false)
+        title(unique: ['platform', 'reportInstitution', 'metricType', 'reportFrom', 'reportTo', 'reportType'])
     }
 
     static Counter5Report construct(Map<String, Object> configMap) throws CreationException {

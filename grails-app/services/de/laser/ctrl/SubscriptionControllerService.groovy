@@ -429,24 +429,29 @@ class SubscriptionControllerService {
                         queryParams.languages << Long.parseLong(lang)
                     }
                 }
-                count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange, queryParams))
+                if(params.metricType && params.list("metricType").size() > 0) {
+                    filter += " and r.metricType in (:metricType) "
+                    queryParams.metricType = params.metricType
+                }
+                //continue here: load data and test!
+                count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+dateRange, [customer: queryParams.customer, platforms: queryParams.platforms, startDate: queryParams.startDate, endDate: queryParams.endDate]))
                 if(count5check.get(0) == 0) {
                     List defaultReport = Counter4Report.executeQuery('select r.reportType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) order by r.reportFrom asc', [customer: queryParams.customer, platforms: queryParams.platforms], [max:1])
                     result.reportTypes = Counter4ApiSource.COUNTER_4_REPORTS
                     if(!params.reportType) {
                         if(defaultReport)
                             params.reportType = [defaultReport[0]]
-                        else params.reportType = [result.reportTypes[0]]
+                        else params.reportType = [Counter4ApiSource.BOOK_REPORT_1]
                     }
                     filter += " and r.reportType in (:reportType) "
                     queryParams.reportType = params.reportType
                     if(params.tab == 'total') {
-                        c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter4Report r join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.reportType, r.metricType order by r.reportFrom asc, r.reportType asc', queryParams))
+                        c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.reportType, r.metricType order by r.reportFrom asc, r.reportType asc', queryParams))
                     }
                     else {
-                        c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
+                        c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
                     }
-                    count4check.addAll(Counter4Report.executeQuery('select count(r.id) from Counter4Report r join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange, queryParams))
+                    count4check.addAll(Counter4Report.executeQuery('select count(r.id) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange, queryParams))
                     result.total = count4check.size() > 0 ? count4check[0] as int : 0
                     result.sums = c4sums
                     result.usages = c4usages
@@ -457,15 +462,15 @@ class SubscriptionControllerService {
                     result.reportTypes = Counter5ApiSource.COUNTER_5_REPORTS
                     if(!params.reportType) {
                         if(defaultReport)
-                            params.reportType = [defaultReport[0]]
-                        else params.reportType = [result.reportTypes[0]]
+                            params.reportType = [defaultReport[0].toLowerCase()]
+                        else params.reportType = [Counter5ApiSource.TITLE_MASTER_REPORT.toLowerCase()]
                     }
                     filter += " and lower(r.reportType) in (:reportType) "
                     queryParams.reportType = params.reportType
                     if(params.tab == 'total')
-                        c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.reportType, r.metricType order by r.reportFrom asc, r.metricType asc', queryParams))
+                        c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.reportType, r.metricType order by r.reportFrom asc, r.metricType asc', queryParams))
                     else
-                        c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
+                        c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
                     result.total = count5check.size() > 0 ? count5check[0] as int : 0
                     result.sums = c5sums
                     result.usages = c5usages
