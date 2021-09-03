@@ -82,7 +82,7 @@
         <semui:form>
 
             <div class="four wide column">
-                <button type="button" class="ui icon button right floated" data-semui="modal"
+                <button type="button" class="ui icon button blue la-modern-button right floated" data-semui="modal"
                         data-href="#modalCreateDocument"><i class="plus icon"></i></button>
                 <g:render template="/templates/documents/modal"
                           model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
@@ -124,7 +124,7 @@
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i
                                         class="download icon"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
-                                    <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay" data-semui="modal"
+                                    <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-semui="modal"
                                             href="#modalEditDocument_${docctx.id}"
                                             data-content="${message(code: "template.documents.edit")}"
                                             aria-label="${message(code: 'ariaLabel.change.universal')}">

@@ -565,7 +565,8 @@ class SurveyController {
                 if (subSurveyUseForTransfer) {
                     SurveyConfigProperties configProperty = new SurveyConfigProperties(
                             surveyProperty: RDStore.SURVEY_PROPERTY_PARTICIPATION,
-                            surveyConfig: surveyConfig)
+                            surveyConfig: surveyConfig,
+                            mandatoryProperty: true)
 
                     SurveyConfigProperties configProperty2 = new SurveyConfigProperties(
                             surveyProperty: RDStore.SURVEY_PROPERTY_ORDER_NUMBER,
@@ -1060,6 +1061,30 @@ class SurveyController {
 
         SurveyConfig.withTransaction { TransactionStatus ts ->
             if (!result.surveyConfig.save()) {
+                flash.error = g.message(code: 'survey.change.fail')
+            }
+        }
+
+        redirect(url: request.getHeader('referer'))
+
+    }
+
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    Map<String,Object> surveyPropertyMandatory() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.get(params.surveyConfigProperties)
+
+        surveyConfigProperties.mandatoryProperty = params.mandatoryProperty ?: false
+
+        SurveyConfigProperties.withTransaction { TransactionStatus ts ->
+            if (!surveyConfigProperties.save()) {
                 flash.error = g.message(code: 'survey.change.fail')
             }
         }

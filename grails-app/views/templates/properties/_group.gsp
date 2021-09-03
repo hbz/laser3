@@ -106,7 +106,7 @@
                                 <g:if test="${! AuditConfig.getConfig(prop)}">
 
                                     <g:if test="${prop.type in memberProperties}">
-                                        <laser:remoteLink class="ui icon button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                        <laser:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
                                                           controller="ajax"
                                                           action="togglePropertyAuditConfig"
                                                           params='[propClass: prop.getClass(),
@@ -130,7 +130,7 @@
                                         </laser:remoteLink>
                                     </g:if>
                                     <g:else>
-                                        <laser:remoteLink class="ui icon button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                        <laser:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
                                                           controller="ajax"
                                                           action="togglePropertyAuditConfig"
                                                           params='[propClass: prop.getClass(),
@@ -214,7 +214,7 @@
 
                                 <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
 
-                                <laser:remoteLink class="ui icon negative button js-open-confirm-modal"
+                                <laser:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                   controller="ajax"
                                                   action="deleteCustomProperty"
                                                   params='[propClass: prop.getClass(),

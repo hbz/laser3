@@ -292,7 +292,7 @@ if (customerType) {
                 data-content="Hier kommt der Tooltip rein"
                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
                 data-confirm-term-how="delete"
-                class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+                class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
                 role="button">
             <i aria-hidden="true" class="trash alternate outline icon"></i>
         </g:link>
@@ -311,7 +311,7 @@ if (customerType) {
                 data-confirm-messageUrl="${createLink(controller:'ajax', action:'genericDialogMessage', params:[template:'abc'])}"
                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
                 data-confirm-term-how="delete"
-                class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+                class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
                 role="button">
             <i aria-hidden="true" class="trash alternate outline icon"></i>
         </g:link>
@@ -321,7 +321,7 @@ if (customerType) {
 
     <div class="html ui top attached segment example">
         <div class="ui top attached label">Link, der den AJAX-Contoler aufruft und  als Button funktioniert (daß heiß, eine Aktion ausführt)</div>
-        <laser:remoteLink class="ui icon negative button js-open-confirm-modal la-popup-tooltip la-delay"
+        <laser:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
                           controller="dev"
                           action="frontend"
                           params=""

@@ -1731,7 +1731,7 @@ join sub.orgRelations or_sub where
 
         result.ownerId = result.surveyResults[0]?.owner?.id
 
-        if(result.surveyConfig.type == 'Subscription') {
+        if(result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
             result.authorizedOrgs = result.user.authorizedOrgs
             // restrict visible for templates/links/orgLinksAsList
@@ -1925,38 +1925,46 @@ join sub.orgRelations or_sub where
         }
 
 
-            List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
+        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
 
-            boolean allResultHaveValue = true
-            //Verbindlich??|
-            if(surveyInfo.isMandatory) {
-
-                boolean noParticipation = false
-                if(surveyConfig && surveyConfig.subSurveyUseForTransfer){
-                    noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
-                }
-
-                if(!noParticipation) {
-                   /* surveyResults.each { SurveyResult surre ->
-                        if (!surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm())
-                            allResultHaveValue = false
-                    }*/
-                }
+        boolean allResultHaveValue = true
+        List<PropertyDefinition> notProcessedMandatoryProperties = []
+        surveyResults.each { SurveyResult surre ->
+            SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
+            if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
+                allResultHaveValue = false
+                notProcessedMandatoryProperties << surre.type.getI10n('name')
             }
-            if (allResultHaveValue) {
-                surveyOrg.finishDate = new Date()
-                if (!surveyOrg.save()) {
-                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
-                } else {
-                    flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
-                    sendMailToSurveyOwner = true
-                }
-                // flash.message = message(code: "surveyResult.finish.info")
+        }
+
+        boolean noParticipation = false
+        if(surveyInfo.isMandatory) {
+            if(surveyConfig && surveyConfig.subSurveyUseForTransfer){
+                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
+            }
+        }
+
+        if(notProcessedMandatoryProperties.size() > 0){
+            flash.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
+        }
+        else if(noParticipation || allResultHaveValue){
+            surveyOrg.finishDate = new Date()
+            if (!surveyOrg.save()) {
+                flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
             } else {
-                if(!surveyConfig.pickAndChoose && surveyInfo.isMandatory) {
-                    flash.error = message(code: "surveyResult.finish.error")
-                }
+                flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
+                sendMailToSurveyOwner = true
             }
+        }
+        else if(!noParticipation && !allResultHaveValue){
+            surveyOrg.finishDate = new Date()
+            if (!surveyOrg.save()) {
+                flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
+            } else {
+                flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
+                sendMailToSurveyOwner = true
+            }
+        }
 
         if(sendMailToSurveyOwner) {
             surveyService.emailToSurveyOwnerbyParticipationFinish(surveyInfo, result.institution)

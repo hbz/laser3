@@ -5731,7 +5731,7 @@ a {
   -webkit-tap-highlight-color: transparent;
 }*/
 
-.ui.button.la-audit-button {
+.ui.button.la-auditButton-header {
   vertical-align: super;
 }
 
@@ -5760,20 +5760,24 @@ a {
     change buttons so the background area is not visible on default
  ----------------*/
 
-.ui.button.la-modern-button {
+/*---------------
+    Negativ
+----------------*/
+
+.ui.negative.buttons .button.la-modern-button,
+.ui.negative.button.la-modern-button,
+.ui.red.buttons .button.la-modern-button,
+.ui.red.button.la-modern-button {
+  color: #BB1600;
   background-color: transparent;
 }
 
-/*---------------
-     Negative
-----------------*/
-
-.ui.negative.buttons .button,
-.ui.negative.button,
-.ui.red.buttons .button,
-.ui.red.button {
-  background-color: transparent;
-  color: #BB1600;
+.ui.negative.buttons .button.la-modern-button:hover,
+.ui.negative.button.la-modern-button:hover,
+.ui.red.buttons .button.la-modern-button:hover,
+.ui.red.button.la-modern-button:hover {
+  background-color: #BB1600;
+  color: #FFFFFF;
 }
 
 /*---------------
@@ -5785,14 +5789,15 @@ a {
 .ui.green.buttons .button.la-modern-button,
 .ui.green.button.la-modern-button {
   color: #98B500;
+  background-color: transparent;
 }
 
-/*---------------
-    NEUTRAL
-----------------*/
-
-.ui.icon.buttons .button:not(.dropdown) {
-  background-color: transparent;
+.ui.positive.buttons .button.la-modern-button:hover,
+.ui.positive.button.la-modern-button:hover,
+.ui.green.buttons .button.la-modern-button:hover,
+.ui.green.button.la-modern-button:hover {
+  background-color: #98B500;
+  color: #FFFFFF;
 }
 
 /*---------------
@@ -5802,15 +5807,13 @@ a {
 .ui.blue.buttons .button.la-modern-button,
 .ui.blue.button.la-modern-button {
   color: #004678;
+  background-color: transparent;
 }
 
-/*--------------
-      Hover
----------------*/
-
-.ui.button.la-modern-button:hover {
-  background-color: #CACBCD;
-  background-image: none;
+.ui.blue.buttons .button.la-modern-button:hover,
+.ui.blue.button.la-modern-button:hover {
+  background-color: #004678;
+  color: #FFFFFF;
 }
 /*!
  * # Semantic UI 2.4.2 - Container
@@ -33677,7 +33680,7 @@ body.dimmable > .dimmer {
   border-radius: 0;
   -webkit-transition: opacity 0.1s ease;
   transition: opacity 0.1s ease;
-  z-index: 11;
+  z-index: 101;
   will-change: transform, opacity;
 }
 
@@ -34447,7 +34450,7 @@ select.ui.dropdown {
   color: rgba(0, 0, 0, 0.95);
   -webkit-box-shadow: none;
   box-shadow: none;
-  z-index: 12;
+  z-index: 102;
 }
 
 /*--------------------
@@ -34459,7 +34462,7 @@ select.ui.dropdown {
 .ui.dropdown .menu > .item:hover {
   background: rgba(0, 0, 0, 0.05);
   color: rgba(0, 0, 0, 0.95);
-  z-index: 13;
+  z-index: 103;
 }
 
 /*--------------------
