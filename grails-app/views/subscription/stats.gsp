@@ -43,7 +43,11 @@
         <g:else>
             <g:render template="/templates/filter/javascript"/>
             <semui:filter showFilterButton="true">
-                <g:form action="stats" class="ui form" params="${[tab: params.tab, id: subscription.id, sort: params.sort, order: params.order]}">
+                <g:form action="stats" class="ui form" method="get">
+                    <g:hiddenField name="tab" value="${params.tab}"/>
+                    <g:hiddenField name="id" value="${subscription.id}"/>
+                    <g:hiddenField name="sort" value="${params.sort}"/>
+                    <g:hiddenField name="order" value="${params.order}"/>
                     <div class="four fields">
                         <div class="field">
                             <label for="series_names">${message(code: 'titleInstance.seriesName.label')}</label>
@@ -137,8 +141,7 @@
                         </div>
 
                         <div class="field la-field-right-aligned">
-                            <a href="${request.forwardURI}"
-                               class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
+                            <g:link action="stats" id="${subscription.id}" class="ui reset primary button">${message(code: 'default.button.reset.label')}</g:link>
                             <input type="submit" class="ui secondary button"
                                    value="${message(code: 'default.button.filter.label')}"/>
                         </div>
@@ -176,7 +179,9 @@
                     <table class="ui sortable celled la-table table">
                         <thead>
                             <tr>
-                                <g:sortableColumn title="${message(code:"default.title.label")}" property="title.name"/>
+                                <g:if test="${usages[0].title}">
+                                    <g:sortableColumn title="${message(code:"default.title.label")}" property="title.name"/>
+                                </g:if>
                                 <g:sortableColumn title="${message(code:"default.usage.metricType")}" property="r.metricType"/>
                                 <g:sortableColumn title="${message(code:"default.usage.reportCount")}" property="r.reportCount"/>
                             </tr>
@@ -184,7 +189,9 @@
                         <tbody>
                             <g:each in="${usages}" var="row">
                                 <tr>
-                                    <td>${row.title.name}</td>
+                                    <g:if test="${row.title}">
+                                        <td>${row.title.name}</td>
+                                    </g:if>
                                     <td>${row.metricType}</td>
                                     <td>${row.reportCount}</td>
                                 </tr>
