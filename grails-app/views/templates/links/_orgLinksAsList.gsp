@@ -115,6 +115,7 @@
 
                                                         </g:render>
                                                     </g:each>
+                                                </div>
                                             </div>
                                         </g:each>
                                         <g:each in="${Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)}" var="resp">
