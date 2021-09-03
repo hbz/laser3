@@ -49,30 +49,45 @@ class FinanceService {
         CostItem newCostItem
         try {
             Set<Subscription> subsToDo = []
-            if (params.newSubscription.contains("${Subscription.class.name}:")) {
-                subsToDo << (Subscription) genericOIDService.resolveOID(params.newSubscription)
-            }
-            switch (params.newLicenseeTarget) {
-                case "${Subscription.class.name}:forParent":
-                    // keep current
-                    break
-                case "${Subscription.class.name}:forAllSubscribers":
-                    // iterate over members
-                    Subscription parentSub = (Subscription) genericOIDService.resolveOID(params.newSubscription)
-                    subsToDo = parentSub.getDerivedSubscriptions()
-                    break
-                default:
-                    if (params.newLicenseeTarget) {
-                        subsToDo.clear()
-                        if(params.newLicenseeTarget instanceof String)
-                            subsToDo << (Subscription) genericOIDService.resolveOID(params.newLicenseeTarget)
-                        else if(params.newLicenseeTarget instanceof String[]) {
-                            params.newLicenseeTarget.each { newLicenseeTarget ->
-                                subsToDo << (Subscription) genericOIDService.resolveOID(newLicenseeTarget)
-                            }
+
+            if(params.selectedSubs){
+                if (params.selectedSubs) {
+                    subsToDo.clear()
+                    if (params.selectedSubs instanceof String)
+                        subsToDo << Subscription.get(Long.parseLong(params.selectedSubs))
+                    else if (params.selectedSubs instanceof String[]) {
+                        params.selectedSubs.each { selectedSubs ->
+                            subsToDo <<  Subscription.get(Long.parseLong(selectedSubs))
                         }
                     }
-                    break
+                }
+            }else {
+
+                if (params.newSubscription.contains("${Subscription.class.name}:")) {
+                    subsToDo << (Subscription) genericOIDService.resolveOID(params.newSubscription)
+                }
+                switch (params.newLicenseeTarget) {
+                    case "${Subscription.class.name}:forParent":
+                        // keep current
+                        break
+                    case "${Subscription.class.name}:forAllSubscribers":
+                        // iterate over members
+                        Subscription parentSub = (Subscription) genericOIDService.resolveOID(params.newSubscription)
+                        subsToDo = parentSub.getDerivedSubscriptions()
+                        break
+                    default:
+                        if (params.newLicenseeTarget) {
+                            subsToDo.clear()
+                            if (params.newLicenseeTarget instanceof String)
+                                subsToDo << (Subscription) genericOIDService.resolveOID(params.newLicenseeTarget)
+                            else if (params.newLicenseeTarget instanceof String[]) {
+                                params.newLicenseeTarget.each { newLicenseeTarget ->
+                                    subsToDo << (Subscription) genericOIDService.resolveOID(newLicenseeTarget)
+                                }
+                            }
+                        }
+                        break
+                }
             }
             SubscriptionPackage pkg
             if (params.newPackage?.contains("${SubscriptionPackage.class.name}:")) {

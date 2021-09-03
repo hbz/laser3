@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+1884    03.09.2021  dev     2.2         Moe     Feature     Kosten in neue Lizenz kopieren ermöglichen?
+
 3778    02.09.2021  dev     2.2         Moe     Feature     Umfrage-Merkmale: Pflichtmerkmale
 
 3774    02.09.2021  dev     2.2         Andreas Bug         Paginierung auf Dashboard korrigiert

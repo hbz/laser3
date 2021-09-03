@@ -198,7 +198,8 @@
                 </div>
             </fieldset> <!-- 1/2 field |  .la-account-currency -->
 
-            <g:if test="${idSuffix != 'bulk'}">
+
+            <g:if test="${idSuffix != 'bulk' && !(mode == 'copy' && !copyCostsFromConsortia)}">
                 <fieldset class="seven wide field la-modal-fieldset-no-margin">
                     <label>${message(code:'financials.newCosts.costsReferenceOn')}</label>
 
@@ -339,6 +340,44 @@
             </fieldset> <!-- 3/3 field -->
 
         </div><!-- three fields -->
+
+        <g:if test="${mode == 'copy' && !copyCostsFromConsortia}">
+        <div class="fields">
+            <fieldset class="sixteen wide field la-modal-fieldset-margin-right ">
+                <label>${g.message(code: 'financials.copyCostItem.toOtherSub')}</label>
+
+                <div class="ui field">
+                    <div class="field">
+                        <label>${message(code: 'filter.status')}</label>
+                        <select id="status" name="status" multiple="" class="ui search selection fluid multiple dropdown" onchange="JSPC.app.adjustDropdown()">
+                            <option value=""><g:message code="default.select.choose.label"/></option>
+                            <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }" var="status">
+                                <option <%=(status.id.toString() in params.list('status')) ? 'selected="selected"' : ''%> value="${status.id}">${status.getI10n('value')}</option>
+                            </g:each>
+                        </select>
+
+                    </div>
+                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                        <div class="ui checkbox">
+                            <g:checkBox name="show.subscriber" value="true" checked="true"
+                                        onchange="JSPC.app.adjustDropdown()"/>
+                            <label for="show.subscriber">${message(code: 'default.compare.show.subscriber.name')}</label>
+                        </div><br />
+                    </g:if>
+                    <div class="ui checkbox">
+                        <g:checkBox name="show.connectedObjects" value="true" checked="false"
+                                    onchange="JSPC.app.adjustDropdown()"/>
+                        <label for="show.connectedObjects">${message(code: 'default.compare.show.connectedObjects.name')}</label>
+                    </div>
+                    <br />
+                    <select id="selectedSubs" name="selectedSubs" multiple="" class="ui search selection fluid dropdown">
+                        <option value="">${message(code: 'default.select.choose.label')}</option>
+                    </select>
+                </div>
+
+            </fieldset> <!-- 1/2 field |  .la-account-currency -->
+        </div>
+        </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     <%
@@ -707,4 +746,42 @@
     }
 
     JSPC.app.setupCalendar();
+
+    JSPC.app.adjustDropdown = function () {
+
+        var showSubscriber = $("input[name='show.subscriber'").prop('checked');
+        var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
+        var url = '<g:createLink controller="ajaxJson" action="adjustCompareSubscriptionList"/>?showSubscriber=' + showSubscriber + '&showConnectedObjs=' + showConnectedObjs
+
+        var status = $("select#status").serialize()
+        if (status) {
+            url = url + '&' + status
+        }
+
+        var dropdownSelectedSubs = $('#selectedSubs');
+
+        dropdownSelectedSubs.empty();
+        dropdownSelectedSubs.append('<option selected="true" disabled>${message(code: 'default.select.choose.label')}</option>');
+        dropdownSelectedSubs.prop('selectedIndex', 0);
+
+        $.ajax({
+                url: url,
+                success: function (data) {
+                    $.each(data, function (key, entry) {
+                        if(entry.value == "${costItem?.sub?.id}"){
+                            dropdownSelectedSubs.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
+                        }else{
+                            dropdownSelectedSubs.append($('<option></option>').attr('value', entry.value).text(entry.text));
+                            }
+                     });
+                }
+        });
+    }
+
+    <g:if test="${mode == 'copy' && !copyCostsFromConsortia}">
+        JSPC.app.adjustDropdown();
+    </g:if>
+
 </laser:script>
+
+
