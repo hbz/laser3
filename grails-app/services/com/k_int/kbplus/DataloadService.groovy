@@ -984,8 +984,8 @@ class DataloadService {
                             highest_timestamp = r.lastUpdated?.getTime();
                         }
 
-                        println(count)
-                        println(total)
+                        //println(count)
+                        //println(total)
                         count++
                         total++
                         if (count == 100) {

@@ -197,7 +197,7 @@ class SurveyService {
                                    messageSource.getMessage('surveyResult.result', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyResult.comment', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyResult.commentOnlyForOwner', null, LocaleContextHolder.getLocale()),
-                                   messageSource.getMessage('surveyResult.finishDate', null, LocaleContextHolder.getLocale())])
+                                   messageSource.getMessage('surveyOrg.finishDate', null, LocaleContextHolder.getLocale())])
                 }
 
             } else {
@@ -398,7 +398,7 @@ class SurveyService {
                              [field: messageSource.getMessage('surveyResult.result', null, LocaleContextHolder.getLocale()), style: 'bold'],
                              [field: messageSource.getMessage('surveyResult.comment', null, LocaleContextHolder.getLocale()), style: 'bold'],
                              [field: messageSource.getMessage('surveyResult.commentOnlyForParticipant', null, LocaleContextHolder.getLocale()), style: 'bold'],
-                             [field: messageSource.getMessage('surveyResult.finishDate', null, LocaleContextHolder.getLocale()), style: 'bold']]
+                             [field: messageSource.getMessage('surveyOrg.finishDate', null, LocaleContextHolder.getLocale()), style: 'bold']]
                 surveyData.add(row2)
 
                 SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextOrg, surveyConfig)
@@ -795,7 +795,7 @@ class SurveyService {
                            messageSource.getMessage('surveyResult.result', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyResult.comment', null, LocaleContextHolder.getLocale()),
                            messageSource.getMessage('surveyResult.commentOnlyForOwner', null, LocaleContextHolder.getLocale()),
-                           messageSource.getMessage('surveyResult.finishDate', null, LocaleContextHolder.getLocale())])
+                           messageSource.getMessage('surveyOrg.finishDate', null, LocaleContextHolder.getLocale())])
 
             List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfigInList(participant, surveyConfigs)
 
