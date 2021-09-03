@@ -221,7 +221,7 @@ class SemanticUiTagLib {
                         if (hasAuditConfig) {
                             if (obj.isSlaved) {
                                 out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
+                                out << '<i aria-hidden="true" class="icon thumbtack grey la-rotate"></i>'
                                 out << '</span>'
                             }
                             else {

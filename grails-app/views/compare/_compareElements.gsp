@@ -38,7 +38,7 @@
                             <%
                                 if (AuditConfig.getConfig(object, objProperty)) {
                                     if (object.isSlaved) {
-                                        println '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                        println '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack grey la-rotate"></i></span>'
                                     } else {
                                         println '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                     }
