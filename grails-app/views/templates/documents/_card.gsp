@@ -91,7 +91,7 @@
                                 <%-- STOP First Small Column --%>
                                 <g:if test="${!docctx.isShared}">
                                 <%-- START Second Button --%>
-                                    <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="ui icon negative button js-open-confirm-modal"
+                                    <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
                                             params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'
@@ -135,7 +135,7 @@
                                     </laser:remoteLink>
                                 </g:if>
                                 <g:else>
-                                    <laser:remoteLink class="ui icon button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay js-open-confirm-modal"
+                                    <laser:remoteLink class="ui icon blue button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay js-open-confirm-modal"
                                                       controller="ajax"
                                                       action="toggleShare"
                                                       params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"documents", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?:  actionName]'

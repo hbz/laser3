@@ -34,7 +34,7 @@
                             </g:if>
                             <g:else>
                                 <span class="la-js-editmode-container">
-                                    <g:link  class="ui icon button blue  la-modern-button la-selectable-button la-popup-tooltip la-delay  "
+                                    <g:link  class="ui icon button blue la-modern-button la-selectable-button la-popup-tooltip la-delay  "
                                             controller="ajax" action="toggleShare"
                                             params="${[owner:genericOIDService.getOID(roleObject), sharedObject:genericOIDService.getOID(role), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]}"
                                              data-position="top right" data-content="${message(code:'property.share.tooltip.off')}"
@@ -46,7 +46,7 @@
                         </g:if>
                         <g:if test="${! role.isShared && ! role.sharedFrom}">
                             <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.unlinkProviderAgency')}">
-                                <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal" controller="ajax" action="delOrgRole" id="${role.id}"
+                                <g:link class="ui negative icon button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delOrgRole" id="${role.id}"
                                     data-confirm-tokenMsg = "${message(code:'confirm.dialog.unlink.provider-agency.subscription')}"
                                     data-confirm-how = "unlink"
                                     role="button"
@@ -97,7 +97,7 @@
                                                     <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                 </div>
                                                 <div class="twelve wide column">
-                                                    <div class="ui blue label">
+                                                    <div class="ui  label">
                                                         ${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
@@ -124,7 +124,7 @@
                                                     <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                 </div>
                                                 <div class="twelve wide column">
-                                                    <div class="ui blue label">
+                                                    <div class="ui  label">
                                                         ${(RefdataValue.getByValue(roleRespValue)).getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
@@ -174,7 +174,7 @@
                                                     <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                 </div>
                                                 <div class="twelve wide column">
-                                                    <div class="ui blue label">
+                                                    <div class="ui  label">
                                                         ${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
@@ -201,7 +201,7 @@
                                                     <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" ></i>
                                                </div>
                                                 <div class="twelve wide column">
-                                                    <div class="ui blue label">
+                                                    <div class="ui  label">
                                                         ${(RefdataValue.getByValue(roleRespValue)).getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
@@ -224,7 +224,7 @@
                                                     <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
                                                     <div class="two wide column">
                                                         <div class="ui icon buttons">
-                                                            <g:link class="ui negative button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
+                                                            <g:link class="ui negative button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">
                                                                 <i class="unlink icon"></i>

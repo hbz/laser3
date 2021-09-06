@@ -13892,6 +13892,11 @@ i.inverted.circular.la-light-grey.icon {
 i.inverted.circular.icon.la-filter-icon {
   background-color: #8699b1 !important;
 }
+
+.la-rotate {
+  -webkit-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
 /*!
  * # Semantic UI 2.4.2 - Image
  * http://github.com/semantic-org/semantic-ui/
