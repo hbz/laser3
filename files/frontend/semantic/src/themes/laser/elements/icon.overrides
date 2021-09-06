@@ -1931,3 +1931,6 @@ i.inverted.circular.la-light-grey.icon {
 i.inverted.circular.icon.la-filter-icon {
   background-color: #8699b1!important;
 }
+.la-rotate {
+  transform: rotate(90deg);
+}

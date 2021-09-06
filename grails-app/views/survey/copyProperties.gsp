@@ -436,13 +436,13 @@ ${surveyInfo.name}
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'property.audit.target.inherit.auto')}"
                                                       data-position="top right"><i
-                                                        class="large icon thumbtack blue"></i></span>
+                                                        class="icon thumbtack grey la-rotate"></i></span>
                                             </g:if>
                                             <g:else>
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'property.audit.target.inherit')}"
                                                       data-position="top right"><i
-                                                        class="large icon thumbtack grey"></i></span>
+                                                        class="icon thumbtack grey"></i></span>
                                             </g:else>
                                         </g:if>
 
@@ -604,13 +604,13 @@ ${surveyInfo.name}
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'property.audit.target.inherit.auto')}"
                                                       data-position="top right"><i
-                                                        class="large icon thumbtack blue"></i></span>
+                                                        class="icon thumbtack grey la-rotate"></i></span>
                                             </g:if>
                                             <g:else>
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'property.audit.target.inherit')}"
                                                       data-position="top right"><i
-                                                        class="large icon thumbtack grey"></i></span>
+                                                        class="icon thumbtack grey"></i></span>
                                             </g:else>
                                         </g:if>
 
