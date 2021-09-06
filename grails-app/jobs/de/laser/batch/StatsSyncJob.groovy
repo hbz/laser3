@@ -16,6 +16,7 @@ class StatsSyncJob extends AbstractJob {
         // Example - every 10 mins 0 0/10 * * * ?
         // At 5 past 2am on the first of every month - Sync stats
         cron name:'statsSyncTrigger', cronExpression: "0 0 4 5 * ?"
+        //cron name:'statsSyncTrigger', cronExpression: "0 0/10 * * * ?" //debug only!
         // cronExpression: "s m h D M W Y"
         //                  | | | | | | `- Year [optional]
         //                  | | | | | `- Day of Week, 1-7 or SUN-SAT, ?
@@ -44,7 +45,7 @@ class StatsSyncJob extends AbstractJob {
         try {
             log.debug("Execute::statsSyncJob")
 
-            if (ConfigUtils.getStatsSyncJobActiv()) {
+            if (ConfigUtils.getLaserStatsSyncJobActive()) {
                 log.debug("Running Stats SYNC batch job")
                 SystemEvent.createEvent('STATS_SYNC_JOB_START')
 
