@@ -180,10 +180,10 @@
                         <thead>
                             <tr>
                                 <g:if test="${usages[0].title}">
-                                    <g:sortableColumn title="${message(code:"default.title.label")}" property="title.name"/>
+                                    <g:sortableColumn title="${message(code:"default.title.label")}" property="title.name" params="${params}"/>
                                 </g:if>
-                                <g:sortableColumn title="${message(code:"default.usage.metricType")}" property="r.metricType"/>
-                                <g:sortableColumn title="${message(code:"default.usage.reportCount")}" property="r.reportCount"/>
+                                <g:sortableColumn title="${message(code:"default.usage.metricType")}" property="r.metricType" params="${params}"/>
+                                <g:sortableColumn title="${message(code:"default.usage.reportCount")}" property="r.reportCount" params="${params}"/>
                             </tr>
                         </thead>
                         <tbody>
