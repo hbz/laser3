@@ -49,13 +49,15 @@
 						</th>
 						<td>
 							<g:if test="${platformInstance && platformInstance.org}">
-								<g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
-								<g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
-									<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-										  data-content="${RDStore.OT_PROVIDER.getI10n("value")}">
-										<i class="certificate grey icon"></i>
-									</span>
-								</g:if>
+								<div class="la-flexbox">
+									<g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
+										<span class="la-long-tooltip la-popup-tooltip la-delay"
+											  data-content="${RDStore.OT_PROVIDER.getI10n("value")}">
+											<i class="handshake outline grey icon la-list-icon"></i>
+										</span>
+									</g:if>
+									<g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
+								</div>
 							</g:if>
 							<g:elseif test="${record.providerUuid}">
 								${record.providerName}

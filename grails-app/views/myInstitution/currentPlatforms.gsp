@@ -42,13 +42,15 @@
             </th>
             <td>
                 <g:if test="${platformInstance.org}">
-                    <g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
+                    <div class="la-flexbox">
                     <g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                        <span class="la-long-tooltip la-popup-tooltip la-delay"
                               data-content="${RDStore.OT_PROVIDER.getI10n("value")}">
-                            <i class="certificate grey icon"></i>
+                            <i class="grey handshake outline icon la-list-icon"></i>
                         </span>
                     </g:if>
+                    </div>
+                    <g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
                 </g:if>
             </td>
             <td>

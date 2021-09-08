@@ -58,7 +58,7 @@
 
                         <g:if test="${!role.isShared && role.sharedFrom}">
                             <span  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.sharedFrom')}">
-                                <i class="green alternate share icon"></i>
+                                <i class="grey alternate share icon"></i>
                             </span>
                         </g:if>
 

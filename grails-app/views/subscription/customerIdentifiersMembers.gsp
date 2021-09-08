@@ -63,7 +63,7 @@
                                     action="deleteCustomerIdentifier"
                                     id="${subscription.id}"
                                     params="${[deleteCI:pair.id]}"
-                                    class="ui button icon red js-open-confirm-modal"
+                                    class="ui button icon red la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.customeridentifier", args: [""+pair.getProvider()+" : "+pair.platform+" "+pair.value])}"
                                     data-confirm-term-how="delete"
                                     role="button"
