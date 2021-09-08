@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.base.BaseExport;de.laser.reporting.myInstitution.GenericHelper;de.laser.helper.DateUtils;de.laser.Links;de.laser.helper.RDStore" %>
+<%@ page import="de.laser.reporting.export.base.BaseExport;de.laser.reporting.myInstitution.GenericHelper;de.laser.helper.DateUtils;de.laser.Links;de.laser.helper.RDStore;de.laser.Person;de.laser.RefdataValue;de.laser.helper.RDConstants;de.laser.Contact;de.laser.Identifier" %>
 <laser:serviceInjection/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
@@ -59,7 +59,49 @@
         </header>
         <article>
             <h2><g:message code="default.identifiers.label"/></h2>
-
+            <g:set var="objectIds" value="${identifierService.prepareIDsForTable(license, institution).objectIds}" />
+            <table>
+                <g:each in="${objectIds}" var="row">
+                    <g:set var="namespace" value="${row.getKey()}"/>
+                    <g:each in="${row.getValue()}" var="ident">
+                        <tr>
+                            <td>
+                                ${namespace}
+                                <g:if test="${ident instanceof Identifier && ident.ns.getI10n("description")}">
+                                    <i>${ident.ns.getI10n("description")}</i>
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${ident instanceof Identifier}">
+                                    <g:if test="${!ident.instanceOf}">
+                                        ${ident.value}
+                                    </g:if>
+                                    <g:else>${ident.value}</g:else>
+                                    <g:if test="${ident.ns.urlPrefix}"><a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="external alternate icon"></i></a></g:if>
+                                </g:if>
+                                <g:else>
+                                    ${ident}
+                                </g:else>
+                            </td>
+                            <td>
+                                <g:if test="${ident instanceof Identifier}">
+                                    ${ident.note}
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${ident instanceof Identifier}">
+                                    <g:if test="${!ident.instanceOf && AuditConfig.getConfig(ident)}">
+                                        <span class="green">V</span>
+                                    </g:if>
+                                    <g:elseif test="${ident.instanceOf}">
+                                        <span class="blue">V</span>
+                                    </g:elseif>
+                                </g:if>
+                            </td>
+                        </tr>
+                    </g:each>
+                </g:each>
+            </table>
         </article>
         <article>
             <h2><g:message code="default.object.generalInformation"/></h2>
@@ -116,11 +158,11 @@
                     </li>
                     <g:if test="${license.instanceOf && institution.id == license.getLicensingConsortium().id}">
                         <li>
-                            <strong><g:message code="license.linktoLicense"/>: </strong><g:link controller="license" action="show" id="${license.instanceOf.id}">${license.instanceOf.reference}</g:link>
+                            <strong><g:message code="license.linktoLicense"/>: </strong><g:link controller="license" action="show" id="${license.instanceOf.id}" absolute="true">${license.instanceOf.reference}</g:link>
                         </li>
                     </g:if>
                     <li>
-                        <strong><g:message code="license.isPublicForApi.label"/>: </strong>
+                        <strong><g:message code="license.isPublicForApi.label"/>: </strong>${license.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
                         <g:if test="${auditService.getAuditConfig(license, 'isPublicForApi')}">
                             <span class="green">V</span>
                         </g:if>
@@ -151,7 +193,7 @@
                 <table>
                     <g:each in="${linkedSubscriptions}" var="subscription">
                         <tr>
-                            <td>${subscription.dropdownNamingConvention(institution)}</td>
+                            <td><g:link controller="subscription" action="show" id="${subscription.id}" absolute="true">${subscription.dropdownNamingConvention(institution)}</g:link></td>
                         </tr>
                     </g:each>
                 </table>
@@ -174,7 +216,7 @@
                                     memberRunningTimes += " ${formatDate(date: member.endDate, format: message(code: 'default.date.format.notime'))})"
                                 else memberRunningTimes += ")"
                             %>
-                            <td>${member.reference} ${memberRunningTimes}</td>
+                            <td><g:link controller="license" action="show" id="${member.id}" absolute="true">${member.reference} ${memberRunningTimes}</g:link></td>
                             <td>(${subCount[0]} <g:message code="consortium.member.plural"/>)</td>
                         </tr>
                     </g:each>
@@ -309,6 +351,110 @@
         <article>
             <header>
                 <h2><g:message code="license.licensor.label"/></h2>
+                <table>
+                    <g:each in="${visibleOrgRelations}" var="role">
+                        <g:if test="${role.org}">
+                            <tr>
+                                <td>
+                                    <g:link controller="organisation" action="show" id="${role.org.id}" absolute="true">${role.org.name}</g:link>
+                                </td>
+                            </tr>
+                            <g:if test="${(Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
+                                    Person.getPublicByOrgAndObjectResp(role.org, license, 'Specific license editor') ||
+                                    Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', institution) ||
+                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, license, 'Specific license editor', institution))}">
+                                <%-- public --%>
+                                <g:if test="${ Person.getPublicByOrgAndFunc(role.org, 'General contact person') || Person.getPublicByOrgAndObjectResp(role.org, license, 'Specific license editor')  }">
+                                    <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'General contact person')}" var="func">
+                                        <tr>
+                                            <td>
+                                                <i>${message(code:'address.public')}</i>
+                                            </td>
+                                            <td>
+                                                ${RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value')}
+                                            </td>
+                                            <td>
+                                                <g:link controller="organisation" action="${institution.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
+                                            </td>
+                                            <td>
+                                                <ul>
+                                                    <g:each in="${Contact.findAllByPrsAndContentType(func, RDStore.CCT_EMAIL)}" var="email">
+                                                        <li>${email.contentType.value} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                    </g:each>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                    <g:each in="${Person.getPublicByOrgAndObjectResp(role.org, license, 'Specific license editor')}" var="resp">
+                                        <tr>
+                                            <td>
+                                                <i>${message(code:'address.public')}</i>
+                                            </td>
+                                            <td>
+                                                ${RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value')}
+                                            </td>
+                                            <td>
+                                                <g:link controller="organisation" action="${institution.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${resp}</g:link>
+                                            </td>
+                                            <td>
+                                                <ul>
+                                                    <g:each in="${Contact.findAllByPrsAndContentType(resp, RDStore.CCT_EMAIL)}" var="email">
+                                                        <li>${email.contentType.'value'} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                    </g:each>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                </g:if>
+                                <%-- public --%>
+                                <%-- private --%>
+                                <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', institution) || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, license, 'Specific license editor', institution)}">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg)}" var="func">
+                                        <tr>
+                                            <td>
+                                                <i>${message(code:'address.private')}</i>
+                                            </td>
+                                            <td>
+                                                ${RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value')}
+                                            </td>
+                                            <td>
+                                                <g:link controller="organisation" action="${institution.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
+                                            </td>
+                                            <td>
+                                                <ul>
+                                                    <g:each in="${Contact.findAllByPrsAndContentType(func, RDStore.CCT_EMAIL)}" var="email">
+                                                        <li>${email.contentType.'value'} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                    </g:each>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, license, 'Specific license editor', institution)}" var="resp">
+                                        <tr>
+                                            <td>
+                                                <i>${message(code:'address.private')}</i>
+                                            </td>
+                                            <td>
+                                                ${RefdataValue.getByValue('Specific license editor').getI10n('value')}
+                                            </td>
+                                            <td>
+                                                <g:link controller="organisation" action="${institution.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${resp}</g:link>
+                                            </td>
+                                            <td>
+                                                <ul>
+                                                    <g:each in="${Contact.findAllByPrsAndContentType(resp, RDStore.CCT_EMAIL)}" var="email">
+                                                        <li>${email.contentType.'value'} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                    </g:each>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                </g:if>
+                                <%-- private --%>
+                            </g:if>
+                        </g:if>
+                    </g:each>
+                </table>
             </header>
         </article>
     </body>

@@ -218,7 +218,6 @@ class LicenseController {
         List bm = pu.stopBenchmark()
         result.benchMark = bm
         if(params.export) {
-            result.links = linksGenerationService.getSourcesAndDestinations(result.license, result.user, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE)
             result.availablePropDefGroups = PropertyDefinitionGroup.getAvailableGroups(result.institution, License.class.name)
             result.allPropDefGroups = result.license.getCalculatedPropDefGroups(result.institution)
             result.prop_desc = PropertyDefinition.LIC_PROP
@@ -228,6 +227,7 @@ class LicenseController {
             result.tasks = taskService.getTasksForExport((User) result.user, (Org) result.institution, (License) result.license)
             result.documents = docstoreService.getDocumentsForExport((Org) result.institution, (License) result.license)
             result.notes = docstoreService.getNotesForExport((Org) result.institution, (License) result.license)
+
             Map<String, Object> pageStruct = [
                     width       : 85,
                     height      : 35,
