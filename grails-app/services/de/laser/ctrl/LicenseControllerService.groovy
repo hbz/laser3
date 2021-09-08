@@ -79,6 +79,10 @@ class LicenseControllerService {
     }
 
     boolean showConsortiaFunctions(License license) {
-        return license.getLicensingConsortium()?.id == contextService.getOrg().id && license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
+        showConsortiaFunctions(contextService.getOrg(), license)
+    }
+
+    boolean showConsortiaFunctions(Org contextOrg, License license) {
+        return license.getLicensingConsortium()?.id == contextOrg.id && license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
     }
 }

@@ -41,7 +41,7 @@
             <%
                 Set documentSet = instance.documents
                 if(instance instanceof Org && inContextOrg){
-                    documentSet.addAll(orgDocumentService.getTargettedDocuments(instance))
+                    documentSet.addAll(docstoreService.getTargettedDocuments(instance))
                 }
             %>
             <g:each in="${documentSet.sort{it?.owner?.title?.toLowerCase()}}" var="docctx">
@@ -64,7 +64,7 @@
                             case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
                                 break
                             default:
-                                if(docctx.shareConf) log.debug(docctx.shareConf)
+                                if(docctx.shareConf) println docctx.shareConf
                                 else visible = true
                                 break
                         }
