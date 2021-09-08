@@ -6,7 +6,7 @@ import de.laser.annotations.RefdataAnnotation
 import de.laser.traits.ShareableTrait
 import org.grails.datastore.mapping.engine.event.PostUpdateEvent
 
-class DocContext implements ShareableTrait {
+class DocContext implements ShareableTrait, Comparable {
 
     def deletionService
     def shareService
@@ -96,5 +96,14 @@ class DocContext implements ShareableTrait {
     void beforeDelete(PostUpdateEvent event) {
         log.debug('beforeDelete')
         deleteShare_trait()
+    }
+
+    int compareTo(Object o) {
+        int result = 0
+        DocContext dc = (DocContext) o
+        if(owner && dc.owner) {
+            result = owner.title?.toLowerCase()?.compareTo(dc.owner.title?.toLowerCase())
+        }
+        result
     }
 }

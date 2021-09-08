@@ -31,6 +31,13 @@ class TaskService {
         result
     }
 
+    Set<Task> getTasksForExport(User user, Org contextOrg, object) {
+        Set<Task> result = []
+        result.addAll(getTasksByResponsiblesAndObject(user, contextOrg, object))
+        result.addAll(getTasksByCreatorAndObject(user,  object))
+        result
+    }
+
     List<Task> getTasksByObject(obj) {
         List<Task> tasks = []
         switch (obj.getClass().getSimpleName()) {

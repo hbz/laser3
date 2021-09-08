@@ -17,7 +17,7 @@
     Set<DocContext> documentSet = ownobj.documents
 
     if(ownobj instanceof Org && ownobj.id == contextOrg.id) {
-        documentSet.addAll(orgDocumentService.getTargettedDocuments(ownobj))
+        documentSet.addAll(docstoreService.getTargettedDocuments(ownobj))
     }
 
     documentSet.sort{it.owner?.title}.each{ it ->

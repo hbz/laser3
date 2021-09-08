@@ -20,7 +20,7 @@ class LaserInjectionTagLib {
         g.set( var:'instAdmService',            bean:'instAdmService' )
         g.set( var:'identifierService',         bean:'identifierService' )
         g.set( var:'linksGenerationService',    bean:'linksGenerationService' )
-        g.set( var:'orgDocumentService',        bean:'orgDocumentService' )
+        g.set( var:'docstoreService',           bean:'docstoreService' )
         g.set( var:'packageService',            bean:'packageService')
         g.set( var:'pendingChangeService',      bean:'pendingChangeService')
         g.set( var:'subscriptionsQueryService', bean:'subscriptionsQueryService' )
