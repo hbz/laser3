@@ -255,6 +255,7 @@
 @license          :    #008C25; /* Dark Green */
 @organisation      :   @teal; /* bluegreen */
 @platform      :    @o-yellow;
+@workflow      :    @brown;
 
 
 /*---  Colors for Site Elements---*/

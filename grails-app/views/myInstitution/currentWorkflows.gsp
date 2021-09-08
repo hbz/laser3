@@ -13,8 +13,9 @@
     <semui:crumb message="menu.my.workflows" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header la-clear-before la-noMargin-top">
-    <i class="ui icon tasks"></i> ${message(code:'menu.my.workflows')} : ${currentWorkflows.size()}
+<h1 class="ui icon header la-noMargin-top"><semui:headerTitleIcon type="Workflow"/>
+    ${message(code:'menu.my.workflows')}
+    <semui:totalNumber total="${currentWorkflows.size()}"/>
     %{-- <semui:totalNumber total="${currentWorkflows.size()}"/> --}%
 </h1>
 

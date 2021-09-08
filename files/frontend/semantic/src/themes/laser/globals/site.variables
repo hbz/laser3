@@ -230,7 +230,7 @@
 @violet           : #76007A;
 @purple           : #A333C8;
 @pink             : #E03997;
-@brown            : #A5673F;
+@brown            : #6b1d1d;
 @grey             : #767676;
 @black            : #1B1C1D; /* laser-black -matching the blue */
 

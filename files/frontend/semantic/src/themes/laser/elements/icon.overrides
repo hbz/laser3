@@ -1932,5 +1932,5 @@ i.inverted.circular.icon.la-filter-icon {
   background-color: #8699b1!important;
 }
 .la-rotate {
-  transform: rotate(90deg);
+  transform: translateY(3px) rotate(90deg);
 }
