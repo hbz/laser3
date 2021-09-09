@@ -55,8 +55,8 @@
                                         data-content="${message(code: "surveyEvaluation.label")} anzeigen">
                                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                                     params="[surveyConfigID: surveyConfig.id]"
-                                                    class="ui icon button la-modern-button">
-                                                <i class="icon blue chart pie"></i>
+                                                    class="ui icon blue button la-modern-button">
+                                                <i class="icon chart pie"></i>
                                             </g:link>
                                     </span>
                             </span>
