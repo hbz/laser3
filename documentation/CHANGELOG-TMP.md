@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3786    09.09.2021  dev     2.2         David   Feature     'Meine Workflows' überarbeiten
+
 1884    03.09.2021  dev     2.2         Moe     Feature     Kosten in neue Lizenz kopieren ermöglichen?
 
 3778    02.09.2021  dev     2.2         Moe     Feature     Umfrage-Merkmale: Pflichtmerkmale

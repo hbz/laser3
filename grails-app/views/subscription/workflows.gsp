@@ -61,22 +61,24 @@
                     </g:link>
                 </td>
                 <td>
-                    <g:set var="tasks" value="${wf.getSequence()}" />
-                    <g:each in="${tasks}" var="task" status="ti">
-                        <g:if test="${task.child}">
-                            [
-                                <laser:workflowTask task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
+                    <div class="ui buttons workflowOverrideCss">
+                        <g:set var="tasks" value="${wf.getSequence()}" />
+                        <g:each in="${tasks}" var="task" status="ti">
+                            <g:if test="${task.child}">
+                                <div style="width:8px"></div>
+                                    <laser:workflowTask task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
 
-                                <g:set var="children" value="${task.child.getSequence()}" />
-                                <g:each in="${children}" var="child" status="ci">
-                                    <laser:workflowTask task="${child}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + child.id]}" />
-                                </g:each>
-                            ]
-                        </g:if>
-                        <g:else>
-                            <laser:workflowTask task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
-                        </g:else>
-                    </g:each>
+                                    <g:set var="children" value="${task.child.getSequence()}" />
+                                    <g:each in="${children}" var="child" status="ci">
+                                        <laser:workflowTask task="${child}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + child.id]}" />
+                                    </g:each>
+                                <div style="width:8px"></div>
+                            </g:if>
+                            <g:else>
+                                <laser:workflowTask task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
+                            </g:else>
+                        </g:each>
+                    </div>
                 </td>
                 <td>
                     ${DateUtils.getSDF_NoTime().format(wfInfo.lastUpdated)}
@@ -287,6 +289,16 @@
     </g:each>
 
     <div id="wfModal" class="ui modal"></div>
+
+<style>
+.workflowOverrideCss .label {
+    margin-right: 3px !important;
+}
+.workflowOverrideCss .label .icon {
+    margin: 0 !important;
+    padding-top: 1px;
+}
+</style>
 
     <laser:script file="${this.getGroovyPageFileName()}">
         $('.wfModalLink').on('click', function(e) {

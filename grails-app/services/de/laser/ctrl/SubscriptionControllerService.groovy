@@ -18,6 +18,7 @@ import de.laser.properties.SubscriptionProperty
 import de.laser.reporting.local.SubscriptionReporting
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter5ApiSource
+import de.laser.workflow.WfWorkflow
 import grails.doc.internal.StringEscapeCategory
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
@@ -2940,6 +2941,12 @@ class SubscriptionControllerService {
             }
             result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(result.contextOrg, result.subscription)
 
+
+            result.workflowCount = WfWorkflow.executeQuery(
+                    'select count(wf) from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg',
+                    [sub: result.subscription, ctxOrg: result.contextOrg]
+            )[0]
+
             if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
                 if (!result.subscription.isVisibleBy(result.user)) {
                     log.debug("--- NOT VISIBLE ---")
@@ -3007,6 +3014,12 @@ class SubscriptionControllerService {
         if (params.info) {
             result.info = params.info // @ currentWorkflows @ dashboard
         }
+
+        result.workflows = WfWorkflow.executeQuery(
+                'select wf from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg order by wf.id desc',
+                [sub: result.subscription, ctxOrg: result.contextOrg]
+        )
+        result.workflowCount = result.workflows.size()
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }
