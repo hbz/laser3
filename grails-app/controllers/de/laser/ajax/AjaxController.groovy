@@ -866,7 +866,7 @@ class AjaxController {
 
       request.setAttribute("editable", params.editable == "true")
       boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
-        if(params.withoutRender == "false"){
+        if(Boolean.valueOf(params.withoutRender)){
             if(params.url){
                 redirect(url: params.url)
             }else {

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3776    09.09.2021  dev     2.2         Moe     Feature     Lizenzverwaltung 
+
 3786    09.09.2021  dev     2.2         David   Feature     'Meine Workflows' überarbeiten
 
 3785    09.09.2021  dev     2.2         Andreas Feature     Zurücksetzen der Statistikdaten implementiert

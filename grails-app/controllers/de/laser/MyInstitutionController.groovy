@@ -5,6 +5,7 @@ import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.InstitutionsService
 import de.laser.annotations.DebugAnnotation
 import de.laser.ctrl.MyInstitutionControllerService
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.finance.PriceItem
 import de.laser.properties.LicenseProperty
@@ -86,6 +87,7 @@ class MyInstitutionController  {
     GokbService gokbService
     ExportClickMeService exportClickMeService
     WorkflowService workflowService
+    ManagementService managementService
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
@@ -939,6 +941,20 @@ join sub.orgRelations or_sub where
                 return exportService.generateXLSXWorkbook(sheetData)
             case 'csv': return exportService.generateSeparatorTableString(titles, subscriptionData, ',')
         }
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    def subscriptionsManagement() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        params.tab = params.tab ?: 'generalProperties'
+
+        result << managementService.subscriptionsManagement(this, params)
+
+
+        result
+
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")', wtc = 2)
