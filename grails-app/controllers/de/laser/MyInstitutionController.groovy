@@ -2293,13 +2293,13 @@ join sub.orgRelations or_sub where
                 try {
                     URL url = URI.create(request.getHeader('referer')).toURL()
                     if (url.getPath() != urlKey) {
-                        cache.remove(fmKey)
+                        cache.put(fmKey, [ filterStatus: RDStore.WF_WORKFLOW_STATUS_OPEN.id ])
                         cache.remove(pmKey)
                     }
                 } catch (Exception e) { }
             }
             if (filterMap.get('filter') == 'false') {
-                cache.remove(fmKey)
+                cache.put(fmKey, [ filterStatus: RDStore.WF_WORKFLOW_STATUS_OPEN.id ])
                 cache.remove(pmKey)
             }
             else {
