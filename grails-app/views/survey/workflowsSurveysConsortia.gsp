@@ -369,7 +369,7 @@
                         </td>
                         <td>
                             <g:link controller="survey" action="show" id="${surveyInfo.id}"
-                                    class="ui button icon la-modern-button"
+                                    class="ui button blue icon la-modern-button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.change.universal')}">
                                 <i class="pencil icon"></i>

@@ -235,7 +235,7 @@
                                                         <g:set var="oid" value="${link.class.name}:${link.id}" />
                                                         <g:if test="${personInstance.roleLinks?.size() > 1}">
                                                             <div class="ui icon buttons">
-                                                                <g:link class="ui negative button js-open-confirm-modal"
+                                                                <g:link class="ui negative button la-modern-button js-open-confirm-modal"
                                                                         data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.function', args: [link.positionType?.getI10n('value')])}"
                                                                         data-confirm-term-how="unlink"
                                                                         controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]"

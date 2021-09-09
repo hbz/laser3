@@ -55,7 +55,7 @@
 <semui:messages data="${flash}"/>
 
 <div class="ui stackable grid">
-    <div class="twelve wide column">
+    <div class="ten wide column">
 
         <div class="la-inline-lists">
             <div class="ui card">
@@ -281,7 +281,7 @@
                                                   ]}" />--%>
                                         <g:if test="${editable}">
                                             <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
-                                                <g:link class="ui negative icon button la-selectable-button js-open-confirm-modal"
+                                                <g:link class="ui negative icon button la-modern-button la-selectable-button js-open-confirm-modal"
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
                                                         data-confirm-term-how="unlink"
                                                         action="unlinkOrg" params="[id: orgInstance.id, combo: row.id]"
@@ -619,8 +619,10 @@
 
         </div>
     </div>
-    <aside class="four wide column la-sidekick">
-        <g:render template="/templates/aside1" model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
+    <aside class="six wide column la-sidekick">
+        <div class="ui one cards">
+            <g:render template="/templates/aside1" model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
+        </div>
     </aside>
 </div>
 

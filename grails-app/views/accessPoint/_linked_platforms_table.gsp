@@ -21,7 +21,7 @@
       </td>
       <g:if test="${ (accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg ) || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
         <td class="center aligned">
-          <g:link class="ui negative icon button button js-open-confirm-modal" id="${linkedPlatform.aplink.id}"
+          <g:link class="ui negative icon button la-modern-button js-open-confirm-modal" id="${linkedPlatform.aplink.id}"
                   controller="accessPoint" action="unlinkPlatform"
                   data-confirm-tokenMsg="${message(code: 'confirm.dialog.unlink.accessPoint.platform',
                       args: [accessPoint.name, linkedPlatform.platform.name])}"
