@@ -28,6 +28,9 @@ class SessionCacheWrapper {
         }
         result
     }
+    List getKeys() {
+        session.getAttributeNames().findAll{ it.startsWith(keyPrefix) }
+    }
     def put(String key, def value) {
         session.setAttribute(keyPrefix + key, value)
     }

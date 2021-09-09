@@ -1575,11 +1575,6 @@ class SubscriptionController {
     def workflows() {
         Map<String,Object> ctrlResult = subscriptionControllerService.workflows( params )
 
-        ctrlResult.result.workflows = WfWorkflow.executeQuery(
-                'select wf from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg order by wf.id desc',
-                [sub: ctrlResult.result.subscription, ctxOrg: ctrlResult.result.contextOrg]
-        )
-
         render view: 'workflows', model: ctrlResult.result
     }
 

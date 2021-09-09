@@ -173,7 +173,7 @@
                         <label for="${prefix}_workflow">${message(code:'workflow.label')} &uarr;</label> %{-- TODO --}%
                         <p>
                             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + task.getWorkflow().id]}">
-                                <i class="icon circle purple"></i> ${task.getWorkflow().title}
+                                <i class="icon circle brown"></i> ${task.getWorkflow().title}
                             </g:link>
                         </p>
                     </div>
