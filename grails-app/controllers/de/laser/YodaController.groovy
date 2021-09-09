@@ -16,7 +16,10 @@ import de.laser.properties.PersonProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import de.laser.stats.Counter4ApiSource
+import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5ApiSource
+import de.laser.stats.Counter5Report
+import de.laser.stats.LaserStatsCursor
 import de.laser.system.SystemActivityProfiler
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemSetting
@@ -556,41 +559,19 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     Map<String, Object> manageStatsSources() {
-        Map<String, Object> result = [c4sources: Counter4ApiSource.findAll(),
-                                      c5sources: Counter5ApiSource.findAll(),
-                                      platforms: Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')]
-        /*List<Map<String, Object>> testSources = []
-        //Bloomsbury
-        //https://api-fivestar.highwire.org/sushi/reports/tr?customer_id=1000000001&begin_date=2018-10&end_date=2018-11&attributes_to_show=YOP&api_key=xxxxx-xxxxx-xxxxx&platform=SiteA
-        testSources << [version: "counter5",
-                        provider: 1803,
-                        platform: 199,
-                        baseUrl: "https://api-fivestar.highwire.org/sushi/reports/",
-                        arguments: [platform: [value: "BloomsburyCollections"]]
-        ]
-        //Preselect
-        testSources << [version: "counter4",
-                        provider: 1051,
-                        platform: 127,
-                        baseUrl: "https://content-select.com/stats/soap/"
-        ]*/
+        Map<String, Object> result = [platforms: Platform.executeQuery('select p from LaserStatsCursor lsc join lsc.platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name') as Set<Platform>]
         result
     }
 
     @Secured(['ROLE_YODA'])
-    def newStatsSource() {
-        Map<String, Object> newSource = [:], arguments = [:]
-        Platform plat = Platform.get(params.platform)
-        newSource.platform = plat
-        newSource.provider = plat.org
-        newSource.version = params.version
-        newSource.baseUrl = params.baseUrl
-        params.list("arg[]")?.eachWithIndex { String arg, int i ->
-            arguments[arg] = [value: params.list("val[]")[i]]
+    def resetStatsData() {
+        boolean fullReset = Boolean.valueOf(params.fullReset)
+        Long platform = params.long("platform")
+        if(fullReset) {
+            Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.platform.id = :plat', [plat: platform])
+            Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.platform.id = :plat', [plat: platform])
         }
-        if(arguments)
-            newSource.arguments = arguments
-        statsSyncService.createSushiSource(newSource)
+        LaserStatsCursor.executeUpdate('delete from LaserStatsCursor lsc where lsc.platform.id = :plat', [plat: platform])
         redirect(action: 'manageStatsSources')
     }
 

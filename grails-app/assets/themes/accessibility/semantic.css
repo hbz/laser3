@@ -1093,7 +1093,7 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 i.icon.la-list-icon {
-  margin: 0 0.5rem 0 0;
+  margin: -0.2rem 0.5rem 0 0;
 }
 
 i.icon.la-list-icon:before {
@@ -7058,15 +7058,15 @@ a.ui.inverted.pink.header:hover {
 /*--- Brown ---*/
 
 .ui.brown.header {
-  color: #A5673F !important;
+  color: #6b1d1d !important;
 }
 
 a.ui.brown.header:hover {
-  color: #975b33 !important;
+  color: #5a1414 !important;
 }
 
 .ui.brown.dividing.header {
-  border-bottom: 2px solid #A5673F;
+  border-bottom: 2px solid #6b1d1d;
 }
 
 /* Inverted */
@@ -7845,7 +7845,7 @@ i.inverted.circular.pink.icon {
 /* Brown */
 
 i.brown.icon {
-  color: #A5673F !important;
+  color: #6b1d1d !important;
 }
 
 i.inverted.brown.icon {
@@ -7854,7 +7854,7 @@ i.inverted.brown.icon {
 
 i.inverted.bordered.brown.icon,
 i.inverted.circular.brown.icon {
-  background-color: #A5673F !important;
+  background-color: #6b1d1d !important;
   color: #FFFFFF !important;
 }
 
@@ -13894,8 +13894,8 @@ i.inverted.circular.icon.la-filter-icon {
 }
 
 .la-rotate {
-  -webkit-transform: rotate(90deg);
-  transform: rotate(90deg);
+  -webkit-transform: translateY(3px) rotate(90deg);
+  transform: translateY(3px) rotate(90deg);
 }
 /*!
  * # Semantic UI 2.4.2 - Image
@@ -15791,8 +15791,8 @@ a.ui.basic.pink.label:hover {
 
 .ui.brown.labels .label,
 .ui.brown.label {
-  background-color: #A5673F !important;
-  border-color: #A5673F !important;
+  background-color: #6b1d1d !important;
+  border-color: #6b1d1d !important;
   color: #FFFFFF !important;
 }
 
@@ -15800,8 +15800,8 @@ a.ui.basic.pink.label:hover {
 
 .ui.brown.labels .label:hover,
 a.ui.brown.label:hover {
-  background-color: #975b33 !important;
-  border-color: #975b33 !important;
+  background-color: #5a1414 !important;
+  border-color: #5a1414 !important;
   color: #FFFFFF !important;
 }
 
@@ -15815,22 +15815,22 @@ a.ui.brown.label:hover {
 /* Ribbon */
 
 .ui.brown.ribbon.label {
-  border-color: #805031 !important;
+  border-color: #431212 !important;
 }
 
 /* Basic */
 
 .ui.basic.brown.label {
   background: none #FFFFFF !important;
-  color: #A5673F !important;
-  border-color: #A5673F !important;
+  color: #6b1d1d !important;
+  border-color: #6b1d1d !important;
 }
 
 .ui.basic.brown.labels a.label:hover,
 a.ui.basic.brown.label:hover {
   background-color: #FFFFFF !important;
-  color: #975b33 !important;
-  border-color: #975b33 !important;
+  color: #5a1414 !important;
+  border-color: #5a1414 !important;
 }
 
 /*--- Grey ---*/
@@ -15861,7 +15861,7 @@ a.ui.grey.label:hover {
 /* Ribbon */
 
 .ui.grey.ribbon.label {
-  border-color: #805031 !important;
+  border-color: #431212 !important;
 }
 
 /* Basic */
@@ -15907,7 +15907,7 @@ a.ui.black.label:hover {
 /* Ribbon */
 
 .ui.black.ribbon.label {
-  border-color: #805031 !important;
+  border-color: #431212 !important;
 }
 
 /* Basic */
@@ -23574,7 +23574,7 @@ legend {
 .ui.grid > .brown.row,
 .ui.grid > .brown.column,
 .ui.grid > .row > .brown.column {
-  background-color: #A5673F !important;
+  background-color: #6b1d1d !important;
   color: #FFFFFF;
 }
 
@@ -28202,11 +28202,11 @@ Floated Menu / Item
 /* Brown */
 
 .ui.brown.table {
-  border-top: 0.2em solid #A5673F;
+  border-top: 0.2em solid #6b1d1d;
 }
 
 .ui.inverted.brown.table {
-  background-color: #A5673F !important;
+  background-color: #6b1d1d !important;
   color: #FFFFFF !important;
 }
 
@@ -29925,15 +29925,15 @@ a.ui.card:hover,
 .ui.brown.cards > .card,
 .ui.cards > .brown.card,
 .ui.brown.card {
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #A5673F, 0px 1px 3px 0px #D4D4D5;
-  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #A5673F, 0px 1px 3px 0px #D4D4D5;
+  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #6b1d1d, 0px 1px 3px 0px #D4D4D5;
+  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #6b1d1d, 0px 1px 3px 0px #D4D4D5;
 }
 
 .ui.brown.cards > .card:hover,
 .ui.cards > .brown.card:hover,
 .ui.brown.card:hover {
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #975b33, 0px 1px 3px 0px #BCBDBD;
-  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #975b33, 0px 1px 3px 0px #BCBDBD;
+  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #5a1414, 0px 1px 3px 0px #BCBDBD;
+  box-shadow: 0px 0px 0px 1px #D4D4D5, 0px 2px 0px 0px #5a1414, 0px 1px 3px 0px #BCBDBD;
 }
 
 /* Grey */

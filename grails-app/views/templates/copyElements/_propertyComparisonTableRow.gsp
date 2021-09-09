@@ -336,7 +336,7 @@
                                                 <span class="la-popup-tooltip la-delay"
                                                       data-content="${message(code: 'property.notInherited.fromConsortia')}"
                                                       data-position="top right"><i
-                                                        class="large icon cart arrow down blue"></i></span>
+                                                        class="large icon cart arrow down grey"></i></span>
                                             </g:elseif>
 
                                         </g:if>

@@ -13,7 +13,7 @@
     <semui:crumb message="menu.my.workflows" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.my.workflows')}
+<h1 class="ui icon header la-noMargin-top"><semui:headerTitleIcon type="Workflow"/>${message(code:'menu.my.workflows')}
 <semui:totalNumber total="${total}"/>
 </h1>
 

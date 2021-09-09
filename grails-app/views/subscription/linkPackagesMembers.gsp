@@ -185,7 +185,7 @@
                                     <span data-position="top right"
                                           class="la-popup-tooltip la-delay"
                                           data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                        <i class="thumbtack blue icon"></i>
+                                        <i class="thumbtack grey la-rotate icon"></i>
                                     </span>
                                 </g:if>
 

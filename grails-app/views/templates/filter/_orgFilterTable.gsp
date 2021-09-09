@@ -217,33 +217,35 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <th scope="row" class="la-th-column la-main-object">
-                    <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
-                        ${fieldValue(bean: org, field: "name")} <br />
-                        <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
-                            (${fieldValue(bean: org, field: "shortname")})
+                    <div class="la-flexbox">
+                        <g:if test="${org.getCustomerType() in ['ORG_INST']}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${org.getCustomerTypeI10n()}">
+                                <i class="chess rook grey la-list-icon icon"></i>
+                            </span>
                         </g:if>
-                    </g:if>
-                    <g:else>
-                        <g:link controller="organisation" action="show" id="${org.id}" params="${actionName == "currentProviders" ? [my: true] : [:]}">
-                            ${fieldValue(bean: org, field: "name")}
+                        <g:elseif test="${org.gokbId != null && RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${RDStore.OT_PROVIDER.getI10n("value")}">
+                                <i class="grey handshake outline la-list-icon icon"></i>
+                            </span>
+                        </g:elseif>
+                        <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
+                            ${fieldValue(bean: org, field: "name")} <br />
                             <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
-                                <br />
                                 (${fieldValue(bean: org, field: "shortname")})
                             </g:if>
-                        </g:link>
-                    </g:else>
-                    <g:if test="${org.getCustomerType() in ['ORG_INST']}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${org.getCustomerTypeI10n()}">
-                            <i class="chess rook grey icon"></i>
-                        </span>
-                    </g:if>
-                    <g:elseif test="${org.gokbId != null && RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${RDStore.OT_PROVIDER.getI10n("value")}">
-                            <i class="certificate grey icon"></i>
-                        </span>
-                    </g:elseif>
+                        </g:if>
+                        <g:else>
+                            <g:link controller="organisation" action="show" id="${org.id}" params="${actionName == "currentProviders" ? [my: true] : [:]}">
+                                ${fieldValue(bean: org, field: "name")}
+                                <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
+                                    <br />
+                                    (${fieldValue(bean: org, field: "shortname")})
+                                </g:if>
+                            </g:link>
+                        </g:else>
+                    </div>
                 </th>
             </g:if>
 

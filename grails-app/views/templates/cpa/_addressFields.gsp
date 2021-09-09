@@ -1,7 +1,7 @@
 <%@ page import="de.laser.Address; de.laser.FormService; de.laser.helper.RDStore; de.laser.RefdataValue; de.laser.RefdataCategory;de.laser.helper.RDConstants; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder;" %>
 
 <laser:serviceInjection />
-<div id="addressFields">
+<div id="addressFields1">
         <g:if test="${multipleAddresses}">
             <input type="hidden" name="multipleAddresses" value="multipleAddresses"/>
         </g:if>

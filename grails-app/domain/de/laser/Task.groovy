@@ -97,4 +97,30 @@ class Task {
 
         result
     }
+
+    def getDisplayArgs() {
+        Map<String, Object> displayArgs = [action: 'show']
+        if (license) {
+            displayArgs.controller = 'license'
+            displayArgs.id = license.id
+        }
+        else if (org) {
+            displayArgs.controller = 'organisation'
+            displayArgs.id = org.id
+        }
+        else if (pkg) {
+            displayArgs.controller = 'package'
+            displayArgs.id = pkg.id
+        }
+        else if (subscription) {
+            displayArgs.controller = 'subscription'
+            displayArgs.id = subscription.id
+        }
+        else if (surveyConfig) {
+            displayArgs.controller = 'survey'
+            displayArgs.id = surveyConfig.surveyInfo.id
+            displayArgs.surveyConfigID = surveyConfig.id
+        }
+        displayArgs
+    }
 }

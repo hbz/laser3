@@ -220,12 +220,12 @@ class SemanticUiTagLib {
                         else hasAuditConfig = auditService.getAuditConfig(obj.instanceOf, objAttr)
                         if (hasAuditConfig) {
                             if (obj.isSlaved) {
-                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
+                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
                                 out << '<i aria-hidden="true" class="icon thumbtack grey la-rotate"></i>'
                                 out << '</span>'
                             }
                             else {
-                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
+                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
                                 //out <<   '<button class="ui icon mini green button">'
                                 out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
                                 out << '</span>'
@@ -292,12 +292,12 @@ class SemanticUiTagLib {
 
                         if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
                             if (obj.isSlaved) {
-                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack blue"></i>'
+                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
+                                out << '<i aria-hidden="true" class="icon thumbtack grey la-rotate"></i>'
                                 out << '</span>'
                             }
                             else {
-                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
+                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
                                 //out <<   '<button class="ui icon mini green button">'
                                 out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
                                 out << '</span>'
@@ -311,19 +311,19 @@ class SemanticUiTagLib {
                         if (auditService.getAuditConfig(obj, objAttr)) {
 
                             if (obj.isSlaved) {
-                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack blue"></i>'
+                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
+                                out << '<i aria-hidden="true" class="icon thumbtack grey la-rotate"></i>'
                                 out << '</span>'
                             }
                             else {
-                                out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
+                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
                                 //out <<   '<button class="ui icon mini green button">'
                                 out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
                                 out << '</span>'
                             }
                         }
                         else {
-                            out << '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird nicht vererbt" data-position="top right">'
+                            out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird nicht vererbt" data-position="top right">'
                             out << '<i aria-hidden="true" class="icon la-thumbtack slash"></i>'
                             out << '</span>'
                         }

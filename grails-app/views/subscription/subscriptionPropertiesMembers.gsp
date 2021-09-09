@@ -293,7 +293,7 @@
                                             <span data-position="top right"
                                                   class="la-popup-tooltip la-delay"
                                                   data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                                <i class="thumbtack blue icon"></i>
+                                                <i class="thumbtack grey la-rotate icon"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${subscr.getCustomerType() in ['ORG_INST']}">
@@ -467,7 +467,7 @@
                                                     <span data-position="top right"
                                                           class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                                        <i class="thumbtack blue icon"></i>
+                                                        <i class="thumbtack grey la-rotate icon"></i>
                                                     </span>
                                                 </g:if>
 
@@ -736,7 +736,7 @@
                                         <span data-position="top right"
                                               class="la-popup-tooltip la-delay"
                                               data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                            <i class="thumbtack blue icon"></i>
+                                            <i class="thumbtack grey la-rotate icon"></i>
                                         </span>
                                     </g:if>
 
