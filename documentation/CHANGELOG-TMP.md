@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3785    09.09.2021  dev     2.2         Andreas Feature     Zurücksetzen der Statistikdaten implementiert
+
+3784    08.09.2021  dev     2.2         Andreas Bug         fehlende Kontrollstruktur bei ungültigem Schlüsselpaar nachgereicht
+
 3347    08.09.2021  dev     2.2         Andreas Feature     Vertragsexport per PDF
 
 1900    06.09.2021  dev     2.2         Andreas Feature     Mailtemplate der fälligen Termine angepasst

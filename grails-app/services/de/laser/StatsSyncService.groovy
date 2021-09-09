@@ -175,7 +175,6 @@ class StatsSyncService {
                 response.success = { resp, json ->
                     if(resp.status == 200) {
                         c4SushiSources.addAll(json.counter4ApiSources)
-                        //c4SushiSources.add(json.counter4ApiSources.find { obj -> obj[1].contains('beck') }) //remove resp. reset if Beck situation is cleared!
                         c5SushiSources.addAll(json.counter5ApiSources)
                     }
                     else {
@@ -655,12 +654,15 @@ class StatsSyncService {
             http.request(Method.GET, ContentType.JSON) { req ->
                 response.success = { resp, json ->
                     if(resp.status == 200) {
-                        if(!requestList) {
+                        if(json instanceof ArrayList) {
+                            result.list = json
+                        }
+                        else if(!json.containsKey("Exception") && !requestList) {
                             result.header = json["Report_Header"]
                             result.items = json["Report_Items"]
                         }
                         else {
-                            result.list = json
+                            log.error(json["Exception"]["Message"])
                         }
                     }
                     else {
