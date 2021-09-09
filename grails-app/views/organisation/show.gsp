@@ -55,7 +55,7 @@
 <semui:messages data="${flash}"/>
 
 <div class="ui stackable grid">
-    <div class="twelve wide column">
+    <div class="ten wide column">
 
         <div class="la-inline-lists">
             <div class="ui card">
@@ -619,8 +619,10 @@
 
         </div>
     </div>
-    <aside class="four wide column la-sidekick">
-        <g:render template="/templates/aside1" model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
+    <aside class="six wide column la-sidekick">
+        <div class="ui one cards">
+            <g:render template="/templates/aside1" model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
+        </div>
     </aside>
 </div>
 
