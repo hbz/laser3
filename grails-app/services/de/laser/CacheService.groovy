@@ -119,6 +119,10 @@ class CacheService implements ApplicationContextAware {
 
     /* --- */
 
+    List getKeys() {
+        cache.getKeys()
+    }
+
     def put(def cache, String key, def value) {
         cache.put(new Element(key, value))
     }

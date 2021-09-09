@@ -23,6 +23,9 @@ class EhcacheWrapper {
     def getCache() {
         cache
     }
+    List getKeys() {
+        cache.getKeys().findAll{ it.toString().startsWith(keyPrefix + SEPARATOR) }
+    }
     def put(String key, def value) {
         cacheService.put(cache, keyPrefix + SEPARATOR + key, value)
     }

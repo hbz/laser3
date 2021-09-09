@@ -12,7 +12,7 @@ class WorkflowHelper {
             case    RDStore.WF_WORKFLOW_STATUS_OPEN :
             case    RDStore.WF_TASK_STATUS_OPEN :
             //case    RDStore.WF_CONDITION_STATUS_OPEN :
-                return 'basic la-light-grey'
+                return 'la-light-grey'
                 break
             case    RDStore.WF_WORKFLOW_STATUS_CANCELED :
             case    RDStore.WF_TASK_STATUS_CANCELED :
@@ -57,10 +57,10 @@ class WorkflowHelper {
 
         switch (priority) {
             case    RDStore.WF_TASK_PRIORITY_IMPORTANT :
-                return 'arrow alternate circle up'
+                return 'arrow circle up'
                 break
             case    RDStore.WF_TASK_PRIORITY_OPTIONAL :
-                return 'arrow alternate circle down'
+                return 'arrow circle down'
                 break
             case    RDStore.WF_TASK_PRIORITY_NORMAL :
                 return 'circle'
