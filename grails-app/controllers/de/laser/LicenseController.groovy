@@ -176,7 +176,9 @@ class LicenseController {
 
             pu.setBenchmark('links')
 
-            result.links = linksGenerationService.getSourcesAndDestinations(result.license,result.user)
+            if(params.export)
+                result.links = linksGenerationService.getSourcesAndDestinations(result.license, result.user, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE)
+            else result.links = linksGenerationService.getSourcesAndDestinations(result.license,result.user)
 
             // -- private properties
 
