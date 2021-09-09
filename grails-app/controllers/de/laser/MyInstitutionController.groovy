@@ -2282,7 +2282,7 @@ join sub.orgRelations or_sub where
         }
 
         SessionCacheWrapper cache = contextService.getSessionCache()
-        String urlKey = '/myInstitution/currentWorkflows'
+        String urlKey = 'myInstitution/currentWorkflows'
         String fmKey = urlKey + '/_filterMap'
         String pmKey = urlKey + '/_paginationMap'
 
@@ -2292,7 +2292,7 @@ join sub.orgRelations or_sub where
             if (request.getHeader('referer')) {
                 try {
                     URL url = URI.create(request.getHeader('referer')).toURL()
-                    if (url.getPath() != urlKey) {
+                    if (! url.getPath().endsWith(urlKey)) {
                         cache.put(fmKey, [ filterStatus: RDStore.WF_WORKFLOW_STATUS_OPEN.id ])
                         cache.remove(pmKey)
                     }
