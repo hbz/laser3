@@ -36,12 +36,12 @@
                             </g:else>
                             <td>
                                 <g:if test="${pair instanceof Subscription}">
-                                    <g:link controller="subscription" action="show" id="${pair.id}">
+                                    <g:link controller="subscription" action="show" id="${pair.id}" absolute="true">
                                         ${pair.name}
                                     </g:link>
                                 </g:if>
                                 <g:elseif test="${pair instanceof License}">
-                                    <g:link controller="license" action="show" id="${pair.id}">
+                                    <g:link controller="license" action="show" id="${pair.id}" absolute="true">
                                         ${pair.reference} (${pair.status.getI10n("value")})
                                     </g:link>
                                 </g:elseif>
