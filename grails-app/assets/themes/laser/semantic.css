@@ -30342,7 +30342,8 @@ a.ui.card:hover,
 #container-tasks,
 #container-documents,
 #container-notes,
-#container-provider {
+#container-provider,
+#container-billing {
   width: 100%;
 }
 

@@ -267,7 +267,7 @@
             <div class="ui card" id="licenses"></div>
         <%-- FINANCE, to be reactivated as of ERMS-943 --%>
         <%-- assemble data on server side --%>
-            <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
+%{--            <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
                 <div class="ui card la-dl-no-table">
                     <div class="content">
                         <g:if test="${costItemSums.ownCosts}">
@@ -286,7 +286,7 @@
                         </g:elseif>
                     </div>
                 </div>
-            </g:if>
+            </g:if>--}%
             <g:if test="${usage}">
                 <div class="ui card la-dl-no-table">
                     <div class="content">
@@ -463,6 +463,50 @@
 
                 </div>
             </div>
+            </div>
+            <div id="container-billing">
+                <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
+                    <div class="ui card la-dl-no-table">
+                        <div class="content">
+                            <g:if test="${costItemSums.ownCosts}">
+                                <g:if test="${(contextOrg.id != subscription.getConsortia()?.id && subscription.instanceOf) || !subscription.instanceOf}">
+                                    <h2 class="ui header">${message(code: 'financials.label')}: ${message(code: 'financials.tab.ownCosts')}</h2>
+                                    <g:render template="financials" model="[data: costItemSums.ownCosts]"/>
+                                </g:if>
+                            </g:if>
+                            <g:if test="${costItemSums.consCosts}">
+                                <h2 class="ui header">${message(code: 'financials.label')}: ${message(code: 'financials.tab.consCosts')}</h2>
+                                <g:render template="financials" model="[data: costItemSums.consCosts]"/>
+                            </g:if>
+                            <g:elseif test="${costItemSums.subscrCosts}">
+                                <h2 class="ui header">${message(code: 'financials.label')}: ${message(code: 'financials.tab.subscrCosts')}</h2>
+                                <g:render template="financials" model="[data: costItemSums.subscrCosts]"/>
+                            </g:elseif>
+                        </div>
+                    </div>
+                </g:if>
+            </div>
+            <div id="container-billing">
+                <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
+                    <div class="ui card la-dl-no-table">
+                        <div class="content">
+                            <g:if test="${costItemSums.ownCosts}">
+                                <g:if test="${(contextOrg.id != subscription.getConsortia()?.id && subscription.instanceOf) || !subscription.instanceOf}">
+                                    <h2 class="ui header">${message(code: 'financials.label')}: ${message(code: 'financials.tab.ownCosts')}</h2>
+                                    <g:render template="financials2" model="[data: costItemSums.ownCosts]"/>
+                                </g:if>
+                            </g:if>
+                            <g:if test="${costItemSums.consCosts}">
+                                <h2 class="ui header">${message(code: 'financials.label')}: ${message(code: 'financials.tab.consCosts')}</h2>
+                                <g:render template="financials2" model="[data: costItemSums.consCosts]"/>
+                            </g:if>
+                            <g:elseif test="${costItemSums.subscrCosts}">
+                                <h2 class="ui header">${message(code: 'financials.label')}: ${message(code: 'financials.tab.subscrCosts')}</h2>
+                                <g:render template="financials2" model="[data: costItemSums.subscrCosts]"/>
+                            </g:elseif>
+                        </div>
+                    </div>
+                </g:if>
             </div>
         </div>
     </aside><!-- .four -->
