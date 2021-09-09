@@ -353,7 +353,8 @@ class PersonController  {
 
             if (params.multipleAddresses) {
                 params.list('multipleAddresses').eachWithIndex { name, i ->
-                    Address addressInstance = new Address(
+                    if(params.type) {
+                        Address addressInstance = new Address(
                             name: (1 == params.list('name').size()) ? params.name : params.name[i],
                             additionFirst: (1 == params.list('additionFirst').size()) ? params.additionFirst : params.additionFirst[i],
                             additionSecond: (1 == params.list('additionSecond').size()) ? params.additionSecond : params.additionSecond[i],
@@ -368,16 +369,17 @@ class PersonController  {
                             pobCity: (1 == params.list('pobCity').size()) ? params.pobCity : params.pobCity[i],
                             prs: personInstance)
 
-                    params.list('type').each {
-                        if (!(it in addressInstance.type)) {
-                            addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
+                        params.list('type').each {
+                            if (!(it in addressInstance.type)) {
+                                addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
+                            }
                         }
-                    }
-                    if (!addressInstance.save()) {
-                        flash.error = message(code: 'default.save.error.general.message')
-                        log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
-                        redirect(url: request.getHeader('referer'), params: params)
-                        return
+                        if (!addressInstance.save()) {
+                            flash.error = message(code: 'default.save.error.general.message')
+                            log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
+                            redirect(url: request.getHeader('referer'), params: params)
+                            return
+                        }
                     }
                 }
             }

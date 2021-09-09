@@ -219,8 +219,8 @@
                 </label>
 
                 <g:if test="${personInstance}">
-                    <g:each in="${personInstance.contacts?.toSorted()}" var="contact">
-                        <div class="three fields">
+                    <g:each in="${personInstance.contacts?.toSorted()}" var="contact" status="i">
+                        <div class="three fields" id="contactFields${i}">
                             <div class="field wide four ">
                                 <input type="text" readonly value="${contact.contentType.getI10n('value')}"/>
                             </div>
@@ -258,7 +258,7 @@
                 <br />
                 <br />
             <div class="field">
-                <div class="three fields">
+                <div class="three fields" id="contactFields1">
                     <div class="field wide four">
                         <label></label>
                         <laser:select class="ui dropdown" name="contentType.id"
@@ -400,8 +400,8 @@
 
             tooltip.go()  // TODO: set ctxSel @ tooltip.init()
 
-            JSPC.app.addressElementCount = 0;
-            JSPC.app.contactElementCount = 0;
+            JSPC.app.addressElementCount = 1;
+            JSPC.app.contactElementCount = 1;
 
             JSPC.app.addressContainer = $(document.createElement('div'));
             JSPC.app.contactContainer = $(document.createElement('div'));
