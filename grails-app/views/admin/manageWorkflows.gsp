@@ -175,7 +175,7 @@
     <div class="ui info message">
         <div class="ui list">
             <div class="item">
-                <span class="ui pink circular label">id</span>
+                <span class="ui brown circular label">id</span>
                 &nbsp; ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)}
             </div>
             <div class="item">
@@ -211,7 +211,7 @@
                 <tr data-wfwp="${wp.id}">
                     <td>
                         <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + wp.id, tab: 'prototypes']}">
-                            <span class="ui pink circular label" data-wfwp="${wp.id}">${wp.id}</span>
+                            <span class="ui brown circular label" data-wfwp="${wp.id}">${wp.id}</span>
                             ${wp.title}
                         </g:link>
                     </td>
@@ -289,7 +289,7 @@
                         <g:each in="${WfWorkflowPrototype.executeQuery('select wp from WfWorkflowPrototype wp where wp.task = :tp order by id', [tp: tp])}" var="wp">
                             <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${wp.title}">
                                 <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + wp.id, tab: 'prototypes']}">
-                                    <span class="ui pink circular label" data-wfwp="${wp.id}">${wp.id}</span>
+                                    <span class="ui brown circular label" data-wfwp="${wp.id}">${wp.id}</span>
                                 </g:link>
                             </span>
                         </g:each>
@@ -419,7 +419,7 @@
     <g:each in="${workflowTemplates}" var="wfwp">
         <p><strong>
             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + wfwp.id, tab: 'prototypes']}">
-                <span class="ui pink circular label" data-wfwp="${wfwp.id}">${wfwp.id}</span>
+                <span class="ui brown circular label" data-wfwp="${wfwp.id}">${wfwp.id}</span>
                 ${wfwp.title}
             </g:link>
         </strong></p>
