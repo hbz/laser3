@@ -27,7 +27,7 @@
 ---------------*/
 
 /* Table Row */
-/* @rowBorder: 1px solid @internalBorderColor; */
+@rowBorder: 1px solid @internalBorderColor;
 
 /* Table Cell */
 @cellVerticalPadding: 1.4em;
