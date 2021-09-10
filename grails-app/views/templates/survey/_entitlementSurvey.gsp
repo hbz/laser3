@@ -57,7 +57,7 @@
 
                     <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
 
-                        <g:link action="renewEntitlements"
+                        <g:link action="renewEntitlements" controller="surveys"
                                 id="${surveyConfig.id}" params="[participant: participant.id]"
                                 class="ui button">
                             <g:message code="renewEntitlementsWithSurvey.renewEntitlements"/>

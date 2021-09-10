@@ -1758,7 +1758,7 @@ join sub.orgRelations or_sub where
 
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it.surveyConfig.configOrder }
 
-        result.ownerId = result.surveyResults[0]?.owner?.id
+        result.ownerId = result.surveyInfo.owner?.id
 
         if(result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
