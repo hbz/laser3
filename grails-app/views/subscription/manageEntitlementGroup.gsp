@@ -59,7 +59,7 @@
                 </td>
                 <td class="x">
 
-                    <g:link action="index" class="ui icon button la-modern-button" id="${params.id}"
+                    <g:link action="index" class="ui icon blue button la-modern-button" id="${params.id}"
                             params="[titleGroup: titleGroup.id]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.change.universal')}">

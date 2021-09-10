@@ -118,13 +118,13 @@
                                 <g:if test="${instance?.respondsTo('showUIShareButton')}">
                                     <g:if test="${docctx.sharedFrom}">
                                         <span  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                            <i class="green alternate share icon"></i>
+                                            <i class="grey alternate share icon"></i>
                                         </span>
                                     </g:if>
                                     <g:if test="${instance?.showUIShareButton()}">
                                         <g:if test="${docctx.isShared}">
                                             <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                                <g:link controller="ajax" action="toggleShare" class="ui icon button green"
+                                                <g:link controller="ajax" action="toggleShare" class="ui icon button green la-modern-button"
                                                         params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), reload:true, ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
                                                     <i class="alternate share icon"></i>
                                                 </g:link>
@@ -132,15 +132,15 @@
                                         </g:if>
                                         <g:else>
                                             <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
-                                                <g:link controller="ajax" action="toggleShare" class="ui icon button"
+                                                <g:link controller="ajax" action="toggleShare" class="ui icon button blue la-modern-button"
                                                         params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), reload:true, ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
-                                                    <i class="alternate share icon"></i>
+                                                    <i class="la-share slash icon"></i>
                                                 </g:link>
                                             </span>
                                         </g:else>
                                     </g:if>
                                 </g:if>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i class="download icon"></i></g:link>
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button"><i class="download icon"></i></g:link>
                                 <g:if test="${accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR") && inOwnerOrg}">
                                     <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-semui="modal" href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
                                 </g:if>

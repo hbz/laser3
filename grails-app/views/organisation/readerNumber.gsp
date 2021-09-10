@@ -100,7 +100,7 @@
                                             <i aria-hidden="true" class="write icon"></i>
                                         </a>
                                     </g:if>
-                                    <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
+                                    <g:link class="ui icon negative button la-modern-button js-open-confirm-modal" controller="readerNumber" action="delete"
                                             data-confirm-tokenMsg="${message(code: 'readerNumber.confirm.delete')}"
                                             data-confirm-term-how="ok" params="${[semester:numbersInstance.getKey().id,org:params.id]}"
                                             role="button"
@@ -145,7 +145,7 @@
                                 <td><semui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/></td>
                                 <td class="x">
                                     <g:if test="${editable}">
-                                        <g:link class="ui icon negative button js-open-confirm-modal" controller="readerNumber" action="delete"
+                                        <g:link class="ui icon negative button la-modern-button js-open-confirm-modal" controller="readerNumber" action="delete"
                                                 data-confirm-tokenMsg="${message(code: 'readerNumber.confirmRow.delete')}"
                                                 data-confirm-term-how="ok" params="${[dueDate:numbersInstance.getKey(),org:params.id]}"
                                                 role="button"

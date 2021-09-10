@@ -18,6 +18,7 @@ import de.laser.properties.SubscriptionProperty
 import de.laser.reporting.local.SubscriptionReporting
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter5ApiSource
+import de.laser.workflow.WfWorkflow
 import grails.doc.internal.StringEscapeCategory
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
@@ -66,6 +67,7 @@ class SubscriptionControllerService {
     GenericOIDService genericOIDService
     MessageSource messageSource
     WorkflowService workflowService
+    ManagementService managementService
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
@@ -433,7 +435,6 @@ class SubscriptionControllerService {
                     filter += " and r.metricType in (:metricType) "
                     queryParams.metricType = params.metricType
                 }
-                //continue here: load data and test!
                 count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+dateRange, [customer: queryParams.customer, platforms: queryParams.platforms, startDate: queryParams.startDate, endDate: queryParams.endDate]))
                 if(count5check.get(0) == 0) {
                     List defaultReport = Counter4Report.executeQuery('select r.reportType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) order by r.reportFrom asc', [customer: queryParams.customer, platforms: queryParams.platforms], [max:1])
@@ -471,7 +472,7 @@ class SubscriptionControllerService {
                         c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.reportType, r.metricType order by r.reportFrom asc, r.metricType asc', queryParams))
                     else
                         c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
-                    result.total = count5check.size() > 0 ? count5check[0] as int : 0
+                    result.total = count5check
                     result.sums = c5sums
                     result.usages = c5usages
                     result.metricTypes = Counter5Report.executeQuery('select distinct(r.metricType) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) order by r.metricType asc', [customer: queryParams.customer, platforms: queryParams.platforms])
@@ -872,496 +873,17 @@ class SubscriptionControllerService {
         }
     }
 
-    Map<String,Object> linkLicenseMembers(SubscriptionController controller, GrailsParameterMap params) {
+    Map<String,Object> membersSubscriptionsManagement(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            result.parentLicenses = Links.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType',[subscription:result.subscription,linkType:RDStore.LINKTYPE_LICENSE])
-            result.validLicenses = []
-            if(result.parentLicenses) {
-                result.validLicenses.addAll(License.findAllByInstanceOfInList(result.parentLicenses))
-            }
-            result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
+            params.tab = params.tab ?: 'generalProperties'
+
+            result << managementService.subscriptionsManagement(controller, params)
             [result:result,status:STATUS_OK]
         }
-    }
-
-    Map<String,Object> processLinkLicenseMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        Locale locale = LocaleContextHolder.getLocale()
-        if (!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            if(formService.validateToken(params)) {
-                Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.subscription)
-                List selectedMembers = params.list("selectedMembers")
-                List<GString> changeAccepted = []
-                validSubChilds.each { Subscription subChild ->
-                    if (selectedMembers.contains(subChild.id.toString())) { //toString needed for type check
-                        License newLicense = License.get(params.license_All)
-                        if(subscriptionService.setOrgLicRole(subChild,newLicense,params.processOption == 'unlinkLicense'))
-                            changeAccepted << "${subChild.name} (${messageSource.getMessage('subscription.linkInstance.label',null,locale)} ${subChild.getSubscriber().sortname})"
-                    }
-                }
-                if (changeAccepted) {
-                    result.message = changeAccepted.join(', ')
-                }
-                [result:result,status:STATUS_OK]
-            }
-            else {
-                [result:result,status:STATUS_ERROR]
-            }
-        }
-    }
-
-    Map<String,Object> processUnLinkLicenseMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        Locale locale = LocaleContextHolder.getLocale()
-        if(!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            if(formService.validateToken(params)) {
-                List selectedMembers = params.list("selectedMembers")
-                Set<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.subscription)
-                List<GString> removeLic = []
-                validSubChilds.each { Subscription subChild ->
-                    if(subChild.id in selectedMembers || params.unlinkAll == 'true') {
-                        Links.findAllByDestinationSubscriptionAndLinkType(subChild,RDStore.LINKTYPE_LICENSE).each { Links li ->
-                            if (subscriptionService.setOrgLicRole(subChild,li.sourceLicense,true)) {
-                                removeLic << "${subChild.name} (${messageSource.getMessage('subscription.linkInstance.label',null,locale)} ${subChild.getSubscriber().sortname})"
-                            }
-                        }
-                    }
-
-                }
-                if (removeLic) {
-                    result.message = removeLic.join(', ')
-                }
-                [result:result,status:STATUS_OK]
-            }
-            else {
-                [result:result,status:STATUS_ERROR]
-            }
-        }
-    }
-
-    Map<String,Object> linkPackagesMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if(!result)
-            [result:null,status:STATUS_ERROR]
-        else {
-            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
-            threadArray.each {
-                if (it.name == 'linkPackageMembers_'+result.subscription.id) {
-                    result.message = messageSource.getMessage('subscription.details.linkPackagesMembers.thread.running',null,LocaleContextHolder.getLocale())
-                    result.isLinkingRunning = true
-                }
-            }
-            result.validPackages = result.subscription.packages
-            result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
-            result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubChildren) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution,deleted:RDStore.COST_ITEM_DELETED,filteredSubChildren:result.filteredSubChilds.collect { row -> row.sub }])
-            [result:result,status:STATUS_OK]
-        }
-    }
-
-    Map<String,Object> processLinkPackagesMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if (!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            Locale locale = LocaleContextHolder.getLocale()
-            if(formService.validateToken(params)) {
-                List selectedMembers = params.list("selectedMembers")
-                if(selectedMembers && params.package_All){
-                    Package pkg_to_link = SubscriptionPackage.get(params.package_All).pkg
-                    executorService.execute({
-                        IssueEntitlement.withNewTransaction { TransactionStatus ts ->
-                            Thread.currentThread().setName("linkPackageMembers_${result.subscription.id}")
-                            selectedMembers.each { id ->
-                                Subscription subChild = Subscription.get(Long.parseLong(id))
-                                if (params.processOption == 'linkwithIE' || params.processOption == 'linkwithoutIE') {
-                                    if (!(pkg_to_link in subChild.packages.pkg)) {
-                                        if (params.processOption == 'linkwithIE') {
-                                            subscriptionService.addToSubscriptionCurrentStock(subChild, result.subscription, pkg_to_link)
-                                        } else {
-                                            subscriptionService.addToSubscription(subChild, pkg_to_link, false)
-                                        }
-                                    }
-                                }
-                                if (params.processOption == 'unlinkwithIE' || params.processOption == 'unlinkwithoutIE') {
-                                    if (pkg_to_link in subChild.packages.pkg) {
-                                        if (params.processOption == 'unlinkwithIE') {
-                                            pkg_to_link.unlinkFromSubscription(subChild, result.institution, true)
-                                        } else {
-                                            pkg_to_link.unlinkFromSubscription(subChild, result.institution, false)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    })
-                    [result:result,status:STATUS_OK]
-                }
-                else {
-                    if(!selectedMembers) {
-                        result.error = messageSource.getMessage('subscription.linkPackagesMembers.noSelectedMember',null,locale)
-                    }
-                    if(!params.package_All) {
-                        result.error = messageSource.getMessage('subscription.linkPackagesMembers.noSelectedPackage',null,locale)
-                    }
-                    [result:result,status:STATUS_ERROR]
-                }
-            }
-            else {
-                [result:result,status:STATUS_ERROR]
-            }
-        }
-    }
-
-    Map<String,Object> processUnLinkPackagesMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if(!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            Locale locale = LocaleContextHolder.getLocale()
-            result.parentPackages = result.subscription.packages
-            result.message = []
-            result.error = []
-            List<SubscriptionPackage> validSubChildPackages = SubscriptionPackage.executeQuery("select sp from SubscriptionPackage sp join sp.subscription sub where sub.instanceOf = :parent",[parent:result.subscription])
-            validSubChildPackages.each { SubscriptionPackage sp ->
-                if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context',[sp:sp,deleted:RDStore.COST_ITEM_DELETED,context:result.institution])) {
-                    if (Boolean.valueOf(params.withIE)) {
-                        if(sp.pkg.unlinkFromSubscription(sp.subscription, result.institution, true)){
-                            result.message << messageSource.getMessage('subscription.linkPackagesMembers.unlinkInfo.withIE.successful',null,locale)
-                        }
-                        else {
-                            result.error << messageSource.getMessage('subscription.linkPackagesMembers.unlinkInfo.withIE.fail',null,locale)
-                        }
-                    }
-                    else {
-                        if(sp.pkg.unlinkFromSubscription(sp.subscription, result.institution, false)){
-                            result.message << messageSource.getMessage('subscription.linkPackagesMembers.unlinkInfo.onlyPackage.successful',null,locale)
-                        }
-                        else {
-                            result.error << messageSource.getMessage('subscription.linkPackagesMembers.unlinkInfo.onlyPackage.fail',null,locale)
-                        }
-                    }
-                }
-                else {
-                    Object[] args = [sp.pkg.name,sp.subscription.getSubscriber().name]
-                    result.error << messageSource.getMessage('subscription.linkPackagesMembers.unlinkInfo.costsExisting',args,locale)
-                }
-            }
-            [result:result,status:STATUS_OK]
-        }
-    }
-
-    Map<String,Object> propertiesMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if (!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            result.filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
-            params.remove('filterPropDef')
-            Set<Subscription> validSubChildren = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.roleType = :roleType order by oo.org.sortname asc",[parent:result.subscription,roleType:RDStore.OR_SUBSCRIBER_CONS])
-            if(validSubChildren) {
-                result.validSubChilds = validSubChildren
-                Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select distinct(sp.type) from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null",[subscriptionSet:validSubChildren,ctx:result.institution])
-                propList.addAll(result.subscription.propertySet.type)
-                result.propList = propList
-                result.filteredSubChilds = validSubChildren
-                List<Subscription> childSubs = result.subscription.getNonDeletedDerivedSubscriptions()
-                if(childSubs) {
-                    String localizedName
-                    switch(LocaleContextHolder.getLocale()) {
-                        case Locale.GERMANY:
-                        case Locale.GERMAN: localizedName = "name_de"
-                            break
-                        default: localizedName = "name_en"
-                            break
-                    }
-                    String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
-                    Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
-                    result.memberProperties = memberProperties
-                }
-            }
-            [result:result,status:STATUS_OK]
-        }
-    }
-
-    Map<String,Object> processPropertiesMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if(!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            if(formService.validateToken(params)) {
-                Locale locale = LocaleContextHolder.getLocale()
-                PropertyDefinition filterPropDef = params.filterPropDef ? genericOIDService.resolveOID(params.filterPropDef.replace(" ", "")) : null
-                if (filterPropDef && params.filterPropValue) {
-                    int newProperties = 0
-                    int changeProperties = 0
-                    List selectedMembers = params.list("selectedMembers")
-                    Object[] args
-                    if(selectedMembers) {
-                        Set<Subscription> subChildren = Subscription.findAllByIdInList(selectedMembers)
-                        subChildren.each { Subscription subChild ->
-                            List<SubscriptionProperty> existingProps = []
-                            String propDefFlag
-                            if (filterPropDef.tenant == result.institution) {
-                                //private Property
-                                existingProps.addAll(subChild.propertySet.findAll { SubscriptionProperty sp ->
-                                    sp.owner.id == subChild.id && sp.type.id == filterPropDef.id
-                                })
-                                propDefFlag = PropertyDefinition.PRIVATE_PROPERTY
-                            }
-                            else {
-                                //custom Property
-                                existingProps.addAll(subChild.propertySet.findAll { SubscriptionProperty sp ->
-                                    sp.type.id == filterPropDef.id && sp.owner.id == subChild.id && sp.tenant.id == result.institution.id
-                                })
-                                propDefFlag = PropertyDefinition.CUSTOM_PROPERTY
-                            }
-                            if (existingProps.size() == 0 || filterPropDef.multipleOccurrence) {
-                                AbstractPropertyWithCalculatedLastUpdated newProp = PropertyDefinition.createGenericProperty(propDefFlag, subChild, filterPropDef, result.institution)
-                                if (newProp.hasErrors()) {
-                                    log.error(newProp.errors.toString())
-                                } else {
-                                    log.debug("New property created: " + newProp.type.name)
-                                    newProperties++
-                                    subscriptionService.updateProperty(controller, newProp, params.filterPropValue)
-                                }
-                            }
-                            if (existingProps.size() == 1){
-                                SubscriptionProperty privateProp = SubscriptionProperty.get(existingProps[0].id)
-                                changeProperties++
-                                subscriptionService.updateProperty(controller, privateProp, params.filterPropValue)
-                            }
-                        }
-                        args = [newProperties, changeProperties]
-                        result.message = messageSource.getMessage('subscription.propertiesMembers.successful',args,locale)
-                        [result:result,status:STATUS_OK]
-                    }
-                    else{
-                        args = [newProperties, changeProperties]
-                        result.error = messageSource.getMessage('subscription.propertiesMembers.successful', args, locale)
-                        [result:result,status:STATUS_ERROR]
-                    }
-                }
-                else [result:result,status:STATUS_ERROR]
-            }
-            else {
-                [result:result,status:STATUS_ERROR]
-            }
-        }
-    }
-
-    Map<String,Object> processDeletePropertiesMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if(!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            List<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.subscription)
-            if (params.filterPropDef) {
-                PropertyDefinition filterPropDef = (PropertyDefinition) genericOIDService.resolveOID(params.filterPropDef.replace(" ", ""))
-                int deletedProperties = 0
-                if (filterPropDef) {
-                    result.filterPropDef = filterPropDef
-                    validSubChilds.each { Subscription subChild ->
-                        SubscriptionProperty existingProp
-                        if (filterPropDef.tenant == result.institution) {
-                            //private Property
-                            existingProp = subChild.propertySet.find { SubscriptionProperty sp ->
-                                sp.owner.id == subChild.id && sp.type.id == filterPropDef.id
-                            }
-                            if (existingProp){
-                                try {
-                                    subChild.propertySet.remove(existingProp)
-                                    existingProp.delete()
-                                    deletedProperties++
-                                }
-                                catch (Exception e) {
-                                    log.error( e.toString() )
-                                }
-                            }
-                        }
-                        else {
-                            //custom Property
-                            existingProp = subChild.propertySet.find { SubscriptionProperty sp ->
-                                sp.type.id == filterPropDef.id && sp.owner.id == subChild.id && sp.tenant.id == result.institution.id
-                            }
-                            if (existingProp && !(existingProp.hasProperty('instanceOf') && existingProp.instanceOf && AuditConfig.getConfig(existingProp.instanceOf))){
-                                try {
-                                    subChild.propertySet.remove(existingProp)
-                                    existingProp.delete()
-                                    deletedProperties++
-                                }
-                                catch (Exception e){
-                                    log.error( e.toString() )
-                                }
-                            }
-                        }
-                    }
-                    Object[] args = [deletedProperties]
-                    result.message = messageSource.getMessage('subscription.propertiesMembers.deletedProperties', args, LocaleContextHolder.getLocale())
-                }
-            }
-            [result:result,status:STATUS_OK]
-        }
-    }
-
-    Map<String,Object> subscriptionPropertiesMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if(!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
-            if(params.tab == 'providerAgency') {
-                result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
-                result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.institution)
-                result.visibleOrgRelations = OrgRole.executeQuery("select oo from OrgRole oo join oo.org org where oo.sub = :parent and oo.roleType in (:roleTypes) order by org.name asc",[parent:result.subscription,roleTypes:[RDStore.OR_PROVIDER,RDStore.OR_AGENCY]])
-            }
-            [result:result,status:STATUS_OK]
-        }
-    }
-
-    Map<String,Object> processSubscriptionPropertiesMembers(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if(!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            Locale locale = LocaleContextHolder.getLocale()
-            List selectedMembers = params.list("selectedMembers")
-            if(selectedMembers) {
-                Set change = [], noChange = []
-                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
-                Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
-                Set<Subscription> subChildren = Subscription.findAllByIdInList(selectedMembers)
-                subChildren.each { Subscription subChild ->
-                    if(startDate && !auditService.getAuditConfig(subChild.instanceOf, 'startDate')) {
-                        subChild.startDate = startDate
-                        change << messageSource.getMessage('default.startDate.label',null,locale)
-                    }
-                    if(startDate && auditService.getAuditConfig(subChild.instanceOf, 'startDate')) {
-                        noChange << messageSource.getMessage('default.startDate.label',null,locale)
-                    }
-                    if(endDate && !auditService.getAuditConfig(subChild.instanceOf, 'endDate')) {
-                        subChild.endDate = endDate
-                        change << messageSource.getMessage('default.endDate.label',null,locale)
-                    }
-                    if(endDate && auditService.getAuditConfig(subChild.instanceOf, 'endDate')) {
-                        noChange << messageSource.getMessage('default.endDate.label',null,locale)
-                    }
-                    if(params.status && !auditService.getAuditConfig(subChild.instanceOf, 'status')) {
-                        subChild.status = RefdataValue.get(params.status) ?: subChild.status
-                        change << messageSource.getMessage('subscription.status.label',null,locale)
-                    }
-                    if(params.status && auditService.getAuditConfig(subChild.instanceOf, 'status')) {
-                        noChange << messageSource.getMessage('subscription.status.label',null,locale)
-                    }
-                    if(params.kind && !auditService.getAuditConfig(subChild.instanceOf, 'kind')) {
-                        subChild.kind = RefdataValue.get(params.kind) ?: subChild.kind
-                        change << messageSource.getMessage('subscription.kind.label',null,locale)
-                    }
-                    if(params.kind && auditService.getAuditConfig(subChild.instanceOf, 'kind')) {
-                        noChange << messageSource.getMessage('subscription.kind.label',null,locale)
-                    }
-                    if(params.form && !auditService.getAuditConfig(subChild.instanceOf, 'form')) {
-                        subChild.form = RefdataValue.get(params.form) ?: subChild.form
-                        change << messageSource.getMessage('subscription.form.label',null,locale)
-                    }
-                    if(params.form && auditService.getAuditConfig(subChild.instanceOf, 'form')) {
-                        noChange << messageSource.getMessage('subscription.form.label',null,locale)
-                    }
-                    if(params.resource && !auditService.getAuditConfig(subChild.instanceOf, 'resource')) {
-                        subChild.resource = RefdataValue.get(params.resource) ?: subChild.resource
-                        change << messageSource.getMessage('subscription.resource.label',null,locale)
-                    }
-                    if(params.resource && auditService.getAuditConfig(subChild.instanceOf, 'resource')) {
-                        noChange << messageSource.getMessage('subscription.resource.label',null,locale)
-                    }
-                    if(params.isPublicForApi && !auditService.getAuditConfig(subChild.instanceOf, 'isPublicForApi')) {
-                        subChild.isPublicForApi = RefdataValue.get(params.isPublicForApi) == RDStore.YN_YES
-                        change << messageSource.getMessage('subscription.isPublicForApi.label',null,locale)
-                    }
-                    if(params.isPublicForApi && auditService.getAuditConfig(subChild.instanceOf, 'isPublicForApi')) {
-                        noChange << messageSource.getMessage('subscription.isPublicForApi.label',null,locale)
-                    }
-                    if(params.hasPerpetualAccess && !auditService.getAuditConfig(subChild.instanceOf, 'hasPerpetualAccess')) {
-                        subChild.hasPerpetualAccess = RefdataValue.get(params.hasPerpetualAccess) == RDStore.YN_YES
-                        //subChild.hasPerpetualAccess = RefdataValue.get(params.hasPerpetualAccess)
-                        change << messageSource.getMessage('subscription.hasPerpetualAccess.label',null,locale)
-                    }
-                    if(params.hasPerpetuaLAccess && auditService.getAuditConfig(subChild.instanceOf, 'hasPerpetualAccess')) {
-                        noChange << messageSource.getMessage('subscription.hasPerpetualAccess.label',null,locale)
-                    }
-                    if(params.hasPublishComponent && !auditService.getAuditConfig(subChild.instanceOf, 'hasPublishComponent')) {
-                        subChild.hasPublishComponent = RefdataValue.get(params.hasPublishComponent) == RDStore.YN_YES
-                        change << messageSource.getMessage('subscription.hasPublishComponent.label',null,locale)
-                    }
-                    if(params.hasPublishComponent && auditService.getAuditConfig(subChild.instanceOf, 'hasPublishComponent')) {
-                        noChange << messageSource.getMessage('subscription.hasPublishComponent.label',null,locale)
-                    }
-                    if (subChild.isDirty()) {
-                        subChild.save()
-                    }
-                }
-                [result:result,status:STATUS_OK]
-            }
-            else {
-                result.error = messageSource.getMessage('subscription.subscriptionPropertiesMembers.noSelectedMember',null,locale)
-                [result:result,status:STATUS_ERROR]
-            }
-        }
-    }
-
-    Map<String, Object> customerIdentifierMembers(GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if(!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            result.platforms = Platform.executeQuery('select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :parentSub', [parentSub: result.subscription]) as Set<Platform>
-            result.members = Org.executeQuery("select org from OrgRole oo join oo.sub sub join oo.org org where sub.instanceOf = :parent and oo.roleType in (:subscrTypes) order by org.sortname asc, org.name asc",[parent: result.subscription, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]) as Set<Org>
-            result.keyPairs = []
-            result.platforms.each { Platform platform ->
-                result.members.each { Org customer ->
-                    //create dummies for that they may be xEdited - OBSERVE BEHAVIOR for eventual performance loss!
-                    CustomerIdentifier keyPair = CustomerIdentifier.findByPlatformAndCustomer(platform, customer)
-                    if(!keyPair) {
-                        keyPair = new CustomerIdentifier(platform: platform,
-                                customer: customer,
-                                type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE),
-                                owner: contextService.getOrg(),
-                                isPublic: true)
-                        if(!keyPair.save()) {
-                            log.warn(keyPair.errors.getAllErrors().toListString())
-                        }
-                    }
-                    result.keyPairs << keyPair
-                }
-            }
-            [result:result,status:STATUS_OK]
-        }
-    }
-
-    boolean deleteCustomerIdentifier(Long id) {
-        CustomerIdentifier ci = CustomerIdentifier.get(id)
-        ci.value = null
-        ci.requestorKey = null
-        ci.save()
     }
 
     //--------------------------------------- survey section -------------------------------------------
@@ -2940,6 +2462,12 @@ class SubscriptionControllerService {
             }
             result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(result.contextOrg, result.subscription)
 
+
+            result.workflowCount = WfWorkflow.executeQuery(
+                    'select count(wf) from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg',
+                    [sub: result.subscription, ctxOrg: result.contextOrg]
+            )[0]
+
             if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
                 if (!result.subscription.isVisibleBy(result.user)) {
                     log.debug("--- NOT VISIBLE ---")
@@ -3007,6 +2535,12 @@ class SubscriptionControllerService {
         if (params.info) {
             result.info = params.info // @ currentWorkflows @ dashboard
         }
+
+        result.workflows = WfWorkflow.executeQuery(
+                'select wf from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg order by wf.id desc',
+                [sub: result.subscription, ctxOrg: result.contextOrg]
+        )
+        result.workflowCount = result.workflows.size()
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }

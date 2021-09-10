@@ -13,13 +13,12 @@
     <semui:crumb message="menu.my.workflows" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-noMargin-top"><semui:headerTitleIcon type="Workflow"/>
-    ${message(code:'menu.my.workflows')}
-    <semui:totalNumber total="${currentWorkflows.size()}"/>
-    %{-- <semui:totalNumber total="${currentWorkflows.size()}"/> --}%
+<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerTitleIcon type="Workflow"/>${message(code:'menu.my.workflows')}
+<semui:totalNumber total="${total}"/>
 </h1>
 
-<semui:filter showFilterButton="false">
+<g:render template="/templates/filter/javascript" />
+<semui:filter showFilterButton="true">
     <form class="ui form">
         <div class="three fields">
             <div class="field">
@@ -32,15 +31,6 @@
                           noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
             <div class="field">
-                <label>${message(code: 'default.status.label')}</label>
-                <laser:select class="ui dropdown" name="filterStatus"
-                  from="${ RefdataCategory.getAllRefdataValues(RDConstants.WF_WORKFLOW_STATUS) }"
-                  optionKey="id"
-                  optionValue="value"
-                  value="${params.filterStatus}"
-                  noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-            </div>
-            <div class="field">
                 <label>${message(code: 'default.priority.label')}</label>
                 <laser:select class="ui dropdown" name="filterPriority"
                               from="${ RefdataCategory.getAllRefdataValues(RDConstants.WF_TASK_PRIORITY) }"
@@ -48,6 +38,15 @@
                               optionValue="value"
                               value="${params.filterPriority}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+            <div class="field">
+                <label>${message(code: 'default.status.label')}</label>
+                <laser:select class="ui dropdown" name="filterStatus"
+                  from="${ RefdataCategory.getAllRefdataValues(RDConstants.WF_WORKFLOW_STATUS) }"
+                  optionKey="id"
+                  optionValue="value"
+                  value="${params.filterStatus}"
+                  noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
         </div>
         <div class="three fields">
@@ -71,7 +70,7 @@
             </div>
         </div>
         <div class="field la-field-right-aligned">
-            <g:link controller="myInstitution" action="currentWorkflows" class="ui reset primary button">${message(code:'default.button.reset.label')}</g:link>
+            <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: false]}" class="ui reset primary button">${message(code:'default.button.reset.label')}</g:link>
             <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
         </div>
     </form>
@@ -131,22 +130,24 @@
                     </div>
                 </td>
                 <td>
-                    <g:set var="tasks" value="${wf.getSequence()}" />
-                    <g:each in="${tasks}" var="task" status="ti">
-                        <g:if test="${task.child}">
-                            [
+                    <div class="ui buttons workflowOverrideCss">
+                        <g:set var="tasks" value="${wf.getSequence()}" />
+                        <g:each in="${tasks}" var="task" status="ti">
+                            <g:if test="${task.child}">
+                                <div style="width:8px"></div>
                                 <laser:workflowTask task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />
 
                                 <g:set var="children" value="${task.child.getSequence()}" />
                                 <g:each in="${children}" var="child" status="ci">
                                     <laser:workflowTask task="${child}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + child.id]}" />
                                 </g:each>
-                           ]
-                        </g:if>
-                        <g:else>
-                            <laser:workflowTask task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />
-                        </g:else>
-                    </g:each>
+                                <div style="width:8px"></div>
+                            </g:if>
+                            <g:else>
+                                <laser:workflowTask task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />
+                            </g:else>
+                        </g:each>
+                    </div>
                 </td>
                 <td>
                     ${DateUtils.getSDF_NoTime().format(wfInfo.lastUpdated)}
@@ -154,16 +155,29 @@
                     ${DateUtils.getSDF_NoTime().format(wf.dateCreated)}
                 </td>
                 <td class="x">
-                    <g:link class="ui icon small button" controller="subscription" action="workflows" id="${wf.subscription.id}" params="${[info: 'subscription:' + wf.subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}"><i class="icon info"></i></g:link>
+                    <g:link class="ui blue icon button la-modern-button" controller="subscription" action="workflows" id="${wf.subscription.id}" params="${[info: 'subscription:' + wf.subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}"><i class="icon info"></i></g:link>
                     %{-- <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button> --}%
-                    <g:link class="ui red icon small button" controller="myInstitution" action="currentWorkflows" params="${[cmd: "delete:${WfWorkflow.KEY}:${wf.id}"]}"><i class="trash alternate outline icon"></i></g:link>
+                    <g:link class="ui red icon button la-modern-button" controller="myInstitution" action="currentWorkflows" params="${[cmd: "delete:${WfWorkflow.KEY}:${wf.id}"]}"><i class="trash alternate outline icon"></i></g:link>
                 </td>
             </tr>
         </g:each>
     </tbody>
 </table>
 
+<semui:paginate action="currentWorkflows" controller="myInstitution" total="${total}" max="${params.max}"
+                next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" />
+
 <div id="wfModal" class="ui modal"></div>
+
+<style>
+.workflowOverrideCss .label {
+    margin-right: 3px !important;
+}
+.workflowOverrideCss .label .icon {
+    margin: 0 !important;
+    padding-top: 1px;
+}
+</style>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.wfModalLink').on('click', function(e) {

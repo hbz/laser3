@@ -175,7 +175,6 @@ class StatsSyncService {
                 response.success = { resp, json ->
                     if(resp.status == 200) {
                         c4SushiSources.addAll(json.counter4ApiSources)
-                        //c4SushiSources.add(json.counter4ApiSources.find { obj -> obj[1].contains('beck') }) //remove resp. reset if Beck situation is cleared!
                         c5SushiSources.addAll(json.counter5ApiSources)
                     }
                     else {
@@ -475,7 +474,21 @@ class StatsSyncService {
                                                                         configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.Period.End_Date).getTime())
                                                                         configMap.metricType = instance.Metric_Type
                                                                         configMap.reportCount = instance.Count as int
-                                                                        stmt.addBatch(configMap)
+                                                                        Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
+                                                                        selMap.remove('version')
+                                                                        selMap.remove('reportCount')
+                                                                        List<GroovyRowResult> existingKey = sql.rows('select c5r_id from counter5report where c5r_publisher = :publisher ' +
+                                                                                'and c5r_platform_fk = :platform ' +
+                                                                                'and c5r_report_institution_fk = :reportInstitution ' +
+                                                                                'and c5r_report_type = :reportType ' +
+                                                                                'and c5r_metric_type = :metricType ' +
+                                                                                'and c5r_report_from = :reportFrom ' +
+                                                                                'and c5r_report_to = :reportTo', selMap)
+                                                                        if(existingKey) {
+                                                                            sql.execute('update counter5report set c5r_report_count = :reportCount where c5r_id = :reportId', [reportCount: instance.Count as int, reportId: existingKey[0].get('c5r_id')])
+                                                                        }
+                                                                        else
+                                                                            stmt.addBatch(configMap)
                                                                         /*
                                                                         try {
                                                                             Counter5Report c5report = Counter5Report.construct(configMap)
@@ -655,12 +668,15 @@ class StatsSyncService {
             http.request(Method.GET, ContentType.JSON) { req ->
                 response.success = { resp, json ->
                     if(resp.status == 200) {
-                        if(!requestList) {
+                        if(json instanceof ArrayList) {
+                            result.list = json
+                        }
+                        else if(!json.containsKey("Exception") && !requestList) {
                             result.header = json["Report_Header"]
                             result.items = json["Report_Items"]
                         }
                         else {
-                            result.list = json
+                            log.error(json["Exception"]["Message"])
                         }
                     }
                     else {

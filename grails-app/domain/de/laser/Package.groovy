@@ -440,4 +440,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         result
     }
 
+    String getPackageNameWithCurrentTippsCount() {
+        return this.name + ' ('+ TitleInstancePackagePlatform.countByPkgAndStatus(this, RDStore.TIPP_STATUS_CURRENT) +')'
+    }
+
 }

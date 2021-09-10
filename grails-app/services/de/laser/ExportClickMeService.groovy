@@ -1085,7 +1085,7 @@ class ExportClickMeService {
                 LinkedHashSet<Address> adressList = org.addresses.findAll { Address adress -> adress.type.findAll { it == billingAdress } }
 
                 if (adressList) {
-                    row.add([field: adressList.collect { Address address -> address.zipcode + ' ' + address.city + ', ' + address.street_1 + ' ' + address.street_2 }.join(";"), style: null])
+                    row.add([field: adressList.collect { Address address -> org.name + ', '+ address.street_1 + ' ' + address.street_2 + ', ' + address.zipcode + ' ' + address.city + ', ' + (address.region ? address.region.getI10n('value') : ' ')+ ', ' + (address.country ? address.country.getI10n('value') : '') }.join(";"), style: null])
                 } else {
                     row.add([field: '', style: null])
                 }
@@ -1100,7 +1100,7 @@ class ExportClickMeService {
                 LinkedHashSet<Address> adressList = org.addresses.findAll { Address adress -> adress.type.findAll { it == postAdress } }
 
                 if (adressList) {
-                    row.add([field: adressList.collect { it.zipcode + ' ' + it.city + ', ' + it.street_1 + ' ' + it.street_2 }.join(";"), style: null])
+                    row.add([field: adressList.collect { Address address -> org.name + ', '+ address.street_1 + ' ' + address.street_2 + ', ' + address.zipcode + ' ' + address.city + ', ' + (address.region ? address.region.getI10n('value') : ' ')+ ', ' + (address.country ? address.country.getI10n('value') : '') }.join(";"), style: null])
                 } else {
                     row.add([field: '', style: null])
                 }

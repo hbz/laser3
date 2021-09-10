@@ -40,7 +40,7 @@
     </g:if>
     <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
         <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM']}">
-            <semui:subNavItem controller="subscription" action="workflows" params="${[id:params.id]}" message="workflow.plural" />
+            <semui:subNavItem controller="subscription" action="workflows" counts="${workflowCount}" params="${[id:params.id]}" message="workflow.plural" />
         </g:if>
     </sec:ifAnyGranted>
 

@@ -1,164 +1,47 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.properties.PropertyDefinition; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="de.laser.helper.RDConstants; de.laser.Subscription;" %>
 <laser:serviceInjection/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscription.subscriptionPropertiesMembers.header', args: args.memberTypeGenitive)}</title>
-</head>
+<g:if test="${filteredSubscriptions}">
+    <div class="ui segment ">
+        <h3 class="ui header"><g:message code="subscriptionsManagement.subscription" args="${args.superOrgType}"/></h3>
 
-<body>
+        <table class="ui celled la-table table">
+            <thead>
+            <tr>
+                <th>${message(code: 'subscription')}</th>
+                <th>${message(code: 'default.startDate.label')}</th>
+                <th>${message(code: 'default.endDate.label')}</th>
+                <th>${message(code: 'default.status.label')}</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>${subscription.name}</td>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions"
-                 text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="show" id="${subscription.id}"
-                 text="${subscription.name}"/>
-
-    <semui:crumb class="active"
-                 text="${message(code: 'subscription.details.subscriberManagement.label', args: args.memberType)}"/>
-
-</semui:breadcrumbs>
-
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscription.name}</h1>
-
-<semui:anualRings object="${subscription}" controller="subscription" action="${actionName}"
-                  navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
-
-<g:render template="navSubscriberManagement"/>
-
-<semui:messages data="${flash}"/>
-
-<h2 class="ui header">
-    <g:message code="subscription"/>:
-    <g:link controller="subscription" action="show" id="${subscription.id}">${subscription.name}</g:link>
-</h2>
-
-
-<g:if test="${filteredSubChilds}">
-
-    <div class="ui top attached tabular menu">
-
-        <g:link class="item ${params.tab == 'generalProperties' ? 'active' : ''}"
-                controller="subscription" action="subscriptionPropertiesMembers"
-                id="${subscription.id}"
-                params="[tab: 'generalProperties']">
-            <g:message code="subscription.subscriptionPropertiesMembers.generalProperties"/>
-
-        </g:link>
-
-        <g:link class="item ${params.tab == 'providerAgency' ? 'active' : ''}"
-                controller="subscription" action="subscriptionPropertiesMembers"
-                id="${subscription.id}"
-                params="[tab: 'providerAgency']">
-            <g:message code="subscription.subscriptionPropertiesMembers.providerAgency"/>
-
-        </g:link>
-
-        <g:link class="item ${params.tab == 'documents' ? 'active' : ''}"
-                controller="subscription" action="subscriptionPropertiesMembers"
-                id="${subscription.id}"
-                params="[tab: 'documents']">
-            <g:message code="subscription.subscriptionPropertiesMembers.documents"/>
-
-        </g:link>
-
-        <g:link class="item ${params.tab == 'notes' ? 'active' : ''}"
-                controller="subscription" action="subscriptionPropertiesMembers"
-                id="${subscription.id}"
-                params="[tab: 'notes']">
-            <g:message code="subscription.subscriptionPropertiesMembers.notes"/>
-
-        </g:link>
-
-        <g:link class="item ${params.tab == 'multiYear' ? 'active' : ''}"
-                controller="subscription" action="subscriptionPropertiesMembers"
-                id="${subscription.id}"
-                params="[tab: 'multiYear']">
-            <g:message code="subscription.isMultiYear.label"/>
-
-        </g:link>
-
+                <td>
+                    <g:formatDate formatName="default.date.format.notime" date="${subscription.startDate}"/>
+                    <semui:auditButton auditable="[subscription, 'startDate']"/>
+                </td>
+                <td>
+                    <g:formatDate formatName="default.date.format.notime" date="${subscription.endDate}"/>
+                    <semui:auditButton auditable="[subscription, 'endDate']"/>
+                </td>
+                <td>
+                    ${subscription.status.getI10n('value')}
+                    <semui:auditButton auditable="[subscription, 'status']"/>
+                </td>
+                <td class="x">
+                    <g:link controller="subscription" action="show" id="${subscription.id}"
+                            class="ui icon button blue la-modern-button"
+                            role="button"
+                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                        <i aria-hidden="true" class="write icon"></i></g:link>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
-
-
-    <g:if test="${params.tab == 'generalProperties'}">
-        <div class="ui bottom attached tab segment active">
-
-            <g:set var="editableOld" value="${editable}"/>
-
-            <div class="ui segment">
-                <h3 class="ui header"><g:message code="subscription.propertiesMembers.subscription" args="${args.superOrgType}"/></h3>
-                <table class="ui celled la-table table">
-                    <thead>
-                    <tr>
-                        <th>${message(code: 'subscription')}</th>
-                        <th>${message(code: 'default.startDate.label')}</th>
-                        <th>${message(code: 'default.endDate.label')}</th>
-                        <th>${message(code: 'default.status.label')}</th>
-                        <th>${message(code: 'subscription.kind.label')}</th>
-                        <th>${message(code: 'subscription.form.label')}</th>
-                        <th>${message(code: 'subscription.resource.label')}</th>
-                        <th>${message(code: 'subscription.isPublicForApi.label')}</th>
-                        <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
-                        <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                    <td>${subscription.name}</td>
-
-                    <td>
-                        <g:formatDate formatName="default.date.format.notime" date="${subscription.startDate}"/>
-                        <semui:auditButton auditable="[subscription, 'startDate']"/>
-                    </td>
-                    <td>
-                        <g:formatDate formatName="default.date.format.notime" date="${subscription.endDate}"/>
-                        <semui:auditButton auditable="[subscription, 'endDate']"/>
-                    </td>
-                    <td>
-                        ${subscription.status.getI10n('value')}
-                        <semui:auditButton auditable="[subscription, 'status']"/>
-                    </td>
-                    <td>
-                        ${subscription.kind?.getI10n('value')}
-                        <semui:auditButton auditable="[subscription, 'kind']"/>
-                    </td>
-                    <td>
-                        ${subscription.form?.getI10n('value')}
-                        <semui:auditButton auditable="[subscription, 'form']"/>
-                    </td>
-                    <td>
-                        ${subscription.resource?.getI10n('value')}
-                        <semui:auditButton auditable="[subscription, 'resource']"/>
-                    </td>
-                    <td>
-                        ${subscription.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
-                        <semui:auditButton auditable="[subscription, 'isPublicForApi']"/>
-                    </td>
-                    <td>
-                        ${subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
-                        <%--${subscription.hasPerpetualAccess?.getI10n('value')}--%>
-                        <semui:auditButton auditable="[subscription, 'hasPerpetualAccess']"/>
-                    </td>
-                    <td>
-                        ${subscription.hasPublishComponent ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
-                        <semui:auditButton auditable="[subscription, 'hasPublishComponent']"/>
-                    </td>
-
-                    <td class="x">
-                        <g:link controller="subscription" action="show" id="${subscription.id}"
-                                class="ui icon button blue la-modern-button"
-                                role="button"
-                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="write icon"></i></g:link>
-                    </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
 
             <div class="divider"></div>
 
@@ -740,59 +623,55 @@
                                         </span>
                                     </g:if>
 
-                                    <g:if test="${subscr.getCustomerType() in ['ORG_INST']}">
-                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                              data-content="${subscr.getCustomerTypeI10n()}">
-                                            <i class="chess rook grey icon"></i>
-                                        </span>
-                                    </g:if>
-
-                                </td>
-                            </g:each>
-                            <g:if test="${!sub.getAllSubscribers()}">
-                                <td></td>
-                                <td></td>
+                            <g:if test="${subscr.getCustomerType() == 'ORG_INST'}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                      data-content="${subscr.getCustomerTypeI10n()}">
+                                    <i class="chess rook grey icon"></i>
+                                </span>
                             </g:if>
-                            <td>
-                                <semui:xEditable owner="${sub}" field="startDate" type="date" validation="datesCheck"/>
-                                <semui:auditButton auditable="[sub, 'startDate']"/>
-                            </td>
-                            <td><semui:xEditable owner="${sub}" field="endDate" type="date" validation="datesCheck"/>
-                            <semui:auditButton auditable="[sub, 'endDate']"/>
-                            </td>
-                            <td>
-                                <semui:xEditableRefData owner="${sub}" field="status"
-                                                        config="${RDConstants.SUBSCRIPTION_STATUS}"
-                                                        constraint="removeValue_deleted"/>
-                                <semui:auditButton auditable="[sub, 'status']"/>
-                            </td>
-                            <td>
-                                <semui:xEditableBoolean owner="${sub}" field="isMultiYear"/>
-                            </td>
-                            <td class="x">
-                                <g:link controller="subscription" action="show" id="${sub.id}"
-                                        class="ui icon button blue la-modern-button"
-                                        role="button"
-                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="write icon"></i>
-                                </g:link>
-                            </td>
-                        </tr>
-                    </g:each>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </g:if>
+                        </td>
+                    </g:if>
+                    <g:if test="${controllerName == "myInstitution"}">
+                        <td>${sub.name}</td>
+                    </g:if>
+                    <td>
+                        <semui:xEditable owner="${sub}" field="startDate" type="date" validation="datesCheck"/>
+                        <semui:auditButton auditable="[sub, 'startDate']"/>
+                    </td>
+                    <td><semui:xEditable owner="${sub}" field="endDate" type="date" validation="datesCheck"/>
+                    <semui:auditButton auditable="[sub, 'endDate']"/>
+                    </td>
+                    <td>
+                        <semui:xEditableRefData owner="${sub}" field="status"
+                                                config="${RDConstants.SUBSCRIPTION_STATUS}"
+                                                constraint="removeValue_deleted"/>
+                        <semui:auditButton auditable="[sub, 'status']"/>
+                    </td>
+                    <td>
+                        <semui:xEditableBoolean owner="${sub}" field="isMultiYear"/>
+                    </td>
+                    <td class="x">
+                        <g:link controller="subscription" action="show" id="${sub.id}"
+                                class="ui icon button blue la-modern-button"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                            <i aria-hidden="true" class="write icon"></i>
+                        </g:link>
+                    </td>
+                </tr>
+            </g:each>
+            </tbody>
+        </table>
+    </div>
 </g:if>
 <g:else>
-
-    <br />
-
-    <g:if test="${!filteredSubChilds}">
-        <strong><g:message code="subscription.details.nomembers.label" args="${args.memberType}"/></strong>
+    <g:if test="${filterSet}">
+        <br/><strong><g:message code="filter.result.empty.object"
+                                args="${[message(code: "subscription.plural")]}"/></strong>
     </g:if>
-
+    <g:else>
+        <br/><strong><g:message code="result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>
+    </g:else>
 </g:else>
 
 <div id="magicArea"></div>
@@ -801,47 +680,11 @@
 
     $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {
-            $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', true)
+            $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', true)
         } else {
-            $("tr[class!=disabled] input[name=selectedMembers]").prop('checked', false)
-        }
-    });
-
-    $.fn.form.settings.rules.endDateNotBeforeStartDate = function() {
-        if($("#valid_from").val() !== '' && $("#valid_to").val() !== '') {
-            var startDate = Date.parse(JSPC.helper.formatDate($("#valid_from").val()));
-            var endDate = Date.parse(JSPC.helper.formatDate($("#valid_to").val()));
-            return (startDate < endDate);
-        }
-        else return true;
-    };
-
-    $('.propertiesSubscription').form({
-        on: 'blur',
-        inline: true,
-        fields: {
-            valid_from: {
-                identifier: 'valid_from',
-                rules: [
-                    {
-                        type: 'endDateNotBeforeStartDate',
-                        prompt: '<g:message code="validation.startDateAfterEndDate"/>'
-                    }
-                ]
-            },
-            valid_to: {
-                identifier: 'valid_to',
-                rules: [
-                    {
-                        type: 'endDateNotBeforeStartDate',
-                        prompt: '<g:message code="validation.endDateBeforeStartDate"/>'
-                    }
-                ]
-            }
+            $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
         }
     });
 </laser:script>
 
-</body>
-</html>
 

@@ -161,7 +161,10 @@
 
                   <semui:actionsDropdownItem controller="subscription" action="linkLicenseMembers"
                                              params="${[id: params.id]}"
-                                             text="${message(code:'subscription.details.subscriberManagement.label',args:menuArgs)}"/>
+                                             text="${message(code:'subscriptionsManagement.subscriptions.members')}"/>
+                  <semui:actionsDropdownItem controller="subscription" action="membersSubscriptionsManagement"
+                                           params="${[id: params.id]}"
+                                           text="${message(code:'subscriptionsManagement.subscriptions.members')}"/>
             </g:if>
 
             <g:if test="${actionName == 'members'}">

@@ -5,6 +5,7 @@ import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.InstitutionsService
 import de.laser.annotations.DebugAnnotation
 import de.laser.ctrl.MyInstitutionControllerService
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.finance.PriceItem
 import de.laser.properties.LicenseProperty
@@ -86,6 +87,7 @@ class MyInstitutionController  {
     GokbService gokbService
     ExportClickMeService exportClickMeService
     WorkflowService workflowService
+    ManagementService managementService
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
@@ -939,6 +941,20 @@ join sub.orgRelations or_sub where
                 return exportService.generateXLSXWorkbook(sheetData)
             case 'csv': return exportService.generateSeparatorTableString(titles, subscriptionData, ',')
         }
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    def subscriptionsManagement() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        params.tab = params.tab ?: 'generalProperties'
+
+        result << managementService.subscriptionsManagement(this, params)
+
+
+        result
+
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")', wtc = 2)
@@ -2281,6 +2297,54 @@ join sub.orgRelations or_sub where
             result.putAll( workflowService.usage(params) )
         }
 
+        SessionCacheWrapper cache = contextService.getSessionCache()
+        String urlKey = 'myInstitution/currentWorkflows'
+        String fmKey = urlKey + '/_filterMap'
+        String pmKey = urlKey + '/_paginationMap'
+
+        Map<String, Object> filterMap = params.findAll{ it.key.startsWith('filter') }
+
+        if (cache) {
+            if (request.getHeader('referer')) {
+                try {
+                    URL url = URI.create(request.getHeader('referer')).toURL()
+                    if (! url.getPath().endsWith(urlKey)) {
+                        cache.put(fmKey, [ filterStatus: RDStore.WF_WORKFLOW_STATUS_OPEN.id ])
+                        cache.remove(pmKey)
+                    }
+                } catch (Exception e) { }
+            }
+            if (filterMap.get('filter') == 'false') {
+                cache.put(fmKey, [ filterStatus: RDStore.WF_WORKFLOW_STATUS_OPEN.id ])
+                cache.remove(pmKey)
+            }
+            else {
+                if (filterMap) {
+                    cache.put(fmKey, filterMap)
+                    cache.remove(pmKey)
+                }
+                if (! cache.get(pmKey) || params.max || params.offset) {
+                    cache.put(pmKey, [
+                            max:    params.max ? params.int('max') : contextService.getUser().getDefaultPageSizeAsInteger(),
+                            offset: params.offset ? params.int('offset') : 0
+                    ])
+                }
+            }
+
+            if (cache.get(fmKey)) {
+                params.putAll( cache.get(fmKey) as Map )
+            }
+            if (cache.get(pmKey)) {
+                params.putAll( cache.get(pmKey) as Map )
+            }
+            else {
+                params.putAll( [
+                        max: contextService.getUser().getDefaultPageSizeAsInteger(),
+                        offset: 0
+                ] )
+            }
+        }
+
         String query = 'select wf from WfWorkflow wf where wf.owner = :ctxOrg'
         Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
 
@@ -2312,7 +2376,8 @@ join sub.orgRelations or_sub where
             query = query + ' and wf.subscription = :subscription'
             queryParams.put('subscription', Subscription.get(params.filterSubscription))
         }
-        result.currentWorkflows = WfWorkflow.executeQuery( query + ' order by wf.id desc', queryParams )
+
+        result.currentWorkflows = WfWorkflow.executeQuery(query + ' order by wf.id desc', queryParams)
 
         if (params.filterPriority) {
             List<WfWorkflow> matches = []
@@ -2340,6 +2405,9 @@ join sub.orgRelations or_sub where
                 result.currentWorkflows = matches
             }
         }
+
+        result.total = result.currentWorkflows.size()
+        result.currentWorkflows = result.currentWorkflows.drop(params.offset).take(params.max)
 
         result
     }
