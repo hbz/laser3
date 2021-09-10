@@ -47,14 +47,6 @@
     </g:if>
 
     <div class="ui segment">
-        <h3 class="ui header"><g:if test="${controllerName == "subscription"}">
-            ${message(code: 'subscriptionsManagement.subscriber')} <semui:totalNumber
-                    total="${filteredSubscriptions.size()}"/>
-        </g:if><g:else>
-            ${message(code: 'subscriptionsManagement.subscriptions')} <semui:totalNumber
-                    total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
-        </g:else></h3>
-
         <h3 class="ui header">
             <g:if test="${controllerName == "subscription"}">
                 ${message(code: 'subscriptionsManagement.subscriber')} <semui:totalNumber
@@ -145,8 +137,6 @@
         </table>
     </div>
 </g:if>
-</tbody>
-</table>
 <g:else>
     <g:if test="${filterSet}">
         <br/><strong><g:message code="filter.result.empty.object"
