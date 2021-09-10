@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3790    10.09.2021  dev     2.2         Andreas Bug         Passwörter mit HTML-relevanten Zeichen wurden inkorrekt dargestellt
+
 3776    09.09.2021  dev     2.2         Moe     Feature     Lizenzverwaltung 
 
 3786    09.09.2021  dev     2.2         David   Feature     'Meine Workflows' überarbeiten
