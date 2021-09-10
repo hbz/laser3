@@ -23,6 +23,7 @@
     <a data-tab="workflows" class="item <% if (tmplTab == 'workflows') { print 'active' } %>">${message(code:'workflow.plural')}</a>
     %{-- <a data-tab="templates" class="item <% if (tmplTab == 'templates') { print 'active' } %>">Templates</a> --}%
     <a data-tab="prototypes" class="item <% if (tmplTab == 'prototypes') { print 'active' } %>">${message(code:'default.prototype.plural')}</a>
+    <a data-tab="help" class="item <% if (tmplTab == 'help') { print 'active' } %>">?</a>
 </div>
 
 <div data-tab="workflows" class="ui bottom attached tab <% if (tmplTab == 'workflows') { print 'active' } %>" style="margin-top:2em;">
@@ -506,6 +507,18 @@
     </g:each>
 
 </div><!-- .prototypes -->
+
+<div data-tab="help" class="ui bottom attached tab <% if (tmplTab == 'help') { print 'active' } %>" style="margin-top:2em;">
+
+    <div class="ui segment">
+        <div class="field">
+            <div style="text-align:center; padding:2em 0">
+                <asset:image src="help/workflows.png" absolute="true" style="width:85%" />
+            </div>
+        </div>
+    </div><!-- .tab -->
+
+</div><!-- .help -->
 
 <div id="wfModal" class="ui modal"></div>
 
