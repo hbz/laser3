@@ -24062,6 +24062,7 @@ legend {
 
 .la-timeLineGrid {
   border-left: 2px dashed #dcdcdc;
+  margin-left: 25px;
 }
 
 .la-timeLineGrid h2.ui.header {
