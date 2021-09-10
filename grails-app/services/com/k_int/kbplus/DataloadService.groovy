@@ -1049,11 +1049,14 @@ class DataloadService {
         finally {
             log.debug("Completed processing on ${domain.name} - saved ${total} records")
             try {
+                if (ESWrapperService.testConnection()) {
                 if (latest_ft_record.active) {
                     FlushRequest request = new FlushRequest(esIndices.get(domain.simpleName));
                     FlushResponse flushResponse = esclient.indices().flush(request, RequestOptions.DEFAULT)
                 }
-                esclient.close()
+
+                    esclient.close()
+                }
                 checkESElementswithDBElements(domain.name)
             }
             catch (Exception e) {

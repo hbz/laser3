@@ -151,10 +151,6 @@ class AccessPointService {
         List accessPointData = []
         orgs.each { Org org ->
             List row = []
-            row.add([field: org.sortname ?: '', style: null])
-            row.add([field: org.name ?: '', style: null])
-            row.add([field: org.shortname ?: '', style: null])
-            accessPointData.add(row)
 
             List<OrgAccessPoint> accessPoints = OrgAccessPoint.findAllByOrg(org, [sort: ["name": 'asc', "accessMethod": 'asc']])
             accessPoints.each { accessPoint ->
@@ -165,9 +161,9 @@ class AccessPointService {
 
                     accessPointDataList.ipv4Ranges.each {
                         row = []
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
+                        row.add([field: org.sortname ?: '', style: null])
+                        row.add([field: org.name ?: '', style: null])
+                        row.add([field: org.shortname ?: '', style: null])
                         row.add([field: it.name ?: '', style: null])
                         row.add([field: 'IPv4', style: null])
                         row.add([field: it.ipRange ?: '', style: null])
@@ -177,9 +173,9 @@ class AccessPointService {
 
                     accessPointDataList.ipv6Ranges.each {
                         row = []
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
+                        row.add([field: org.sortname ?: '', style: null])
+                        row.add([field: org.name ?: '', style: null])
+                        row.add([field: org.shortname ?: '', style: null])
                         row.add([field: it.name ?: '', style: null])
                         row.add([field: 'IPv6', style: null])
                         row.add([field: it.ipRange ?: '', style: null])
@@ -216,10 +212,6 @@ class AccessPointService {
         List accessPointData = []
         orgs.each { Org org ->
             List row = []
-            row.add([field: org.sortname ?: '', style: null])
-            row.add([field: org.name ?: '', style: null])
-            row.add([field: org.shortname ?: '', style: null])
-            accessPointData.add(row)
 
             List<OrgAccessPoint> accessPoints = OrgAccessPoint.findAllByOrg(org, [sort: ["name": 'asc', "accessMethod": 'asc']])
             accessPoints.each { accessPoint ->
@@ -230,9 +222,9 @@ class AccessPointService {
 
                     accessPointDataList.ipv4Ranges.each {
                         row = []
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
+                        row.add([field: org.sortname ?: '', style: null])
+                        row.add([field: org.name ?: '', style: null])
+                        row.add([field: org.shortname ?: '', style: null])
                         row.add([field: it.name ?: '', style: null])
                         row.add([field: 'IPv4', style: null])
                         row.add([field: it.ipRange ?: '', style: null])
@@ -242,9 +234,9 @@ class AccessPointService {
 
                     accessPointDataList.ipv6Ranges.each {
                         row = []
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
+                        row.add([field: org.sortname ?: '', style: null])
+                        row.add([field: org.name ?: '', style: null])
+                        row.add([field: org.shortname ?: '', style: null])
                         row.add([field: it.name ?: '', style: null])
                         row.add([field: 'IPv6', style: null])
                         row.add([field: it.ipRange ?: '', style: null])
@@ -280,10 +272,6 @@ class AccessPointService {
         List accessPointData = []
         orgs.each { Org org ->
             List row = []
-            row.add([field: org.sortname ?: '', style: null])
-            row.add([field: org.name ?: '', style: null])
-            row.add([field: org.shortname ?: '', style: null])
-            accessPointData.add(row)
 
             List<OrgAccessPoint> accessPoints = OrgAccessPoint.findAllByOrg(org, [sort: ["name": 'asc', "accessMethod": 'asc']])
             accessPoints.each { accessPoint ->
@@ -294,9 +282,9 @@ class AccessPointService {
 
                     accessPointDataList.ipv4Ranges.each {
                         row = []
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
+                        row.add([field: org.sortname ?: '', style: null])
+                        row.add([field: org.name ?: '', style: null])
+                        row.add([field: org.shortname ?: '', style: null])
                         row.add([field: it.name ?: '', style: null])
                         row.add([field: 'IPv4', style: null])
                         row.add([field: it.ipRange ?: '', style: null])
@@ -307,9 +295,9 @@ class AccessPointService {
 
                     accessPointDataList.ipv6Ranges.each {
                         row = []
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
-                        row.add([field: '', style: null])
+                        row.add([field: org.sortname ?: '', style: null])
+                        row.add([field: org.name ?: '', style: null])
+                        row.add([field: org.shortname ?: '', style: null])
                         row.add([field: it.name ?: '', style: null])
                         row.add([field: 'IPv6', style: null])
                         row.add([field: it.ipRange ?: '', style: null])
@@ -345,15 +333,14 @@ class AccessPointService {
         List accessPointData = []
         orgs.each { Org org ->
             List row = []
-            row.add([field: org.sortname ?: '', style: null])
-            row.add([field: org.name ?: '', style: null])
-            row.add([field: org.shortname ?: '', style: null])
 
             List<OrgAccessPoint> accessPoints = OrgAccessPoint.findAllByOrg(org, [sort: ["name": 'asc', "accessMethod": 'asc']])
             accessPoints.each { accessPoint ->
 
                 if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_SHIBBOLETH) {
-
+                    row.add([field: org.sortname ?: '', style: null])
+                    row.add([field: org.name ?: '', style: null])
+                    row.add([field: org.shortname ?: '', style: null])
                     row.add([field: accessPoint.name ?: '', style: null])
                     row.add([field: accessPoint.accessMethod ? accessPoint.accessMethod.getI10n('value') : '', style: null])
                     row.add([field: accessPoint.entityId ?: '', style: null])
