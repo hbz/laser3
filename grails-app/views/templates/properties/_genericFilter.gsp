@@ -10,7 +10,7 @@
         </span>
     </label>
     <%-- value="${params.filterPropDef}" --%>
-    <semui:dropdown id="filterPropDef" name="filterPropDef"
+    <semui:dropdown id="filterPropDef" name="${newfilterPropDefName ?: 'filterPropDef'}"
                     class="la-filterPropDef"
                     from="${propList}"
                     iconWhich = "shield alternate"

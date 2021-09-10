@@ -31,6 +31,7 @@ class SubscriptionController {
     AccessPointService accessPointService
     CopyElementsService copyElementsService
     ExportClickMeService exportClickMeService
+    ManagementService managementService
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
@@ -353,12 +354,14 @@ class SubscriptionController {
         }
     }
 
+
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def linkLicenseMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.linkLicenseMembers(this,params)
+    def membersSubscriptionsManagement() {
+        Map<String, Object> ctrlResult = subscriptionControllerService.membersSubscriptionsManagement(this, params)
+
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
@@ -366,225 +369,20 @@ class SubscriptionController {
             }
         }
         else {
+            params.tab = params.tab ?: 'generalProperties'
+
             ctrlResult.result
         }
     }
 
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processLinkLicenseMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.processLinkLicenseMembers(this,params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            flash.message = message(code: 'subscription.linkLicenseMembers.changeAcceptedAll', args: [ctrlResult.result.message])
-            redirect(action: 'linkLicenseMembers', id: params.id)
-        }
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processUnLinkLicenseMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.processUnLinkLicenseMembers(this,params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            flash.message = message(code: 'subscription.linkLicenseMembers.removeAcceptedAll', args: [ctrlResult.result.message])
-        }
-        redirect(action: 'linkLicenseMembers', id: params.id)
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def linkPackagesMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.linkPackagesMembers(this,params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            flash.message = ctrlResult.result.message
-            ctrlResult.result
-        }
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processLinkPackagesMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.processLinkPackagesMembers(this,params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-            else {
-                flash.error = ctrlResult.result.error
-                redirect(action: 'linkPackagesMembers', id: params.id)
-            }
-        }
-        else {
-            redirect(action: 'linkPackagesMembers', id: params.id)
-        }
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processUnLinkPackagesMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.processUnLinkPackagesMembers(this,params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            flash.message = ctrlResult.result.message.join("<br/>")
-            flash.error = ctrlResult.result.error.join("<br/>")
-        }
-        redirect(action: 'linkPackagesMembers', id: params.id)
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def propertiesMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.propertiesMembers(this,params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            ctrlResult.result
-        }
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processPropertiesMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.processPropertiesMembers(this,params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-            else {
-                flash.error = ctrlResult.result.error
-            }
-        }
-        else {
-            flash.message = ctrlResult.result.message
-        }
-        redirect(action: 'propertiesMembers', id: params.id, params: [filterPropDef: params.filterPropDef])
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processDeletePropertiesMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.processDeletePropertiesMembers(this,params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            flash.message = ctrlResult.result.message
-        }
-        redirect(action: 'propertiesMembers', id: params.id, params: [filterPropDef: params.filterPropDef])
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def subscriptionPropertiesMembers() {
-        params.tab = params.tab ?: 'generalProperties'
-        Map<String,Object> ctrlResult = subscriptionControllerService.subscriptionPropertiesMembers(this,params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            ctrlResult.result
-        }
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def processSubscriptionPropertiesMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.processSubscriptionPropertiesMembers(this,params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            if(ctrlResult.result.change){
-                flash.message = message(code: 'subscription.subscriptionPropertiesMembers.changes', args: [ctrlResult.result.change.join(', ').toString()])
-            }
-            if(ctrlResult.result.noChange){
-                flash.error = message(code: 'subscription.subscriptionPropertiesMembers.noChanges', args: [ctrlResult.result.noChange.join(', ').toString()])
-            }
-        }
-        redirect(action: 'subscriptionPropertiesMembers', id: params.id)
-    }
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
-    def customerIdentifiersMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.customerIdentifierMembers(params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            ctrlResult.result
-        }
-    }
 
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def deleteCustomerIdentifier() {
-        subscriptionControllerService.deleteCustomerIdentifier(params.deleteCI)
-        redirect action: 'customerIdentifiersMembers', id: params.id
+        managementService.deleteCustomerIdentifier(params.deleteCI)
+        redirect(url: request.getHeader("referer"))
     }
 
     //-------------------------------- survey section --------------------------------------

@@ -8,6 +8,10 @@
         <g:if test="${license}">
             <input type="hidden" name="id" value="${license.id}"/>
         </g:if>
+        <g:if test="${actionName == 'subscriptionsManagement'}">
+            <input type="hidden" name="tab" value="${params.tab}"/>
+            <input type="hidden" name="propertiesFilterPropDef" value="${propertiesFilterPropDef}"/>
+        </g:if>
         <div class="three fields">
             %{--<div class="four fields">--}%
             <% /* 1-1 */ %>
@@ -239,7 +243,7 @@
             </div>
         </g:if>
         <div class="field la-field-right-aligned">
-            <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true])}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+            <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true, tab: params.tab])}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
             <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
         </div>
 

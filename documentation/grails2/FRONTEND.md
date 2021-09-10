@@ -97,11 +97,11 @@ Mind the convention of data-confirm-id in form element and inner button element
     <g:form action="processLinkLicenseMembers" method="post" class="ui form" data-confirm-id="deleteLicenses_form">
                 <div class="ui buttons">
                     <button class="ui button negative js-open-confirm-modal"
-                            data-confirm-tokenMsg="${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button.confirm', args: args.memberType)}"
+                            data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.deleteLicenses.button.confirm')}"
                             data-confirm-term-how="ok"
                             name="processOption"
                             data-confirm-id="deleteLicenses"
-                            value="unlinkLicense">${message(code: 'subscription.linkLicenseMembers.deleteLicenses.button')}</button>
+                            value="unlinkLicense">${message(code: 'subscriptionsManagement.deleteLicenses.button')}</button>
                 </div>
     </g:form>
 ```

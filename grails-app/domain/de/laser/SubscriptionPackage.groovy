@@ -103,6 +103,10 @@ class SubscriptionPackage implements Comparable {
     return this.pkg.name
   }
 
+  String getPackageNameWithCurrentTippsCount() {
+    return this.pkg.name + ' ('+ TitleInstancePackagePlatform.countByPkgAndStatus(this.pkg, RDStore.TIPP_STATUS_CURRENT) +')'
+  }
+
   def getNotActiveAccessPoints(Org org){
     String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
     notActiveAPLinkQuery += "and not exists ("

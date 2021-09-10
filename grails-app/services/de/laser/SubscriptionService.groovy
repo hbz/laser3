@@ -2035,7 +2035,7 @@ class SubscriptionService {
         prop.save()
     }
 
-    void updateProperty(SubscriptionController controller, AbstractPropertyWithCalculatedLastUpdated prop, def value) {
+    void updateProperty(def controller, AbstractPropertyWithCalculatedLastUpdated prop, def value) {
 
         String field = prop.type.getImplClassValueProperty()
 

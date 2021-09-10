@@ -1,5 +1,10 @@
 package de.laser.ctrl
 
+import com.k_int.kbplus.ExecutorWrapperService
+import com.k_int.kbplus.FactService
+import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.GlobalSourceSyncService
+import com.k_int.kbplus.PackageService
 import de.laser.*
 import de.laser.auth.User
 import de.laser.helper.DateUtils
@@ -11,6 +16,8 @@ import de.laser.workflow.WfWorkflow
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorService
@@ -24,6 +31,10 @@ class MyInstitutionControllerService {
     def filterService
     def surveyService
     def taskService
+
+    FormService formService
+    SubscriptionService subscriptionService
+    MessageSource messageSource
 
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
