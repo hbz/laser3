@@ -2,13 +2,15 @@
 <g:if test="${filteredSubscriptions}">
 
     <div class="ui bottom attached tab segment active">
-        <div class="ui segment ">
-            <h3 class="ui header"><g:message code="subscriptionsManagement.subscription"
-                                             args="${args.superOrgType}"/></h3>
+        <g:if test="${controllerName == "subscription"}">
+            <div class="ui segment ">
+                <h3 class="ui header"><g:message code="subscriptionsManagement.subscription"
+                                                 args="${args.superOrgType}"/></h3>
 
-    <g:render template="/templates/notes/table"
-              model="${[instance: subscription, redirect: actionName]}"/>
-    </div>
+                <g:render template="/templates/notes/table"
+                          model="${[instance: subscription, redirect: actionName]}"/>
+            </div>
+        </g:if>
 
     <div class="ui segment">
         <h3 class="ui header">
