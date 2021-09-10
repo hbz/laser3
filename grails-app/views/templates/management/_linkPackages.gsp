@@ -1,62 +1,58 @@
 <%@ page import="de.laser.finance.CostItem; de.laser.Person; de.laser.helper.RDStore; de.laser.FormService; de.laser.SubscriptionPackage; de.laser.Subscription" %>
 <laser:serviceInjection/>
 
+<g:if test="${filteredSubscriptions}">
+    <g:if test="${controllerName == "subscription"}">
+        <div class="ui segment">
+            <h3 class="ui header"><g:message code="subscriptionsManagement.package.label"
+                                             args="${args.superOrgType}"/>
+            </h3>
 
-<g:if test="${controllerName == "subscription"}">
+            <g:if test="${validPackages}">
+                <div class="ui middle aligned selection list">
+                    <g:each in="${validPackages}" var="subPkg">
+                        <div class="item">
+                            <g:link controller="package" action="show"
+                                    id="${subPkg.pkg.id}">${subPkg.pkg.name} ${raw(subPkg.getIEandPackageSize())}</g:link>
 
-    <g:message code="subscriptionsManagement.package.label"
-               args="${args.superOrgType}"/></label>
-
-    <g:if test="${validPackages}">
-        <div class="ui middle aligned selection list">
-            <g:each in="${validPackages}" var="subPkg">
-                <div class="item">
-                    <g:link controller="package" action="show"
-                            id="${subPkg.pkg.id}">${subPkg.pkg.name} ${raw(subPkg.getIEandPackageSize())}</g:link>
-
-                    <div class="right floated content">
-                        <button class="ui negative button la-modern-button la-selectable-button unlinkPackages"
-                                data-package="${subPkg.pkg.id}" data-subscription="${subPkg.subscription.id}">
-                            <i class="unlink icon"></i>
-                        </button>
-                    </div>
+                            <div class="right floated content">
+                                <button class="ui negative button la-modern-button la-selectable-button unlinkPackages" ${!editable ? 'disabled="disabled"' : ''}
+                                        data-package="${subPkg.pkg.id}" data-subscription="${subPkg.subscription.id}">
+                                    <i class="unlink icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </g:each>
                 </div>
-            </g:each>
+
+            </g:if>
+            <g:else>
+                <g:message code="subscriptionsManagement.noValidPackages" args="${args.superOrgType}"/>
+            </g:else>
         </div>
-
     </g:if>
-    <g:else>
-        <g:message code="subscriptionsManagement.noValidPackages" args="${args.superOrgType}"/>
-    </g:else>
-</g:if>
 
+    <g:if test="${isLinkingRunning}">
+        <div class="ui icon warning message">
+            <i class="info icon"></i>
 
-</h4>
+            <div class="content">
+                <div class="header">Info</div>
 
-<g:if test="${isLinkingRunning}">
-    <div class="ui icon warning message">
+                <p>${message(code: 'subscriptionsManagement.isLinkingRunning.info')}</p>
+            </div>
+        </div>
+    </g:if>
+
+    <div class="ui icon info message">
         <i class="info icon"></i>
 
         <div class="content">
             <div class="header">Info</div>
 
-            <p>${message(code: 'subscriptionsManagement.isLinkingRunning.info')}</p>
+            <p>${message(code: 'subscriptionsManagement.package.info')}</p>
         </div>
     </div>
-</g:if>
-
-<div class="ui icon info message">
-    <i class="info icon"></i>
-
-    <div class="content">
-        <div class="header">Info</div>
-
-        <p>${message(code: 'subscriptionsManagement.package.info')}</p>
-    </div>
-</div>
-
-
-<g:if test="${filteredSubscriptions}">
 
     <g:if test="${controllerName == "subscription"}">
 
@@ -117,7 +113,7 @@
 
 
             <div class="two fields">
-                <div class="eight wide field">
+                <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
                         <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
@@ -130,7 +126,7 @@
                     </div>
                 </div>
 
-                <div class="eight wide field">
+                <div class="eight wide field" style="text-align: right;">
                     <div class="ui buttons">
                         <button class="ui button negative js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.onlyPackage.confirm')}"
