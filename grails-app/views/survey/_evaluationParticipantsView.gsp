@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.helper.RDStore;de.laser.RefdataCategory;de.laser.SurveyConfig;de.laser.SurveyOrg" %>
+<%@ page import="de.laser.SurveyResult; de.laser.Org; de.laser.helper.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.helper.RDStore;de.laser.RefdataCategory;de.laser.SurveyConfig;de.laser.SurveyOrg" %>
 
 <g:if test="${surveyConfig}">
 
@@ -122,12 +122,12 @@
         <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
 
         <g:set var="surveyParticipantsHasAccess"
-               value="${surveyResult.findAll { it.participant.hasAccessOrg() }}"/>
+               value="${participants.findAll { it.org.hasAccessOrg() }}"/>
 
         <div class="four wide column">
             <g:if test="${surveyParticipantsHasAccess}">
                 <a data-semui="modal" class="ui icon button right floated"
-                   data-orgIdList="${(surveyParticipantsHasAccess.participant.id)?.join(',')}"
+                   data-orgIdList="${(surveyParticipantsHasAccess.org.id)?.join(',')}"
                    href="#copyEmailaddresses_static">
                     <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
                 </a>
@@ -160,10 +160,7 @@
                     </g:if>
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                        <g:each in="${surveyParticipantsHasAccess.groupBy {
-                            it.type.id
-                        }.sort { it.value[0].type.name }}" var="property">
-                            <g:set var="surveyProperty" value="${PropertyDefinition.get(property.key)}"/>
+                        <g:each in="${propList.sort { it.name }}" var="surveyProperty">
                             <g:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}"
                                                   property="surResult.${surveyProperty.getImplClassValueProperty()}, surResult.participant.sortname ">
                                 <g:if test="${surveyProperty.getI10n('expl')}">
@@ -197,9 +194,11 @@
             </tr>
             </thead>
             <tbody>
-            <g:each in="${surveyParticipantsHasAccess.groupBy { it.participant.id }}" var="result" status="i">
+            <g:each in="${surveyParticipantsHasAccess.org}" var="participant" status="i">
 
-                <g:set var="participant" value="${Org.get(result.key)}"/>
+                <g:set var="surResults" value="${SurveyResult.findAllByParticipantAndSurveyConfig(participant, surveyConfig)}"/>
+                <g:set var="surveyOrg"
+                       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant)}"/>
                 <tr>
                     <g:if test="${showCheckbox}">
                         <td>
@@ -280,11 +279,8 @@
                         </g:if>
 
                         <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                            <g:each in="${result.value.sort { it.type.name }}" var="resultProperty">
+                            <g:each in="${surResults.sort { it.type.name }}" var="resultProperty">
                                 <td>
-                                    <g:set var="surveyOrg"
-                                           value="${SurveyOrg.findBySurveyConfigAndOrg(resultProperty.surveyConfig, participant)}"/>
-
                                     <g:if test="${resultProperty.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
 
                                         <g:message code="surveyOrg.perennialTerm.available"/>
@@ -378,12 +374,12 @@
         <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
         <g:set var="surveyParticipantsHasNotAccess"
-               value="${surveyResult.findAll { !it.participant.hasAccessOrg() }}"/>
+               value="${participants.findAll { !it.org.hasAccessOrg() }}"/>
 
         <div class="four wide column">
             <g:if test="${surveyParticipantsHasNotAccess}">
                 <a data-semui="modal" class="ui icon button right floated"
-                   data-orgIdList="${(surveyParticipantsHasNotAccess.participant.id)?.join(',')}"
+                   data-orgIdList="${(surveyParticipantsHasNotAccess.org.id)?.join(',')}"
                    href="#copyEmailaddresses_static">
                     <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
                 </a>
@@ -416,10 +412,7 @@
                     </g:if>
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                        <g:each in="${surveyParticipantsHasAccess.groupBy {
-                            it.type.id
-                        }.sort { it.value[0].type.name }}" var="property">
-                            <g:set var="surveyProperty" value="${PropertyDefinition.get(property.key)}"/>
+                        <g:each in="${propList.sort { it.name }}" var="surveyProperty">
                             <g:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}"
                                               property="surResult.${surveyProperty.getImplClassValueProperty()}, surResult.participant.sortname ">
                                 <g:if test="${surveyProperty.getI10n('expl')}">
@@ -453,9 +446,11 @@
             </tr>
             </thead>
             <tbody>
-            <g:each in="${surveyParticipantsHasNotAccess.groupBy { it.participant.id }}" var="result" status="i">
+            <g:each in="${surveyParticipantsHasNotAccess.org}" var="participant" status="i">
 
-                <g:set var="participant" value="${Org.get(result.key)}"/>
+                <g:set var="surResults" value="${SurveyResult.findAllByParticipantAndSurveyConfig(participant, surveyConfig)}"/>
+                <g:set var="surveyOrg"
+                       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant)}"/>
                 <tr>
                     <g:if test="${showCheckbox}">
                         <td>
@@ -537,11 +532,8 @@
                         </g:if>
 
                         <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                            <g:each in="${result.value.sort { it.type.name }}" var="resultProperty">
+                            <g:each in="${surResults.sort { it.type.name }}" var="resultProperty">
                                 <td>
-                                    <g:set var="surveyOrg"
-                                           value="${SurveyOrg.findBySurveyConfigAndOrg(resultProperty.surveyConfig, participant)}"/>
-
                                     <g:if test="${resultProperty.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
 
                                         <g:message code="surveyOrg.perennialTerm.available"/>

@@ -120,6 +120,17 @@
 
                         </g:if>
 
+                        <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION}">
+                            <dl>
+                                <dt class="control-label">${message(code: 'surveyconfig.pickAndChoosePerpetualAccess.label')}</dt>
+                                <dd>
+                                    ${surveyInfo.surveyConfigs[0].pickAndChoosePerpetualAccess ? message(code: 'refdata.Yes') : message(code: 'refdata.No')}
+                                </dd>
+
+                            </dl>
+
+                        </g:if>
+
                     </div>
                 </div>
             </div>

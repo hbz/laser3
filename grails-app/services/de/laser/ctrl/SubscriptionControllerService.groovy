@@ -934,7 +934,7 @@ class SubscriptionControllerService {
             params.id = newSub.id
             params.sourceObjectId = baseSub.id
             params.tab = params.tab ?: 'allIEs'
-            List<IssueEntitlement> sourceIEs
+            List<IssueEntitlement> sourceIEs = []
             if(params.tab == 'allIEs') {
                 Map query = filterService.getIssueEntitlementQuery(params, baseSub)
                 sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
@@ -960,39 +960,45 @@ class SubscriptionControllerService {
             result.num_ies_rows = sourceIEs.size()
             //subscriptionService.getIssueEntitlementsFixed(baseSub).size()
 
-            result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max)) : []
-
-            Map query = filterService.getIssueEntitlementQuery(params, newSub)
-            List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
-            result.targetIEs = []
-            targetIEs.collate(32767).each {
-                result.targetIEs.addAll(IssueEntitlement.findAllByIdInList(targetIEs.take(32768)))
-            }
             result.newSub = newSub
             result.subscription = baseSub
             result.subscriber = result.newSub.getSubscriber()
-            result.editable = (params.tab == 'previousIEs') ? false : surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
-            if(result.editable) {
-                SessionCacheWrapper sessionCache = contextService.getSessionCache()
-                Map<String, Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
+            if(params.tab != 'previousIEsStats') {
+                result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max)) : []
 
-                if (!checkedCache) {
-                    sessionCache.put("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}", ["checked": [:]])
-                    checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
+                Map query = filterService.getIssueEntitlementQuery(params, newSub)
+                List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
+                result.targetIEs = []
+                targetIEs.collate(32767).each {
+                    result.targetIEs.addAll(IssueEntitlement.findAllByIdInList(targetIEs.take(32768)))
                 }
 
-                result.checkedCache = checkedCache.get('checked')
-                result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
+                result.editable = (params.tab == 'previousIEs') ? false : surveyService.isEditableSurvey(result.institution, result.surveyInfo)
+
+                if (result.editable) {
+                    SessionCacheWrapper sessionCache = contextService.getSessionCache()
+                    Map<String, Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
+
+                    if (!checkedCache) {
+                        sessionCache.put("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}", ["checked": [:]])
+                        checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
+                    }
+
+                    result.checkedCache = checkedCache.get('checked')
+                    result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
 
 
-                result.allChecked = ""
-                if (params.tab == 'allIEs' && result.countAllIEs > 0 && result.countAllIEs == result.checkedCount) {
-                    result.allChecked = "checked"
+                    result.allChecked = ""
+                    if (params.tab == 'allIEs' && result.countAllIEs > 0 && result.countAllIEs == result.checkedCount) {
+                        result.allChecked = "checked"
+                    }
+                    if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
+                        result.allChecked = "checked"
+                    }
                 }
-                if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
-                    result.allChecked = "checked"
-                }
+            }else{
+                result << result + surveyService.getStatsForParticipant(params,  baseSub, newSub, previousSubscription)
             }
 
             [result:result,status:STATUS_OK]

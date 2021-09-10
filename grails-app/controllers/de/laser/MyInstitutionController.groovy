@@ -7,6 +7,7 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.UserControllerService
+import de.laser.custom.CustomWkhtmltoxService
 import de.laser.finance.PriceItem
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
@@ -88,6 +89,7 @@ class MyInstitutionController  {
     ExportClickMeService exportClickMeService
     WorkflowService workflowService
     ManagementService managementService
+    CustomWkhtmltoxService wkhtmltoxService
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
@@ -540,14 +542,32 @@ class MyInstitutionController  {
             workbook.dispose()
             return
         }
+        else if(params.exportPDF) {
+            result.licenses = totalLicenses
+            Map<String, Object> pageStruct = [
+                    width       : 85,
+                    height      : 35,
+                    pageSize    : 'A4',
+                    orientation : 'Portrait'
+            ]
+            result.struct = [pageStruct.width, pageStruct.height, pageStruct.pageSize + ' ' + pageStruct.orientation]
+            byte[] pdf = wkhtmltoxService.makePdf(
+                    view: '/myInstitution/currentLicensesPdf',
+                    model: result,
+                    pageSize: pageStruct.pageSize,
+                    orientation: pageStruct.orientation,
+                    marginLeft: 10,
+                    marginRight: 10,
+                    marginTop: 15,
+                    marginBottom: 15
+            )
+            response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
+            response.setContentType('application/pdf')
+            response.outputStream.withStream { it << pdf }
+            return
+        }
         withFormat {
             html result
-
-            json {
-                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.json\"")
-                response.contentType = "application/json"
-                render (result as JSON)
-            }
             csv {
                 response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
                 response.contentType = "text/csv"
@@ -571,13 +591,6 @@ class MyInstitutionController  {
                     writer.write(exportService.generateSeparatorTableString(titles,rows,','))
                 }
                 out.close()
-            }
-            xml {
-                def doc = exportService.buildDocXML("Licences")
-
-                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
-                response.contentType = "text/xml"
-                exportService.streamOutXML(doc, response.outputStream)
             }
         }
     }
@@ -1745,7 +1758,7 @@ join sub.orgRelations or_sub where
 
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it.surveyConfig.configOrder }
 
-        result.ownerId = result.surveyResults[0]?.owner?.id
+        result.ownerId = result.surveyInfo.owner?.id
 
         if(result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)

@@ -735,7 +735,7 @@ class AjaxHtmlController {
     def createWfXModal() {
         Map<String, Object> result = [
                 tmplCmd: 'create',
-                tmplModalTitle: g.message(code: 'workflow.object.' + params.key),
+                tmplModalTitle: g.message(code: 'default.create.label', args: [ g.message(code: 'workflow.object.' + params.key) ]),
                 tmplFormUrl: createLink(controller: 'admin', action: 'manageWorkflows'),
                 prefix: params.key
         ]
@@ -851,12 +851,11 @@ class AjaxHtmlController {
             }
 
             result.prefix = prefix
-            result.tmplModalTitle = g.message(code: 'workflow.object.' + result.prefix) + ' : '
+            result.tmplModalTitle = g.message(code: 'default.edit.label', args: [ g.message(code: 'workflow.object.' + result.prefix) ]) + ': '
 
             if (result.prefix == WfWorkflowPrototype.KEY) {
                 result.workflow       = WfWorkflowPrototype.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
-                result.tmplModalTitle = result.tmplModalTitle + '(' + result.workflow.id + ') ' + result.workflow.title
 
                 if (result.workflow) {
                     // not: * used as tp.next * used as tp.child
@@ -871,7 +870,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfWorkflow.KEY) {
                 result.workflow       = WfWorkflow.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
-                result.tmplModalTitle = result.tmplModalTitle + '(' + result.workflow.id + ') ' + result.workflow.title
+                result.tmplModalTitle = result.tmplModalTitle + result.workflow.title
 
 //                if (result.workflow) {
 //                    result.dd_taskList          = result.workflow.task ? [ result.workflow.task ] : []
@@ -882,7 +881,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfTaskPrototype.KEY) {
                 result.task           = WfTaskPrototype.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfTask'
-                result.tmplModalTitle = result.tmplModalTitle + '(' + result.task.id + ') ' + result.task.title
+                result.tmplModalTitle = result.tmplModalTitle + result.task.title
 
                 if (result.task) {
 //                    String sql = 'select wftp from WfTaskPrototype wftp where id != :id order by id'
@@ -911,7 +910,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfTask.KEY) {
                 result.task           = WfTask.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfTask'
-                result.tmplModalTitle = result.tmplModalTitle + '(' + result.task.id + ') ' + result.task.title
+                result.tmplModalTitle = result.tmplModalTitle + result.task.title
 
                 if (result.task) {
 
@@ -930,7 +929,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfConditionPrototype.KEY) {
                 result.condition      = WfConditionPrototype.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfCondition'
-                result.tmplModalTitle = result.tmplModalTitle + '(' + result.condition.id + ') ' + result.condition.title
+                result.tmplModalTitle = result.tmplModalTitle + result.condition.title
 
 //                if (result.condition) {
 //                    result.dd_taskList = WfTaskPrototype.executeQuery( 'select wftp from WfTaskPrototype wftp' )
@@ -939,7 +938,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfCondition.KEY) {
                 result.condition      = WfCondition.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfCondition'
-                result.tmplModalTitle = result.tmplModalTitle + '(' + result.condition.id + ') ' + result.condition.title
+                result.tmplModalTitle = result.tmplModalTitle + result.condition.title
 
 //                if (result.condition) {
 //                    result.dd_taskList = WfTask.executeQuery( 'select wft from WfTask wft' )
