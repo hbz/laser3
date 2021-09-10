@@ -2,7 +2,7 @@
 
 <g:if test="${cmd == 'create'}">
     <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
-        <semui:msg class="positive" text="(${obj.id} : ${obj.title}) wurde erfolgreich gespeichert." />
+        <semui:msg class="positive" message="default.created2.message" args="${[obj.title]}" />
     </g:if>
     <g:else>
         <semui:errors bean="${obj}" />
@@ -10,7 +10,7 @@
 </g:if>
 <g:if test="${cmd == 'edit'}">
     <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
-        <semui:msg class="positive" text="(${obj.id} : ${obj.title}) wurde erfolgreich geändert." />
+        <semui:msg class="positive" message="default.updated2.message" args="${[obj.title]}" />
     </g:if>
     <g:else>
         <semui:errors bean="${obj}" />
@@ -18,7 +18,7 @@
 </g:if>
 <g:if test="${cmd == 'instantiate'}">
     <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
-        <semui:msg class="positive" text="(${obj.id} : ${obj.title}) wurde erfolgreich instanziiert." />
+        <semui:msg class="positive" message="default.instantiated2.message" args="${[obj.title]}" />
     </g:if>
     <g:else>
         <semui:errors bean="${obj}" />
@@ -29,6 +29,6 @@
         <semui:msg class="positive" text="Das Objekt wurde erfolgreich gelöscht." />
     </g:if>
     <g:else>
-        <semui:msg class="negative" text="(${obj.id} : ${obj.title}) konnte nicht gelöscht werden." />
+        <semui:msg class="negative" message="default.not.deleted2.message" args="${[obj.title]}" />
     </g:else>
 </g:if>
