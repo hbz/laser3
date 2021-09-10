@@ -52,8 +52,9 @@ class SurveyConfig {
     boolean costItemsFinish
     boolean evaluationFinish
     boolean subSurveyUseForTransfer
-    //Nicht mehr nötig?
-    boolean createTitleGroups = false
+
+
+    boolean pickAndChoosePerpetualAccess = false
 
     String transferWorkflow
 
@@ -105,11 +106,12 @@ class SurveyConfig {
         urlComment2 column: 'surconf_url_comment_2', type: 'text'
         urlComment3 column: 'surconf_url_comment_3', type: 'text'
         pickAndChoose column: 'surconf_pickandchoose'
-        createTitleGroups column: 'surconf_create_title_groups'
         configFinish column: 'surconf_config_finish'
         costItemsFinish column: 'surconf_costitems_finish'
         evaluationFinish column: 'surconf_evaluation_finish'
         subSurveyUseForTransfer column: 'surconf_is_subscription_survey_fix'
+
+        pickAndChoosePerpetualAccess column: 'surconf_pac_perpetualaccess'
 
         scheduledStartDate column: 'surconf_scheduled_startdate'
         scheduledEndDate column: 'surconf_scheduled_enddate'
