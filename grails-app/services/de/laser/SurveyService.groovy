@@ -1339,18 +1339,18 @@ class SurveyService {
         return result
     }
 
-    Map<String, Object> getStatsForParticipant(GrailsParameterMap parameterMap, Subscription parentSub, Subscription childSubNew, Subscription childSubOld){
+    Map<String, Object> getStatsForParticipant(GrailsParameterMap parameterMap, Subscription subscription, List<Long> titles, boolean showAll){
         Map<String, Object> result = [:]
 
-        Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: childSubOld])
+        Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
         Set<Counter4Report> c4usages = []
         Set<Counter5Report> c5usages = []
-        List count4check = [], c4sums = [], count5check = [], c5sums = [], yearsInRing = []
+        List count4check = [], c4sums = [], count5check = [], c5sums = [], monthsInRing = []
         if(!parameterMap.tabStat)
             parameterMap.tabStat = 'total'
-        if(subscribedPlatforms) {
+        if(subscribedPlatforms && (titles || showAll)) {
             String sort, dateRange
-            Map<String, Object> queryParams = [customer:  childSubOld.getSubscriber(), platforms: subscribedPlatforms]
+            Map<String, Object> queryParams = [customer: subscription.getSubscriber(), platforms: subscribedPlatforms]
             if(parameterMap.sort) {
                 String secondarySort
                 switch(parameterMap.sort) {
@@ -1369,56 +1369,56 @@ class SurveyService {
                 sort = "title.name asc, r.reportType asc, r.reportFrom desc"
             }
             Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance(), now = GregorianCalendar.getInstance()
-            if(childSubOld.startDate && childSubOld.endDate) {
-                dateRange = " and YEAR(r.reportFrom) >= :startDate and YEAR(r.reportTo) <= :endDate "
+            if(subscription.startDate && subscription.endDate) {
+                dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
                 if(parameterMap.tabStat != 'total') {
                     Calendar filterTime = GregorianCalendar.getInstance()
-                    Date filterDate = DateUtils.getSDF_year().parse(parameterMap.tabStat)
+                    Date filterDate = DateUtils.getSDF_yearMonth().parse(parameterMap.tabStat)
                     filterTime.setTime(filterDate)
-                    queryParams.startDate = DateUtils.getYearAsInteger(filterDate)
-                    filterTime.set(Calendar.YEAR,filterTime.getActualMaximum(Calendar.YEAR))
-                    queryParams.endDate = DateUtils.getYearAsInteger(filterTime.getTime())
+                    queryParams.startDate = filterDate
+                    filterTime.set(Calendar.DATE,filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
+                    queryParams.endDate = filterTime.getTime()
                 }
                 else {
-                    queryParams.startDate = DateUtils.getYearAsInteger(childSubOld.startDate)
-                    queryParams.endDate = DateUtils.getYearAsInteger(childSubOld.endDate)
+                    queryParams.startDate = subscription.startDate
+                    queryParams.endDate = subscription.endDate
                 }
-                startTime.setTime(childSubOld.startDate)
-                if(childSubOld.endDate < new Date())
-                    endTime.setTime(childSubOld.endDate)
+                startTime.setTime(subscription.startDate)
+                if(subscription.endDate < new Date())
+                    endTime.setTime(subscription.endDate)
             }
-            else if(childSubOld.startDate) {
-                dateRange = " and YEAR(r.reportFrom) >= :startDate "
+            else if(subscription.startDate) {
+                dateRange = " and r.reportFrom >= :startDate "
                 if(parameterMap.tabStat != 'total') {
-                    dateRange += "and YEAR(r.reportTo) <= :endDate "
+                    dateRange += "and r.reportTo <= :endDate "
                     Calendar filterTime = GregorianCalendar.getInstance()
-                    Date filterDate = DateUtils.getSDF_year().parse(parameterMap.tabStat)
+                    Date filterDate = DateUtils.getSDF_yearMonth().parse(parameterMap.tabStat)
                     filterTime.setTime(filterDate)
-                    queryParams.startDate = DateUtils.getYearAsInteger(filterDate)
-                    filterTime.set(Calendar.YEAR,filterTime.getActualMaximum(Calendar.YEAR))
-                    queryParams.endDate = DateUtils.getYearAsInteger(filterTime.getTime())
+                    queryParams.startDate = filterDate
+                    filterTime.set(Calendar.MONTH,filterTime.getActualMaximum(Calendar.MONTH))
+                    queryParams.endDate = filterTime.getTime()
                 }
                 else
-                    queryParams.startDate = childSubOld.startDate
-                startTime.setTime(childSubOld.startDate)
+                    queryParams.startDate = subscription.startDate
+                startTime.setTime(subscription.startDate)
             }
             else {
                 if(parameterMap.tabStat != 'total') {
-                    dateRange = " and YEAR(r.reportFrom) >= :startDate and YEAR(r.reportTo) <= :endDate "
+                    dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
                     Calendar filterTime = GregorianCalendar.getInstance()
-                    Date filterDate = DateUtils.getSDF_year().parse(parameterMap.tabStat)
+                    Date filterDate = DateUtils.getSDF_yearMonth().parse(parameterMap.tabStat)
                     filterTime.setTime(filterDate)
-                    queryParams.startDate = DateUtils.getYearAsInteger(filterDate)
-                    filterTime.set(Calendar.YEAR,filterTime.getActualMaximum(Calendar.YEAR))
-                    queryParams.endDate = (filterTime.getTime())
+                    queryParams.startDate = filterDate
+                    filterTime.set(Calendar.MONTH,filterTime.getActualMaximum(Calendar.MONTH))
+                    queryParams.endDate = filterTime.getTime()
                 }
                 else
                     dateRange = ''
-                startTime.set(2018)
+                startTime.set(2018, 1, 1)
             }
             while(startTime.before(endTime)) {
-                yearsInRing << startTime.getTime()
-                startTime.add(Calendar.YEAR, DateUtils.getYearAsInteger(startTime.getTime())++)
+                monthsInRing << startTime.getTime()
+                startTime.add(Calendar.MONTH, 1)
             }
             String filter = ""
             if(parameterMap.series_names) {
@@ -1447,6 +1447,12 @@ class SurveyService {
                 filter += " and r.metricType in (:metricType) "
                 queryParams.metricType = parameterMap.metricType
             }
+
+            if(titles.size() > 0) {
+                filter += " and title.id in (:titles) "
+                queryParams.titles = titles
+            }
+
             //continue here: load data and test!
             count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+dateRange, [customer: queryParams.customer, platforms: queryParams.platforms, startDate: queryParams.startDate, endDate: queryParams.endDate]))
             if(count5check.get(0) == 0) {
@@ -1491,7 +1497,7 @@ class SurveyService {
                 result.metricTypes = Counter5Report.executeQuery('select distinct(r.metricType) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) order by r.metricType asc', [customer: queryParams.customer, platforms: queryParams.platforms])
             }
         }
-        result.yearsInRing = yearsInRing
+        result.monthsInRing = monthsInRing
 
         result
     }

@@ -108,9 +108,8 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
     </div>
 </g:if>
 
-<g:if test="${params.tab != 'previousIEsStats'}">
-<g:render template="/templates/filter/tipp_ieFilter"/>
-</g:if><g:else>
+<g:if test="${params.tab == 'previousIEsStats' || params.tab == 'allIEsStats'}">
+
     <g:render template="/templates/filter/javascript"/>
     <semui:filter showFilterButton="true">
         <g:form action="renewEntitlementsWithSurvey" class="ui form" method="get">
@@ -212,17 +211,23 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                 </div>
 
                 <div class="field la-field-right-aligned">
-                    <g:link action="stats" id="${subscription.id}" class="ui reset primary button">${message(code: 'default.button.reset.label')}</g:link>
+                    <g:link ontroller="subscription" action="renewEntitlementsWithSurvey"
+                            id="${newSub.id}"
+                            params="[surveyConfigID: surveyConfig.id, tab: params.tab]" class="ui reset primary button">${message(code: 'default.button.reset.label')}</g:link>
                     <input type="submit" class="ui secondary button"
                            value="${message(code: 'default.button.filter.label')}"/>
                 </div>
             </div>
         </g:form>
     </semui:filter>
+</g:if><g:else>
+
+    <g:render template="/templates/filter/tipp_ieFilter"/>
+
 </g:else>
 
 </br>
-<div class="ui pointing four item massive menu">
+<div class="ui pointing five item massive menu">
 
     <g:link class="item ${params.tab == 'previousIEs' ? 'active' : ''}"
             controller="subscription" action="renewEntitlementsWithSurvey"
@@ -251,16 +256,23 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             controller="subscription" action="renewEntitlementsWithSurvey"
             id="${newSub.id}"
             params="[surveyConfigID: surveyConfig.id, tab: 'previousIEsStats']">
-        <g:message code="renewEntitlementsWithSurvey.currentEntitlements"/>
-        <div class="ui circular label">${countPreviousIEs}</div></g:link>
+        <g:message code="renewEntitlementsWithSurvey.previousIEsStats"/>
+    </g:link>
+
+    <g:link class="item ${params.tab == 'allIEsStats' ? 'active' : ''}"
+            controller="subscription" action="renewEntitlementsWithSurvey"
+            id="${newSub.id}"
+            params="[surveyConfigID: surveyConfig.id, tab: 'allIEsStats']">
+        <g:message code="renewEntitlementsWithSurvey.allIEsStatsStats"/>
+    </g:link>
 
 </div>
 
-<g:if test="${params.tab == 'previousIEsStats'}">
+<g:if test="${params.tab == 'previousIEsStats' || params.tab == 'allIEsStats'}">
     <semui:tabs>
-        <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey" params="${params + [tabStat: 'total']}" text="${message(code: 'default.usage.allUsageGrid.header')}" subTab="total"/>
-        <g:each in="${yearsInRing}" var="year">
-            <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey" params="${params + [tabStat: year.format("yyyy")]}" text="${year.format("yyyy")}" subTab="${year.format("yyyy")}" />
+        <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey" params="${params + [tabStat: 'total']}" text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total" subTab="tabStat"/>
+        <g:each in="${monthsInRing}" var="month">
+            <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey" params="${params + [tabStat: month.format("yyyy-MM")]}" text="${month.format("yyyy-MM")}" tab="${month.format("yyyy-MM")}" subTab="tabStat"/>
         </g:each>
     </semui:tabs>
     <div class="ui bottom attached tab active segment">
@@ -309,6 +321,10 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             </table>
             <semui:paginate total="${total}" params="${params}" max="${max}" offset="${offset}"/>
         </g:elseif>
+        <g:elseif test="${!sums && !usages}">
+            <g:message code="renewEntitlementsWithSurvey.noPreviousIEsStats"/>
+        </g:elseif>
+
     </div>
 </g:if><g:else>
 <g:form name="renewEntitlements" id="${newSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
