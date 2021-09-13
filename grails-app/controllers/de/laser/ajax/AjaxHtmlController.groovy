@@ -4,6 +4,7 @@ import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
+import de.laser.CacheService
 import de.laser.ContextService
 import de.laser.License
 import de.laser.LinksGenerationService
@@ -32,6 +33,7 @@ import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SwissKnife
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.ReportingCache
@@ -65,6 +67,7 @@ class AjaxHtmlController {
      */
 
     AddressbookService addressbookService
+    CacheService cacheService
     ContextService contextService
     MyInstitutionControllerService myInstitutionControllerService
     PendingChangeService pendingChangeService
@@ -780,7 +783,7 @@ class AjaxHtmlController {
                             'order by id'
             )
 
-            result.dd_conditionList = WfConditionPrototype.executeQuery('select wfcp from WfConditionPrototype wfcp')
+            result.dd_conditionList = WfConditionPrototype.executeQuery('select wfcp from WfConditionPrototype wfcp order by id')
         }
         else if (params.key in [WfConditionPrototype.KEY]) {
             result.tmpl = '/templates/workflow/forms/wfCondition'
@@ -904,7 +907,7 @@ class AjaxHtmlController {
 //                    result.dd_previousList  = WfTaskPrototype.executeQuery(sql, sqlParams)
 //                    result.dd_parentList    = WfTaskPrototype.executeQuery(sql, sqlParams)
 
-                    result.dd_conditionList = WfConditionPrototype.executeQuery('select wfcp from WfConditionPrototype wfcp')
+                    result.dd_conditionList = WfConditionPrototype.executeQuery('select wfcp from WfConditionPrototype wfcp order by id')
                 }
             }
             else if (result.prefix == WfTask.KEY) {
@@ -945,6 +948,11 @@ class AjaxHtmlController {
 //                    result.dd_prototypeList = result.condition.prototype ? [ result.condition.prototype ] : []
 //                }
             }
+
+            EhcacheWrapper cache = cacheService.getTTL1800Cache('admin/manageWorkflows')
+            result.wfpIdTable = cache.get( 'wfpIdTable') ?: [:]
+            result.tpIdTable  = cache.get( 'tpIdTable')  ?: [:]
+            result.cpIdTable  = cache.get( 'cpIdTable')  ?: [:]
 
             render template: '/templates/workflow/forms/modalWrapper', model: result
         }

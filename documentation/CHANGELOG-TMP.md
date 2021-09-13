@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3788    10.09.2021  dev     2.2         David   Feature     'Workflows verwalten' überarbeiten
+
 3786    09.09.2021  dev     2.2         David   Feature     'Meine Workflows' überarbeiten
 
 3785    09.09.2021  dev     2.2         Andreas Feature     Zurücksetzen der Statistikdaten implementiert

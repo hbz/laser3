@@ -110,6 +110,19 @@
             <tr>
                 <td>
                     <i class="ui icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i>
+
+                    <g:if test="${wf.status == RDStore.WF_WORKFLOW_STATUS_DONE}">
+                        <g:if test="${wfInfo.tasksImportantBlocking}">
+                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.blockingTasks.important')}">
+                                <i class="ui icon red exclamation triangle"></i>
+                            </span>
+                        </g:if>
+                        <g:elseif test="${wfInfo.tasksNormalBlocking}">
+                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.blockingTasks.normal')}">
+                                <i class="ui icon red exclamation triangle"></i>
+                            </span>
+                        </g:elseif>
+                    </g:if>
                 </td>
                 <td>
                     <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'myInstitution:' + wf.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">

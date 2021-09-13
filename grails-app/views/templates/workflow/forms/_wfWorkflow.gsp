@@ -32,7 +32,7 @@
                       from="${dd_taskList}"
                       value="${workflow?.task?.id}"
                       optionKey="id"
-                      optionValue="${{'(' + it.id + ') ' + it.title}}" />
+                      optionValue="${{ (tpIdTable && tpIdTable[it.id]) ? ('(' + tpIdTable[it.id] + ') ' + it.title) : it.title }}" />
         </div>
 
     </g:if>
