@@ -1033,6 +1033,7 @@ class DataloadService {
                         session.clear()
                     }
                 } else {
+                    latest_ft_record.save()
                     log.debug("updateES ${domain.name}: Fail -> ESWrapperService.testConnection() && esIndices && esIndices.get(domain.simpleName)")
                 }
                 } else {
