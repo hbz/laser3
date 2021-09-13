@@ -1108,7 +1108,14 @@ class AjaxController {
                             members.each { m ->
                                 if(m[prop] instanceof Boolean)
                                     m.setProperty(prop, false)
-                                else m.setProperty(prop, null)
+                                else {
+                                    if(m[prop] instanceof RefdataValue) {
+                                        if(m[prop].owner.desc == RDConstants.Y_N_U)
+                                            m.setProperty(prop, RDStore.YNU_UNKNOWN)
+                                    }
+                                    else
+                                        m.setProperty(prop, null)
+                                }
                                 m.save()
                             }
                         }

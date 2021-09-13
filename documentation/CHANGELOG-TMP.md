@@ -7,11 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-3788    13.09.2021  dev     2.2         David   Feature     'Workflows verwalten' überarbeiten
+3793    13.09.2021  dev     2.2         Andreas Bug         Merkmalswertlöschung bei Ja/Nein/Unbekannt angepasst 
 
 3792    13.09.2021  dev     2.2         Andreas Bug         fehlende Identifier-URL-Präfixes nachgetragen
 
 3791    13.09.2021  dev     2.2         Andreas Feature     Bestand, Umfrage und Workflow-Bubbles im Lizenzfinanzmenü nachgetragen
+
+3788    13.09.2021  dev     2.2         David   Feature     'Workflows verwalten' überarbeiten
 
 3790    10.09.2021  dev     2.2         Andreas Bug         Passwörter mit HTML-relevanten Zeichen wurden inkorrekt dargestellt
 
