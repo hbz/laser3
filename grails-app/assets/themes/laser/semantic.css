@@ -24062,6 +24062,7 @@ legend {
 
 .la-timeLineGrid {
   border-left: 2px dashed #dcdcdc;
+  margin-left: 25px;
 }
 
 .la-timeLineGrid h2.ui.header {
@@ -28560,6 +28561,10 @@ Floated Menu / Item
   color: #515151;
 }
 
+.ui.table tr th {
+  border-top: 1px solid rgba(34, 36, 38, 0.1);
+}
+
 /*--------------
      la-table
 ---------------*/
@@ -30342,7 +30347,8 @@ a.ui.card:hover,
 #container-tasks,
 #container-documents,
 #container-notes,
-#container-provider {
+#container-provider,
+#container-billing {
   width: 100%;
 }
 

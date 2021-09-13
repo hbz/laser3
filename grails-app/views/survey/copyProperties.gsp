@@ -448,7 +448,7 @@ ${surveyInfo.name}
 
                                     </g:elseif><g:else>
 
-                                    ${message(code: 'subscription.propertiesMembers.noCustomProperty')}
+                                    ${message(code: 'subscriptionsManagement.noCustomProperty')}
 
                                 </g:else>
                                 </g:if>
@@ -501,7 +501,7 @@ ${surveyInfo.name}
 
                                     </g:elseif><g:else>
 
-                                    ${message(code: 'subscription.propertiesMembers.noPrivateProperty')}
+                                    ${message(code: 'subscriptionsManagement.noPrivateProperty')}
 
                                 </g:else>
                                 </g:if>
@@ -616,7 +616,7 @@ ${surveyInfo.name}
 
                                     </g:if><g:else>
 
-                                    ${message(code: 'subscription.propertiesMembers.noCustomProperty')}
+                                    ${message(code: 'subscriptionsManagement.noCustomProperty')}
 
                                 </g:else>
                                 </g:if>
@@ -666,7 +666,7 @@ ${surveyInfo.name}
 
                                     </g:if><g:else>
 
-                                    ${message(code: 'subscription.propertiesMembers.noPrivateProperty')}
+                                    ${message(code: 'subscriptionsManagement.noPrivateProperty')}
 
                                 </g:else>
                                 </g:if>

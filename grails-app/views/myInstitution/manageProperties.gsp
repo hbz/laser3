@@ -37,7 +37,7 @@
 
 %{--<div class="ui segment">
 
-    <strong>${message(code: 'subscription.propertiesMembers.propertySelected')}: ${filterPropDef?.getI10n('name')}</strong>
+    <strong>${message(code: 'subscriptionsManagement.propertySelected')}: ${filterPropDef?.getI10n('name')}</strong>
     <br />${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
     <g:if test="${filterPropDef?.isRefdataValueType()}">
         <g:set var="refdataValues" value="${[]}"/>
@@ -138,7 +138,7 @@
 
                                             <g:set var="customProperty" value="${objWithoutProp.propertySet.find { it.tenant?.id == institution.id && it.type == filterPropDef }}"/>
                                             <g:if test="${customProperty}">
-                                                <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
+                                                <div class="header">${message(code: 'subscriptionsManagement.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
                                                     <p>
@@ -190,7 +190,7 @@
                                             </g:if>
                                             <g:else>
                                                 <div class="content">
-                                                    ${message(code: 'subscription.propertiesMembers.noCustomProperty')}
+                                                    ${message(code: 'subscriptionsManagement.noCustomProperty')}
                                                 </div>
                                             </g:else>
                                         </div>
@@ -201,7 +201,7 @@
 
                                             <g:set var="privateProperty" value="${objWithoutProp.propertySet.find { it.type == filterPropDef }}"/>
                                             <g:if test="${privateProperty}">
-                                                <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef.getI10n('name')}</div>
+                                                <div class="header">${message(code: 'subscriptionsManagement.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
                                                     <p>
@@ -256,7 +256,7 @@
                                             </g:if>
                                             <g:else>
                                                 <div class="content">
-                                                    ${message(code: 'subscription.propertiesMembers.noPrivateProperty')}
+                                                    ${message(code: 'subscriptionsManagement.noPrivateProperty')}
                                                 </div>
                                             </g:else>
                                         </div>
@@ -378,7 +378,7 @@
 
                                             <g:set var="customProperty" value="${row.propertySet.find { it.tenant?.id == institution.id && it.type.id == filterPropDef.id }}"/>
                                             <g:if test="${customProperty}">
-                                                <div class="header">${message(code: 'subscription.propertiesMembers.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
+                                                <div class="header">${message(code: 'subscriptionsManagement.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
                                                     <p><g:if test="${customProperty.type.isIntegerType()}">
@@ -431,7 +431,7 @@
                                                 </div>
                                             </g:if><g:else>
                                             <div class="content">
-                                                ${message(code: 'subscription.propertiesMembers.noCustomProperty')}
+                                                ${message(code: 'subscriptionsManagement.noCustomProperty')}
                                             </div>
                                         </g:else>
                                         </div>
@@ -443,7 +443,7 @@
                                             <g:set var="privateProperty" value="${row.propertySet.find { it.type.id == filterPropDef.id }}"/>
 
                                             <g:if test="${privateProperty}">
-                                                <div class="header">${message(code: 'subscription.propertiesMembers.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef.getI10n('name')}</div>
+                                                <div class="header">${message(code: 'subscriptionsManagement.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
                                                     <p>
@@ -495,7 +495,7 @@
                                             </g:if>
                                             <g:else>
                                                 <div class="content">
-                                                    ${message(code: 'subscription.propertiesMembers.noPrivateProperty')}
+                                                    ${message(code: 'subscriptionsManagement.noPrivateProperty')}
                                                 </div>
                                             </g:else>
 

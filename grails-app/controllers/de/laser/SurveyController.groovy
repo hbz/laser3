@@ -645,7 +645,8 @@ class SurveyController {
                         type: 'IssueEntitlementsSurvey',
                         surveyInfo: surveyInfo,
                         subSurveyUseForTransfer: false,
-                        pickAndChoose: true
+                        pickAndChoose: true,
+                        pickAndChoosePerpetualAccess: params.pickAndChoosePerpetualAccess ? true : false
                 )
                 surveyConfig.save()
                 surveyService.addSubMembers(surveyConfig)
@@ -1273,6 +1274,8 @@ class SurveyController {
 
         result.surveyResult = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
 
+        result.participants = result.surveyConfig.orgs
+
         result.availableSubscriptions = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
 
         result.propList    = result.surveyConfig.surveyProperties.surveyProperty
@@ -1861,12 +1864,7 @@ class SurveyController {
                 List<IssueEntitlement> ies = subscriptionService.getIssueEntitlementsUnderNegotiation(participantSub)
 
                 IssueEntitlementGroup issueEntitlementGroup
-                if(result.surveyConfig.createTitleGroups){
 
-                    Integer countTitleGroups = IssueEntitlementGroup.findAllBySubAndNameIlike(participantSub, 'Phase').size()
-
-                    issueEntitlementGroup = new IssueEntitlementGroup(sub: participantSub, name: "Phase ${countTitleGroups+1}").save()
-                }
 
                 ies.each { ie ->
                     ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
@@ -1936,7 +1934,7 @@ class SurveyController {
 
         result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.participant, result.surveyConfig)
 
-        result.ownerId = result.surveyResults[0].owner.id
+        result.ownerId = result.surveyInfo.owner.id
 
         if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)

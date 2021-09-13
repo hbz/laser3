@@ -105,10 +105,14 @@
                                 <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
                                 <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
 
-                        <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
-                            <div class="divider"></div>
-                            <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
-                        </g:if>
+                                <div class="divider"></div>
+                                <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="subscriptionsManagement" message="menu.my.subscriptionsManagement" />
+
+
+                                <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
+                                    <div class="divider"></div>
+                                    <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
+                                </g:if>
 
                                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
 

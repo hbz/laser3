@@ -45,7 +45,7 @@
                     <td style="border-top: none" class="right aligned">
                         <g:if test="${editmode}">
                             <button id="pendingChangeConfigurationToggle${sp.id}"
-                                    class="ui icon button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
+                                    class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
                                     data-content="${message(code:'subscription.packages.config.header')}">
                                 <i class="ui angle double down icon"></i>
                             </button>

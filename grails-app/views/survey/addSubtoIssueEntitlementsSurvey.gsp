@@ -44,6 +44,13 @@
             </div>
         </div>
 
+        <div class="field">
+            <label>${message(code: 'surveyconfig.pickAndChoosePerpetualAccess.label')}</label>
+            <div>
+                <input type="checkbox" id="pickAndChoosePerpetualAccess" name="pickAndChoosePerpetualAccess" ${params.pickAndChoosePerpetualAccess? 'checked':''}>
+            </div>
+        </div>
+
         <div class="field ">
             <label>${message(code: 'surveyInfo.comment.label')}</label>
 
