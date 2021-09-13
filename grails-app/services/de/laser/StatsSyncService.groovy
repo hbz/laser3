@@ -194,22 +194,21 @@ class StatsSyncService {
                         [plat: c4as.platform, deleted: RDStore.TIPP_STATUS_DELETED])*/
                 Platform c4asPlatform = Platform.findByGokbId(c4as[0] as String)
                 String statsUrl = c4as[1] //.endsWith('/') ? c4as[1] : c4as[1]+'/' does not work with every platform!
-                List<CustomerIdentifier> keyPairs = CustomerIdentifier.findAllByPlatformAndValueIsNotNullAndRequestorKeyIsNotNull(c4asPlatform)
+                List keyPairs = CustomerIdentifier.executeQuery('select new map(cust.id as customerId, cust.sortname as customerName, ci.value as value, ci.requestorKey as requestorKey) from CustomerIdentifier ci join ci.customer cust where ci.platform = :plat and ci.value != null and ci.requestorKey != null', [plat: c4asPlatform])
                 if(keyPairs) {
                     GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
-                        keyPairs.eachWithIndexParallel { CustomerIdentifier keyPair, int i ->
-                            Org customer = keyPair.customer
+                        keyPairs.eachWithIndexParallel { Map keyPair, int i ->
                             Sql sql = new Sql(dataSource)
                             //TitleInstancePackagePlatform.withNewSession {
                             sql.withTransaction {
-                                List laserStatsCursor = sql.rows("select lsc_latest_from_date, lsc_latest_to_date, lsc_report_id from laser_stats_cursor where lsc_platform_fk = :platform and lsc_customer_fk = :customer", [platform: c4asPlatform.id, customer: customer.id])
+                                List laserStatsCursor = sql.rows("select lsc_latest_from_date, lsc_latest_to_date, lsc_report_id from laser_stats_cursor where lsc_platform_fk = :platform and lsc_customer_fk = :customer", [platform: c4asPlatform.id, customer: keyPair.customerId])
                                 boolean onlyNewest = laserStatsCursor ? incremental : false
                                 //List<GroovyRowResult> titles = sql.rows("select id_value as identifier, id_tipp_fk as title from identifier join title_instance_package_platform on id_tipp_fk = tipp_id where tipp_plat_fk = :plat and exists (select or_id from org_role join issue_entitlement on or_sub_fk = ie_subscription_fk where ie_tipp_fk = tipp_id and or_org_fk = :customer and ie_status_rv_fk != :deleted)",
                                 //        [plat: c4as.platform.id, customer: keyPair.customer.id, deleted: RDStore.TIPP_STATUS_DELETED.id]
                                 Map<String, Object> calendarConfig = initCalendarConfig(onlyNewest)
                                 //DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                                 Calendar startTime = GregorianCalendar.getInstance(), currentYearEnd = GregorianCalendar.getInstance()
-                                log.debug("${Thread.currentThread().getName()} is now processing key pair ${i}, requesting data for ${customer.name}:${keyPair.value}:${keyPair.requestorKey}")
+                                log.debug("${Thread.currentThread().getName()} is now processing key pair ${i}, requesting data for ${keyPair.customerName}:${keyPair.value}:${keyPair.requestorKey}")
                                 Counter4ApiSource.COUNTER_4_REPORTS.each { String reportID ->
                                     startTime.setTime(calendarConfig.startDate)
                                     currentYearEnd.setTime(calendarConfig.endNextRun)
@@ -220,12 +219,12 @@ class StatsSyncService {
                                         currentYearEnd.setTimeInMillis(row.get("lsc_latest_to_date").getTime())
                                         currentYearEnd.add(Calendar.MONTH, 1)
                                     }
-                                    log.debug("${Thread.currentThread().getName()} is starting ${reportID} for ${customer.sortname} at ${startTime.format('yyyy-MM-dd')}-${currentYearEnd.format('yyyy-MM-dd')}")
+                                    log.debug("${Thread.currentThread().getName()} is starting ${reportID} for ${keyPair.customerName} at ${startTime.format('yyyy-MM-dd')}-${currentYearEnd.format('yyyy-MM-dd')}")
                                     //LaserStatsCursor.withTransaction {
                                     //LaserStatsCursor lsc = LaserStatsCursor.construct([platform: c4as.platform, customer: keyPair.customer, reportID: reportID, latestFrom: calendarConfig.startDate, latestTo: calendarConfig.endNextRun])
                                     boolean more = true
                                     while (more) {
-                                        log.debug("${Thread.currentThread().getName()} is getting ${reportID} for ${customer.sortname} from ${startTime.format("yyyy-MM-dd")}-${currentYearEnd.format("yyyy-MM-dd")}")
+                                        log.debug("${Thread.currentThread().getName()} is getting ${reportID} for ${keyPair.customerName} from ${startTime.format("yyyy-MM-dd")}-${currentYearEnd.format("yyyy-MM-dd")}")
                                         StreamingMarkupBuilder requestBuilder = new StreamingMarkupBuilder()
                                         def requestBody = requestBuilder.bind {
                                             mkp.xmlDeclaration()
@@ -310,7 +309,7 @@ class StatsSyncService {
                                                                     Integer count = Integer.parseInt(instance.'ns2:Count'.text())
                                                                     Map<String, Object> configMap = [reportType: reportData.'ns2:Report'.'@Name'.text(), version: 0]
                                                                     configMap.title = title
-                                                                    configMap.reportInstitution = keyPair.customer.id
+                                                                    configMap.reportInstitution = keyPair.customerId
                                                                     configMap.platform = c4asPlatform.id
                                                                     /*
                                                                     SimpleDateFormat is not thread-safe, using thread-safe variant to parse date
@@ -360,7 +359,7 @@ class StatsSyncService {
                                         log.debug("${Thread.currentThread().getName()} is getting to ${startTime.format("yyyy-MM-dd")}-${currentYearEnd.format("yyyy-MM-dd")} for report ${reportID}")
                                         if (calendarConfig.now.before(startTime)) {
                                             more = false
-                                            log.debug("${Thread.currentThread().getName()} has finished report ${reportID} and gets next report for ${customer.sortname}")
+                                            log.debug("${Thread.currentThread().getName()} has finished report ${reportID} and gets next report for ${keyPair.customerName}")
                                         }
                                     }
                                     Calendar lastMonth = GregorianCalendar.getInstance()
@@ -371,7 +370,7 @@ class StatsSyncService {
                                             "(0, :reportID, :platform, :customer, :latestFrom, :latestTo) " +
                                             "on conflict on constraint lsc_unique_report_per_customer do " +
                                             "update set lsc_latest_from_date = :latestFrom, lsc_latest_to_date = :latestTo",
-                                            [platform: c4asPlatform.id, customer: customer.id, reportID: reportID, latestFrom: startOfMonth, latestTo: new Timestamp(calendarConfig.now.getTimeInMillis())])
+                                            [platform: c4asPlatform.id, customer: keyPair.customerId, reportID: reportID, latestFrom: startOfMonth, latestTo: new Timestamp(calendarConfig.now.getTimeInMillis())])
                                     /*
                                     lsc.latestFrom = startTime.getTime()
                                     lsc.latestTo = calendarConfig.now.getTime()
@@ -391,14 +390,13 @@ class StatsSyncService {
                 //grasp all customer numbers with requestor keys
                 Platform c5asPlatform = Platform.findByGokbId(c5as[0])
                 String statsUrl = c5as[1] //.endsWith('/') ? c5as[1] : c5as[1]+'/' does not work with every platform!
-                List<CustomerIdentifier> keyPairs = CustomerIdentifier.findAllByPlatformAndValueIsNotNullAndRequestorKeyIsNotNull(c5asPlatform)
+                List keyPairs = CustomerIdentifier.executeQuery('select new map(cust.id as customerId, cust.sortname as customerName, ci.value as value, ci.requestorKey as requestorKey) from CustomerIdentifier ci join ci.customer cust where ci.platform = :plat and ci.value != null and ci.requestorKey != null', [plat: c5asPlatform])
                 if(keyPairs) {
                     GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
-                        keyPairs.eachWithIndexParallel { CustomerIdentifier keyPair, int i ->
-                            Org customer = keyPair.customer
+                        keyPairs.eachWithIndexParallel { Map<String, Object> keyPair, int i ->
                             Sql sql = new Sql(dataSource)
                             sql.withTransaction {
-                                List laserStatsCursor = sql.rows("select lsc_latest_from_date, lsc_latest_to_date,lsc_report_id from laser_stats_cursor where lsc_platform_fk = :platform and lsc_customer_fk = :customer", [platform: c5asPlatform.id, customer: customer.id])
+                                List laserStatsCursor = sql.rows("select lsc_latest_from_date, lsc_latest_to_date,lsc_report_id from laser_stats_cursor where lsc_platform_fk = :platform and lsc_customer_fk = :customer", [platform: c5asPlatform.id, customer: keyPair.customerId])
                                 boolean onlyNewest = laserStatsCursor ? incremental : false
                                 //is done here because no thread-safe date classes are available and this is a workaround
                                 Map<String, Object> calendarConfig = initCalendarConfig(onlyNewest)
@@ -406,7 +404,7 @@ class StatsSyncService {
                                 Calendar startTime = GregorianCalendar.getInstance(), currentYearEnd = GregorianCalendar.getInstance()
                                 SimpleDateFormat monthFormatter = new SimpleDateFormat("yyyy-MM")
                                 //TitleInstancePackagePlatform.withNewTransaction {
-                                log.debug("${Thread.currentThread().getName()} now processing key pair ${i}, requesting data for ${customer.name}:${keyPair.value}:${keyPair.requestorKey}")
+                                log.debug("${Thread.currentThread().getName()} now processing key pair ${i}, requesting data for ${keyPair.customerName}:${keyPair.value}:${keyPair.requestorKey}")
                                 String params = "?customer_id=${keyPair.value}&requestor_id=${keyPair.requestorKey}&api_key=${keyPair.requestorKey}"
                                 /*
                                 Map<String, Map<String, Object>> arguments = (Map<String, Map<String, Object>>) JSON.parse(c5as.arguments)
@@ -467,7 +465,7 @@ class StatsSyncService {
                                                                     performance.Instance.each { Map instance ->
                                                                         log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for platform")
                                                                         Map<String, Object> configMap = [reportType: report.header.Report_ID, version: 0]
-                                                                        configMap.reportInstitution = keyPair.customer.id
+                                                                        configMap.reportInstitution = keyPair.customerId
                                                                         configMap.platform = c5asPlatform.id
                                                                         configMap.publisher = reportItem.Publisher
                                                                         configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.Period.Begin_Date).getTime())
@@ -534,7 +532,7 @@ class StatsSyncService {
                                                                             log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t}")
                                                                             Map<String, Object> configMap = [reportType: report.header.Report_ID, version: 0]
                                                                             configMap.title = title
-                                                                            configMap.reportInstitution = keyPair.customer.id
+                                                                            configMap.reportInstitution = keyPair.customerId
                                                                             configMap.platform = c5asPlatform.id
                                                                             configMap.publisher = reportItem.Publisher
                                                                             configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.Period.Begin_Date).getTime())
@@ -585,7 +583,7 @@ class StatsSyncService {
                                             log.debug("${Thread.currentThread().getName()} is getting to ${startTime.format("yyyy-MM-dd")}-${currentYearEnd.format("yyyy-MM-dd")} for report ${reportId}")
                                             if(calendarConfig.now.before(startTime)) {
                                                 more = false
-                                                log.debug("${Thread.currentThread().getName()} has finished report ${reportId} and gets next report for ${customer.sortname}")
+                                                log.debug("${Thread.currentThread().getName()} has finished report ${reportId} and gets next report for ${keyPair.customerName}")
                                             }
                                             //}
                                         }
@@ -597,7 +595,7 @@ class StatsSyncService {
                                                 "(0, :reportID, :platform, :customer, :latestFrom, :latestTo) " +
                                                 "on conflict on constraint lsc_unique_report_per_customer do " +
                                                 "update set lsc_latest_from_date = :latestFrom, lsc_latest_to_date = :latestTo",
-                                                [platform: c5asPlatform.id, customer: customer.id, reportID: reportId, latestFrom: startOfMonth, latestTo: new Timestamp(calendarConfig.now.getTimeInMillis())])
+                                                [platform: c5asPlatform.id, customer: keyPair.customerId, reportID: reportId, latestFrom: startOfMonth, latestTo: new Timestamp(calendarConfig.now.getTimeInMillis())])
                                         /*
                                         lsc.latestFrom = startTime.getTime()
                                         lsc.latestTo = calendarConfig.now.getTime()
