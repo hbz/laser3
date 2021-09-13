@@ -10,6 +10,7 @@ import de.laser.exceptions.FinancialDataException
 import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDStore
+import de.laser.workflow.WfWorkflow
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
@@ -57,6 +58,27 @@ class FinanceController  {
         log.debug("FinanceController::subFinancialData() ${params}")
         try {
             Map<String,Object> result = financeControllerService.getResultGenerics(params)
+            result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(ie.id) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])[0]
+            if(result.institution.getCustomerType() == "ORG_CONSORTIUM") {
+                if(result.subscription.instanceOf){
+                    result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
+                            [sub: result.subscription.instanceOf,
+                             org: result.subscription.getSubscriber(),
+                             invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
+                }else{
+                    result.currentSurveysCounts = SurveyConfig.findAllBySubscription(result.subscription).size()
+                }
+                result.currentMembersCounts =  Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',[parent: result.subscription, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
+            }else{
+                result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
+                        [sub: result.subscription.instanceOf,
+                         org: result.subscription.getSubscriber(),
+                         invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
+            }
+            result.workflowCount = WfWorkflow.executeQuery(
+                    'select count(wf) from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg',
+                    [sub: result.subscription, ctxOrg: result.contextOrg]
+            )[0]
             result.financialData = financeService.getCostItemsForSubscription(params,result)
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
