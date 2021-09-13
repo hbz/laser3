@@ -123,31 +123,33 @@ class PersonController  {
 
                             if (params.multipleAddresses) {
                                 params.list('multipleAddresses').eachWithIndex { name, i ->
-                                    Address addressInstance = new Address(
-                                            name: (1 == params.list('name').size()) ? params.name : params.name[i],
-                                            additionFirst: (1 == params.list('additionFirst').size()) ? params.additionFirst : params.additionFirst[i],
-                                            additionSecond: (1 == params.list('additionSecond').size()) ? params.additionSecond : params.additionSecond[i],
-                                            street_1: (1 == params.list('street_1').size()) ? params.street_1 : params.street_1[i],
-                                            street_2: (1 == params.list('street_2').size()) ? params.street_2 : params.street_2[i],
-                                            zipcode: (1 == params.list('zipcode').size()) ? params.zipcode : params.zipcode[i],
-                                            city: (1 == params.list('city').size()) ? params.city : params.city[i],
-                                            region: (1 == params.list('region').size()) ? params.region : params.region[i],
-                                            country: (1 == params.list('country').size()) ? params.country : params.country[i],
-                                            pob: (1 == params.list('pob').size()) ? params.pob : params.pob[i],
-                                            pobZipcode: (1 == params.list('pobZipcode').size()) ? params.pobZipcode : params.pobZipcode[i],
-                                            pobCity: (1 == params.list('pobCity').size()) ? params.pobCity : params.pobCity[i],
-                                            prs: personInstance)
+                                    if(params.type) {
+                                        Address addressInstance = new Address(
+                                                name: (1 == params.list('name').size()) ? params.name : params.name[i],
+                                                additionFirst: (1 == params.list('additionFirst').size()) ? params.additionFirst : params.additionFirst[i],
+                                                additionSecond: (1 == params.list('additionSecond').size()) ? params.additionSecond : params.additionSecond[i],
+                                                street_1: (1 == params.list('street_1').size()) ? params.street_1 : params.street_1[i],
+                                                street_2: (1 == params.list('street_2').size()) ? params.street_2 : params.street_2[i],
+                                                zipcode: (1 == params.list('zipcode').size()) ? params.zipcode : params.zipcode[i],
+                                                city: (1 == params.list('city').size()) ? params.city : params.city[i],
+                                                region: (1 == params.list('region').size()) ? params.region : params.region[i],
+                                                country: (1 == params.list('country').size()) ? params.country : params.country[i],
+                                                pob: (1 == params.list('pob').size()) ? params.pob : params.pob[i],
+                                                pobZipcode: (1 == params.list('pobZipcode').size()) ? params.pobZipcode : params.pobZipcode[i],
+                                                pobCity: (1 == params.list('pobCity').size()) ? params.pobCity : params.pobCity[i],
+                                                prs: personInstance)
 
-                                    params.list('type').each {
-                                        if (!(it in addressInstance.type)) {
-                                            addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
+                                        params.list('type').each {
+                                            if (!(it in addressInstance.type)) {
+                                                addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
+                                            }
                                         }
-                                    }
-                                    if (!addressInstance.save()) {
-                                        flash.error = message(code: 'default.save.error.general.message')
-                                        log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
-                                        redirect(url: request.getHeader('referer'), params: params)
-                                        return
+                                        if (!addressInstance.save()) {
+                                            flash.error = message(code: 'default.save.error.general.message')
+                                            log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
+                                            redirect(url: request.getHeader('referer'), params: params)
+                                            return
+                                        }
                                     }
                                 }
                             }
