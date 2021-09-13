@@ -42,7 +42,9 @@ class BaseConfig {
     static String CUSTOM_KEY_CUSTOMER_TYPE      = 'customerType'
     static String CUSTOM_KEY_LEGAL_INFO         = 'legalInfo'
     static String CUSTOM_KEY_ANNUAL             = 'annual'
-    
+    static String CUSTOM_KEY_STARTDATE_LIMIT    = 'startDateLimit'
+    static String CUSTOM_KEY_ENDDATE_LIMIT      = 'endDateLimit'
+
     static Map<String, String> FILTER = [
 
             organisation : 'Organisationen',
@@ -171,6 +173,20 @@ class BaseConfig {
             return [
                     label: messageSource.getMessage('reporting.baseConfig.annual.label', null, locale),
                     from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] } + [ id: 0, value_de: 'Alle ohne Ablauf', value_en: 'Open-Ended']
+            ]
+        }
+        else if (key == CUSTOM_KEY_STARTDATE_LIMIT) {
+            int y = Year.now().value
+            return [
+                    label: messageSource.getMessage('reporting.baseConfig.startDateLimit.label', null, locale),
+                    from: (y..y-6).collect{[ id: it, value_de: it, value_en: it] }
+            ]
+        }
+        else if (key == CUSTOM_KEY_ENDDATE_LIMIT) {
+            int y = Year.now().value
+            return [
+                    label: messageSource.getMessage('reporting.baseConfig.endDateLimit.label', null, locale),
+                    from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] }
             ]
         }
     }
