@@ -66,6 +66,9 @@
     }
   }
 }
+.ui.table tr th {
+  border-top: 1px solid @internalBorderColor;
+}
 /*--------------
      la-table
 ---------------*/

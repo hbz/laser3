@@ -32,7 +32,7 @@
 
 .la-timeLineGrid {
     border-left: 2px dashed #dcdcdc;
-    //margin: 0 10px;
+    margin-left: 25px;
   h2.ui.header{
     font-size: 1.1rem;
     padding-top:3px
