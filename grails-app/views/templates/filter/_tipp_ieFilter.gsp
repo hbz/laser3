@@ -199,6 +199,7 @@
 
         </div>
 
+
         <div class="two fields">
             <div class="field">
                 <label for="coverageDepth"><g:message code="tipp.coverageDepth"/></label>
@@ -215,12 +216,24 @@
                 </select>
             </div>
 
+            <g:if test="${controllerName == 'subscription'}">
+                <div class="field">
+                    <label>${message(code: 'issueEntitlement.hasPerpetualAccess.label')}</label>
+                    <laser:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  value="${params.hasPerpetualAccess}"
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                </div>
+            </g:if>
+        </div>
+
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}"
                    class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
                 <input type="submit" class="ui secondary button"
                        value="${message(code: 'default.button.filter.label')}"/>
             </div>
-        </div>
     </g:form>
 </semui:filter>

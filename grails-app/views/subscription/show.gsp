@@ -104,6 +104,14 @@
                             </dl>
                         </g:if>
 
+                        <g:if test="${(subscription.type == RDStore.SUBSCRIPTION_TYPE_LOCAL &&
+                                        subscription._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.isAutomaticRenewAnnually.label')}</dt>
+                                <dd><semui:xEditableBoolean owner="${subscription}" field="isAutomaticRenewAnnually" overwriteEditable="${subscription.isAllowToAutomaticRenewAnnually()}"/></dd>
+                            </dl>
+                        </g:if>
+
                     </div>
                 </div>
 

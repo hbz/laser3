@@ -945,6 +945,10 @@
           description: Mapping RefdataCategory
           enum:
             [""]
+        hasPerpetualAccess:
+          type: string #mapped to boolean
+          description: Mapping RefdataCategory "${RDConstants.Y_N}"
+          enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         coverages:
           $ref: "#/components/schemas/CoverageCollection"
 

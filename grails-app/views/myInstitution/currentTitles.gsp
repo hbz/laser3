@@ -226,6 +226,10 @@
                                 <div class="sixteen wide column">
                                     <g:message code="subscription.details.prices"/>
                                 </div>
+
+                                <div class="eight wide column">
+                                    <g:message code="issueEntitlement.hasPerpetualAccess.label"/>
+                                </div>
                             </div>
                         </th>
                     </tr>
@@ -311,6 +315,10 @@
                                                 owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
                                                 <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
                                             </g:each>
+                                        </div>
+
+                                        <div class="eight wide column">
+                                            ${message(code: 'issueEntitlement.hasPerpetualAccess.label') + ':'}  <semui:xEditableBoolean owner="${ie}" field="hasPerpetualAccess"/>
                                         </div>
                                     </g:each>
                                 </div>

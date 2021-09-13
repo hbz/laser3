@@ -1502,4 +1502,50 @@ class SurveyService {
         result
     }
 
+    boolean hasParticipantPerpetualAccessToTitle(Org org, TitleInstancePackagePlatform tipp){
+
+        List<OrgRole> orgRoles = OrgRole.findAllByOrgAndRoleTypeInList(org, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN])
+
+        if(orgRoles) {
+            List<IssueEntitlement> issueEntitlementList = IssueEntitlement.findBySubscriptionInListAndStatusAndAcceptStatusAndTippAndHasPerpetualAccess(orgRoles.sub, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED, tipp, true)
+            if(issueEntitlementList.size() > 0){
+                return true
+            }else {
+                return false
+            }
+        }else {
+            return false
+        }
+    }
+
+    boolean allowToSelectedTitle(Subscription participantSub, TitleInstancePackagePlatform tipp) {
+
+        IssueEntitlement issueEntitlement = IssueEntitlement.findBySubscriptionAndStatusAndTipp(participantSub, RDStore.TIPP_STATUS_CURRENT, tipp)
+
+        if(issueEntitlement){
+            if(issueEntitlement.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION){
+                return false
+            }else {
+                return true
+            }
+        }else {
+            return true
+        }
+    }
+
+    IssueEntitlement titleContainedBySubscription(Subscription subscription, TitleInstancePackagePlatform tipp) {
+
+        IssueEntitlement issueEntitlement = IssueEntitlement.findBySubscriptionAndStatusAndTipp(subscription, RDStore.TIPP_STATUS_CURRENT, tipp)
+
+        if(issueEntitlement){
+            if(issueEntitlement.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION){
+                return issueEntitlement
+            }else {
+                return  null
+            }
+        }else {
+            return null
+        }
+    }
+
 }

@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest
 @Slf4j
 class ApiManager {
 
-    static final VERSION = '0.127'
+    static final VERSION = '0.128'
 
     /**
      * @return Object

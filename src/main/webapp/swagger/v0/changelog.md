@@ -2,6 +2,10 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 0.128
+
+- added new attribute: `IssueEntitlement.hasPerpetualAccess`
+
 #### 0.127
 
 - internal refactoring

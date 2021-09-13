@@ -1216,6 +1216,12 @@ class FilterService {
             filterSet = true
         }
 
+        if (params.hasPerpetualAccess) {
+            base_qry += "and ie.hasPerpetualAccess = :hasPerpetualAccess "
+            qry_params.hasPerpetualAccess = (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false
+            filterSet = true
+        }
+
         if(!params.forCount)
             base_qry += " group by tipp, ic, ie.id "
         else base_qry += " group by tipp, ic "

@@ -976,12 +976,12 @@ class SubscriptionControllerService {
 
                result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max)) : []
 
-                Map query = filterService.getIssueEntitlementQuery(params, newSub)
+                /*Map query = filterService.getIssueEntitlementQuery(params, newSub)
                 List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
                 result.targetIEs = []
                 targetIEs.collate(32767).each {
                     result.targetIEs.addAll(IssueEntitlement.findAllByIdInList(targetIEs.take(32768)))
-                }
+                }*/
 
                 result.editable = (params.tab == 'previousIEs') ? false : surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
