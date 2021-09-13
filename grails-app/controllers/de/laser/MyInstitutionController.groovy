@@ -1760,7 +1760,7 @@ join sub.orgRelations or_sub where
 
         result.ownerId = result.surveyInfo.owner?.id
 
-        if(result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION) {
+        if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
             result.authorizedOrgs = result.user.authorizedOrgs
             // restrict visible for templates/links/orgLinksAsList
