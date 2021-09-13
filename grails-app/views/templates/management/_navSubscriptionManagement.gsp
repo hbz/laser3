@@ -7,6 +7,18 @@
                     text="${message(code: 'subscriptionsManagement.generalProperties')}" tab="generalProperties"/>
 
     <semui:tabsItem controller="${controllerName}" action="${actionName}"
+                    params="${[id: params.id, tab: 'linkLicense']}"
+                    text="${message(code: 'subscription.details.linkLicenseMembers.label')}" tab="linkLicense"/>
+
+    <semui:tabsItem controller="${controllerName}" action="${actionName}"
+                    params="${[id: params.id, tab: 'linkPackages']}"
+                    text="${message(code: 'subscription.details.linkPackagesMembers.label')}" tab="linkPackages"/>
+
+    <semui:tabsItem controller="${controllerName}" action="${actionName}"
+                    params="${[id: params.id, tab: 'properties']}"
+                    text="${message(code: 'subscriptionsManagement.properties')}" tab="properties"/>
+
+    <semui:tabsItem controller="${controllerName}" action="${actionName}"
                     params="${[id: params.id, tab: 'providerAgency']}"
                     text="${message(code: 'subscriptionsManagement.providerAgency')}" tab="providerAgency"/>
 
@@ -22,19 +34,10 @@
                     params="${[id: params.id, tab: 'multiYear']}"
                     text="${message(code: 'subscription.isMultiYear.label')}" tab="multiYear"/>
 
-    <semui:tabsItem controller="${controllerName}" action="${actionName}"
-                    params="${[id: params.id, tab: 'linkLicense']}"
-                    text="${message(code: 'subscription.details.linkLicenseMembers.label')}" tab="linkLicense"/>
 
-    <semui:tabsItem controller="${controllerName}" action="${actionName}"
-                    params="${[id: params.id, tab: 'linkPackages']}"
-                    text="${message(code: 'subscription.details.linkPackagesMembers.label')}" tab="linkPackages"/>
-
-    <semui:tabsItem controller="${controllerName}" action="${actionName}"
-                    params="${[id: params.id, tab: 'properties']}"
-                    text="${message(code: 'subscriptionsManagement.properties')}" tab="properties"/>
-
-    <semui:tabsItem controller="${controllerName}" action="${actionName}"
-                    params="${[id: params.id, tab: 'customerIdentifiers']}"
-                    text="${message(code: 'org.customerIdentifier.plural')}" tab="customerIdentifiers"/>
+    <g:if test="${controllerName == 'subscription'}">
+        <semui:tabsItem controller="${controllerName}" action="${actionName}"
+                        params="${[id: params.id, tab: 'customerIdentifiers']}"
+                        text="${message(code: 'org.customerIdentifier.plural')}" tab="customerIdentifiers"/>
+    </g:if>
 </semui:tabs>

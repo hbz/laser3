@@ -3,17 +3,38 @@
 
 <g:if test="${filteredSubscriptions}">
 
-    <div class="ui segment">
-        <h4 class="ui header">${message(code: 'subscriptionsManagement.deleteLicensesInfo', args: [num_sub_rows ?: filteredSubscriptions.size()])}</h4>
+    <g:if test="${controllerName == 'subscription'}">
+        <div class="ui segment">
+            <h3 class="ui header"><g:message code="subscriptionsManagement.license.label"
+                                             args="${args.superOrgType}"/>
+            </h3>
 
-        <g:if test="${controllerName == 'subscription'}">
+            <g:if test="${validLicenses}">
+                <div class="ui middle aligned selection list">
+                    <g:each in="${validLicenses}" var="license">
+                        <div class="item">
+                            <g:link controller="license" action="show"
+                                    id="${license.id}">${license.reference}</g:link>
+                        </div>
+                    </g:each>
+                </div>
+
+            </g:if>
+            <g:else>
+                <g:message code="subscriptionsManagement.noValidLicenses" args="${args.superOrgType}"/>
+            </g:else>
+
+        </div>
+
+        <div class="ui segment">
+            <h4 class="ui header">${message(code: 'subscriptionsManagement.deleteLicensesInfo', args: [num_sub_rows ?: filteredSubscriptions.size()])}</h4>
+
             <g:link class="ui button negative js-open-confirm-modal"
                     data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.deleteLicenses.button.confirm')}"
                     data-confirm-term-how="ok" action="${actionName}" controller="${controllerName}" id="${params.id}"
                     params="[processOption: 'unlinkAll', tab: 'linkLicense']">${message(code: 'subscriptionsManagement.deleteAllLicenses.button')}</g:link>
-        </g:if>
-
-    </div>
+        </div>
+    </g:if>
 
     <div class="divider"></div>
 
@@ -34,13 +55,18 @@
                               required=""
                               noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.license')}"]'/>
                 </g:if><g:else>
-                    <g:message code="subscriptionsManagement.noValidLicenses" args="${args.superOrgType}"/>
+                    <g:if test="${controllerName == 'subscription'}">
+                        <g:message code="subscriptionsManagement.noValidLicenses" args="${args.superOrgType}"/>
+                    </g:if>
+                    <g:else>
+                        <g:message code="subscriptionsManagement.noValidLicenses"/>
+                    </g:else>
                 </g:else>
             </div>
 
 
             <div class="two fields">
-                <div class="eight wide field">
+                <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
                         <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
@@ -48,9 +74,9 @@
                     </div>
                 </div>
 
-                <div class="eight wide field">
+                <div class="eight wide field" style="text-align: right;">
                     <div class="ui buttons">
-                        <button class="ui button negative js-open-confirm-modal"
+                        <button class="ui button negative js-open-confirm-modal" ${!editable ? 'disabled="disabled"' : ''}
                                 data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.deleteLicenses.button.confirm')}"
                                 data-confirm-term-how="ok"
                                 name="processOption"
