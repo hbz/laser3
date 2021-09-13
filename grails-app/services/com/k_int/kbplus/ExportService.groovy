@@ -1221,7 +1221,7 @@ class ExportService {
 	Map<String,List> generateTitleExportCSV(Collection entitlementIDs, String entitlementInstance) {
 		log.debug("Begin generateTitleExportCSV")
 		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
-		List<String> titleHeaders = getBaseTitleHeaders()
+		List<String> titleHeaders = getBaseTitleHeadersForCSV()
 		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect { IdentifierNamespace ns -> "${ns.ns}_identifer"})
 		Map<String,List> export = [titleRow:titleHeaders,rows:[]]
 		int max = 500
@@ -1480,6 +1480,12 @@ class ExportService {
 						row.add(' ')
 						row.add(' ')
 						row.add(' ')
+						row.add(' ')
+					}
+					if(entitlement) {
+						//is Perpetual Access
+						row.add(entitlement.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value'))
+					}else {
 						row.add(' ')
 					}
 
@@ -1774,6 +1780,61 @@ class ExportService {
 		 'localprice_eur',
 		 'localprice_gbp',
 		 'localprice_usd']
+	}
+
+	List<String> getBaseTitleHeadersForCSV() {
+		['publication_title',
+		 'print_identifier',
+		 'online_identifier',
+		 'date_first_issue_online',
+		 'num_first_vol_online',
+		 'num_first_issue_online',
+		 'date_last_issue_online',
+		 'num_last_vol_online',
+		 'num_last_issue_online',
+		 'title_url',
+		 'first_author',
+		 'title_id',
+		 'embargo_info',
+		 'coverage_depth',
+		 'notes',
+		 'publication_type',
+		 'publisher_name',
+		 'date_monograph_published_print',
+		 'date_monograph_published_online',
+		 'monograph_volume',
+		 'monograph_edition',
+		 'first_editor',
+		 'parent_publication_title_id',
+		 'preceding_publication_title_id',
+		 'access_type',
+		 'package_name',
+		 'package_id',
+		 'last_changed',
+		 'access_start_date',
+		 'access_end_date',
+		 'medium',
+		 'zdb_id',
+		 'doi_identifier',
+		 'ezb_id',
+		 'title_gokb_uuid',
+		 'package_gokb_uuid',
+		 'package_isci',
+		 'package_isil',
+		 'package_ezb_anchor',
+		 'ill_indicator',
+		 'superceding_publication_title_id',
+		 'monograph_parent_collection_title',
+		 'subject_area',
+		 'status',
+		 'zdb_ppn',
+		 'listprice_eur',
+		 'listprice_gbp',
+		 'listprice_usd',
+		 'localprice_eur',
+		 'localprice_gbp',
+		 'localprice_usd',
+		 'perpetual_access']
 	}
 
 	IssueEntitlement getIssueEntitlement(rowData) {

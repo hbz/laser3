@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.RDStore;" %>
 <div class="la-icon-list">
 
     <semui:listIcon type="${tipp.titleType}"/>
@@ -89,6 +90,17 @@
             </div>
         </g:if>
     </g:else>
+
+    <g:if test="${ie}">
+        <div class="item">
+            <i class="grey save icon la-popup-tooltip la-delay"
+               data-content="${message(code: 'issueEntitlement.hasPerpetualAccess.label')}"></i>
+
+            <div class="content">
+                ${showCompact ? '' : message(code: 'issueEntitlement.hasPerpetualAccess.label') + ':'} <semui:xEditableBoolean owner="${ie}" field="hasPerpetualAccess"/>
+            </div>
+        </div>
+    </g:if>
 
     <g:if test="${(tipp.titleType == 'Book') && (tipp.volume || showEmptyFields)}">
         <div class="item">

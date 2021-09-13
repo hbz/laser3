@@ -22,15 +22,22 @@
 
         <g:each in="${ies.sourceIEs}" var="ie">
             <g:set var="tipp" value="${ie.tipp}"/>
-            <g:set var="isContainedByTarget"
-                   value="${ies.targetIEs.find { it.tipp == tipp && it.status != RDStore.TIPP_STATUS_DELETED }}"/>
-            <g:set var="targetIE" value="${ies.targetIEs.find { it.tipp == tipp }}"/>
+            <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
+                <g:set var="allowedToSelect"
+                       value="${!(surveyService.hasParticipantPerpetualAccessToTitle(subscriber, tipp)) && surveyService.allowToSelectedTitle(newSub, tipp)}"/>
+            </g:if>
+            <g:else>
+                <g:set var="allowedToSelect"
+                       value="${surveyService.allowToSelectedTitle(newSub, tipp)}"/>
+            </g:else>
+            <g:set var="targetIE"
+                   value="${surveyService.titleContainedBySubscription(newSub, tipp)}"/>
             <tr data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie.id}" data-index="${counter}" class="${checkedCache ? (checkedCache[ie.id.toString()] ? 'positive' : '') : ''}">
                 <td>
-                    <g:if test="${params.tab == 'selectedIEs' && isContainedByTarget && targetIE?.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
+                    <g:if test="${editable && params.tab == 'selectedIEs' && allowedToSelect}">
                         <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                     </g:if>
-                    <g:elseif test="${!isContainedByTarget && editable}">
+                    <g:elseif test="${editable &&  !targetIE}">
                         <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                     </g:elseif>
 
@@ -98,15 +105,15 @@
                     </g:else>
                 </td>
                 <td>
-                    <g:if test="${isContainedByTarget && targetIE?.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
+                    <g:if test="${editable && targetIE}">
                         <g:link class="ui icon negative button la-popup-tooltip la-delay"
                                 action="processRemoveIssueEntitlementsSurvey"
-                                params="${[id: newSub.id, singleTitle: isContainedByTarget.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
+                                params="${[id: newSub.id, singleTitle: targetIE.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                 data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
                             <i class="minus icon"></i>
                         </g:link>
                     </g:if>
-                    <g:elseif test="${!isContainedByTarget && editable}">
+                    <g:elseif test="${editable && !targetIE && allowedToSelect}">
                         <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
                                 action="processAddIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: ie.id, surveyConfigID: surveyConfig?.id]}"

@@ -65,6 +65,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     boolean hasPublishComponent = false
     boolean isMultiYear = false
 
+    boolean isAutomaticRenewAnnually = false
+
   String name
   String identifier
   Date startDate
@@ -155,6 +157,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
+        isAutomaticRenewAnnually column: 'sub_is_automatic_renew_annually'
         pendingChanges  sort: 'ts', order: 'asc', batchSize: 10
 
         ids             sort: 'ns', batchSize: 10
@@ -459,6 +462,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     boolean islateCommer() {
         return (this.endDate && (this.endDate.minus(this.startDate) > 366 && this.endDate.minus(this.startDate) < 728))
+    }
+
+    boolean isAllowToAutomaticRenewAnnually() {
+        return (this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 366))
     }
 
     boolean isEditableBy(user) {

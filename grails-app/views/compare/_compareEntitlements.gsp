@@ -18,6 +18,8 @@
                 <th>${message(code: 'subscription.details.date_header')}</th>
                 <th>${message(code: 'subscription.details.access_dates')}</th>
                 <th>${message(code: 'tipp.price')}</th></g:each>
+                <th>${message(code: 'issueEntitlement.hasPerpetualAccess.label')}</th>
+            </g:each>
         </tr>
         </thead>
         <tbody>
@@ -70,6 +72,9 @@
                                             <g:if test="${i < ieValue.priceItems.size() - 1}"><hr></g:if>
                                         </g:each>
                                     </g:if>
+                                </td>
+                                <td>
+                                    ${message(code: 'issueEntitlement.hasPerpetualAccess.label') + ':'}  <semui:xEditableBoolean owner="${ieValue}" field="hasPerpetualAccess"/>
                                 </td>
                             </g:each>
                     </g:if><g:else>

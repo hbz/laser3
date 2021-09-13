@@ -27,6 +27,8 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     String ieReason
 
+    boolean hasPerpetualAccess = false
+
     //merged as the difference between an IssueEntitlement and a TIPP is mainly former's attachment to a subscription, otherwise, they are functionally identical, even dependent upon each other. So why keep different refdata categories?
     @RefdataAnnotation(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
@@ -79,6 +81,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       subscription column:'ie_subscription_fk', index: 'ie_sub_idx'
               tipp column:'ie_tipp_fk',         index: 'ie_tipp_idx'
           ieReason column:'ie_reason'
+          hasPerpetualAccess column:'ie_has_perpetual_access'
             medium column:'ie_medium_rv_fk'
     accessStartDate column:'ie_access_start_date'
      accessEndDate column:'ie_access_end_date'

@@ -368,7 +368,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             </div>
 
             <g:render template="/templates/survey/entitlementTableSurvey"
-                      model="${[ies: [sourceIEs: sourceIEs, targetIEs: targetIEs], showPackage: true, showPlattform: true]}"/>
+                      model="${[ies: [sourceIEs: sourceIEs], showPackage: true, showPlattform: true]}"/>
 
         </div>
 

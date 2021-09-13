@@ -1751,7 +1751,7 @@ class SubscriptionService {
                                        startDateCol       : -1, startVolumeCol: -1, startIssueCol: -1,
                                        endDateCol         : -1, endVolumeCol: -1, endIssueCol: -1,
                                        accessStartDateCol : -1, accessEndDateCol: -1, coverageDepthCol: -1, coverageNotesCol: -1, embargoCol: -1,
-                                       listPriceCol       : -1, listCurrencyCol: -1, listPriceEurCol: -1, listPriceUsdCol: -1, listPriceGbpCol: -1, localPriceCol: -1, localCurrencyCol: -1, priceDateCol: -1]
+                                       listPriceCol       : -1, listCurrencyCol: -1, listPriceEurCol: -1, listPriceUsdCol: -1, listPriceGbpCol: -1, localPriceCol: -1, localCurrencyCol: -1, priceDateCol: -1, hasPerpetualAccessCol: -1]
         //read off first line of KBART file
         rows[0].split('\t').eachWithIndex { headerCol, int c ->
             switch (headerCol.toLowerCase().trim()) {
@@ -1804,6 +1804,8 @@ class SubscriptionService {
                 case "localprice_currency": colMap.localCurrencyCol = c
                     break
                 case "price_date": colMap.priceDateCol = c
+                    break
+                case "has_perpetual_access": colMap.hasPerpetualAccessCol = c
                     break
             }
         }
@@ -1868,6 +1870,9 @@ class SubscriptionService {
                                         case "coverageDepthCol": ieCoverage.coverageDepth = cellEntry ?: null
                                             break
                                         case "coverageNotesCol": ieCoverage.coverageNote = cellEntry ?: null
+                                            break
+                                        case "hasPerpetualAccessCol":
+                                            issueEntitlement.hasPerpetualAccess = cellEntry ? (cellEntry == RDStore.YN_YES.value_en || cellEntry == RDStore.YN_YES.value_de) : false
                                             break
                                     }
                                 }
