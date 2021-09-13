@@ -32,7 +32,7 @@
                       from="${dd_conditionList}"
                       value="${task?.condition?.id}"
                       optionKey="id"
-                      optionValue="${{'(' + it.id + ') ' + it.title}}" />
+                      optionValue="${{ (cpIdTable && cpIdTable[it.id]) ? ('(' + cpIdTable[it.id] + ') ' + it.title) : it.title }}" />
         </div>
 
         <div class="field">
@@ -44,7 +44,7 @@
                               from="${dd_nextList}"
                               value="${task?.next?.id}"
                               optionKey="id"
-                              optionValue="${{'(' + it.id + ') ' + it.title}}" />
+                              optionValue="${{ (tpIdTable && tpIdTable[it.id]) ? ('(' + tpIdTable[it.id] + ') ' + it.title) : it.title }}" />
                 </div>
                 <div class="field">
                     <label for="${prefix}_child">Child &darr;</label>
@@ -53,7 +53,7 @@
                               from="${dd_childList}"
                               value="${task?.child?.id}"
                               optionKey="id"
-                              optionValue="${{'(' + it.id + ') ' + it.title}}" />
+                              optionValue="${{ (tpIdTable && tpIdTable[it.id]) ? ('(' + tpIdTable[it.id] + ') ' + it.title) : it.title }}" />
                 </div>
             </div>
         </div>

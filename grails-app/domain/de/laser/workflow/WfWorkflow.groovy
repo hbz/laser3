@@ -57,6 +57,8 @@ class WfWorkflow extends WfWorkflowBase {
             tasksNormal: 0,
             tasksOptional: 0,
             tasksImportant: 0,
+            tasksNormalBlocking: 0,
+            tasksImportantBlocking: 0,
             lastUpdated: lastUpdated
         ]
 
@@ -74,9 +76,19 @@ class WfWorkflow extends WfWorkflowBase {
             if (task.status == RDStore.WF_TASK_STATUS_CANCELED) { info.tasksCanceled++ }
             if (task.status == RDStore.WF_TASK_STATUS_DONE)     { info.tasksDone++ }
 
-            if (task.priority == RDStore.WF_TASK_PRIORITY_NORMAL)       { info.tasksNormal++ }
+            if (task.priority == RDStore.WF_TASK_PRIORITY_NORMAL)       {
+                info.tasksNormal++
+                if (task.status != RDStore.WF_TASK_STATUS_DONE) {
+                    info.tasksNormalBlocking++
+                }
+            }
             if (task.priority == RDStore.WF_TASK_PRIORITY_OPTIONAL)     { info.tasksOptional++ }
-            if (task.priority == RDStore.WF_TASK_PRIORITY_IMPORTANT)    { info.tasksImportant++ }
+            if (task.priority == RDStore.WF_TASK_PRIORITY_IMPORTANT)    {
+                info.tasksImportant++
+                if (task.status != RDStore.WF_TASK_STATUS_DONE) {
+                    info.tasksImportantBlocking++
+                }
+            }
 
             if (task.lastUpdated > info.lastUpdated) { info.lastUpdated = task.lastUpdated }
             if (task.condition && task.condition.lastUpdated > info.lastUpdated) { info.lastUpdated = task.condition.lastUpdated }

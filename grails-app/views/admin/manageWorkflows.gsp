@@ -33,22 +33,22 @@
             <div class="item">
                 <span>
                     <i class="icon circle large"></i>
-                    <strong>${message(code: 'workflow.task.label')}</strong> ( ${message(code: 'workflow.condition.label')} )
+                    <strong>${message(code: 'workflow.task.label')}</strong> - ${message(code: 'workflow.condition.label')}
                 </span>
             </div>
             <div class="item">
                 <span>
                     <strong>${message(code:'default.priority.label')}:</strong>
-                    <i class="icon circle large"></i>Normal -
-                    <i class="icon arrow alternate circle up large"></i>Wichtig -
+                    <i class="icon circle large"></i>Normal
+                    <i class="icon arrow alternate circle up large"></i>Wichtig
                     <i class="icon arrow alternate circle down large"></i>Optional
                 </span>
             </div>
             <div class="item">
                 <span>
                     <strong>${message(code:'default.status.label')}:</strong>
-                    <i class="icon la-light-grey circle large"></i>Offen -
-                    <i class="icon green circle large"></i>Erledigt -
+                    <i class="icon la-light-grey circle large"></i>Offen
+                    <i class="icon green circle large"></i>Erledigt
                     <i class="icon orange circle large"></i>Abgebrochen
                 </span>
             </div>
@@ -67,8 +67,24 @@
 
     <g:each in="${WfWorkflow.executeQuery('select wfw from WfWorkflow wfw order by wfw.id desc')}" var="wf">
 
+        <g:set var="wfInfo" value="${wf.getInfo()}" />
+
         <div class="ui segment attached top">
             <i class="ui icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i>
+
+            <g:if test="${wf.status == RDStore.WF_WORKFLOW_STATUS_DONE}">
+                <g:if test="${wfInfo.tasksImportantBlocking}">
+                    <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.blockingTasks.important')}">
+                        <i class="ui icon red exclamation triangle"></i>
+                    </span>
+                </g:if>
+                <g:elseif test="${wfInfo.tasksNormalBlocking}">
+                    <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.blockingTasks.normal')}">
+                        <i class="ui icon red exclamation triangle"></i>
+                    </span>
+                </g:elseif>
+            </g:if>
+
             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflow.KEY + ':' + wf.id, tab: 'workflows']}">
                 <strong>${wf.title}</strong>
             </g:link>
@@ -164,10 +180,9 @@
                 </g:link>
             </div>
 
-            <g:link class="ui red icon small button right floated" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflow.KEY}:${wf.id}", tab: 'workflows']}"><i class="trash alternate outline icon"></i></g:link>
+            <g:link class="ui red icon small button right floated la-modern-button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflow.KEY}:${wf.id}", tab: 'workflows']}"><i class="trash alternate outline icon"></i></g:link>
             <br />
 
-            <g:set var="wfInfo" value="${wf.getInfo()}" />
             Bearbeitet: ${DateUtils.getSDF_NoTime().format(wfInfo.lastUpdated)} - Erstellt: ${DateUtils.getSDF_NoTime().format(wf.dateCreated)}
         </div>
 
@@ -204,25 +219,6 @@
         ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} <semui:totalNumber total="${WfWorkflowPrototype.findAll().size()}"/>
     </p>
 
-    <%
-        Map<Long, Integer> wfpIdTable = [:]
-        Map<Long, Integer> tpIdTable = [:]
-        Map<Long, Integer> cpIdTable = [:]
-
-        List<WfWorkflowPrototype> wfpList = WfWorkflowPrototype.executeQuery('select wfp from WfWorkflowPrototype wfp order by id')
-        wfpList.eachWithIndex { wfp, i ->
-            wfpIdTable.put( wfp.id, i+1 )
-        }
-        List<WfTaskPrototype> tpList = WfTaskPrototype.executeQuery('select tp from WfTaskPrototype tp order by id')
-        tpList.eachWithIndex { tp, i ->
-            tpIdTable.put( tp.id, i+1 )
-        }
-        List<WfConditionPrototype> cpList = WfConditionPrototype.executeQuery('select cp from WfConditionPrototype cp order by id')
-        cpList.eachWithIndex { cp, i ->
-            cpIdTable.put( cp.id, i+1 )
-        }
-    %>
-
     <table class="ui celled la-table compact table">
         <thead>
             <tr>
@@ -255,10 +251,10 @@
                     </td>
                     <td class="x">
                         <g:if test="${! wfp.inUse()}">
-                            <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflowPrototype.KEY}:${wfp.id}", tab: 'prototypes']}"><i class="trash alternate outline icon"></i></g:link>
+                            <g:link class="ui red icon small button la-modern-button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflowPrototype.KEY}:${wfp.id}", tab: 'prototypes']}"><i class="trash alternate outline icon"></i></g:link>
                         </g:if>
                         <g:if test="${wfp.state == RDStore.WF_WORKFLOW_STATE_ACTIVE}">
-                            <g:link class="ui green icon small button tmpJSPrompt" controller="admin" action="manageWorkflows" params="${[cmd: "instantiate:${WfWorkflowPrototype.KEY}:${wfp.id}", tab: 'prototypes']}"><i class="step forward icon"></i></g:link>
+                            <g:link class="ui green icon small button tmpJSPrompt la-modern-button" controller="admin" action="manageWorkflows" params="${[cmd: "instantiate:${WfWorkflowPrototype.KEY}:${wfp.id}", tab: 'prototypes']}"><i class="step forward icon"></i></g:link>
                         </g:if>
                     </td>
                 </tr>
@@ -364,7 +360,7 @@
                     </td>
                     <td class="x">
                         <g:if test="${! tp.inUse()}">
-                            <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfTaskPrototype.KEY}:${tp.id}", tab: 'prototypes']}"><i class="trash alternate outline icon"></i></g:link>
+                            <g:link class="ui red icon small button la-modern-button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfTaskPrototype.KEY}:${tp.id}", tab: 'prototypes']}"><i class="trash alternate outline icon"></i></g:link>
                         </g:if>
                     </td>
                 </tr>
@@ -416,7 +412,7 @@
                     </td>
                     <td class="x">
                         <g:if test="${! cp.inUse()}">
-                            <g:link class="ui red icon small button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfConditionPrototype.KEY}:${cp.id}", tab: 'prototypes']}"><i class="trash alternate outline icon"></i></g:link>
+                            <g:link class="ui red icon small button la-modern-button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfConditionPrototype.KEY}:${cp.id}", tab: 'prototypes']}"><i class="trash alternate outline icon"></i></g:link>
                         </g:if>
                     </td>
                 </tr>
@@ -450,8 +446,10 @@
             </g:link>
         </strong></p>
 
+        <g:set var="tasks" value="${wfwp.getSequence()}" />
+        <g:if test="${tasks}">
+
         <div class="ui mini steps">
-            <g:set var="tasks" value="${wfwp.getSequence()}" />
             <g:each in="${tasks}" var="wftp">
                 <div class="step">
                     <g:if test="${! wftp.child}">
@@ -529,6 +527,8 @@
                 </div>
             </g:each>
         </div>
+
+        </g:if>
     </g:each>
 
 </div><!-- .prototypes -->

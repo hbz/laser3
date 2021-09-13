@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SwissKnife
 import de.laser.titles.BookInstance
 import de.laser.titles.TitleInstance
@@ -46,24 +47,25 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController  {
 
+    def cacheService
+    def contextService
+    def dataConsistencyService
     def dataloadService
+    def deletionService
     def statsSyncService
     StatusUpdateService statusUpdateService
     def messageService
     def changeNotificationService
+    def workflowService
     def yodaService
+
     def sessionFactory
     def genericOIDService
-    def deletionService
     def filterService
-
-    def contextService
     def refdataService
     def propertyService
-    def dataConsistencyService
     def organisationService
     def apiService
-    def workflowService
 
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
@@ -420,6 +422,23 @@ class AdminController  {
         if (params.tab) {
             result.tab = params.tab
         }
+
+        result.wfpIdTable = [:] as Map<Long, Integer>
+        result.tpIdTable  = [:] as Map<Long, Integer>
+        result.cpIdTable  = [:] as Map<Long, Integer>
+
+        result.wfpList = WfWorkflowPrototype.executeQuery('select wfp from WfWorkflowPrototype wfp order by id')
+        result.tpList  = WfTaskPrototype.executeQuery('select tp from WfTaskPrototype tp order by id')
+        result.cpList  = WfConditionPrototype.executeQuery('select cp from WfConditionPrototype cp order by id')
+
+        result.wfpList.eachWithIndex { wfp, i -> result.wfpIdTable.put( wfp.id, i+1 ) }
+        result.tpList.eachWithIndex { tp, i -> result.tpIdTable.put( tp.id, i+1 ) }
+        result.cpList.eachWithIndex { cp, i -> result.cpIdTable.put( cp.id, i+1 ) }
+
+        EhcacheWrapper cache = cacheService.getTTL1800Cache('admin/manageWorkflows')
+        cache.put( 'wfpIdTable', result.wfpIdTable )
+        cache.put( 'tpIdTable', result.tpIdTable )
+        cache.put( 'cpIdTable', result.cpIdTable )
 
         log.debug( result.toMapString() )
         result

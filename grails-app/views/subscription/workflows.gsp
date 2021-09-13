@@ -54,6 +54,19 @@
             <tr>
                 <td>
                     <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i>
+
+                    <g:if test="${wf.status == RDStore.WF_WORKFLOW_STATUS_DONE}">
+                        <g:if test="${wfInfo.tasksImportantBlocking}">
+                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.blockingTasks.important')}">
+                                <i class="ui icon red exclamation triangle"></i>
+                            </span>
+                        </g:if>
+                        <g:elseif test="${wfInfo.tasksNormalBlocking}">
+                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.blockingTasks.normal')}">
+                                <i class="ui icon red exclamation triangle"></i>
+                            </span>
+                        </g:elseif>
+                    </g:if>
                 </td>
                 <td>
                     <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
@@ -86,9 +99,9 @@
                     ${DateUtils.getSDF_NoTime().format(wf.dateCreated)}
                 </td>
                 <td class="x">
-                    <button class="ui small icon button" data-wfId="${wf.id}"><i class="icon info"></i></button>
+                    <button class="ui small icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon info"></i></button>
                     %{-- <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button> --}%
-                    <g:link class="ui red icon small button" controller="subscription" action="workflows" params="${[id: "${subscription.id}", cmd: "delete:${WfWorkflow.KEY}:${wf.id}"]}"><i class="trash alternate outline icon"></i></g:link>
+                    <g:link class="ui red icon small button la-modern-button" controller="subscription" action="workflows" params="${[id: "${subscription.id}", cmd: "delete:${WfWorkflow.KEY}:${wf.id}"]}"><i class="trash alternate outline icon"></i></g:link>
                 </td>
             </tr>
         </g:each>
@@ -138,12 +151,12 @@
                             <g:set var="wfKey" value="subscription:${subscription.id}:${WfWorkflow.KEY}:${wf.id}" />
                             <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
-                                    <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="editWfXModal" params="${[key: wfKey, info: wfKey]}">
+                                    <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: wfKey, info: wfKey]}">
                                         <i class="icon cogs"></i>
                                     </g:link>
                                 </span>
                             </g:if>
-                            <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal" params="${[key: wfKey, info: wfKey]}">
+                            <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="useWfXModal" params="${[key: wfKey, info: wfKey]}">
                                 <i class="icon pencil"></i>
                             </g:link>
                         </td>
@@ -186,7 +199,7 @@
                                                 <g:set var="cKey" value="subscription:${subscription.id}:${WfCondition.KEY}:${task.condition.id}" />
                                                 <span style="float:right">
                                                     <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
-                                                        <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="editWfXModal" params="${[key: cKey, info: wfKey]}">
+                                                        <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: cKey, info: wfKey]}">
                                                             <i class="icon cogs"></i>
                                                         </g:link>
                                                     </span>
@@ -201,12 +214,12 @@
                                 <g:set var="tKey" value="subscription:${subscription.id}:${WfTask.KEY}:${task.id}" />
                                 <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
                                     <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
-                                        <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
+                                        <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
                                             <i class="icon cogs"></i>
                                         </g:link>
                                     </span>
                                 </g:if>
-                                <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
+                                <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
                                     <i class="icon pencil"></i>
                                 </g:link>
                             </td>
@@ -251,7 +264,7 @@
                                                         <g:set var="cKey" value="subscription:${subscription.id}:${WfCondition.KEY}:${child.condition.id}" />
                                                         <span style="float:right">
                                                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
-                                                                <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="editWfXModal" params="${[key: cKey, info: wfKey]}">
+                                                                <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: cKey, info: wfKey]}">
                                                                     <i class="icon cogs"></i>
                                                                 </g:link>
                                                             </span>
@@ -266,12 +279,12 @@
                                         <g:set var="tKey" value="subscription:${subscription.id}:${WfTask.KEY}:${child.id}" />
                                         <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
                                             <span data-position="top center" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
-                                                <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
+                                                <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
                                                     <i class="icon cogs"></i>
                                                 </g:link>
                                             </span>
                                         </g:if>
-                                        <g:link class="wfModalLink ui button icon compact" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
+                                        <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
                                             <i class="icon pencil"></i>
                                         </g:link>
                                     </td>
@@ -307,13 +320,11 @@
             func();
         });
         $('button[data-wfId]').on('click', function(e) {
+            var trigger = $(this).hasClass('la-modern-button');
             $('div[data-wfId]').hide();
-
-            if (! $(this).hasClass('grey')) {
-                $('button[data-wfId]').removeClass('grey');
-                $('div[data-wfId=' + $(this).addClass('grey').attr('data-wfId') + ']').show();
-            } else {
-                $('button[data-wfId]').removeClass('grey');
+            $('button[data-wfId]').addClass('la-modern-button');
+            if (trigger) {
+                $('div[data-wfId=' + $(this).removeClass('la-modern-button').attr('data-wfId') + ']').show();
             }
         });
 

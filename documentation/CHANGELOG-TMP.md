@@ -13,6 +13,8 @@
 
 3791    13.09.2021  dev     2.2         Andreas Feature     Bestand, Umfrage und Workflow-Bubbles im Lizenzfinanzmenü nachgetragen
 
+3788    13.09.2021  dev     2.2         David   Feature     'Workflows verwalten' überarbeiten
+
 3790    10.09.2021  dev     2.2         Andreas Bug         Passwörter mit HTML-relevanten Zeichen wurden inkorrekt dargestellt
 
 3776    09.09.2021  dev     2.2         Moe     Feature     Lizenzverwaltung 
