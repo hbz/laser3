@@ -134,6 +134,18 @@ class LicenseFilter extends BaseFilter {
                         List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Integer.parseInt(it2) } }
                         filterLabelValue = labels.collect { it.get('value_de') } // TODO
                     }
+                    else if (p == BaseConfig.CUSTOM_KEY_STARTDATE_LIMIT) {
+                        whereParts.add( '(YEAR(lic.startDate) >= :p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, params.int(key))
+
+                        filterLabelValue = params.get(key)
+                    }
+                    else if (p == BaseConfig.CUSTOM_KEY_ENDDATE_LIMIT) {
+                        whereParts.add( '(YEAR(lic.endDate) <= :p' + (++pCount) + ')')
+                        queryParams.put('p' + pCount, params.int(key))
+
+                        filterLabelValue = params.get(key)
+                    }
                 }
 
                 if (filterLabelValue) {

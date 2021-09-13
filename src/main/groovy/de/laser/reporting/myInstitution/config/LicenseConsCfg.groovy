@@ -17,17 +17,17 @@ class LicenseConsCfg extends BaseConfig {
                     ],
                     fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'endDateLimit'          : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'licenseCategory'       : BaseConfig.FIELD_TYPE_REFDATA,
                             //'openEnded'             : FIELD_TYPE_REFDATA,
-                            'startDate'             : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'startDateLimit'        : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'status'                : BaseConfig.FIELD_TYPE_REFDATA,
                             //'type'                  : BaseConfig.FIELD_TYPE_REFDATA
                     ],
                     filter : [
                             default : [
                                     [ 'licenseCategory', 'status', 'annual' ],
-                                    [ 'startDate', 'endDate' /*, 'openEnded' */ ]
+                                    [ 'startDateLimit', 'endDateLimit' /*, 'openEnded' */ ]
                             ]
                     ],
                     query : [

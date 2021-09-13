@@ -17,7 +17,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'endDateLimit'          : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'hasPerpetualAccess'    : BaseConfig.FIELD_TYPE_PROPERTY,
                             'hasPublishComponent'   : BaseConfig.FIELD_TYPE_PROPERTY,
@@ -25,7 +25,7 @@ class SubscriptionConsCfg extends BaseConfig {
                             'isMultiYear'           : BaseConfig.FIELD_TYPE_PROPERTY,
                             'kind'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'resource'              : BaseConfig.FIELD_TYPE_REFDATA,
-                            'startDate'             : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'startDateLimit'        : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'status'                : BaseConfig.FIELD_TYPE_REFDATA,
                             //'type'                : FIELD_TYPE_REFDATA,
                             //'manualRenewalDate'       : FIELD_TYPE_PROPERTY,
@@ -36,7 +36,7 @@ class SubscriptionConsCfg extends BaseConfig {
                                     [ 'form', 'kind', 'status', 'annual' ],
                                     [ 'resource', 'hasPerpetualAccess', 'hasPublishComponent' ],
                                     [ 'isMultiYear', 'isPublicForApi' ],
-                                    [ 'startDate', 'endDate' ]
+                                    [ 'startDateLimit', 'endDateLimit' ]
                             ]
                     ],
                     query : [
@@ -120,7 +120,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
-                            'endDate'               : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'endDateLimit'          : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'form'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'hasPerpetualAccess'    : BaseConfig.FIELD_TYPE_PROPERTY,
                             'hasPublishComponent'   : BaseConfig.FIELD_TYPE_PROPERTY,
@@ -128,7 +128,7 @@ class SubscriptionConsCfg extends BaseConfig {
                             'isMultiYear'           : BaseConfig.FIELD_TYPE_PROPERTY,
                             'kind'                  : BaseConfig.FIELD_TYPE_REFDATA,
                             'resource'              : BaseConfig.FIELD_TYPE_REFDATA,
-                            'startDate'             : BaseConfig.FIELD_TYPE_PROPERTY,
+                            'startDateLimit'        : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
                             'status'                : BaseConfig.FIELD_TYPE_REFDATA,
                     ],
                     filter : [
@@ -136,7 +136,7 @@ class SubscriptionConsCfg extends BaseConfig {
                                     [ 'form', 'kind', 'status', 'annual' ],
                                     [ 'resource', 'hasPerpetualAccess', 'hasPublishComponent' ],
                                     [ 'isMultiYear', 'isPublicForApi' ],
-                                    [ 'startDate', 'endDate' ]
+                                    [ 'startDateLimit', 'endDateLimit' ]
                             ]
                     ],
                     query : [

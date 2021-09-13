@@ -96,7 +96,8 @@ class LaserReportingTagLib {
                     id         : getUniqueId(filterName),
                     placeholder: "filter.placeholder",
                     value      : filterValue,
-                    modifiers  : true
+                    modifiers       : true,
+                    defaultModifier : prop.name == 'startDate' ? 'greater-equal' : ( prop.name == 'endDate' ? 'less-equal' : null )
             ])
         }
     }
