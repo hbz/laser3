@@ -17,7 +17,7 @@
             <g:each in="${objects}" var="object">
                 <th>${message(code: 'subscription.details.date_header')}</th>
                 <th>${message(code: 'subscription.details.access_dates')}</th>
-                <th>${message(code: 'tipp.price')}</th></g:each>
+                <th>${message(code: 'tipp.price')}</th>
                 <th>${message(code: 'issueEntitlement.hasPerpetualAccess.label')}</th>
             </g:each>
         </tr>
