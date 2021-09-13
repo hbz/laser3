@@ -964,8 +964,17 @@ class SubscriptionControllerService {
             result.subscription = baseSub
             result.subscriber = result.newSub.getSubscriber()
 
-            if(params.tab != 'previousIEsStats') {
-                result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max)) : []
+            if(params.tab == 'previousIEsStats' || params.tab == 'allIEsStats') {
+
+                List<Long> previousTitles = []
+                if(params.tab == 'previousIEsStats' ) {
+                    previousTitles = subscriptionService.getTippIDsFixed(previousSubscription)
+                }
+                result << result + surveyService.getStatsForParticipant(params,  previousSubscription, previousTitles, params.tab == 'allIEsStats')
+
+            }else{
+
+               result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max)) : []
 
                 Map query = filterService.getIssueEntitlementQuery(params, newSub)
                 List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
@@ -997,8 +1006,6 @@ class SubscriptionControllerService {
                         result.allChecked = "checked"
                     }
                 }
-            }else{
-                result << result + surveyService.getStatsForParticipant(params,  baseSub, newSub, previousSubscription)
             }
 
             [result:result,status:STATUS_OK]
