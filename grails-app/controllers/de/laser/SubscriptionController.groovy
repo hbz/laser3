@@ -701,7 +701,7 @@ class SubscriptionController {
                 IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
                 TitleInstancePackagePlatform tipp = ie.tipp
                 try {
-                    if(subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null) , RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)) {
+                    if(subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null) , RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
                         flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name])
                     }
                 }

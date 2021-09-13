@@ -22,22 +22,22 @@
 
         <g:each in="${ies.sourceIEs}" var="ie">
             <g:set var="tipp" value="${ie.tipp}"/>
+            <g:set var="targetIE"
+                   value="${surveyService.titleContainedBySubscription(newSub, tipp)}"/>
             <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
                 <g:set var="allowedToSelect"
-                       value="${!(surveyService.hasParticipantPerpetualAccessToTitle(subscriber, tipp)) && surveyService.allowToSelectedTitle(newSub, tipp)}"/>
+                       value="${!(surveyService.hasParticipantPerpetualAccessToTitle(subscriber, tipp)) && (!targetIE || (targetIE && targetIE.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION))}"/>
             </g:if>
             <g:else>
                 <g:set var="allowedToSelect"
-                       value="${surveyService.allowToSelectedTitle(newSub, tipp)}"/>
+                       value="${!targetIE || (targetIE && targetIE.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)}"/>
             </g:else>
-            <g:set var="targetIE"
-                   value="${surveyService.titleContainedBySubscription(newSub, tipp)}"/>
             <tr data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie.id}" data-index="${counter}" class="${checkedCache ? (checkedCache[ie.id.toString()] ? 'positive' : '') : ''}">
                 <td>
                     <g:if test="${editable && params.tab == 'selectedIEs' && allowedToSelect}">
                         <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                     </g:if>
-                    <g:elseif test="${editable &&  !targetIE}">
+                    <g:elseif test="${editable && !targetIE && allowedToSelect}">
                         <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                     </g:elseif>
 
@@ -105,7 +105,7 @@
                     </g:else>
                 </td>
                 <td>
-                    <g:if test="${editable && targetIE}">
+                    <g:if test="${editable && targetIE && allowedToSelect}">
                         <g:link class="ui icon negative button la-popup-tooltip la-delay"
                                 action="processRemoveIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: targetIE.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
@@ -113,7 +113,7 @@
                             <i class="minus icon"></i>
                         </g:link>
                     </g:if>
-                    <g:elseif test="${editable && !targetIE && allowedToSelect}">
+                    <g:elseif test="${editable && allowedToSelect}">
                         <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
                                 action="processAddIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: ie.id, surveyConfigID: surveyConfig?.id]}"

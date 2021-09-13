@@ -1023,7 +1023,11 @@ class SubscriptionService {
         result
     }
 
-    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus) throws EntitlementCreationException {
+    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus){
+        addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus, false)
+    }
+
+    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus, pickAndChoosePerpetualAccess) throws EntitlementCreationException {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
@@ -1045,7 +1049,8 @@ class SubscriptionService {
                     name: tipp.name,
                     medium: tipp.medium,
                     ieReason: 'Manually Added by User',
-                    acceptStatus: acceptStatus)
+                    acceptStatus: acceptStatus,
+                    hasPerpetualAccess: pickAndChoosePerpetualAccess)
             new_ie.generateSortTitle()
             Date accessStartDate, accessEndDate
             if(issueEntitlementOverwrite) {
