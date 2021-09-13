@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3792    13.09.2021  dev     2.2         Andreas Bug         fehlende Identifier-URL-Präfixes nachgetragen
+
+3791    13.09.2021  dev     2.2         Andreas Feature     Bestand, Umfrage und Workflow-Bubbles im Lizenzfinanzmenü nachgetragen
+
 3790    10.09.2021  dev     2.2         Andreas Bug         Passwörter mit HTML-relevanten Zeichen wurden inkorrekt dargestellt
 
 3776    09.09.2021  dev     2.2         Moe     Feature     Lizenzverwaltung 
