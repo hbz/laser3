@@ -33,10 +33,10 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     filter : [
                             default : [
-                                    [ 'form', 'kind', 'status', 'annual' ],
-                                    [ 'resource', 'hasPerpetualAccess', 'hasPublishComponent' ],
-                                    [ 'isMultiYear', 'isPublicForApi' ],
-                                    [ 'startDateLimit', 'endDateLimit' ]
+                                    [ 'form', 'kind', 'status' ],
+                                    [ 'resource', 'hasPublishComponent', 'hasPerpetualAccess' ],
+                                    [ 'isPublicForApi', 'isMultiYear' ],
+                                    [ 'startDateLimit', 'endDateLimit', 'annual' ]
                             ]
                     ],
                     query : [
@@ -133,10 +133,10 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     filter : [
                             default : [
-                                    [ 'form', 'kind', 'status', 'annual' ],
-                                    [ 'resource', 'hasPerpetualAccess', 'hasPublishComponent' ],
-                                    [ 'isMultiYear', 'isPublicForApi' ],
-                                    [ 'startDateLimit', 'endDateLimit' ]
+                                    [ 'form', 'kind', 'status' ],
+                                    [ 'resource', 'hasPublishComponent', 'hasPerpetualAccess' ],
+                                    [ 'isPublicForApi', 'isMultiYear' ],
+                                    [ 'startDateLimit', 'endDateLimit', 'annual' ]
                             ]
                     ],
                     query : [

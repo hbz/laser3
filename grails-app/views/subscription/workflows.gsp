@@ -40,13 +40,16 @@
 
     <table class="ui celled table la-table">
         <thead>
-        <tr>
-            <th>${message(code:'default.status.label')}</th>
-            <th>${message(code:'workflow.label')}</th>
-            <th>${message(code:'default.progress.label')}</th>
-            <th>${message(code:'workflow.dates.plural')}</th>
-            <th>${message(code:'default.actions.label')}</th>
-        </tr>
+            <tr>
+                <th rowspan="2">${message(code:'default.status.label')}</th>
+                <th rowspan="2">${message(code:'workflow.label')}</th>
+                <th rowspan="2">${message(code:'default.progress.label')}</th>
+                <th class="la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
+                <th rowspan="2">${message(code:'default.actions.label')}</th>
+            </tr>
+            <tr>
+                <th class="la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>
+            <tr>
         </thead>
         <tbody>
         <g:each in="${workflows}" var="wf">

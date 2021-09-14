@@ -23,9 +23,9 @@
 
         <g:render template="nav" />
 
-        <sec:ifAnyGranted roles="ROLE_YODA">
+        %{-- <sec:ifAnyGranted roles="ROLE_YODA">
             <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_SUBSCRIPTION]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
-        </sec:ifAnyGranted>
+        </sec:ifAnyGranted> --}%
 
         <g:render template="/templates/reporting/helper" />
 
