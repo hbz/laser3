@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.GlobalSourceSyncService
 import de.laser.exceptions.CleanupException
+import de.laser.exceptions.SyncException
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -16,7 +17,9 @@ import grails.util.Holders
 import grails.web.mapping.LinkGenerator
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChildren
+import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
+import groovyx.net.http.Method
 import org.hibernate.Session
 import org.springframework.transaction.TransactionStatus
 
@@ -641,6 +644,42 @@ class YodaService {
         toUUIDfy.each { tippId ->
             TitleInstancePackagePlatform.executeUpdate("update TitleInstancePackagePlatform tipp set tipp.gokbId = :missing where tipp.id = :id",[missing:"${RDStore.GENERIC_NULL_VALUE}.${tippId}",id:tippId])
         }
+    }
+
+    Map<String, Object> expungeDeletedTIPPs(boolean doIt) {
+        GlobalRecordSource grs = GlobalRecordSource.findByActiveAndRectype(true, GlobalSourceSyncService.RECTYPE_TIPP)
+        Map<String, Object> result = [:], requestResult = [:]
+        HTTPBuilder http = new HTTPBuilder(grs.uri+'/scroll?status=Deleted&status='+GlobalSourceSyncService.PERMANENTLY_DELETED)
+        http.request(Method.POST, ContentType.JSON) { req ->
+            response.success = { resp, json ->
+                if(resp.status == 200) {
+                    requestResult.count = json.size ?: json.count
+                    requestResult.records = json.records
+                    requestResult.scrollId = json.scrollId
+                    requestResult.hasMoreRecords = Boolean.valueOf(json.hasMoreRecords)
+                }
+                else {
+                    throw new SyncException("erroneous response")
+                }
+            }
+            response.failure = { resp, reader ->
+                log.error("server response: ${resp.statusLine}")
+                if(resp.status == 404) {
+                    requestResult.error = resp.status
+                }
+                else
+                    throw new SyncException("error on request: ${resp.statusLine} : ${reader}")
+            }
+        }
+        http.shutdown()
+        List deletedLaserTIPPs = TitleInstancePackagePlatform.executeQuery('select new map(tipp.id as tippId, tipp.gokbId as wekbId, tipp.status as laserStatus, tipp.name as title) from TitleInstancePackagePlatform tipp where tipp.status = :deleted', [deleted: RDStore.TIPP_STATUS_DELETED])
+        if(doIt) {
+
+        }
+        else {
+
+        }
+        result
     }
 
     Map<String, Object> listPlatformDuplicates() {

@@ -532,6 +532,11 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    Map<String, Object> expungeDeletedTIPPs() {
+        yodaService.expungeDeletedTIPPs(Boolean.valueOf("doIt"))
+    }
+
+    @Secured(['ROLE_YODA'])
     @Transactional
     def remapOriginEditUrl() {
         List<Identifier> originEditUrls = Identifier.executeQuery("select ident from Identifier ident where lower(ident.ns.ns) = 'originediturl'")
