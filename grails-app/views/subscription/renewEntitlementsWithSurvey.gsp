@@ -409,6 +409,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
         </div>
     </div>
 
+</g:form>
 
     <g:if test="${sourceIEs}">
         <semui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
@@ -417,7 +418,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                         total="${num_ies_rows}"/>
     </g:if>
 
-</g:form>
+
 </g:else>
 </body>
 <laser:script file="${this.getGroovyPageFileName()}">

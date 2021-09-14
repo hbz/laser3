@@ -962,6 +962,7 @@ class SubscriptionControllerService {
 
             result.newSub = newSub
             result.subscription = baseSub
+            result.previousSubscription = previousSubscription
             result.subscriber = result.newSub.getSubscriber()
 
             if(params.tab == 'previousIEsStats' || params.tab == 'allIEsStats') {
@@ -2123,7 +2124,7 @@ class SubscriptionControllerService {
                     IssueEntitlement ie = IssueEntitlement.findById(it.key)
                     TitleInstancePackagePlatform tipp = ie.tipp
                     try {
-                        if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)) {
+                        if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
                             log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
                             ++countIEsToAdd
                             removeFromCache << it.key
