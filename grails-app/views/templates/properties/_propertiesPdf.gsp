@@ -14,16 +14,16 @@
                         <td>
                             ${propType.getI10n("name")}
                         </td>
-                        <td>
+                        %{--<td>
                             <g:if test="${propType.mandatory}">
                                 <span class="yellow"> P </span>
                             </g:if>
                             <g:if test="${propType.multipleOccurrence}">
                                 <span class="orange"> M </span>
                             </g:if>
-                        </td>
+                        </td>--}%
                         <td>
-                            <span class="blue"> K </span>
+                            %{--<span class="blue"> K </span>--}%
                             <g:if test="${memberSubs}">
                                 (${SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null and sp.type = :type', [subscriptionSet: memberSubs, context: institution, type: propType]).size() ?: 0} / ${memberSubs.size() ?: 0})
                             </g:if>
@@ -77,7 +77,7 @@
                             <th>${message(code:'property.table.paragraph')}</th>
                         </g:if>
                         <th>${message(code:'property.table.notes')}</th>
-                        <th> </th>
+                        %{--<th> </th>--}%
                     </tr>
                 </thead>
                 <tbody>
@@ -115,9 +115,9 @@
                                     <g:else>
                                         ${prop.type.getI10n('name')}
                                     </g:else>
-                                    <g:if test="${prop.type.multipleOccurrence}">
+                                    %{--<g:if test="${prop.type.multipleOccurrence}">
                                         <span class="redo icon orange"> M </span>
-                                    </g:if>
+                                    </g:if>--}%
                                 </td>
                                 <td>
                                     <g:if test="${prop.type.isIntegerType()}">
@@ -147,14 +147,14 @@
                                 <td>
                                     ${prop.note}
                                 </td>
-                                <td>
+                                %{--<td>
                                     <g:if test="${prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)}">
                                         <span class="blue"> V </span>
                                     </g:if>
                                     <g:elseif test="${prop.tenant?.id == consortium?.id && atSubscr}">
                                         <span class="blue"> K </span>
                                     </g:elseif>
-                                </td>
+                                </td>--}%
                             </tr>
                         </g:if>
                     </g:each>
@@ -205,7 +205,7 @@
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
-                <th> </th>
+                %{--<th> </th>--}%
             </thead>
             <tbody>
                 <g:each in="${allPropDefGroups.orphanedProperties.sort{a, b -> a.type.getI10n('name') <=> b.type.getI10n('name') ?: a.getValue() <=> b.getValue() ?: a.id <=> b.id }}" var="prop">
@@ -254,7 +254,7 @@
                                 <td>
                                     ${prop.note}
                                 </td>
-                                <td>
+                                %{--<td>
                                     <g:if test="${license}">
                                         <g:set var="consortium" value="${license.getLicensingConsortium()}"/>
                                     </g:if>
@@ -262,13 +262,13 @@
                                         <g:set var="consortium" value="${subscription.getConsortia()}"/>
                                         <g:set var="atSubscr" value="${subscription._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
                                     </g:elseif>
-                                    <g:if test="${(prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) || AuditConfig.getConfig(prop)}">
+                                    %{--<g:if test="${(prop.hasProperty('instanceOf') && prop.instan && AuditConfig.getConfig(prop.instanceOf)) || AuditConfig.getConfig(prop)}">
                                         <span class="blue"> V </span>
                                     </g:if>
                                     <g:elseif test="${prop.tenant?.id == consortium?.id && atSubscr}">
                                         <span class="blue"> V </span>
                                     </g:elseif>
-                                </td>
+                                    </td>--}%
                             </tr>
                         </g:if>
                     </g:if>
@@ -277,10 +277,10 @@
         </table>
     </g:if>
 </section>
+<g:set var="privateProperties" value="${entry.propertySet.findAll { cp -> cp.type.tenant?.id == institution.id && cp.tenant?.id == institution.id }}"/>
+<g:if test="${privateProperties}">
 <section>
     <header><h3><g:message code="org.properties.private"/> ${institution.name}</h3></header>
-    <g:set var="privateProperties" value="${entry.propertySet.findAll { cp -> cp.type.tenant?.id == institution.id && cp.tenant?.id == institution.id }}"/>
-    <g:if test="${privateProperties}">
         <table>
             <thead>
                 <tr>
@@ -306,12 +306,12 @@
                                 <g:else>
                                     ${prop.type.getI10n('name')}
                                 </g:else>
-                                <g:if test="${prop.type.mandatory}">
+                                %{--<g:if test="${prop.type.mandatory}">
                                     <span class="yellow"> P </span>
                                 </g:if>
                                 <g:if test="${prop.type.multipleOccurrence}">
                                     <span class="orange"> M </span>
-                                </g:if>
+                                </g:if>--}%
                             </td>
                             <td>
                                 <g:if test="${prop.type.isIntegerType()}">
@@ -347,5 +347,5 @@
                 </g:each>
             </tbody>
         </table>
-    </g:if>
-</section>
+    </section>
+</g:if>

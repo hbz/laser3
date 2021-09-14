@@ -1,6 +1,14 @@
 <%@ page import="de.laser.License; de.laser.interfaces.CalculatedType; de.laser.helper.RDStore; de.laser.Org" %>
 <laser:serviceInjection />
 
+<g:if test="${actionName == 'show'}">
+    <semui:exportDropdown>
+        <semui:exportDropdownItem>
+            <g:link class="item" action="show" params="[id: license.id, export: 'pdf']">Export PDF</g:link>
+        </semui:exportDropdownItem>
+    </semui:exportDropdown>
+</g:if>
+
 <g:if test="${accessService.checkMinUserOrgRole(user,institution,'INST_EDITOR')}">
     <semui:actionsDropdown>
 
@@ -69,12 +77,4 @@
 </g:if>
 <g:if test="${accessService.checkMinUserOrgRole(user,institution,'INST_EDITOR')}">
     <g:render template="/templates/notes/modal_create" model="${[ownobj: license, owntp: 'license']}"/>
-</g:if>
-
-<g:if test="${actionName == 'show'}">
-    <semui:exportDropdown>
-        <semui:exportDropdownItem>
-            <g:link class="item" action="show" params="[id: license.id, export: 'pdf']">Export PDF</g:link>
-        </semui:exportDropdownItem>
-    </semui:exportDropdown>
 </g:if>

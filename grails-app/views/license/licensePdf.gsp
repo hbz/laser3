@@ -88,7 +88,7 @@
                                     ${ident.note}
                                 </g:if>
                             </td>
-                            <td>
+                            <%--<td>
                                 <g:if test="${ident instanceof Identifier}">
                                     <g:if test="${!ident.instanceOf && AuditConfig.getConfig(ident)}">
                                         <span class="green">V</span>
@@ -97,7 +97,7 @@
                                         <span class="blue">V</span>
                                     </g:elseif>
                                 </g:if>
-                            </td>
+                            </td>--%>
                         </tr>
                     </g:each>
                 </g:each>
@@ -109,30 +109,30 @@
                 <ul>
                     <li>
                         <strong><g:message code="license.startDate.label"/>: </strong><g:formatDate date="${license.startDate}" format="${message(code: 'default.date.format.notime')}"/>
-                        <g:if test="${auditService.getAuditConfig(license, 'startDate')}">
+                        %{--<g:if test="${auditService.getAuditConfig(license, 'startDate')}">
                             <span class="green">V</span>
                         </g:if>
                         <g:elseif test="${auditService.getAuditConfig(license.instanceOf, 'startDate')}">
                             <span class="blue">V</span>
-                        </g:elseif>
+                        </g:elseif>--}%
                     </li>
                     <li>
                         <strong><g:message code="license.endDate.label"/>: </strong><g:formatDate date="${license.endDate}" format="${message(code: 'default.date.format.notime')}"/>
-                        <g:if test="${auditService.getAuditConfig(license, 'endDate')}">
+                        %{--<g:if test="${auditService.getAuditConfig(license, 'endDate')}">
                             <span class="green">V</span>
                         </g:if>
                         <g:elseif test="${auditService.getAuditConfig(license.instanceOf, 'endDate')}">
                             <span class="blue">V</span>
-                        </g:elseif>
+                        </g:elseif>--}%
                     </li>
                     <li>
                         <strong><g:message code="license.openEnded.label"/>: </strong>${license.openEnded.getI10n("value")}
-                        <g:if test="${auditService.getAuditConfig(license, 'openEnded')}">
+                        %{--<g:if test="${auditService.getAuditConfig(license, 'openEnded')}">
                             <span class="green">V</span>
                         </g:if>
                         <g:elseif test="${auditService.getAuditConfig(license.instanceOf, 'openEnded')}">
                             <span class="blue">V</span>
-                        </g:elseif>
+                        </g:elseif>--}%
                     </li>
                 </ul>
             </section>
@@ -140,21 +140,21 @@
                 <ul>
                     <li>
                         <strong><g:message code="license.status.label"/>: </strong>${license.status.getI10n("value")}
-                        <g:if test="${auditService.getAuditConfig(license, 'status')}">
+                        %{--<g:if test="${auditService.getAuditConfig(license, 'status')}">
                             <span class="green">V</span>
                         </g:if>
                         <g:elseif test="${auditService.getAuditConfig(license.instanceOf, 'status')}">
                             <span class="blue">V</span>
-                        </g:elseif>
+                        </g:elseif>--}%
                     </li>
                     <li>
                         <strong><g:message code="license.licenseCategory.label"/>: </strong>${license.licenseCategory.getI10n("value")}
-                        <g:if test="${auditService.getAuditConfig(license, 'licenseCategory')}">
+                        %{--<g:if test="${auditService.getAuditConfig(license, 'licenseCategory')}">
                             <span class="green">V</span>
                         </g:if>
                         <g:elseif test="${auditService.getAuditConfig(license.instanceOf, 'licenseCategory')}">
                             <span class="blue">V</span>
-                        </g:elseif>
+                        </g:elseif>--}%
                     </li>
                     <g:if test="${license.instanceOf && institution.id == license.getLicensingConsortium().id}">
                         <li>
@@ -163,12 +163,12 @@
                     </g:if>
                     <li>
                         <strong><g:message code="license.isPublicForApi.label"/>: </strong>${license.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
-                        <g:if test="${auditService.getAuditConfig(license, 'isPublicForApi')}">
+                        %{--<g:if test="${auditService.getAuditConfig(license, 'isPublicForApi')}">
                             <span class="green">V</span>
                         </g:if>
                         <g:elseif test="${auditService.getAuditConfig(license.instanceOf, 'isPublicForApi')}">
                             <span class="blue">V</span>
-                        </g:elseif>
+                        </g:elseif>--}%
                     </li>
                 </ul>
             </section>
@@ -257,11 +257,11 @@
                             <td>
                                  ${docctx.owner.type?.getI10n("value")}
                             </td>
-                            <td>
+                            %{--<td>
                                 <g:if test="${docctx.isShared}">
                                     <span class="green">G</span>
                                 </g:if>
-                            </td>
+                            </td>--}%
                         </tr>
                     </g:each>
                 </table>
@@ -312,11 +312,11 @@
                             <td>
                                 <g:message code="template.notes.created"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${note.owner.dateCreated}"/>
                             </td>
-                            <td>
+                            %{--<td>
                                 <g:if test="${note.sharedFrom}">
                                     <span class="green">G</span>
                                 </g:if>
-                            </td>
+                            </td>--}%
                         </tr>
                     </g:each>
                 </table>
@@ -356,7 +356,7 @@
                         <g:if test="${role.org}">
                             <tr>
                                 <td>
-                                    <g:link controller="organisation" action="show" id="${role.org.id}" absolute="true">${role.org.name}</g:link>
+                                    <g:link controller="organisation" action="show" id="${role.org.id}" absolute="true">${role.org.name}</g:link> <i>${role.roleType.getI10n("value")}</i>
                                 </td>
                             </tr>
                             <g:if test="${(Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
