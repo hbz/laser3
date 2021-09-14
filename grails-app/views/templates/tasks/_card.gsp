@@ -1,3 +1,4 @@
+<%@page import="de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 
 <%--OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, institution, 'INST_EDITOR')} @ ${institution}--%>
@@ -13,6 +14,15 @@
                     ${message(code:'task.endDate.label')}
                     <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/>
                 </div>
+                <g:if test="${tsk.status == RDStore.TASK_STATUS_DONE}">
+                    <i class="ui icon green check"></i>
+                </g:if>
+                <g:elseif test="${tsk.status == RDStore.TASK_STATUS_OPEN}">
+                    <i class="ui icon red times"></i>
+                </g:elseif>
+                <g:elseif test="${tsk.status == RDStore.TASK_STATUS_DEFERRED}">
+                    <i class="ui icon yellow pause"></i>
+                </g:elseif>
             </div>
             <div class="right aligned four wide column la-column-left-lessPadding">
                 <g:link action="deleteTask" controller="ajax"

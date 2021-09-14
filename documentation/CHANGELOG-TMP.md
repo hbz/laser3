@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3783    14.09.2021  dev     2.2         Andreas Feature     Status der Aufgaben grafisch dargestellt
+
 3796    14.09.2021  dev     2.2         David   Feature     Reporting: Datepicker für Datumsgrenzen
 
 3793    13.09.2021  dev     2.2         Andreas Bug         Merkmalswertlöschung bei Ja/Nein/Unbekannt angepasst
