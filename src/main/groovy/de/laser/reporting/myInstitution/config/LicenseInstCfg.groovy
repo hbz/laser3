@@ -28,8 +28,8 @@ class LicenseInstCfg extends BaseConfig {
                     ],
                     filter : [
                             default : [
-                                    [ 'licenseCategory', 'status', 'annual' ],
-                                    [ 'startDateLimit', 'endDateLimit' /*, 'openEnded' */ ]
+                                    [ 'licenseCategory', 'status' ],
+                                    [ 'startDateLimit', 'endDateLimit', 'annual' /*, 'openEnded' */ ]
                             ]
                     ],
                     query : [

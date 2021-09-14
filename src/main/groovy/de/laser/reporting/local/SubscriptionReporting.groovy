@@ -37,6 +37,8 @@ class SubscriptionReporting {
                                             'tipp-subjectReference' : 'Fachbereich',
                                             'tipp-titleType'        : 'Titel-Typ',
                                             'tipp-medium'           : 'Medium',
+                                            'tipp-ddcs'             : 'Dewey-Dezimalklassifikation',
+                                            'tipp-languages'        : 'Sprache',
                                             //'tipp-platform'         : 'Plattform',
                                             //'tipp-package'          : 'Paket'
                                     ]
@@ -344,6 +346,80 @@ class SubscriptionReporting {
                 else if (params.query == 'tipp-medium') {
 
                     processSimpleTippRefdataQuery(params.query, 'medium', idList, result)
+                }
+                else if (params.query == 'tipp-ddcs') {
+
+                    TitleInstancePackagePlatform.executeQuery(
+                            'select ddc.ddc.id, count(*) from DeweyDecimalClassification ddc where ddc.tipp.id in (:idList) group by ddc.ddc.id',
+                            [idList: idList]
+                    ).each { tmp ->
+                        String label = RefdataValue.get(tmp[0]).getI10n('value')
+                        result.data.add([tmp[0], label, tmp[1]])
+
+                        result.dataDetails.add([
+                                query : params.query,
+                                id    : tmp[0],
+                                label : label,
+                                idList: TitleInstancePackagePlatform.executeQuery(
+                                        'select tipp.id from TitleInstancePackagePlatform tipp, DeweyDecimalClassification ddc ' +
+                                        'where tipp.id in (:idList) and ddc.tipp = tipp and ddc.ddc.id = :d order by tipp.sortname',
+                                        [idList: idList, d: tmp[0]]
+                                )
+                        ])
+                    }
+
+                    List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+                    List noDataList = nonMatchingIdList ? TitleInstancePackagePlatform.executeQuery(
+                            'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList)', [idList: nonMatchingIdList]
+                    ) : []
+
+                    if (noDataList) {
+                        result.data.add([null, BaseQuery.NO_DATA_LABEL, noDataList.size()])
+
+                        result.dataDetails.add([
+                                query : params.query,
+                                id    : null,
+                                label : BaseQuery.NO_DATA_LABEL,
+                                idList: noDataList,
+                        ])
+                    }
+                }
+                else if (params.query == 'tipp-languages') {
+
+                    TitleInstancePackagePlatform.executeQuery(
+                            'select lang.language.id, count(*) from Language lang where lang.tipp.id in (:idList) group by lang.language.id',
+                            [idList: idList]
+                    ).each { tmp ->
+                        String label = RefdataValue.get(tmp[0]).getI10n('value')
+                        result.data.add([tmp[0], label, tmp[1]])
+
+                        result.dataDetails.add([
+                                query : params.query,
+                                id    : tmp[0],
+                                label : label,
+                                idList: TitleInstancePackagePlatform.executeQuery(
+                                        'select tipp.id from TitleInstancePackagePlatform tipp, Language lang ' +
+                                                'where tipp.id in (:idList) and lang.tipp = tipp and lang.language.id = :d order by tipp.sortname',
+                                        [idList: idList, d: tmp[0]]
+                                )
+                        ])
+                    }
+
+                    List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+                    List noDataList = nonMatchingIdList ? TitleInstancePackagePlatform.executeQuery(
+                            'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList)', [idList: nonMatchingIdList]
+                    ) : []
+
+                    if (noDataList) {
+                        result.data.add([null, BaseQuery.NO_DATA_LABEL, noDataList.size()])
+
+                        result.dataDetails.add([
+                                query : params.query,
+                                id    : null,
+                                label : BaseQuery.NO_DATA_LABEL,
+                                idList: noDataList,
+                        ])
+                    }
                 }
                 /* else if (params.query == 'tipp-platform') {
 
