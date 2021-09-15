@@ -167,6 +167,7 @@ class RDStore {
 
     public static final TASK_STATUS_OPEN            = getRefdataValue('Open', RDConstants.TASK_STATUS)
     public static final TASK_STATUS_DONE            = getRefdataValue('Done', RDConstants.TASK_STATUS)
+    public static final TASK_STATUS_DEFERRED        = getRefdataValue('Deferred', RDConstants.TASK_STATUS)
 
     public static final TAX_REVERSE_CHARGE          = getRefdataValue('reverse charge', RDConstants.TAX_TYPE)
 
