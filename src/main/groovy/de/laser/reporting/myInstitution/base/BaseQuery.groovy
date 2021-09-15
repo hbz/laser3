@@ -15,6 +15,7 @@ import java.time.Year
 class BaseQuery {
 
     static String NO_DATA_LABEL         = '* keine Angabe'
+    static String NO_MATCH_LABEL        = '* keine Übereinstimmung'
     static String NO_IDENTIFIER_LABEL   = '* ohne Identifikator'
     static String NO_PLATFORM_LABEL     = '* ohne Plattform'
     static String NO_PROVIDER_LABEL     = '* ohne Anbieter'
