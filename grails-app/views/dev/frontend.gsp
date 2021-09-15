@@ -96,6 +96,9 @@
             <div class="column"><i aria-hidden="true" class="la-equals icon"></i>la-equals</div>
             <div class="column"><i aria-hidden="true" class="la-less-than-equal icon"></i>la-less-than-equal</div>
             <div class="column"><i aria-hidden="true" class="la-greater-than-equal icon"></i>la-greater-than-equal</div>
+
+            <div class="column"><i aria-hidden="true" class="la-open icon"></i>la-open</div>
+            <div class="column"><i aria-hidden="true" class="la-consortia icon"></i>la-consortia</div>
         </div>
 
         <div class="ui top attached label">Zusätzliche Icons in Laser</div>
@@ -110,6 +113,8 @@
     <i class="circular la-database icon"></i>
     <i class="circular la-ebook icon"></i>
     <i class="circular la-book icon"></i>
+    <i aria-hidden="true" class="circular icon inverted brown icon tasks"></i>
+    <i aria-hidden="true" class="circular icon inverted blue chart pie"></i>
     <div class="html ui top attached segment example">
 
         <div class="ui doubling five column grid">
@@ -131,9 +136,13 @@
 
             <div class="column"><i class="circular la-book icon"></i>circular la-book icon</div>
 
+            <div class="column"><i aria-hidden="true" class="circular icon inverted brown icon tasks"></i>circular icon inverted brown icon tasks</div>
+                <div class="column"><i aria-hidden="true" class="circular icon inverted purple chart pie"></i>circular icon inverted purple chart pie</div>
+            <div class="column"><i aria-hidden="true" class="circular icon inverted pink chart pie"></i>circular icon inverted pink chart pie</div>
+
         </div>
 
-        <div class="ui top attached label">Zusätzliche Icons in Laser</div>
+        <div class="ui top attached label">Icons und Farben von laser-Objekten</div>
     </div>
     <h2 class="ui dividing header">Form-Elemente<a class="anchor" id="form-elemente"></a></h2>
     <!-- Dropdowns -->
