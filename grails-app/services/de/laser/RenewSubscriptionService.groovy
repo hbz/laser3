@@ -47,22 +47,21 @@ class RenewSubscriptionService extends AbstractLockableService {
                             Org org = subscription.getSubscriber()
 
                             def newProperties = subscription.properties
-                            newProperties.globalUID = null
-                            newProperties.ids = null
-                            newProperties.packages = null
-                            newProperties.issueEntitlements = null
-                            newProperties.documents = null
-                            newProperties.orgRelations = null
-                            newProperties.prsLinks = null
-                            newProperties.derivedSubscriptions = null
-                            newProperties.pendingChanges = null
-                            newProperties.propertySet = null
-                            newProperties.costItems = null
-                            newProperties.ieGroups = null
-
                             Subscription copySub = new Subscription()
                             InvokerHelper.setProperties(copySub, newProperties)
                             copySub.id = null
+                            copySub.globalUID = null
+                            copySub.ids = null
+                            copySub.packages = null
+                            copySub.issueEntitlements = null
+                            copySub.documents = null
+                            copySub.orgRelations = null
+                            copySub.prsLinks = null
+                            copySub.derivedSubscriptions = null
+                            copySub.pendingChanges = null
+                            copySub.propertySet = null
+                            copySub.costItems = null
+                            copySub.ieGroups = null
 
                             use(TimeCategory) {
                                 copySub.startDate = subscription.startDate + 1.year
@@ -94,6 +93,7 @@ class RenewSubscriptionService extends AbstractLockableService {
                                     //newOrgRole.sharedFrom = null
                                     //newOrgRole.isShared = false
                                     newOrgRole.sub = copySub
+                                    newOrgRole.id = null
 
                                     if (!newOrgRole.save()) {
                                         log.error("Problem saving OrgRole ${newOrgRole.errors}")
@@ -110,20 +110,20 @@ class RenewSubscriptionService extends AbstractLockableService {
                                 subscription.packages.each { SubscriptionPackage subscriptionPackage ->
                                     def pkgOapls = subscriptionPackage.oapls
                                     def pkgPcc = subscriptionPackage.pendingChangeConfig
-                                    subscriptionPackage.properties.oapls = null
-                                    subscriptionPackage.properties.pendingChangeConfig = null
                                     SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                                     InvokerHelper.setProperties(newSubscriptionPackage, subscriptionPackage.properties)
                                     newSubscriptionPackage.subscription = copySub
+                                    newSubscriptionPackage.oapls = null
+                                    newSubscriptionPackage.pendingChangeConfig = null
 
                                     if (newSubscriptionPackage.save()) {
                                         pkgOapls.each { OrgAccessPointLink oapl ->
 
                                             def oaplProperties = oapl.properties
-                                            oaplProperties.globalUID = null
                                             OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
                                             InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
                                             newOrgAccessPointLink.subPkg = newSubscriptionPackage
+                                            newOrgAccessPointLink.globalUID = null
 
                                             if (!newOrgAccessPointLink.save()) {
                                                 log.error("Problem saving OrgAccessPointLink ${newOrgAccessPointLink.errors}")
@@ -154,13 +154,13 @@ class RenewSubscriptionService extends AbstractLockableService {
                                 subscription.issueEntitlements.each { IssueEntitlement ie ->
                                     if (ie.status != RDStore.TIPP_STATUS_DELETED) {
                                         def ieProperties = ie.properties
-                                        ieProperties.globalUID = null
 
                                         IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                                         InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
                                         newIssueEntitlement.coverages = null
                                         newIssueEntitlement.ieGroups = null
                                         newIssueEntitlement.priceItems = null
+                                        newIssueEntitlement.globalUID = null
                                         newIssueEntitlement.subscription = copySub
 
                                         if (newIssueEntitlement.save()) {
@@ -178,10 +178,11 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                             ie.priceItems.each { PriceItem priceItem ->
                                                 def priceItemProperties = priceItem.properties
-                                                priceItemProperties.globalUID = null
+
                                                 PriceItem newPriceItem = new PriceItem()
                                                 InvokerHelper.setProperties(newPriceItem, priceItemProperties)
                                                 newPriceItem.issueEntitlement = newIssueEntitlement
+                                                newPriceItem.globalUID = null
 
                                                 if (!newPriceItem.save()) {
                                                     log.error("Problem saving PriceItem ${newPriceItem.errors}")
@@ -198,13 +199,13 @@ class RenewSubscriptionService extends AbstractLockableService {
                                 //IEGroups
                                 subscription.ieGroups.each { IssueEntitlementGroup ieGroup ->
 
-
                                     def issueEntitlementGroupProperties = ieGroup.properties
-                                    issueEntitlementGroupProperties.items = null
+
                                     IssueEntitlementGroup newIssueEntitlementGroup = new IssueEntitlementGroup()
                                     InvokerHelper.setProperties(newIssueEntitlementGroup, issueEntitlementGroupProperties)
                                     newIssueEntitlementGroup.sub = copySub
-                                    newIssueEntitlementGroup.save()
+                                    newIssueEntitlementGroup.items = null
+
 
                                     if (newIssueEntitlementGroup.save()) {
 
@@ -294,10 +295,11 @@ class RenewSubscriptionService extends AbstractLockableService {
                                 //CostItems
                                 subscription.costItems.each { CostItem costItem ->
                                     def costItemProperties = costItem.properties
-                                    costItemProperties.globalUID = null
+
                                     CostItem newCostItem = new CostItem()
                                     InvokerHelper.setProperties(newCostItem, costItemProperties)
                                     newCostItem.sub = copySub
+                                    newCostItem.globalUID = null
 
                                     if (!newCostItem.save()) {
                                         log.error("Problem saving CostItem ${newCostItem.errors}")
