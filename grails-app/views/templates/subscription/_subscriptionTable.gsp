@@ -243,11 +243,11 @@
                                     <g:set var="surveysConsortiaSub" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s ,true)}" />
                                     <g:if test="${surveysConsortiaSub}">
                                         <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
-                                                class="ui icon button">
+                                                class="ui icon button la-modern-button">
                                             <g:if test="${surveysConsortiaSub.surveyInfo?.isCompletedforOwner()}">
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                       data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
-                                                    <i class="ui icon pie chart green"></i>
+                                                    <i class="ui icon pie chart blue"></i>
                                                 </span>
                                             </g:if>
                                             <g:else>
