@@ -113,7 +113,7 @@
             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                 <a class="${us_dashboard_tab.getValue().value=='Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                     <i class="tasks icon large"></i>
-                    ${currentWorkflows.size()}
+                    ${currentWorkflowsCount}
                     ${message(code:'workflow.plural')}
                 </a>
             </g:if>
@@ -270,6 +270,9 @@
         <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
             <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active':''}" data-tab="workflows">
                 <div>
+                    <g:if test="${currentWorkflows.size() != currentWorkflowsCount}">
+                        <semui:msg class="info" text="${message(code:'workflow.dashboard.msg.more', args:[currentWorkflows.size(), currentWorkflowsCount, g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[max:200])])}" />
+                    </g:if>
                     <table class="ui celled table la-table">
                         <thead>
                             <tr>
