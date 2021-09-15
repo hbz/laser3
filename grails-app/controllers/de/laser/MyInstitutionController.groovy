@@ -963,8 +963,19 @@ join sub.orgRelations or_sub where
 
         params.tab = params.tab ?: 'generalProperties'
 
-        result << managementService.subscriptionsManagement(this, params)
-
+        if(params.tab == 'documents' && params.upload_file) {
+            def input_file = request.getFile("upload_file")
+            if (input_file.size == 0) {
+                flash.error = message(code: 'template.emptyDocument.file')
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+            params.original_filename = input_file.originalFilename
+            params.mimeType = input_file.contentType
+            result << managementService.subscriptionsManagement(this, params, input_file)
+        }else{
+            result << managementService.subscriptionsManagement(this, params)
+        }
 
         result
 

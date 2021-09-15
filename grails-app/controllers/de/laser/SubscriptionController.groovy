@@ -360,7 +360,19 @@ class SubscriptionController {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def membersSubscriptionsManagement() {
-        Map<String, Object> ctrlResult = subscriptionControllerService.membersSubscriptionsManagement(this, params)
+        def input_file
+        if(params.tab == 'documents' && params.upload_file) {
+            input_file = request.getFile("upload_file")
+            if (input_file.size == 0) {
+                flash.error = message(code: 'template.emptyDocument.file')
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+            params.original_filename = input_file.originalFilename
+            params.mimeType = input_file.contentType
+        }
+
+        Map<String, Object> ctrlResult = subscriptionControllerService.membersSubscriptionsManagement(this, params, input_file)
 
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {

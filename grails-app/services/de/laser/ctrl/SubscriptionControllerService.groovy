@@ -873,7 +873,7 @@ class SubscriptionControllerService {
         }
     }
 
-    Map<String,Object> membersSubscriptionsManagement(SubscriptionController controller, GrailsParameterMap params) {
+    Map<String,Object> membersSubscriptionsManagement(SubscriptionController controller, GrailsParameterMap params, input_file) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
@@ -881,7 +881,8 @@ class SubscriptionControllerService {
         else {
             params.tab = params.tab ?: 'generalProperties'
 
-            result << managementService.subscriptionsManagement(controller, params)
+            result << managementService.subscriptionsManagement(this, params, input_file)
+
             [result:result,status:STATUS_OK]
         }
     }
