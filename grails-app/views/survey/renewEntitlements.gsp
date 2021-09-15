@@ -159,7 +159,7 @@
                             <!-- START TEMPLATE -->
                             <g:render template="/templates/title"
                                       model="${[ie: ie, tipp: tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
-                                                showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
+                                                showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                             <!-- END TEMPLATE -->
                         </td>
                         <td class="coverageStatements la-tableCard">

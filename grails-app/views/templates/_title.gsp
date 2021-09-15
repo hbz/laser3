@@ -97,7 +97,7 @@
                data-content="${message(code: 'issueEntitlement.hasPerpetualAccess.label')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'issueEntitlement.hasPerpetualAccess.label') + ':'} <semui:xEditableBoolean owner="${ie}" field="hasPerpetualAccess"/>
+                ${showCompact ? '' : message(code: 'issueEntitlement.hasPerpetualAccess.label') + ':'} <semui:xEditableBoolean owner="${ie}" field="hasPerpetualAccess" overwriteEditable="${overwriteEditable}"/>
             </div>
         </div>
     </g:if>
