@@ -465,7 +465,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     boolean isAllowToAutomaticRenewAnnually() {
-        return (this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 366))
+        return (this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 364) && (this.endDate.minus(this.startDate) < 367))
     }
 
     boolean isEditableBy(user) {
@@ -790,7 +790,7 @@ select distinct oap from OrgAccessPoint oap
     Collection<OrgAccessPoint> getOrgAccessPointsOfSubscriber() {
         Collection<OrgAccessPoint> result = []
 
-        result = this.getSubscriber().accessPoints
+        result = this.getSubscriber()?.accessPoints
 
         result
     }
