@@ -1,4 +1,4 @@
-<%@ page import="de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.SurveyOrg; de.laser.SurveyConfigProperties; de.laser.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.SurveyOrg; de.laser.SurveyConfigProperties; de.laser.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -926,7 +926,7 @@
                     <td>
                         <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
                                 SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
-                                && (RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id)}">
+                                && ((RDStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyProperty.surveyProperty.id) || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}">
                             <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [surveyProperty.surveyProperty.getI10n('name')])}"
                                     data-confirm-term-how="delete"

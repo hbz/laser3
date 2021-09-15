@@ -106,9 +106,12 @@ class MyInstitutionControllerService {
                     [org: result.institution,
                      status: RDStore.SURVEY_SURVEY_STARTED])*/
 
-            result.currentWorkflows = WfWorkflow.executeQuery(
+            List<WfWorkflow> workflows = WfWorkflow.executeQuery(
                     'select wf from WfWorkflow wf where wf.owner = :ctxOrg and wf.status = :status order by wf.id desc',
                     [ctxOrg: result.institution, status: RDStore.WF_WORKFLOW_STATUS_OPEN] )
+
+            result.currentWorkflowsCount = workflows.size()
+            result.currentWorkflows = workflows.take(contextService.getUser().getDefaultPageSizeAsInteger())
         }
         /*
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
