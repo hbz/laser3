@@ -78,17 +78,24 @@ class SubscriptionConsCfg extends BaseConfig {
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
                                      ],
-//                                     'subscription-x-subscription-provider' : [
-//                                            label : 'Anbieter → Teilnehmerlizenz',
-//                                            chartTemplate : 'generic',
-//                                            chartLabels : []
-//                                    ],
                                      'subscription-x-provider' : [
                                              label               : 'Anbieter → Lizenz',
                                              detailsTemplate     : 'subscription',
                                              chartTemplate       : 'generic',
                                              chartLabels         : []
                                      ],
+                                     'subscription-x-memberProvider' : [
+                                             label              : 'Anbieter → Lizenz → Teilnehmerlizenz',
+                                             detailsTemplate    : 'subscription',
+                                             chartTemplate      : 'generic',
+                                             chartLabels        : []
+                                     ],
+//                                     'subscription-x-memberCost-TODO' : [
+//                                             label              : 'Anbieter → Lizenz → Teilnehmerkosten',
+//                                             detailsTemplate    : 'TODO',
+//                                             chartTemplate      : 'generic',
+//                                             chartLabels        : []
+//                                     ],
                                      'subscription-x-platform' : [
                                              label               : 'Plattform → Anbieter → Lizenz',
                                              detailsTemplate     : 'subscription',

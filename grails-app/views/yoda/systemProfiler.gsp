@@ -4,6 +4,7 @@
 <head>
     <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'menu.yoda.systemProfiler')}</title>
+    <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </head>
 <body>
 
@@ -29,6 +30,10 @@
     <div class="ui secondary stackable pointing tabular menu">
         <a data-tab="first" class="item active">Global</a>
         <a data-tab="second" class="item">Kontextbezogen</a>
+        %{--
+        <a data-tab="third" class="item">Top 20 (Aufrufe)</a>
+        <a data-tab="fourth" class="item">Top 20 (AVG)</a>
+        --}%
     </div>
 
     <div data-tab="first" class="ui bottom attached tab segment active" style="border-top: 1px solid #d4d4d5;">
@@ -117,6 +122,22 @@
             </tbody>
         </table>
     </div>
+
+%{--
+    <div data-tab="third" class="ui bottom attached tab segment" style="border-top: 1px solid #d4d4d5;">
+        <div id="ct-chart-top20a" class="echarts-wrapper"></div>
+    </div>
+    <div data-tab="fourth" class="ui bottom attached tab segment" style="border-top: 1px solid #d4d4d5;">
+        <div id="ct-chart-top20b" class="echarts-wrapper"></div>
+    </div>
+
+    <style>
+    .echarts-wrapper {
+        width: 100%;
+        height: 250px;
+    }
+    </style>
+--}%
 
 <laser:script file="${this.getGroovyPageFileName()}">
      $('.secondary.menu > a').tab();
