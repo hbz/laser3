@@ -104,7 +104,7 @@
                 },
                 itemStyle: {
                     color: function(params) {
-                        if (JSPC.helper.contains(['${BaseQuery.NO_DATA_LABEL}', '${BaseQuery.NO_PROVIDER_LABEL}', '${BaseQuery.NO_STARTDATE_LABEL}'], params.name)) {
+                        if (JSPC.helper.contains(['${BaseQuery.NO_DATA_LABEL}', '${BaseQuery.NO_MATCH_LABEL}', '${BaseQuery.NO_PROVIDER_LABEL}', '${BaseQuery.NO_STARTDATE_LABEL}'], params.name)) {
                             return JSPC.app.reporting.helper.series.color.redInactive
                         }
                         else if (JSPC.helper.contains(['${BaseQuery.NO_ENDDATE_LABEL}'], params.name)) {
