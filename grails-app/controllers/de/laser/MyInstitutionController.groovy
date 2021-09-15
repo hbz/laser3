@@ -956,8 +956,10 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+    })
     def subscriptionsManagement() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
