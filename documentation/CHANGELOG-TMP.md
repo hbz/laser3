@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3768    15.09.2021  dev     2.2         Andreas Bug         Merkmal Teilnahme konnte nicht entfernt werden
+
 3754    15.09.2021  dev     2.2         David   Feature     Dashboard-Workflow-Tab: Paginierung einführen
 
 3783    14.09.2021  dev     2.2         Andreas Feature     Status der Aufgaben grafisch dargestellt
