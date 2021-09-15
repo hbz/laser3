@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3771    15.09.2021  dev     2.2         David   Feature     Workflow: Sicherheitsabfrage beim Löschen eines Workflows fehlt
+
 3768    15.09.2021  dev     2.2         Andreas Bug         Merkmal Teilnahme konnte nicht entfernt werden
 
 3754    15.09.2021  dev     2.2         David   Feature     Dashboard-Workflow-Tab: Paginierung einführen
