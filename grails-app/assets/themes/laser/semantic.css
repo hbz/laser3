@@ -5664,11 +5664,6 @@ i.icon.la-list-icon:before {
   color: #839c00 !important;
 }
 
-.la-contextBar .ui.button:hover,
-.la-contextBar .ui.button:focus {
-  background-color: transparent !important;
-}
-
 /* Vertical  Style special for details show sides */
 
 .ui.la-vertical.buttons {

@@ -604,7 +604,7 @@
                                     </button>
                                 </g:if>
                                 <g:else>
-                                    <button class="ui icon toggle button la-toggle-controls la-popup-tooltip la-delay"  data-content="${message(code:'statusbar.hideButtons.tooltip')}"  data-position="bottom right">
+                                    <button class="ui icon toggle blue button la-modern-button la-toggle-controls la-popup-tooltip la-delay"  data-content="${message(code:'statusbar.hideButtons.tooltip')}"  data-position="bottom right">
                                         <i class="pencil alternate slash icon"></i>
                                     </button>
                                 </g:else>
@@ -672,7 +672,7 @@
                         </g:if>
                         <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='dev' && actionName=='frontend')}">
                             <div class="item">
-                                <button class="ui button la-help-panel-button"><i class="info circle large icon"></i></button>
+                                <button class="ui button blue la-modern-button la-help-panel-button"><i class="info circle large icon"></i></button>
                             </div>
                         </g:if>
                 </div>
