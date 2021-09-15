@@ -13668,6 +13668,18 @@ i.icon.la-greater-than-equal {
   font-family: 'icomoon';
 }
 
+i.icon.la-open {
+  font-family: 'icomoon';
+}
+
+i.icon.la-pause {
+  font-family: 'icomoon';
+}
+
+i.icon.la-consortia {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
@@ -13756,6 +13768,20 @@ i.icon.la-less-than-equal:before {
 
 i.icon.la-greater-than-equal:before {
   content: "\e914";
+}
+
+/**/
+
+i.icon.la-open:before {
+  content: "\e915";
+}
+
+i.icon.la-pause:before {
+  content: "\e916";
+}
+
+i.icon.la-consortia:before {
+  content: "\e917";
 }
 
 /*******************************
@@ -24316,6 +24342,41 @@ legend {
 }
 
 .la-timeLineGrid .la-timeLineIcon-contact {
+  left: -7px;
+  background-color: #fffaf5;
+}
+
+.la-timeLineGrid {
+  border-left: 2px dashed #dcdcdc;
+  margin-left: 25px;
+}
+
+.la-timeLineGrid h2.ui.header {
+  font-size: 1.1rem;
+  padding-top: 3px;
+}
+
+.la-timeLineGrid .one.wide.column {
+  position: relative;
+}
+
+.la-timeLineGrid .la-timeLineIcon {
+  position: absolute;
+  top: 0;
+  z-index: 9;
+}
+
+.la-timeLineGrid .la-timeLineIcon-announcement {
+  left: 1px;
+  background-color: #FFFFFF;
+}
+
+.la-timeLineGrid .la-timeLineIcon-contact {
+  left: -7px;
+  background-color: #fffaf5;
+}
+
+.la-timeLineGrid .la-timeLineIcon-link {
   left: -7px;
   background-color: #fffaf5;
 }
