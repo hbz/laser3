@@ -17195,7 +17195,7 @@ ol.ui.horizontal.list li:before,
 --------------------*/
 
 .ui.divided.list > .item {
-  border-top: 1px solid #d3dae3;
+  border-top: 1px solid rgba(34, 36, 38, 0.1);
 }
 
 .ui.divided.list .list > .item {
@@ -17274,7 +17274,7 @@ ol.ui.horizontal.list li:before,
 
 .ui.divided.horizontal.list > .item {
   border-top: none;
-  border-left: 1px solid #d3dae3;
+  border-left: 1px solid rgba(34, 36, 38, 0.1);
   margin: 0em;
   line-height: 0.6;
 }
