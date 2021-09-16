@@ -515,7 +515,7 @@ class SemanticUiTagLib {
 
         out << '<div class="actions">'
         out << '<button class="ui deny button">' + msgCancel + '</button>'
-        out << '<button id="js-confirmation-button" class="ui positive la-modern-button right labeled icon button">' + msgDelete
+        out << '<button id="js-confirmation-button" class="ui negative right labeled icon button">' + msgDelete
         out << '    <i aria-hidden="true" class="trash alternate outline icon"></i>'
         out << '</button>'
         out << '</div>'

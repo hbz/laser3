@@ -1,4 +1,5 @@
-<%@ page import="de.laser.Subscription;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
+<laser:serviceInjection/>
 <g:if test="${filteredSubscriptions}">
 
     <g:if test="${controllerName == "subscription"}">
@@ -12,6 +13,52 @@
     </g:if>
 
     <div class="ui segment">
+    <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'documents']" method="post"
+            class="ui form" id="newDocument" enctype="multipart/form-data">
+        <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
+
+        <h4 class="ui header">${message(code: 'subscriptionsManagement.document.info.newDocument')}</h4>
+
+        <div class="field">
+            <label for="upload_title">${message(code: 'template.addDocument.name')}:</label>
+
+            <input type="text" id="upload_title" name="upload_title" value=""/>
+        </div>
+
+        <div class="field">
+            <label for="upload_file">${message(code: 'template.addDocument.file')}:</label>
+
+            <div class="ui fluid action input">
+                <input type="text" readonly="readonly"
+                       placeholder="${message(code: 'template.addDocument.selectFile')}">
+                <input type="file" id="upload_file" name="upload_file" style="display: none;">
+
+                <div class="ui icon button" style="padding-left:30px; padding-right:30px">
+                    <i class="attach icon"></i>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="doctype">${message(code: 'template.addDocument.type')}:</label>
+
+                <%
+                    List notAvailable = [RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT, RDStore.DOC_TYPE_ONIXPL]
+                    List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE) - notAvailable
+                %>
+                <g:select from="${documentTypes}"
+                          class="ui dropdown fluid"
+                          optionKey="value"
+                          optionValue="${{ it.getI10n('value') }}"
+                          name="doctype"
+                          id="doctype"
+                          value=""/>
+            </div>
+        </div>
+
+        <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
+                value="newDoc">${message(code: 'default.button.create.label')}</button>
+
         <h3 class="ui header">
             <g:if test="${controllerName == "subscription"}">
                 ${message(code: 'subscriptionsManagement.subscriber')} <semui:totalNumber
@@ -24,6 +71,10 @@
         <table class="ui celled la-table table">
             <thead>
             <tr>
+                <th>
+                    <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"
+                                disabled="${!editable}"/>
+                </th>
                 <th>${message(code: 'sidewide.number')}</th>
                 <g:if test="${controllerName == "subscription"}">
                     <th>${message(code: 'default.sortname.label')}</th>
@@ -41,6 +92,10 @@
                 <g:set var="sub" value="${zeile instanceof Subscription ? zeile : zeile.sub}"/>
                 <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriber() : zeile.orgs}"/>
                 <tr>
+                    <td>
+                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
+                                    checked="false" disabled="${!editable}"/>
+                    </td>
                     <td>${i + 1}</td>
                     <g:if test="${controllerName == "subscription"}">
                         <td>
@@ -85,6 +140,7 @@
             </g:each>
             </tbody>
         </table>
+    </g:form>
     </div>
 </g:if>
 <g:else>
@@ -107,6 +163,15 @@
         } else {
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
         }
+    });
+
+     $('.action .icon.button').click(function () {
+        $(this).parent('.action').find('input:file').click();
+    });
+
+    $('input:file', '.ui.action.input').on('change', function (e) {
+        var name = e.target.files[0].name;
+        $('input:text', $(e.target).parent()).val(name);
     });
 
 </laser:script>

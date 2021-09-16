@@ -9,7 +9,7 @@
 
 <body>
 <semui:breadcrumbs>
-    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
@@ -159,7 +159,7 @@
                             <!-- START TEMPLATE -->
                             <g:render template="/templates/title"
                                       model="${[ie: ie, tipp: tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
-                                                showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
+                                                showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                             <!-- END TEMPLATE -->
                         </td>
                         <td class="coverageStatements la-tableCard">

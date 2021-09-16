@@ -873,7 +873,7 @@ class SubscriptionControllerService {
         }
     }
 
-    Map<String,Object> membersSubscriptionsManagement(SubscriptionController controller, GrailsParameterMap params) {
+    Map<String,Object> membersSubscriptionsManagement(SubscriptionController controller, GrailsParameterMap params, input_file) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
@@ -881,7 +881,8 @@ class SubscriptionControllerService {
         else {
             params.tab = params.tab ?: 'generalProperties'
 
-            result << managementService.subscriptionsManagement(controller, params)
+            result << managementService.subscriptionsManagement(this, params, input_file)
+
             [result:result,status:STATUS_OK]
         }
     }
@@ -984,7 +985,7 @@ class SubscriptionControllerService {
                     result.targetIEs.addAll(IssueEntitlement.findAllByIdInList(targetIEs.take(32768)))
                 }*/
 
-                result.editable = (params.tab == 'previousIEs') ? false : surveyService.isEditableSurvey(result.institution, result.surveyInfo)
+                result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
                 if (result.editable) {
                     SessionCacheWrapper sessionCache = contextService.getSessionCache()
@@ -2123,17 +2124,21 @@ class SubscriptionControllerService {
                 result.checked.each {
                     IssueEntitlement ie = IssueEntitlement.findById(it.key)
                     TitleInstancePackagePlatform tipp = ie.tipp
-                    try {
-                        if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
-                            log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
-                            ++countIEsToAdd
-                            removeFromCache << it.key
+
+                    if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+
+                        try {
+                            if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
+                                log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
+                                ++countIEsToAdd
+                                removeFromCache << it.key
+                            }
                         }
-                    }
-                    catch (EntitlementCreationException e) {
-                        log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
-                        result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps',null,locale)
-                        [result:result,status:STATUS_ERROR]
+                        catch (EntitlementCreationException e) {
+                            log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
+                            result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, locale)
+                            [result: result, status: STATUS_ERROR]
+                        }
                     }
                 }
                 if(countIEsToAdd > 0){
