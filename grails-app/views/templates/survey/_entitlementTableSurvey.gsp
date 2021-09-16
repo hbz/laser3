@@ -39,7 +39,7 @@
             <tr data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie.id}" data-index="${counter}" class="${checkedCache ? (checkedCache[ie.id.toString()] ? 'positive' : '') : ''}">
                 <td>
 
-                    <g:if test="${params.tab == 'previousIEs' && (editable && !ieInNewSub && allowedToSelect)}">
+                    <g:if test="${(params.tab == 'previousIEs' || params.tab == 'allIEs') && (editable && !ieInNewSub && allowedToSelect)}">
                         <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                     </g:if>
                     <g:elseif test="${editable && allowedToSelect && params.tab == 'selectedIEs'}">
@@ -127,14 +127,14 @@
                     </g:if>
 
 
-                    <g:elseif test="${editable && allowedToSelect}">
+                    <g:if test="${editable && !ieInNewSub && allowedToSelect && params.tab == 'allIEs'}">
                         <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
                                 action="processAddIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: ie.id, surveyConfigID: surveyConfig?.id]}"
                                 data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                             <i class="plus icon"></i>
                         </g:link>
-                    </g:elseif>
+                    </g:if>
                 </td>
             </tr>
 
