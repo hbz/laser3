@@ -114,7 +114,9 @@ class SemanticUiInplaceTagLib {
                         oldValue = nf.format(attrs.owner[attrs.field])
                     }
                     else {
-                        oldValue = attrs.owner[attrs.field].replaceAll("(.{50})",'$1&shy;') //.encodeAsHTML() check if it has side effects!
+                        if(attrs.owner[attrs.field] instanceof String)
+                            oldValue = attrs.owner[attrs.field].replaceAll("(.{50})",'$1&shy;')
+                        else oldValue = attrs.owner[attrs.field].encodeAsHTML()
                     }
                 }
                 out << " data-oldvalue=\"${oldValue}\">"
