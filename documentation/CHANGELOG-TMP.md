@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3805    16.09.2021  dev     2.2         Andreas Feature     Rückverweis bei Teilnehmer-Vorgänger/Nachfolger verknüpfen umgestellt
+
 3804    16.09.2021  dev     2.2         Andreas Bug         Statistik war für Lizenz ohne Start- und Enddatum nicht abrufbar und weitere Bugfixes 
 
 3770    16.09.2021  dev     2.2         David   Feature     Workflow: Anbieter Angebot archiviert - unklare Handhabe

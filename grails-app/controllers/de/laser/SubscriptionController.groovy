@@ -350,7 +350,7 @@ class SubscriptionController {
             else redirect(url: request.getHeader('referer'))
         }
         else {
-            redirect(action: 'show', id: ctrlResult.result.redirect)
+            redirect(action: 'members', id: params.id)
         }
     }
 
