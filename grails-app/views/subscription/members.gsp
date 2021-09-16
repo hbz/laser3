@@ -311,7 +311,7 @@
                             </g:if>
                             <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci.id from CostItem ci where ci.sub = :sub and ci.costItemStatus != :deleted and ci.owner = :context',[sub:sub,deleted:RDStore.COST_ITEM_DELETED,context:institution])}"/>
                             <g:if test="${!hasCostItems}">
-                                <g:link class="ui icon negative button" controller="subscription" action="delete" params="${[id:sub.id]}"
+                                <g:link class="ui icon negative button la-modern-button" controller="subscription" action="delete" params="${[id:sub.id]}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="trash alternate outline icon"></i>
@@ -319,7 +319,7 @@
                             </g:if>
                             <g:else>
                                 <span class="la-popup-tooltip" data-content="${message(code:'subscription.delete.existingCostItems')}">
-                                    <button class="ui disabled icon negative button"
+                                    <button class="ui disabled icon negative button la-modern-button"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="trash alternate outline icon"></i>
