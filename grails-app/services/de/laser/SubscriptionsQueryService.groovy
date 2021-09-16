@@ -102,39 +102,37 @@ class SubscriptionsQueryService {
             // globalUID based
             if (params.identifier.startsWith('org:')) {
 
-                base_qry += "AND ( exists ( select idMatch from OrgRole as idMatch where idMatch.sub = s and idMatch.org.globalUID = :identifier ) ) "
+                base_qry += "AND ( exists ( select idMatch.id from OrgRole as idMatch where idMatch.sub = s and idMatch.org.globalUID = :identifier ) ) "
             }
             else if (params.identifier.startsWith('license:')) {
 
-                base_qry += "AND ( exists ( select idMatch from Links li join li.sourceLicense idMatch where li.destinationSubscription = s and li.linkType = :linkType and idMatch.globalUID = :identifier ) ) "
+                base_qry += "AND ( exists ( select idMatch.id from Links li join li.sourceLicense idMatch where li.destinationSubscription = s and li.linkType = :linkType and idMatch.globalUID = :identifier ) ) "
                 qry_params.put('linkType',RDStore.LINKTYPE_LICENSE)
             }
             else if (params.identifier.startsWith('subscription:')) {
 
-                base_qry += "AND ( exists ( select idMatch from Subscription as idMatch where idMatch = s and idMatch.globalUID = :identifier ) ) "
+                base_qry += "AND ( exists ( select idMatch.id from Subscription as idMatch where idMatch = s and idMatch.globalUID = :identifier ) ) "
             }
             else if (params.identifier.startsWith('package:')) {
 
-                base_qry += "AND ( exists ( select idMatch from SubscriptionPackage as idMatch where idMatch.subscription = s and idMatch.pkg.globalUID = :identifier ) ) "
+                base_qry += "AND ( exists ( select idMatch.id from SubscriptionPackage as idMatch where idMatch.subscription = s and idMatch.pkg.globalUID = :identifier ) ) "
             }
             // identifier based
             else {
-                String tmpBaseQuery1 = "( exists ( select ident from Identifier ident"
-                String tmpBaseQuery2 = "and ident.value = :identifier ) )"
 
-                base_qry += "AND ("
-                base_qry += tmpBaseQuery1 + " where ident.sub = s.id " + tmpBaseQuery2 + " or "
+                base_qry += "AND ( exists ( select ident.id from Identifier ident"
 
-                base_qry += tmpBaseQuery1 + ", Links li where ident.lic = li.sourceLicense.id and li.destinationSubscription = s.id and li.linkType = :linkType " + tmpBaseQuery2 + " or "
+                base_qry += " where ( ident.sub = s.id or "
 
-                base_qry += tmpBaseQuery1 + ", SubscriptionPackage sp where ident.pkg = sp.pkg.id and sp.subscription = s " + tmpBaseQuery2 + " or "
+                base_qry += "ident.lic in (select li.sourceLicense from Links li where li.destinationSubscription = s and li.linkType = :linkType) or "
 
-                base_qry += tmpBaseQuery1 + ", TitleInstancePackagePlatform tipp, IssueEntitlement ie " +
-                        " where ident.tipp = tipp.id and ie.tipp = tipp.id and ie.subscription = s.id " + tmpBaseQuery2  + " or "
+                base_qry += "ident.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = s) or "
 
-                base_qry += tmpBaseQuery1 + ", OrgRole ro where ident.org = ro.org and ro.sub = s " + tmpBaseQuery2
+                base_qry += "ident.tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription = s) or "
 
-                base_qry += ")"
+                base_qry += "ident.org in (select ro.org from OrgRole ro where ro.sub = s) "
+
+                base_qry += ") and ident.value = :identifier ) )"
                 qry_params.put('linkType', RDStore.LINKTYPE_LICENSE)
             }
 

@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3802    15.09.2021  dev     2.2         Andreas Bug         Tippfehler korrigiert
+
+3772    15.09.2021  dev     2.2         Andreas Feature     ROLE-Rechte-Löschung muss jetzt bestätigt werden
+
 3770    16.09.2021  dev     2.2         David   Feature     Workflow: Anbieter Angebot archiviert - unklare Handhabe
 
 3803    15.09.2021  dev     2.2         Moe     Feature     Meine Umfragen Startseite ändern
@@ -16,6 +20,10 @@
 3768    15.09.2021  dev     2.2         Andreas Bug         Merkmal Teilnahme konnte nicht entfernt werden
 
 3754    15.09.2021  dev     2.2         David   Feature     Dashboard-Workflow-Tab: Paginierung einführen
+
+3582    15.09.2021  dev     2.2         Andreas Feature     Umbruch der xEditable-Werte nach 50 Zeichen
+
+3461    15.09.2021  dev     2.2         Andreas Bug         umständliche Abfragelogik bei Identifikatorensuche entstrickt
 
 3501    14.09.2021  dev     2.2         Moe     Feature     Bulkoperation für Vollnutzer zur Massenverlängerung
 
