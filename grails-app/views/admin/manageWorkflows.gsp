@@ -492,7 +492,7 @@
                                     </g:link>
                                 </span>
                                 <g:if test="${wftp.condition}">
-                                    <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${wftp.condition.title}">
+                                    <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${wftp.condition.title} (${wftp.condition.getTypeAsRefdataValue().getI10n('value')})">
                                         <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + wftp.condition.id, tab: 'prototypes']}">
                                             <span class="ui teal circular label" data-wfcp="${wftp.condition.id}">${cpIdTable[wftp.condition.id] ?: '?'}</span>
                                         </g:link>
@@ -517,7 +517,7 @@
                                                 </g:link>
                                             </span>
                                             <g:if test="${wftp.condition}">
-                                                <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${wftp.condition.title}">
+                                                <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${wftp.condition.title} (${wftp.condition.getTypeAsRefdataValue().getI10n('value')})">
                                                     <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + wftp.condition.id, tab: 'prototypes']}">
                                                         <span class="ui teal circular label" data-wfcp="${wftp.condition.id}">${cpIdTable[wftp.condition.id] ?: '?'}</span>
                                                     </g:link>
@@ -539,7 +539,7 @@
                                                     </g:link>
                                                 </span>
                                                 <g:if test="${child.condition}">
-                                                    <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${child.condition.title}">
+                                                    <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${child.condition.title} (${child.condition.getTypeAsRefdataValue().getI10n('value')})">
                                                         <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + child.condition.id, tab: 'prototypes']}">
                                                             <span class="ui teal circular label" data-wfcp="${child.condition.id}">${cpIdTable[child.condition.id] ?: '?'}</span>
                                                         </g:link>
