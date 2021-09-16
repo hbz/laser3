@@ -965,6 +965,13 @@ join sub.orgRelations or_sub where
 
         params.tab = params.tab ?: 'generalProperties'
 
+        //Important
+        if(accessService.checkPerm('ORG_CONSORTIUM')) {
+            params.subTypes = [RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()]
+        }else{
+            params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id.toString()]
+        }
+
         if(params.tab == 'documents' && params.upload_file) {
             def input_file = request.getFile("upload_file")
             if (input_file.size == 0) {
