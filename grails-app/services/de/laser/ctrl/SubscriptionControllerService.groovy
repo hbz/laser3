@@ -881,7 +881,7 @@ class SubscriptionControllerService {
         else {
             params.tab = params.tab ?: 'generalProperties'
 
-            result << managementService.subscriptionsManagement(this, params, input_file)
+            result << managementService.subscriptionsManagement(controller, params, input_file)
 
             [result:result,status:STATUS_OK]
         }
