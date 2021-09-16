@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3770    16.09.2021  dev     2.2         David   Feature     Workflow: Anbieter Angebot archiviert - unklare Handhabe
+
 3803    15.09.2021  dev     2.2         Moe     Feature     Meine Umfragen Startseite ändern
 
 3771    15.09.2021  dev     2.2         David   Feature     Workflow: Sicherheitsabfrage beim Löschen eines Workflows fehlt

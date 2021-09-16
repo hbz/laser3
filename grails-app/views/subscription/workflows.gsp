@@ -147,7 +147,7 @@
                                     <i class="icon clipboard"></i>${wf.subscription.name}
                                 </g:link>
                                 <g:if test="${wf.comment}">
-                                    <div style="margin: 1em; padding-left: 1em; border-left: 5px solid #E0E0E0">
+                                    <div style="margin: 1em 2em; padding: 0.1em 0.5em; border-bottom: 1px dashed #BBBBBB">
                                         ${wf.comment}
                                     </div>
                                 </g:if>
@@ -160,7 +160,7 @@
                         <td class="x">
                             <g:set var="wfKey" value="subscription:${subscription.id}:${WfWorkflow.KEY}:${wf.id}" />
                             <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
-                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
+                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
                                     <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: wfKey, info: wfKey]}">
                                         <i class="icon cogs"></i>
                                     </g:link>
@@ -187,7 +187,7 @@
                                 </div>
                                 <div class="description">${task.description}
                                     <g:if test="${task.comment}">
-                                        <div style="margin: 1em; padding-left: 1em; border-left: 5px solid #E0E0E0">
+                                        <div style="margin: 1em 2em; padding: 0.1em 0.5em; border-bottom: 1px dashed #BBBBBB">
                                             ${task.comment}
                                         </div>
                                     </g:if>
@@ -208,7 +208,7 @@
                                             <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
                                                 <g:set var="cKey" value="subscription:${subscription.id}:${WfCondition.KEY}:${task.condition.id}" />
                                                 <span style="float:right">
-                                                    <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
+                                                    <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
                                                         <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: cKey, info: wfKey]}">
                                                             <i class="icon cogs"></i>
                                                         </g:link>
@@ -223,7 +223,7 @@
                             <td class="x">
                                 <g:set var="tKey" value="subscription:${subscription.id}:${WfTask.KEY}:${task.id}" />
                                 <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
-                                    <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
+                                    <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
                                         <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
                                             <i class="icon cogs"></i>
                                         </g:link>
@@ -251,7 +251,7 @@
                                         </div>
                                         <div class="description">${child.description}
                                             <g:if test="${child.comment}">
-                                                <div style="margin: 1em; padding-left: 1em; border-left: 5px solid #E0E0E0">
+                                                <div style="margin: 1em 2em; padding: 0.1em 0.5em; border-bottom: 1px dashed #BBBBBB">
                                                     ${child.comment}
                                                 </div>
                                             </g:if>
@@ -273,7 +273,7 @@
                                                     <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
                                                         <g:set var="cKey" value="subscription:${subscription.id}:${WfCondition.KEY}:${child.condition.id}" />
                                                         <span style="float:right">
-                                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
+                                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
                                                                 <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: cKey, info: wfKey]}">
                                                                     <i class="icon cogs"></i>
                                                                 </g:link>
@@ -288,7 +288,7 @@
                                     <td class="x">
                                         <g:set var="tKey" value="subscription:${subscription.id}:${WfTask.KEY}:${child.id}" />
                                         <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
-                                            <span data-position="top center" class="la-popup-tooltip la-delay" data-content="Erweiterte Bearbeitungsrechte">
+                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
                                                 <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
                                                     <i class="icon cogs"></i>
                                                 </g:link>
