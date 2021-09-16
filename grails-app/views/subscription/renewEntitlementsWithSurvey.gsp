@@ -252,19 +252,22 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
         <g:message code="renewEntitlementsWithSurvey.currentEntitlements"/>
         <div class="ui circular label">${countSelectedIEs}</div></g:link>
 
-    <g:link class="item ${params.tab == 'previousIEsStats' ? 'active' : ''}"
-            controller="subscription" action="renewEntitlementsWithSurvey"
-            id="${newSub.id}"
-            params="[surveyConfigID: surveyConfig.id, tab: 'previousIEsStats']">
-        <g:message code="renewEntitlementsWithSurvey.previousIEsStats"/>
-    </g:link>
 
-    <g:link class="item ${params.tab == 'allIEsStats' ? 'active' : ''}"
-            controller="subscription" action="renewEntitlementsWithSurvey"
-            id="${newSub.id}"
-            params="[surveyConfigID: surveyConfig.id, tab: 'allIEsStats']">
-        <g:message code="renewEntitlementsWithSurvey.allIEsStatsStats"/>
-    </g:link>
+    <g:if test="${surveyService.showStatisticByParticipant(subscription, subscriber)}">
+        <g:link class="item ${params.tab == 'previousIEsStats' ? 'active' : ''}"
+                controller="subscription" action="renewEntitlementsWithSurvey"
+                id="${newSub.id}"
+                params="[surveyConfigID: surveyConfig.id, tab: 'previousIEsStats']">
+            <g:message code="renewEntitlementsWithSurvey.previousIEsStats"/>
+        </g:link>
+
+        <g:link class="item ${params.tab == 'allIEsStats' ? 'active' : ''}"
+                controller="subscription" action="renewEntitlementsWithSurvey"
+                id="${newSub.id}"
+                params="[surveyConfigID: surveyConfig.id, tab: 'allIEsStats']">
+            <g:message code="renewEntitlementsWithSurvey.allIEsStatsStats"/>
+        </g:link>
+    </g:if>
 
 </div>
 
@@ -378,7 +381,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
         <div class="two fields">
 
             <div class="eight wide field" style="text-align: left;">
-                <g:if test="${editable && params.tab == 'allIEs'}">
+                <g:if test="${editable}">
                     <button type="submit" name="process" id="processButton" value="preliminary" class="ui green button">
                         ${checkedCount} <g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
                 </g:if>

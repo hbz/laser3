@@ -32,7 +32,7 @@
                     <!-- START TEMPLATE -->
                     <g:render template="/templates/title"
                               model="${[ie: null, tipp: tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
-                                        showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false]}"/>
+                                        showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                     <!-- END TEMPLATE -->
                 </td>
                 <g:each in="${objects}" var="object">

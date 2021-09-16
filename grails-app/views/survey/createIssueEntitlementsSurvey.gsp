@@ -14,7 +14,7 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
-    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <semui:crumb message="createIssueEntitlementsSurvey.label" class="active"/>
 </semui:breadcrumbs>
 

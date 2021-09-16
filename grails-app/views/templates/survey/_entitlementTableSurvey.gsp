@@ -25,12 +25,16 @@
             <g:set var="targetIE"
                    value="${surveyService.titleContainedBySubscription(newSub, tipp)}"/>
             <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
+                <g:set var="ieExistsInSubs"
+                       value="${surveyService.hasParticipantPerpetualAccessToTitle(subscriber, tipp)}"/>
                 <g:set var="allowedToSelect"
-                       value="${!(surveyService.hasParticipantPerpetualAccessToTitle(subscriber, tipp)) && (!targetIE || (targetIE && targetIE.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION))}"/>
+                       value="${!(ieExistsInSubs) && (!targetIE || (targetIE && targetIE.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION))}"/>
             </g:if>
             <g:else>
                 <g:set var="allowedToSelect"
                        value="${!targetIE || (targetIE && targetIE.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)}"/>
+                <g:set var="ieExistsInSubs"
+                       value="${targetIE != null}"/>
             </g:else>
             <tr data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie.id}" data-index="${counter}" class="${checkedCache ? (checkedCache[ie.id.toString()] ? 'positive' : '') : ''}">
                 <td>
@@ -45,6 +49,12 @@
                 <td>${counter++}</td>
                 <td class="titleCell">
 
+                    <g:if test="${ieExistsInSubs}">
+                        <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInSub')}" data-position="left center" data-variation="tiny">
+                            <i class="icon redo alternate blue"></i>
+                        </div>
+                    </g:if>
+
                     <g:if test="${targetIE}">
                         <semui:ieAcceptStatusIcon status="${targetIE?.acceptStatus}"/>
                     </g:if>
@@ -57,7 +67,7 @@
                     <!-- START TEMPLATE -->
                         <g:render template="/templates/title"
                                   model="${[ie: ie, tipp: ie.tipp, apisources: ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true),
-                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false]}"/>
+                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
                     <!-- END TEMPLATE -->
                 </td>
                 <td>

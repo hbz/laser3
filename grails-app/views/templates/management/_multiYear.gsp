@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDConstants; de.laser.Subscription;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
@@ -47,6 +47,45 @@
     </g:if>
 
     <div class="ui segment">
+    <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'multiYear']" method="post"
+            class="ui form propertiesSubscription">
+        <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
+
+        <h4 class="ui header">${message(code: 'subscriptionsManagement.info.subscriptionProperty')}</h4>
+
+        <div class="two fields">
+            <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from"/>
+
+            <semui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to"/>
+        </div>
+
+        <div class="two fields">
+            <div class="field">
+                <label>${message(code: 'default.status.label')}</label>
+                <%
+                    def fakeList = []
+                    fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
+                    fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
+                %>
+                <laser:select name="process_status" from="${fakeList}" optionKey="id" optionValue="value"
+                              noSelection="${['': '']}"
+                              value="${['': '']}"/>
+            </div>
+            <div class="field">
+                <label>${message(code: 'subscription.isMultiYear.label')}</label>
+                <laser:select name="process_isMultiYear"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                              optionKey="id" optionValue="value" noSelection="${['': '']}"
+                              value="${['': '']}"/>
+            </div>
+        </div>
+
+
+        <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
+                value="changeProperties">${message(code: 'default.button.save_changes')}</button>
+
+
         <h3 class="ui header">
             <g:if test="${controllerName == "subscription"}">
                 ${message(code: 'subscriptionsManagement.subscriber')} <semui:totalNumber
@@ -59,6 +98,10 @@
         <table class="ui celled la-table table">
             <thead>
             <tr>
+                <th>
+                    <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"
+                                disabled="${!editable}"/>
+                </th>
                 <th>${message(code: 'sidewide.number')}</th>
                 <g:if test="${controllerName == "subscription"}">
                     <th>${message(code: 'default.sortname.label')}</th>
@@ -79,6 +122,10 @@
                 <g:set var="sub" value="${zeile instanceof Subscription ? zeile : zeile.sub}"/>
                 <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriber() : zeile.orgs}"/>
                 <tr>
+                    <td>
+                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
+                                    checked="false" disabled="${!editable}"/>
+                    </td>
                     <td>${i + 1}</td>
                     <g:if test="${controllerName == "subscription"}">
                         <td>
@@ -135,6 +182,7 @@
             </g:each>
             </tbody>
         </table>
+    </g:form>
     </div>
 </g:if>
 <g:else>
