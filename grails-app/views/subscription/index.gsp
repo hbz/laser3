@@ -440,7 +440,7 @@
                                 <td class="x">
                                     <g:if test="${editable}">
                                         <g:if test="${subscription.ieGroups.size() > 0}">
-                                            <g:link action="removeEntitlementWithIEGroups" class="ui icon negative button js-open-confirm-modal"
+                                            <g:link action="removeEntitlementWithIEGroups" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                     params="${[ieid: ie.id, sub: subscription.id]}"
                                                     role="button"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.name])}"
@@ -450,7 +450,7 @@
                                             </g:link>
                                         </g:if>
                                         <g:else>
-                                            <g:link action="removeEntitlement" class="ui icon negative button js-open-confirm-modal"
+                                            <g:link action="removeEntitlement" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                     params="${[ieid: ie.id, sub: subscription.id]}"
                                                     role="button"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.name])}"

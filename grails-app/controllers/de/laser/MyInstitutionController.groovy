@@ -1817,6 +1817,8 @@ join sub.orgRelations or_sub where
 
             if (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
 
+                result.previousSubscription = result.subscription._getCalculatedPrevious()
+
                 result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscription)
                 result.iesListPriceSum = 0
                 result.ies.each { IssueEntitlement ie ->
@@ -1839,6 +1841,19 @@ join sub.orgRelations or_sub where
                     }
                     result.iesFixListPriceSum = result.iesListPriceSum + priceSum
                 }
+
+                result.previousIes = subscriptionService.getIssueEntitlementsFixed(result.previousSubscription)
+                result.previousIesListPriceSum = 0
+                result.previousIes.each { IssueEntitlement ie ->
+                    Double priceSum = 0.0
+
+                    ie.priceItems.each { PriceItem priceItem ->
+                        priceSum = priceItem.listPrice ?: 0.0
+                    }
+                    result.previousIesListPriceSum = result.previousIesListPriceSum + priceSum
+                }
+
+                result.subscriber = result.subscription.getSubscriber()
             }
 
         }
