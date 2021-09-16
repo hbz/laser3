@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.FormService; de.laser.Subscription; de.laser.interfaces.CalculatedType;" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
@@ -160,6 +160,16 @@
                                   value="${['': '']}"/>
                 </div>
 
+                <g:if test="${accessService.checkPerm('ORG_INST')}">
+                    <div class="field">
+                        <label>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</label>
+                        <laser:select name="process_isAutomaticRenewAnnually"
+                                      from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                      optionKey="id" optionValue="value" noSelection="${['': '']}"
+                                      value="${['': '']}"/>
+                    </div>
+                </g:if>
+
             </div>
 
             <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
@@ -175,7 +185,7 @@
                             total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
                 </g:else>
             </h3>
-            <table class="ui celled la-table table">
+            <table class="ui celled la-table compact table">
                 <thead>
                 <tr>
                     <th>
@@ -199,6 +209,9 @@
                     <th>${message(code: 'subscription.isPublicForApi.label')}</th>
                     <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
                     <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
+                    <g:if test="${accessService.checkPerm('ORG_INST')}">
+                        <th>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</th>
+                    </g:if>
                     <th class="la-no-uppercase">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                               data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
@@ -298,6 +311,13 @@
                                                     overwriteEditable="${editableOld}"/>
                             <semui:auditButton auditable="[sub, 'hasPublishComponent']"/>
                         </td>
+                        <g:if test="${accessService.checkPerm('ORG_INST')}">
+                            <td>
+                                <g:if test="${(sub.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && sub._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
+                                    <semui:xEditableBoolean owner="${sub}" field="isAutomaticRenewAnnually" overwriteEditable="${sub.isAllowToAutomaticRenewAnnually()}"/>
+                                </g:if>
+                            </td>
+                        </g:if>
                         <td>
                             <g:if test="${sub.isMultiYear}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay"

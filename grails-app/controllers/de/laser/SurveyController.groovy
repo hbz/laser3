@@ -1218,7 +1218,7 @@ class SurveyController {
 
              Map<String,Object> fsq = filterService.getSurveyResultQuery(params, result.surveyConfig)
 
-            result.surveyResult = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
+            //result.surveyResult = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
 
 
             result.propList    = result.surveyConfig.surveyProperties.surveyProperty
@@ -1257,6 +1257,8 @@ class SurveyController {
                     }
                 }
             }
+
+            result.participants = result.participants.sort{it.org.sortname}
 
             result
         }

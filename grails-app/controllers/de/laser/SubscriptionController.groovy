@@ -712,13 +712,16 @@ class SubscriptionController {
             if(params.singleTitle) {
                 IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
                 TitleInstancePackagePlatform tipp = ie.tipp
-                try {
-                    if(subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null) , RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
-                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name])
+
+                if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                    try {
+                        if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
+                            flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name])
+                        }
                     }
-                }
-                catch(EntitlementCreationException e) {
-                    flash.error = e.getMessage()
+                    catch (EntitlementCreationException e) {
+                        flash.error = e.getMessage()
+                    }
                 }
             }
         } else {

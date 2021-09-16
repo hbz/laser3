@@ -1813,7 +1813,7 @@ class SubscriptionControllerService {
             int addTitlesCount = 0
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
             Map cache = sessionCache.get("/subscription/addEntitlements/${result.subscription.id}")
-            Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
+            Map issueEntitlementCandidates = cache?.get('issueEntitlementCandidates')
             if(!params.singleTitle) {
                 Map checked = cache.get('checked')
                 if(checked) {
