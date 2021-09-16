@@ -7,11 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3804    16.09.2021  dev     2.2         Andreas Bug         Statistik war für Lizenz ohne Start- und Enddatum nicht abrufbar und weitere Bugfixes 
+
+3770    16.09.2021  dev     2.2         David   Feature     Workflow: Anbieter Angebot archiviert - unklare Handhabe
+
 3802    15.09.2021  dev     2.2         Andreas Bug         Tippfehler korrigiert
 
 3772    15.09.2021  dev     2.2         Andreas Feature     ROLE-Rechte-Löschung muss jetzt bestätigt werden
-
-3770    16.09.2021  dev     2.2         David   Feature     Workflow: Anbieter Angebot archiviert - unklare Handhabe
 
 3803    15.09.2021  dev     2.2         Moe     Feature     Meine Umfragen Startseite ändern
 
