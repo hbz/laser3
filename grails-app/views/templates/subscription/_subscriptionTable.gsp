@@ -232,9 +232,9 @@
                                             [sub: s.instanceOf, org: institution, invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY], type: [RDStore.SURVEY_TYPE_RENEWAL]])}" />
                                     <g:if test="${surveysSub}">
                                         <g:link controller="subscription" action="surveys" id="${s.id}"
-                                                class="ui icon button">
+                                                class="ui icon positive button la-modern-button">
                                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info3")}">
-                                                <i class="ui icon pie chart open"></i>
+                                                <i class="ui icon pie chart"></i>
                                             </span>
                                         </g:link>
                                     </g:if>
@@ -242,12 +242,32 @@
                                 <g:if test="${institution.getCustomerType()  == 'ORG_CONSORTIUM'}">
                                     <g:set var="surveysConsortiaSub" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s ,true)}" />
                                     <g:if test="${surveysConsortiaSub}">
-                                        <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
-                                                class="ui icon button">
+
+                                            <g:if test="${surveysConsortiaSub.surveyInfo?.isCompletedforOwner()}">
+                                                <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
+                                                        class="ui button blue icon la-modern-button">
+                                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                                          data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
+                                                        <i class="ui icon pie chart"></i>
+                                                    </span>
+                                                </g:link>
+                                            </g:if>
+                                            <g:else>
+                                                <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
+                                                        class="ui button positive icon la-modern-button">
+                                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                                          data-content="${message(code: "surveyconfig.isCompletedforOwner.false")}">
+                                                        <i class="ui icon pie chart"></i>
+                                                    </span>
+                                                </g:link>
+                                            </g:else>
+
+%{--                                        <g:link controller="subscription" action="surveysConsortia" id="${s.id}"
+                                                class="ui button blue icon la-modern-button">
                                             <g:if test="${surveysConsortiaSub.surveyInfo?.isCompletedforOwner()}">
                                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                                       data-content="${message(code: "surveyconfig.isCompletedforOwner.true")}">
-                                                    <i class="ui icon pie chart green"></i>
+                                                    <i class="ui icon pie chart blue"></i>
                                                 </span>
                                             </g:if>
                                             <g:else>
@@ -256,7 +276,7 @@
                                                     <i class="ui icon pie chart open"></i>
                                                 </span>
                                             </g:else>
-                                        </g:link>
+                                        </g:link>--}%
                                     </g:if>
                                 </g:if>
                                 <%--<g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasPlatformWithUsageSupplierId()}">

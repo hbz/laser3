@@ -1523,4 +1523,19 @@ class SurveyService {
         IssueEntitlement.findBySubscriptionAndStatusAndTipp(subscription, RDStore.TIPP_STATUS_CURRENT, tipp)
     }
 
-}
+    boolean showStatisticByParticipant(Subscription subscription, Org org) {
+        Map<String, Object> result = [:]
+
+        Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
+
+        List<CustomerIdentifier> customerIdentifiers = CustomerIdentifier.findAllByCustomerAndPlatformInList(org, subscribedPlatforms)
+
+        if(customerIdentifiers.size() > 0){
+            return true
+        }else {
+            return false
+        }
+
+    }
+
+    }

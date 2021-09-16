@@ -156,7 +156,7 @@ class AjaxJsonController {
             data.each { Subscription s ->
                 result.add([value: s.id, text: s.dropdownNamingConvention()])
             }
-            result.sort{it.text}
+            result.sort{it.text.toLowerCase()}
         }
         render result as JSON
     }

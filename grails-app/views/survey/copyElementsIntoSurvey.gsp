@@ -9,7 +9,7 @@
 </head>
 <body>
 <semui:breadcrumbs>
-    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
+    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
 
     <g:if test="${sourceObject}">
         <semui:crumb class="active" controller="survey" action="show" id="${sourceObject.surveyInfo.id}"

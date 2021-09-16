@@ -104,14 +104,14 @@
                         fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
                         fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
                     %>
-                    <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
+                    <laser:select name="process_status" from="${fakeList}" optionKey="id" optionValue="value"
                                   noSelection="${['': '']}"
                                   value="${['': '']}"/>
                 </div>
 
                 <div class="field">
                     <label>${message(code: 'subscription.kind.label')}</label>
-                    <laser:select name="kind"
+                    <laser:select name="process_kind"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
@@ -119,7 +119,7 @@
 
                 <div class="field">
                     <label>${message(code: 'subscription.form.label')}</label>
-                    <laser:select name="form"
+                    <laser:select name="process_form"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
@@ -127,7 +127,7 @@
 
                 <div class="field">
                     <label>${message(code: 'subscription.resource.label')}</label>
-                    <laser:select name="resource"
+                    <laser:select name="process_resource"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
@@ -138,7 +138,7 @@
 
                 <div class="field">
                     <label>${message(code: 'subscription.isPublicForApi.label')}</label>
-                    <laser:select name="isPublicForApi"
+                    <laser:select name="process_isPublicForApi"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
@@ -146,7 +146,7 @@
 
                 <div class="field">
                     <label>${message(code: 'subscription.hasPerpetualAccess.label')}</label>
-                    <laser:select name="hasPerpetualAccess"
+                    <laser:select name="process_hasPerpetualAccess"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
@@ -154,7 +154,7 @@
 
                 <div class="field">
                     <label>${message(code: 'subscription.hasPublishComponent.label')}</label>
-                    <laser:select name="hasPublishComponent"
+                    <laser:select name="process_hasPublishComponent"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
