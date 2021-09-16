@@ -23,18 +23,18 @@
 
     <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
         <g:if test="${cmd == 'delete'}">
-            <semui:msg class="positive" text="Objekt wurde gelöscht." />
+            <semui:msg class="positive" message="workflow.delete.ok" />
         </g:if>
         <g:else>
-            <semui:msg class="positive" text="OK ( ${cmd} )" />
+            <semui:msg class="positive" message="workflow.edit.ok" />
         </g:else>
     </g:if>
     <g:elseif test="${status == WorkflowService.OP_STATUS_ERROR}">
         <g:if test="${cmd == 'delete'}">
-            <semui:msg class="negative" text="Objekt konnte nicht gelöscht werden." />
+            <semui:msg class="negative" message="workflow.delete.error" />
         </g:if>
         <g:else>
-            <semui:msg class="negative" text="FEHLER ( ${cmd} )" />
+            <semui:msg class="negative" message="workflow.edit.error" />
         </g:else>
     </g:elseif>
 
@@ -102,9 +102,16 @@
                     ${DateUtils.getSDF_NoTime().format(wf.dateCreated)}
                 </td>
                 <td class="x">
-                    <button class="ui small icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon info"></i></button>
+                    <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon info"></i></button>
                     %{-- <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button> --}%
-                    <g:link class="ui red icon small button la-modern-button" controller="subscription" action="workflows" params="${[id: "${subscription.id}", cmd: "delete:${WfWorkflow.KEY}:${wf.id}"]}"><i class="trash alternate outline icon"></i></g:link>
+                    <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
+                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wf.title])}"
+                            data-confirm-term-how="delete"
+                            controller="subscription" action="workflows" id="${subscription.id}" params="${[cmd:"delete:${WfWorkflow.KEY}:${wf.id}"]}"
+                            role="button"
+                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                        <i class="trash alternate outline icon"></i>
+                    </g:link>
                 </td>
             </tr>
         </g:each>

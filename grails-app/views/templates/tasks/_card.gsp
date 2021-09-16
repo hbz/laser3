@@ -1,14 +1,61 @@
+<%@page import="de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 
 <%--OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, institution, 'INST_EDITOR')} @ ${institution}--%>
 <g:set var="overwriteEditable" value="${editable || accessService.checkMinUserOrgRole(user, institution, 'INST_EDITOR')}" />
 
 <semui:card message="task.plural" class="notes la-js-hideable ${css_class}" href="#modalCreateTask" editable="${overwriteEditable}">
+    <div class="ui relaxed divided list  la-js-dont-hide-this-card">
     <g:each in="${tasks}" var="tsk">
-        <div class="ui grid la-js-dont-hide-this-card">
+        <g:if test="${tsk.status == RDStore.TASK_STATUS_DONE}">
+            <g:set var="icon" value="check circle outline"/>
+            <g:set var="tooltip" value="${message(code: 'tooltip.closedTask')}"/>
+        </g:if>
+        <g:elseif test="${tsk.status == RDStore.TASK_STATUS_OPEN}">
+            <g:set var="icon" value="la-open"/>
+            <g:set var="tooltip" value="${message(code: 'tooltip.openTask')}"/>
+        </g:elseif>
+        <g:elseif test="${tsk.status == RDStore.TASK_STATUS_DEFERRED}">
+            <g:set var="icon" value="pause circle outline"/>
+            <g:set var="tooltip" value="${message(code: 'tooltip.pausedTask')}"/>
+        </g:elseif>
+
+            <div class="item">
+                <div class="right floated content">
+                    <g:link action="deleteTask" controller="ajax"
+                            class="ui icon negative button la-modern-button la-modern-button js-open-confirm-modal"
+                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
+                            data-confirm-term-how="delete"
+                            params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'
+                            role="button"
+                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                        <i class="trash alternate outline icon"></i>
+                    </g:link>
+                </div>
+                <i class="large la-list-icon la-popup-tooltip la-delay icon ${icon}" data-content="${tooltip}"></i>
+                <div class="content">
+                    <a class="header" onclick="JSPC.app.taskedit(${tsk.id});">${tsk.title}</a>
+                    <div class="description">${message(code:'task.endDate.label')}
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/>
+                    </div>
+                </div>
+            </div>
+
+
+        %{--<div class="ui grid la-js-dont-hide-this-card">
             <div class="twelve wide column summary">
-                <a onclick="JSPC.app.taskedit(${tsk.id});">${tsk.title}</a>
-                <br />
+
+                    <g:if test="${tsk.status == RDStore.TASK_STATUS_DONE}">
+                        <i class="large la-list-icon la-popup-tooltip la-delay icon check circle outline"></i>
+                    </g:if>
+                    <g:elseif test="${tsk.status == RDStore.TASK_STATUS_OPEN}">
+                        <i class="large la-list-icon la-popup-tooltip la-delay icon la-open"></i>
+                    </g:elseif>
+                    <g:elseif test="${tsk.status == RDStore.TASK_STATUS_DEFERRED}">
+                        <i class="large la-list-icon la-popup-tooltip la-delay icon pause circle outline"></i>
+                    </g:elseif>
+                    <a onclick="JSPC.app.taskedit(${tsk.id});">${tsk.title}</a>
+
                 <div class="content">
                     ${message(code:'task.endDate.label')}
                     <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/>
@@ -25,8 +72,9 @@
                     <i class="trash alternate outline icon"></i>
                 </g:link>
             </div>
-        </div>
+        </div>--}%
     </g:each>
+    </div>
 </semui:card>
 
 <laser:script file="${this.getGroovyPageFileName()}">

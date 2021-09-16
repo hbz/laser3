@@ -113,7 +113,7 @@
                         mergeables.push(elem.id)
                     }
                     if (elem.deletable) {
-                        markup += ' <i class="icon trash alternate negative"></i> '
+                        markup += ' <i class="icon trash alternate outline negative"></i> '
                         deletables.push(elem.id)
                     }
                     markup += '</a></div>'
@@ -129,7 +129,7 @@
                 if (deletables.length > 0) {
                     var deleteUrl = "<g:createLink controller="admin" action="dataConsistency" />?task=delete&objType=Org";
                     deleteUrl += '&objId=' + deletables.join('&objId=')
-                    $html.append( '<a href="' + deleteUrl + '" class="ui button negative"><i class="icon trash alternate"></i> Löschen</a>' )
+                    $html.append( '<a href="' + deleteUrl + '" class="ui button negative"><i class="icon trash alternate outline"></i> Löschen</a>' )
                 }
                 $('#modalConsistencyCheck').modal('show')
             }

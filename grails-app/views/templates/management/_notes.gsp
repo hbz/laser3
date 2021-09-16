@@ -1,4 +1,5 @@
-<%@ page import="de.laser.Subscription;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
+<laser:serviceInjection/>
 <g:if test="${filteredSubscriptions}">
 
     <g:if test="${controllerName == "subscription"}">
@@ -12,6 +13,27 @@
     </g:if>
 
     <div class="ui segment">
+    <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'notes']" method="post"
+            class="ui form">
+        <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
+
+        <h4 class="ui header">${message(code: 'subscriptionsManagement.note.info.newNote')}</h4>
+
+        <div class="field">
+            <label for="licenseNoteTitle">${message(code:'template.addNote.title')}:</label>
+
+            <input type="text" id="licenseNoteTitle" name="licenseNoteTitle" />
+        </div>
+        <div class="field">
+            <label for="licenseNote">${message(code:'template.addNote.note')}:</label>
+
+            <textarea id="licenseNote" name="licenseNote"></textarea>
+        </div>
+
+        <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
+                value="newNote">${message(code: 'default.button.create.label')}</button>
+
         <h3 class="ui header">
             <g:if test="${controllerName == "subscription"}">
                 ${message(code: 'subscriptionsManagement.subscriber')} <semui:totalNumber
@@ -24,6 +46,10 @@
         <table class="ui celled la-table table">
             <thead>
             <tr>
+                <th>
+                    <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"
+                                disabled="${!editable}"/>
+                </th>
                 <th>${message(code: 'sidewide.number')}</th>
                 <g:if test="${controllerName == "subscription"}">
                     <th>${message(code: 'default.sortname.label')}</th>
@@ -41,6 +67,10 @@
                 <g:set var="sub" value="${zeile instanceof Subscription ? zeile : zeile.sub}"/>
                 <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriber() : zeile.orgs}"/>
                 <tr>
+                    <td>
+                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
+                                    checked="false" disabled="${!editable}"/>
+                    </td>
                     <td>${i + 1}</td>
                     <g:if test="${controllerName == "subscription"}">
                         <td>
@@ -85,6 +115,7 @@
             </g:each>
             </tbody>
         </table>
+    </g:form>
     </div>
 </g:if>
 <g:else>

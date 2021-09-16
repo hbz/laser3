@@ -12,7 +12,7 @@
 
 <semui:breadcrumbs>
 
-    <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
+    <semui:crumb controller="survey" action="workflowsSurveysConsortia" message="currentSurveys.label"/>
     <semui:crumb message="createGeneralSurvey.label" class="active"/>
 </semui:breadcrumbs>
 
