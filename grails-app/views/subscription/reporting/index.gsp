@@ -29,7 +29,7 @@
 
         <g:render template="/templates/reporting/helper" />
 
-        <g:render template="/subscription/reporting/query" />
+        <g:render template="/subscription/reporting/query/query" />
 
         <div id="chart-wrapper"></div>
         <div id="chart-details"></div>
@@ -63,8 +63,7 @@
                         method: 'post',
                         data: JSPC.app.reporting.current.request,
                         beforeSend: function (xhr) {
-                            //$('#chart-export').attr('disabled', 'disabled');
-                            $('#query-export-button').attr('disabled', 'disabled');
+                            $('#query-export-button, #query-help-button').attr('disabled', 'disabled');
                         }
                     })
                     .done( function (data) {
@@ -91,8 +90,11 @@
                             echart.on( 'legendselectchanged', function (params) { /* console.log(params); */ });
 
                             JSPC.app.reporting.current.chart.echart = echart;
-                            //$('#chart-export').removeAttr('disabled');
+
                             $('#query-export-button').removeAttr('disabled');
+                            if (JSPC.app.reporting.current.request.query.indexOf('timeline-') == 0) {
+                                $('#query-help-button').removeAttr('disabled');
+                            }
                         }
                     })
                     .fail( function (data) {

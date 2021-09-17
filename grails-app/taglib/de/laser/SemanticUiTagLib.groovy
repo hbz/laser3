@@ -470,7 +470,7 @@ class SemanticUiTagLib {
         out << body()
         out << '</div>'
         out << '<div class="actions">'
-        out << '<a href="#" class="ui button ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</a>'
+        out << '<button class="ui button ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</button>'
 
         if (attrs.showDeleteButton) {
 
