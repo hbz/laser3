@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.local.ExportLocalHelper; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.export.base.BaseExport; de.laser.reporting.export.myInstitution.ExportGlobalHelper;" %>
+<%@ page import="de.laser.reporting.export.local.ExportLocalHelper;" %>
 <laser:serviceInjection />
 <!-- _helpModal.gsp -->
 <semui:modal id="${modalID}" text="?" hideSubmitButton="true">
@@ -10,7 +10,7 @@
 
     <div class="help-section" data-help-section="default">
         <i class="icon huge la-light-grey meh outline"></i>
-        Leider ist der Hilfetext zu diesem Vorgang noch in Arbeit.
+        ${message(code:'reporting.help.infoMissing')}
     </div>
 </semui:modal>
 
