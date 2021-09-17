@@ -8,6 +8,7 @@ import de.laser.oap.OrgAccessPoint
 import de.laser.properties.*
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemTicket
+import de.laser.titles.TitleHistoryEventParticipant
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
@@ -852,9 +853,22 @@ class DeletionService {
         TitleInstancePackagePlatform.withTransaction { status ->
             try {
                 Map<String,Collection<TitleInstancePackagePlatform>> toDelete = [toDelete:tippsToDelete]
-                TIPPCoverage.executeUpdate('delete from TIPPCoverage tc where tc.tipp in (:toDelete)',toDelete)
-                Identifier.executeUpdate('delete from Identifier i where i.tipp in (:toDelete)',toDelete)
-                TitleInstancePackagePlatform.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp in (:toDelete)',toDelete)
+                Map<String,Collection<IssueEntitlement>> delIssueEntitlements = [toDelete:IssueEntitlement.findAllByTippInListAndStatus(tippsToDelete, RDStore.TIPP_STATUS_DELETED)]
+                log.info("${TIPPCoverage.executeUpdate('delete from TIPPCoverage tc where tc.tipp in (:toDelete)',toDelete)} coverages deleted")
+                log.info("${Identifier.executeUpdate('delete from Identifier i where i.tipp in (:toDelete)',toDelete)} identifiers deleted")
+                log.info("${PriceItem.executeUpdate('delete from PriceItem pi where pi.tipp in (:toDelete)', toDelete)} price items deleted")
+                log.info("${OrgRole.executeUpdate('delete from OrgRole oo where oo.tipp in (:toDelete)', toDelete)} org roles deleted")
+                log.info("${TitleHistoryEventParticipant.executeUpdate('delete from TitleHistoryEventParticipant thep where thep.participant in (:toDelete)', toDelete)} title history event participants deleted")
+                log.info("${Fact.executeUpdate('delete from Fact f where f.relatedTitle in (:toDelete)', toDelete)} facts deleted")
+                log.info("${PendingChange.executeUpdate('delete from PendingChange pc where pc.tipp in (:toDelete)', toDelete)} pending changes deleted")
+                log.info("${Language.executeUpdate('delete from Language l where l.tipp in (:toDelete)', toDelete)} language entries deleted")
+                log.info("${DeweyDecimalClassification.executeUpdate('delete from DeweyDecimalClassification ddc where ddc.tipp in (:toDelete)', toDelete)} DDC entrie deleted")
+                log.info("${IssueEntitlementCoverage.executeUpdate('delete from IssueEntitlementCoverage ic where ic.issueEntitlement in (:toDelete)',delIssueEntitlements)} issue entitlement coverages deleted")
+                log.info("${CostItem.executeUpdate('update CostItem ci set ci.issueEntitlement = null where ci.issueEntitlement in (:toDelete)', delIssueEntitlements)} issue entitlement costs nullified")
+                log.info("${IssueEntitlementGroupItem.executeUpdate('delete from IssueEntitlementGroupItem iegi where iegi.ie in (:toDelete)', delIssueEntitlements)} issue entitlement group items deleted")
+                log.info("${PriceItem.executeUpdate('delete from PriceItem pi where pi.issueEntitlement in (:toDelete)', delIssueEntitlements)} issue entitlement price items deleted")
+                log.info("${IssueEntitlement.executeUpdate('delete from IssueEntitlement ie where ie in (:toDelete)', delIssueEntitlements)} deleted issue entitlements cleared")
+                log.info("${TitleInstancePackagePlatform.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp in (:toDelete)',toDelete)} tipps cleared")
                 return true
             }
             catch (Exception e) {
