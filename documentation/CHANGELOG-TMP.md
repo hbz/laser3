@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3801    17.09.2021  dev     2.2         David   Feature     Reporting: Kontextabhängige Hilfe
+
+3812    17.09.2021  dev     2.2         David   Feature     Modale Dialoge springen nach dem Schließen zum Seitenanfang
+
 3748    17.09.2021  dev     2.2         Andreas Feature     Massenlöschung von gelöscht markierten TIPP-Einträgen implementiert
 
 3805    16.09.2021  dev     2.2         Andreas Feature     Rückverweis bei Teilnehmer-Vorgänger/Nachfolger verknüpfen umgestellt

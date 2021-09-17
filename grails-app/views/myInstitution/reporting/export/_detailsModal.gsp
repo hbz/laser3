@@ -1,6 +1,6 @@
 <%@ page import="de.laser.reporting.export.base.BaseExport; de.laser.reporting.export.myInstitution.ExportGlobalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
-<!-- _chartDetailsModal.gsp -->
+<!-- _detailsModal.gsp -->
 <g:set var="export" value="${DetailsExportManager.createExport( token, BaseConfig.KEY_MYINST )}" />
 
 <g:if test="${export}">
@@ -141,5 +141,5 @@
         }).trigger('change');
     </laser:script>
 </g:if>
-<!-- _chartDetailsModal.gsp -->
+<!-- _detailsModal.gsp -->
 
