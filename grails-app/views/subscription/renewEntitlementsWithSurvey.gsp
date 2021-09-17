@@ -227,15 +227,17 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 </g:else>
 
 </br>
-<div class="ui pointing five item massive menu">
+%{--<div class="ui pointing five item massive menu">
 
-    <g:link class="item ${params.tab == 'previousIEs' ? 'active' : ''}"
-            controller="subscription" action="renewEntitlementsWithSurvey"
-            id="${newSub.id}"
-            params="[surveyConfigID: surveyConfig.id, tab: 'previousIEs']">
-        <g:message code="renewEntitlementsWithSurvey.previousSelectableTitles"/>
-        <div class="ui circular label">${countPreviousIEs}</div>
-    </g:link>
+    <g:if test="${previousSubscription}">
+        <g:link class="item ${params.tab == 'previousIEs' ? 'active' : ''}"
+                controller="subscription" action="renewEntitlementsWithSurvey"
+                id="${newSub.id}"
+                params="[surveyConfigID: surveyConfig.id, tab: 'previousIEs']">
+            <g:message code="renewEntitlementsWithSurvey.previousSelectableTitles"/>
+            <div class="ui circular label">${countPreviousIEs}</div>
+        </g:link>
+    </g:if>
 
     <g:link class="item ${params.tab == 'allIEs' ? 'active' : ''}"
             controller="subscription" action="renewEntitlementsWithSurvey"
@@ -269,7 +271,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
         </g:link>
     </g:if>
 
-</div>
+</div>--}%
 
 <g:if test="${params.tab == 'previousIEsStats' || params.tab == 'allIEsStats'}">
     <semui:tabs>
@@ -381,7 +383,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
         <div class="two fields">
 
             <div class="eight wide field" style="text-align: left;">
-                <g:if test="${editable}">
+                <g:if test="${editable && params.tab != 'selectedIEs'}">
                     <button type="submit" name="process" id="processButton" value="preliminary" class="ui green button">
                         ${checkedCount} <g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
                 </g:if>

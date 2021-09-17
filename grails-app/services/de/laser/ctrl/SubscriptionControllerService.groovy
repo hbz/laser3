@@ -356,7 +356,7 @@ class SubscriptionControllerService {
                 else {
                     sort = "title.name asc, r.reportType asc, r.reportFrom desc"
                 }
-                Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance(), now = GregorianCalendar.getInstance()
+                Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance(), stopTime = GregorianCalendar.getInstance()
                 if(result.subscription.startDate && result.subscription.endDate) {
                     dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
                     if(params.tab != 'total') {
@@ -383,7 +383,7 @@ class SubscriptionControllerService {
                         Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tab)
                         filterTime.setTime(filterDate)
                         queryParams.startDate = filterDate
-                        filterTime.set(Calendar.MONTH,filterTime.getActualMaximum(Calendar.MONTH))
+                        filterTime.set(Calendar.DATE,filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
                         queryParams.endDate = filterTime.getTime()
                     }
                     else
@@ -397,12 +397,12 @@ class SubscriptionControllerService {
                         Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tab)
                         filterTime.setTime(filterDate)
                         queryParams.startDate = filterDate
-                        filterTime.set(Calendar.MONTH,filterTime.getActualMaximum(Calendar.MONTH))
+                        filterTime.set(Calendar.DATE,filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
                         queryParams.endDate = filterTime.getTime()
                     }
                     else
                         dateRange = ''
-                    startTime.set(2018, 1, 1)
+                    startTime.set(2018, 0, 1)
                 }
                 while(startTime.before(endTime)) {
                     monthsInRing << startTime.getTime()
@@ -435,7 +435,12 @@ class SubscriptionControllerService {
                     filter += " and r.metricType in (:metricType) "
                     queryParams.metricType = params.metricType
                 }
-                count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+dateRange, [customer: queryParams.customer, platforms: queryParams.platforms, startDate: queryParams.startDate, endDate: queryParams.endDate]))
+                Map<String, Object> c5CheckParams = [customer: queryParams.customer, platforms: queryParams.platforms]
+                if(dateRange) {
+                    c5CheckParams.startDate = queryParams.startDate
+                    c5CheckParams.endDate = queryParams.endDate
+                }
+                count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+dateRange, c5CheckParams))
                 if(count5check.get(0) == 0) {
                     List defaultReport = Counter4Report.executeQuery('select r.reportType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) order by r.reportFrom asc', [customer: queryParams.customer, platforms: queryParams.platforms], [max:1])
                     result.reportTypes = Counter4ApiSource.COUNTER_4_REPORTS
@@ -447,7 +452,7 @@ class SubscriptionControllerService {
                     filter += " and r.reportType in (:reportType) "
                     queryParams.reportType = params.reportType
                     if(params.tab == 'total') {
-                        c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.reportType, r.metricType order by r.reportFrom asc, r.reportType asc', queryParams))
+                        c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', queryParams))
                     }
                     else {
                         c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
@@ -469,7 +474,7 @@ class SubscriptionControllerService {
                     filter += " and lower(r.reportType) in (:reportType) "
                     queryParams.reportType = params.reportType
                     if(params.tab == 'total')
-                        c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.reportType, r.metricType order by r.reportFrom asc, r.metricType asc', queryParams))
+                        c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', queryParams))
                     else
                         c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
                     result.total = count5check
@@ -855,11 +860,9 @@ class SubscriptionControllerService {
                 Links link
                 if(params.prev && prevMemberSub) {
                     link = Links.construct([source: memberSub, destination: prevMemberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
-                    result.redirect = prevMemberSub.id
                 }
                 if(params.next && nextMemberSub) {
                     link = Links.construct([source: nextMemberSub, destination: memberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
-                    result.redirect = nextMemberSub.id
                 }
                 if(link) {
                     [result:result,status:STATUS_OK]
@@ -881,7 +884,7 @@ class SubscriptionControllerService {
         else {
             params.tab = params.tab ?: 'generalProperties'
 
-            result << managementService.subscriptionsManagement(this, params, input_file)
+            result << managementService.subscriptionsManagement(controller, params, input_file)
 
             [result:result,status:STATUS_OK]
         }
@@ -1810,7 +1813,7 @@ class SubscriptionControllerService {
             int addTitlesCount = 0
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
             Map cache = sessionCache.get("/subscription/addEntitlements/${result.subscription.id}")
-            Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
+            Map issueEntitlementCandidates = cache?.get('issueEntitlementCandidates')
             if(!params.singleTitle) {
                 Map checked = cache.get('checked')
                 if(checked) {

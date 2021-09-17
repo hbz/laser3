@@ -142,7 +142,7 @@
             <tr>
                 <g:if test="${showCheckbox}">
                     <th>
-                        <g:if test="${surveyResult}">
+                        <g:if test="${surveyParticipantsHasAccess}">
                             <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
                         </g:if>
                     </th>
@@ -155,21 +155,19 @@
                     </g:if>
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
-                        <g:sortableColumn params="${params}" title="${message(code: 'default.name.label')}"
-                                          property="surResult.participant.sortname"/>
+                        <th>${message(code: 'default.name.label')}</th>
                     </g:if>
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
                         <g:each in="${propList.sort { it.name }}" var="surveyProperty">
-                            <g:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}"
-                                                  property="surResult.${surveyProperty.getImplClassValueProperty()}, surResult.participant.sortname ">
+                            <th>${surveyProperty.getI10n('name')}
                                 <g:if test="${surveyProperty.getI10n('expl')}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                           data-content="${surveyProperty.getI10n('expl')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </g:if>
-                            </g:sortableColumn>
+                            </th>
                         </g:each>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
@@ -394,7 +392,7 @@
             <tr>
                 <g:if test="${showCheckbox}">
                     <th>
-                        <g:if test="${surveyResult}">
+                        <g:if test="${surveyParticipantsHasNotAccess}">
                             <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
                         </g:if>
                     </th>
@@ -407,21 +405,19 @@
                     </g:if>
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
-                        <g:sortableColumn params="${params}" title="${message(code: 'default.name.label')}"
-                                          property="surResult.participant.sortname"/>
+                        <th>${message(code: 'default.name.label')}</th>
                     </g:if>
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
                         <g:each in="${propList.sort { it.name }}" var="surveyProperty">
-                            <g:sortableColumn params="${params}" title="${surveyProperty.getI10n('name')}"
-                                              property="surResult.${surveyProperty.getImplClassValueProperty()}, surResult.participant.sortname ">
+                            <th>${surveyProperty.getI10n('name')}
                                 <g:if test="${surveyProperty.getI10n('expl')}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                                           data-content="${surveyProperty.getI10n('expl')}">
                                         <i class="question circle icon"></i>
                                     </span>
                                 </g:if>
-                            </g:sortableColumn>
+                            </th>
                         </g:each>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">

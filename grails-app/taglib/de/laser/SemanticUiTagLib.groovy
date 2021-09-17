@@ -515,7 +515,7 @@ class SemanticUiTagLib {
 
         out << '<div class="actions">'
         out << '<button class="ui deny button">' + msgCancel + '</button>'
-        out << '<button id="js-confirmation-button" class="ui negative right labeled icon button">' + msgDelete
+        out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
         out << '    <i aria-hidden="true" class="trash alternate outline icon"></i>'
         out << '</button>'
         out << '</div>'
@@ -913,7 +913,7 @@ class SemanticUiTagLib {
 
     def tabs = { attrs, body ->
 
-        out << '<div class="ui top attached tabular menu">'
+        out << '<div class="ui top attached tabular menu" style="overflow-x: scroll; overflow-y: hidden">' //ugliest workaround ever!!!!
         out << body()
         out << '</div>'
     }
