@@ -1,6 +1,6 @@
 <%@ page import="de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.export.base.BaseExport; de.laser.reporting.export.myInstitution.ExportGlobalHelper;" %>
 <laser:serviceInjection />
-<!-- _queryChartModal.gsp -->
+<!-- _queryModal.gsp -->
 
     <semui:modal id="${modalID}" text="Ergebnis exportieren" msgSave="Exportieren">
 
@@ -92,5 +92,5 @@
     });
 </laser:script>
 
-<!-- _queryChartModal.gsp -->
+<!-- _queryModal.gsp -->
 

@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3801    17.09.2021  dev     2.2         David   Feature     Reporting: Kontextabhängige Hilfe
+
+3812    17.09.2021  dev     2.2         David   Feature     Modale Dialoge springen nach dem Schließen zum Seitenanfang
+
 3804    16.09.2021  dev     2.2         Andreas Bug         Statistik war für Lizenz ohne Start- und Enddatum nicht abrufbar und weitere Bugfixes 
 
 3770    16.09.2021  dev     2.2         David   Feature     Workflow: Anbieter Angebot archiviert - unklare Handhabe
