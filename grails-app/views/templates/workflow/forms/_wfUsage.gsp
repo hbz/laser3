@@ -205,7 +205,7 @@
 
                         <g:if test="${field.startsWith('checkbox')}">
                             <div class="field">
-                                <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: '[ohne Titel]'}</label>
+                                <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
                                 <div class="ui checkbox">
                                     <input type="checkbox" name="${prefixOverride}_${field}" id="${prefixOverride}_${field}"
                                         <% print task.condition.getProperty(field) == true ? 'checked="checked"' : '' %>
@@ -218,7 +218,7 @@
                         </g:if>
                         <g:elseif test="${field.startsWith('date')}">
                             <div class="field">
-                                <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: '[ohne Titel]'}</label>
+                                <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
                                 <input type="date" name="${prefixOverride}_${field}" id="${prefixOverride}_${field}"
                                     <% print task.condition.getProperty(field) ? 'value="' + DateUtils.getSDF_ymd().format(task.condition.getProperty(field)) + '"' : '' %>
                                 />
@@ -226,7 +226,7 @@
                         </g:elseif>
                         <g:elseif test="${field.startsWith('file')}">
                             <div class="field">
-                                <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: '[ohne Titel]'}
+                                <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}
                                     <a id="fileUploadWrapper_toggle" href="#" style="float:right">
                                         <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.condition.file.info')}">
                                             <span class="ui active label">${message(code:'default.select.label')}</span>
