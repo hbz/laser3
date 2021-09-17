@@ -399,7 +399,7 @@
                                         <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
                                     </g:each>
                                     <g:if test="${editable && ie.priceItems.size() < 1 }">
-                                        <g:link action="addEmptyPriceItem" class="ui icon positive button"
+                                        <g:link action="addEmptyPriceItem" class="ui icon blue button la-modern-button"
                                                 params="${[ieid: ie.id, id: subscription.id]}">
                                             <i class="money icon la-popup-tooltip la-delay"
                                                data-content="${message(code: 'subscription.details.addEmptyPriceItem.info')}"></i>
