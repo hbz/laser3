@@ -2,11 +2,11 @@
 <laser:serviceInjection/>
 <g:set var="exportClickMeService" bean="exportClickMeService"/>
 <!-- _individuallyExportModal.gsp -->
-<g:set var="formFields" value="${exportClickMeService.getExportSurveyEvaluationFieldsForUI(surveyConfig)}"/>
+<g:set var="formFields" value="${exportClickMeService.getExportRenewalFieldsForUI()}"/>
 
 <semui:modal id="${modalID}" text="Excel-Export" hideSubmitButton="true">
 
-    <g:form controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
+    <g:form controller="survey" action="renewalEvaluation" id="${surveyInfo.id}"
             params="[surveyConfigID: surveyConfig.id, exportClickMeExcel: true]">
         <div class="ui form">
             <div class="field">
@@ -54,13 +54,13 @@
 
                 <div class="wide eight field">
                     <label for="filename"><g:message code="default.fileName.label"/></label>
-                    <input name="filename" id="filename" value="${escapeService.escapeString(surveyConfig.getSurveyName()) + "_" + message(code:'surveyInfo.evaluation')}"/>
+                    <input name="filename" id="filename" value="${escapeService.escapeString(surveyConfig.getSurveyName()) + "_" + message(code:'renewalexport.renewals')}"/>
                 </div>
 
                 <div class="wide eight field">
                     <br>
                     <button class="ui button positive right floated"
-                            id="export-as-excel">Export Excel</button>
+                            id="export-renewal-as-excel">${message(code: 'renewalEvaluation.exportRenewal')}</button>
                 </div>
 
             </div><!-- .fields -->

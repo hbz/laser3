@@ -23,6 +23,10 @@
 
 
 <semui:controlButtons>
+    <semui:exportDropdown>
+        <semui:actionsDropdownItem data-semui="modal" href="#individuallyExportModal"
+                                   message="renewalEvaluation.exportRenewal"/>
+    </semui:exportDropdown>
     <g:render template="actions"/>
 </semui:controlButtons>
 
@@ -366,7 +370,7 @@ ${surveyInfo.name}
 
     </g:form>
 
-    <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
+    <g:render template="export/individuallyExportRenewModal" model="[modalID: 'individuallyExportModal']" />
 
 
     <laser:script file="${this.getGroovyPageFileName()}">
