@@ -22,7 +22,10 @@ import de.laser.IssueEntitlementCoverage
 import de.laser.TIPPCoverage
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
+import de.laser.stats.Counter4ApiSource
+import de.laser.stats.Counter5ApiSource
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
@@ -517,6 +520,35 @@ class ExportService {
 				cells.add(cell)
 		}
 		cells
+	}
+
+	/**
+	 *
+	 * @param grailsParameterMap
+	 * @param data - the retrieved and filtered COUNTER data
+	 * @return
+	 */
+	SXSSFWorkbook exportReport(GrailsParameterMap params, Map data) {
+		Locale locale = LocaleContextHolder.getLocale()
+		XSSFWorkbook workbook = new XSSFWorkbook()
+		POIXMLProperties xmlProps = workbook.getProperties()
+		POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
+		coreProps.setCreator(messageSource.getMessage('laser',null,locale))
+		SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50)
+		Row row
+		Cell cell
+		int rowno
+		//revision 4
+		if(params.reportType in Counter4ApiSource.COUNTER_4_REPORTS) {
+			rowno = 9
+			//the header
+
+		}
+		else if(params.reportType in Counter5ApiSource.COUNTER_5_REPORTS) {
+			rowno = 14 //14 is the first row (zero-based counting: 14) in which data is being displayed
+			//the header
+		}
+		wb
 	}
 
 	/**
@@ -1909,5 +1941,4 @@ class ExportService {
 		}
 		result
 	}
-
 }

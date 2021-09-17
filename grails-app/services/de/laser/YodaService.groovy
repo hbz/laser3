@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.ChangeNotificationService
 import com.k_int.kbplus.GlobalSourceSyncService
 import de.laser.exceptions.CleanupException
+import de.laser.exceptions.SyncException
 import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
@@ -16,7 +17,9 @@ import grails.util.Holders
 import grails.web.mapping.LinkGenerator
 import groovy.util.slurpersupport.GPathResult
 import groovy.util.slurpersupport.NodeChildren
+import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
+import groovyx.net.http.Method
 import org.hibernate.Session
 import org.springframework.transaction.TransactionStatus
 
@@ -38,16 +41,7 @@ class YodaService {
     }
 
     void fillIEMedium() {
-        IssueEntitlement.withSession { Session sess ->
-            IssueEntitlement.executeQuery("select ie from IssueEntitlement ie join ie.tipp tipp where ie.medium = null and tipp.medium != null").eachWithIndex { IssueEntitlement ie, int ctr ->
-                ie.medium = ie.tipp.medium
-                println "${ie.save()} saved"
-                if(ctr > 0 && ctr % 10000 == 0) {
-                    println "interim flush after ${ctr}"
-                    sess.flush()
-                }
-            }
-        }
+        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.medium = (select tipp.medium from TitleInstancePackagePlatform tipp where tipp = ie.tipp and tipp.medium != null) where ie.medium = null")
     }
 
     Map<String,Object> listDuplicatePackages() {
@@ -641,6 +635,66 @@ class YodaService {
         toUUIDfy.each { tippId ->
             TitleInstancePackagePlatform.executeUpdate("update TitleInstancePackagePlatform tipp set tipp.gokbId = :missing where tipp.id = :id",[missing:"${RDStore.GENERIC_NULL_VALUE}.${tippId}",id:tippId])
         }
+    }
+
+    Map<String, Object> expungeDeletedTIPPs(boolean doIt) {
+        GlobalRecordSource grs = GlobalRecordSource.findByActiveAndRectype(true, GlobalSourceSyncService.RECTYPE_TIPP)
+        Map<String, Object> result = [:]
+        Map<String, String> wekbUuids = [:]
+        Set<Map> titles = []
+        HTTPBuilder http = new HTTPBuilder(grs.uri+'/find') //we presume that the count will never get beyond 10000
+        http.request(Method.POST, ContentType.JSON) { req ->
+            body = [componentType: 'TitleInstancePackagePlatform',
+                    max: 10000,
+                    status: ['Deleted', GlobalSourceSyncService.PERMANENTLY_DELETED]]
+            requestContentType = ContentType.URLENC
+            response.success = { resp, json ->
+                if(resp.status == 200) {
+                    json.records.each{ Map record ->
+                        wekbUuids.put(record.uuid, record.status)
+                    }
+                }
+                else {
+                    throw new SyncException("erroneous response")
+                }
+            }
+            response.failure = { resp, reader ->
+                log.error("server response: ${resp.statusLine}")
+                if(resp.status == 404) {
+                    requestResult.error = resp.status
+                }
+                else
+                    throw new SyncException("error on request: ${resp.statusLine} : ${reader}")
+            }
+        }
+        http.shutdown()
+        List deletedLaserTIPPs = TitleInstancePackagePlatform.executeQuery('select new map(tipp.id as tippId, tipp.gokbId as wekbId, tipp.status as laserStatus, tipp.name as title) from TitleInstancePackagePlatform tipp where tipp.status = :deleted or tipp.gokbId in (:deletedWekbIDs)', [deleted: RDStore.TIPP_STATUS_DELETED, deletedWekbIDs: wekbUuids.keySet()])
+        Set<String> keysToDelete = []
+        deletedLaserTIPPs.each { Map row ->
+            Map<String, Object> titleRow = row
+            titleRow.wekbStatus = wekbUuids.get(row.wekbId)
+            List issueEntitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, concat(s.name, ' (', s.startDate, '-', s.endDate, ') (', oo.org.sortname, ')') as subscriptionName) from IssueEntitlement ie join ie.tipp tipp join ie.subscription s join s.orgRelations oo where oo.roleType in (:roleTypes) and tipp.gokbId = :wekbId and ie.status != :deleted", [roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER], wekbId: row.wekbId, deleted: RDStore.TIPP_STATUS_DELETED])
+            titleRow.issueEntitlements = issueEntitlements
+            if(doIt) {
+                if(!issueEntitlements) {
+                    keysToDelete << row.wekbId
+                }
+                else titles << titleRow
+            }
+            else
+                titles << titleRow
+        }
+        if(doIt && keysToDelete) {
+            Set<TitleInstancePackagePlatform> toDelete = TitleInstancePackagePlatform.findAllByGokbIdInList(keysToDelete)
+            if(toDelete) {
+                toDelete.collate(50).each { List<TitleInstancePackagePlatform> subList ->
+                    deletionService.deleteTIPPsCascaded(subList)
+                }
+            }
+            else log.info("no titles to delete")
+        }
+        result.titles = titles
+        result
     }
 
     Map<String, Object> listPlatformDuplicates() {

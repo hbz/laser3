@@ -105,7 +105,11 @@ class SubscriptionController {
                 return
             }
         }
-        else ctrlResult.result
+        else {
+            if(params.exportXLS)
+                exportService.exportReport(params, ctrlResult.result)
+            else ctrlResult.result
+        }
     }
 
     /*@DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
@@ -350,7 +354,7 @@ class SubscriptionController {
             else redirect(url: request.getHeader('referer'))
         }
         else {
-            redirect(action: 'show', id: ctrlResult.result.redirect)
+            redirect(action: 'members', id: params.id)
         }
     }
 
@@ -712,13 +716,16 @@ class SubscriptionController {
             if(params.singleTitle) {
                 IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
                 TitleInstancePackagePlatform tipp = ie.tipp
-                try {
-                    if(subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null) , RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
-                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name])
+
+                if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                    try {
+                        if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
+                            flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name])
+                        }
                     }
-                }
-                catch(EntitlementCreationException e) {
-                    flash.error = e.getMessage()
+                    catch (EntitlementCreationException e) {
+                        flash.error = e.getMessage()
+                    }
                 }
             }
         } else {

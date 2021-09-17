@@ -7,10 +7,13 @@
             <tr>
                 <td>
                     <span class="la-flexbox la-minor-object">
-                        <g:if test="${role.roleType.value=="Provider"}">
-                            <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code:'default.provider.label')}"></i>
+                        <g:if test="${role.roleType.value == RDStore.OR_SUBSCRIPTION_CONSORTIA.value}">
+                            <i class="la-list-icon la-popup-tooltip la-delay la-consortia icon" data-content="${message(code:'consortium')}"></i>
                         </g:if>
-                        <g:elseif test="${role.roleType.value =="Agency"}">
+                        <g:elseif test="${role.roleType.value==RDStore.OR_PROVIDER.value}">
+                            <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code:'default.provider.label')}"></i>
+                        </g:elseif>
+                        <g:elseif test="${role.roleType.value ==RDStore.OR_AGENCY.value}">
                             <i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'default.agency.label')}"></i>
                         </g:elseif>
                         <g:link controller="organisation" action="show" id="${role.org.id}">${role.org.name}</g:link>
@@ -101,7 +104,7 @@
                                                         ${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
-                                                        <g:link controller="organisation" action="${contextOrg.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]">${func}</g:link>
+                                                        ${func}
                                                     </div>
                                                     <g:each in="${Contact.findAllByPrsAndContentType(
                                                     func,
@@ -128,7 +131,7 @@
                                                         ${(RefdataValue.getByValue(roleRespValue)).getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
-                                                        <g:link controller="organisation" action="${contextOrg.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]">${resp}</g:link>
+                                                        ${resp}
                                                     </div>
                                                     <g:each in="${Contact.findAllByPrsAndContentType(
                                                             resp,
@@ -178,7 +181,7 @@
                                                         ${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
-                                                        <g:link controller="organisation" action="${contextOrg.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]">${func}</g:link>
+                                                        ${func}
                                                     </div>
                                                     <g:each in="${Contact.findAllByPrsAndContentType(
                                                             func,
@@ -205,7 +208,7 @@
                                                         ${(RefdataValue.getByValue(roleRespValue)).getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
-                                                        <g:link controller="organisation" action="${contextOrg.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]">${resp}</g:link>
+                                                        ${resp}
                                                     </div>
                                                     <g:each in="${Contact.findAllByPrsAndContentType(
                                                     resp,
