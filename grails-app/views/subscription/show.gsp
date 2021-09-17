@@ -271,7 +271,7 @@
             </div>
         </div>
         --%>
-            <div class="ui card" id="licenses"></div>K
+            <div class="ui card" id="licenses"></div>
             <g:if test="${usage}">
                 <div class="ui card la-dl-no-table">
                     <div class="content">
