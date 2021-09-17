@@ -105,7 +105,11 @@ class SubscriptionController {
                 return
             }
         }
-        else ctrlResult.result
+        else {
+            if(params.exportXLS)
+                exportService.exportReport(params, ctrlResult.result)
+            else ctrlResult.result
+        }
     }
 
     /*@DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
