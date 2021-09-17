@@ -282,6 +282,24 @@
                     </laser:script>
                 </div>
 
+                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
+
+                                <div class="field" style="text-align: right;">
+                                    <button id="package-info-toggle"
+                                            class="ui button blue la-modern-button">Paketinformationen anzeigen <i class="ui angle double down icon"></i></button></button>
+                                    <laser:script file="${this.getGroovyPageFileName()}">
+                                        $('#package-info-toggle').on('click', function () {
+                                            $("#packages").transition('slide down');
+                                            if ($("#packages").hasClass('visible')) {
+                                                $(this).html('Paketinformationen anzeigen <i class="ui angle double down icon"></i>')
+                                            } else {
+                                                $(this).html('Paketinformationen ausblenden <i class="ui angle double up icon"></i>')
+                                            }
+                                        })
+                                    </laser:script>
+                                </div>
+                </g:if>
+
             </div>
         </div>
 
@@ -484,6 +502,11 @@
             </div>
 
         </div>
+
+        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
+            <div id="packages"></div>
+        </g:if>
+
 
     </div>
 
@@ -1163,6 +1186,23 @@
                 $("#${link.id}Properties").html(response);
             }).fail();
        </g:each>
+    </g:if>
+
+    <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
+        JSPC.app.loadPackages = function () {
+                  $.ajax({
+                      url: "<g:createLink controller="ajaxHtml" action="getGeneralPackageData"/>",
+                      data: {
+                          subscription: "${surveyConfig.subscription.id}"
+                      }
+                  }).done(function(response){
+                      $("#packages").html(response);
+                      r2d2.initDynamicSemuiStuff("#packages");
+                  })
+              }
+
+
+        JSPC.app.loadPackages();
     </g:if>
 
 </laser:script>
