@@ -533,7 +533,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     Map<String, Object> expungeDeletedTIPPs() {
-        yodaService.expungeDeletedTIPPs(Boolean.valueOf("doIt"))
+        yodaService.expungeDeletedTIPPs(Boolean.valueOf(params.doIt))
     }
 
     @Secured(['ROLE_YODA'])

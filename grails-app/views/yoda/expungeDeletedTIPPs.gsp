@@ -1,6 +1,5 @@
 <%@ page import="de.laser.helper.RDStore; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" %>
 <laser:serviceInjection/>
-<g:set var="contextOrg" value="${contextService.getOrg()}"/>
 <html>
     <head>
         <meta name="layout" content="laser">
@@ -12,6 +11,12 @@
         <table>
             <thead>
                 <tr>
+                    <td colspan="5">
+                        <g:link action="expungeDeletedTIPPs" params="[doIt: true]" class="ui negative button js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
+                                data-confirm-term-how="ok">Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)</g:link>
+                    </td>
+                </tr>
+                <tr>
                     <th>TIPP ID + we:kb-ID</th>
                     <th>Titel</th>
                     <th>Status we:kb</th>
@@ -20,20 +25,16 @@
                 </tr>
             </thead>
             <tbody>
-                <g:each in="${tipps}" var="entry">
+                <g:each in="${titles}" var="entry">
                     <tr>
-                        <td>${entry.tipp.id}</td>
+                        <td>${entry.tippId} + ${entry.wekbId}</td>
                         <td>${entry.name}</td>
-                        <td>
-
-                        </td>
-                        <td>
-
-                        </td>
+                        <td>${entry.laserStatus}</td>
+                        <td>${entry.wekbStatus}</td>
                         <td>
                             <ul>
-                                <g:each in="${issueEntitlements.get(entry.tipp)}" var="ie">
-                                    <li>${ie.id} -> ${ie.subscription.dropdownNamingConvention(contextOrg)}</li>
+                                <g:each in="${entry.issueEntitlements}" var="ie">
+                                    <li>${ie.id} -> ${ie.subscriptionName}</li>
                                 </g:each>
                             </ul>
                         </td>
@@ -42,8 +43,8 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td>
-                        <g:link action="purgeTIPPsWithoutGOKBId" params="[doIt: true]" class="ui negative button js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
+                    <td colspan="5">
+                        <g:link action="expungeDeletedTIPPs" params="[doIt: true]" class="ui negative button js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
                                 data-confirm-term-how="ok">Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)</g:link>
                     </td>
                 </tr>
