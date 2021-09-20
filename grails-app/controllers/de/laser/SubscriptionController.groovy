@@ -731,7 +731,9 @@ class SubscriptionController {
         } else {
             log.error("Unable to locate subscription instance")
         }
-        redirect(url: request.getHeader("referer"))
+
+        redirect action: "renewEntitlementsWithSurvey", id: result.subscription.id, params: [surveyConfigID: result.surveyConfig.id, tab: 'selectedIEs']
+
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
@@ -1017,7 +1019,7 @@ class SubscriptionController {
         else {
             flash.message = ctrlResult.result.message
         }
-        redirect(url: request.getHeader("referer"))
+        redirect action: "renewEntitlementsWithSurvey", id: ctrlResult.result.subscription.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id, tab: 'selectedIEs']
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)

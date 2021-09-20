@@ -1008,13 +1008,13 @@ class SubscriptionControllerService {
                 if(params.tab == 'previousIEsStats' ) {
                     previousTitles = subscriptionService.getTippIDsFixed(previousSubscription)
                 }
-                result = surveyService.getStatsForParticipant(result, params, previousSubscription, result.subscriber, subscriptionService.getTippIDsFixed(baseSub))
+                result = surveyService.getStatsForParticipant(result, params, newSub, result.subscriber, subscriptionService.getTippIDsFixed(baseSub))
 
-            }else{
+            }else {
 
-               params.sort = params.sort ?: 'tipp.sortname'
-               params.order = params.order ?: 'asc'
-               result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
+                params.sort = params.sort ?: 'tipp.sortname'
+                params.order = params.order ?: 'asc'
+                result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
 
                 /*Map query = filterService.getIssueEntitlementQuery(params, newSub)
                 List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
@@ -1022,29 +1022,29 @@ class SubscriptionControllerService {
                 targetIEs.collate(32767).each {
                     result.targetIEs.addAll(IssueEntitlement.findAllByIdInList(targetIEs.take(32768)))
                 }*/
+            }
 
-                result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
+            result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
-                if (result.editable) {
-                    SessionCacheWrapper sessionCache = contextService.getSessionCache()
-                    Map<String, Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
+            if (result.editable) {
+                SessionCacheWrapper sessionCache = contextService.getSessionCache()
+                Map<String, Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
 
-                    if (!checkedCache) {
-                        sessionCache.put("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}", ["checked": [:]])
-                        checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
-                    }
+                if (!checkedCache) {
+                    sessionCache.put("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}", ["checked": [:]])
+                    checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
+                }
 
-                    result.checkedCache = checkedCache.get('checked')
-                    result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
+                result.checkedCache = checkedCache.get('checked')
+                result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
 
 
-                    result.allChecked = ""
-                    if (params.tab == 'allIEs' && result.countAllIEs > 0 && result.countAllIEs == result.checkedCount) {
-                        result.allChecked = "checked"
-                    }
-                    if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
-                        result.allChecked = "checked"
-                    }
+                result.allChecked = ""
+                if (params.tab == 'allIEs' && result.countAllIEs > 0 && result.countAllIEs == result.checkedCount) {
+                    result.allChecked = "checked"
+                }
+                if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
+                    result.allChecked = "checked"
                 }
             }
 

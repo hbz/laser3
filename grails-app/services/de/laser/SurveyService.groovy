@@ -1347,30 +1347,36 @@ class SurveyService {
             subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription.instanceOf])
         }
 
-        Set<Counter4Report> c4usages = []
-        Set<Counter5Report> c5usages = []
-        List count4check = [], c4sums = [], count5check = [], c5sums = [], monthsInRing = []
+        List count4check = [], count5check = [], monthsInRing = []
         if(!params.tabStat)
             params.tabStat = 'total'
         if(subscribedPlatforms && titles) {
             String sort, dateRange
             Map<String, Object> queryParams = [customer: participant, platforms: subscribedPlatforms]
-            if(params.sort) {
-                String secondarySort
-                switch(params.sort) {
-                    case 'reportType': secondarySort = ", title.name asc, r.reportFrom desc"
-                        break
-                    case 'title.name': secondarySort = ", r.reportType asc, r.reportFrom desc"
-                        break
-                    case 'reportFrom': secondarySort = ", title.name asc, r.reportType asc"
-                        break
-                    default: secondarySort = ", title.name asc, r.reportType asc, r.reportFrom desc"
-                        break
+
+            if(params.tabStat == 'total'){
+                if (params.sort) {
+                    sort = "${params.sort} ${params.order}"
+                } else {
+                    sort = "reportCount ${params.order ?: 'asc'}"
                 }
-                sort = "${params.sort} ${params.order} ${secondarySort}"
-            }
-            else {
-                sort = "title.name asc, r.reportType asc, r.reportFrom desc"
+            }else {
+                if (params.sort) {
+                    String secondarySort
+                    switch (params.sort) {
+                        case 'reportType': secondarySort = ", title.name asc, r.reportFrom desc"
+                            break
+                        case 'title.name': secondarySort = ", r.reportType asc, r.reportFrom desc"
+                            break
+                        case 'reportFrom': secondarySort = ", title.name asc, r.reportType asc"
+                            break
+                        default: secondarySort = ", title.name asc, r.reportType asc, r.reportFrom desc"
+                            break
+                    }
+                    sort = "${params.sort} ${params.order} ${secondarySort}"
+                } else {
+                    sort = "title.name asc, r.reportType asc, r.reportFrom desc"
+                }
             }
             Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance(), now = GregorianCalendar.getInstance()
 
@@ -1379,7 +1385,7 @@ class SurveyService {
 
             use(TimeCategory) {
                 newStartDate = new Date()-12.months
-                newEndDate = new Date()
+                newEndDate = new Date()+1.months
             }
 
             dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
@@ -1461,15 +1467,16 @@ class SurveyService {
                 filter += " and r.metricType = :metricType "
                 queryParams.metricType = params.metricType
                 if(params.tabStat == 'total') {
-                    c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', queryParams))
+                    result.total = Counter4Report.executeQuery('select new map(r.title as title, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange + ' group by r.title, r.metricType, r.reportType, r.reportCount order by ' + sort, queryParams).size()
+                    result.usages = Counter4Report.executeQuery('select new map(r.title as title, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange + ' group by r.title, r.metricType, r.reportType, r.reportCount order by ' + sort, queryParams, [max: result.max, offset: result.offset])
                 }
                 else {
-                    c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
+                    result.usages = Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange + ' order by ' + sort, queryParams, [max: result.max, offset: result.offset])
+
+                    count4check.addAll(Counter4Report.executeQuery('select count(r.id) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange, queryParams))
+                    result.total = count4check.size() > 0 ? count4check[0] as int : 0
                 }
-                count4check.addAll(Counter4Report.executeQuery('select count(r.id) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange, queryParams))
-                result.total = count4check.size() > 0 ? count4check[0] as int : 0
-                result.sums = c4sums
-                result.usages = c4usages
+
             }
             else {
                 Set availableReportTypes = Counter5Report.executeQuery('select r.reportType from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) order by r.reportFrom asc', [customer: queryParams.customer, platforms: queryParams.platforms])
@@ -1490,13 +1497,14 @@ class SurveyService {
                 }
                 filter += " and r.metricType = :metricType "
                 queryParams.metricType = params.metricType
-                if(params.tabStat == 'total')
-                    c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', queryParams))
-                else
-                    c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
-                result.total = count5check.size() > 0 ? count5check[0] as int : 0
-                result.sums = c5sums
-                result.usages = c5usages
+                if(params.tabStat == 'total') {
+                    result.total = Counter5Report.executeQuery('select new map(r.title as title, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange + ' group by r.title, r.metricType, r.reportType, r.reportCount order by ' + sort, queryParams).size()
+                    result.usages = Counter5Report.executeQuery('select new map(r.title as title, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange + ' group by r.title, r.metricType, r.reportType, r.reportCount order by ' + sort, queryParams, [max: result.max, offset: result.offset])
+                }else {
+                    result.usages = Counter5Report.executeQuery('select r from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)' + filter + dateRange + ' order by ' + sort, queryParams, [max: result.max, offset: result.offset])
+                    result.total = count5check.size() > 0 ? count5check[0] as int : 0
+                }
+
             }
         }
         result.monthsInRing = monthsInRing
