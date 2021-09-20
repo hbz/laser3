@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3811    17.09.2021  dev     2.2         Moe     Feature     Click me auch bei Umfragen
+
 3801    17.09.2021  dev     2.2         David   Feature     Reporting: Kontextabhängige Hilfe
 
 3812    17.09.2021  dev     2.2         David   Feature     Modale Dialoge springen nach dem Schließen zum Seitenanfang

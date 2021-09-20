@@ -186,10 +186,10 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             <div class="three fields">
                 <div class="field">
                     <label for="metricType"><g:message code="default.usage.metricType"/></label>
-                    <select name="metricType" id="metricType" multiple="multiple" class="ui selection dropdown">
+                    <select name="metricType" id="metricType" class="ui selection dropdown">
                         <option value=""><g:message code="default.select.choose.label"/></option>
                         <g:each in="${metricTypes}" var="metricType">
-                            <option <%=(params.list('metricType')?.contains(metricType)) ? 'selected="selected"' : ''%>
+                            <option <%=(params.metricType == metricType) ? 'selected="selected"' : ''%>
                                     value="${metricType}">
                                 ${metricType}
                             </option>
@@ -227,51 +227,26 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 </g:else>
 
 </br>
-%{--<div class="ui pointing five item massive menu">
-
-    <g:if test="${previousSubscription}">
-        <g:link class="item ${params.tab == 'previousIEs' ? 'active' : ''}"
-                controller="subscription" action="renewEntitlementsWithSurvey"
-                id="${newSub.id}"
-                params="[surveyConfigID: surveyConfig.id, tab: 'previousIEs']">
-            <g:message code="renewEntitlementsWithSurvey.previousSelectableTitles"/>
-            <div class="ui circular label">${countPreviousIEs}</div>
-        </g:link>
-    </g:if>
-
-    <g:link class="item ${params.tab == 'allIEs' ? 'active' : ''}"
-            controller="subscription" action="renewEntitlementsWithSurvey"
-            id="${newSub.id}"
-            params="[surveyConfigID: surveyConfig.id, tab: 'allIEs']">
-        <g:message code="renewEntitlementsWithSurvey.selectableTitles"/>
-        <div class="ui circular label">${countSelectedIEs}/${countAllIEs}</div>
-    </g:link>
-
-    <g:link class="item ${params.tab == 'selectedIEs' ? 'active' : ''}"
-            controller="subscription" action="renewEntitlementsWithSurvey"
-            id="${newSub.id}"
-            params="[surveyConfigID: surveyConfig.id, tab: 'selectedIEs']">
-        <g:message code="renewEntitlementsWithSurvey.currentEntitlements"/>
-        <div class="ui circular label">${countSelectedIEs}</div></g:link>
-
+<semui:tabs actionName="${actionName}">
+    <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+                    params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEs']" text="${message(code: "renewEntitlementsWithSurvey.selectableTitles")}" tab="allIEs"
+                    counts="${countAllIEs}"/>
+    <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+                    params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']" text="${message(code: "renewEntitlementsWithSurvey.currentTitlesSelect")}" tab="selectedIEs"
+                    counts="${countSelectedIEs}"/>
+    <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+                    params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'currentIEs']" text="${message(code: "renewEntitlementsWithSurvey.currentTitles")}" tab="currentIEs"
+                    counts="${countCurrentIEs}"/>
 
     <g:if test="${surveyService.showStatisticByParticipant(subscription, subscriber)}">
-        <g:link class="item ${params.tab == 'previousIEsStats' ? 'active' : ''}"
-                controller="subscription" action="renewEntitlementsWithSurvey"
-                id="${newSub.id}"
-                params="[surveyConfigID: surveyConfig.id, tab: 'previousIEsStats']">
-            <g:message code="renewEntitlementsWithSurvey.previousIEsStats"/>
-        </g:link>
-
-        <g:link class="item ${params.tab == 'allIEsStats' ? 'active' : ''}"
-                controller="subscription" action="renewEntitlementsWithSurvey"
-                id="${newSub.id}"
-                params="[surveyConfigID: surveyConfig.id, tab: 'allIEsStats']">
-            <g:message code="renewEntitlementsWithSurvey.allIEsStatsStats"/>
-        </g:link>
+    <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+                    params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEsStats']" text="${message(code: "renewEntitlementsWithSurvey.allIEsStats")}" tab="allIEsStats"
+                    />
     </g:if>
 
-</div>--}%
+
+</semui:tabs>
+
 
 <g:if test="${params.tab == 'previousIEsStats' || params.tab == 'allIEsStats'}">
     <semui:tabs>
@@ -316,7 +291,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                 <g:each in="${usages}" var="row">
                     <tr>
                         <g:if test="${row.title}">
-                            <td>${row.title.name}</td>
+                            <td>${row.title.name} ${row.title.id}</td>
                         </g:if>
                         <td>${row.metricType}</td>
                         <td>${row.reportCount}</td>
@@ -339,43 +314,10 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 
     <div class="ui segment">
 
-        <div class="ui grid">
-
-            <div class="row">
-
-                <div class="sixteen wide column">
-                    <g:if test="${targetInfoMessage}">
-                        <h3 class="ui header center aligned"><g:message code="${targetInfoMessage}"/></h3>
-                    </g:if>
-
-                    <g:if test="${sourceInfoMessage}">
-                        <h3 class="ui header center aligned"><g:message code="${sourceInfoMessage}"/></h3>
-                    </g:if>
-
-                    <semui:form>
-                        <g:message code="subscription"/>: <strong><g:link action="show"
-                                                                     id="${newSub.id}">${newSub.name}</g:link></strong>
-                        <br />
-                        <br />
-                        <g:message code="package"/>:
-
-                        <div class="ui list">
-                            <g:each in="${newSub.packages.sort { it.pkg.name }}" var="subPkg">
-                                <div class="item">
-                                    <strong>${subPkg.pkg.name}</strong> (<g:message
-                                        code="title.plural"/>: ${raw(subPkg.getIEandPackageSize())})
-                                </div>
-                            </g:each>
-                        </div>
-                    </semui:form>
-                </div>
-
-            </div>
 
             <g:render template="/templates/survey/entitlementTableSurvey"
                       model="${[ies: [sourceIEs: sourceIEs], showPackage: true, showPlattform: true]}"/>
 
-        </div>
 
     </div>
 

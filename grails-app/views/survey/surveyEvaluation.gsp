@@ -22,6 +22,10 @@
     <g:if test="${surveyInfo.status != RDStore.SURVEY_IN_PROCESSING}">
         <semui:exportDropdown>
             <semui:exportDropdownItem>
+                <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+            </semui:exportDropdownItem>
+
+            <semui:exportDropdownItem>
                 <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'survey.exportSurvey')}</g:link>
             </semui:exportDropdownItem>
@@ -109,6 +113,8 @@
 
         </div>
     </div>
+
+    <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
 
 </g:else>
 

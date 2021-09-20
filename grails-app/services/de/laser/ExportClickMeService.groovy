@@ -307,6 +307,73 @@ class ExportClickMeService {
 
     ]
 
+    static Map<String, Object> EXPORT_SURVEY_EVALUATION = [
+            //Wichtig: Hier bei dieser Config bitte drauf achten, welche Feld Bezeichnung gesetzt ist,
+            // weil die Felder von einer zusammengesetzten Map kommen. siehe ExportClickMeService -> exportSurveyEvaluation
+            survey      : [
+                    label: 'Survey',
+                    message: 'survey.label',
+                    fields: [
+                            'participant.sortname'        : [field: 'participant.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                            'participant.name'            : [field: 'participant.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                    ]
+            ],
+
+            participant : [
+                    label: 'Participant',
+                    message: 'surveyParticipants.label',
+                    fields: [
+                            'participant.funderType'        : [field: 'participant.funderType', label: 'Funder Type', message: 'org.funderType.label'],
+                            'participant.funderHskType'     : [field: 'participant.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+                            'participant.libraryType'       : [field: 'participant.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            'participant.generalContact'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
+                            'participant.billingContact'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+                            'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
+                            'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+                            'participant.eInvoice'          : [field: 'participant.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
+                            'participant.eInvoicePortal'    : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
+                            'participant.linkResolverBaseURL'    : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                    ]
+            ],
+            participantAccessPoints : [
+                    label: 'Participants Access Points',
+                    message: 'exportClickMe.participantAccessPoints',
+                    fields: [
+                            'participant.exportIPs'         : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateSheet: 'true'],
+                            'participant.exportProxys'      : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
+                            'participant.exportEZProxys'    : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
+                            'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
+                    ]
+            ],
+            participantIdentifiersCustomerIdentifier : [
+                    label: 'Identifiers/Customer Identifier',
+                    message: 'exportClickMe.participantIdentifiersCustomerIdentifier',
+                    fields: [
+                            'participant.customerIdentifier' : [field: null, label: 'customerIdentifier', message: 'org.customerIdentifier.plural'],
+                    ],
+
+            ],
+
+            subscription: [
+                    label: 'Subscription',
+                    message: 'subscription.label',
+                    fields: [
+                            'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
+                            'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
+                            'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
+                            'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                            'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
+                            'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label'],
+                            'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label'],
+                            'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label'],
+                            'subscription.resource'                     : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
+                            'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                            'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                    ]
+            ]
+
+    ]
+
     Map<String, Object> getExportRenewalFields() {
 
         Map<String, Object> exportFields = [:]
@@ -317,8 +384,7 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
         }
 
@@ -329,8 +395,7 @@ class ExportClickMeService {
 
         Map<String, Object> fields = EXPORT_RENEWAL_CONFIG as Map
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
         }
 
@@ -347,8 +412,7 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
         }
         List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
@@ -380,8 +444,7 @@ class ExportClickMeService {
 
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_CONFIG as Map
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
         }
 
@@ -423,8 +486,7 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
         }
 
@@ -435,8 +497,7 @@ class ExportClickMeService {
 
         Map<String, Object> fields = EXPORT_COST_ITEM_CONFIG as Map
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
         }
 
@@ -464,8 +525,7 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
         }
 
@@ -492,8 +552,7 @@ class ExportClickMeService {
                 break
         }
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
         }
 
@@ -501,6 +560,51 @@ class ExportClickMeService {
 
         PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
             fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
+        }
+
+        fields
+    }
+
+    Map<String, Object> getExportSurveyEvaluationFields(SurveyConfig surveyConfig) {
+
+        Map<String, Object> exportFields = [:]
+
+        EXPORT_SURVEY_EVALUATION.keySet().each {
+            EXPORT_SURVEY_EVALUATION.get(it).fields.each {
+                exportFields.put(it.key, it.value)
+            }
+        }
+
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
+        }
+
+        surveyConfig.surveyProperties.each {SurveyConfigProperties surveyConfigProperties ->
+            exportFields.put("surveyProperty."+surveyConfigProperties.surveyProperty.id, [field: null, label: surveyConfigProperties.surveyProperty.getI10n('name'), defaultChecked: 'true'])
+        }
+
+        if(!surveyConfig.subscription){
+            exportFields.remove('subscription')
+        }
+
+
+        exportFields
+    }
+
+    Map<String, Object> getExportSurveyEvaluationFieldsForUI(SurveyConfig surveyConfig) {
+
+        Map<String, Object> fields = EXPORT_SURVEY_EVALUATION as Map
+
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
+        }
+
+        surveyConfig.surveyProperties.each {SurveyConfigProperties surveyConfigProperties ->
+            fields.survey.fields << ["surveyProperty.${surveyConfigProperties.surveyProperty.id}": [field: null, label: surveyConfigProperties.surveyProperty.getI10n('name'), defaultChecked: 'true']]
+        }
+
+        if(!surveyConfig.subscription){
+            fields.remove('subscription')
         }
 
         fields
@@ -754,6 +858,80 @@ class ExportClickMeService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    def exportSurveyEvaluation(Map result, Map<String, Object> selectedFields) {
+        Locale locale = LocaleContextHolder.getLocale()
+
+        Map<String, Object> selectedExportFields = [:]
+
+        Map<String, Object> configFields = getExportSurveyEvaluationFields(result.surveyConfig)
+
+        configFields.keySet().each { String k ->
+            if (k in selectedFields.keySet() ) {
+                selectedExportFields.put(k, configFields.get(k))
+            }
+        }
+
+        List titles = exportTitles(selectedExportFields, null, locale)
+
+
+        List<SurveyOrg> participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig)
+        List<SurveyOrg> participantsFinish = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)
+
+        List exportData = []
+
+        exportData.add([[field: messageSource.getMessage('surveyEvaluation.participantsViewAllFinish', null, locale) + " (${participantsFinish.size()})", style: 'positive']])
+
+        participantsFinish.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
+            Map participantResult = [:]
+            participantResult.properties = SurveyResult.findAllByParticipantAndSurveyConfig(surveyOrg.org, result.surveyConfig)
+
+            participantResult.sub = [:]
+            if(result.surveyConfig.subscription) {
+                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyOrg.org)
+            }
+
+            participantResult.participant = surveyOrg.org
+            participantResult.surveyConfig = result.surveyConfig
+
+            setSurveyEvaluationRow(participantResult, selectedExportFields, exportData)
+        }
+
+        exportData.add([[field: '', style: null]])
+        exportData.add([[field: '', style: null]])
+        exportData.add([[field: '', style: null]])
+        exportData.add([[field: messageSource.getMessage('surveyEvaluation.participantsViewAllNotFinish', null, locale) + " (${participantsNotFinish.size()})", style: 'negative']])
+
+
+        participantsNotFinish.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
+            Map participantResult = [:]
+            participantResult.properties = SurveyResult.findAllByParticipantAndSurveyConfig(surveyOrg.org, result.surveyConfig)
+
+            participantResult.sub = [:]
+            if(result.surveyConfig.subscription) {
+                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyOrg.org)
+            }
+
+            participantResult.participant = surveyOrg.org
+            participantResult.surveyConfig = result.surveyConfig
+
+            setSurveyEvaluationRow(participantResult, selectedExportFields, exportData)
+        }
+
+
+        Map sheetData = [:]
+        sheetData[messageSource.getMessage('surveyInfo.evaluation', null, locale)] = [titleRow: titles, columnData: exportData]
+
+        if (participantsFinish) {
+            sheetData = exportAccessPoints(participantsFinish.org, sheetData, selectedExportFields, locale)
+        }
+
+        if (participantsNotFinish) {
+            sheetData = exportAccessPoints(participantsNotFinish.org, sheetData, selectedExportFields, locale)
+        }
+
+        return exportService.generateXLSXWorkbook(sheetData)
+    }
+
     private void setRenewalRow(Map participantResult, Map<String, Object> selectedFields, List renewalData, boolean onlySubscription, PropertyDefinition multiYearTermTwoSurvey, PropertyDefinition multiYearTermThreeSurvey, String localizedName){
         List row = []
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -931,7 +1109,6 @@ class ExportClickMeService {
 
     }
 
-
     private void setOrgRow(Org result, Map<String, Object> selectedFields, List exportData){
         List row = []
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -976,6 +1153,42 @@ class ExportClickMeService {
         exportData.add(row)
 
     }
+
+    private void setSurveyEvaluationRow(Map participantResult, Map<String, Object> selectedFields, List exportData){
+        List row = []
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        selectedFields.keySet().each { String fieldKey ->
+            Map mapSelecetedFields = selectedFields.get(fieldKey)
+            String field = mapSelecetedFields.field
+            if(!mapSelecetedFields.separateSheet) {
+                if (fieldKey.startsWith('surveyProperty.')) {
+                    Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                    SurveyResult participantResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, PropertyDefinition.get(id))
+                    row.add([field: participantResultProperty.getResult() ?: "", style: null])
+                    row.add([field: participantResultProperty.comment ?: "", style: null])
+                } else if (fieldKey == 'participant.generalContact') {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
+                }else if (fieldKey == 'participant.billingContact') {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
+                }else if (fieldKey == 'participant.billingAdress') {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
+                }else if (fieldKey == 'participant.postAdress') {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
+                }
+                else if (fieldKey == 'participant.customerIdentifier') {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey, participantResult.sub)
+                }else if (fieldKey.startsWith('participantIdentifiers.')) {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
+                }else {
+                        def fieldValue = getFieldValue(participantResult, field, sdf)
+                        row.add([field: fieldValue != null ? fieldValue : '', style: null])
+                }
+            }
+        }
+        exportData.add(row)
+
+    }
+
 
     private def getFieldValue(def map, String field, SimpleDateFormat sdf){
         def fieldValue
@@ -1196,6 +1409,9 @@ class ExportClickMeService {
                             }
                 }else {
                     titles << (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label)
+                    if (fieldKey.startsWith('surveyProperty.')) {
+                        titles << (messageSource.getMessage('surveyResult.participantComment', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))
+                    }
                 }
             }
         }

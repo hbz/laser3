@@ -192,11 +192,11 @@
             </tr>
             </thead>
             <tbody>
-            <g:each in="${surveyParticipantsHasAccess.org}" var="participant" status="i">
+            <g:each in="${surveyParticipantsHasAccess}" var="surveyOrg" status="i">
 
+                <g:set var="participant"
+                       value="${surveyOrg.org}"/>
                 <g:set var="surResults" value="${SurveyResult.findAllByParticipantAndSurveyConfig(participant, surveyConfig)}"/>
-                <g:set var="surveyOrg"
-                       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant)}"/>
                 <tr>
                     <g:if test="${showCheckbox}">
                         <td>
@@ -442,11 +442,12 @@
             </tr>
             </thead>
             <tbody>
-            <g:each in="${surveyParticipantsHasNotAccess.org}" var="participant" status="i">
+            <g:each in="${surveyParticipantsHasNotAccess}" var="surveyOrg" status="i">
 
+                <g:set var="participant"
+                       value="${surveyOrg.org}"/>
                 <g:set var="surResults" value="${SurveyResult.findAllByParticipantAndSurveyConfig(participant, surveyConfig)}"/>
-                <g:set var="surveyOrg"
-                       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant)}"/>
+
                 <tr>
                     <g:if test="${showCheckbox}">
                         <td>

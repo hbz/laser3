@@ -52,13 +52,13 @@
 
                     <g:if test="${ieExistsInSubs && ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
                         <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInSub')}" data-position="left center" data-variation="tiny">
-                            <i class="icon redo alternate blue"></i>
+                            <i class="icon redo alternate yellow"></i>
                         </div>
                     </g:if>
 
                     <g:if test="${ieInNewSub && previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
                         <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInPreviousSubscription')}" data-position="left center" data-variation="tiny">
-                            <i class="icon redo alternate red"></i>
+                            <i class="icon redo alternate orange"></i>
                         </div>
                     </g:if>
 
