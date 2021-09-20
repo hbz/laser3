@@ -185,7 +185,7 @@
                             total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
                 </g:else>
             </h3>
-            <table class="ui celled la-table compact table">
+            <table class="ui celled monitor stackable la-table compact table">
                 <thead>
                 <tr>
                     <th>

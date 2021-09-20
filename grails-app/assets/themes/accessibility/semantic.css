@@ -6149,6 +6149,12 @@ i.icon.la-list-icon:before {
 /*******************************
          Theme Overrides
 *******************************/
+
+@media only screen and (min-width: 1200px) {
+  .ui.container {
+    width: 1220px;
+  }
+}
 /*!
  * # Semantic UI 2.4.2 - Divider
  * http://github.com/semantic-org/semantic-ui/
