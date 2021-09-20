@@ -19,6 +19,7 @@ import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -1339,18 +1340,21 @@ class SurveyService {
         return result
     }
 
-    Map<String, Object> getStatsForParticipant(GrailsParameterMap params, Subscription subscription, List<Long> titles, boolean showAll){
-        Map<String, Object> result = [:]
-
+    Map<String, Object> getStatsForParticipant(Map<String, Object> result, GrailsParameterMap params, Subscription subscription, Org participant, List<Long> titles){
         Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
+
+        if(!subscribedPlatforms) {
+            subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription.instanceOf])
+        }
+
         Set<Counter4Report> c4usages = []
         Set<Counter5Report> c5usages = []
         List count4check = [], c4sums = [], count5check = [], c5sums = [], monthsInRing = []
         if(!params.tabStat)
             params.tabStat = 'total'
-        if(subscribedPlatforms && (titles || showAll)) {
+        if(subscribedPlatforms && titles) {
             String sort, dateRange
-            Map<String, Object> queryParams = [customer: subscription.getSubscriber(), platforms: subscribedPlatforms]
+            Map<String, Object> queryParams = [customer: participant, platforms: subscribedPlatforms]
             if(params.sort) {
                 String secondarySort
                 switch(params.sort) {
@@ -1369,6 +1373,15 @@ class SurveyService {
                 sort = "title.name asc, r.reportType asc, r.reportFrom desc"
             }
             Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance(), now = GregorianCalendar.getInstance()
+
+            Date newStartDate
+            Date newEndDate
+
+            use(TimeCategory) {
+                newStartDate = new Date()-12.months
+                newEndDate = new Date()
+            }
+
             if(subscription.startDate && subscription.endDate) {
                 dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
                 if(params.tabStat != 'total') {
@@ -1380,42 +1393,13 @@ class SurveyService {
                     queryParams.endDate = filterTime.getTime()
                 }
                 else {
-                    queryParams.startDate = subscription.startDate
-                    queryParams.endDate = subscription.endDate
+                        queryParams.startDate = newStartDate
+                        queryParams.endDate = newEndDate
                 }
-                startTime.setTime(subscription.startDate)
-                if(subscription.endDate < new Date())
-                    endTime.setTime(subscription.endDate)
+                startTime.setTime(newStartDate)
+                endTime.setTime(newEndDate)
             }
-            else if(subscription.startDate) {
-                dateRange = " and r.reportFrom >= :startDate "
-                if(params.tabStat != 'total') {
-                    dateRange += "and r.reportTo <= :endDate "
-                    Calendar filterTime = GregorianCalendar.getInstance()
-                    Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tabStat)
-                    filterTime.setTime(filterDate)
-                    queryParams.startDate = filterDate
-                    filterTime.set(Calendar.DATE,filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
-                    queryParams.endDate = filterTime.getTime()
-                }
-                else
-                    queryParams.startDate = subscription.startDate
-                startTime.setTime(subscription.startDate)
-            }
-            else {
-                if(params.tab != 'total') {
-                    dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
-                    Calendar filterTime = GregorianCalendar.getInstance()
-                    Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tab)
-                    filterTime.setTime(filterDate)
-                    queryParams.startDate = filterDate
-                    filterTime.set(Calendar.DATE,filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
-                    queryParams.endDate = filterTime.getTime()
-                }
-                else
-                    dateRange = ''
-                startTime.set(2018, 0, 1)
-            }
+
             while(startTime.before(endTime)) {
                 monthsInRing << startTime.getTime()
                 startTime.add(Calendar.MONTH, 1)
@@ -1478,7 +1462,7 @@ class SurveyService {
                 }
                 filter += " and r.metricType = :metricType "
                 queryParams.metricType = params.metricType
-                if(params.tab == 'total') {
+                if(params.tabStat == 'total') {
                     c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', queryParams))
                 }
                 else {
@@ -1508,11 +1492,11 @@ class SurveyService {
                 }
                 filter += " and r.metricType = :metricType "
                 queryParams.metricType = params.metricType
-                if(params.tab == 'total')
+                if(params.tabStat == 'total')
                     c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', queryParams))
                 else
                     c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
-                result.total = count5check
+                result.total = count5check.size() > 0 ? count5check[0] as int : 0
                 result.sums = c5sums
                 result.usages = c5usages
             }
@@ -1556,6 +1540,21 @@ class SurveyService {
             return false
         }
 
+    }
+
+    List<TitleInstancePackagePlatform> perpetualAccessTitlesOfParticipant(Org org){
+
+        List<TitleInstancePackagePlatform> tipps = []
+
+        List<OrgRole> orgRoles = OrgRole.findAllByOrgAndRoleTypeInList(org, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN])
+
+        if(orgRoles) {
+            List<IssueEntitlement> issueEntitlementList = IssueEntitlement.findAllBySubscriptionInListAndStatusAndAcceptStatusAndHasPerpetualAccess(orgRoles.sub, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED, true)
+            if (issueEntitlementList && issueEntitlementList.size() > 0) {
+                tipps = issueEntitlementList.tipp
+            }
+        }
+        return  tipps.unique()
     }
 
     }
