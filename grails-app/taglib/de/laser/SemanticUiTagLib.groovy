@@ -492,6 +492,28 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
+    //  <semui:infoModal> ${content} <semui:infoModal />
+
+    def infoModal = { attrs, body ->
+
+        String id        = attrs.id ? ' id="' + attrs.id + '" ' : ''
+        String modalSize = attrs.modalSize ? attrs.modalSize  : ''
+        String msgClose  = attrs.msgClose  ?: "${g.message(code:'default.button.merci.label')}"
+
+        out << '<div role="dialog" class="ui modal ' + modalSize + '"' + id + ' aria-label="Modal">'
+        out <<    '<div class="content ui items">'
+        out <<       '<div class="item">'
+        out <<          '<div class="image"><i class="ui icon huge circular question"></i></div>'
+        out <<          '<div class="content">'
+        out << body()
+        out <<          '</div>'
+        out <<       '</div>'
+        out <<    '</div>'
+        out <<    '<div class="actions">'
+        out <<       '<button class="ui button ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</button>'
+        out <<    '</div>'
+        out << '</div>'
+    }
 
     //  <semui:confirmationModal  />
     // global included at semanticUI.gsp

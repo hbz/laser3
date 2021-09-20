@@ -1,53 +1,60 @@
 <%@ page import="de.laser.reporting.export.local.ExportLocalHelper;" %>
 <laser:serviceInjection />
 <!-- _helpModal.gsp -->
-<semui:modal id="${modalID}" text="?" hideSubmitButton="true">
+<semui:infoModal id="${modalID}">
 
     <div class="help-section" data-help-section="timeline-member">
-        <p>
-            Diese Abfrage visualisiert die zeitliche Teilnehmerentwicklung dieser Lizenz.
+        <p class="ui header">
+            Die Abfrage visualisiert die zeitliche Entwicklung der Teilnehmer für diese Lizenz
         </p>
         <p>
-            Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit jeweiligen Datumsgrenzen.<br />
-            Für jede Lizenz sind die Veränderungen bezogen auf den Vorgänger erkennbar:
+            Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit jeweiligen Datumsgrenzen.
+            Für jede Lizenz sind mögliche Veränderungen, bezogen auf den Vorgänger, wie folgt erkennbar:
         </p>
         <p>
-            Teilnehmer hinzugefügt: <span class="ui green circular label">grün</span>, Teilnehmer entfernt: <span class="ui red circular label">rot</span>
+            <i class="icon circle green"></i> Teilnehmer hinzugefügt, <br />
+            <i class="icon circle red"></i> Teilnehmer entfernt
         </p>
+        <p>Aktuelle Teilnehmer sind unter <i class="icon circle blue"></i> zu finden.</p>
     </div>
     <div class="help-section" data-help-section="timeline-costX">B</div>
     <div class="help-section" data-help-section="timeline-entitlement">
-        <p>
-            Diese Abfrage visualisiert die zeitliche Bestandsentwicklung dieser Lizenz.
+        <p class="ui header">
+            Die Abfrage visualisiert die zeitliche Entwicklung des Bestands für diese Lizenz
         </p>
         <p>
-            Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit jeweiligen Datumsgrenzen.<br />
-            Für jede Lizenz sind die Veränderungen bezogen auf den Vorgänger erkennbar:
+            Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit jeweiligen Datumsgrenzen.
+            Für jede Lizenz sind mögliche Veränderungen, bezogen auf den Vorgänger, wie folgt erkennbar:
         </p>
         <p>
-            Titel hinzugefügt: <span class="ui green circular label">grün</span>, Titel entfernt: <span class="ui red circular label">rot</span>
+            <i class="icon circle green"></i> Titel hinzugefügt, <br />
+            <i class="icon circle red"></i>Titel entfernt
         </p>
+        <p>Der aktuelle Bestand ist unter <i class="icon circle blue"></i> zu finden.</p>
     </div>
     <div class="help-section" data-help-section="timeline-annualMember-subscription">
-        <p>
-            Diese Abfrage visualisiert die zeitliche Entwicklung aller von dieser Lizenz referenzierten Teilnehmerlizenzen.
+        <p class="ui header">
+            Die Abfrage visualisiert die zeitliche Entwicklung aller für diese Lizenz relevanten Teilnehmerlizenzen
         </p>
         <p>
-            Gelistet werden die Teilnehmerlizenzen in Jahresringen - abhängig von den Datumsgrenzen der jeweiligen Teilnehmerlizenz.
+            Gruppiert werden die Teilnehmerlizenzen in Jahresringen - abhängig von den Datumsgrenzen der jeweiligen Teilnehmerlizenzen.
         </p>
         <p>
-            <strong>
-                Datumsangaben dieser Lizenz werden bei der Abfrage nicht beachtet; <br />
-                über ggf. vorhandene Vorgänger oder Nachfolger referenzierte Teilnehmerlizenzen dagegen schon.
-            </strong>
+            Datumsangaben <strong>dieser Lizenz</strong> werden bei der Abfrage nicht beachtet; <br />
+            über ggf. vorhandene Vorgänger oder Nachfolger referenzierte Teilnehmerlizenzen dagegen schon.
         </p>
     </div>
 
     <div class="help-section" data-help-section="default">
-        <i class="icon huge la-light-grey meh outline"></i>
         ${message(code:'reporting.help.infoMissing')}
     </div>
-</semui:modal>
+</semui:infoModal>
+
+<style>
+#queryHelpModal .items .item {
+    padding: 1em;
+}
+</style>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.callbacks.modal.show['${modalID}'] = function() {

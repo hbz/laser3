@@ -146,7 +146,8 @@
 #container-documents,
 #container-notes,
 #container-provider,
-#container-billing
+#container-billing,
+#links
 {
   width: 100%;
 }
