@@ -504,7 +504,7 @@
         </div>
 
         <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
-            <div id="packages"></div>
+            <div id="packages" class="la-inline-lists hidden"></div>
         </g:if>
 
 

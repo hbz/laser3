@@ -25,21 +25,19 @@
             <g:set var="ieInNewSub"
                    value="${surveyService.titleContainedBySubscription(newSub, tipp)}"/>
             <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-                <g:set var="ieExistsInSubs"
+                <g:set var="participantPerpetualAccessToTitle"
                        value="${surveyService.hasParticipantPerpetualAccessToTitle(subscriber, tipp)}"/>
                 <g:set var="allowedToSelect"
-                       value="${!(ieExistsInSubs) && (!ieInNewSub || (ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION))}"/>
+                       value="${!(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION))}"/>
             </g:if>
             <g:else>
                 <g:set var="allowedToSelect"
                        value="${!ieInNewSub || (ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)}"/>
-                <g:set var="ieExistsInSubs"
-                       value="${ieInNewSub}"/>
             </g:else>
             <tr data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie.id}" data-index="${counter}" class="${checkedCache ? (checkedCache[ie.id.toString()] ? 'positive' : '') : ''}">
                 <td>
 
-                    <g:if test="${(params.tab == 'previousIEs' || params.tab == 'allIEs') && (editable && !ieInNewSub && allowedToSelect)}">
+                    <g:if test="${(params.tab == 'previousIEs' || params.tab == 'allIEs' || params.tab == 'currentIEs') && (editable && !ieInNewSub && allowedToSelect)}">
                         <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                     </g:if>
                     <g:elseif test="${editable && allowedToSelect && params.tab == 'selectedIEs'}">
@@ -50,13 +48,19 @@
                 <td>${counter++}</td>
                 <td class="titleCell">
 
-                    <g:if test="${ieExistsInSubs && ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
+                    <g:if test="${ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
                         <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInSub')}" data-position="left center" data-variation="tiny">
                             <i class="icon redo alternate yellow"></i>
                         </div>
                     </g:if>
 
-                    <g:if test="${ieInNewSub && previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
+                    <g:if test="${participantPerpetualAccessToTitle}">
+                        <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}" data-position="left center" data-variation="tiny">
+                            <i class="icon redo alternate red"></i>
+                        </div>
+                    </g:if>
+
+                    <g:if test="${previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
                         <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInPreviousSubscription')}" data-position="left center" data-variation="tiny">
                             <i class="icon redo alternate orange"></i>
                         </div>
@@ -117,7 +121,7 @@
                     </g:else>
                 </td>
                 <td>
-                    <g:if test="${editable && ieInNewSub && allowedToSelect && (params.tab == 'allIEs' || params.tab == 'selectedIEs')}">
+                    <g:if test="${(params.tab == 'allIEs' || params.tab == 'selectedIEs') && editable && ieInNewSub && allowedToSelect}">
                         <g:link class="ui icon negative button la-popup-tooltip la-delay"
                                 action="processRemoveIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
@@ -127,7 +131,7 @@
                     </g:if>
 
 
-                    <g:if test="${editable && !ieInNewSub && allowedToSelect && params.tab == 'allIEs'}">
+                    <g:if test="${(params.tab == 'allIEs'|| params.tab == 'currentIEs') && editable && !ieInNewSub && allowedToSelect }">
                         <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
                                 action="processAddIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: ie.id, surveyConfigID: surveyConfig?.id]}"
