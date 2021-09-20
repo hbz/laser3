@@ -142,6 +142,8 @@
                         </div>
                     </div>
 
+                    <div class="ui card" id="links"></div>
+
 
                 <div id="new-dynamic-properties-block">
                     <g:render template="properties" model="${[ license: license ]}" />
@@ -155,6 +157,7 @@
 
             <aside class="six wide column la-sidekick">
                 <div class="ui one cards">
+
                     <div id="container-provider">
                         <div class="ui card ">
                             <div class="content">
@@ -182,9 +185,6 @@
                                           ]}" />
                             </div>
                         </div>
-                    </div>
-                    <div id="container-links">
-                        <div class="ui card"  id="links"></div>
                     </div>
                     <g:render template="/templates/aside1" model="${[ownobj:license, owntp:'license']}" />
                 </div>
