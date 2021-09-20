@@ -472,7 +472,7 @@
                     </div>
                 </g:if>
             </div>
-            <div>
+            <div id="container-links">
                 <div class="ui card"  id="links"></div>
             </div>
         </div>
