@@ -384,8 +384,7 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
         }
 
@@ -396,8 +395,7 @@ class ExportClickMeService {
 
         Map<String, Object> fields = EXPORT_RENEWAL_CONFIG as Map
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
         }
 
@@ -414,8 +412,7 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
         }
         List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
@@ -447,8 +444,7 @@ class ExportClickMeService {
 
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_CONFIG as Map
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
         }
 
@@ -490,8 +486,7 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
         }
 
@@ -502,8 +497,7 @@ class ExportClickMeService {
 
         Map<String, Object> fields = EXPORT_COST_ITEM_CONFIG as Map
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
         }
 
@@ -531,8 +525,7 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
         }
 
@@ -559,8 +552,7 @@ class ExportClickMeService {
                 break
         }
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
         }
 
@@ -583,8 +575,7 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it.getI10n('name') ?: it.ns])
         }
 
@@ -604,8 +595,7 @@ class ExportClickMeService {
 
         Map<String, Object> fields = EXPORT_SURVEY_EVALUATION as Map
 
-        IdentifierNamespace.where{(nsType == Org.class.name)}
-                .list(sort: 'ns').each {
+        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
             fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it.getI10n('name') ?: it.ns]]
         }
 
