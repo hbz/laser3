@@ -403,7 +403,6 @@
     </div><!-- .twelve -->
     <aside class="six wide column la-sidekick">
         <div class="ui one cards">
-            <g:render template="/templates/aside1" model="${[ownobj: subscription, owntp: 'subscription']}"/>
             <div id="container-provider">
                 <div class="ui card ">
                     <div class="content">
@@ -475,6 +474,7 @@
             <div id="container-links">
                 <div class="ui card"  id="links"></div>
             </div>
+            <g:render template="/templates/aside1" model="${[ownobj: subscription, owntp: 'subscription']}"/>
         </div>
     </aside><!-- .four -->
 </div><!-- .grid -->
