@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance; de.laser.SurveyOrg" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance; de.laser.SurveyOrg; de.laser.ApiSource" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -16,20 +16,6 @@
 
 <semui:controlButtons>
     <semui:exportDropdown>
-        <semui:exportDropdownItem>
-            <g:link class="item" action="renewEntitlementsWithSurvey"
-                    id="${newSub.id}"
-                    params="${[surveyConfigID: surveyConfig.id,
-                               exportKBart   : true,
-                               tab: 'previousIEs']}">KBART Export "${message(code: 'renewEntitlementsWithSurvey.previousSelectableTitles')}"</g:link>
-        </semui:exportDropdownItem>
-        <semui:exportDropdownItem>
-            <g:link class="item" action="renewEntitlementsWithSurvey"
-                    id="${newSub.id}"
-                    params="${[surveyConfigID: surveyConfig.id,
-                               exportXLS     : true,
-                               tab: 'previousIEs']}">${message(code: 'default.button.exports.xls')} "${message(code: 'renewEntitlementsWithSurvey.previousSelectableTitles')}"</g:link>
-        </semui:exportDropdownItem>
         <semui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"
@@ -277,29 +263,15 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             </table>
         </g:if>
         <g:elseif test="${usages}">
-            <table class="ui sortable celled la-table table">
-                <thead>
-                <tr>
-                    <g:if test="${usages[0].title}">
-                        <g:sortableColumn title="${message(code:"default.title.label")}" property="title.name" params="${params}"/>
-                    </g:if>
-                    <g:sortableColumn title="${message(code:"default.usage.metricType")}" property="r.metricType" params="${params}"/>
-                    <g:sortableColumn title="${message(code:"default.usage.reportCount")}" property="r.reportCount" params="${params}"/>
-                </tr>
-                </thead>
-                <tbody>
-                <g:each in="${usages}" var="row">
-                    <tr>
-                        <g:if test="${row.title}">
-                            <td>${row.title.name} ${row.title.id}</td>
-                        </g:if>
-                        <td>${row.metricType}</td>
-                        <td>${row.reportCount}</td>
-                    </tr>
-                </g:each>
-                </tbody>
-            </table>
-            <semui:paginate total="${total}" params="${params}" max="${max}" offset="${offset}"/>
+            <g:render template="/templates/survey/entitlementTableSurveyWithStats"
+                      model="${[stats: usages, showPackage: true, showPlattform: true]}"/>
+
+            <g:if test="${usages}">
+                <semui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
+                                next="${message(code: 'default.paginate.next')}"
+                                prev="${message(code: 'default.paginate.prev')}" max="${max}"
+                                total="${total}"/>
+            </g:if>
         </g:elseif>
         <g:elseif test="${!sums && !usages}">
             <g:message code="renewEntitlementsWithSurvey.noPreviousIEsStats"/>

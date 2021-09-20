@@ -933,24 +933,30 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> renewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String, Object> result = [:]
-        result.contextOrg = contextService.getOrg()
+        Subscription newSub = params.targetObjectId ? Subscription.get(params.targetObjectId) : Subscription.get(params.id)
+        params.id = newSub.id
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         result.institution = result.contextOrg
-        result.user = contextService.getUser()
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        result.surveyInfo = result.surveyConfig.surveyInfo
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
         else {
             SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-            Subscription newSub = params.targetObjectId ? Subscription.get(params.targetObjectId) : Subscription.get(params.id)
+
+            params.tab = params.tab ?: 'allIEs'
+
+            result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+            result.surveyInfo = result.surveyConfig.surveyInfo
+
             Subscription previousSubscription = newSub._getCalculatedPrevious()
             Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
-            params.id = newSub.id
-            params.sourceObjectId = baseSub.id
-            params.tab = params.tab ?: 'allIEs'
+
+            result.newSub = newSub
+            result.subscription = baseSub
+            result.previousSubscription = previousSubscription
+            result.subscriber = result.newSub.getSubscriber()
+
             List<IssueEntitlement> sourceIEs = []
             if(params.tab == 'allIEs') {
                 Map query = filterService.getIssueEntitlementQuery(params, baseSub)
@@ -966,21 +972,35 @@ class SubscriptionControllerService {
                 sourceIEs = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
             }
 
+            if(params.tab == 'currentIEs') {
+                GrailsParameterMap parameterMap = params.clone()
+                Map query = filterService.getIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], previousSubscription)
+                List<IssueEntitlement> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
+                sourceIEs = sourceIEs + previousIes
+
+                query = filterService.getIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], newSub)
+                List<IssueEntitlement> currentIes = newSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
+                sourceIEs = sourceIEs + currentIes
+
+                query = filterService.getPerpetualAccessIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], result.subscriber)
+                List<IssueEntitlement> perpetualAccessIes = newSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
+                sourceIEs = sourceIEs + perpetualAccessIes
+
+            }
+
             result.allIEIDs = subscriptionService.getIssueEntitlementIDsFixed(baseSub)
             result.notFixedIEIDs = subscriptionService.getIssueEntitlementIDsNotFixed(newSub)
             result.previousIEIDs = subscriptionService.getIssueEntitlementIDsFixed(previousSubscription)
+            result.currentIEIDs = subscriptionService.getIssueEntitlementIDsFixed(newSub)
+
+            //List<IssueEntitlement> perpetualAccessTitles = surveyService.perpetualAccessTitlesOfParticipant(result.subscriber)
 
             result.countSelectedIEs = result.notFixedIEIDs.size()
-            result.countPreviousIEs = result.previousIEIDs.size()
+            result.countCurrentIEs = result.previousIEIDs.size() + result.currentIEIDs.size()
             result.countAllIEs = result.allIEIDs.size()
             //result.countAllSourceIEs = sourceIEs.size()
             result.num_ies_rows = sourceIEs.size()
             //subscriptionService.getIssueEntitlementsFixed(baseSub).size()
-
-            result.newSub = newSub
-            result.subscription = baseSub
-            result.previousSubscription = previousSubscription
-            result.subscriber = result.newSub.getSubscriber()
 
             if(params.tab == 'previousIEsStats' || params.tab == 'allIEsStats') {
 
@@ -988,11 +1008,13 @@ class SubscriptionControllerService {
                 if(params.tab == 'previousIEsStats' ) {
                     previousTitles = subscriptionService.getTippIDsFixed(previousSubscription)
                 }
-                result << result + surveyService.getStatsForParticipant(params,  previousSubscription, previousTitles, params.tab == 'allIEsStats')
+                result = surveyService.getStatsForParticipant(result, params, previousSubscription, result.subscriber, subscriptionService.getTippIDsFixed(baseSub))
 
             }else{
 
-               result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max)) : []
+               params.sort = params.sort ?: 'tipp.sortname'
+               params.order = params.order ?: 'asc'
+               result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
 
                 /*Map query = filterService.getIssueEntitlementQuery(params, newSub)
                 List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)

@@ -85,10 +85,10 @@
                 <dt class="control-label">${message(code: 'myinst.selectPackages.pkg_titles')}</dt>
                 <dd>${iesFix.size()}</dd>
             </dl>
-            <dl>
+           %{-- <dl>
                 <dt class="control-label">${message(code: 'tipp.price.listPrice')}</dt>
                 <dd><g:formatNumber number="${iesFixListPriceSum}" type="currency"/></dd>
-            </dl>
+            </dl>--}%
 
         </div>
     </div>
