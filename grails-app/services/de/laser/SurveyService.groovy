@@ -1382,23 +1382,21 @@ class SurveyService {
                 newEndDate = new Date()
             }
 
-            if(subscription.startDate && subscription.endDate) {
-                dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
-                if(params.tabStat != 'total') {
-                    Calendar filterTime = GregorianCalendar.getInstance()
-                    Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tabStat)
-                    filterTime.setTime(filterDate)
-                    queryParams.startDate = filterDate
-                    filterTime.set(Calendar.DATE,filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
-                    queryParams.endDate = filterTime.getTime()
-                }
-                else {
-                        queryParams.startDate = newStartDate
-                        queryParams.endDate = newEndDate
-                }
-                startTime.setTime(newStartDate)
-                endTime.setTime(newEndDate)
+            dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+            if (params.tabStat != 'total') {
+                Calendar filterTime = GregorianCalendar.getInstance()
+                Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tabStat)
+                filterTime.setTime(filterDate)
+                queryParams.startDate = filterDate
+                filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
+                queryParams.endDate = filterTime.getTime()
+            } else {
+                queryParams.startDate = newStartDate
+                queryParams.endDate = newEndDate
             }
+            startTime.setTime(newStartDate)
+            endTime.setTime(newEndDate)
+
 
             while(startTime.before(endTime)) {
                 monthsInRing << startTime.getTime()
