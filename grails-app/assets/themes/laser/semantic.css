@@ -28817,6 +28817,56 @@ Floated Menu / Item
 .ui.table.la-noSticky thead tr:nth-child(2) > th {
   position: static!important;
 }
+
+/*--------------
+    Stackable
+---------------*/
+
+@media only screen and (max-width: 1199px) {
+  .ui[class*="monitor stackable"].table,
+  .ui[class*="monitor stackable"].table tbody,
+  .ui[class*="monitor stackable"].table tr,
+  .ui[class*="monitor stackable"].table tr > th,
+  .ui[class*="monitor stackable"].table tr > td {
+    width: 100% !important;
+    display: block !important;
+  }
+
+  .ui[class*="monitor stackable"].table {
+    padding: 0em;
+  }
+
+  .ui[class*="monitor stackable"].table thead {
+    display: block;
+  }
+
+  .ui[class*="monitor stackable"].table tfoot {
+    display: block;
+  }
+
+  .ui[class*="monitor stackable"].table tr {
+    padding-top: 1em;
+    padding-bottom: 1em;
+    -webkit-box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset !important;
+    box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset !important;
+  }
+
+  .ui[class*="monitor stackable"].table tr > th,
+  .ui[class*="monitor stackable"].table tr > td {
+    background: none;
+    border: none !important;
+    padding: 0.25em 0.75em;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Definition Table */
+
+  .ui.definition[class*="monitor stackable"].table thead th:first-child {
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+  }
+}
 /*!
  * # Semantic UI 2.4.2 - Ad
  * http://github.com/semantic-org/semantic-ui/
