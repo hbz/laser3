@@ -9,10 +9,11 @@ class CostItemXCfg extends BaseConfig {
 
             base : [
                     meta : [
-                            class: CostItem
+                            class:  CostItem,
+                            cfgKey: KEY_COSTITEM
                     ],
                     source : [
-                            'consortia-cost' : 'Meine Teilnehmerkosten - aktive Lizenzen'
+                            'consortia-cost'
                     ],
                     fields: [
                             'type'                          : BaseConfig.FIELD_TYPE_REFDATA,
@@ -30,14 +31,14 @@ class CostItemXCfg extends BaseConfig {
                     ],
                     query : [
                             default: [
-                                    'Kosten' : [ // TODO ..
-                                            'costItem-type'                         : 'type',
-                                            'costItem-costItemStatus'               : 'costItemStatus',
-                                            'costItem-costItemCategory'             : 'costItemCategory',
-                                            'costItem-costItemElement'              : 'costItemElement',
-                                            'costItem-costItemElementConfiguration' : 'costItemElementConfiguration',
-                                            'costItem-billingCurrency'              : 'billingCurrency',
-                                            'costItem-*'                            : 'Alle'
+                                    'Kosten' : [
+                                            'costItem-type',
+                                            'costItem-costItemStatus',
+                                            'costItem-costItemCategory',
+                                            'costItem-costItemElement',
+                                            'costItem-costItemElementConfiguration',
+                                            'costItem-billingCurrency',
+                                            'costItem-*'
                                     ]
                             ]
                     ]

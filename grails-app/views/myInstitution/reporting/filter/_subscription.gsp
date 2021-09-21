@@ -31,7 +31,7 @@
         <div class="ui bottom attached active tab segment" data-tab="sub-filter-tab-1">
             <div class="field">
                 <label for="filter:subscription_source">${message(code:'reporting.filter.selection')}</label>
-                <g:select name="filter:subscription_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:subscription_source')}" />
+                <g:select name="filter:subscription_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey + '.source.' + it)}}" value="${params.get('filter:subscription_source')}" />
             </div>
 
             <g:each in="${config.filter.default}" var="cfgFilter">
@@ -58,7 +58,7 @@
             <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-2">
                 <div class="field">
                     <label for="filter:memberSubscription_source">${message(code:'reporting.filter.selection')}</label>
-                    <g:select name="filter:memberSubscription_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:memberSubscription_source')}" />
+                    <g:select name="filter:memberSubscription_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey + '.source.' + it)}}" value="${params.get('filter:memberSubscription_source')}" />
                 </div>
 
                 <g:each in="${config.filter.default}" var="cfgFilter">
@@ -86,7 +86,7 @@
             <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-3">
                 <div class="field">
                     <label for="filter:member_source">${message(code:'reporting.filter.selection')}</label>
-                    <g:select name="filter:member_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:member_source')}" />
+                    <g:select name="filter:member_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey + '.source.' + it)}}" value="${params.get('filter:member_source')}" />
                 </div>
 
                 <g:each in="${config.filter.default}" var="cfgFilter">
@@ -107,7 +107,7 @@
                 <div class="filter-wrapper-consortium">
                     <div class="field">
                         <label for="filter:consortium_source">${message(code:'reporting.filter.selection')}</label>
-                        <g:select name="filter:consortium_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:consortium_source')}" />
+                        <g:select name="filter:consortium_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey + '.source.' + it)}}" value="${params.get('filter:consortium_source')}" />
                     </div>
 
                     %{--
@@ -132,7 +132,7 @@
                 <div class="field">
                     <label for="filter:provider_source">${message(code:'reporting.filter.selection')}</label>
 
-                    <g:select name="filter:provider_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:provider_source')}" />
+                    <g:select name="filter:provider_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey + '.source.' + it)}}" value="${params.get('filter:provider_source')}" />
                 </div>
 
                 <g:each in="${config.filter.default}" var="cfgFilter">
@@ -153,7 +153,7 @@
                 <div class="field">
                     <label for="filter:agency_source">${message(code:'reporting.filter.selection')}</label>
 
-                    <g:select name="filter:agency_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:agency_source')}" />
+                    <g:select name="filter:agency_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="${it}" optionValue="${{BaseConfig.getMessage(config.meta.cfgKey + '.source.' + it)}}" value="${params.get('filter:agency_source')}" />
                 </div>
 
                 <g:each in="${config.filter.default}" var="cfgFilter">
