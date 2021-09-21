@@ -8,14 +8,16 @@ class LicenseInstCfg extends BaseConfig {
 
     static Map<String, Object> CONFIG = [
 
+            key : KEY_LICENSE,
+
             base : [
                     meta : [
                             class: License
                     ],
                     source : [
-                            'inst-lic'              : 'Meine Verträge (alle)',
-                            'inst-lic-consortia'    : 'Meine zentral verwalteten Verträge',
-                            'inst-lic-local'        : 'Meine lokalen Verträge',
+                            'inst-lic',
+                            'inst-lic-consortia',
+                            'inst-lic-local'
                     ],
                     fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
@@ -34,13 +36,12 @@ class LicenseInstCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Vertrag' : [ // TODO ..
-
-                                          'license-licenseCategory'   : 'Vertragskategorie',
-                                          //'license-type'              : 'Lizenztyp',
-                                          //'license-openEnded'         : 'Unbefristet',
-                                          'license-status'            : 'Vertragstatus',
-                                          'license-*'                 : 'Alle'
+                                    'Vertrag' : [
+                                          'license-licenseCategory',
+                                          //'license-type',
+                                          //'license-openEnded',
+                                          'license-status',
+                                          'license-*'
                                     ]
                             ]
                     ],
@@ -73,7 +74,7 @@ class LicenseInstCfg extends BaseConfig {
                             class: Org
                     ],
                     source : [
-                            'depending-licensor' : 'Betreffende Lizenzgeber'
+                            'depending-licensor'
                     ],
                     fields : [
                             'country'   : BaseConfig.FIELD_TYPE_REFDATA,
@@ -85,11 +86,11 @@ class LicenseInstCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Lizenzgeber' : [ // TODO ..
-                                            'licensor-orgType'      : 'Organisationstyp',
-                                            'licensor-country'      : 'Länder',
-                                            'licensor-region'       : 'Bundesländer',
-                                            'licensor-*'            : 'Alle'
+                                    'Lizenzgeber' : [
+                                            'licensor-orgType',
+                                            'licensor-country',
+                                            'licensor-region',
+                                            'licensor-*'
                                     ]
                             ]
                     ]
