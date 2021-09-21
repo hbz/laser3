@@ -356,7 +356,7 @@ class SubscriptionControllerService {
                 else {
                     sort = "title.name asc, r.reportType asc, r.reportFrom desc"
                 }
-                Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance(), now = GregorianCalendar.getInstance()
+                Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance(), stopTime = GregorianCalendar.getInstance()
                 if(result.subscription.startDate && result.subscription.endDate) {
                     dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
                     if(params.tab != 'total') {
@@ -383,7 +383,7 @@ class SubscriptionControllerService {
                         Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tab)
                         filterTime.setTime(filterDate)
                         queryParams.startDate = filterDate
-                        filterTime.set(Calendar.MONTH,filterTime.getActualMaximum(Calendar.MONTH))
+                        filterTime.set(Calendar.DATE,filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
                         queryParams.endDate = filterTime.getTime()
                     }
                     else
@@ -397,12 +397,12 @@ class SubscriptionControllerService {
                         Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tab)
                         filterTime.setTime(filterDate)
                         queryParams.startDate = filterDate
-                        filterTime.set(Calendar.MONTH,filterTime.getActualMaximum(Calendar.MONTH))
+                        filterTime.set(Calendar.DATE,filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
                         queryParams.endDate = filterTime.getTime()
                     }
                     else
                         dateRange = ''
-                    startTime.set(2018, 1, 1)
+                    startTime.set(2018, 0, 1)
                 }
                 while(startTime.before(endTime)) {
                     monthsInRing << startTime.getTime()
@@ -431,23 +431,34 @@ class SubscriptionControllerService {
                         queryParams.languages << Long.parseLong(lang)
                     }
                 }
-                if(params.metricType && params.list("metricType").size() > 0) {
-                    filter += " and r.metricType in (:metricType) "
-                    queryParams.metricType = params.metricType
+
+                Map<String, Object> c5CheckParams = [customer: queryParams.customer, platforms: queryParams.platforms]
+                if(dateRange) {
+                    c5CheckParams.startDate = queryParams.startDate
+                    c5CheckParams.endDate = queryParams.endDate
                 }
-                count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+dateRange, [customer: queryParams.customer, platforms: queryParams.platforms, startDate: queryParams.startDate, endDate: queryParams.endDate]))
+                count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+dateRange, c5CheckParams))
                 if(count5check.get(0) == 0) {
-                    List defaultReport = Counter4Report.executeQuery('select r.reportType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) order by r.reportFrom asc', [customer: queryParams.customer, platforms: queryParams.platforms], [max:1])
-                    result.reportTypes = Counter4ApiSource.COUNTER_4_REPORTS
+                    Set availableReportTypes = Counter4Report.executeQuery('select r.reportType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) order by r.reportFrom asc', [customer: queryParams.customer, platforms: queryParams.platforms])
+                    result.reportTypes = availableReportTypes
                     if(!params.reportType) {
-                        if(defaultReport)
-                            params.reportType = [defaultReport[0]]
-                        else params.reportType = [Counter4ApiSource.BOOK_REPORT_1]
+                        if(availableReportTypes)
+                            params.reportType = availableReportTypes[0]
+                        else params.reportType = Counter4ApiSource.BOOK_REPORT_1
                     }
                     filter += " and r.reportType in (:reportType) "
                     queryParams.reportType = params.reportType
+                    Set availableMetricTypes = Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.reportType in (:reportType)', [customer: queryParams.customer, platforms: queryParams.platforms, reportType: params.reportType])
+                    result.metricTypes = availableMetricTypes
+                    if(!params.metricType) {
+                        if(availableMetricTypes)
+                            params.metricType = availableMetricTypes[0]
+                        else params.metricType = 'ft_total'
+                    }
+                    filter += " and r.metricType = :metricType "
+                    queryParams.metricType = params.metricType
                     if(params.tab == 'total') {
-                        c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.reportType, r.metricType order by r.reportFrom asc, r.reportType asc', queryParams))
+                        c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', queryParams))
                     }
                     else {
                         c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
@@ -456,26 +467,33 @@ class SubscriptionControllerService {
                     result.total = count4check.size() > 0 ? count4check[0] as int : 0
                     result.sums = c4sums
                     result.usages = c4usages
-                    result.metricTypes = Counter4Report.executeQuery('select distinct(r.metricType) from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) order by r.metricType asc', [customer: queryParams.customer, platforms: queryParams.platforms])
                 }
                 else {
-                    List defaultReport = Counter5Report.executeQuery('select r.reportType from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) order by r.reportFrom asc', [customer: queryParams.customer, platforms: queryParams.platforms], [max:1])
-                    result.reportTypes = Counter5ApiSource.COUNTER_5_REPORTS
+                    Set availableReportTypes = Counter5Report.executeQuery('select r.reportType from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) order by r.reportFrom asc', [customer: queryParams.customer, platforms: queryParams.platforms])
+                    result.reportTypes = availableReportTypes
                     if(!params.reportType) {
-                        if(defaultReport)
-                            params.reportType = [defaultReport[0].toLowerCase()]
-                        else params.reportType = [Counter5ApiSource.TITLE_MASTER_REPORT.toLowerCase()]
+                        if(availableReportTypes)
+                            params.reportType = availableReportTypes[0].toLowerCase()
+                        else params.reportType = Counter5ApiSource.TITLE_MASTER_REPORT.toLowerCase()
                     }
                     filter += " and lower(r.reportType) in (:reportType) "
                     queryParams.reportType = params.reportType
+                    Set availableMetricTypes = Counter5Report.executeQuery('select r.metricType from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and lower(r.reportType) in (:reportType)', [customer: queryParams.customer, platforms: queryParams.platforms, reportType: params.reportType])
+                    result.metricTypes = availableMetricTypes
+                    if(!params.metricType) {
+                        if(availableMetricTypes)
+                            params.metricType = availableMetricTypes[0]
+                        else params.metricType = 'Total_Item_Investigations'
+                    }
+                    filter += " and r.metricType = :metricType "
+                    queryParams.metricType = params.metricType
                     if(params.tab == 'total')
-                        c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.reportType, r.metricType order by r.reportFrom asc, r.metricType asc', queryParams))
+                        c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', queryParams))
                     else
                         c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
                     result.total = count5check
                     result.sums = c5sums
                     result.usages = c5usages
-                    result.metricTypes = Counter5Report.executeQuery('select distinct(r.metricType) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) order by r.metricType asc', [customer: queryParams.customer, platforms: queryParams.platforms])
                 }
             }
             result.monthsInRing = monthsInRing
@@ -855,11 +873,9 @@ class SubscriptionControllerService {
                 Links link
                 if(params.prev && prevMemberSub) {
                     link = Links.construct([source: memberSub, destination: prevMemberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
-                    result.redirect = prevMemberSub.id
                 }
                 if(params.next && nextMemberSub) {
                     link = Links.construct([source: nextMemberSub, destination: memberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
-                    result.redirect = nextMemberSub.id
                 }
                 if(link) {
                     [result:result,status:STATUS_OK]
@@ -873,7 +889,7 @@ class SubscriptionControllerService {
         }
     }
 
-    Map<String,Object> membersSubscriptionsManagement(SubscriptionController controller, GrailsParameterMap params) {
+    Map<String,Object> membersSubscriptionsManagement(SubscriptionController controller, GrailsParameterMap params, input_file) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
             [result:null,status:STATUS_ERROR]
@@ -881,7 +897,8 @@ class SubscriptionControllerService {
         else {
             params.tab = params.tab ?: 'generalProperties'
 
-            result << managementService.subscriptionsManagement(controller, params)
+            result << managementService.subscriptionsManagement(controller, params, input_file)
+
             [result:result,status:STATUS_OK]
         }
     }
@@ -916,24 +933,30 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> renewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String, Object> result = [:]
-        result.contextOrg = contextService.getOrg()
+        Subscription newSub = params.targetObjectId ? Subscription.get(params.targetObjectId) : Subscription.get(params.id)
+        params.id = newSub.id
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         result.institution = result.contextOrg
-        result.user = contextService.getUser()
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        result.surveyInfo = result.surveyConfig.surveyInfo
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
         else {
             SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-            Subscription newSub = params.targetObjectId ? Subscription.get(params.targetObjectId) : Subscription.get(params.id)
+
+            params.tab = params.tab ?: 'allIEs'
+
+            result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+            result.surveyInfo = result.surveyConfig.surveyInfo
+
             Subscription previousSubscription = newSub._getCalculatedPrevious()
             Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
-            params.id = newSub.id
-            params.sourceObjectId = baseSub.id
-            params.tab = params.tab ?: 'allIEs'
+
+            result.newSub = newSub
+            result.subscription = baseSub
+            result.previousSubscription = previousSubscription
+            result.subscriber = result.newSub.getSubscriber()
+
             List<IssueEntitlement> sourceIEs = []
             if(params.tab == 'allIEs') {
                 Map query = filterService.getIssueEntitlementQuery(params, baseSub)
@@ -949,21 +972,35 @@ class SubscriptionControllerService {
                 sourceIEs = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
             }
 
+            if(params.tab == 'currentIEs') {
+                GrailsParameterMap parameterMap = params.clone()
+                Map query = filterService.getIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], previousSubscription)
+                List<IssueEntitlement> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
+                sourceIEs = sourceIEs + previousIes
+
+                query = filterService.getIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], newSub)
+                List<IssueEntitlement> currentIes = newSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
+                sourceIEs = sourceIEs + currentIes
+
+                query = filterService.getPerpetualAccessIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], result.subscriber)
+                List<IssueEntitlement> perpetualAccessIes = newSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
+                sourceIEs = sourceIEs + perpetualAccessIes
+
+            }
+
             result.allIEIDs = subscriptionService.getIssueEntitlementIDsFixed(baseSub)
             result.notFixedIEIDs = subscriptionService.getIssueEntitlementIDsNotFixed(newSub)
             result.previousIEIDs = subscriptionService.getIssueEntitlementIDsFixed(previousSubscription)
+            result.currentIEIDs = subscriptionService.getIssueEntitlementIDsFixed(newSub)
+
+            //List<IssueEntitlement> perpetualAccessTitles = surveyService.perpetualAccessTitlesOfParticipant(result.subscriber)
 
             result.countSelectedIEs = result.notFixedIEIDs.size()
-            result.countPreviousIEs = result.previousIEIDs.size()
+            result.countCurrentIEs = result.previousIEIDs.size() + result.currentIEIDs.size()
             result.countAllIEs = result.allIEIDs.size()
             //result.countAllSourceIEs = sourceIEs.size()
             result.num_ies_rows = sourceIEs.size()
             //subscriptionService.getIssueEntitlementsFixed(baseSub).size()
-
-            result.newSub = newSub
-            result.subscription = baseSub
-            result.previousSubscription = previousSubscription
-            result.subscriber = result.newSub.getSubscriber()
 
             if(params.tab == 'previousIEsStats' || params.tab == 'allIEsStats') {
 
@@ -971,11 +1008,13 @@ class SubscriptionControllerService {
                 if(params.tab == 'previousIEsStats' ) {
                     previousTitles = subscriptionService.getTippIDsFixed(previousSubscription)
                 }
-                result << result + surveyService.getStatsForParticipant(params,  previousSubscription, previousTitles, params.tab == 'allIEsStats')
+                result = surveyService.getStatsForParticipant(result, params, newSub, result.subscriber, subscriptionService.getTippIDsFixed(baseSub))
 
-            }else{
+            }else {
 
-               result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max)) : []
+                params.sort = params.sort ?: 'tipp.sortname'
+                params.order = params.order ?: 'asc'
+                result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
 
                 /*Map query = filterService.getIssueEntitlementQuery(params, newSub)
                 List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
@@ -983,29 +1022,29 @@ class SubscriptionControllerService {
                 targetIEs.collate(32767).each {
                     result.targetIEs.addAll(IssueEntitlement.findAllByIdInList(targetIEs.take(32768)))
                 }*/
+            }
 
-                result.editable = (params.tab == 'previousIEs') ? false : surveyService.isEditableSurvey(result.institution, result.surveyInfo)
+            result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
 
-                if (result.editable) {
-                    SessionCacheWrapper sessionCache = contextService.getSessionCache()
-                    Map<String, Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
+            if (result.editable) {
+                SessionCacheWrapper sessionCache = contextService.getSessionCache()
+                Map<String, Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
 
-                    if (!checkedCache) {
-                        sessionCache.put("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}", ["checked": [:]])
-                        checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
-                    }
+                if (!checkedCache) {
+                    sessionCache.put("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}", ["checked": [:]])
+                    checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
+                }
 
-                    result.checkedCache = checkedCache.get('checked')
-                    result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
+                result.checkedCache = checkedCache.get('checked')
+                result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
 
 
-                    result.allChecked = ""
-                    if (params.tab == 'allIEs' && result.countAllIEs > 0 && result.countAllIEs == result.checkedCount) {
-                        result.allChecked = "checked"
-                    }
-                    if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
-                        result.allChecked = "checked"
-                    }
+                result.allChecked = ""
+                if (params.tab == 'allIEs' && result.countAllIEs > 0 && result.countAllIEs == result.checkedCount) {
+                    result.allChecked = "checked"
+                }
+                if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
+                    result.allChecked = "checked"
                 }
             }
 
@@ -1809,7 +1848,7 @@ class SubscriptionControllerService {
             int addTitlesCount = 0
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
             Map cache = sessionCache.get("/subscription/addEntitlements/${result.subscription.id}")
-            Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
+            Map issueEntitlementCandidates = cache?.get('issueEntitlementCandidates')
             if(!params.singleTitle) {
                 Map checked = cache.get('checked')
                 if(checked) {
@@ -2123,17 +2162,21 @@ class SubscriptionControllerService {
                 result.checked.each {
                     IssueEntitlement ie = IssueEntitlement.findById(it.key)
                     TitleInstancePackagePlatform tipp = ie.tipp
-                    try {
-                        if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
-                            log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
-                            ++countIEsToAdd
-                            removeFromCache << it.key
+
+                    if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+
+                        try {
+                            if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
+                                log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
+                                ++countIEsToAdd
+                                removeFromCache << it.key
+                            }
                         }
-                    }
-                    catch (EntitlementCreationException e) {
-                        log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
-                        result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps',null,locale)
-                        [result:result,status:STATUS_ERROR]
+                        catch (EntitlementCreationException e) {
+                            log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
+                            result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, locale)
+                            [result: result, status: STATUS_ERROR]
+                        }
                     }
                 }
                 if(countIEsToAdd > 0){

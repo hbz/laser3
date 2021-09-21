@@ -111,12 +111,13 @@
                                 </g:if>
                             </td>
                         </tr>
+
                         <g:if test="${pair.propertySet && pair instanceof License}">
                             <tr>
-                                <td style="border-top: none;" colspan="3">
-                                    <div>
+                                <td style="border-top: none; padding:0" colspan="3">
+
                                         <g:render template="/subscription/licProp" model="[license: pair, derivedPropDefGroups: pair.getCalculatedPropDefGroups(contextOrg), linkId: link.id]"/>
-                                    </div>
+
                                 </td>
                             </tr>
                         </g:if>

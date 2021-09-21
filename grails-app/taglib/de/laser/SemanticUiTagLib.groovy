@@ -470,7 +470,7 @@ class SemanticUiTagLib {
         out << body()
         out << '</div>'
         out << '<div class="actions">'
-        out << '<a href="#" class="ui button ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</a>'
+        out << '<button class="ui button ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</button>'
 
         if (attrs.showDeleteButton) {
 
@@ -492,6 +492,28 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
+    //  <semui:infoModal> ${content} <semui:infoModal />
+
+    def infoModal = { attrs, body ->
+
+        String id        = attrs.id ? ' id="' + attrs.id + '" ' : ''
+        String modalSize = attrs.modalSize ? attrs.modalSize  : ''
+        String msgClose  = attrs.msgClose  ?: "${g.message(code:'default.button.merci.label')}"
+
+        out << '<div role="dialog" class="ui modal ' + modalSize + '"' + id + ' aria-label="Modal">'
+        out <<    '<div class="content ui items">'
+        out <<       '<div class="item">'
+        out <<          '<div class="image"><i class="ui icon huge circular question"></i></div>'
+        out <<          '<div class="content">'
+        out << body()
+        out <<          '</div>'
+        out <<       '</div>'
+        out <<    '</div>'
+        out <<    '<div class="actions">'
+        out <<       '<button class="ui button ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</button>'
+        out <<    '</div>'
+        out << '</div>'
+    }
 
     //  <semui:confirmationModal  />
     // global included at semanticUI.gsp
@@ -515,7 +537,7 @@ class SemanticUiTagLib {
 
         out << '<div class="actions">'
         out << '<button class="ui deny button">' + msgCancel + '</button>'
-        out << '<button id="js-confirmation-button" class="ui positive la-modern-button right labeled icon button">' + msgDelete
+        out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
         out << '    <i aria-hidden="true" class="trash alternate outline icon"></i>'
         out << '</button>'
         out << '</div>'
@@ -913,7 +935,7 @@ class SemanticUiTagLib {
 
     def tabs = { attrs, body ->
 
-        out << '<div class="ui top attached tabular menu">'
+        out << '<div class="ui top attached tabular menu" style="overflow-x: scroll; overflow-y: hidden">' //ugliest workaround ever!!!!
         out << body()
         out << '</div>'
     }

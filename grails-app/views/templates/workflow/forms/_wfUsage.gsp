@@ -57,7 +57,7 @@
                                         ${task.description}
                                     </div>
                                     <g:if test="${task.comment}">
-                                        <div style="margin: 1em; padding-left: 1em; border-left: 5px solid #E0E0E0">
+                                        <div style="margin: 1em; padding-left: 1em; border-left: 5px solid #E0E0E0; font-style: italic;">
                                             ${task.comment}
                                         </div>
                                     </g:if>
@@ -105,7 +105,7 @@
                                                 ${child.description}
                                             </div>
                                             <g:if test="${child.comment}">
-                                                <div style="margin: 1em; padding-left: 1em; border-left: 5px solid #E0E0E0">
+                                                <div style="margin: 1em; padding-left: 1em; border-left: 5px solid #E0E0E0; font-style: italic;">
                                                     ${child.comment}
                                                 </div>
                                             </g:if>
@@ -205,7 +205,7 @@
 
                         <g:if test="${field.startsWith('checkbox')}">
                             <div class="field">
-                                <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: '[ohne Titel]'}</label>
+                                <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
                                 <div class="ui checkbox">
                                     <input type="checkbox" name="${prefixOverride}_${field}" id="${prefixOverride}_${field}"
                                         <% print task.condition.getProperty(field) == true ? 'checked="checked"' : '' %>
@@ -218,7 +218,7 @@
                         </g:if>
                         <g:elseif test="${field.startsWith('date')}">
                             <div class="field">
-                                <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: '[ohne Titel]'}</label>
+                                <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
                                 <input type="date" name="${prefixOverride}_${field}" id="${prefixOverride}_${field}"
                                     <% print task.condition.getProperty(field) ? 'value="' + DateUtils.getSDF_ymd().format(task.condition.getProperty(field)) + '"' : '' %>
                                 />
@@ -226,8 +226,15 @@
                         </g:elseif>
                         <g:elseif test="${field.startsWith('file')}">
                             <div class="field">
-                                <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: '[ohne Titel]'}
-                                    <a id="fileUploadWrapper_toggle" href="#" style="float:right"><span class="ui active label">Auswahl</span> &hArr; <span class="ui label">Upload</span></a>
+                                <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}
+                                    <a id="fileUploadWrapper_toggle" href="#" style="float:right">
+                                        <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.condition.file.info')}">
+                                            <span class="ui active label">${message(code:'default.select.label')}</span>
+                                        </span> &hArr;
+                                        <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.condition.fileUpload.info')}">
+                                            <span class="ui label">${message(code:'default.newFile.label')}</span>
+                                        </span>
+                                    </a>
                                 </label>
                                 <g:set var="docctx" value="${task.condition.getProperty(field)}" />
                                 %{-- <g:if test="${docctx}">
@@ -256,13 +263,13 @@
                                 </div>
                                 <div id="fileUploadWrapper_upload" class="fileUploadWrapper ui segment" style="margin:8px 0 0 0; display:none;">
                                     %{--<g:form class="ui form" url="${formUrl}" method="post" enctype="multipart/form-data">--}%
-                                        <g:if test="${workflow}"> %{-- currentWorkflows --}%
-                                            <input type="hidden" name="wfUploadOwner" value="${workflow.subscription.class.name}:${workflow.subscription.id}"/>
-                                        </g:if>
-                                        <g:else>
-                                            <input type="hidden" name="wfUploadOwner" value="${subscription.class.name}:${subscription.id}"/>
-                                        </g:else>
 
+                                    <g:if test="${workflow}"> %{-- currentWorkflows --}%
+                                        <input type="hidden" name="wfUploadOwner" value="${workflow.subscription.class.name}:${workflow.subscription.id}"/>
+                                    </g:if>
+                                    <g:else>
+                                        <input type="hidden" name="wfUploadOwner" value="${subscription.class.name}:${subscription.id}"/>
+                                    </g:else>
                                         <label for="wfUploadTitle" >${message(code: 'template.addDocument.name')}:</label>
                                         <input type="text" id="wfUploadTitle" name="wfUploadTitle" />
 
@@ -275,6 +282,7 @@
                                                   />
 
                                         <label for="wfUploadFile-placeholder">${message(code: 'template.addDocument.file')}:</label>
+
                                         <div class="ui fluid action input">
                                             <input type="text" id="wfUploadFile-placeholder" name="wfUploadFile-placeholder" readonly="readonly" placeholder="${message(code:'template.addDocument.selectFile')}">
                                             <input type="file" id="wfUploadFile" name="wfUploadFile" style="display: none;">
@@ -287,7 +295,7 @@
                                             $('#fileUploadWrapper_toggle').click( function(e) {
                                                 e.preventDefault();
                                                 $('.fileUploadWrapper').toggle();
-                                                $('#fileUploadWrapper_toggle > .label').toggleClass('active');
+                                                $('#fileUploadWrapper_toggle .label').toggleClass('active');
                                             });
                                             $('#wfUploadFile').on('change', function(e) {
                                                 var name = e.target.files[0].name;
@@ -309,7 +317,6 @@
                                         </laser:script>
                                     %{--</g:form>--}%
                                 </div>
-
                             </div>
                         </g:elseif>
 
@@ -327,7 +334,6 @@
         </g:if>
         <input type="hidden" name="cmd" value="usage:${prefix}:${task.id}" />
     </g:if>
-
  </g:form>
 
 

@@ -180,9 +180,16 @@
                 </g:link>
             </div>
 
-            <g:link class="ui red icon small button right floated la-modern-button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflow.KEY}:${wf.id}", tab: 'workflows']}"><i class="trash alternate outline icon"></i></g:link>
-            <br />
+            <g:link class="ui small icon negative button right floated la-modern-button js-open-confirm-modal"
+                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wf.title])}"
+                    data-confirm-term-how="delete"
+                    controller="admin" action="manageWorkflows" params="${[cmd:"delete:${WfWorkflow.KEY}:${wf.id}", tab:'workflows']}"
+                    role="button"
+                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                <i class="trash alternate outline icon"></i>
+            </g:link>
 
+            <br />
             Bearbeitet: ${DateUtils.getSDF_NoTime().format(wfInfo.lastUpdated)} - Erstellt: ${DateUtils.getSDF_NoTime().format(wf.dateCreated)}
         </div>
 
@@ -219,6 +226,10 @@
         ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} <semui:totalNumber total="${WfWorkflowPrototype.findAll().size()}"/>
     </p>
 
+    <g:if test="${key == WfWorkflowPrototype.KEY}">
+        <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:workflow]}" />
+    </g:if>
+
     <table class="ui celled la-table compact table">
         <thead>
             <tr>
@@ -251,7 +262,14 @@
                     </td>
                     <td class="x">
                         <g:if test="${! wfp.inUse()}">
-                            <g:link class="ui red icon small button la-modern-button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfWorkflowPrototype.KEY}:${wfp.id}", tab: 'prototypes']}"><i class="trash alternate outline icon"></i></g:link>
+                            <g:link class="ui small icon negative button la-modern-button js-open-confirm-modal"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.generic", args: [wfp.title])}"
+                                    data-confirm-term-how="delete"
+                                    controller="admin" action="manageWorkflows" params="${[cmd:"delete:${WfWorkflowPrototype.KEY}:${wfp.id}", tab:'prototypes']}"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                <i class="trash alternate outline icon"></i>
+                            </g:link>
                         </g:if>
                         <g:if test="${wfp.state == RDStore.WF_WORKFLOW_STATE_ACTIVE}">
                             <g:link class="ui green icon small button tmpJSPrompt la-modern-button" controller="admin" action="manageWorkflows" params="${[cmd: "instantiate:${WfWorkflowPrototype.KEY}:${wfp.id}", tab: 'prototypes']}"><i class="step forward icon"></i></g:link>
@@ -262,10 +280,6 @@
         </tbody>
     </table>
 
-    <g:if test="${key == WfWorkflowPrototype.KEY}">
-        <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:workflow]}" />
-    </g:if>
-
     <g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfWorkflowPrototype.KEY, tab: 'prototypes']}">${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} erstellen</g:link>
 
     <!-- -->
@@ -273,6 +287,10 @@
     <p class="ui header">
         ${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} <semui:totalNumber total="${WfTaskPrototype.findAll().size()}"/>
     </p>
+
+    <g:if test="${key == WfTaskPrototype.KEY}">
+        <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:task]}" />
+    </g:if>
 
     <table class="ui celled la-table compact table">
         <thead>
@@ -360,17 +378,20 @@
                     </td>
                     <td class="x">
                         <g:if test="${! tp.inUse()}">
-                            <g:link class="ui red icon small button la-modern-button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfTaskPrototype.KEY}:${tp.id}", tab: 'prototypes']}"><i class="trash alternate outline icon"></i></g:link>
+                            <g:link class="ui small icon negative button la-modern-button js-open-confirm-modal"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.generic", args: [tp.title])}"
+                                    data-confirm-term-how="delete"
+                                    controller="admin" action="manageWorkflows" params="${[cmd:"delete:${WfTaskPrototype.KEY}:${tp.id}", tab:'prototypes']}"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                <i class="trash alternate outline icon"></i>
+                            </g:link>
                         </g:if>
                     </td>
                 </tr>
             </g:each>
         </tbody>
     </table>
-
-    <g:if test="${key == WfTaskPrototype.KEY}">
-        <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:task]}" />
-    </g:if>
 
     <g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfTaskPrototype.KEY, tab: 'prototypes']}">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} erstellen</g:link>
 
@@ -379,6 +400,10 @@
     <p class="ui header">
         ${message(code: 'workflow.object.' + WfConditionPrototype.KEY)} <semui:totalNumber total="${WfConditionPrototype.findAll().size()}"/>
     </p>
+
+    <g:if test="${key == WfConditionPrototype.KEY}">
+        <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:condition]}" />
+    </g:if>
 
     <table class="ui celled la-table compact table">
         <thead>
@@ -412,17 +437,20 @@
                     </td>
                     <td class="x">
                         <g:if test="${! cp.inUse()}">
-                            <g:link class="ui red icon small button la-modern-button" controller="admin" action="manageWorkflows" params="${[cmd: "delete:${WfConditionPrototype.KEY}:${cp.id}", tab: 'prototypes']}"><i class="trash alternate outline icon"></i></g:link>
+                            <g:link class="ui small icon negative button la-modern-button js-open-confirm-modal"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.generic", args: [cp.title])}"
+                                    data-confirm-term-how="delete"
+                                    controller="admin" action="manageWorkflows" params="${[cmd:"delete:${WfConditionPrototype.KEY}:${cp.id}", tab:'prototypes']}"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                <i class="trash alternate outline icon"></i>
+                            </g:link>
                         </g:if>
                     </td>
                 </tr>
             </g:each>
         </tbody>
     </table>
-
-    <g:if test="${key == WfConditionPrototype.KEY}">
-        <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:condition]}" />
-    </g:if>
 
     <g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfConditionPrototype.KEY, tab: 'prototypes']}">${message(code: 'workflow.object.' + WfConditionPrototype.KEY)} erstellen</g:link>
 
@@ -464,7 +492,7 @@
                                     </g:link>
                                 </span>
                                 <g:if test="${wftp.condition}">
-                                    <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${wftp.condition.title}">
+                                    <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${wftp.condition.title} (${wftp.condition.getTypeAsRefdataValue().getI10n('value')})">
                                         <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + wftp.condition.id, tab: 'prototypes']}">
                                             <span class="ui teal circular label" data-wfcp="${wftp.condition.id}">${cpIdTable[wftp.condition.id] ?: '?'}</span>
                                         </g:link>
@@ -489,7 +517,7 @@
                                                 </g:link>
                                             </span>
                                             <g:if test="${wftp.condition}">
-                                                <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${wftp.condition.title}">
+                                                <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${wftp.condition.title} (${wftp.condition.getTypeAsRefdataValue().getI10n('value')})">
                                                     <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + wftp.condition.id, tab: 'prototypes']}">
                                                         <span class="ui teal circular label" data-wfcp="${wftp.condition.id}">${cpIdTable[wftp.condition.id] ?: '?'}</span>
                                                     </g:link>
@@ -511,7 +539,7 @@
                                                     </g:link>
                                                 </span>
                                                 <g:if test="${child.condition}">
-                                                    <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${child.condition.title}">
+                                                    <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${child.condition.title} (${child.condition.getTypeAsRefdataValue().getI10n('value')})">
                                                         <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfConditionPrototype.KEY + ':' + child.condition.id, tab: 'prototypes']}">
                                                             <span class="ui teal circular label" data-wfcp="${child.condition.id}">${cpIdTable[child.condition.id] ?: '?'}</span>
                                                         </g:link>

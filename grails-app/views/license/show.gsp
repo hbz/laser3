@@ -157,7 +157,7 @@
 
             <aside class="six wide column la-sidekick">
                 <div class="ui one cards">
-                    <g:render template="/templates/aside1" model="${[ownobj:license, owntp:'license']}" />
+
                     <div id="container-provider">
                         <div class="ui card ">
                             <div class="content">
@@ -186,6 +186,7 @@
                             </div>
                         </div>
                     </div>
+                    <g:render template="/templates/aside1" model="${[ownobj:license, owntp:'license']}" />
                 </div>
             </aside><!-- .four -->
 

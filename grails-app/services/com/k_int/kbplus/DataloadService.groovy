@@ -1004,7 +1004,7 @@ class DataloadService {
 
                             log.debug("processed ${total} records (${domain.name})")
                             latest_ft_record.lastTimestamp = highest_timestamp
-
+                            latest_ft_record.save()
                             session.flush()
                         }
                     }
@@ -1216,14 +1216,13 @@ class DataloadService {
 
     boolean checkESElementswithDBElements(String domainClassName) {
 
-        log.debug("Begin to check ES Elements with DB Elements")
-
         RestHighLevelClient esclient = ESWrapperService.getClient()
         def esIndices = ESWrapperService.es_indices
 
         try {
 
             if(ESWrapperService.testConnection()) {
+                log.debug("Begin to check ES Elements with DB Elements")
                 FTControl ftControl = FTControl.findByDomainClassName(domainClassName)
 
                 if (ftControl && ftControl.active) {
@@ -1255,6 +1254,7 @@ class DataloadService {
                             ftControl.save()
                         }
                     }
+                log.debug("End to check ES Elements with DB Elements")
             }
         }
             finally {
@@ -1265,8 +1265,6 @@ class DataloadService {
                     log.error("Problem by Close ES Client", e);
                 }
             }
-
-        log.debug("End to check ES Elements with DB Elements")
 
         return true
 

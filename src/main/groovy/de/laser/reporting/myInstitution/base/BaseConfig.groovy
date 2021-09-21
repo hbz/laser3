@@ -190,4 +190,12 @@ class BaseConfig {
             ]
         }
     }
+
+    static String getMessage(String token) {
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+
+        // println ' ---> ' + 'reporting.cfg.' + token
+        messageSource.getMessage('reporting.cfg.' + token, null, locale)
+    }
 }

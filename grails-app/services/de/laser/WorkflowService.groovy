@@ -151,10 +151,11 @@ class WorkflowService {
             WfWorkflowPrototype wf = WfWorkflowPrototype.get( cmd[2] )
             result.workflow = wf
 
-            if (! wf.inUse()) {
+            if (! wf?.inUse()) {
                 try {
                     wf.delete()
                     result.status = OP_STATUS_DONE
+                    result.workflow = null // gap
                 }
                 catch (Exception e) {
                     result.status = OP_STATUS_ERROR
@@ -177,9 +178,10 @@ class WorkflowService {
             WfTaskPrototype task = WfTaskPrototype.get( cmd[2] )
             result.task = task
 
-            if (! task.inUse()) {
+            if (! task?.inUse()) {
                 try {
                     task.delete()
+                    result.task = null // gap
                     result.status = OP_STATUS_DONE
                 }
                 catch (Exception e) {
@@ -207,9 +209,10 @@ class WorkflowService {
             WfConditionPrototype condition = WfConditionPrototype.get( cmd[2] )
             result.condition = condition
 
-            if (! condition.inUse()) {
+            if (! condition?.inUse()) {
                 try {
                     condition.delete()
+                    result.condition = null // gap
                     result.status = OP_STATUS_DONE
                 }
                 catch (Exception e) {
@@ -448,6 +451,7 @@ class WorkflowService {
                     }
                     else {
                         result.status = OP_STATUS_DONE
+                        ts.flush() // TODO
                     }
                 }
                 catch (Exception e) {

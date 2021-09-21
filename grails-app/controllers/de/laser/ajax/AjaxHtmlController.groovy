@@ -4,8 +4,10 @@ import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
+import de.laser.ApiSource
 import de.laser.CacheService
 import de.laser.ContextService
+import de.laser.GokbService
 import de.laser.License
 import de.laser.LinksGenerationService
 import de.laser.Org
@@ -19,6 +21,7 @@ import de.laser.Address
 import de.laser.Doc
 import de.laser.Person
 import de.laser.PersonRole
+import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
 import de.laser.SurveyConfig
 import de.laser.SurveyConfigProperties
@@ -80,6 +83,7 @@ class AjaxHtmlController {
     SubscriptionService subscriptionService
     LicenseControllerService licenseControllerService
     CustomWkhtmltoxService wkhtmltoxService // custom
+    GokbService gokbService
 
     @Secured(['ROLE_USER'])
     def test() {
@@ -175,6 +179,30 @@ class AjaxHtmlController {
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
         result.accessConfigEditable = accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
         render template: '/subscription/packages', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def getGeneralPackageData() {
+        Map<String,Object> result = [subscription:Subscription.get(params.subscription)]
+
+        result.packages = []
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.subscription.packages.each { SubscriptionPackage subscriptionPackage ->
+            Map packageInfos = [:]
+
+            packageInfos.packageInstance = subscriptionPackage.pkg
+
+            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${subscriptionPackage.pkg.gokbId}")
+            if (queryResult.error && queryResult.error == 404) {
+                flash.error = message(code: 'wekb.error.404')
+            } else if (queryResult.warning) {
+                List records = queryResult.warning.records
+                packageInfos.packageInstanceRecord = records ? records[0] : [:]
+            }
+            result.packages << packageInfos
+        }
+
+        render template: '/survey/packages', model: result
     }
 
     @Secured(['ROLE_USER'])

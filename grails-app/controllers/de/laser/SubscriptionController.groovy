@@ -105,7 +105,11 @@ class SubscriptionController {
                 return
             }
         }
-        else ctrlResult.result
+        else {
+            if(params.exportXLS)
+                exportService.exportReport(params, ctrlResult.result)
+            else ctrlResult.result
+        }
     }
 
     /*@DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
@@ -350,7 +354,7 @@ class SubscriptionController {
             else redirect(url: request.getHeader('referer'))
         }
         else {
-            redirect(action: 'show', id: ctrlResult.result.redirect)
+            redirect(action: 'members', id: params.id)
         }
     }
 
@@ -360,7 +364,19 @@ class SubscriptionController {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def membersSubscriptionsManagement() {
-        Map<String, Object> ctrlResult = subscriptionControllerService.membersSubscriptionsManagement(this, params)
+        def input_file
+        if(params.tab == 'documents' && params.upload_file) {
+            input_file = request.getFile("upload_file")
+            if (input_file.size == 0) {
+                flash.error = message(code: 'template.emptyDocument.file')
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+            params.original_filename = input_file.originalFilename
+            params.mimeType = input_file.contentType
+        }
+
+        Map<String, Object> ctrlResult = subscriptionControllerService.membersSubscriptionsManagement(this, params, input_file)
 
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
@@ -700,19 +716,24 @@ class SubscriptionController {
             if(params.singleTitle) {
                 IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
                 TitleInstancePackagePlatform tipp = ie.tipp
-                try {
-                    if(subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null) , RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
-                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name])
+
+                if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+                    try {
+                        if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null), RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, result.surveyConfig.pickAndChoosePerpetualAccess)) {
+                            flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name])
+                        }
                     }
-                }
-                catch(EntitlementCreationException e) {
-                    flash.error = e.getMessage()
+                    catch (EntitlementCreationException e) {
+                        flash.error = e.getMessage()
+                    }
                 }
             }
         } else {
             log.error("Unable to locate subscription instance")
         }
-        redirect(url: request.getHeader("referer"))
+
+        redirect action: "renewEntitlementsWithSurvey", id: result.subscription.id, params: [surveyConfigID: result.surveyConfig.id, tab: 'selectedIEs']
+
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
@@ -998,7 +1019,7 @@ class SubscriptionController {
         else {
             flash.message = ctrlResult.result.message
         }
-        redirect(url: request.getHeader("referer"))
+        redirect action: "renewEntitlementsWithSurvey", id: ctrlResult.result.subscription.id, params: [surveyConfigID: ctrlResult.result.surveyConfig.id, tab: 'selectedIEs']
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)

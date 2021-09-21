@@ -2,15 +2,19 @@ package de.laser
 
 
 import com.k_int.kbplus.GenericOIDService
+import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.CostItem
+import de.laser.helper.AppUtils
+import de.laser.helper.ConfigUtils
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
+import grails.core.GrailsClass
 import grails.gorm.transactions.Transactional
 import grails.web.mvc.FlashScope
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -43,7 +47,7 @@ class ManagementService {
     MyInstitutionControllerService myInstitutionControllerService
 
 
-    Map subscriptionsManagement(def controller, GrailsParameterMap parameterMap) {
+    Map subscriptionsManagement(def controller, GrailsParameterMap parameterMap, def input_file = null) {
         Map<String, Object> result = [:]
 
         switch (parameterMap.tab) {
@@ -79,12 +83,25 @@ class ManagementService {
                 result << subscriptionProperties(controller, parameterMap)
                 break
             case "multiYear":
+                if(parameterMap.processOption) {
+                    processSubscriptionProperties(controller, parameterMap)
+                    parameterMap.remove('processOption')
+                }
                 result << subscriptionProperties(controller, parameterMap)
                 break
             case "notes":
+                if(parameterMap.processOption) {
+                    processNotes(controller, parameterMap)
+                    parameterMap.remove('processOption')
+                }
                 result << subscriptionProperties(controller, parameterMap)
                 break
             case "documents":
+                if(parameterMap.processOption) {
+                    processDocuments(controller, parameterMap, input_file)
+                    parameterMap.remove('processOption')
+                }
+
                 result << subscriptionProperties(controller, parameterMap)
                 break
             case "customerIdentifiers":
@@ -183,7 +200,7 @@ class ManagementService {
         }
     }
 
-    boolean processLinkLicense(def controller, GrailsParameterMap params) {
+    void processLinkLicense(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if(result.editable && formService.validateToken(params)) {
             Locale locale = LocaleContextHolder.getLocale()
@@ -264,7 +281,7 @@ class ManagementService {
         }
     }
 
-    boolean processLinkPackages(def controller, GrailsParameterMap params) {
+    void processLinkPackages(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if (result.editable && formService.validateToken(params)) {
             FlashScope flash = getCurrentFlashScope()
@@ -417,7 +434,7 @@ class ManagementService {
         }
     }
 
-    boolean processProperties(def controller, GrailsParameterMap params) {
+    void processProperties(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if(result.editable && formService.validateToken(params)) {
             Locale locale = LocaleContextHolder.getLocale()
@@ -551,10 +568,11 @@ class ManagementService {
         }
     }
 
-    Map<String,Object> processSubscriptionProperties(def controller, GrailsParameterMap params) {
+    void processSubscriptionProperties(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
-        if(result.editable) {
+        if(result.editable && formService.validateToken(params)) {
             Locale locale = LocaleContextHolder.getLocale()
+            FlashScope flash = getCurrentFlashScope()
             List selectedSubs = params.list("selectedSubs")
             if (selectedSubs) {
                 Set change = [], noChange = []
@@ -562,80 +580,198 @@ class ManagementService {
                 Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
                 Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
                 Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
-                subscriptions.each { Subscription subscription ->
-                    if (subscription.isEditableBy(result.user)) {
-                        if (startDate && !auditService.getAuditConfig(subscription.instanceOf, 'startDate')) {
-                            subscription.startDate = startDate
-                            change << messageSource.getMessage('default.startDate.label', null, locale)
-                        }
-                        if (startDate && auditService.getAuditConfig(subscription.instanceOf, 'startDate')) {
-                            noChange << messageSource.getMessage('default.startDate.label', null, locale)
-                        }
-                        if (endDate && !auditService.getAuditConfig(subscription.instanceOf, 'endDate')) {
-                            subscription.endDate = endDate
-                            change << messageSource.getMessage('default.endDate.label', null, locale)
-                        }
-                        if (endDate && auditService.getAuditConfig(subscription.instanceOf, 'endDate')) {
-                            noChange << messageSource.getMessage('default.endDate.label', null, locale)
-                        }
-                        if (params.status && !auditService.getAuditConfig(subscription.instanceOf, 'status')) {
-                            subscription.status = RefdataValue.get(params.status) ?: subscription.status
-                            change << messageSource.getMessage('subscription.status.label', null, locale)
-                        }
-                        if (params.status && auditService.getAuditConfig(subscription.instanceOf, 'status')) {
-                            noChange << messageSource.getMessage('subscription.status.label', null, locale)
-                        }
-                        if (params.kind && !auditService.getAuditConfig(subscription.instanceOf, 'kind')) {
-                            subscription.kind = RefdataValue.get(params.kind) ?: subscription.kind
-                            change << messageSource.getMessage('subscription.kind.label', null, locale)
-                        }
-                        if (params.kind && auditService.getAuditConfig(subscription.instanceOf, 'kind')) {
-                            noChange << messageSource.getMessage('subscription.kind.label', null, locale)
-                        }
-                        if (params.form && !auditService.getAuditConfig(subscription.instanceOf, 'form')) {
-                            subscription.form = RefdataValue.get(params.form) ?: subscription.form
-                            change << messageSource.getMessage('subscription.form.label', null, locale)
-                        }
-                        if (params.form && auditService.getAuditConfig(subscription.instanceOf, 'form')) {
-                            noChange << messageSource.getMessage('subscription.form.label', null, locale)
-                        }
-                        if (params.resource && !auditService.getAuditConfig(subscription.instanceOf, 'resource')) {
-                            subscription.resource = RefdataValue.get(params.resource) ?: subscription.resource
-                            change << messageSource.getMessage('subscription.resource.label', null, locale)
-                        }
-                        if (params.resource && auditService.getAuditConfig(subscription.instanceOf, 'resource')) {
-                            noChange << messageSource.getMessage('subscription.resource.label', null, locale)
-                        }
-                        if (params.isPublicForApi && !auditService.getAuditConfig(subscription.instanceOf, 'isPublicForApi')) {
-                            subscription.isPublicForApi = RefdataValue.get(params.isPublicForApi) == RDStore.YN_YES
-                            change << messageSource.getMessage('subscription.isPublicForApi.label', null, locale)
-                        }
-                        if (params.isPublicForApi && auditService.getAuditConfig(subscription.instanceOf, 'isPublicForApi')) {
-                            noChange << messageSource.getMessage('subscription.isPublicForApi.label', null, locale)
-                        }
-                        if (params.hasPerpetualAccess && !auditService.getAuditConfig(subscription.instanceOf, 'hasPerpetualAccess')) {
-                            subscription.hasPerpetualAccess = RefdataValue.get(params.hasPerpetualAccess) == RDStore.YN_YES
-                            //subscription.hasPerpetualAccess = RefdataValue.get(params.hasPerpetualAccess)
-                            change << messageSource.getMessage('subscription.hasPerpetualAccess.label', null, locale)
-                        }
-                        if (params.hasPerpetuaLAccess && auditService.getAuditConfig(subscription.instanceOf, 'hasPerpetualAccess')) {
-                            noChange << messageSource.getMessage('subscription.hasPerpetualAccess.label', null, locale)
-                        }
-                        if (params.hasPublishComponent && !auditService.getAuditConfig(subscription.instanceOf, 'hasPublishComponent')) {
-                            subscription.hasPublishComponent = RefdataValue.get(params.hasPublishComponent) == RDStore.YN_YES
-                            change << messageSource.getMessage('subscription.hasPublishComponent.label', null, locale)
-                        }
-                        if (params.hasPublishComponent && auditService.getAuditConfig(subscription.instanceOf, 'hasPublishComponent')) {
-                            noChange << messageSource.getMessage('subscription.hasPublishComponent.label', null, locale)
-                        }
-                        if (subscription.isDirty()) {
-                            subscription.save()
+                if(params.processOption == 'changeProperties') {
+                    subscriptions.each { Subscription subscription ->
+                        if (subscription.isEditableBy(result.user)) {
+                            if (startDate && !auditService.getAuditConfig(subscription.instanceOf, 'startDate')) {
+                                subscription.startDate = startDate
+                                change << messageSource.getMessage('default.startDate.label', null, locale)
+                            }
+                            if (startDate && auditService.getAuditConfig(subscription.instanceOf, 'startDate')) {
+                                noChange << messageSource.getMessage('default.startDate.label', null, locale)
+                            }
+                            if (endDate && !auditService.getAuditConfig(subscription.instanceOf, 'endDate')) {
+                                subscription.endDate = endDate
+                                change << messageSource.getMessage('default.endDate.label', null, locale)
+                            }
+                            if (endDate && auditService.getAuditConfig(subscription.instanceOf, 'endDate')) {
+                                noChange << messageSource.getMessage('default.endDate.label', null, locale)
+                            }
+                            if (params.process_status && !auditService.getAuditConfig(subscription.instanceOf, 'status')) {
+                                subscription.status = RefdataValue.get(params.process_status) ?: subscription.status
+                                change << messageSource.getMessage('subscription.status.label', null, locale)
+                            }
+                            if (params.process_status && auditService.getAuditConfig(subscription.instanceOf, 'status')) {
+                                noChange << messageSource.getMessage('subscription.status.label', null, locale)
+                            }
+                            if (params.process_kind && !auditService.getAuditConfig(subscription.instanceOf, 'kind')) {
+                                subscription.kind = RefdataValue.get(params.process_kind) ?: subscription.kind
+                                change << messageSource.getMessage('subscription.kind.label', null, locale)
+                            }
+                            if (params.process_kind && auditService.getAuditConfig(subscription.instanceOf, 'kind')) {
+                                noChange << messageSource.getMessage('subscription.kind.label', null, locale)
+                            }
+                            if (params.process_form && !auditService.getAuditConfig(subscription.instanceOf, 'form')) {
+                                subscription.form = RefdataValue.get(params.process_form) ?: subscription.form
+                                change << messageSource.getMessage('subscription.form.label', null, locale)
+                            }
+                            if (params.process_form && auditService.getAuditConfig(subscription.instanceOf, 'form')) {
+                                noChange << messageSource.getMessage('subscription.form.label', null, locale)
+                            }
+                            if (params.process_resource && !auditService.getAuditConfig(subscription.instanceOf, 'resource')) {
+                                subscription.resource = RefdataValue.get(params.process_resource) ?: subscription.resource
+                                change << messageSource.getMessage('subscription.resource.label', null, locale)
+                            }
+                            if (params.process_resource && auditService.getAuditConfig(subscription.instanceOf, 'resource')) {
+                                noChange << messageSource.getMessage('subscription.resource.label', null, locale)
+                            }
+                            if (params.process_isPublicForApi && !auditService.getAuditConfig(subscription.instanceOf, 'isPublicForApi')) {
+                                subscription.isPublicForApi = RefdataValue.get(params.process_isPublicForApi) == RDStore.YN_YES
+                                change << messageSource.getMessage('subscription.isPublicForApi.label', null, locale)
+                            }
+                            if (params.process_isPublicForApi && auditService.getAuditConfig(subscription.instanceOf, 'isPublicForApi')) {
+                                noChange << messageSource.getMessage('subscription.isPublicForApi.label', null, locale)
+                            }
+                            if (params.process_hasPerpetualAccess && !auditService.getAuditConfig(subscription.instanceOf, 'hasPerpetualAccess')) {
+                                subscription.hasPerpetualAccess = RefdataValue.get(params.process_hasPerpetualAccess) == RDStore.YN_YES
+                                //subscription.hasPerpetualAccess = RefdataValue.get(params.process_hasPerpetualAccess)
+                                change << messageSource.getMessage('subscription.hasPerpetualAccess.label', null, locale)
+                            }
+                            if (params.process_hasPerpetuaLAccess && auditService.getAuditConfig(subscription.instanceOf, 'hasPerpetualAccess')) {
+                                noChange << messageSource.getMessage('subscription.hasPerpetualAccess.label', null, locale)
+                            }
+                            if (params.process_hasPublishComponent && !auditService.getAuditConfig(subscription.instanceOf, 'hasPublishComponent')) {
+                                subscription.hasPublishComponent = RefdataValue.get(params.process_hasPublishComponent) == RDStore.YN_YES
+                                change << messageSource.getMessage('subscription.hasPublishComponent.label', null, locale)
+                            }
+                            if (params.process_hasPublishComponent && auditService.getAuditConfig(subscription.instanceOf, 'hasPublishComponent')) {
+                                noChange << messageSource.getMessage('subscription.hasPublishComponent.label', null, locale)
+                            }
+                            if (params.process_isMultiYear && !auditService.getAuditConfig(subscription.instanceOf, 'isMultiYear')) {
+                                subscription.isMultiYear = RefdataValue.get(params.process_isMultiYear) == RDStore.YN_YES
+                                change << messageSource.getMessage('subscription.isMultiYear.label', null, locale)
+                            }
+                            if (params.process_isMultiYear && auditService.getAuditConfig(subscription.instanceOf, 'isMultiYear')) {
+                                noChange << messageSource.getMessage('subscription.isMultiYear.label', null, locale)
+                            }
+
+                            if (params.process_isAutomaticRenewAnnually && !auditService.getAuditConfig(subscription.instanceOf, 'isAutomaticRenewAnnually')) {
+                                subscription.isAutomaticRenewAnnually = RefdataValue.get(params.process_isAutomaticRenewAnnually) == RDStore.YN_YES
+                                change << messageSource.getMessage('subscription.isAutomaticRenewAnnually.label', null, locale)
+                            }
+                            if (subscription.isDirty()) {
+                                subscription.save()
+                            }
                         }
                     }
                 }
 
             } else {
-                result.error = messageSource.getMessage('subscriptionsManagement.noSelectedMember', null, locale)
+                flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedMember', null, locale)
+            }
+        }
+    }
+
+    void processNotes(def controller, GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
+        if(result.editable && formService.validateToken(params)) {
+            Locale locale = LocaleContextHolder.getLocale()
+            FlashScope flash = getCurrentFlashScope()
+            List selectedSubs = params.list("selectedSubs")
+            if (selectedSubs) {
+                Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
+                if(params.licenseNoteTitle && params.licenseNote) {
+                    if(params.processOption == 'newNote') {
+                        subscriptions.each { Subscription subscription ->
+                            if (subscription.isEditableBy(result.user)) {
+
+                                Doc doc_content = new Doc(contentType: Doc.CONTENT_TYPE_STRING,
+                                        title: params.licenseNoteTitle,
+                                        content: params.licenseNote,
+                                        type: RDStore.DOC_TYPE_NOTE,
+                                        owner: contextService.getOrg(),
+                                        user: result.user).save()
+
+
+                                DocContext doc_context = new DocContext(
+                                        subscription: subscription,
+                                        owner: doc_content,
+                                        doctype: RDStore.DOC_TYPE_NOTE)
+                                doc_context.save()
+                            }
+                        }
+                    }
+                }else{
+                    flash.error = messageSource.getMessage('subscriptionsManagement.note.noNoteParameter', null, locale)
+                }
+
+            } else {
+                flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedMember', null, locale)
+            }
+        }
+    }
+
+    void processDocuments(def controller, GrailsParameterMap params, def input_file) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
+
+        //Is be to need, because with upload_file the formService.validateToken(params) is not working really
+        params.remove('upload_file')
+
+        if(result.editable && formService.validateToken(params)) {
+            Locale locale = LocaleContextHolder.getLocale()
+            FlashScope flash = getCurrentFlashScope()
+            List selectedSubs = params.list("selectedSubs")
+            if (selectedSubs) {
+                Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
+                    if(params.processOption == 'newDoc') {
+                        subscriptions.each { Subscription subscription ->
+                            if (subscription.isEditableBy(result.user)) {
+
+                                def input_stream = input_file.inputStream
+                                if (input_stream) {
+                                    Doc doc_content = new Doc(
+                                            contentType: Doc.CONTENT_TYPE_FILE,
+                                            filename: params.original_filename,
+                                            mimeType: params.mimeType,
+                                            title: params.upload_title ?: params.original_filename,
+                                            type: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE),
+                                            creator: result.user,
+                                            owner: contextService.getOrg())
+
+                                    doc_content.save()
+
+                                    File new_File
+                                    try {
+                                        String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
+                                        String fName = doc_content.uuid
+
+                                        File folder = new File("${fPath}")
+                                        if (!folder.exists()) {
+                                            folder.mkdirs()
+                                        }
+                                        new_File = new File("${fPath}/${fName}")
+
+                                        input_file.transferTo(new_File)
+                                    }
+                                    catch (Exception e) {
+                                        e.printStackTrace()
+                                    }
+
+                                    DocContext doc_context = new DocContext(
+                                            subscription: subscription,
+                                            owner: doc_content,
+                                            doctype: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
+                                    )
+
+                                    doc_context.save()
+                                }
+
+                            }
+                    }
+                }
+
+            } else {
+                flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedMember', null, locale)
             }
         }
     }

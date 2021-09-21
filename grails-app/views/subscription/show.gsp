@@ -105,10 +105,11 @@
                         </g:if>
 
                         <g:if test="${(subscription.type == RDStore.SUBSCRIPTION_TYPE_LOCAL &&
-                                        subscription._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
+                                subscription._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.isAutomaticRenewAnnually.label')}</dt>
-                                <dd><semui:xEditableBoolean owner="${subscription}" field="isAutomaticRenewAnnually" overwriteEditable="${subscription.isAllowToAutomaticRenewAnnually()}"/></dd>
+                                <dd><semui:xEditableBoolean owner="${subscription}" field="isAutomaticRenewAnnually"
+                                                            overwriteEditable="${subscription.isAllowToAutomaticRenewAnnually()}"/></dd>
                             </dl>
                         </g:if>
 
@@ -222,7 +223,7 @@
                 </div>
             </div>
 
-            <div class="ui card" id="links"></div>
+
             <g:if test="${subscription.packages}">
                 <div id="packages"></div>
             </g:if>
@@ -402,52 +403,52 @@
     </div><!-- .twelve -->
     <aside class="six wide column la-sidekick">
         <div class="ui one cards">
-            <g:render template="/templates/aside1" model="${[ownobj: subscription, owntp: 'subscription']}"/>
             <div id="container-provider">
                 <div class="ui card ">
-                <div class="content">
-                    <h2 class="ui header">${message(code: 'default.agency.provider.plural.label')}</h2>
-                    <g:render template="/templates/links/orgLinksAsList"
-                              model="${[roleLinks    : visibleOrgRelations,
-                                        roleObject   : subscription,
-                                        roleRespValue: 'Specific subscription editor',
-                                        editmode     : editable,
-                                        showPersons  : true
-                              ]}"/>
-                    <div class="ui la-vertical buttons la-js-hide-this-card">
-
-                        <g:render template="/templates/links/orgLinksSimpleModal"
-                                  model="${[linkType      : subscription.class.name,
-                                            parent        : genericOIDService.getOID(subscription),
-                                            property      : 'orgs',
-                                            recip_prop    : 'sub',
-                                            tmplRole      : RDStore.OR_PROVIDER,
-                                            tmplType      : RDStore.OT_PROVIDER,
-                                            tmplEntity    : message(code: 'subscription.details.linkProvider.tmplEntity'),
-                                            tmplText      : message(code: 'subscription.details.linkProvider.tmplText'),
-                                            tmplButtonText: message(code: 'subscription.details.linkProvider.tmplButtonText'),
-                                            tmplModalID   : 'modal_add_provider',
-                                            editmode      : editable
+                    <div class="content">
+                        <h2 class="ui header">${message(code: 'subscription.organisations.label')}</h2>
+                        <g:render template="/templates/links/orgLinksAsList"
+                                  model="${[roleLinks    : visibleOrgRelations,
+                                            roleObject   : subscription,
+                                            roleRespValue: 'Specific subscription editor',
+                                            editmode     : editable,
+                                            showPersons  : true
                                   ]}"/>
-                        <g:render template="/templates/links/orgLinksSimpleModal"
-                                  model="${[linkType      : subscription.class.name,
-                                            parent        : genericOIDService.getOID(subscription),
-                                            property      : 'orgs',
-                                            recip_prop    : 'sub',
-                                            tmplRole      : RDStore.OR_AGENCY,
-                                            tmplType      : RDStore.OT_AGENCY,
-                                            tmplEntity    : message(code: 'subscription.details.linkAgency.tmplEntity'),
-                                            tmplText      : message(code: 'subscription.details.linkAgency.tmplText'),
-                                            tmplButtonText: message(code: 'subscription.details.linkAgency.tmplButtonText'),
-                                            tmplModalID   : 'modal_add_agency',
-                                            editmode      : editable
-                                  ]}"/>
+                        <div class="ui la-vertical buttons la-js-hide-this-card">
 
-                    </div><!-- la-js-hide-this-card -->
+                            <g:render template="/templates/links/orgLinksSimpleModal"
+                                      model="${[linkType      : subscription.class.name,
+                                                parent        : genericOIDService.getOID(subscription),
+                                                property      : 'orgs',
+                                                recip_prop    : 'sub',
+                                                tmplRole      : RDStore.OR_PROVIDER,
+                                                tmplType      : RDStore.OT_PROVIDER,
+                                                tmplEntity    : message(code: 'subscription.details.linkProvider.tmplEntity'),
+                                                tmplText      : message(code: 'subscription.details.linkProvider.tmplText'),
+                                                tmplButtonText: message(code: 'subscription.details.linkProvider.tmplButtonText'),
+                                                tmplModalID   : 'modal_add_provider',
+                                                editmode      : editable
+                                      ]}"/>
+                            <g:render template="/templates/links/orgLinksSimpleModal"
+                                      model="${[linkType      : subscription.class.name,
+                                                parent        : genericOIDService.getOID(subscription),
+                                                property      : 'orgs',
+                                                recip_prop    : 'sub',
+                                                tmplRole      : RDStore.OR_AGENCY,
+                                                tmplType      : RDStore.OT_AGENCY,
+                                                tmplEntity    : message(code: 'subscription.details.linkAgency.tmplEntity'),
+                                                tmplText      : message(code: 'subscription.details.linkAgency.tmplText'),
+                                                tmplButtonText: message(code: 'subscription.details.linkAgency.tmplButtonText'),
+                                                tmplModalID   : 'modal_add_agency',
+                                                editmode      : editable
+                                      ]}"/>
 
+                        </div><!-- la-js-hide-this-card -->
+
+                    </div>
                 </div>
             </div>
-            </div>
+
             <div id="container-billing">
                 <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
                     <div class="ui card la-dl-no-table">
@@ -470,6 +471,10 @@
                     </div>
                 </g:if>
             </div>
+            <div id="container-links">
+                <div class="ui card"  id="links"></div>
+            </div>
+            <g:render template="/templates/aside1" model="${[ownobj: subscription, owntp: 'subscription']}"/>
         </div>
     </aside><!-- .four -->
 </div><!-- .grid -->

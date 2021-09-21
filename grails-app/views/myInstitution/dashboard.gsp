@@ -113,7 +113,7 @@
             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                 <a class="${us_dashboard_tab.getValue().value=='Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                     <i class="tasks icon large"></i>
-                    ${currentWorkflows.size()}
+                    ${currentWorkflowsCount}
                     ${message(code:'workflow.plural')}
                 </a>
             </g:if>
@@ -254,7 +254,7 @@
         <div class="ui bottom attached tab segment ${us_dashboard_tab.getValue().value == 'Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active':''}" data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
                     <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-                        <g:link controller="survey" action="currentSurveysConsortia" class="ui button">${message(code:'menu.my.surveys')}</g:link>
+                        <g:link controller="survey" action="workflowsSurveysConsortia" class="ui button">${message(code:'menu.my.surveys')}</g:link>
                     </g:if>
                     <g:else>
                         <g:link action="currentSurveys" class="ui button">${message(code:'menu.my.surveys')}</g:link>
@@ -270,6 +270,9 @@
         <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
             <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active':''}" data-tab="workflows">
                 <div>
+                    <g:if test="${currentWorkflows.size() != currentWorkflowsCount}">
+                        <semui:msg class="info" text="${message(code:'workflow.dashboard.msg.more', args:[currentWorkflows.size(), currentWorkflowsCount, g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[max:200])])}" />
+                    </g:if>
                     <table class="ui celled table la-table">
                         <thead>
                             <tr>

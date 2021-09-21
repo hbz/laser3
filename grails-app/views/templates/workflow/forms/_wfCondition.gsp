@@ -94,7 +94,7 @@
 
                     <g:if test="${field.startsWith('checkbox')}">
                         <div class="field">
-                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title')}</label>
+                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
                             <div class="ui checkbox">
                                 <input type="checkbox" name="${prefix}_${field}" id="${prefix}_${field}"
                                     <% print condition.getProperty(field) == true ? 'checked="checked"' : '' %>
@@ -107,7 +107,7 @@
                     </g:if>
                     <g:if test="${field.startsWith('date')}">
                         <div class="field">
-                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title')}</label>
+                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
                             <input type="date" name="${prefix}_${field}" id="${prefix}_${field}"
                                 <% print condition.getProperty(field) ? 'value="' + DateUtils.getSDF_ymd().format(condition.getProperty(field)) + '"' : '' %>
                             />
@@ -115,7 +115,7 @@
                     </g:if>
                     <g:if test="${field.startsWith('file')}">
                         <div class="field">
-                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title')}</label>
+                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
 
                             <g:set var="docctx" value="${condition.getProperty(field)}" />
                             <g:if test="${docctx}">

@@ -15,7 +15,7 @@
 <body>
     <g:if test="${fromSurvey}">
         <semui:breadcrumbs>
-            <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
+            <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
 
             <g:if test="${sourceObject}">
                 <g:set var="surveyConfig" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sourceObject, true)}"/>

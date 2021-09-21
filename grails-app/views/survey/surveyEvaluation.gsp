@@ -11,7 +11,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb controller="survey" action="currentSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
+    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.getConfigNameShort()}" />
     </g:if>
@@ -21,6 +21,10 @@
 <semui:controlButtons>
     <g:if test="${surveyInfo.status != RDStore.SURVEY_IN_PROCESSING}">
         <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+            </semui:exportDropdownItem>
+
             <semui:exportDropdownItem>
                 <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'survey.exportSurvey')}</g:link>
@@ -109,6 +113,8 @@
 
         </div>
     </div>
+
+    <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
 
 </g:else>
 

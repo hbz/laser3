@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.FormService; de.laser.Subscription; de.laser.interfaces.CalculatedType;" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
@@ -104,14 +104,14 @@
                         fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
                         fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
                     %>
-                    <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
+                    <laser:select name="process_status" from="${fakeList}" optionKey="id" optionValue="value"
                                   noSelection="${['': '']}"
                                   value="${['': '']}"/>
                 </div>
 
                 <div class="field">
                     <label>${message(code: 'subscription.kind.label')}</label>
-                    <laser:select name="kind"
+                    <laser:select name="process_kind"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
@@ -119,7 +119,7 @@
 
                 <div class="field">
                     <label>${message(code: 'subscription.form.label')}</label>
-                    <laser:select name="form"
+                    <laser:select name="process_form"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
@@ -127,7 +127,7 @@
 
                 <div class="field">
                     <label>${message(code: 'subscription.resource.label')}</label>
-                    <laser:select name="resource"
+                    <laser:select name="process_resource"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
@@ -138,7 +138,7 @@
 
                 <div class="field">
                     <label>${message(code: 'subscription.isPublicForApi.label')}</label>
-                    <laser:select name="isPublicForApi"
+                    <laser:select name="process_isPublicForApi"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
@@ -146,7 +146,7 @@
 
                 <div class="field">
                     <label>${message(code: 'subscription.hasPerpetualAccess.label')}</label>
-                    <laser:select name="hasPerpetualAccess"
+                    <laser:select name="process_hasPerpetualAccess"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
@@ -154,11 +154,21 @@
 
                 <div class="field">
                     <label>${message(code: 'subscription.hasPublishComponent.label')}</label>
-                    <laser:select name="hasPublishComponent"
+                    <laser:select name="process_hasPublishComponent"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
                 </div>
+
+                <g:if test="${accessService.checkPerm('ORG_INST')}">
+                    <div class="field">
+                        <label>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</label>
+                        <laser:select name="process_isAutomaticRenewAnnually"
+                                      from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                      optionKey="id" optionValue="value" noSelection="${['': '']}"
+                                      value="${['': '']}"/>
+                    </div>
+                </g:if>
 
             </div>
 
@@ -175,7 +185,7 @@
                             total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
                 </g:else>
             </h3>
-            <table class="ui celled la-table table">
+            <table class="ui celled monitor stackable la-table compact table">
                 <thead>
                 <tr>
                     <th>
@@ -199,6 +209,9 @@
                     <th>${message(code: 'subscription.isPublicForApi.label')}</th>
                     <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
                     <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
+                    <g:if test="${accessService.checkPerm('ORG_INST')}">
+                        <th>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</th>
+                    </g:if>
                     <th class="la-no-uppercase">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                               data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
@@ -298,6 +311,13 @@
                                                     overwriteEditable="${editableOld}"/>
                             <semui:auditButton auditable="[sub, 'hasPublishComponent']"/>
                         </td>
+                        <g:if test="${accessService.checkPerm('ORG_INST')}">
+                            <td>
+                                <g:if test="${(sub.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && sub._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
+                                    <semui:xEditableBoolean owner="${sub}" field="isAutomaticRenewAnnually" overwriteEditable="${sub.isAllowToAutomaticRenewAnnually()}"/>
+                                </g:if>
+                            </td>
+                        </g:if>
                         <td>
                             <g:if test="${sub.isMultiYear}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay"

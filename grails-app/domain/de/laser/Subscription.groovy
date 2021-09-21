@@ -65,6 +65,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     boolean hasPublishComponent = false
     boolean isMultiYear = false
 
+    //Only for Subscription with Type = Local
     boolean isAutomaticRenewAnnually = false
 
   String name
@@ -465,7 +466,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     boolean isAllowToAutomaticRenewAnnually() {
-        return (this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 366))
+        return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 363) && (this.endDate.minus(this.startDate) < 367))
     }
 
     boolean isEditableBy(user) {
@@ -790,7 +791,7 @@ select distinct oap from OrgAccessPoint oap
     Collection<OrgAccessPoint> getOrgAccessPointsOfSubscriber() {
         Collection<OrgAccessPoint> result = []
 
-        result = this.getSubscriber().accessPoints
+        result = this.getSubscriber()?.accessPoints
 
         result
     }

@@ -12,7 +12,7 @@
 
 <semui:breadcrumbs>
 
-    <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
+    <semui:crumb controller="survey" action="workflowsSurveysConsortia" message="currentSurveys.label"/>
     <semui:crumb message="createIssueEntitlementsSurvey.label" class="active"/>
 </semui:breadcrumbs>
 
@@ -22,11 +22,11 @@
 
 <semui:form>
     <g:form action="processCreateIssueEntitlementsSurvey" controller="survey" method="post" class="ui form">
-        <g:hiddenField id="sub_id_${subscription?.id}" name="sub" value="${subscription?.id}"/>
+        <g:hiddenField id="sub_id_${subscription.id}" name="sub" value="${subscription.id}"/>
 
         <div class="field required ">
             <label>${message(code: 'surveyInfo.name.label')} <g:message code="messageRequiredField" /></label>
-            <input type="text" name="name" placeholder="" value="${subscription?.name ?: params.name}" required />
+            <input type="text" name="name" placeholder="" value="${subscription.name ?: params.name}" required />
         </div>
 
         <div class="two fields ">
@@ -47,7 +47,7 @@
         <div class="field">
             <label>${message(code: 'surveyconfig.pickAndChoosePerpetualAccess.label')}</label>
             <div>
-                <input type="checkbox" id="pickAndChoosePerpetualAccess" name="pickAndChoosePerpetualAccess" ${params.pickAndChoosePerpetualAccess? 'checked':''}>
+                <input type="checkbox" id="pickAndChoosePerpetualAccess" name="pickAndChoosePerpetualAccess" ${(params.pickAndChoosePerpetualAccess || subscription.hasPerpetualAccess ) ? 'checked':''}>
             </div>
         </div>
 

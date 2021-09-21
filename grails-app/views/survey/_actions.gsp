@@ -1,13 +1,6 @@
 <%@ page import="de.laser.helper.RDStore; de.laser.Org" %>
 <laser:serviceInjection/>
 
-<g:if test="${actionName == 'renewalEvaluation'}">
-<semui:exportDropdown>
-    <semui:actionsDropdownItem data-semui="modal" href="#individuallyExportModal"
-                               message="renewalEvaluation.exportRenewal"/>
-</semui:exportDropdown>
-</g:if>
-
 <semui:actionsDropdown>
     <g:if test="${contextService.getUser().hasAffiliation("INST_EDITOR")}">
         <g:if test="${actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia'}">

@@ -399,7 +399,7 @@
                                         <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
                                     </g:each>
                                     <g:if test="${editable && ie.priceItems.size() < 1 }">
-                                        <g:link action="addEmptyPriceItem" class="ui icon positive button"
+                                        <g:link action="addEmptyPriceItem" class="ui icon blue button la-modern-button"
                                                 params="${[ieid: ie.id, id: subscription.id]}">
                                             <i class="money icon la-popup-tooltip la-delay"
                                                data-content="${message(code: 'subscription.details.addEmptyPriceItem.info')}"></i>
@@ -440,7 +440,7 @@
                                 <td class="x">
                                     <g:if test="${editable}">
                                         <g:if test="${subscription.ieGroups.size() > 0}">
-                                            <g:link action="removeEntitlementWithIEGroups" class="ui icon negative button js-open-confirm-modal"
+                                            <g:link action="removeEntitlementWithIEGroups" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                     params="${[ieid: ie.id, sub: subscription.id]}"
                                                     role="button"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.name])}"
@@ -450,7 +450,7 @@
                                             </g:link>
                                         </g:if>
                                         <g:else>
-                                            <g:link action="removeEntitlement" class="ui icon negative button js-open-confirm-modal"
+                                            <g:link action="removeEntitlement" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                     params="${[ieid: ie.id, sub: subscription.id]}"
                                                     role="button"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.name])}"

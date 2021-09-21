@@ -7,6 +7,38 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3811    17.09.2021  dev     2.2         Moe     Feature     Click me auch bei Umfragen
+
+3801    17.09.2021  dev     2.2         David   Feature     Reporting: Kontextabhängige Hilfe
+
+3812    17.09.2021  dev     2.2         David   Feature     Modale Dialoge springen nach dem Schließen zum Seitenanfang
+
+3748    17.09.2021  dev     2.2         Andreas Feature     Massenlöschung von gelöscht markierten TIPP-Einträgen implementiert
+
+3805    16.09.2021  dev     2.2         Andreas Feature     Rückverweis bei Teilnehmer-Vorgänger/Nachfolger verknüpfen umgestellt
+
+3804    16.09.2021  dev     2.2         Andreas Bug         Statistik war für Lizenz ohne Start- und Enddatum nicht abrufbar und weitere Bugfixes 
+
+3770    16.09.2021  dev     2.2         David   Feature     Workflow: Anbieter Angebot archiviert - unklare Handhabe
+
+3802    15.09.2021  dev     2.2         Andreas Bug         Tippfehler korrigiert
+
+3772    15.09.2021  dev     2.2         Andreas Feature     ROLE-Rechte-Löschung muss jetzt bestätigt werden
+
+3803    15.09.2021  dev     2.2         Moe     Feature     Meine Umfragen Startseite ändern
+
+3771    15.09.2021  dev     2.2         David   Feature     Workflow: Sicherheitsabfrage beim Löschen eines Workflows fehlt
+
+3768    15.09.2021  dev     2.2         Andreas Bug         Merkmal Teilnahme konnte nicht entfernt werden
+
+3754    15.09.2021  dev     2.2         David   Feature     Dashboard-Workflow-Tab: Paginierung einführen
+
+3582    15.09.2021  dev     2.2         Andreas Feature     Umbruch der xEditable-Werte nach 50 Zeichen
+
+3461    15.09.2021  dev     2.2         Andreas Bug         umständliche Abfragelogik bei Identifikatorensuche entstrickt
+
+3501    14.09.2021  dev     2.2         Moe     Feature     Bulkoperation für Vollnutzer zur Massenverlängerung
+
 3783    14.09.2021  dev     2.2         Andreas Feature     Status der Aufgaben grafisch dargestellt
 
 3796    14.09.2021  dev     2.2         David   Feature     Reporting: Datepicker für Datumsgrenzen

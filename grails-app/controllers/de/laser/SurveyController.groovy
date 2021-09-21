@@ -85,7 +85,7 @@ class SurveyController {
 
         params.max = result.max
         params.offset = result.offset
-        params.filterStatus = params.filterStatus ?: ((params.size() > 4) ? "" : [RDStore.SURVEY_SURVEY_STARTED.id.toString(), RDStore.SURVEY_READY.id.toString(), RDStore.SURVEY_IN_PROCESSING.id.toString()])
+        //params.filterStatus = params.filterStatus ?: ((params.size() > 4) ? "" : [RDStore.SURVEY_SURVEY_STARTED.id.toString(), RDStore.SURVEY_READY.id.toString(), RDStore.SURVEY_IN_PROCESSING.id.toString()])
         pu.setBenchmark("before properties")
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SVY_PROP], (Org) result.institution)
         pu.setBenchmark("after properties")
@@ -1200,7 +1200,41 @@ class SurveyController {
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
-        }else {
+        }else if (params.exportClickMeExcel) {
+            try {
+                String message = g.message(code: 'renewalexport.renewals')
+                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+
+                String filename
+                if (params.filename) {
+                    filename =params.filename
+                }
+                else {
+                    filename = message + "_" + result.surveyConfig.getSurveyName() + "_${datetoday}"
+                }
+
+                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                Map<String, Object> selectedFields = [:]
+                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyEvaluation(result, selectedFields)
+                // Write the output to a file
+
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
+            }
+            catch (Exception e) {
+                log.error("Problem", e);
+                response.sendError(500)
+                return
+            }
+        }
+        else {
 
             if(params.tab == 'participantsViewAllNotFinish'){
                 params.participantsNotFinish = true
@@ -1216,9 +1250,9 @@ class SurveyController {
             result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
             result.participantsTotal = result.surveyConfig.orgs.size()
 
-             Map<String,Object> fsq = filterService.getSurveyResultQuery(params, result.surveyConfig)
+             //Map<String,Object> fsq = filterService.getSurveyResultQuery(params, result.surveyConfig)
 
-            result.surveyResult = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
+            //result.surveyResult = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
 
 
             result.propList    = result.surveyConfig.surveyProperties.surveyProperty
@@ -1257,6 +1291,8 @@ class SurveyController {
                     }
                 }
             }
+
+            result.participants = result.participants.sort{it.org.sortname}
 
             result
         }
@@ -2822,7 +2858,7 @@ class SurveyController {
         }
         else {
 
-            if (params.exportXLSX) {
+            if (params.exportClickMeExcel) {
                 try {
                     String message = g.message(code: 'renewalexport.renewals')
                     SimpleDateFormat sdf = DateUtils.getSDF_NoTime()

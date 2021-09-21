@@ -956,15 +956,35 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+    })
     def subscriptionsManagement() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         params.tab = params.tab ?: 'generalProperties'
 
-        result << managementService.subscriptionsManagement(this, params)
+        //Important
+        if(accessService.checkPerm('ORG_CONSORTIUM')) {
+            params.subTypes = [RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()]
+        }else{
+            params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id.toString()]
+        }
 
+        if(params.tab == 'documents' && params.upload_file) {
+            def input_file = request.getFile("upload_file")
+            if (input_file.size == 0) {
+                flash.error = message(code: 'template.emptyDocument.file')
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+            params.original_filename = input_file.originalFilename
+            params.mimeType = input_file.contentType
+            result << managementService.subscriptionsManagement(this, params, input_file)
+        }else{
+            result << managementService.subscriptionsManagement(this, params)
+        }
 
         result
 
@@ -1797,6 +1817,8 @@ join sub.orgRelations or_sub where
 
             if (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
 
+                result.previousSubscription = result.subscription._getCalculatedPrevious()
+
                 result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscription)
                 result.iesListPriceSum = 0
                 result.ies.each { IssueEntitlement ie ->
@@ -1819,6 +1841,19 @@ join sub.orgRelations or_sub where
                     }
                     result.iesFixListPriceSum = result.iesListPriceSum + priceSum
                 }
+
+                result.previousIes = subscriptionService.getIssueEntitlementsFixed(result.previousSubscription)
+                result.previousIesListPriceSum = 0
+                result.previousIes.each { IssueEntitlement ie ->
+                    Double priceSum = 0.0
+
+                    ie.priceItems.each { PriceItem priceItem ->
+                        priceSum = priceItem.listPrice ?: 0.0
+                    }
+                    result.previousIesListPriceSum = result.previousIesListPriceSum + priceSum
+                }
+
+                result.subscriber = result.subscription.getSubscriber()
             }
 
         }
