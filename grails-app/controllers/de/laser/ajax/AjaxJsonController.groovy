@@ -157,6 +157,7 @@ class AjaxJsonController {
         }
 
         if (data) {
+            data.unique()
             data.each { Subscription s ->
                 result.add([value: s.id, text: s.dropdownNamingConvention()])
             }
