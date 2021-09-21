@@ -53,6 +53,7 @@ invoicing,Rechnungsstellung,Invoicing
 ip.authentication,IP-Authentifizierung,IP Authentication
 ipv4.address.format,IPv4 Address Format,IPv4 Address Format
 ipv6.address.format,IPv6 Address Format,IPv6 Address Format
+kfl.advisor,KfL-Betreuer,KfL advisor
 language,Sprache,Language
 language.iso,Sprache nach ISO 639-2,Language according to ISO 639-2
 library.network,Verbundzugehörigkeit,Library Network
