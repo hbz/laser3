@@ -52,7 +52,7 @@
 
                             <span class="la-float-right">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center"
-                                        data-content="${message(code: "surveyEvaluation.label")} anzeigen">
+                                        data-content="${message(code: "surveyResult.label")} anzeigen">
                                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                                     params="[surveyConfigID: surveyConfig.id]"
                                                     class="ui icon blue button la-modern-button">

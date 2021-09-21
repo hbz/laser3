@@ -164,6 +164,8 @@ class SurveyController {
             params.validOnYear = [sdfyear.format(new Date())]
         }
 
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SVY_PROP], (Org) result.institution)
+
         result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
 
         result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( contextService.getOrg() )

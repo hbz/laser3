@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3809    21.09.2021  dev     2.2         Andreas Feature     Nachbesserungen und Bugfixes bei der Statistik-Darstellung
+
 3811    17.09.2021  dev     2.2         Moe     Feature     Click me auch bei Umfragen
 
 3801    17.09.2021  dev     2.2         David   Feature     Reporting: Kontextabhängige Hilfe

@@ -109,7 +109,7 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.isAutomaticRenewAnnually.label')}</dt>
                                 <dd><semui:xEditableBoolean owner="${subscription}" field="isAutomaticRenewAnnually"
-                                                            overwriteEditable="${subscription.isAllowToAutomaticRenewAnnually()}"/></dd>
+                                                            overwriteEditable="${editable && subscription.isAllowToAutomaticRenewAnnually()}"/></dd>
                             </dl>
                         </g:if>
 
@@ -225,7 +225,7 @@
 
 
             <g:if test="${subscription.packages}">
-                <div id="packages"></div>
+                <div id="packages" class="la-padding-top-1em"></div>
             </g:if>
         <%--
         <div class="ui card la-js-hideable hidden">
