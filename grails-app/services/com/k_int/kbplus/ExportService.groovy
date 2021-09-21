@@ -11,6 +11,7 @@ import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractReport
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemGroup
@@ -23,7 +24,9 @@ import de.laser.TIPPCoverage
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.stats.Counter4ApiSource
+import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5ApiSource
+import de.laser.stats.Counter5Report
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.poi.POIXMLProperties
@@ -535,20 +538,352 @@ class ExportService {
 		POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
 		coreProps.setCreator(messageSource.getMessage('laser',null,locale))
 		SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50)
+		wb.setCompressTempFiles(true)
 		Row row
 		Cell cell
-		int rowno
-		//revision 4
-		if(params.reportType in Counter4ApiSource.COUNTER_4_REPORTS) {
-			rowno = 9
-			//the header
-
-		}
-		else if(params.reportType in Counter5ApiSource.COUNTER_5_REPORTS) {
-			rowno = 14 //14 is the first row (zero-based counting: 14) in which data is being displayed
-			//the header
+		Set<String> reportTypes = []
+		if(params.data != 'fetchAll' && params.reportType)
+			reportTypes << params.reportType
+		else reportTypes.addAll(data.reportTypes)
+		Org customer = data.subscription.getSubscriber()
+		//IMMENSELY UGLY WORKAROUND, TODO [ticket=3814]
+		Set<IdentifierNamespace> propIdNamespaces = IdentifierNamespace.findAllByIsFromLaserAndNsNotInList(false, IdentifierNamespace.CORE_TITLE_NS)
+		reportTypes.each { String reportType ->
+			SXSSFSheet sheet = wb.createSheet(reportType)
+			sheet.flushRows(10)
+			sheet.setAutobreaks(true)
+			LinkedHashSet<String> columnHeaders
+			Map<TitleInstancePackagePlatform, Map> titleRows = [:]
+			int rowno = 0
+			//revision 4
+			if(data.revision == 'counter4') {
+				//the header
+				Row headerRow = sheet.createRow(0)
+				cell = headerRow.createCell(0)
+				LinkedHashSet<String> header = Counter4Report.EXPORTS.valueOf(reportType).header
+				cell.setCellValue(header[0])
+				cell = headerRow.createCell(1)
+				cell.setCellValue(header[1])
+				headerRow = sheet.createRow(1)
+				cell = headerRow.createCell(0)
+				cell.setCellValue(customer.name)
+				headerRow = sheet.createRow(2)
+				cell = headerRow.createCell(0)
+				cell.setCellValue("") //institutional identifier is never used but must appear according to reference
+				headerRow = sheet.createRow(3)
+				cell = headerRow.createCell(0)
+				cell.setCellValue('Period covered by Report:')
+				headerRow = sheet.createRow(4)
+				cell = headerRow.createCell(0)
+				cell.setCellValue("${data.startDate.format('yyyy-MM-dd')} to ${data.endDate.format('yyyy-MM-dd')}")
+				headerRow = sheet.createRow(5)
+				cell = headerRow.createCell(0)
+				cell.setCellValue("Date run:")
+				headerRow = sheet.createRow(6)
+				cell = headerRow.createCell(0)
+				cell.setCellValue(data.dateRun.format('yyyy-MM-dd'))
+				columnHeaders = Counter4Report.COLUMN_HEADERS.valueOf(reportType).headers
+				columnHeaders.addAll(data.monthsInRing.collect { Date month -> month.format('yyyy-MM') })
+				row = sheet.createRow(7)
+				columnHeaders.eachWithIndex { String colHeader, int i ->
+					cell = row.createCell(i)
+					cell.setCellValue(colHeader)
+				}
+				row = sheet.createRow(8)
+				switch(reportType) {
+					case Counter4ApiSource.JOURNAL_REPORT_1:
+					case Counter4ApiSource.JOURNAL_REPORT_1_GOA:
+					case Counter4ApiSource.BOOK_REPORT_1:
+					case Counter4ApiSource.BOOK_REPORT_2: cell = row.createCell(0)
+						cell.setCellValue("Total for all titles")
+						for(int i = 1; i < 7; i++) {
+							cell = row.createCell(i)
+							cell.setCellValue("")
+						}
+						cell = row.createCell(7)
+						if(data.total) {
+							int totalCount = 0
+							if(data.total.find { Map totalRow -> totalRow.reportType == reportType && totalRow.metricType == 'ft_total' })
+								totalCount = data.total.find { Map totalRow -> totalRow.reportType == reportType && totalRow.metricType == 'ft_total' }.reportCount
+							else if(data.total.find { Map totalRow -> totalRow.reportType == reportType })
+								totalCount = data.total.find { Map totalRow -> totalRow.reportType == reportType }.reportCount
+							cell.setCellValue(totalCount)
+						}
+						else cell.setCellValue(0)
+						data.sums.findAll { Map totalRow -> totalRow.metricType == 'ft_total' && totalRow.reportType == reportType }.eachWithIndex { Map totalRow, int i ->
+							cell = row.createCell(i+8)
+							cell.setCellValue(totalRow.reportCount ?: 0)
+						}
+						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType)
+						rowno = 8
+						break
+					case Counter4ApiSource.JOURNAL_REPORT_2:
+					case Counter4ApiSource.BOOK_REPORT_3:
+					case Counter4ApiSource.BOOK_REPORT_4:
+						Map<String, Set<Map>> categoryRows = [:]
+						data.sums.findAll { Map report -> report.reportType == reportType }.each { Map sumRow ->
+							Set<Map> categoryRow = categoryRows.get(sumRow.category)
+							if(!categoryRow)
+								categoryRow = []
+							categoryRow.add(sumRow)
+							categoryRows.put(sumRow.category, categoryRow)
+						}
+						categoryRows.each { String category, Set<Map> categoryRow ->
+							cell = row.createCell(0)
+							cell.setCellValue(category)
+							cell = row.createCell(2)
+							cell.setCellValue(categoryRow[0].platform.name)
+							cell = row.createCell(8)
+							cell.setCellValue(categoryRow.sum { Map sumRow -> sumRow.reportCount })
+							categoryRow.eachWithIndex { Map sumRow, int i ->
+								cell = row.createCell(i+9)
+								cell.setCellValue(sumRow.reportCount ?: 0)
+							}
+							rowno++
+							row = sheet.createRow(rowno)
+						}
+						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType)
+						rowno = 8
+						break
+					case Counter4ApiSource.JOURNAL_REPORT_5:
+					case Counter4ApiSource.BOOK_REPORT_5:
+						Map<String, Set<Map>> metricRows = [:]
+						rowno = 8
+						data.sums.findAll { Map report -> report.reportType == reportType }.each { Map sumRow ->
+							Set<Map> metricRow = metricRows.get(sumRow.metricType)
+							if(!metricRow)
+								metricRow = []
+							metricRow.add(sumRow)
+							metricRows.put(sumRow.metricType, metricRow)
+						}
+						metricRows.each { String metric, Set<Map> metricRow ->
+							cell = row.createCell(0)
+							cell.setCellValue(metric == 'search_reg' ? "Total searches" : "Total searches: Searches: federated and automated")
+							cell = row.createCell(2)
+							cell.setCellValue(metricRow[0].platform.name)
+							cell = row.createCell(8)
+							cell.setCellValue(metricRow.sum { Map sumRow -> sumRow.reportCount })
+							metricRow.eachWithIndex { Map sumRow, int i ->
+								cell = row.createCell(i+9)
+								cell.setCellValue(sumRow.reportCount)
+							}
+							rowno++
+							row = sheet.createRow(rowno)
+						}
+						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType)
+						break
+				}
+			}
+			//revision 5
+			else if(data.revision == 'counter5') {
+				//the header
+				columnHeaders = Counter5Report.COLUMN_HEADERS.valueOf(reportType.toUpperCase()).headers
+				Row headerRow = sheet.createRow(0)
+				cell = headerRow.createCell(0)
+				cell.setCellValue("Report_Name")
+				cell = headerRow.createCell(1)
+				cell.setCellValue(Counter5Report.EXPORT_HEADERS.valueOf(reportType.toUpperCase()).header)
+				headerRow = sheet.createRow(1)
+				cell = headerRow.createCell(0)
+				cell.setCellValue("Report_ID")
+				cell = headerRow.createCell(1)
+				cell.setCellValue(reportType.toUpperCase())
+				headerRow = sheet.createRow(2)
+				cell = headerRow.createCell(0)
+				cell.setCellValue("Release")
+				cell = headerRow.createCell(1)
+				cell.setCellValue(5)
+				headerRow = sheet.createRow(3)
+				cell = headerRow.createCell(0)
+				cell.setCellValue("Institution_Name")
+				cell = headerRow.createCell(1)
+				cell.setCellValue(customer.name)
+				headerRow = sheet.createRow(4)
+				cell = headerRow.createCell(0)
+				cell.setCellValue("Institution_ID")
+				cell = headerRow.createCell(1)
+				String identifierString = customer.ids.findAll{ Identifier id -> id.ns.ns == IdentifierNamespace.ISIL }.collect { Identifier id -> "${id.ns.ns}:${id.value}"}.join("; ")
+				cell.setCellValue(identifierString)
+				headerRow = sheet.createRow(5)
+				cell = headerRow.createCell(0)
+				cell.setCellValue("Metric_Types")
+				cell = headerRow.createCell(1)
+				cell.setCellValue(params.metricType ?: Counter5Report.EXPORT_CONTROLLED_LISTS.valueOf(reportType.toUpperCase()).metricTypes)
+				headerRow = sheet.createRow(6)
+				cell = headerRow.createCell(0)
+				cell.setCellValue("Report_Filters")
+				cell = headerRow.createCell(1)
+				cell.setCellValue(Counter5Report.EXPORT_CONTROLLED_LISTS.valueOf(reportType.toUpperCase()).reportFilters)
+				headerRow = sheet.createRow(7)
+				cell = headerRow.createCell(0)
+				cell.setCellValue("Report_Attributes")
+				cell = headerRow.createCell(1)
+				cell.setCellValue(Counter5Report.EXPORT_CONTROLLED_LISTS.valueOf(reportType.toUpperCase()).reportAttributes)
+				headerRow = sheet.createRow(8)
+				cell = headerRow.createCell(0)
+				cell.setCellValue("Exceptions")
+				headerRow = sheet.createRow(9)
+				cell = headerRow.createCell(0)
+				cell.setCellValue("Reporting_Period")
+				cell = headerRow.createCell(1)
+				cell.setCellValue("Begin_Date:${data.startDate.format('yyyy-MM-dd')}; End_Date=${data.endDate.format('yyyy-MM-dd')}")
+				headerRow = sheet.createRow(10)
+				cell = headerRow.createCell(0)
+				cell.setCellValue("Created")
+				cell = headerRow.createCell(1)
+				cell.setCellValue(data.dateRun.format("yyyy-MM-dd'T'HH:mm:ss'Z'"))
+				headerRow = sheet.createRow(11)
+				cell = headerRow.createCell(0)
+				cell.setCellValue("Created_By")
+				cell = headerRow.createCell(1)
+				cell.setCellValue(messageSource.getMessage('laser', null, locale))
+				headerRow = sheet.createRow(12) //the 13th row is mandatory empty
+				cell = headerRow.createCell(0)
+				cell.setCellValue("")
+				columnHeaders.addAll(data.monthsInRing.collect { Date month -> month.format('MMM-yyyy') })
+				row = sheet.createRow(13)
+				columnHeaders.eachWithIndex { String colHeader, int i ->
+					cell = row.createCell(i)
+					cell.setCellValue(colHeader)
+				}
+				rowno = 14
+				if(reportType.toLowerCase() in [Counter5ApiSource.PLATFORM_MASTER_REPORT, Counter5ApiSource.PLATFORM_USAGE]) {
+					Map<String, Map> metricRows = [:]
+					data.usages.findAll{ Counter5Report r -> r.reportType == reportType }.each { Counter5Report r ->
+						Map<String, Object> metricRow = metricRows.get(r.metricType)
+						int periodTotal = 0
+						if(!metricRow) {
+							metricRow = [:]
+						}
+						else periodTotal = metricRow.get('Reporting_Period_Total')
+						metricRow.put('Platform', r.platform.name)
+						metricRow.put('Metric_Type', r.metricType)
+						periodTotal += r.reportCount
+						metricRow.put('Reporting_Period_Total', periodTotal)
+						metricRow.put(r.reportFrom.format('MMM-yyyy'), r.reportCount)
+						metricRows.put(r.metricType, metricRow)
+					}
+					metricRows.eachWithIndex{ String metricType, Map metricRow, int i ->
+						row = sheet.createRow(i+rowno)
+						for(int c = 0; c < columnHeaders.size(); c++) {
+							cell = row.createCell(c)
+							cell.setCellValue(metricRow.get(columnHeaders[c]) ?: "")
+						}
+					}
+				}
+				else
+					titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType)
+			}
+			titleRows.each{ TitleInstancePackagePlatform title, Map<String, Map> titleMetric ->
+				titleMetric.eachWithIndex { String metricType, Map titleRow, int i ->
+					row = sheet.createRow(i+rowno)
+					cell = row.createCell(0)
+					cell.setCellValue(title.name)
+					for(int c = 1; c < columnHeaders.size(); c++) {
+						cell = row.createCell(c)
+						cell.setCellValue(titleRow.get(columnHeaders[c]) ?: "")
+					}
+				}
+				rowno += titleMetric.size()
+			}
 		}
 		wb
+	}
+
+	Map<TitleInstancePackagePlatform, Map<String, Map>> prepareTitleRows(Set<AbstractReport> usages, Set<IdentifierNamespace> propIdNamespaces, String reportType) {
+		Map<TitleInstancePackagePlatform, Map<String, Map>> titleRows = [:]
+		//inconsistent storage of the report type makes that necessary
+		usages.findAll { AbstractReport report -> report.reportType in [reportType, reportType.toLowerCase(), reportType.toUpperCase()] }.each { AbstractReport report ->
+			Map<String, Map> titleMetrics = titleRows.get(report.title)
+			if(!titleMetrics)
+				titleMetrics = [:]
+			Map<String, Object> titleRow = titleMetrics.get(report.metricType)
+			int periodTotal = 0
+			if(report instanceof Counter4Report) {
+				if(!titleRow) {
+					titleRow = [:]
+					//key naming identical to column headers
+					titleRow.put("Publisher", report.publisher)
+					titleRow.put("Platform", report.platform.name)
+					titleRow.put("Book DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+					titleRow.put("Proprietary Identifier", report.title.ids.find { Identifier id -> id.ns in propIdNamespaces }?.value)
+					titleRow.put("ISBN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISBN }?.value)
+					titleRow.put("ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+				}
+				else periodTotal = titleRow.get("Reporting Period Total") as int
+				periodTotal += report.reportCount
+				if(reportType in [Counter4ApiSource.JOURNAL_REPORT_5, Counter4ApiSource.BOOK_REPORT_5])
+					titleRow.put("User activity", report.metricType == 'search_reg' ? "Regular Searches" : "Searches: federated and automated")
+				titleRow.put("Reporting Period Total", periodTotal)
+				titleRow.put(report.reportFrom.format("yyyy-MM"), report.reportCount)
+			}
+			else if(report instanceof Counter5Report) {
+				if(!titleRow) {
+					titleRow = [:]
+					//key naming identical to column headers
+					titleRow.put("Publisher", report.publisher)
+					//publisher ID is ususally not available
+					titleRow.put("Platform", report.platform.name)
+					titleRow.put("Proprietary_ID", report.title.ids.find { Identifier id -> id.ns in propIdNamespaces }?.value)
+					titleRow.put("Metric_Type", report.metricType)
+				}
+				else periodTotal = titleRow.get("Reporting_Period_Total") as int
+				periodTotal += report.reportCount
+				switch(reportType.toLowerCase()) {
+					case Counter5ApiSource.TITLE_MASTER_REPORT:
+						titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+						titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+						titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
+						titleRow.put("URI", report.title.hostPlatformURL)
+						break
+					case Counter5ApiSource.BOOK_REQUESTS:
+					case Counter5ApiSource.BOOK_ACCESS_DENIED: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+						titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+						titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
+						titleRow.put("URI", report.title.hostPlatformURL)
+						titleRow.put("YOP", report.title.dateFirstOnline?.format("YYYY"))
+						titleRow.put("ISBN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISBN }?.value)
+						break
+					case Counter5ApiSource.BOOK_USAGE_BY_ACCESS_TYPE: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+						titleRow.put("ISBN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISBN }?.value)
+						titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+						titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
+						titleRow.put("URI", report.title.hostPlatformURL)
+						titleRow.put("YOP", report.title.dateFirstOnline?.format("YYYY"))
+						titleRow.put("Access_Type", report.accessType)
+						break
+					case Counter5ApiSource.JOURNAL_REQUESTS:
+					case Counter5ApiSource.JOURNAL_ACCESS_DENIED: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+						titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+						titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
+						titleRow.put("URI", report.title.hostPlatformURL)
+						break
+					case Counter5ApiSource.JOURNAL_USAGE_BY_ACCESS_TYPE: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+						titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+						titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
+						titleRow.put("URI", report.title.hostPlatformURL)
+						titleRow.put("Access_Type", report.accessType)
+						break
+					case Counter5ApiSource.JOURNAL_REQUESTS_BY_YOP: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+						titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+						titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
+						titleRow.put("URI", report.title.hostPlatformURL)
+						titleRow.put("YOP", report.title.dateFirstOnline?.format("YYYY"))
+						break
+					case Counter5ApiSource.ITEM_MASTER_REPORT: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+						titleRow.put("ISBN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISBN }?.value)
+						titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+						titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
+						titleRow.put("URI", report.title.hostPlatformURL)
+						break
+				}
+				titleRow.put("Reporting_Period_Total", periodTotal)
+				titleRow.put(report.reportFrom.format("MMM-yyyy"), report.reportCount)
+			}
+			titleMetrics.put(report.metricType, titleRow)
+			titleRows.put(report.title, titleMetrics)
+		}
+		titleRows
 	}
 
 	/**

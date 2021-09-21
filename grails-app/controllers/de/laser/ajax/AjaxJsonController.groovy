@@ -28,6 +28,10 @@ import de.laser.helper.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.ReportingCache
 import de.laser.reporting.myInstitution.base.BaseConfig
+import de.laser.stats.Counter4ApiSource
+import de.laser.stats.Counter4Report
+import de.laser.stats.Counter5ApiSource
+import de.laser.stats.Counter5Report
 import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -193,6 +197,17 @@ class AjaxJsonController {
         render result as JSON
     }
 
+    @Secured(['ROLE_USER'])
+    def adjustMetricList() {
+        Map<String, Object> result = [:], queryParams = [reportTypes: params.list("reportTypes[]"), platforms: params.list("platforms[]").collect { platId -> Long.parseLong(platId) }, customer: params.customer as long]
+        if(queryParams.reportTypes.any { String reportType -> reportType in Counter4ApiSource.COUNTER_4_REPORTS }) {
+            result.metricTypes = Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportType in (:reportTypes) and r.platform.id in :platforms and r.reportInstitution.id = :customer', queryParams) as SortedSet<String>
+        }
+        else if(queryParams.reportTypes.any { String reportType -> reportType in Counter5ApiSource.COUNTER_5_REPORTS }) {
+            result.metricTypes = Counter5Report.executeQuery('select r.metricType from Counter5Report r where r.reportType in (:reportTypes) and r.platform.id in :platforms and r.reportInstitution.id = :customer', queryParams) as SortedSet<String>
+        }
+        render result as JSON
+    }
 
     @Secured(['ROLE_USER'])
     def consistencyCheck() {

@@ -8,6 +8,52 @@ import org.apache.commons.logging.LogFactory
 
 class Counter4Report extends AbstractReport {
 
+    static enum EXPORTS {
+        JR1 (['Journal Report 1 (R4)', 'Number of Successful Full-Text Article Requests by Month and Journal'] as LinkedHashSet<String>),
+        JR1GOA (['Journal Report 1 GOA (R4)', 'Number of Successful Gold Open Access Full-Text Article Requests by Month and Journal'] as LinkedHashSet<String>),
+        JR2 (['Journal Report 2 (R4)', 'Access Denied to Full-Text Articles by Month, Journal and Category'] as LinkedHashSet<String>),
+        JR3 (['Journal Report 3 (R4)', 'Number of Successful Item Requests by Month, Journal and Page-type'] as LinkedHashSet<String>),
+        JR4 (['Journal Report 4 (R4)', 'Total Searches Run By Month and Collection'] as LinkedHashSet<String>),
+        JR5 (['Journal Report 5 (R4)', 'Number of Successful Full-Text Article Requests by Year-of-Publication (YOP) and Journal'] as LinkedHashSet<String>),
+        DR1 (['Database Report 1 (R4)', 'Total Searches, Result Clicks and Record Views by Month and Database'] as LinkedHashSet<String>),
+        DR2 (['Database Report 2 (R4)', 'Access Denied by Month, Database and Category'] as LinkedHashSet<String>),
+        PR1 (['Platform Report 1 (R4)', 'Total Searches, Result Clicks and Record Views by Month and Platform'] as LinkedHashSet<String>),
+        BR1 (['Book Report 1 (R4)', 'Number of Successful Title Requests by Month and Title'] as LinkedHashSet<String>),
+        BR2 (['Book Report 2 (R4)', 'Number of Successful Section Requests by Month and Title'] as LinkedHashSet<String>),
+        BR3 (['Book Report 3 (R4)', 'Access Denied to Content Items by Month, Title and Category'] as LinkedHashSet<String>),
+        BR4 (['Book Report 4 (R4)', 'Access Denied to Content Items by Month, Platform and Category'] as LinkedHashSet<String>),
+        BR5 (['Book Report 5 (R4)', 'Total Searches by Month and Title'] as LinkedHashSet<String>)
+
+        EXPORTS(LinkedHashSet<String> header) {
+            this.header = header
+        }
+
+        public LinkedHashSet<String> header
+    }
+
+    static enum COLUMN_HEADERS {
+        JR1 (['Journal', 'Publisher', 'Platform', 'Journal DOI', 'Proprietary Identifier', 'Print ISSN', 'Online ISSN', 'Reporting Period Total', 'Reporting Period HTML', 'Reporting Period PDF'] as LinkedHashSet<String>),
+        JR1GOA (['Journal', 'Publisher', 'Platform', 'Journal DOI', 'Proprietary Identifier', 'Print ISSN', 'Online ISSN', 'Reporting Period Total', 'Reporting Period HTML', 'Reporting Period PDF'] as LinkedHashSet<String>),
+        JR2 (['Journal', 'Publisher', 'Platform', 'Journal DOI', 'Proprietary Identifier', 'Print ISSN', 'Online ISSN', 'Reporting Period Total', 'Access Denied Category'] as LinkedHashSet<String>),
+        JR3 (['Journal', 'Publisher', 'Platform', 'Journal DOI', 'Proprietary Identifier', 'Print ISSN', 'Online ISSN', 'Page type', 'Reporting Period Total'] as LinkedHashSet<String>),
+        JR4 ([' ', ' ', 'Reporting Period Total'] as LinkedHashSet<String>),
+        JR5 (['Journal', 'Publisher', 'Platform', 'Journal DOI', 'Proprietary Identifier', 'Print ISSN', 'Online ISSN', 'Articles in Press'] as LinkedHashSet<String>),
+        DR1 (['Database', 'Publisher', 'Platform', 'User Activity', 'Reporting Period Total'] as LinkedHashSet<String>),
+        DR2 (['Database', 'Publisher', 'Platform', 'Access denied category', 'Reporting Period Total'] as LinkedHashSet<String>),
+        PR1 (['Platform', 'Publisher', 'User Activity', 'Reporting Period Total'] as LinkedHashSet<String>),
+        BR1 ([' ', 'Publisher', 'Platform', 'Book DOI', 'Proprietary Identifier', 'ISBN', 'ISSN', 'Reporting Period Total'] as LinkedHashSet<String>),
+        BR2 ([' ', 'Publisher', 'Platform', 'Book DOI', 'Proprietary Identifier', 'ISBN', 'ISSN', 'Reporting Period Total'] as LinkedHashSet<String>),
+        BR3 ([' ', 'Publisher', 'Platform', 'Book DOI', 'Proprietary Identifier', 'ISBN', 'ISSN', 'Access Denied Category', 'Reporting Period Total'] as LinkedHashSet<String>),
+        BR4 ([' ', 'Publisher', 'Platform', 'Proprietary Identifier', 'Access Denied Category', 'Reporting Period Total'] as LinkedHashSet<String>),
+        BR5 ([' ', 'Publisher', 'Platform', 'Book DOI', 'Proprietary Identifier', 'ISBN', 'ISSN', 'User activity', 'Reporting Period Total'] as LinkedHashSet<String>)
+
+        COLUMN_HEADERS(LinkedHashSet<String> headers) {
+            this.headers = headers
+        }
+
+        public LinkedHashSet<String> headers
+    }
+
     String category
     static Log static_logger = LogFactory.getLog(Counter4Report)
 
@@ -21,8 +67,8 @@ class Counter4Report extends AbstractReport {
         reportType          column: 'c4r_report_type', index: 'c4r_rt_idx'
         category            column: 'c4r_category'
         metricType          column: 'c4r_metric_type'
-        reportFrom          column: 'c4r_report_from'
-        reportTo            column: 'c4r_report_to'
+        reportFrom          column: 'c4r_report_from' //for JR5, this will be the start of YOP
+        reportTo            column: 'c4r_report_to' //for JR5, this will be the end of YOP
         reportCount         column: 'c4r_report_count'
     }
 
