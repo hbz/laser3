@@ -7,19 +7,21 @@ class OrganisationInstCfg extends BaseConfig {
 
     static Map<String, Object> CONFIG = [
 
+            key : KEY_ORGANISATION,
+
             base : [
                     meta : [
                             class: Org
                     ],
                     source : [
-                            'all-consortium'        : 'Alle Konsortialstellen',
-                            'all-provider'          : 'Alle Anbieter',
-                            'all-agency'            : 'Alle Lieferanten',
-                            'all-providerAndAgency' : 'Alle Anbieter und Lieferanten',
-                            'my-consortium'         : 'Meine Konsortialstellen',
-                            'my-provider'           : 'Meine Anbieter',
-                            'my-agency'             : 'Meine Lieferanten',
-                            'my-providerAndAgency'  : 'Meine Anbieter und Lieferanten'
+                            'all-consortium',
+                            'all-provider',
+                            'all-agency',
+                            'all-providerAndAgency',
+                            'my-consortium',
+                            'my-provider',
+                            'my-agency',
+                            'my-providerAndAgency'
                     ],
                     fields : [
                             'country'           : BaseConfig.FIELD_TYPE_REFDATA,
@@ -48,32 +50,26 @@ class OrganisationInstCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Organisation' : [ // TODO ..
-                                           'org-orgType'           : 'Organisationstyp',
-                                           'org-customerType'      : 'Kundentyp',
-                                           'org-libraryType'       : 'Bibliothekstyp',
-                                           'org-region'            : 'Bundesländer',
-                                           'org-subjectGroup'      : 'Fächergruppen',
-                                           'org-libraryNetwork'    : 'Verbundzugehörigkeit',
-                                           'org-funderType'        : 'Unterhaltsträger',
-                                           'org-funderHskType'     : 'Trägerschaft',
-                                           'org-*'                 : 'Alle'
+                                    'Organisation' : [
+                                           'org-orgType',
+                                           'org-customerType',
+                                           'org-libraryType',
+                                           'org-region',
+                                           'org-subjectGroup',
+                                           'org-libraryNetwork',
+                                           'org-funderType',
+                                           'org-funderHskType',
+                                           'org-*'
                                     ]
                             ],
                             providerAndAgency : [
-                                    'Organisation' : [
-                                            'org-orgType' : 'Organisationstyp'
-                                    ]
+                                    'Organisation' : [ 'org-orgType' ]
                             ],
-                            provider: [
-                                    'Organisation' : [
-                                            'org-orgType' : 'Organisationstyp'
-                                    ]
+                            provider : [
+                                    'Organisation' : [ 'org-orgType' ]
                             ],
-                            agency: [
-                                    'Organisation' : [
-                                            'org-orgType' : 'Organisationstyp'
-                                    ]
+                            agency : [
+                                    'Organisation' : [ 'org-orgType' ]
                             ]
                     ],
                     query2 : [

@@ -8,12 +8,14 @@ class LicenseConsCfg extends BaseConfig {
 
     static Map<String, Object> CONFIG = [
 
+            key : KEY_LICENSE,
+
             base : [
                     meta : [
                             class: License
                     ],
                     source : [
-                            'consortia-lic' : 'Meine Verträge'
+                            'consortia-lic'
                     ],
                     fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
@@ -32,12 +34,12 @@ class LicenseConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Vertrag' : [ // TODO ..
-                                            'license-licenseCategory'   : 'Vertragskategorie',
-                                            //'license-type'              : 'Lizenztyp',
-                                            //'license-openEnded'         : 'Unbefristet',
-                                            'license-status'            : 'Vertragstatus',
-                                            'license-*'                 : 'Alle'
+                                    'Vertrag' : [
+                                            'license-licenseCategory',
+                                            //'license-type',
+                                            //'license-openEnded',
+                                            'license-status',
+                                            'license-*'
                                     ]
                             ]
                     ],
@@ -70,7 +72,7 @@ class LicenseConsCfg extends BaseConfig {
                             class: Org
                     ],
                     source : [
-                            'depending-licensor' : 'Betreffende Lizenzgeber'
+                            'depending-licensor'
                     ],
                     fields : [
                             'country'   : BaseConfig.FIELD_TYPE_REFDATA,
@@ -82,11 +84,11 @@ class LicenseConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Lizenzgeber' : [ // TODO ..
-                                            'licensor-orgType'      : 'Organisationstyp',
-                                            'licensor-country'      : 'Länder',
-                                            'licensor-region'       : 'Bundesländer',
-                                            'licensor-*'            : 'Alle'
+                                    'Lizenzgeber' : [
+                                            'licensor-orgType',
+                                            'licensor-country',
+                                            'licensor-region',
+                                            'licensor-*'
                                     ]
                             ]
                     ]
