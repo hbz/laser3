@@ -98,7 +98,15 @@ class SubscriptionController {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })
     def stats() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.stats(params)
+        Map<String,Object> ctrlResult
+        SXSSFWorkbook wb
+        if(params.exportXLS) {
+            ctrlResult = subscriptionControllerService.statsForExport(params)
+            wb = exportService.exportReport(params, ctrlResult.result)
+        }
+        else {
+            ctrlResult = subscriptionControllerService.stats(params)
+        }
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
@@ -106,9 +114,21 @@ class SubscriptionController {
             }
         }
         else {
-            if(params.exportXLS)
-                exportService.exportReport(params, ctrlResult.result)
-            else ctrlResult.result
+            if(params.exportXLS) {
+                if(wb) {
+                    response.setHeader "Content-disposition", "attachment; filename=report_${ctrlResult.result.dateRun.format('yyyy-MM-dd')}.xlsx"
+                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    wb.write(response.outputStream)
+                    response.outputStream.flush()
+                    response.outputStream.close()
+                    wb.dispose()
+                }
+            }
+            else {
+                params.metricType = ctrlResult.result.metricType
+                params.reportType = ctrlResult.result.reportType
+                ctrlResult.result
+            }
         }
     }
 

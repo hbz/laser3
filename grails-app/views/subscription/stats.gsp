@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription" %>
+<%@ page import="de.laser.helper.RDStore; org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource" %>
 <laser:serviceInjection />
 <%-- r:require module="annotations" / --%>
 
@@ -32,6 +32,10 @@
         <semui:objectStatus object="${subscription}" status="${subscription.status}" />
         <g:render template="message" />
         <semui:messages data="${flash}" />
+        <div class="ui icon info message">
+            <i class="info icon"></i>
+            <g:message code="default.usage.exports.warning"/>
+        </div>
         <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
             <div class="ui segment">
                 <table class="ui celled table">
@@ -161,12 +165,11 @@
                 </g:each>
             </semui:tabs>
             <div class="ui bottom attached tab active segment">
-                <g:if test="${sums}">
+                <g:if test="${params.tab == 'total'}">
                     <table class="ui celled la-table table">
                         <thead>
                             <tr>
                                 <th><g:message code="default.usage.date"/></th>
-                                <th><g:message code="default.usage.metricType"/></th>
                                 <th><g:message code="default.usage.reportCount"/></th>
                             </tr>
                         </thead>
@@ -174,21 +177,20 @@
                             <g:each in="${sums}" var="row">
                                 <tr>
                                     <td><g:formatDate date="${row.reportMonth}" format="yyyy-MM"/></td>
-                                    <td>${row.metricType}</td>
-                                    <td>${row.reportCount}</td>
+                                    <g:set var="reportType" value="${row.reportType in Counter4ApiSource.COUNTER_4_REPORTS ? row.reportType : row.reportType.toLowerCase()}"/>
+                                    <td><g:link action="stats" params="${params + [tab: row.reportMonth.format("yyyy-MM"), reportType: reportType, metricType: row.metricType]}">${row.reportCount}</g:link></td>
                                 </tr>
                             </g:each>
                         </tbody>
                     </table>
                 </g:if>
-                <g:elseif test="${usages}">
+                <g:else>
                     <table class="ui sortable celled la-table table">
                         <thead>
                             <tr>
-                                <g:if test="${usages[0].title}">
+                                <g:if test="${usages && usages[0].title}">
                                     <g:sortableColumn title="${message(code:"default.title.label")}" property="title.name" params="${params}"/>
                                 </g:if>
-                                <g:sortableColumn title="${message(code:"default.usage.metricType")}" property="r.metricType" params="${params}"/>
                                 <g:sortableColumn title="${message(code:"default.usage.reportCount")}" property="r.reportCount" params="${params}"/>
                             </tr>
                         </thead>
@@ -196,18 +198,40 @@
                             <g:each in="${usages}" var="row">
                                 <tr>
                                     <g:if test="${row.title}">
-                                        <td>${row.title.name}</td>
+                                        <td>
+                                            <g:link controller="tipp" action="show" id="${row.title.id}">${row.title.name}</g:link>
+                                        </td>
                                     </g:if>
-                                    <td>${row.metricType}</td>
                                     <td>${row.reportCount}</td>
                                 </tr>
                             </g:each>
                         </tbody>
                     </table>
                     <semui:paginate total="${total}" params="${params}" max="${max}" offset="${offset}"/>
-                </g:elseif>
+                </g:else>
             </div>
         </g:else>
+        <laser:script file="${this.getGroovyPageFileName()}">
 
+            $("#reportType").on('change', function() {
+                $.ajax({
+                    url: "<g:createLink controller="ajaxJson" action="adjustMetricList"/>",
+                    data: {
+                        reportTypes: $(this).val(),
+                        platforms: ${platforms},
+                        customer: ${customer}
+                    }
+                }).done(function(response){
+                    let dropdown = '<option value=""><g:message code="default.select.choose.label"/></option>';
+                    for(let i = 0; i < response.metricTypes.length; i++) {
+                        if(i === 0)
+                            dropdown += '<option selected="selected" value="'+response.metricTypes[i]+'">'+response.metricTypes[i]+'</option>';
+                        else
+                            dropdown += '<option value="'+response.metricTypes[i]+'">'+response.metricTypes[i]+'</option>';
+                    }
+                    $("#metricType").html(dropdown);
+                });
+            });
+        </laser:script>
     </body>
 </html>

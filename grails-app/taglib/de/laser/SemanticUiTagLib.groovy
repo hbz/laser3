@@ -935,7 +935,7 @@ class SemanticUiTagLib {
 
     def tabs = { attrs, body ->
 
-        out << '<div class="ui top attached tabular menu" style="overflow-x: scroll; overflow-y: hidden">' //ugliest workaround ever!!!!
+        out << '<div class="ui top attached tabular menu" style="overflow-x: auto; overflow-y: hidden">' //ugliest workaround ever!!!!
         out << body()
         out << '</div>'
     }
