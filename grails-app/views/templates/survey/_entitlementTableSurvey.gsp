@@ -122,11 +122,11 @@
                 </td>
                 <td>
                     <g:if test="${(params.tab == 'allIEs' || params.tab == 'selectedIEs') && editable && ieInNewSub && allowedToSelect}">
-                        <g:link class="ui icon negative button la-popup-tooltip la-delay"
+                        <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                 action="processRemoveIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                 data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
-                            <i class="minus icon"></i>
+                            <i class="check icon"></i>
                         </g:link>
                     </g:if>
 

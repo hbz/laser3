@@ -10,10 +10,15 @@
                 <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
             </th>
             <th>${message(code: 'sidewide.number')}</th>
-            <g:sortableColumn class="ten wide" params="${params}" property="tipp.sortname"
+            <g:if test="${params.tabStat != 'total'}">
+            <g:sortableColumn class="ten wide" params="${params}" property="r.title.sortname"
                               title="${message(code: 'title.label')}"/>
-            <g:sortableColumn title="${message(code:"default.usage.metricType")}" property="r.metricType" params="${params}" class="two wide"/>
-            <g:sortableColumn title="${message(code:"default.usage.reportCount")}" property="r.reportCount" params="${params}" class="two wide"/>
+            </g:if>
+            <g:else>
+                <th>${message(code: 'title.label')}</th>
+            </g:else>
+            <g:sortableColumn title="${message(code:"default.usage.metricType")}" property="metricType" params="${params}" class="two wide"/>
+            <g:sortableColumn title="${message(code:"default.usage.reportCount")}" property="reportCount" params="${params}" class="two wide"/>
             <th class="two wide"><g:message code="default.actions.label"/></th>
         </tr>
         </thead>
@@ -77,7 +82,7 @@
                 <td>${stat.reportCount}</td>
                 <td>
                     <g:if test="${(params.tab == 'allIEsStats') && editable && ieInNewSub && allowedToSelect}">
-                        <g:link class="ui icon negative button la-popup-tooltip la-delay"
+                        <g:link class="ui icon positive check button la-popup-tooltip la-delay"
                                 action="processRemoveIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                 data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
