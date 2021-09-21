@@ -225,7 +225,7 @@
 
 
             <g:if test="${subscription.packages}">
-                <div id="packages"></div>
+                <div id="packages" class="la-padding-top-1em"></div>
             </g:if>
         <%--
         <div class="ui card la-js-hideable hidden">
