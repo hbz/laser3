@@ -15,7 +15,7 @@
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.getConfigNameShort()}" />
     </g:if>
-    <semui:crumb message="surveyEvaluation.label" class="active"/>
+    <semui:crumb message="surveyResult.label" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
@@ -68,7 +68,7 @@
     <g:else>
         ${surveyConfig.getConfigNameShort()}
     </g:else>
-    : ${message(code: 'surveyEvaluation.label')}
+    : ${message(code: 'surveyResult.label')}
 </h2>
 
 <g:if test="${surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
