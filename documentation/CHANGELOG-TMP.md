@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3822    21.09.2021  dev     2.2         Andreas Feature     neue FID-Merkmale, Referenzwerte und Identifier-Namensräume aufgenommen
+
+3820    21.09.2021  dev     2.2         Andreas Feature     neue Darstellung der Anbieter/Lieferanten/Lizenzgeber in Meine Lizenzen und Verträge
+
 3809    21.09.2021  dev     2.2         Andreas Feature     Nachbesserungen und Bugfixes bei der Statistik-Darstellung
 
 3811    17.09.2021  dev     2.2         Moe     Feature     Click me auch bei Umfragen

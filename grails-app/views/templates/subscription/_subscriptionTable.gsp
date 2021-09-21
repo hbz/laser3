@@ -169,10 +169,21 @@
                         <td>
                             <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
                             <g:each in="${s.providers}" var="org">
-                                <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br />
+                                <g:link controller="organisation" action="show" id="${org.id}">${fieldValue(bean: org, field: "name")}
+                                    <g:if test="${org.shortname}">
+                                        <br />
+                                        (${fieldValue(bean: org, field: "shortname")})
+                                    </g:if>
+                                </g:link><br />
                             </g:each>
                             <g:each in="${s.agencies}" var="org">
-                                <g:link controller="organisation" action="show" id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br />
+                                <g:link controller="organisation" action="show" id="${org.id}">
+                                    ${fieldValue(bean: org, field: "name")}
+                                    <g:if test="${org.shortname}">
+                                        <br />
+                                        (${fieldValue(bean: org, field: "shortname")})
+                                    </g:if> (${message(code: 'default.agency.label')})
+                                </g:link><br />
                             </g:each>
                         </td>
                         <%--

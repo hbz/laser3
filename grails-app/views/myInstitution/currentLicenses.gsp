@@ -203,7 +203,13 @@
                           <td>
                               <g:set var="licensor" value="${l.getLicensor()}"/>
                               <g:if test="${licensor}">
-                                  <g:link controller="organisation" action="show" id="${licensor.id}">${licensor.name}</g:link>
+                                  <g:link controller="organisation" action="show" id="${licensor.id}">
+                                      ${fieldValue(bean: licensor, field: "name")}
+                                      <g:if test="${licensor.shortname}">
+                                          <br />
+                                          (${fieldValue(bean: licensor, field: "shortname")})
+                                      </g:if>
+                                  </g:link>
                               </g:if>
                           </td>
                           <g:if test="${'licensingConsortium' in licenseFilterTable}">
