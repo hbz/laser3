@@ -794,94 +794,97 @@ class ExportService {
 		Map<TitleInstancePackagePlatform, Map<String, Map>> titleRows = [:]
 		//inconsistent storage of the report type makes that necessary
 		usages.findAll { AbstractReport report -> report.reportType in [reportType, reportType.toLowerCase(), reportType.toUpperCase()] }.each { AbstractReport report ->
-			Map<String, Map> titleMetrics = titleRows.get(report.title)
-			if(!titleMetrics)
-				titleMetrics = [:]
-			Map<String, Object> titleRow = titleMetrics.get(report.metricType)
-			int periodTotal = 0
-			if(report instanceof Counter4Report) {
-				if(!titleRow) {
-					titleRow = [:]
-					//key naming identical to column headers
-					titleRow.put("Publisher", report.publisher)
-					titleRow.put("Platform", report.platform.name)
-					titleRow.put("Book DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
-					titleRow.put("Proprietary Identifier", report.title.ids.find { Identifier id -> id.ns in propIdNamespaces }?.value)
-					titleRow.put("ISBN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISBN }?.value)
-					titleRow.put("ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+			if(!(reportType in [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.BOOK_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1_GOA, Counter4ApiSource.JOURNAL_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_5]) ||
+					((reportType in [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.BOOK_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1_GOA, Counter4ApiSource.JOURNAL_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_5]) && report.metricType == 'ft_total')) {
+				Map<String, Map> titleMetrics = titleRows.get(report.title)
+				if(!titleMetrics)
+					titleMetrics = [:]
+				Map<String, Object> titleRow = titleMetrics.get(report.metricType)
+				int periodTotal = 0
+				if(report instanceof Counter4Report) {
+					if(!titleRow) {
+						titleRow = [:]
+						//key naming identical to column headers
+						titleRow.put("Publisher", report.publisher)
+						titleRow.put("Platform", report.platform.name)
+						titleRow.put("Book DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+						titleRow.put("Proprietary Identifier", report.title.ids.find { Identifier id -> id.ns in propIdNamespaces }?.value)
+						titleRow.put("ISBN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISBN }?.value)
+						titleRow.put("ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+					}
+					else periodTotal = titleRow.get("Reporting Period Total") as int
+					periodTotal += report.reportCount
+					if(reportType in [Counter4ApiSource.JOURNAL_REPORT_5, Counter4ApiSource.BOOK_REPORT_5])
+						titleRow.put("User activity", report.metricType == 'search_reg' ? "Regular Searches" : "Searches: federated and automated")
+					titleRow.put("Reporting Period Total", periodTotal)
+					titleRow.put(report.reportFrom.format("yyyy-MM"), report.reportCount)
 				}
-				else periodTotal = titleRow.get("Reporting Period Total") as int
-				periodTotal += report.reportCount
-				if(reportType in [Counter4ApiSource.JOURNAL_REPORT_5, Counter4ApiSource.BOOK_REPORT_5])
-					titleRow.put("User activity", report.metricType == 'search_reg' ? "Regular Searches" : "Searches: federated and automated")
-				titleRow.put("Reporting Period Total", periodTotal)
-				titleRow.put(report.reportFrom.format("yyyy-MM"), report.reportCount)
+				else if(report instanceof Counter5Report) {
+					if(!titleRow) {
+						titleRow = [:]
+						//key naming identical to column headers
+						titleRow.put("Publisher", report.publisher)
+						//publisher ID is ususally not available
+						titleRow.put("Platform", report.platform.name)
+						titleRow.put("Proprietary_ID", report.title.ids.find { Identifier id -> id.ns in propIdNamespaces }?.value)
+						titleRow.put("Metric_Type", report.metricType)
+					}
+					else periodTotal = titleRow.get("Reporting_Period_Total") as int
+					periodTotal += report.reportCount
+					switch(reportType.toLowerCase()) {
+						case Counter5ApiSource.TITLE_MASTER_REPORT:
+							titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+							titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+							titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
+							titleRow.put("URI", report.title.hostPlatformURL)
+							break
+						case Counter5ApiSource.BOOK_REQUESTS:
+						case Counter5ApiSource.BOOK_ACCESS_DENIED: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+							titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+							titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
+							titleRow.put("URI", report.title.hostPlatformURL)
+							titleRow.put("YOP", report.title.dateFirstOnline?.format("YYYY"))
+							titleRow.put("ISBN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISBN }?.value)
+							break
+						case Counter5ApiSource.BOOK_USAGE_BY_ACCESS_TYPE: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+							titleRow.put("ISBN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISBN }?.value)
+							titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+							titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
+							titleRow.put("URI", report.title.hostPlatformURL)
+							titleRow.put("YOP", report.title.dateFirstOnline?.format("YYYY"))
+							titleRow.put("Access_Type", report.accessType)
+							break
+						case Counter5ApiSource.JOURNAL_REQUESTS:
+						case Counter5ApiSource.JOURNAL_ACCESS_DENIED: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+							titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+							titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
+							titleRow.put("URI", report.title.hostPlatformURL)
+							break
+						case Counter5ApiSource.JOURNAL_USAGE_BY_ACCESS_TYPE: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+							titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+							titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
+							titleRow.put("URI", report.title.hostPlatformURL)
+							titleRow.put("Access_Type", report.accessType)
+							break
+						case Counter5ApiSource.JOURNAL_REQUESTS_BY_YOP: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+							titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+							titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
+							titleRow.put("URI", report.title.hostPlatformURL)
+							titleRow.put("YOP", report.title.dateFirstOnline?.format("YYYY"))
+							break
+						case Counter5ApiSource.ITEM_MASTER_REPORT: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+							titleRow.put("ISBN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISBN }?.value)
+							titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
+							titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
+							titleRow.put("URI", report.title.hostPlatformURL)
+							break
+					}
+					titleRow.put("Reporting_Period_Total", periodTotal)
+					titleRow.put(report.reportFrom.format("MMM-yyyy"), report.reportCount)
+				}
+				titleMetrics.put(report.metricType, titleRow)
+				titleRows.put(report.title, titleMetrics)
 			}
-			else if(report instanceof Counter5Report) {
-				if(!titleRow) {
-					titleRow = [:]
-					//key naming identical to column headers
-					titleRow.put("Publisher", report.publisher)
-					//publisher ID is ususally not available
-					titleRow.put("Platform", report.platform.name)
-					titleRow.put("Proprietary_ID", report.title.ids.find { Identifier id -> id.ns in propIdNamespaces }?.value)
-					titleRow.put("Metric_Type", report.metricType)
-				}
-				else periodTotal = titleRow.get("Reporting_Period_Total") as int
-				periodTotal += report.reportCount
-				switch(reportType.toLowerCase()) {
-					case Counter5ApiSource.TITLE_MASTER_REPORT:
-						titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
-						titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
-						titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
-						titleRow.put("URI", report.title.hostPlatformURL)
-						break
-					case Counter5ApiSource.BOOK_REQUESTS:
-					case Counter5ApiSource.BOOK_ACCESS_DENIED: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
-						titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
-						titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
-						titleRow.put("URI", report.title.hostPlatformURL)
-						titleRow.put("YOP", report.title.dateFirstOnline?.format("YYYY"))
-						titleRow.put("ISBN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISBN }?.value)
-						break
-					case Counter5ApiSource.BOOK_USAGE_BY_ACCESS_TYPE: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
-						titleRow.put("ISBN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISBN }?.value)
-						titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
-						titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
-						titleRow.put("URI", report.title.hostPlatformURL)
-						titleRow.put("YOP", report.title.dateFirstOnline?.format("YYYY"))
-						titleRow.put("Access_Type", report.accessType)
-						break
-					case Counter5ApiSource.JOURNAL_REQUESTS:
-					case Counter5ApiSource.JOURNAL_ACCESS_DENIED: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
-						titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
-						titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
-						titleRow.put("URI", report.title.hostPlatformURL)
-						break
-					case Counter5ApiSource.JOURNAL_USAGE_BY_ACCESS_TYPE: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
-						titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
-						titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
-						titleRow.put("URI", report.title.hostPlatformURL)
-						titleRow.put("Access_Type", report.accessType)
-						break
-					case Counter5ApiSource.JOURNAL_REQUESTS_BY_YOP: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
-						titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
-						titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
-						titleRow.put("URI", report.title.hostPlatformURL)
-						titleRow.put("YOP", report.title.dateFirstOnline?.format("YYYY"))
-						break
-					case Counter5ApiSource.ITEM_MASTER_REPORT: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
-						titleRow.put("ISBN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISBN }?.value)
-						titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
-						titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
-						titleRow.put("URI", report.title.hostPlatformURL)
-						break
-				}
-				titleRow.put("Reporting_Period_Total", periodTotal)
-				titleRow.put(report.reportFrom.format("MMM-yyyy"), report.reportCount)
-			}
-			titleMetrics.put(report.metricType, titleRow)
-			titleRows.put(report.title, titleMetrics)
 		}
 		titleRows
 	}
