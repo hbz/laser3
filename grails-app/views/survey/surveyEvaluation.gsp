@@ -15,7 +15,7 @@
     <g:if test="${surveyInfo}">
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.getConfigNameShort()}" />
     </g:if>
-    <semui:crumb message="surveyEvaluation.label" class="active"/>
+    <semui:crumb message="surveyResult.label" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
@@ -25,7 +25,7 @@
                 <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
             </semui:exportDropdownItem>
 
-            <semui:exportDropdownItem>
+            %{--<semui:exportDropdownItem>
                 <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'survey.exportSurvey')}</g:link>
             </semui:exportDropdownItem>
@@ -35,7 +35,7 @@
                 <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id, exportXLSX: true, surveyCostItems: true]">${message(code: 'survey.exportSurveyCostItems')}</g:link>
             </semui:exportDropdownItem>
-            </g:if>
+            </g:if>--}%
         </semui:exportDropdown>
     </g:if>
 
@@ -68,7 +68,7 @@
     <g:else>
         ${surveyConfig.getConfigNameShort()}
     </g:else>
-    : ${message(code: 'surveyEvaluation.label')}
+    : ${message(code: 'surveyResult.label')}
 </h2>
 
 <g:if test="${surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">

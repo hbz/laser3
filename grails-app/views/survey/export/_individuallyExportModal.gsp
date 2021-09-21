@@ -54,7 +54,7 @@
 
                 <div class="wide eight field">
                     <label for="filename"><g:message code="default.fileName.label"/></label>
-                    <input name="filename" id="filename" value="${escapeService.escapeString(surveyConfig.getSurveyName()) + "_" + message(code:'surveyInfo.evaluation')}"/>
+                    <input name="filename" id="filename" value="${escapeService.escapeString(surveyConfig.getSurveyName()) + "_" + message(code:'surveyResult.label')}"/>
                 </div>
 
                 <div class="wide eight field">

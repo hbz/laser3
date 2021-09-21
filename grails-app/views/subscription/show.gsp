@@ -109,7 +109,7 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.isAutomaticRenewAnnually.label')}</dt>
                                 <dd><semui:xEditableBoolean owner="${subscription}" field="isAutomaticRenewAnnually"
-                                                            overwriteEditable="${subscription.isAllowToAutomaticRenewAnnually()}"/></dd>
+                                                            overwriteEditable="${editable && subscription.isAllowToAutomaticRenewAnnually()}"/></dd>
                             </dl>
                         </g:if>
 
