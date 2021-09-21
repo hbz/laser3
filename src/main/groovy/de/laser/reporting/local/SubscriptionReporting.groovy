@@ -29,6 +29,9 @@ class SubscriptionReporting {
     static Map<String, Object> CONFIG = [
 
             base : [
+                    meta : [
+                            cfgKey: 'SubscriptionReporting'
+                    ],
                     query: [
                             default: [
                                     'Bestand' : [
