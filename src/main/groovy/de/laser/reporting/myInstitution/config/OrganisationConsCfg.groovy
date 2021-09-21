@@ -7,11 +7,10 @@ class OrganisationConsCfg extends BaseConfig {
 
     static Map<String, Object> CONFIG = [
 
-            key : KEY_ORGANISATION,
-
             base : [
                     meta : [
-                            class: Org
+                            class:  Org,
+                            cfgKey: KEY_ORGANISATION
                     ],
                     source : [
                             'all-org',

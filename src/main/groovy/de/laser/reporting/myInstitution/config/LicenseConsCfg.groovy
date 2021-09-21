@@ -8,11 +8,10 @@ class LicenseConsCfg extends BaseConfig {
 
     static Map<String, Object> CONFIG = [
 
-            key : KEY_LICENSE,
-
             base : [
                     meta : [
-                            class: License
+                            class:  License,
+                            cfgKey: KEY_LICENSE
                     ],
                     source : [
                             'consortia-lic'
@@ -69,7 +68,8 @@ class LicenseConsCfg extends BaseConfig {
 
             licensor : [
                     meta : [
-                            class: Org
+                            class:  Org,
+                            cfgKey: KEY_LICENSE
                     ],
                     source : [
                             'depending-licensor'

@@ -4,10 +4,6 @@ import grails.web.servlet.mvc.GrailsParameterMap
 
 class BaseFilter {
 
-    static String getFilterSourceLabel(Map<String, Object> objConfig, String key) {
-        objConfig.source.get(key)
-    }
-
     static Set<String> getCurrentFilterKeys(GrailsParameterMap params, String cmbKey) {
 
         params.keySet().findAll{ it.toString().startsWith(cmbKey) && ! it.toString().endsWith(BaseConfig.FILTER_SOURCE_POSTFIX) }

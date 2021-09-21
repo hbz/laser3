@@ -7,11 +7,10 @@ class CostItemXCfg extends BaseConfig {
 
     static Map<String, Object> CONFIG = [
 
-            key : KEY_COSTITEM,
-
             base : [
                     meta : [
-                            class: CostItem
+                            class:  CostItem,
+                            cfgKey: KEY_COSTITEM
                     ],
                     source : [
                             'consortia-cost'

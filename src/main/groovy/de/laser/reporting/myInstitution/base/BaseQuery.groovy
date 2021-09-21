@@ -49,13 +49,14 @@ class BaseQuery {
     }
 
     static List<String> getQueryLabels(Map<String, Object> config, String query) {
-
         List<String> meta = []
 
         config.each {it ->
+            String cfgKey = it.value.get('meta').cfgKey
+
             it.value.get('query')?.default?.each { it2 ->
-                if (it2.value.containsKey(query)) {
-                    meta = [ it2.key, it2.value.get(query) ]
+                if (it2.value.contains(query)) {
+                    meta = [ it2.key, BaseConfig.getMessage(cfgKey + '.query.' + query) ]
                 }
             }
             it.value.get('query2')?.each { it2 ->

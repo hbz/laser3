@@ -1,3 +1,5 @@
+<%@ page import="de.laser.reporting.myInstitution.base.BaseConfig" %>
+
 <div class="ui segment form">
     <div class="fields <laser:numberToString number="${cfgQueryList.size()}" min="2"/>">
         <g:each in="${cfgQueryList}" var="cfgQuery" status="qci">
@@ -7,8 +9,8 @@
                     <g:select name="query-chooser"
                               id="query-chooser-1-${qci}"
                               from="${field.value}"
-                              optionKey="key"
-                              optionValue="value"
+                              optionKey="${{it}}"
+                              optionValue="${{BaseConfig.getMessage(cfgKey + '.query.' + it)}}"
                               class="ui selection dropdown la-not-clearable"
                               noSelection="${['': message(code: 'default.select.choose.label')]}" />
                 </div>

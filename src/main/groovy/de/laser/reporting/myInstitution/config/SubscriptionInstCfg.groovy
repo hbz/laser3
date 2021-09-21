@@ -8,11 +8,10 @@ class SubscriptionInstCfg extends BaseConfig {
 
     static Map<String, Object> CONFIG = [
 
-            key : KEY_SUBSCRIPTION,
-
             base : [
                     meta : [
-                            class: Subscription
+                            class:  Subscription,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
                             'inst-sub',
@@ -94,7 +93,8 @@ class SubscriptionInstCfg extends BaseConfig {
 
             consortium : [
                     meta : [
-                            class: Org
+                            class:  Org,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
                             'depending-consortium'
@@ -139,7 +139,8 @@ class SubscriptionInstCfg extends BaseConfig {
 
             provider : [
                     meta : [
-                            class: Org
+                            class:  Org,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
                             'depending-provider'
@@ -166,7 +167,8 @@ class SubscriptionInstCfg extends BaseConfig {
 
             agency : [
                     meta : [
-                            class: Org
+                            class:  Org,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
                             'depending-agency'
