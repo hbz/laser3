@@ -116,7 +116,9 @@
 
         </div>
 
-        <div class="two fields">
+        <div class="three fields">
+
+            <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true]"/>
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>

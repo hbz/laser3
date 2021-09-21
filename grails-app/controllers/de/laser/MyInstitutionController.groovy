@@ -1704,6 +1704,8 @@ join sub.orgRelations or_sub where
             params.validOnYear = [sdfyear.format(new Date())]
         }
 
+        result.propList = PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList order by pd.name_de asc", [defList: [PropertyDefinition.SVY_PROP]])
+
         result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org and surorg.surveyConfig.surveyInfo.startDate != null group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.institution]) ?: []
 
         result.allConsortia = Org.executeQuery(

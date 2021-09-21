@@ -78,17 +78,6 @@
         </div>
 
         <div class="three fields">
-
-            <div class="field">
-                <label>${message(code: 'surveyInfo.type.label')}</label>
-                <laser:select class="ui dropdown" name="type"
-                              from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SURVEY_TYPE)}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.type}"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-            </div>
-
             <div class="field">
                 <label>${message(code: 'menu.my.providers')}</label>
                 <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
@@ -119,9 +108,22 @@
 
             </div>
 
+            <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true]"/>
+
         </div>
 
         <div class="three fields">
+
+
+            <div class="field">
+                <label>${message(code: 'surveyInfo.type.label')}</label>
+                <laser:select class="ui dropdown" name="type"
+                              from="${RefdataCategory.getAllRefdataValues(de.laser.helper.RDConstants.SURVEY_TYPE)}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.type}"
+                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+            </div>
 
             %{--<div class="field">
                 <label>${message(code: 'surveyInfo.status.label')}</label>
@@ -147,6 +149,15 @@
                             <label for="checkMandatory">${message(code: 'surveyInfo.isMandatory.label')}</label>
                             <input id="checkMandatory" name="mandatory" type="checkbox"
                                    <g:if test="${params.mandatory}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkNoMandatory">${message(code: 'surveyInfo.isNotMandatory.label')}</label>
+                            <input id="checkNoMandatory" name="noMandatory" type="checkbox"
+                                   <g:if test="${params.noMandatory}">checked=""</g:if>
                                    tabindex="0">
                         </div>
                     </div>

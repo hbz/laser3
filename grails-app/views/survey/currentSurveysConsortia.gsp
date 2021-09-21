@@ -92,7 +92,7 @@
 
         </div>
 
-        <div class="two fields">
+        <div class="three fields">
 
             <div class="field">
                 <label>${message(code: 'menu.my.providers')}</label>
@@ -124,7 +124,7 @@
 
             </div>
 
-            %{--<g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>--}%
+            <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true]"/>
 
         </div>
 
@@ -228,7 +228,7 @@
                     </a>
                 </th>
 
-                <th rowspan="2" scope="col">${message(code: 'surveyEvaluation.label')}</th>
+                <th rowspan="2" scope="col">${message(code: 'surveyResult.label')}</th>
 
                 %{--<th rowspan="2" scope="col">${message(code: 'surveyInfo.finished')}</th>--}%
                 <th rowspan="2" scope="col"></th>
