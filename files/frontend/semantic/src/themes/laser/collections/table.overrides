@@ -299,3 +299,6 @@
     box-shadow: none !important;
   }
 }
+.ui.table tr:first-child th {
+  border-top: none;
+}
