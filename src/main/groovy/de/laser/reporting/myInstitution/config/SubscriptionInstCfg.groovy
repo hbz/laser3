@@ -10,12 +10,13 @@ class SubscriptionInstCfg extends BaseConfig {
 
             base : [
                     meta : [
-                            class: Subscription
+                            class:  Subscription,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
-                            'inst-sub'            : 'Meine Lizenzen (alle)',
-                            'inst-sub-consortia'  : 'Meine zentral verwalteten Lizenzen',
-                            'inst-sub-local'      : 'Meine lokalen Lizenzen',
+                            'inst-sub',
+                            'inst-sub-consortia',
+                            'inst-sub-local'
                     ],
                     fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
@@ -43,14 +44,14 @@ class SubscriptionInstCfg extends BaseConfig {
                     ],
                     query : [
                             default: [
-                                    'Lizenz' : [ // TODO ..
-                                             'subscription-form'        : 'Lizenzform',
-                                             'subscription-kind'        : 'Lizenztyp',
-                                             'subscription-resource'    : 'Ressourcentyp',
-                                             'subscription-status'      : 'Lizenzstatus',
-                                             'subscription-isMultiYear' : 'Mehrjahreslaufzeit',
-                                             'subscription-manualCancellationDate'  : 'Kündigungsdatum',
-                                             'subscription-*'           : 'Alle'
+                                    'Lizenz' : [
+                                             'subscription-form',
+                                             'subscription-kind',
+                                             'subscription-resource',
+                                             'subscription-status',
+                                             'subscription-isMultiYear',
+                                             'subscription-manualCancellationDate',
+                                             'subscription-*'
                                     ]
                             ]
                     ],
@@ -92,10 +93,11 @@ class SubscriptionInstCfg extends BaseConfig {
 
             consortium : [
                     meta : [
-                            class: Org
+                            class:  Org,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
-                            'depending-consortium' : 'Betreffende Konsortialstellen'
+                            'depending-consortium'
                     ],
                     fields : [
                             'country'           : BaseConfig.FIELD_TYPE_REFDATA,
@@ -112,24 +114,24 @@ class SubscriptionInstCfg extends BaseConfig {
                             'subjectGroup'      : BaseConfig.FIELD_TYPE_CUSTOM_IMPL
                     ],
                     filter : [
-                            default: [
+                            default : [
                                     [ 'country', 'region', 'subjectGroup', 'libraryType' ],
                                     [ 'libraryNetwork', 'funderType', 'funderHskType' ],
                                     [ 'eInvoice' ]
                             ]
                     ],
                     query : [
-                            default: [
-                                    'Konsortialstelle' : [ // TODO ..
-                                             //'consortium-orgType'            : 'Organisationstyp',
-                                             //'consortium-customerType'       : 'Kundentyp',
-                                             'consortium-libraryType'        : 'Bibliothekstyp',
-                                             'consortium-region'             : 'Bundesländer',
-                                             'consortium-subjectGroup'       : 'Fächergruppen',
-                                             'consortium-libraryNetwork'     : 'Verbundzugehörigkeit',
-                                             'consortium-funderType'         : 'Unterhaltsträger',
-                                             'consortium-funderHskType'      : 'Trägerschaft',
-                                             'consortium-*'                  : 'Alle'
+                            default : [
+                                    'Konsortialstelle' : [
+                                             //'consortium-orgType'
+                                             //'consortium-customerType',
+                                             'consortium-libraryType',
+                                             'consortium-region',
+                                             'consortium-subjectGroup',
+                                             'consortium-libraryNetwork',
+                                             'consortium-funderType',
+                                             'consortium-funderHskType',
+                                             'consortium-*'
                                     ]
                             ]
                     ]
@@ -137,37 +139,11 @@ class SubscriptionInstCfg extends BaseConfig {
 
             provider : [
                     meta : [
-                            class: Org
+                            class:  Org,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
-                            'depending-provider' : 'Betreffende Anbieter'
-                    ],
-                    fields : [
-                            'country'   : BaseConfig.FIELD_TYPE_REFDATA,
-                            'region'    : BaseConfig.FIELD_TYPE_REFDATA,
-                            'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
-                    ],
-                    filter : [
-                            default: []
-                    ],
-                    query : [
-                            default: [
-                                    'Anbieter' : [ // TODO ..
-                                               'provider-orgType'      : 'Organisationstyp',
-                                               'provider-*'            : 'Alle'
-                                              // 'provider-country'      : 'Länder',
-                                              // 'provider-region'       : 'Bundesländer'
-                                    ]
-                            ]
-                    ]
-            ],
-
-            agency : [
-                    meta : [
-                            class: Org
-                    ],
-                    source : [
-                            'depending-agency' : 'Betreffende Lieferanten'
+                            'depending-provider'
                     ],
                     fields : [
                             'country'   : BaseConfig.FIELD_TYPE_REFDATA,
@@ -179,11 +155,37 @@ class SubscriptionInstCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Lieferant' : [ // TODO ..
-                                           'agency-orgType'      : 'Organisationstyp',
-                                           'agency-*'            : 'Alle'
-                                           // 'provider-country'      : 'Länder',
-                                           // 'provider-region'       : 'Bundesländer'
+                                    'Anbieter' : [
+                                               'provider-orgType',
+                                               'provider-*'
+                                              // 'provider-country'
+                                              // 'provider-region'
+                                    ]
+                            ]
+                    ]
+            ],
+
+            agency : [
+                    meta : [
+                            class:  Org,
+                            cfgKey: KEY_SUBSCRIPTION
+                    ],
+                    source : [
+                            'depending-agency'
+                    ],
+                    fields : [
+                            'country'   : BaseConfig.FIELD_TYPE_REFDATA,
+                            'region'    : BaseConfig.FIELD_TYPE_REFDATA,
+                            'orgType'   : BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
+                    ],
+                    filter : [
+                            default : []
+                    ],
+                    query : [
+                            default : [
+                                    'Lieferant' : [
+                                           'agency-orgType',
+                                           'agency-*'
                                     ]
                             ]
                     ]

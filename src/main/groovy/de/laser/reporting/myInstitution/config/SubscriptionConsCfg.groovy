@@ -10,10 +10,11 @@ class SubscriptionConsCfg extends BaseConfig {
 
             base : [
                     meta : [
-                            class: Subscription
+                            class:  Subscription,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
-                            'consortia-sub' : 'Meine Lizenzen'
+                            'consortia-sub'
                     ],
                     fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
@@ -41,14 +42,14 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Lizenz' : [ // TODO ..
-                                            'subscription-form'         : 'Lizenzform',
-                                            'subscription-kind'         : 'Lizenztyp',
-                                            'subscription-resource'     : 'Ressourcentyp',
-                                            'subscription-status'       : 'Lizenzstatus',
-                                            'subscription-isMultiYear'  : 'Mehrjahreslaufzeit',
-                                            'subscription-manualCancellationDate'  : 'Kündigungsdatum',
-                                            'subscription-*'            : 'Alle'
+                                    'Lizenz' : [
+                                            'subscription-form',
+                                            'subscription-kind',
+                                            'subscription-resource',
+                                            'subscription-status',
+                                            'subscription-isMultiYear',
+                                            'subscription-manualCancellationDate',
+                                            'subscription-*'
                                     ]
                             ]
                     ],
@@ -120,10 +121,11 @@ class SubscriptionConsCfg extends BaseConfig {
 
             memberSubscription : [
                     meta : [
-                            class: Subscription
+                            class:  Subscription,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
-                            'depending-memberSubscription' : 'Betreffende Teilnehmerlizenzen',
+                            'depending-memberSubscription'
                     ],
                     fields : [
                             'annual'                : BaseConfig.FIELD_TYPE_CUSTOM_IMPL,
@@ -148,14 +150,14 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     query : [
                             default: [
-                                    'Teilnehmerlizenz' : [ // TODO ..
-                                                 'memberSubscription-form'        : 'Lizenzform',
-                                                 'memberSubscription-kind'        : 'Lizenztyp',
-                                                 'memberSubscription-resource'    : 'Ressourcentyp',
-                                                 'memberSubscription-status'      : 'Lizenzstatus',
-                                                 'memberSubscription-isMultiYear' : 'Mehrjahreslaufzeit',
-                                                 'memberSubscription-manualCancellationDate'  : 'Kündigungsdatum',
-                                                 'memberSubscription-*'           : 'Alle'
+                                    'Teilnehmerlizenz' : [
+                                                 'memberSubscription-form',
+                                                 'memberSubscription-kind',
+                                                 'memberSubscription-resource',
+                                                 'memberSubscription-status',
+                                                 'memberSubscription-isMultiYear',
+                                                 'memberSubscription-manualCancellationDate',
+                                                 'memberSubscription-*'
                                     ]
                             ]
                     ]
@@ -163,10 +165,11 @@ class SubscriptionConsCfg extends BaseConfig {
 
             member : [
                     meta : [
-                            class: Org
+                            class:  Org,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
-                            'depending-member' : 'Betreffende Teilnehmer'
+                            'depending-member'
                     ],
                     fields : [
                             'country'           : BaseConfig.FIELD_TYPE_REFDATA,
@@ -192,16 +195,16 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Teilnehmer' : [ // TODO ..
-                                            'member-orgType'            : 'Organisationstyp',
-                                            'member-customerType'       : 'Kundentyp',
-                                            'member-libraryType'        : 'Bibliothekstyp',
-                                            'member-region'             : 'Bundesländer',
-                                            'member-subjectGroup'       : 'Fächergruppen',
-                                            'member-libraryNetwork'     : 'Verbundzugehörigkeit',
-                                            'member-funderType'         : 'Unterhaltsträger',
-                                            'member-funderHskType'      : 'Trägerschaft',
-                                            'member-*'                  : 'Alle'
+                                    'Teilnehmer' : [
+                                            'member-orgType',
+                                            'member-customerType',
+                                            'member-libraryType',
+                                            'member-region',
+                                            'member-subjectGroup',
+                                            'member-libraryNetwork',
+                                            'member-funderType',
+                                            'member-funderHskType',
+                                            'member-*'
                                     ]
                             ]
                     ]
@@ -209,10 +212,11 @@ class SubscriptionConsCfg extends BaseConfig {
 
             provider : [
                     meta : [
-                            class: Org
+                            class:  Org,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
-                            'depending-provider' : 'Betreffende Anbieter'
+                            'depending-provider'
                     ],
                     fields : [
                             'country'   : BaseConfig.FIELD_TYPE_REFDATA,
@@ -225,10 +229,10 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     'Anbieter' : [ // TODO ..
-                                            'provider-orgType'      : 'Organisationstyp',
-                                            'provider-*'            : 'Alle'
-                                            //'provider-country'      : 'Länder',
-                                            //'provider-region'       : 'Bundesländer'
+                                            'provider-orgType',
+                                            'provider-*'
+                                            //'provider-country',
+                                            //'provider-region'
                                     ]
                             ]
                     ]
@@ -236,10 +240,11 @@ class SubscriptionConsCfg extends BaseConfig {
 
             agency : [
                     meta : [
-                            class: Org
+                            class:  Org,
+                            cfgKey: KEY_SUBSCRIPTION
                     ],
                     source : [
-                            'depending-agency' : 'Betreffende Lieferanten'
+                            'depending-agency'
                     ],
                     fields : [
                             'country'   : BaseConfig.FIELD_TYPE_REFDATA,
@@ -250,12 +255,10 @@ class SubscriptionConsCfg extends BaseConfig {
                             default : []
                     ],
                     query : [
-                            default: [
-                                    'Lieferant' : [ // TODO ..
-                                            'agency-orgType'      : 'Organisationstyp',
-                                            'agency-*'            : 'Alle'
-                                            // 'provider-country'      : 'Länder',
-                                            // 'provider-region'       : 'Bundesländer'
+                            default : [
+                                    'Lieferant' : [
+                                            'agency-orgType',
+                                            'agency-*'
                                     ]
                             ]
                     ]
