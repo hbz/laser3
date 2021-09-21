@@ -30640,6 +30640,10 @@ a.ui.card:hover,
     width: 100%;
   }
 }
+
+.la-padding-top-1em {
+  padding-top: 1em;
+}
 /*!
  * # Semantic UI 2.4.2 - Comment
  * http://github.com/semantic-org/semantic-ui/
