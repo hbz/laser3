@@ -5,7 +5,7 @@
         <g:each in="${cfgQueryList}" var="cfgQuery" status="qci">
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
-                    <label for="query-chooser-1-${qci}">${field.key}</label>
+                    <label for="query-chooser-1-${qci}">${BaseConfig.getMessage(field.key)}</label>
                     <g:select name="query-chooser"
                               id="query-chooser-1-${qci}"
                               from="${field.value}"
@@ -22,12 +22,12 @@
         <g:each in="${cfgQuery2List}" var="cfgQuery" status="qci">
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
-                    <label for="query-chooser-2-${qci}">${field.key}</label>
+                    <label for="query-chooser-2-${qci}">${BaseConfig.getMessage(field.key)}</label>
                          <g:select name="query-chooser"
                               id="query-chooser-2-${qci}"
                               from="${field.value}"
                               optionKey="key"
-                              optionValue="${{it.value.label}}"
+                              optionValue="${{BaseConfig.getMessage(cfgKey + '.dist.' + it.key)}}"
                               class="ui selection dropdown la-not-clearable"
                               noSelection="${['': message(code: 'default.select.choose.label')]}" />
                 </div>

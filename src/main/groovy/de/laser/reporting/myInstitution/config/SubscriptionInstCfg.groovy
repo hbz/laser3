@@ -44,7 +44,7 @@ class SubscriptionInstCfg extends BaseConfig {
                     ],
                     query : [
                             default: [
-                                    'Lizenz' : [
+                                    'subscription' : [
                                              'subscription-form',
                                              'subscription-kind',
                                              'subscription-resource',
@@ -56,33 +56,28 @@ class SubscriptionInstCfg extends BaseConfig {
                             ]
                     ],
                     query2 : [
-                            'Verteilung' : [ // TODO ..
+                            'distribution' : [ // TODO ..
                                      'subscription-x-identifier' : [
-                                             label              : 'Identifikatoren → Lizenz',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : '2axis2values_nonMatches',
                                              chartLabels        : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
                                      ],
                                      'subscription-x-property' : [
-                                             label              : 'Merkmale (eigene/allgemeine) → Lizenz',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : '2axis2values',
                                              chartLabels        : [ 'Lizenzen', 'Vergebene Merkmale (eigene/allgemeine)' ]
                                      ],
                                      'subscription-x-annual' : [
-                                             label              : 'Jahresring → Lizenz',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
                                      ],
                                      'subscription-x-provider' : [
-                                             label              : 'Anbieter → Lizenz',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
                                      ],
                                      'subscription-x-platform' : [
-                                             label              : 'Plattform → Anbieter → Lizenz',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : '2axis2values_nonMatches',
                                              chartLabels        : [ 'Ermittelt durch Bestand', 'Zuordnung über Anbieter' ]
@@ -122,7 +117,7 @@ class SubscriptionInstCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Konsortialstelle' : [
+                                    'consortium' : [
                                              //'consortium-orgType'
                                              //'consortium-customerType',
                                              'consortium-libraryType',
@@ -155,7 +150,7 @@ class SubscriptionInstCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Anbieter' : [
+                                    'provider' : [
                                                'provider-orgType',
                                                'provider-*'
                                               // 'provider-country'
@@ -183,7 +178,7 @@ class SubscriptionInstCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Lieferant' : [
+                                    'agency' : [
                                            'agency-orgType',
                                            'agency-*'
                                     ]
