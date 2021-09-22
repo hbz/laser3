@@ -17,7 +17,6 @@ import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
-import jnr.ffi.annotations.In
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
