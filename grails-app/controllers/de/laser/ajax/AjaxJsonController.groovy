@@ -3,6 +3,7 @@ package de.laser.ajax
 import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.auth.Role
+import de.laser.helper.DateUtils
 import de.laser.properties.LicenseProperty
 import de.laser.Org
 import de.laser.properties.OrgProperty
@@ -39,6 +40,8 @@ import grails.core.GrailsClass
 import org.springframework.context.i18n.LocaleContextHolder
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+import java.text.SimpleDateFormat
+
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxJsonController {
 
@@ -68,8 +71,8 @@ class AjaxJsonController {
 
     @Secured(['ROLE_USER'])
     def adjustSubscriptionList(){
-        List<Subscription> data
-        List result = []
+        List data
+        Set result = []
         boolean showSubscriber = params.showSubscriber == 'true'
         boolean showConnectedObjs = params.showConnectedObjs == 'true'
         Map queryParams = [:]
@@ -80,17 +83,38 @@ class AjaxJsonController {
         }
         queryParams.showSubscriber = showSubscriber
         queryParams.showConnectedObjs = showConnectedObjs
+        queryParams.forDropdown = true
+        Org contextOrg = contextService.getOrg()
 
         data = subscriptionService.getMySubscriptions_readRights(queryParams)
+        Map<Long, Map> subscriptionRows = [:]
         if (data) {
-            data = data-Subscription.get(params.context)
-            if (params.valueAsOID){
-                data.each { Subscription s ->
-                    result.add([value: genericOIDService.getOID(s), text: s.dropdownNamingConvention()])
+            data.each { s ->
+                Map subscriptionRow = subscriptionRows.get(s[0])
+                if(!subscriptionRow)
+                    subscriptionRow = [name: s[1], startDate: s[2], endDate: s[3], status: s[4], instanceOf: s[7], orgRelations: [:]]
+                subscriptionRow.orgRelations.put(s[6], s[5])
+                subscriptionRows.put(s[0], subscriptionRow)
+            }
+            subscriptionRows.each {Long subId, Map entry ->
+                SimpleDateFormat sdf = DateUtils.getSDF_dmy()
+                String startDate = "", endDate = "", additionalInfo = ""
+                if(entry.startDate)
+                    startDate = sdf.format(entry.startDate)
+                if(entry.endDate)
+                    endDate = sdf.format(entry.endDate)
+                if(entry.instanceOf) {
+                    if(entry.orgRelations[RDStore.OR_SUBSCRIPTION_CONSORTIA] == contextOrg) {
+                        additionalInfo = " - ${entry.orgRelations.find { RefdataValue roleType, Org org -> roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN] }?.sortname}"
+                    }
+                    else additionalInfo = " - ${message(code: 'gasco.filter.consortialLicence')}"
                 }
-            } else {
-                data.each { Subscription s ->
-                    result.add([value: s.id, text: s.dropdownNamingConvention()])
+                String text = "${entry.name} - ${entry.status.getI10n("value")} (${startDate} - ${endDate})${additionalInfo}"
+                if (params.valueAsOID){
+                    result.add([value: "${Subscription.class.name}:${subId}", text: text])
+                }
+                else {
+                    result.add([value: subId, text: text])
                 }
             }
         }
@@ -99,7 +123,7 @@ class AjaxJsonController {
 
     @Secured(['ROLE_USER'])
     def adjustLicenseList(){
-        List<Subscription> data
+        Set<License> data
         List result = []
         boolean showSubscriber = params.showSubscriber == 'true'
         boolean showConnectedObjs = params.showConnectedObjs == 'true'
