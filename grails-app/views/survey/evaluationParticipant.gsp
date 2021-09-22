@@ -42,6 +42,13 @@
                                            message="openSurveyAgainForParticipant.button"/>
             </semui:actionsDropdown>
         </g:if>
+        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
+            <semui:actionsDropdown>
+                <semui:actionsDropdownItem action="renewEntitlements" controller="surveys"
+                    id="${surveyConfig.id}" params="[participant: participant.id]" message="renewEntitlementsWithSurvey.renewEntitlements"/>
+            </semui:actionsDropdown>
+        </g:if>
+
 </semui:controlButtons>
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>

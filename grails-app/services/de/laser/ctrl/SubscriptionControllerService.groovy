@@ -1013,16 +1013,16 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> renewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
-        Subscription newSub = params.targetObjectId ? Subscription.get(params.targetObjectId) : Subscription.get(params.id)
-        params.id = newSub.id
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
-        result.institution = result.contextOrg
+
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
         else {
             SwissKnife.setPaginationParams(result, params, (User) result.user)
 
+            Subscription newSub = result.subscription
+            result.institution = result.contextOrg
 
             params.tab = params.tab ?: 'allIEs'
 
@@ -1068,16 +1068,11 @@ class SubscriptionControllerService {
 
             }
 
-            result.allIEIDs = subscriptionService.getIssueEntitlementIDsFixed(baseSub)
-            result.notFixedIEIDs = subscriptionService.getIssueEntitlementIDsNotFixed(newSub)
-            result.previousIEIDs = subscriptionService.getIssueEntitlementIDsFixed(previousSubscription)
-            result.currentIEIDs = subscriptionService.getIssueEntitlementIDsFixed(newSub)
-
             //List<IssueEntitlement> perpetualAccessTitles = surveyService.perpetualAccessTitlesOfParticipant(result.subscriber)
 
-            result.countSelectedIEs = result.notFixedIEIDs.size()
-            result.countCurrentIEs = result.previousIEIDs.size() + result.currentIEIDs.size()
-            result.countAllIEs = result.allIEIDs.size()
+            result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(newSub)
+            result.countCurrentIEs = subscriptionService.countIssueEntitlementsFixed(previousSubscription) + subscriptionService.countIssueEntitlementsFixed(newSub)
+            result.countAllIEs = subscriptionService.countIssueEntitlementsFixed(baseSub)
             //result.countAllSourceIEs = sourceIEs.size()
             result.num_ies_rows = sourceIEs.size()
             //subscriptionService.getIssueEntitlementsFixed(baseSub).size()
@@ -1123,7 +1118,13 @@ class SubscriptionControllerService {
                 if (params.tab == 'allIEs' && result.countAllIEs > 0 && result.countAllIEs == result.checkedCount) {
                     result.allChecked = "checked"
                 }
-                if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
+                else if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
+                    result.allChecked = "checked"
+                }
+                else if (params.tab == 'currentIEs' && result.countCurrentIEs > 0 && result.countCurrentIEs == result.checkedCount) {
+                    result.allChecked = "checked"
+                }
+                else if (params.tab == 'allIEsStats' && result.countAllIEs > 0 && result.countAllIEs == result.checkedCount) {
                     result.allChecked = "checked"
                 }
             }
