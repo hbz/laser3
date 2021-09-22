@@ -1517,7 +1517,7 @@ class SurveyService {
         List<OrgRole> orgRoles = OrgRole.findAllByOrgAndRoleTypeInList(org, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN])
 
         if(orgRoles) {
-            List<IssueEntitlement> issueEntitlementList = IssueEntitlement.findAllBySubscriptionInListAndStatusAndAcceptStatusAndTippAndHasPerpetualAccess(orgRoles.sub, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED, tipp, true)
+            List<IssueEntitlement> issueEntitlementList = IssueEntitlement.findAllBySubscriptionInListAndStatusAndAcceptStatusAndTippAndPerpetualAccessBySubIsNotNull(orgRoles.sub, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED, tipp, true)
             if(issueEntitlementList && issueEntitlementList.size() > 0){
                 return true
             }else {
@@ -1546,21 +1546,6 @@ class SurveyService {
             return false
         }
 
-    }
-
-    List<TitleInstancePackagePlatform> perpetualAccessTitlesOfParticipant(Org org){
-
-        List<TitleInstancePackagePlatform> tipps = []
-
-        List<OrgRole> orgRoles = OrgRole.findAllByOrgAndRoleTypeInList(org, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN])
-
-        if(orgRoles) {
-            List<IssueEntitlement> issueEntitlementList = IssueEntitlement.findAllBySubscriptionInListAndStatusAndAcceptStatusAndHasPerpetualAccess(orgRoles.sub, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED, true)
-            if (issueEntitlementList && issueEntitlementList.size() > 0) {
-                tipps = issueEntitlementList.tipp
-            }
-        }
-        return  tipps.unique()
     }
 
     }

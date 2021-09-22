@@ -17,7 +17,6 @@ import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
-import jnr.ffi.annotations.In
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -1057,9 +1056,13 @@ class SubscriptionService {
                     name: tipp.name,
                     medium: tipp.medium,
                     ieReason: 'Manually Added by User',
-                    acceptStatus: acceptStatus,
-                    hasPerpetualAccess: pickAndChoosePerpetualAccess)
+                    acceptStatus: acceptStatus)
             new_ie.generateSortTitle()
+
+            if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
+                new_ie.perpetualAccessBySub = sub
+            }
+
             Date accessStartDate, accessEndDate
             if(issueEntitlementOverwrite) {
                 if(issueEntitlementOverwrite.accessStartDate) {
@@ -1885,7 +1888,7 @@ class SubscriptionService {
                                         case "coverageNotesCol": ieCoverage.coverageNote = cellEntry ?: null
                                             break
                                         case "hasPerpetualAccessCol":
-                                            issueEntitlement.hasPerpetualAccess = cellEntry ? (cellEntry == RDStore.YN_YES.value_en || cellEntry == RDStore.YN_YES.value_de) : false
+                                            issueEntitlement.perpetualAccessBySub = cellEntry ? (cellEntry == RDStore.YN_YES.value_en || cellEntry == RDStore.YN_YES.value_de ? issueEntitlement.subscription : null) : null
                                             break
                                     }
                                 }

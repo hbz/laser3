@@ -1062,13 +1062,7 @@ class SubscriptionControllerService {
                 List<IssueEntitlement> currentIes = newSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
                 sourceIEs = sourceIEs + currentIes
 
-                query = filterService.getPerpetualAccessIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], result.subscriber)
-                List<IssueEntitlement> perpetualAccessIes = newSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
-                sourceIEs = sourceIEs + perpetualAccessIes
-
             }
-
-            //List<IssueEntitlement> perpetualAccessTitles = surveyService.perpetualAccessTitlesOfParticipant(result.subscriber)
 
             result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(newSub)
             result.countCurrentIEs = subscriptionService.countIssueEntitlementsFixed(previousSubscription) + subscriptionService.countIssueEntitlementsFixed(newSub)

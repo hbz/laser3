@@ -1854,7 +1854,7 @@ class ExportService {
 					}
 					if(entitlement) {
 						//is Perpetual Access
-						row.add(entitlement.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value'))
+						row.add(entitlement.perpetualAccessBySub ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value'))
 					}else {
 						row.add(' ')
 					}
