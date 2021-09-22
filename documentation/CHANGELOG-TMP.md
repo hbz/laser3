@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3819    22.09.2021  dev     2.2         Moe     Bug         Fehlermeldung beim Aufrufen der Teilnehmer
+
 3822    21.09.2021  dev     2.2         Andreas Feature     neue FID-Merkmale, Referenzwerte und Identifier-Namensräume aufgenommen
 
 3820    21.09.2021  dev     2.2         Andreas Feature     neue Darstellung der Anbieter/Lieferanten/Lizenzgeber in Meine Lizenzen und Verträge

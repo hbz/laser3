@@ -479,7 +479,7 @@ class ExportClickMeService {
                 exportFields.put("participantSubProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
             }
 
-            CostItem.findAllBySubInListAndCostItemStatusNotEqual(childSubs, RDStore.COST_ITEM_DELETED).groupBy {it.costItemElement.id}.each {
+            CostItem.findAllBySubInListAndCostItemStatusNotEqualAndCostItemElementIsNotNull(childSubs, RDStore.COST_ITEM_DELETED).groupBy {it.costItemElement.id}.each {
                 exportFields.put("participantSubCostItem."+it.key, [field: null, label: RefdataValue.get(it.key).getI10n('value')])
             }
         }
@@ -515,7 +515,7 @@ class ExportClickMeService {
                 fields.participantSubProperties.fields << ["participantSubProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
             }
 
-            CostItem.findAllBySubInListAndCostItemStatusNotEqual(childSubs, RDStore.COST_ITEM_DELETED).groupBy {it.costItemElement.id}.each {
+            CostItem.findAllBySubInListAndCostItemStatusNotEqualAndCostItemElementIsNotNull(childSubs, RDStore.COST_ITEM_DELETED).groupBy {it.costItemElement.id}.each {
                 fields.participantSubCostItems.fields.costItemsElements << ["participantSubCostItem.${it.key}":[field: null, label: RefdataValue.get(it.key).getI10n('value')]]
             }
         }
