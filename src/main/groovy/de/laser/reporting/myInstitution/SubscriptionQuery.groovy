@@ -104,12 +104,12 @@ class SubscriptionQuery extends BaseQuery {
                 List nonList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
 
                 if (nonList) {
-                    result.data.add([null, BaseQuery.NO_MATCH_LABEL, nonList.size()])
+                    result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_MATCH_LABEL), nonList.size()])
 
                     result.dataDetails.add([
                             query : params.query,
                             id    : null,
-                            label : BaseQuery.NO_MATCH_LABEL,
+                            label : BaseQuery.getMessage(BaseQuery.NO_MATCH_LABEL),
                             idList: nonList
                     ])
                 }
@@ -136,12 +136,12 @@ class SubscriptionQuery extends BaseQuery {
                 List noDataList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
 
                 if (noDataList) {
-                    result.data.add([null, BaseQuery.NO_PROVIDER_LABEL, noDataList.size()])
+                    result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL), noDataList.size()])
 
                     result.dataDetails.add([
                             query : params.query,
                             id    : null,
-                            label : BaseQuery.NO_PROVIDER_LABEL,
+                            label : BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL),
                             idList: noDataList
                     ])
                 }
@@ -188,12 +188,12 @@ class SubscriptionQuery extends BaseQuery {
                 List noDataList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
 
                 if (noDataList) {
-                    result.data.add([null, BaseQuery.NO_PLATFORM_LABEL, noDataList.size()])
+                    result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL), noDataList.size()])
 
                     result.dataDetails.add([
                             query : params.query,
                             id    : null,
-                            label : BaseQuery.NO_PLATFORM_LABEL,
+                            label : BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL),
                             idList: noDataList,
                             value1: 0,
                             value2: noDataList.size()

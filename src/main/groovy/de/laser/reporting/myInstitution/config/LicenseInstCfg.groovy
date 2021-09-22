@@ -49,12 +49,12 @@ class LicenseInstCfg extends BaseConfig {
                                      'license-x-identifier' : [
                                              detailsTemplate    : 'license',
                                              chartTemplate      : '2axis2values_nonMatches',
-                                             chartLabels        : [ 'Verträge', 'Vergebene Identifikatoren' ]
+                                             chartLabels        : [ 'base', 'x.identifiers' ]
                                      ],
                                      'license-x-property' : [
                                              detailsTemplate    : 'license',
                                              chartTemplate      : '2axis2values',
-                                             chartLabels        : [ 'Verträge', 'Vergebene Merkmale (eigene/allgemeine)' ]
+                                             chartLabels        : [ 'base', 'x.properties' ]
                                      ],
                                      'license-x-annual' : [
                                              detailsTemplate    : 'license',

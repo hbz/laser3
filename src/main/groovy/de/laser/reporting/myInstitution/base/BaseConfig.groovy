@@ -45,18 +45,12 @@ class BaseConfig {
     static String CUSTOM_KEY_STARTDATE_LIMIT    = 'startDateLimit'
     static String CUSTOM_KEY_ENDDATE_LIMIT      = 'endDateLimit'
 
-    static Map<String, String> FILTER = [
-
-            organisation : 'Organisationen',
-            subscription : 'Lizenzen',
-            license      : 'Verträge',
-            // costItem     : 'Kosten (* experimentelle Funktion)'
+    static List<String> FILTER = [
+            'organisation', 'subscription', 'license' // 'costItem'
     ]
 
-    static Map<String, String> CHARTS = [
-
-            bar   : 'Balkendiagramm',
-            pie   : 'Tortendiagramm'
+    static List<String> CHARTS = [
+            'bar', 'pie'
     ]
 
     static Map<String, Object> getCurrentConfigByPrefix(String prefix) {
@@ -120,6 +114,7 @@ class BaseConfig {
 
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
+        String ck = 'reporting.cfg.base.custom'
 
         if (key == CUSTOM_KEY_SUBJECT_GROUP) {
             return [
@@ -148,44 +143,44 @@ class BaseConfig {
             Locale localeEn = new Locale.Builder().setLanguage("en").build()
 
             return [
-                    label: messageSource.getMessage('reporting.baseConfig.legalInfo.label', null, locale),
+                    label: messageSource.getMessage(ck + '.legalInfo.label', null, locale),
                     from: [
                         [   id: 0,
-                            value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.0', null, localeDe),
-                            value_en: messageSource.getMessage('reporting.baseConfig.legalInfo.0', null, localeEn),
+                            value_de: messageSource.getMessage(ck + '.legalInfo.0', null, localeDe),
+                            value_en: messageSource.getMessage(ck + '.legalInfo.0', null, localeEn),
                         ],
                         [   id: 1,
-                            value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.1', null, localeDe),
-                            value_en: messageSource.getMessage('reporting.baseConfig.legalInfo.1', null, localeEn),
+                            value_de: messageSource.getMessage(ck + '.legalInfo.1', null, localeDe),
+                            value_en: messageSource.getMessage(ck + '.legalInfo.1', null, localeEn),
                         ],  // ui icon green check circle
                         [   id: 2,
-                            value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.2', null, localeDe),
-                            value_en: messageSource.getMessage('reporting.baseConfig.legalInfo.2', null, localeEn),
+                            value_de: messageSource.getMessage(ck + '.legalInfo.2', null, localeDe),
+                            value_en: messageSource.getMessage(ck + '.legalInfo.2', null, localeEn),
                         ],  // ui icon grey outline circle
                         [   id: 3,
-                            value_de: messageSource.getMessage('reporting.baseConfig.legalInfo.3', null, localeDe),
-                            value_en: messageSource.getMessage('reporting.baseConfig.legalInfo.3', null, localeEn),
+                            value_de: messageSource.getMessage(ck + '.legalInfo.3', null, localeDe),
+                            value_en: messageSource.getMessage(ck + '.legalInfo.3', null, localeEn),
                         ]   // ui icon red question mark
             ]]
         }
         else if (key == CUSTOM_KEY_ANNUAL) {
             int y = Year.now().value
             return [
-                    label: messageSource.getMessage('reporting.baseConfig.annual.label', null, locale),
+                    label: messageSource.getMessage(ck + '.annual.label', null, locale),
                     from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] } + [ id: 0, value_de: 'Alle ohne Ablauf', value_en: 'Open-Ended']
             ]
         }
         else if (key == CUSTOM_KEY_STARTDATE_LIMIT) {
             int y = Year.now().value
             return [
-                    label: messageSource.getMessage('reporting.baseConfig.startDateLimit.label', null, locale),
+                    label: messageSource.getMessage(ck + '.startDateLimit.label', null, locale),
                     from: (y..y-6).collect{[ id: it, value_de: it, value_en: it] }
             ]
         }
         else if (key == CUSTOM_KEY_ENDDATE_LIMIT) {
             int y = Year.now().value
             return [
-                    label: messageSource.getMessage('reporting.baseConfig.endDateLimit.label', null, locale),
+                    label: messageSource.getMessage(ck + '.endDateLimit.label', null, locale),
                     from: (y+2..y-4).collect{[ id: it, value_de: it, value_en: it] }
             ]
         }

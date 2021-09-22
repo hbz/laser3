@@ -49,7 +49,7 @@
                 },
                 itemStyle: {
                     color: function(params) {
-                        if (JSPC.helper.contains(['${BaseQuery.NO_DATA_LABEL}'], params.name)) {
+                        if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL)}'], params.name)) {
                             return JSPC.app.reporting.helper.series.color.redInactive
                         } else {
                             return JSPC.app.reporting.helper.series.color.blue

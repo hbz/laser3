@@ -17,7 +17,7 @@
             formatter (params) {
                 var str = params.name
 
-                if (JSPC.helper.contains(['${BaseQuery.NO_IDENTIFIER_LABEL}', '${BaseQuery.NO_PLATFORM_LABEL}'], str)) {
+                if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}'], str)) {
                     return str + JSPC.app.reporting.helper.tooltip.getEntry(params.marker, ' ', Math.abs(params.value[3]))
                 }
 
@@ -70,7 +70,7 @@
             formatter (params) {
                 var str = params[0].name
 
-                if (JSPC.helper.contains(['${BaseQuery.NO_IDENTIFIER_LABEL}', '${BaseQuery.NO_PLATFORM_LABEL}'], str)) {
+                if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}'], str)) {
                     return str + JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, ' ', Math.abs(params[0].value[3]))
                 }
 
@@ -126,7 +126,7 @@
                 },
                 itemStyle: {
                     color: function(params) {
-                        if (JSPC.helper.contains(['${BaseQuery.NO_IDENTIFIER_LABEL}', '${BaseQuery.NO_PLATFORM_LABEL}'], params.name)) {
+                        if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}'], params.name)) {
                             return JSPC.app.reporting.helper.series.color.redInactive
                         } else {
                             return JSPC.app.reporting.helper.series.color.blue

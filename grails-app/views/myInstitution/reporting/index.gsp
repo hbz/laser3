@@ -48,8 +48,8 @@
                         <label for="filter-chooser">${message(code:'reporting.filter.base')}</label>
                         <g:select name="filter-chooser"
                                   from="${cfgFilterList}"
-                                  optionKey="key"
-                                  optionValue="value"
+                                  optionKey="${{it}}"
+                                  optionValue="${{BaseConfig.getMessage('base.filter.' + it)}}"
                                   class="ui selection dropdown la-not-clearable"
                                   noSelection="${['': message(code: 'default.select.choose.label')]}" />
                     </div>
@@ -62,9 +62,9 @@
 
         <g:each in="${BaseConfig.FILTER}" var="filterItem">
 
-            <g:if test="${!filter || filter == filterItem.key}">
-                <div id="filter-${filterItem.key}" class="filter-form-wrapper ${hidden}">
-                    <g:render template="/myInstitution/reporting/filter/${filterItem.key}" />
+            <g:if test="${!filter || filter == filterItem}">
+                <div id="filter-${filterItem}" class="filter-form-wrapper ${hidden}">
+                    <g:render template="/myInstitution/reporting/filter/${filterItem}" />
                 </div>
             </g:if>
         </g:each>
