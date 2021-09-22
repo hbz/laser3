@@ -1013,7 +1013,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> renewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
 
         if (!result) {
             [result:null,status:STATUS_ERROR]
