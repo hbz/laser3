@@ -1065,7 +1065,7 @@ class SubscriptionControllerService {
             }
 
             result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(newSub)
-            result.countCurrentIEs = subscriptionService.countIssueEntitlementsFixed(previousSubscription) + subscriptionService.countIssueEntitlementsFixed(newSub)
+            result.countCurrentIEs = (previousSubscription ? subscriptionService.countIssueEntitlementsFixed(previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(newSub)
             result.countAllIEs = subscriptionService.countIssueEntitlementsFixed(baseSub)
             //result.countAllSourceIEs = sourceIEs.size()
             result.num_ies_rows = sourceIEs.size()

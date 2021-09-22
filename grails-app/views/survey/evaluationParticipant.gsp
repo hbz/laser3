@@ -30,24 +30,24 @@
                 </g:link>
             </semui:exportDropdownItem>
         </semui:exportDropdown>--}%
-        <g:if test="${surveyInfo.status.id == RDStore.SURVEY_SURVEY_STARTED.id && surveyConfig.isResultsSetFinishByOrg(participant)}">
-            <semui:actionsDropdown>
-            <semui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant" params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
-                                       message="openSurveyAgainForParticipant.button"/>
-            </semui:actionsDropdown>
-        </g:if>
-        <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_SURVEY_COMPLETED.id] && !surveyConfig.isResultsSetFinishByOrg(participant)}">
-            <semui:actionsDropdown>
-                <semui:actionsDropdownItem controller="survey" action="finishSurveyForParticipant" params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+    <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_SURVEY_COMPLETED.id]}">
+        <semui:actionsDropdown>
+            <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
+                <semui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant" params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
                                            message="openSurveyAgainForParticipant.button"/>
-            </semui:actionsDropdown>
-        </g:if>
-        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
-            <semui:actionsDropdown>
-                <semui:actionsDropdownItem action="renewEntitlements" controller="surveys"
-                    id="${surveyConfig.id}" params="[participant: participant.id]" message="renewEntitlementsWithSurvey.renewEntitlements"/>
-            </semui:actionsDropdown>
-        </g:if>
+
+            </g:if>
+            <g:if test="${!surveyConfig.isResultsSetFinishByOrg(participant)}">
+                    <semui:actionsDropdownItem controller="survey" action="finishSurveyForParticipant" params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+                                               message="finishSurveyForParticipant.button"/>
+
+            </g:if>
+            <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
+                    <semui:actionsDropdownItem action="renewEntitlements" controller="surveys"
+                        id="${surveyConfig.id}" params="[participant: participant.id]" message="renewEntitlementsWithSurvey.renewEntitlements"/>
+            </g:if>
+        </semui:actionsDropdown>
+    </g:if>
 
 </semui:controlButtons>
 

@@ -44,7 +44,7 @@
         <div class="content">
             <dl>
                 <dt class="control-label">${message(code: 'myinst.selectPackages.pkg_titles')}</dt>
-                <dd>${ies.size()}</dd>
+                <dd>${countSelectedIEs}</dd>
             </dl>
             <dl>
                 <dt class="control-label">${message(code: 'tipp.price.listPrice')}</dt>
@@ -69,7 +69,7 @@
         <div class="content">
             <dl>
                 <dt class="control-label">${message(code: 'myinst.selectPackages.pkg_titles')}</dt>
-                <dd>${iesFix.size()}</dd>
+                <dd>${countCurrentIEs}</dd>
             </dl>
            %{-- <dl>
                 <dt class="control-label">${message(code: 'tipp.price.listPrice')}</dt>

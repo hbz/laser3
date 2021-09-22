@@ -1217,7 +1217,11 @@ class FilterService {
         }
 
         if (params.hasPerpetualAccess) {
-            base_qry += "and ie.perpetualAccessBySub is not null "
+            if(params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
+                base_qry += "and ie.perpetualAccessBySub is not null "
+            }else{
+                base_qry += "and ie.perpetualAccessBySub is null "
+            }
             filterSet = true
         }
 
