@@ -211,7 +211,7 @@
                                         <% print task.condition.getProperty(field) == true ? 'checked="checked"' : '' %>
                                     />
                                     <g:if test="${task.condition.getProperty(field + '_isTrigger')}">
-                                        <label>* Dieser Status ändert den Aufgaben-Status</label>
+                                        <label><sup>*</sup>erledigt die Aufgabe</label>
                                     </g:if>
                                 </div>
                             </div>

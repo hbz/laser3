@@ -73,6 +73,14 @@ class LaserWorkflowTagLib {
         String field = attrs.field
         WfCondition condition = attrs.condition as WfCondition
 
+        Closure getField = { cc, cf ->
+            String markup = (cc.getProperty(cf + '_title') ?: message(code:'workflow.field.noTitle.label'))
+            if (cc.getProperty(cf + '_isTrigger')) {
+                markup = '<u>' + markup + '</u>'
+            }
+            markup
+        }
+
         if (field && condition) {
 
             if (field.startsWith('checkbox')) {
@@ -82,7 +90,7 @@ class LaserWorkflowTagLib {
                 else {
                     out << '<i class="icon square outline la-light-grey"></i> '
                 }
-                out << (condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label'))
+                out << getField(condition, field)
             }
             else if (field.startsWith('date')) {
                 if (condition.getProperty(field)) {

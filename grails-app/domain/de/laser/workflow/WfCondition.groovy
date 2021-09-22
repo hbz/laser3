@@ -1,5 +1,7 @@
 package de.laser.workflow
 
+import de.laser.helper.RDStore
+
 class WfCondition extends WfConditionBase {
 
     static final String KEY = 'WF_CONDITION'
@@ -43,6 +45,16 @@ class WfCondition extends WfConditionBase {
 
     void remove() throws Exception {
         this.delete()
+    }
+
+    def afterUpdate() {
+        if ((checkbox1_isTrigger && checkbox1) || (checkbox2_isTrigger && checkbox2)) {
+            WfTask task = getTask()
+            if (task.status == RDStore.WF_TASK_STATUS_OPEN) {
+                task.status = RDStore.WF_TASK_STATUS_DONE
+                task.save()
+            }
+        }
     }
 
     WfTask getTask() {
