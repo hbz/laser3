@@ -17,6 +17,7 @@ import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import jnr.ffi.annotations.In
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -717,20 +718,19 @@ class SubscriptionService {
         ies
     }
 
+    Integer countIssueEntitlementsNotFixed(Subscription subscription) {
+        Integer iesCount = subscription?
+                IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                : 0
+        iesCount
+    }
+
     List<Long> getIssueEntitlementIDsNotFixed(Subscription subscription) {
         List<Long> ies = subscription?
                 IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus order by ie.sortname",
                         [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies
-    }
-
-    List getSelectedIssueEntitlementsBySurvey(Subscription subscription, SurveyInfo surveyInfo) {
-        List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                : []
-        ies.sort {it.sortname}
         ies
     }
 
@@ -741,6 +741,14 @@ class SubscriptionService {
                 : []
         ies.sort {it.sortname}
         ies
+    }
+
+    Integer countIssueEntitlementsFixed(Subscription subscription) {
+        Integer countIes = subscription?
+                IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
+                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                : 0
+        countIes
     }
 
     List<Long> getIssueEntitlementIDsFixed(Subscription subscription) {

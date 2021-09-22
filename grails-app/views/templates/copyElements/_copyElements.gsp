@@ -631,7 +631,7 @@
                                         perspectiveIndex = 1
                                 %>
                                 <div data-oid="${genericOIDService.getOID(link)}">
-                                    <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp${link.getOther(sourceObject)}<br />
+                                    <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp${link.getOther(sourceObject).dropdownNamingConvention()}<br />
                                 </div>
                             </g:each>
                         </div>
@@ -669,7 +669,7 @@
                                             perspectiveIndex = 1
                                     %>
                                     <div data-oid="${genericOIDService.getOID(link)}">
-                                        <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp${link.getOther(targetObject)}<br />
+                                        <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp${link.getOther(targetObject).dropdownNamingConvention()}<br />
                                     </div>
                                 </g:each>
                             </div>

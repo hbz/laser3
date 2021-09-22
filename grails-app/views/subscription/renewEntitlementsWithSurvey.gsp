@@ -266,7 +266,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                           model="${[stats: usages, showPackage: true, showPlattform: true]}"/>
             </g:if>
             <g:else>
-                <g:message code="renewEntitlementsWithSurvey.noPreviousIEsStats"/>
+                <g:message code="renewEntitlementsWithSurvey.noIEsStats"/>
             </g:else>
         </g:if>
         <g:else>

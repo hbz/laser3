@@ -892,72 +892,72 @@ class DataloadService {
         def highest_timestamp = 0;
         def highest_id = 0;
 
+        FTControl.withTransaction {
 
+            def latest_ft_record = FTControl.findByDomainClassNameAndActivity(domain.name, 'ESIndex')
 
-        def latest_ft_record = FTControl.findByDomainClassNameAndActivity(domain.name, 'ESIndex')
+            if (!latest_ft_record) {
+                latest_ft_record = new FTControl(domainClassName: domain.name, activity: 'ESIndex', lastTimestamp: 0)
+            } else {
+                highest_timestamp = latest_ft_record.lastTimestamp
+                //log.debug("Got existing ftcontrol record for ${domain.name} max timestamp is ${highest_timestamp} which is ${new Date(highest_timestamp)}");
+            }
 
-        if (!latest_ft_record) {
-            latest_ft_record = new FTControl(domainClassName: domain.name, activity: 'ESIndex', lastTimestamp: 0)
-        } else {
-            highest_timestamp = latest_ft_record.lastTimestamp
-            //log.debug("Got existing ftcontrol record for ${domain.name} max timestamp is ${highest_timestamp} which is ${new Date(highest_timestamp)}");
-        }
-
-        try {
+            try {
 
                 if (latest_ft_record.active) {
 
-                if (ESWrapperService.testConnection() && esIndices && esIndices.get(domain.simpleName)) {
-                    //log.debug("updateES - ${domain.name}")
+                    if (ESWrapperService.testConnection() && esIndices && esIndices.get(domain.simpleName)) {
+                        //log.debug("updateES - ${domain.name}")
 
-                    //log.debug("result of findByDomain: ${latest_ft_record}")
+                        //log.debug("result of findByDomain: ${latest_ft_record}")
 
-                    log.debug("updateES ${domain.name} since ${new Date(latest_ft_record.lastTimestamp)}")
-                    Date from = new Date(latest_ft_record.lastTimestamp)
-                    // def qry = domain.findAllByLastUpdatedGreaterThan(from,[sort:'lastUpdated'])
+                        log.debug("updateES ${domain.name} since ${new Date(latest_ft_record.lastTimestamp)}")
+                        Date from = new Date(latest_ft_record.lastTimestamp)
+                        // def qry = domain.findAllByLastUpdatedGreaterThan(from,[sort:'lastUpdated'])
 
-                    def query
+                        def query
 
-                    Class domainClass = grailsApplication.getDomainClass(domain.name).clazz
-                    if (org.apache.commons.lang.ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
-                        query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true])
-                    } else {
-                        query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true]);
-                    }
-
-                    //log.debug("Query completed .. processing rows ..")
-
-                    String rectype
-
-                    //BulkRequest bulkRequest = new BulkRequest()
-                    BulkRequest bulkRequest = new BulkRequest();
-
-                    FTControl.withNewSession { Session session ->
-                    for (domain_id in query) {
-                        Object r = domain.get(domain_id)
-                        def idx_record = recgen_closure(r)
-                        def future
-                        if (idx_record['_id'] == null) {
-                            log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
-                            continue
+                        Class domainClass = grailsApplication.getDomainClass(domain.name).clazz
+                        if (org.apache.commons.lang.ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
+                            query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true])
+                        } else {
+                            query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true]);
                         }
 
-                        def recid = idx_record['_id'].toString()
-                        idx_record.remove('_id');
+                        //log.debug("Query completed .. processing rows ..")
 
-                        IndexRequest request = new IndexRequest(esIndices.get(domain.simpleName));
-                        request.id(recid);
-                        String jsonString = idx_record as JSON
-                        //String jsonString = JsonOutput.toJson(idx_record)
-                        //println(jsonString)
-                        request.source(jsonString, XContentType.JSON)
+                        String rectype
 
-                        bulkRequest.add(request)
+                        //BulkRequest bulkRequest = new BulkRequest()
+                        BulkRequest bulkRequest = new BulkRequest();
 
-                        //bulkRequest.add(request)
+                        FTControl.withNewSession { Session session ->
+                            for (domain_id in query) {
+                                Object r = domain.get(domain_id)
+                                def idx_record = recgen_closure(r)
+                                def future
+                                if (idx_record['_id'] == null) {
+                                    log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
+                                    continue
+                                }
 
-                        //println(request)
-                        /*IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
+                                def recid = idx_record['_id'].toString()
+                                idx_record.remove('_id');
+
+                                IndexRequest request = new IndexRequest(esIndices.get(domain.simpleName));
+                                request.id(recid);
+                                String jsonString = idx_record as JSON
+                                //String jsonString = JsonOutput.toJson(idx_record)
+                                //println(jsonString)
+                                request.source(jsonString, XContentType.JSON)
+
+                                bulkRequest.add(request)
+
+                                //bulkRequest.add(request)
+
+                                //println(request)
+                                /*IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
 
                         String index = indexResponse.getIndex();
                         String id = indexResponse.getId();
@@ -979,89 +979,90 @@ class DataloadService {
                             }
                         }*/
 
-                        //latest_ft_record.lastTimestamp = r.lastUpdated?.getTime()
-                        if (r.lastUpdated?.getTime() > highest_timestamp) {
-                            highest_timestamp = r.lastUpdated?.getTime();
-                        }
+                                //latest_ft_record.lastTimestamp = r.lastUpdated?.getTime()
+                                if (r.lastUpdated?.getTime() > highest_timestamp) {
+                                    highest_timestamp = r.lastUpdated?.getTime();
+                                }
 
-                        //println(count)
-                        //println(total)
-                        count++
-                        total++
-                        if (count == 100) {
-                            count = 0;
+                                //println(count)
+                                //println(total)
+                                count++
+                                total++
+                                if (count == 100) {
+                                    count = 0;
 
-                            BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
+                                    BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
 
-                            if (bulkResponse.hasFailures()) {
-                                for (BulkItemResponse bulkItemResponse : bulkResponse) {
-                                    if (bulkItemResponse.isFailed()) {
-                                        BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
-                                        log.debug("updateES ${domain.name}: ES Bulk operation has failure -> ${failure}")
+                                    if (bulkResponse.hasFailures()) {
+                                        for (BulkItemResponse bulkItemResponse : bulkResponse) {
+                                            if (bulkItemResponse.isFailed()) {
+                                                BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
+                                                log.debug("updateES ${domain.name}: ES Bulk operation has failure -> ${failure}")
+                                            }
+                                        }
                                     }
+
+                                    log.debug("processed ${total} records (${domain.name})")
+                                    latest_ft_record.lastTimestamp = highest_timestamp
+                                    latest_ft_record.save()
+                                    session.flush()
                                 }
                             }
 
-                            log.debug("processed ${total} records (${domain.name})")
+                            if (count > 0) {
+                                BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
+
+                                if (bulkResponse.hasFailures()) {
+                                    for (BulkItemResponse bulkItemResponse : bulkResponse) {
+                                        if (bulkItemResponse.isFailed()) {
+                                            BulkItemResponse.Failure failure =
+                                                    bulkItemResponse.getFailure()
+                                            println("ES Bulk operation has failure: " + failure)
+                                        }
+                                    }
+                                }
+                                session.flush()
+                            }
+
+                            log.debug("Processed ${total} records for ${domain.name}")
+
+                            // update timestamp
                             latest_ft_record.lastTimestamp = highest_timestamp
                             latest_ft_record.save()
                             session.flush()
+                            session.clear()
                         }
+                    } else {
+                        latest_ft_record.save()
+                        log.debug("updateES ${domain.name}: Fail -> ESWrapperService.testConnection() && esIndices && esIndices.get(domain.simpleName)")
                     }
-
-                    if(count > 0){
-                        BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
-
-                        if (bulkResponse.hasFailures()) {
-                            for (BulkItemResponse bulkItemResponse : bulkResponse) {
-                                if (bulkItemResponse.isFailed()) {
-                                    BulkItemResponse.Failure failure =
-                                            bulkItemResponse.getFailure()
-                                    println("ES Bulk operation has failure: " +failure)
-                                }
-                            }
-                        }
-                        session.flush()
-                    }
-
-                    log.debug("Processed ${total} records for ${domain.name}")
-
-                    // update timestamp
-                    latest_ft_record.lastTimestamp = highest_timestamp
-                    latest_ft_record.save()
-                        session.flush()
-                        session.clear()
-                    }
-                } else {
-                    latest_ft_record.save()
-                    log.debug("updateES ${domain.name}: Fail -> ESWrapperService.testConnection() && esIndices && esIndices.get(domain.simpleName)")
-                }
                 } else {
                     latest_ft_record.save()
                     log.debug("updateES ${domain.name}: FTControle is not active")
                 }
 
-        }
-        catch (Exception e) {
-            log.error("Problem with FT index", e)
-
-            SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["index": domain.name])
-        }
-        finally {
-            log.debug("Completed processing on ${domain.name} - saved ${total} records")
-            try {
-                if (ESWrapperService.testConnection()) {
-                if (latest_ft_record.active) {
-                    FlushRequest request = new FlushRequest(esIndices.get(domain.simpleName));
-                    FlushResponse flushResponse = esclient.indices().flush(request, RequestOptions.DEFAULT)
-                }
-
-                    esclient.close()
-                }
-                checkESElementswithDBElements(domain.name)
             }
             catch (Exception e) {
-                log.error("Problem by Close ES Client", e);
+                log.error("Problem with FT index", e)
+
+                SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["index": domain.name])
+            }
+            finally {
+                log.debug("Completed processing on ${domain.name} - saved ${total} records")
+                try {
+                    if (ESWrapperService.testConnection()) {
+                        if (latest_ft_record.active) {
+                            FlushRequest request = new FlushRequest(esIndices.get(domain.simpleName));
+                            FlushResponse flushResponse = esclient.indices().flush(request, RequestOptions.DEFAULT)
+                        }
+
+                        esclient.close()
+                    }
+                    checkESElementswithDBElements(domain.name)
+                }
+                catch (Exception e) {
+                    log.error("Problem by Close ES Client", e);
+                }
             }
         }
   }

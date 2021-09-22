@@ -634,6 +634,10 @@ class ExportClickMeService {
             exportFields.remove('subscription')
         }
 
+        if(surveyConfig.pickAndChoose){
+            exportFields.remove('participantSurveyCostItems')
+        }
+
 
         exportFields
     }
@@ -653,6 +657,10 @@ class ExportClickMeService {
 
         if(!surveyConfig.subscription){
             fields.remove('subscription')
+        }
+
+        if(surveyConfig.pickAndChoose){
+            fields.remove('participantSurveyCostItems')
         }
 
         fields
