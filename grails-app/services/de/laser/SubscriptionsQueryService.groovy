@@ -5,6 +5,7 @@ import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -14,7 +15,7 @@ class SubscriptionsQueryService {
     def propertyService
     def accessService
 
-    List myInstitutionCurrentSubscriptionsBaseQuery(params, Org contextOrg) {
+    List myInstitutionCurrentSubscriptionsBaseQuery(params, Org contextOrg, String joinQuery = "") {
 
         def date_restriction
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -57,22 +58,22 @@ class SubscriptionsQueryService {
 
         if (params.orgRole == 'Subscriber') {
 
-            base_qry = "${providerSort} from Subscription as s where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
+            base_qry = "${providerSort} from Subscription as s ${joinQuery} where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
 
             qry_params << ['roleType1':role_sub, 'roleType2':[role_subCons], 'activeInst':contextOrg, 'scRoleType':[role_sub_consortia]]
         }
 
         if (params.orgRole == 'Subscription Consortia') {
             if (params.actionName == 'manageMembers') {
-                base_qry =  "${providerSort} from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                base_qry =  "${providerSort} from Subscription as s ${joinQuery} where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                             " AND s.instanceOf is not null "
                 qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
             } else {
                 if (params.showParentsAndChildsSubs) {
-                    base_qry =  "${providerSort} from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
+                    base_qry =  "${providerSort} from Subscription as s ${joinQuery} where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
                     qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
                 } else {//nur Parents
-                    base_qry =  "${providerSort} from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                    base_qry =  "${providerSort} from Subscription as s ${joinQuery} where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                                 " AND s.instanceOf is null "
                     qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
                 }

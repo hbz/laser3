@@ -53,12 +53,12 @@
                                 <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
                             </div>
                             <div class="field">
-                                <label for="${prefix}_${field}_isTrigger">Statusänderung</label>
+                                <label for="${prefix}_${field}_isTrigger">...</label>
                                 <div class="ui checkbox">
                                     <input type="checkbox" name="${prefix}_${field}_isTrigger" id="${prefix}_${field}_isTrigger"
                                         <% if (condition?.getProperty(field + '_isTrigger')) { print 'checked="checked"' } %>
                                     />
-                                    <label>Diese Angabe setzt den Aufgaben-Status auf 'Erledigt'</label>
+                                    <label>Soll den Aufgaben-Status auf 'Erledigt' setzen</label>
                                 </div>
                             </div>
                         </div>
@@ -100,7 +100,7 @@
                                     <% print condition.getProperty(field) == true ? 'checked="checked"' : '' %>
                                 />
                                 <g:if test="${condition.getProperty(field + '_isTrigger')}">
-                                    <label>Diese Angabe setzt den Aufgaben-Status auf 'Erledigt'</label>
+                                    <label><sup>*</sup>erledigt die Aufgabe</label>
                                 </g:if>
                             </div>
                         </div>
