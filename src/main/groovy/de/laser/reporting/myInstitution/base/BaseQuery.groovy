@@ -6,7 +6,9 @@ import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.helper.DateUtils
 import de.laser.properties.PropertyDefinition
+import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.sql.Timestamp
@@ -14,13 +16,13 @@ import java.time.Year
 
 class BaseQuery {
 
-    static String NO_DATA_LABEL         = '* keine Angabe'
-    static String NO_MATCH_LABEL        = '* keine Übereinstimmung'
-    static String NO_IDENTIFIER_LABEL   = '* ohne Identifikator'
-    static String NO_PLATFORM_LABEL     = '* ohne Plattform'
-    static String NO_PROVIDER_LABEL     = '* ohne Anbieter'
-    static String NO_STARTDATE_LABEL    = '* ohne Startdatum'
-    static String NO_ENDDATE_LABEL      = '* ohne Ablauf'
+    static String NO_DATA_LABEL         = 'noData.label'
+    static String NO_MATCH_LABEL        = 'noMatch.label'
+    static String NO_IDENTIFIER_LABEL   = 'noIdentifier.label'
+    static String NO_PLATFORM_LABEL     = 'noPlatform.label'
+    static String NO_PROVIDER_LABEL     = 'noProvider.label'
+    static String NO_STARTDATE_LABEL    = 'noStartDate.label'
+    static String NO_ENDDATE_LABEL      = 'noEndDate.label'
 
     static int NO_DATA_ID       = 0
     static int SPEC_DATA_ID_1   = 9990001
@@ -144,12 +146,12 @@ class BaseQuery {
         List noDataList = idList ? Org.executeQuery( hql, [idList: idList] ) : []
 
         if (noDataList) {
-            result.data.add( [null, NO_DATA_LABEL, noDataList.size()] )
+            result.data.add( [null, getMessage(NO_DATA_LABEL), noDataList.size()] )
 
             result.dataDetails.add( [
                     query:  query,
                     id:     null,
-                    label:  NO_DATA_LABEL,
+                    label:  getMessage(NO_DATA_LABEL),
                     idList: noDataList
             ])
         }
@@ -221,12 +223,12 @@ class BaseQuery {
         List noDataList = nonMatchingIdList ? Org.executeQuery( nonMatchingHql, [idList: nonMatchingIdList] ) : []
 
         if (noDataList) {
-            result.data.add( [null, NO_IDENTIFIER_LABEL, noDataList.size()] )
+            result.data.add( [null, getMessage(NO_IDENTIFIER_LABEL), noDataList.size()] )
 
             result.dataDetails.add( [
                     query:  query,
                     id:     null,
-                    label:  NO_IDENTIFIER_LABEL,
+                    label:  getMessage(NO_IDENTIFIER_LABEL),
                     idList: noDataList,
                     value1: 0,
                     value2: noDataList.size(),
@@ -287,38 +289,46 @@ class BaseQuery {
 
         List<Long> sp1DataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate != null and dc.endDate is null', [idList: idList] )
         if (sp1DataList) {
-            result.data.add([SPEC_DATA_ID_1, NO_ENDDATE_LABEL, sp1DataList.size()])
+            result.data.add([SPEC_DATA_ID_1, getMessage(NO_ENDDATE_LABEL), sp1DataList.size()])
 
             result.dataDetails.add([
                     query : query,
                     id    : SPEC_DATA_ID_1,
-                    label : NO_ENDDATE_LABEL,
+                    label : getMessage(NO_ENDDATE_LABEL),
                     idList: sp1DataList
             ])
         }
 
         List<Long> sp2DataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate != null', [idList: idList] )
         if (sp2DataList) {
-            result.data.add([SPEC_DATA_ID_2, NO_STARTDATE_LABEL, sp2DataList.size()])
+            result.data.add([SPEC_DATA_ID_2, getMessage(NO_STARTDATE_LABEL), sp2DataList.size()])
 
             result.dataDetails.add([
                     query : query,
                     id    : SPEC_DATA_ID_2,
-                    label : NO_STARTDATE_LABEL,
+                    label : getMessage(NO_STARTDATE_LABEL),
                     idList: sp2DataList
             ])
         }
 
         List<Long> noDataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate is null', [idList: idList] )
         if (noDataList) {
-            result.data.add([null, NO_DATA_LABEL, noDataList.size()])
+            result.data.add([null, getMessage(NO_DATA_LABEL), noDataList.size()])
 
             result.dataDetails.add([
                     query : query,
                     id    : null,
-                    label : NO_DATA_LABEL,
+                    label : getMessage(NO_DATA_LABEL),
                     idList: noDataList
             ])
         }
+    }
+
+    static String getMessage(String token) {
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+
+        // println ' ---> ' + 'reporting.cfg.' + token
+        messageSource.getMessage('reporting.query.base.' + token, null, locale)
     }
 }

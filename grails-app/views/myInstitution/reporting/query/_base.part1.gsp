@@ -38,8 +38,8 @@
             <label for="query-chooser">${message(code: 'reporting.query.chart')}</label>
             <g:select name="chart-chooser"
                       from="${cfgChartsList}"
-                      optionKey="key"
-                      optionValue="value"
+                      optionKey="${{it}}"
+                      optionValue="${{BaseConfig.getMessage('base.chart.' + it)}}"
                       class="ui selection dropdown la-not-clearable"
                       noSelection="${['': message(code: 'default.select.choose.label')]}" />
         </div>

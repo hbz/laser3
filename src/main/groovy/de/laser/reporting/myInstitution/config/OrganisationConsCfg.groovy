@@ -74,16 +74,16 @@ class OrganisationConsCfg extends BaseConfig {
                     ],
                     query2 : [
                             'distribution' : [ // TODO ..
-                                     'org-x-identifier' : [
+                                    'org-x-identifier' : [
                                              detailsTemplate     : 'organisation',
                                              chartTemplate       : '2axis2values_nonMatches',
-                                             chartLabels         : [ 'Organisationen', 'Vergebene Identifikatoren' ]
-                                     ],
+                                             chartLabels         : [ 'base', 'x.identifiers' ]
+                                    ],
                                     'org-x-property' : [
                                             detailsTemplate     : 'organisation',
                                             chartTemplate       : '2axis2values',
-                                            chartLabels         : [ 'Organisationen', 'Vergebene Merkmale (eigene/allgemeine)' ]
-                                    ]
+                                            chartLabels         : [ 'base', 'x.properties' ]
+                                   ]
                                     //'org-x-serverAccess' : 'Organisation nach Datenweitergabe',
                             ]
                     ]

@@ -138,7 +138,7 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.query2.getAt('distribution').getAt(clone.query) as Map
 
-                    result.labels.chart = cfg.getAt('chartLabels')
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_LICENSE + '.dist.chartLabel.' + it) }
                     result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('chartTemplate')
                 }
             }
@@ -150,7 +150,7 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query2.getAt('distribution').getAt(clone.query) as Map
 
-                    result.labels.chart = cfg.getAt('chartLabels')
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_ORGANISATION + '.dist.chartLabel.' + it) }
                     result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('chartTemplate')
                 }
             }
@@ -162,7 +162,7 @@ class ReportingGlobalService {
                 if (suffix in ['x']) {
                     Map<String, Object> cfg = BaseConfig.getCurrentConfig(BaseConfig.KEY_SUBSCRIPTION).base.query2.getAt('distribution').getAt(clone.query) as Map
 
-                    result.labels.chart = cfg.getAt('chartLabels')
+                    result.labels.chart = cfg.getAt('chartLabels').collect{ BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.dist.chartLabel.' + it)  }
                     result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('chartTemplate')
                 }
             }
