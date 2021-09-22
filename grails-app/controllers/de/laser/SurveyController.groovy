@@ -434,15 +434,17 @@ class SurveyController {
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
         result.allLinkedLicenses = [:]
-        Set<Links> allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndLinkType(result.subscriptions,RDStore.LINKTYPE_LICENSE)
-        allLinkedLicenses.each { Links li ->
-            Subscription s = li.destinationSubscription
-            License l = li.sourceLicense
-            Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
-            if(!linkedLicenses)
-                linkedLicenses = []
-            linkedLicenses << l
-            result.allLinkedLicenses.put(s,linkedLicenses)
+        if(result.subscriptions) {
+            Set<Links> allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndLinkType(result.subscriptions, RDStore.LINKTYPE_LICENSE)
+            allLinkedLicenses.each { Links li ->
+                Subscription s = li.destinationSubscription
+                License l = li.sourceLicense
+                Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
+                if (!linkedLicenses)
+                    linkedLicenses = []
+                linkedLicenses << l
+                result.allLinkedLicenses.put(s, linkedLicenses)
+            }
         }
 
         result

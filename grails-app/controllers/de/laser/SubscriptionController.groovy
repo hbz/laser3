@@ -985,17 +985,12 @@ class SubscriptionController {
             List<Long> exportIEIDs
             String filename
             if(params.tab == 'allIEs') {
-                exportIEIDs = ctrlResult.result.allIEIDs
+                exportIEIDs = subscriptionService.getIssueEntitlementIDsFixed(ctrlResult.result.subscription)
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
             }
             if(params.tab == 'selectedIEs') {
-                exportIEIDs = ctrlResult.result.notFixedIEIDs
+                exportIEIDs = subscriptionService.getIssueEntitlementIDsNotFixed(ctrlResult.result.newSub)
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentEntitlements') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
-            }
-
-            if(params.tab == 'previousIEs') {
-                exportIEIDs = ctrlResult.result.previousIEIDs
-                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentFixedEntitlements') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
             }
 
             if (params.exportKBart) {

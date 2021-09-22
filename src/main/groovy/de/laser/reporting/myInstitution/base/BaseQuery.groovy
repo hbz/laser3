@@ -62,13 +62,14 @@ class BaseQuery {
                 }
                 else {
                     if (it2.value.contains(query)) {
-                        meta = [ it2.key, BaseConfig.getMessage(cfgKey + '.query.' + query) ]
+                        meta = [ BaseConfig.getMessage(it2.key), BaseConfig.getMessage(cfgKey + '.query.' + query) ]
                     }
                 }
             }
+            // TODO - query dist
             it.value.get('query2')?.each { it2 ->
                 if (it2.value.containsKey(query)) {
-                    meta = [ it2.key, it2.value.get(query).label ]
+                    meta = [ BaseConfig.getMessage(it2.key), BaseConfig.getMessage(cfgKey + '.dist.' + query) ]
                 }
             }
         }

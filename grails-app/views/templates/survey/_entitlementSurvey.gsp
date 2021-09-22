@@ -10,25 +10,12 @@
                 <div class="eight wide field" style="text-align: left;">
                     <g:link controller="subscription" action="renewEntitlementsWithSurvey"
                             id="${subscription.id}"
-                            params="${[targetObjectId: subscription.id,
-                                       surveyConfigID: surveyConfig.id]}"
+                            params="${[surveyConfigID: surveyConfig.id]}"
                             class="ui button">
                         <g:message code="surveyInfo.toIssueEntitlementsSurvey"/>
                     </g:link>
                 </div>
 
-
-                <div class="eight wide field" style="text-align: right;">
-                    <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
-
-                        <g:link action="renewEntitlements" controller="surveys"
-                                id="${surveyConfig.id}" params="[participant: participant.id]"
-                                class="ui button">
-                            <g:message code="renewEntitlementsWithSurvey.renewEntitlements"/>
-                        </g:link>
-
-                    </g:if>
-                </div>
             </div>
         </div>
 
@@ -69,8 +56,7 @@
 
     <g:link controller="subscription" action="renewEntitlementsWithSurvey"
             id="${subscription.id}"
-            params="${[targetObjectId: subscription.id,
-                       surveyConfigID: surveyConfig.id,
+            params="${[surveyConfigID: surveyConfig.id,
                        tab           : 'selectedIEs']}"
             class="ui button">
         <g:message code="renewEntitlementsWithSurvey.currentTitlesSelect.button"/>
@@ -95,8 +81,7 @@
 
     <g:link controller="subscription" action="renewEntitlementsWithSurvey"
             id="${subscription.id}"
-            params="${[targetObjectId: subscription.id,
-                       surveyConfigID: surveyConfig.id,
+            params="${[surveyConfigID: surveyConfig.id,
                        tab           : 'currentIEs']}"
             class="ui button">
         <g:message code="renewEntitlementsWithSurvey.currentTitles.button"/>
@@ -109,8 +94,7 @@
 
         <g:link controller="subscription" action="renewEntitlementsWithSurvey"
                 id="${subscription.id}"
-                params="${[targetObjectId: subscription.id,
-                           surveyConfigID: surveyConfig.id,
+                params="${[surveyConfigID: surveyConfig.id,
                            tab           : 'allIEsStats']}"
                 class="ui button">
             <g:message code="renewEntitlementsWithSurvey.stats.button"/>

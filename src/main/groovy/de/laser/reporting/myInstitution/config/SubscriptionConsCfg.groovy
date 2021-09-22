@@ -42,7 +42,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Lizenz' : [
+                                    'subscription' : [
                                             'subscription-form',
                                             'subscription-kind',
                                             'subscription-resource',
@@ -54,39 +54,33 @@ class SubscriptionConsCfg extends BaseConfig {
                             ]
                     ],
                     query2 : [
-                            'Verteilung' : [ // TODO ..
+                            'distribution' : [ // TODO ..
                                      'subscription-x-identifier' : [
-                                             label               : 'Identifikatoren → Lizenz',
                                              detailsTemplate     : 'subscription',
                                              chartTemplate       : '2axis2values_nonMatches',
                                              chartLabels         : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
                                      ],
                                      'subscription-x-property' : [
-                                            label               : 'Merkmale (eigene/allgemeine) → Lizenz',
                                             detailsTemplate     : 'subscription',
                                             chartTemplate       : '2axis2values',
                                             chartLabels         : [ 'Lizenzen', 'Vergebene Merkmale (eigene/allgemeine)' ]
                                      ],
                                      'subscription-x-annual' : [
-                                             label              : 'Jahresring → Lizenz',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
                                      ],
                                      'subscription-x-memberAnnual' : [
-                                             label              : 'Jahresring → Teilnehmerlizenz',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
                                      ],
                                      'subscription-x-provider' : [
-                                             label               : 'Anbieter → Lizenz',
                                              detailsTemplate     : 'subscription',
                                              chartTemplate       : 'generic',
                                              chartLabels         : []
                                      ],
                                      'subscription-x-memberProvider' : [
-                                             label              : 'Anbieter → Lizenz → Teilnehmerlizenz',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
@@ -98,19 +92,16 @@ class SubscriptionConsCfg extends BaseConfig {
 //                                             chartLabels        : []
 //                                     ],
                                      'subscription-x-platform' : [
-                                             label               : 'Plattform → Anbieter → Lizenz',
                                              detailsTemplate     : 'subscription',
                                              chartTemplate       : '2axis2values_nonMatches',
                                              chartLabels         : [ 'Ermittelt durch Bestand', 'Zuordnung über Anbieter' ]
                                      ],
                                      'subscription-x-memberSubscription' : [
-                                             label              : 'Lizenz → Teilnehmerlizenz',
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
                                      ],
                                      'subscription-x-member' : [
-                                             label              : 'Lizenz → Teilnehmerlizenz → Teilnehmer',
                                              detailsTemplate    : 'organisation',
                                              chartTemplate      : 'generic',
                                              chartLabels        : []
@@ -150,7 +141,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     query : [
                             default: [
-                                    'Teilnehmerlizenz' : [
+                                    'memberSubscription' : [
                                                  'memberSubscription-form',
                                                  'memberSubscription-kind',
                                                  'memberSubscription-resource',
@@ -195,7 +186,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Teilnehmer' : [
+                                    'member' : [
                                             'member-orgType',
                                             'member-customerType',
                                             'member-libraryType',
@@ -228,7 +219,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Anbieter' : [ // TODO ..
+                                    'provider' : [
                                             'provider-orgType',
                                             'provider-*'
                                             //'provider-country',
@@ -256,7 +247,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Lieferant' : [
+                                    'agency' : [
                                             'agency-orgType',
                                             'agency-*'
                                     ]

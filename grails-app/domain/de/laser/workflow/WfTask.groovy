@@ -69,6 +69,10 @@ class WfTask extends WfTaskBase {
         this.delete()
     }
 
+    def afterUpdate() {
+        condition?.afterUpdate()
+    }
+
     WfWorkflow getWorkflow() {
         WfWorkflow.findByTask( this )
     }

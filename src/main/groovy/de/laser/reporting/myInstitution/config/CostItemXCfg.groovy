@@ -31,7 +31,7 @@ class CostItemXCfg extends BaseConfig {
                     ],
                     query : [
                             default: [
-                                    'Kosten' : [
+                                    'costItem' : [
                                             'costItem-type',
                                             'costItem-costItemStatus',
                                             'costItem-costItemCategory',

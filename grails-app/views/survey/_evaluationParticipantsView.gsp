@@ -351,7 +351,7 @@
                                 <g:set var="subParticipant"
                                        value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
                                 <div class="ui circular label">
-                                    ${subscriptionService.getIssueEntitlementsFixed(subParticipant).size()} / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant).size()}
+                                    ${subscriptionService.countIssueEntitlementsFixed(subParticipant)} / ${subscriptionService.countIssueEntitlementsNotFixed(subParticipant)}
                                 </div>
 
                             </td>
@@ -603,7 +603,7 @@
                                 <g:set var="subParticipant"
                                        value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
                                 <div class="ui circular label">
-                                    ${subscriptionService.getIssueEntitlementsFixed(subParticipant).size()} / ${subscriptionService.getIssueEntitlementsNotFixed(subParticipant).size()}
+                                    ${subscriptionService.countIssueEntitlementsFixed(subParticipant)} / ${subscriptionService.countIssueEntitlementsNotFixed(subParticipant)}
                                 </div>
 
                             </td>
