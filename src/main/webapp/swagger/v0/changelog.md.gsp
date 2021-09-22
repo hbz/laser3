@@ -4,7 +4,7 @@ Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v
 
 #### 0.128
 
-- added new attribute: `IssueEntitlement.hasPerpetualAccess`
+- added new attribute: `IssueEntitlement.perpetualAccessBySub`
 
 #### 0.127
 

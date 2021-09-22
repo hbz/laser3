@@ -18,4 +18,19 @@ databaseChangeLog = {
         }
     }
 
+    changeSet(author: "djebeniani (generated)", id: "1632228806219-3") {
+        addColumn(tableName: "issue_entitlement") {
+            column(name: "ie_perpetual_access_by_sub_fk", type: "int8")
+        }
+    }
+
+    changeSet(author: "djebeniani (generated)", id: "1632228806219-4") {
+        addForeignKeyConstraint(baseColumnNames: "ie_perpetual_access_by_sub_fk", baseTableName: "issue_entitlement", constraintName: "FKgnwnhaj7fnllowveafnqpxwuk", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "sub_id", referencedTableName: "subscription")
+    }
+
+
+    changeSet(author: "djebeniani (generated)", id: "1632228806219-5") {
+        dropColumn(columnName: "ie_has_perpetual_access", tableName: "issue_entitlement")
+    }
+
 }
