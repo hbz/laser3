@@ -14,6 +14,11 @@
     </h2>
     <g:if test="${links.entrySet()}">
         <table class="ui three column table">
+            <style>
+                .ui.table tr:first-child th {
+                    border-top: none;
+                }
+            </style>
             <g:each in="${links.entrySet()}" var="linkTypes">
                 <g:if test="${linkTypes.getValue().size() > 0}">
                     <g:each in="${linkTypes.getValue()}" var="link">
@@ -50,14 +55,16 @@
                                 </g:if>
                             </td>
                             <td class="right aligned">
-                                <g:if test="${pair.propertySet && pair instanceof License}">
-                                    <button id="derived-license-properties-toggle${link.id}"
-                                            class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
-                                            data-content="${message(code:'subscription.details.viewLicenseProperties')}">
-                                        <i class="ui angle double down icon"></i>
-                                    </button>
-                                    <laser:script file="${this.getGroovyPageFileName()}">
-                                        $("#derived-license-properties-toggle${link.id}").on('click', function() {
+                                <g:if test="${license}"></g:if>
+                                <g:else>
+                                    <g:if test="${pair.propertySet && pair instanceof License}">
+                                        <button id="derived-license-properties-toggle${link.id}"
+                                                class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                                data-content="${message(code:'subscription.details.viewLicenseProperties')}">
+                                            <i class="ui angle double down icon"></i>
+                                        </button>
+                                        <laser:script file="${this.getGroovyPageFileName()}">
+                                            $("#derived-license-properties-toggle${link.id}").on('click', function() {
                                             $("#derived-license-properties${link.id}").transition('slide down');
                                             //$("#derived-license-properties${link.id}").toggleClass('hidden');
 
@@ -67,8 +74,10 @@
                                                 $(this).html('<i class="ui angle double up icon"></i>');
                                             }
                                         })
-                                    </laser:script>
-                                </g:if>
+                                        </laser:script>
+                                    </g:if>
+                                </g:else>
+
                                 <g:render template="/templates/links/subLinksModal"
                                           model="${[tmplText:message(code:'subscription.details.editLink'),
                                                     tmplIcon:'write',
@@ -111,16 +120,18 @@
                                 </g:if>
                             </td>
                         </tr>
+                        <g:if test="${license}"></g:if>
+                        <g:else>
+                            <g:if test="${pair.propertySet && pair instanceof License}">
+                                <tr>
+                                    <td style="border-top: none; padding:0" colspan="3">
 
-                        <g:if test="${pair.propertySet && pair instanceof License}">
-                            <tr>
-                                <td style="border-top: none; padding:0" colspan="3">
+                                            <g:render template="/subscription/licProp" model="[license: pair, derivedPropDefGroups: pair.getCalculatedPropDefGroups(contextOrg), linkId: link.id]"/>
 
-                                        <g:render template="/subscription/licProp" model="[license: pair, derivedPropDefGroups: pair.getCalculatedPropDefGroups(contextOrg), linkId: link.id]"/>
-
-                                </td>
-                            </tr>
-                        </g:if>
+                                    </td>
+                                </tr>
+                            </g:if>
+                        </g:else>
                     </g:each>
                 </g:if>
             </g:each>

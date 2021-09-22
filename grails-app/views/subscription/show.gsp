@@ -7,13 +7,6 @@
 <head>
     <meta name="layout" content="laser">
     <title>${message(code: 'laser')} : ${message(code: 'subscription.details.label')}</title>
-    <style>
-
-
-    .ui.table tr:first-child th {
-        border-top: none;
-    }
-    </style>
 </head>
 
 <body>
