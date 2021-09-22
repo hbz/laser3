@@ -136,7 +136,7 @@ class ReportingGlobalService {
                 result.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (suffix in ['x']) {
-                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.query2.getAt('Verteilung').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).base.query2.getAt('distribution').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels')
                     result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('chartTemplate')
@@ -148,7 +148,7 @@ class ReportingGlobalService {
                 result.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (suffix in ['x']) {
-                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query2.getAt('Verteilung').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig( BaseConfig.KEY_ORGANISATION ).base.query2.getAt('distribution').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels')
                     result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('chartTemplate')
@@ -160,7 +160,7 @@ class ReportingGlobalService {
                 result.tmpl = '/myInstitution/reporting/chart/generic'
 
                 if (suffix in ['x']) {
-                    Map<String, Object> cfg = BaseConfig.getCurrentConfig(BaseConfig.KEY_SUBSCRIPTION).base.query2.getAt('Verteilung').getAt(clone.query) as Map
+                    Map<String, Object> cfg = BaseConfig.getCurrentConfig(BaseConfig.KEY_SUBSCRIPTION).base.query2.getAt('distribution').getAt(clone.query) as Map
 
                     result.labels.chart = cfg.getAt('chartLabels')
                     result.tmpl = '/myInstitution/reporting/chart/' + cfg.getAt('chartTemplate')
@@ -208,7 +208,7 @@ class ReportingGlobalService {
 
                 if (suffix in ['x']) {
 
-                    String tmpl = cfg.base.query2.get('Verteilung').get(params.query).detailsTemplate
+                    String tmpl = cfg.base.query2.get('distribution').get(params.query).detailsTemplate
                     result.tmpl = '/myInstitution/reporting/details/' + tmpl
 
                     if (! idList) {

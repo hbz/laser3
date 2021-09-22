@@ -49,7 +49,7 @@ class OrganisationInstCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'Organisation' : [
+                                    'org' : [
                                            'org-orgType',
                                            'org-customerType',
                                            'org-libraryType',
@@ -62,25 +62,23 @@ class OrganisationInstCfg extends BaseConfig {
                                     ]
                             ],
                             providerAndAgency : [
-                                    'Organisation' : [ 'org-orgType' ]
+                                    'org' : [ 'org-orgType' ]
                             ],
                             provider : [
-                                    'Organisation' : [ 'org-orgType' ]
+                                    'org' : [ 'org-orgType' ]
                             ],
                             agency : [
-                                    'Organisation' : [ 'org-orgType' ]
+                                    'org' : [ 'org-orgType' ]
                             ]
                     ],
                     query2 : [
-                            'Verteilung' : [ // TODO ..
+                            'distribution' : [ // TODO ..
                                      'org-x-identifier' : [
-                                             label              : 'Identifikatoren → Organisation',
                                              detailsTemplate    : 'organisation',
                                              chartTemplate      : '2axis2values_nonMatches',
                                              chartLabels        : [ 'Organisationen', 'Vergebene Identifikatoren' ]
                                      ],
                                      'org-x-property' : [
-                                             label              : 'Merkmale (eigene/allgemeine) → Organisation',
                                              detailsTemplate    : 'organisation',
                                              chartTemplate      : '2axis2values',
                                              chartLabels        : [ 'Organisationen', 'Vergebene Merkmale (eigene/allgemeine)' ]
