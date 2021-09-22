@@ -390,23 +390,28 @@ class SubscriptionService {
     List getMySubscriptions_readRights(Map params){
         List result = []
         List tmpQ
+        String queryStart = "select s "
+        if(params.forDropdown) {
+            queryStart = "select s.id, s.name, s.startDate, s.endDate, s.status, so.org, so.roleType, s.instanceOf.id "
+            params.joinQuery = "join s.orgRelations so"
+        }
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
             tmpQ = getSubscriptionsConsortiaQuery(params)
-            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
+            result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsConsortialLicenseQuery(params)
-            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
+            result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsLocalLicenseQuery(params)
-            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
+            result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
         } else {
-            tmpQ = getSubscriptionsConsortialLicenseQuery()
-            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
+            tmpQ = getSubscriptionsConsortialLicenseQuery(params)
+            result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
             tmpQ = getSubscriptionsLocalLicenseQuery(params)
-            result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
+            result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
         }
         result
     }
@@ -479,7 +484,8 @@ class SubscriptionService {
             queryParams.status = params.status
         }
         queryParams.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
-        List result = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg())
+        String joinQuery = params.joinQuery ?: ""
+        List result = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
         result
     }
 
@@ -491,7 +497,8 @@ class SubscriptionService {
         }
         queryParams.orgRole = RDStore.OR_SUBSCRIBER.value
         queryParams.subTypes = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id
-        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg())
+        String joinQuery = params.joinQuery ?: ""
+        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
     }
 
     //Lokallizenzen
@@ -502,7 +509,8 @@ class SubscriptionService {
         }
         queryParams.orgRole = RDStore.OR_SUBSCRIBER.value
         queryParams.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL.id
-        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg())
+        String joinQuery = params.joinQuery ?: ""
+        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
     }
 
     List getValidSubChilds(Subscription subscription) {
