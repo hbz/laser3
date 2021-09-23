@@ -1013,7 +1013,7 @@ class SubscriptionControllerService {
     }
 
     Map<String,Object> renewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
 
         if (!result) {
             [result:null,status:STATUS_ERROR]
@@ -1062,16 +1062,10 @@ class SubscriptionControllerService {
                 List<IssueEntitlement> currentIes = newSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
                 sourceIEs = sourceIEs + currentIes
 
-                query = filterService.getPerpetualAccessIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], result.subscriber)
-                List<IssueEntitlement> perpetualAccessIes = newSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
-                sourceIEs = sourceIEs + perpetualAccessIes
-
             }
 
-            //List<IssueEntitlement> perpetualAccessTitles = surveyService.perpetualAccessTitlesOfParticipant(result.subscriber)
-
             result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(newSub)
-            result.countCurrentIEs = subscriptionService.countIssueEntitlementsFixed(previousSubscription) + subscriptionService.countIssueEntitlementsFixed(newSub)
+            result.countCurrentIEs = (previousSubscription ? subscriptionService.countIssueEntitlementsFixed(previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(newSub)
             result.countAllIEs = subscriptionService.countIssueEntitlementsFixed(baseSub)
             //result.countAllSourceIEs = sourceIEs.size()
             result.num_ies_rows = sourceIEs.size()

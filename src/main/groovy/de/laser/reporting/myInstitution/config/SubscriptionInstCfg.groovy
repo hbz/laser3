@@ -60,12 +60,12 @@ class SubscriptionInstCfg extends BaseConfig {
                                      'subscription-x-identifier' : [
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : '2axis2values_nonMatches',
-                                             chartLabels        : [ 'Lizenzen', 'Vergebene Identifikatoren' ]
+                                             chartLabels        : [ 'base', 'x.identifiers' ]
                                      ],
                                      'subscription-x-property' : [
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : '2axis2values',
-                                             chartLabels        : [ 'Lizenzen', 'Vergebene Merkmale (eigene/allgemeine)' ]
+                                             chartLabels        : [ 'base', 'x.properties' ]
                                      ],
                                      'subscription-x-annual' : [
                                              detailsTemplate    : 'subscription',
@@ -80,7 +80,7 @@ class SubscriptionInstCfg extends BaseConfig {
                                      'subscription-x-platform' : [
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : '2axis2values_nonMatches',
-                                             chartLabels        : [ 'Ermittelt durch Bestand', 'Zuordnung über Anbieter' ]
+                                             chartLabels        : [ 'x.platforms.1', 'x.platforms.2' ]
                                      ]
                             ]
                     ]

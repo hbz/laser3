@@ -1821,39 +1821,25 @@ join sub.orgRelations or_sub where
 
                 result.previousSubscription = result.subscription._getCalculatedPrevious()
 
-                result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscription)
-                result.iesListPriceSum = 0
-                result.ies.each { IssueEntitlement ie ->
-                    Double priceSum = 0.0
+                /*result.previousIesListPriceSum = 0
+                if(result.previousSubscription){
+                    result.previousIesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                            'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
+                    [sub: result.previousSubscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
-                    ie.priceItems.each { PriceItem priceItem ->
-                        priceSum = priceItem.listPrice ?: 0.0
-                    }
-                    result.iesListPriceSum = result.iesListPriceSum + priceSum
-                }
+                }*/
+
+                result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                        'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus',
+                        [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
 
-                result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscription)
-                result.iesFixListPriceSum = 0
-                result.iesFix.each { IssueEntitlement ie ->
-                    Double priceSum = 0.0
+               /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                        'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
+                        [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
 
-                    ie.priceItems.each { PriceItem priceItem ->
-                        priceSum = priceItem.listPrice ?: 0.0
-                    }
-                    result.iesFixListPriceSum = result.iesListPriceSum + priceSum
-                }
-
-                result.previousIes = subscriptionService.getIssueEntitlementsFixed(result.previousSubscription)
-                result.previousIesListPriceSum = 0
-                result.previousIes.each { IssueEntitlement ie ->
-                    Double priceSum = 0.0
-
-                    ie.priceItems.each { PriceItem priceItem ->
-                        priceSum = priceItem.listPrice ?: 0.0
-                    }
-                    result.previousIesListPriceSum = result.previousIesListPriceSum + priceSum
-                }
+                result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(result.subscription)
+                result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
 
                 result.subscriber = result.subscription.getSubscriber()
             }

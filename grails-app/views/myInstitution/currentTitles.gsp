@@ -228,7 +228,7 @@
                                 </div>
 
                                 <div class="eight wide column">
-                                    <g:message code="issueEntitlement.hasPerpetualAccess.label"/>
+                                    <g:message code="issueEntitlement.perpetualAccessBySub.label"/>
                                 </div>
                             </div>
                         </th>
@@ -318,7 +318,7 @@
                                         </div>
 
                                         <div class="eight wide column">
-                                            ${message(code: 'issueEntitlement.hasPerpetualAccess.label') + ':'}  <semui:xEditableBoolean owner="${ie}" field="hasPerpetualAccess"/>
+                                            ${message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}  ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value') }
                                         </div>
                                     </g:each>
                                 </div>

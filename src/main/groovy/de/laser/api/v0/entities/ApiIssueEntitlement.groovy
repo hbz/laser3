@@ -82,7 +82,7 @@ class ApiIssueEntitlement {
         result.medium           = ie.medium ? ie.medium.value : ie.tipp.medium?.value
         //result.status           = ie.status?.value // legacy; not needed ?
 
-        result.hasPerpetualAccess 	= ie.hasPerpetualAccess ? 'Yes' : 'No'
+        result.perpetualAccessBySub 	= ie.perpetualAccessBySub
 
         result.coverages        = ApiCollectionReader.getIssueEntitlementCoverageCollection(ie.coverages) // de.laser.TitleInstancePackagePlatform
 

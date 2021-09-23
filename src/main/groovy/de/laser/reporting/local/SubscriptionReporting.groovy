@@ -377,12 +377,12 @@ class SubscriptionReporting {
                     ) : []
 
                     if (noDataList) {
-                        result.data.add([null, BaseQuery.NO_DATA_LABEL, noDataList.size()])
+                        result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL), noDataList.size()])
 
                         result.dataDetails.add([
                                 query : params.query,
                                 id    : null,
-                                label : BaseQuery.NO_DATA_LABEL,
+                                label : BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL),
                                 idList: noDataList,
                         ])
                     }
@@ -414,12 +414,12 @@ class SubscriptionReporting {
                     ) : []
 
                     if (noDataList) {
-                        result.data.add([null, BaseQuery.NO_DATA_LABEL, noDataList.size()])
+                        result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL), noDataList.size()])
 
                         result.dataDetails.add([
                                 query : params.query,
                                 id    : null,
-                                label : BaseQuery.NO_DATA_LABEL,
+                                label : BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL),
                                 idList: noDataList,
                         ])
                     }

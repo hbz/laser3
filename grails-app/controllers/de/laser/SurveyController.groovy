@@ -1694,49 +1694,6 @@ class SurveyController {
 
     }
 
-
-    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
-    })
-     Map<String,Object> openIssueEntitlementsSurveyAgain() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = contextService.getUser()
-        result.participant = params.participant ? Org.get(params.participant) : null
-
-        result.surveyConfig = SurveyConfig.get(params.id)
-        result.surveyInfo = result.surveyConfig.surveyInfo
-
-        result.editable = result.surveyInfo.isEditable() ?: false
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        SurveyOrg.withTransaction { TransactionStatus ts ->
-            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
-
-            result.subscription =  result.surveyConfig.subscription
-
-            List ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant))
-
-                ies.each { ie ->
-                    ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
-                    ie.save()
-                }
-
-            surveyOrg.finishDate = null
-            surveyOrg.save()
-        }
-
-        //flash.message = message(code: 'openIssueEntitlementsSurveyAgain.info')
-
-        redirect(action: 'renewEntitlements', id: result.surveyConfig.id, params:[participant: result.participant.id])
-
-    }
-
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -1760,11 +1717,22 @@ class SurveyController {
         SurveyOrg.withTransaction { TransactionStatus ts ->
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
+            if (surveyOrg && result.surveyConfig.pickAndChoose) {
+
+                List<IssueEntitlement> ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant))
+
+                ies.each { ie ->
+                    ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
+                    ie.save()
+                }
+
+            }
+
             surveyOrg.finishDate = null
             surveyOrg.save()
         }
 
-        redirect(action: 'evaluationParticipant', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
+        redirect(url: request.getHeader('referer'))
 
     }
 
@@ -1791,11 +1759,22 @@ class SurveyController {
         SurveyOrg.withTransaction { TransactionStatus ts ->
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
+            if (surveyOrg && result.surveyConfig.pickAndChoose) {
+
+                List<IssueEntitlement> ies = subscriptionService.getIssueEntitlementsUnderConsideration(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant))
+
+                ies.each { ie ->
+                    ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
+                    ie.save()
+                }
+
+            }
+
             surveyOrg.finishDate = new Date()
             surveyOrg.save()
         }
 
-        redirect(action: 'evaluationParticipant', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
+        redirect(url: request.getHeader('referer'))
 
     }
 
@@ -1867,9 +1846,6 @@ class SurveyController {
             }
             flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.reject', args: [params.list('selectedIEs').size()])
         }
-
-
-
 
         redirect(action: 'renewEntitlements', id: result.surveyConfig.id, params:[participant: result.participant.id])
 
@@ -2010,30 +1986,32 @@ class SurveyController {
             }
             result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
 
-            if (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
+                if (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
 
-                    result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscription)
-                    result.iesListPriceSum = 0
-                    result.ies.each { IssueEntitlement ie ->
-                        Double priceSum = 0.0
+                    result.previousSubscription = result.subscription._getCalculatedPrevious()
 
-                        ie.priceItems.each { PriceItem priceItem ->
-                            priceSum = priceItem.listPrice ?: 0.0
-                        }
-                        result.iesListPriceSum = result.iesListPriceSum + priceSum
-                    }
+                    /*result.previousIesListPriceSum = 0
+                   if(result.previousSubscription){
+                       result.previousIesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                               'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
+                       [sub: result.previousSubscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+
+                   }*/
+
+                    result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                            'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus',
+                            [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
 
-                    result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscription)
-                    result.iesFixListPriceSum = 0
-                    result.iesFix.each { IssueEntitlement ie ->
-                        Double priceSum = 0.0
+                    /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                             'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
+                             [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
 
-                        ie.priceItems.each { PriceItem priceItem ->
-                            priceSum = priceItem.listPrice ?: 0.0
-                        }
-                        result.iesFixListPriceSum = result.iesListPriceSum + priceSum
-                    }
+                    result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(result.subscription)
+                    result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+
+                    result.subscriber = result.participant
+
                 }
 
         }

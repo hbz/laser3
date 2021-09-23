@@ -61,7 +61,6 @@ class ManagementService {
             case "linkPackages":
                     if(parameterMap.processOption) {
                         processLinkPackages(controller, parameterMap)
-                        parameterMap.remove('processOption')
                     }
                     result << linkPackages(controller, parameterMap)
                 break
@@ -331,12 +330,16 @@ class ManagementService {
                 }
 
                 if (pkg_to_link) {
+                    List<Subscription> editableSubs = []
+                    selectedSubs.each { id ->
+                        Subscription subscription = Subscription.get(Long.parseLong(id))
+                        if(subscription.isEditableBy(result.user)){
+                            editableSubs << subscription
+                        }
+                    }
                     executorService.execute({
-                        IssueEntitlement.withNewTransaction { TransactionStatus ts ->
                             Thread.currentThread().setName(threadName)
-                            selectedSubs.each { id ->
-                                Subscription subscription = Subscription.get(Long.parseLong(id))
-                                if (subscription.isEditableBy(result.user)) {
+                            editableSubs.each { Subscription subscription ->
                                     if (params.processOption == 'linkwithIE' || params.processOption == 'linkwithoutIE') {
                                         if (!(subscription.packages && (pkg_to_link.id in subscription.packages.pkg.id))) {
                                             if (params.processOption == 'linkwithIE') {
@@ -365,9 +368,7 @@ class ManagementService {
                                             }
                                         }
                                     }
-                                }
                             }
-                        }
                     })
                 }
             } else {

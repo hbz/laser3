@@ -94,10 +94,10 @@
     <g:if test="${ie}">
         <div class="item">
             <i class="grey save icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'issueEntitlement.hasPerpetualAccess.label')}"></i>
+               data-content="${message(code: 'issueEntitlement.perpetualAccessBySub.label')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'issueEntitlement.hasPerpetualAccess.label') + ':'} <semui:xEditableBoolean owner="${ie}" field="hasPerpetualAccess" overwriteEditable="${overwriteEditable}"/>
+                ${showCompact ? '' : message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'} ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value') }
             </div>
         </div>
     </g:if>

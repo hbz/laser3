@@ -18,7 +18,7 @@
                 <th>${message(code: 'subscription.details.date_header')}</th>
                 <th>${message(code: 'subscription.details.access_dates')}</th>
                 <th>${message(code: 'tipp.price')}</th>
-                <th>${message(code: 'issueEntitlement.hasPerpetualAccess.label')}</th>
+                <th>${message(code: 'issueEntitlement.perpetualAccessBySub.label')}</th>
             </g:each>
         </tr>
         </thead>
@@ -74,7 +74,7 @@
                                     </g:if>
                                 </td>
                                 <td>
-                                    ${message(code: 'issueEntitlement.hasPerpetualAccess.label') + ':'}  <semui:xEditableBoolean owner="${ieValue}" field="hasPerpetualAccess"/>
+                                    ${message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}  ${ieValue.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ieValue.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value') }
                                 </td>
                             </g:each>
                     </g:if><g:else>
