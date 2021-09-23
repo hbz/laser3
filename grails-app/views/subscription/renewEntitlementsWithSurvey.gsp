@@ -95,126 +95,24 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
     </div>
 </g:if>
 
-<g:if test="${params.tab == 'previousIEsStats' || params.tab == 'allIEsStats'}">
 
-    <g:render template="/templates/filter/javascript"/>
-    <semui:filter showFilterButton="true">
-        <g:form action="renewEntitlementsWithSurvey" class="ui form" method="get">
-            <g:hiddenField name="id" value="${newSub.id}"/>
-            <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
-            <g:hiddenField name="tab" value="${params.tab}"/>
-            <g:hiddenField name="sort" value="${params.sort}"/>
-            <g:hiddenField name="order" value="${params.order}"/>
-            <div class="four fields">
-                <div class="field">
-                    <label for="series_names">${message(code: 'titleInstance.seriesName.label')}</label>
+<div class="row">
+    <div class="column">
 
-                    <select name="series_names" id="series_names" multiple=""
-                            class="ui search selection dropdown">
-                        <option value="">${message(code: 'default.select.choose.label')}</option>
+        <g:render template="/templates/filter/tipp_ieFilter" model="[showStatsFilter: params.tab == 'allIEsStats']"/>
 
-                        <g:each in="${controlledListService.getAllPossibleSeriesBySub(subscription)}" var="seriesName">
-                            <option <%=(params.list('series_names')?.contains(seriesName)) ? 'selected="selected"' : ''%>
-                                    value="${seriesName}">
-                                ${seriesName}
-                            </option>
-                        </g:each>
-                    </select>
-                </div>
+    </div>
+</div><!--.row-->
 
-                <div class="field">
-                    <label for="subject_reference">${message(code: 'titleInstance.subjectReference.label')}</label>
+<g:if test="${num_ies_rows}">
+    <div class="row">
+        <div class="column">
 
-                    <select name="subject_references" id="subject_reference" multiple=""
-                            class="ui search selection dropdown">
-                        <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                        <g:each in="${controlledListService.getAllPossibleSubjectsBySub(subscription)}" var="subject">
-                            <option <%=(params.list('subject_references')?.contains(subject)) ? 'selected="selected"' : ''%>
-                                    value="${subject}">
-                                ${subject}
-                            </option>
-                        </g:each>
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label for="ddc">${message(code: 'titleInstance.ddc.label')}</label>
-
-                    <select name="ddcs" id="ddc" multiple=""
-                            class="ui search selection dropdown">
-                        <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                        <g:each in="${controlledListService.getAllPossibleDdcsBySub(subscription)}" var="ddc">
-                            <option <%=(params.list('ddcs')?.contains(ddc.id.toString())) ? 'selected="selected"' : ''%>
-                                    value="${ddc.id}">
-                                ${ddc.value} - ${ddc.getI10n("value")}
-                            </option>
-                        </g:each>
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label for="language">${message(code: 'titleInstance.language.label')}</label>
-
-                    <select name="languages" id="language" multiple="multiple"
-                            class="ui search selection dropdown">
-                        <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                        <g:each in="${controlledListService.getAllPossibleLanguagesBySub(subscription)}" var="language">
-                            <option <%=(params.list('languages')?.contains(language.id.toString())) ? 'selected="selected"' : ''%>
-                                    value="${language.id}">
-                                ${language.getI10n("value")}
-                            </option>
-                        </g:each>
-                    </select>
-                </div>
+            <div class="ui blue large label"><g:message code="title.plural"/>: <div class="detail">${num_ies_rows}</div>
             </div>
-
-            <div class="three fields">
-                <div class="field">
-                    <label for="metricType"><g:message code="default.usage.metricType"/></label>
-                    <select name="metricType" id="metricType" class="ui selection dropdown">
-                        <option value=""><g:message code="default.select.choose.label"/></option>
-                        <g:each in="${metricTypes}" var="metricType">
-                            <option <%=(params.metricType == metricType) ? 'selected="selected"' : ''%>
-                                    value="${metricType}">
-                                ${metricType}
-                            </option>
-                        </g:each>
-                    </select>
-                </div>
-
-                <div class="field">
-                    <label for="reportType"><g:message code="default.usage.reportType"/></label>
-                    <select name="reportType" id="reportType" multiple="multiple" class="ui selection dropdown">
-                        <option value=""><g:message code="default.select.choose.label"/></option>
-                        <g:each in="${reportTypes}" var="reportType">
-                            <option <%=(params.list('reportType')?.contains(reportType)) ? 'selected="selected"' : ''%>
-                                    value="${reportType}">
-                                <g:message code="default.usage.${reportType}"/>
-                            </option>
-                        </g:each>
-                    </select>
-                </div>
-
-                <div class="field la-field-right-aligned">
-                    <g:link ontroller="subscription" action="renewEntitlementsWithSurvey"
-                            id="${newSub.id}"
-                            params="[surveyConfigID: surveyConfig.id, tab: params.tab]"
-                            class="ui reset primary button">${message(code: 'default.button.reset.label')}</g:link>
-                    <input type="submit" class="ui secondary button"
-                           value="${message(code: 'default.button.filter.label')}"/>
-                </div>
-            </div>
-        </g:form>
-    </semui:filter>
+        </div>
+    </div>
 </g:if>
-<g:else>
-
-    <g:render template="/templates/filter/tipp_ieFilter"/>
-
-</g:else>
 
 </br>
 <semui:tabs actionName="${actionName}">
@@ -240,7 +138,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 </semui:tabs>
 
 
-<g:if test="${params.tab == 'previousIEsStats' || params.tab == 'allIEsStats'}">
+<g:if test="${params.tab == 'allIEsStats'}">
     <semui:tabs>
         <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                         params="${params + [tabStat: 'total']}"
@@ -260,7 +158,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 
     <div class="ui segment">
 
-        <g:if test="${params.tab == 'previousIEsStats' || params.tab == 'allIEsStats'}">
+        <g:if test="${params.tab == 'allIEsStats'}">
             <g:if test="${usages}">
                 <g:render template="/templates/survey/entitlementTableSurveyWithStats"
                           model="${[stats: usages, showPackage: true, showPlattform: true]}"/>
