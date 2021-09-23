@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.ExportService
 import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
+import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.properties.OrgProperty
 import de.laser.properties.PropertyDefinition
@@ -53,6 +54,7 @@ class ExportClickMeService {
                             'participant.eInvoice'          : [field: 'participant.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                                     ]
                     ],
                     participantAccessPoints : [
@@ -127,6 +129,7 @@ class ExportClickMeService {
                             'participant.eInvoice'          : [field: 'orgs.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'orgs.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'orgs.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                     ]
             ],
             participantAccessPoints : [
@@ -234,6 +237,7 @@ class ExportClickMeService {
                             'participant.eInvoice'          : [field: 'sub.subscriber.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'sub.subscriber.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                     ]
             ],
 
@@ -279,6 +283,7 @@ class ExportClickMeService {
                             'participant.eInvoice'          : [field: 'eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                     ]
             ],
             participantAccessPoints : [
@@ -330,6 +335,7 @@ class ExportClickMeService {
                             'participant.eInvoice'          : [field: 'participant.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                     ]
             ],
             participantAccessPoints : [
@@ -1062,7 +1068,10 @@ class ExportClickMeService {
                 }
                 else if (fieldKey == 'participant.customerIdentifier') {
                     setOrgFurtherInformation(participantResult.participant, row, fieldKey, participantResult.sub)
-                }else if (fieldKey.startsWith('participantIdentifiers.')) {
+                }else if (fieldKey == 'participant.readerNumbers') {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
+                }
+                else if (fieldKey.startsWith('participantIdentifiers.')) {
                     setOrgFurtherInformation(participantResult.participant, row, fieldKey)
                 }else {
                     if (onlySubscription) {
@@ -1110,6 +1119,8 @@ class ExportClickMeService {
                 }
                 else if (fieldKey == 'participant.customerIdentifier') {
                     setOrgFurtherInformation(result.orgs, row, fieldKey, result.sub)
+                }else if (fieldKey == 'participant.readerNumbers') {
+                    setOrgFurtherInformation(result.orgs, row, fieldKey)
                 }
                 else if (fieldKey.startsWith('participantIdentifiers.')) {
                     setOrgFurtherInformation(result.orgs, row, fieldKey)
@@ -1171,6 +1182,8 @@ class ExportClickMeService {
                 }
                 else if (fieldKey == 'participant.customerIdentifier') {
                     setOrgFurtherInformation(org, row, fieldKey, costItem.sub)
+                }else if (fieldKey == 'participant.readerNumbers') {
+                    setOrgFurtherInformation(org, row, fieldKey)
                 }
                 else if (fieldKey.startsWith('participantIdentifiers.')) {
                     setOrgFurtherInformation(org, row, fieldKey)
@@ -1253,6 +1266,8 @@ class ExportClickMeService {
                 }
                 else if (fieldKey == 'participant.customerIdentifier') {
                     setOrgFurtherInformation(participantResult.participant, row, fieldKey, participantResult.sub)
+                }else if (fieldKey == 'participant.readerNumbers') {
+                    setOrgFurtherInformation(participantResult.participant, row, fieldKey)
                 }else if (fieldKey.startsWith('participantIdentifiers.')) {
                     setOrgFurtherInformation(participantResult.participant, row, fieldKey)
                 }else if (fieldKey == 'participantSurveyCostItem') {
@@ -1449,23 +1464,83 @@ class ExportClickMeService {
             } else {
                 row.add([field: '', style: null])
             }
+        }else if (fieldKey == 'participant.readerNumbers') {
+            if (org) {
+
+                RefdataValue currentSemester = RefdataValue.getCurrentSemester()
+
+                ReaderNumber readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, currentSemester)
+                ReaderNumber readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, currentSemester)
+
+                if(readerNumberStudents || readerNumberStaff){
+                    row.add([field: currentSemester.getI10n('value'), style: null])
+                    row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
+                    row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
+                }else{
+                    RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SEMESTER).reverse().each {
+                        boolean nextSemester = false
+                        if (it == currentSemester) {
+                            nextSemester = true
+                        }
+                        if (nextSemester) {
+                            readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, it)
+                            readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, it)
+                            if (readerNumberStudents || readerNumberStaff) {
+                                row.add([field: it.getI10n('value'), style: null])
+                                row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
+                                row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
+                                return
+                            }
+                        }
+                    }
+                    if(!readerNumberStudents && !readerNumberStaff){
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                        row.add([field: '', style: null])
+                    }
+                }
+
+                ReaderNumber readerNumberPeople = ReaderNumber.findByReferenceGroupAndOrg(RDStore.READER_NUMBER_PEOPLE.value_de, org, [sort: 'dueDate', order: 'desc'])
+                ReaderNumber readerNumberUser = ReaderNumber.findByReferenceGroupAndOrg(RDStore.READER_NUMBER_USER.value_de, org, [sort: 'dueDate', order: 'desc'])
+
+
+                row.add([field: readerNumberPeople ? readerNumberPeople.value : '', style: null])
+                row.add([field: readerNumberUser ? readerNumberUser.value : '', style: null])
+
+                Integer sum = 0
+                if(readerNumberStudents){
+                    sum = sum + readerNumberStudents.value
+                }
+                if(readerNumberStaff){
+                    sum = sum + readerNumberStaff.value
+                }
+                row.add([field: sum, style: null])
+
+                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : ''))
+
+                row.add([field: note, style: null])
+
+            } else {
+                row.add([field: '', style: null])
+                row.add([field: '', style: null])
+                row.add([field: '', style: null])
+                row.add([field: '', style: null])
+                row.add([field: '', style: null])
+                row.add([field: '', style: null])
+                row.add([field: '', style: null])
+            }
         }
     }
 
     private List exportTitles(Map<String, Object> selectedExportFields, Locale locale, List<RefdataValue> selectedCostItemElements = null, Map selectedCostItemFields = null, Integer maxCostItemsElements = null){
         List titles = []
-        RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
-        RefdataValue billingContact = RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS
 
-        RefdataValue billingAdress =RDStore.ADRESS_TYPE_BILLING
-        RefdataValue postAdress =RDStore.ADRESS_TYPE_POSTAL
-
-        String localizedName
+        String localizedValue
         switch (locale) {
             case Locale.GERMANY:
-            case Locale.GERMAN: localizedName = "name_de"
+            case Locale.GERMAN: localizedValue = "value_de"
                 break
-            default: localizedName = "name_en"
+            default: localizedValue = "value_en"
                 break
         }
 
@@ -1473,15 +1548,26 @@ class ExportClickMeService {
             Map fields = selectedExportFields.get(fieldKey)
             if(!fields.separateSheet) {
                 if (fieldKey == 'participant.generalContact') {
-                    titles << generalContact.getI10n('value')
+                    titles << RDStore.PRS_FUNC_GENERAL_CONTACT_PRS."${localizedValue}"
                 }else if (fieldKey == 'participant.billingContact') {
-                    titles << billingContact.getI10n('value')
+                    titles << RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS."${localizedValue}"
                 }
                 else if (fieldKey == 'participant.billingAdress') {
-                    titles << billingAdress.getI10n('value')
+                    titles << RDStore.ADRESS_TYPE_BILLING."${localizedValue}"
                 }else if (fieldKey == 'participant.postAdress') {
-                    titles << postAdress.getI10n('value')
-                } else if (fieldKey == 'participantSubCostItem') {
+                    titles << RDStore.ADRESS_TYPE_POSTAL."${localizedValue}"
+                }else if (fieldKey == 'participant.readerNumbers') {
+                    titles << messageSource.getMessage('readerNumber.semester.label', null, locale)
+                    titles << RDStore.READER_NUMBER_STUDENTS."${localizedValue}"
+                    titles << RDStore.READER_NUMBER_SCIENTIFIC_STAFF."${localizedValue}"
+                    titles << RDStore.READER_NUMBER_PEOPLE."${localizedValue}"
+                    titles << RDStore.READER_NUMBER_USER."${localizedValue}"
+                    titles << messageSource.getMessage('readerNumber.sum.label', null, locale)
+                    titles << messageSource.getMessage('readerNumber.note.label', null, locale)
+
+
+                }
+                else if (fieldKey == 'participantSubCostItem') {
                             for(int i = 0; i < maxCostItemsElements; i++) {
                                 titles << messageSource.getMessage("financials.costItemElement", null, locale)
                                 selectedCostItemFields.each {
