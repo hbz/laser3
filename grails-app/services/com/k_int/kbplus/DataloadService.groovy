@@ -897,7 +897,7 @@ class DataloadService {
             def latest_ft_record = FTControl.findByDomainClassNameAndActivity(domain.name, 'ESIndex')
 
             if (!latest_ft_record) {
-                latest_ft_record = new FTControl(domainClassName: domain.name, activity: 'ESIndex', lastTimestamp: 0)
+                latest_ft_record = new FTControl(domainClassName: domain.name, activity: 'ESIndex', lastTimestamp: 0, active: true, esElements: 0, dbElements: 0)
             } else {
                 highest_timestamp = latest_ft_record.lastTimestamp
                 //log.debug("Got existing ftcontrol record for ${domain.name} max timestamp is ${highest_timestamp} which is ${new Date(highest_timestamp)}");
