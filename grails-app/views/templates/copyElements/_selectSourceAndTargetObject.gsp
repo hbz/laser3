@@ -131,7 +131,7 @@
                     var count = index + 1
                     // console.log(optionValue +'-'+optionText)
 
-                    select += '<div class="item" data-value="' + optionValue + '">'+ count + ': ' + optionText + '</div>';
+                    select += '<div class="item" data-value="' + optionValue + '">' + optionText + '</div>';
                 }
 
                 select = ' <div class="ui fluid search selection dropdown la-filterProp">' +
@@ -155,7 +155,7 @@
                         value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                     }
                 });
-            }, async: false
+            }
         });
     }
 

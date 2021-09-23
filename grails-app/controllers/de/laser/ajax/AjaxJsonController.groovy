@@ -37,6 +37,7 @@ import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
+import javafx.collections.transformation.SortedList
 import org.springframework.context.i18n.LocaleContextHolder
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -73,28 +74,32 @@ class AjaxJsonController {
     def adjustSubscriptionList(){
         List data
         Set result = []
-        boolean showSubscriber = params.showSubscriber == 'true'
-        boolean showConnectedObjs = params.showConnectedObjs == 'true'
         Map queryParams = [:]
 
         queryParams.status = []
         if (params.get('status')){
             queryParams.status = params.list('status').collect{ Long.parseLong(it) }
         }
-        queryParams.showSubscriber = showSubscriber
-        queryParams.showConnectedObjs = showConnectedObjs
+        queryParams.showSubscriber = params.showSubscriber == 'true'
+        queryParams.showConnectedObjs = params.showConnectedObjs == 'true'
         queryParams.forDropdown = true
         Org contextOrg = contextService.getOrg()
 
         data = subscriptionService.getMySubscriptions_readRights(queryParams)
         Map<Long, Map> subscriptionRows = [:]
         if (data) {
+
+            if(params.showConnectedObjs == 'true') {
+                data.addAll(linksGenerationService.getAllLinkedSubscriptionsForDropdown(data.collect { s -> s[0] } as Set<Long>))
+            }
             data.each { s ->
-                Map subscriptionRow = subscriptionRows.get(s[0])
-                if(!subscriptionRow)
-                    subscriptionRow = [name: s[1], startDate: s[2], endDate: s[3], status: s[4], instanceOf: s[7], orgRelations: [:]]
-                subscriptionRow.orgRelations.put(s[6], s[5])
-                subscriptionRows.put(s[0], subscriptionRow)
+                if(s[0] != params.long("context")) {
+                    Map subscriptionRow = subscriptionRows.get(s[0])
+                    if(!subscriptionRow)
+                        subscriptionRow = [name: s[1], startDate: s[2], endDate: s[3], status: s[4], instanceOf: s[7], orgRelations: [:]]
+                    subscriptionRow.orgRelations.put(s[6].id, s[5])
+                    subscriptionRows.put(s[0], subscriptionRow)
+                }
             }
             subscriptionRows.each {Long subId, Map entry ->
                 SimpleDateFormat sdf = DateUtils.getSDF_dmy()
@@ -104,13 +109,16 @@ class AjaxJsonController {
                 if(entry.endDate)
                     endDate = sdf.format(entry.endDate)
                 if(entry.instanceOf) {
-                    if(entry.orgRelations[RDStore.OR_SUBSCRIPTION_CONSORTIA] == contextOrg) {
-                        additionalInfo = " - ${entry.orgRelations.find { RefdataValue roleType, Org org -> roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN] }?.sortname}"
+                    if(entry.orgRelations.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id).id == contextOrg.id) {
+                        Org subscriber = entry.orgRelations.get(RDStore.OR_SUBSCRIBER_CONS.id)
+                        if(!subscriber)
+                            subscriber = entry.orgRelations.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id)
+                        additionalInfo = " - ${subscriber?.sortname}"
                     }
                     else additionalInfo = " - ${message(code: 'gasco.filter.consortialLicence')}"
                 }
                 String text = "${entry.name} - ${entry.status.getI10n("value")} (${startDate} - ${endDate})${additionalInfo}"
-                if (params.valueAsOID){
+                if (params.valueAsOID) {
                     result.add([value: "${Subscription.class.name}:${subId}", text: text])
                 }
                 else {
