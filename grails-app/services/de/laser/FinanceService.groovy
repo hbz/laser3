@@ -1085,10 +1085,10 @@ class FinanceService {
         Map<String,IdentifierNamespace> namespaces = [
                 'wibid':IdentifierNamespace.findByNs('wibid'),
                 'isil':IdentifierNamespace.findByNs('ISIL'),
-                'doi':IdentifierNamespace.findByNs('doi'),
-                'zdb':IdentifierNamespace.findByNs('zdb'),
-                'issn':IdentifierNamespace.findByNs('issn'),
-                'eissn':IdentifierNamespace.findByNs('eissn')
+                'doi':IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name),
+                'zdb':IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
+                'issn':IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name),
+                'eissn':IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name)
         ]
         rows.eachWithIndex { row, Integer r ->
             log.debug("now processing entry ${r}")

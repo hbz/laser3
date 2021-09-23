@@ -186,7 +186,7 @@ class StatsSyncService {
                 }
             }
             http.shutdown()
-            Set<Long> namespaces = [IdentifierNamespace.findByNs(IdentifierNamespace.EISSN).id, IdentifierNamespace.findByNs(IdentifierNamespace.ISBN).id, IdentifierNamespace.findByNs(IdentifierNamespace.DOI).id]
+            Set<Long> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name).id]
             def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
             //c4SushiSources.each { Counter4ApiSource c4as ->
             c4SushiSources.each { List c4as ->

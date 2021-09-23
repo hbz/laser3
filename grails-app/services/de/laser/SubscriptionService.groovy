@@ -483,6 +483,7 @@ class SubscriptionService {
         if (params?.status) {
             queryParams.status = params.status
         }
+        queryParams.showParentsAndChildsSubs = params.showSubscriber
         queryParams.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
         String joinQuery = params.joinQuery ?: ""
         List result = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
