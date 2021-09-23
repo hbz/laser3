@@ -33,9 +33,13 @@
 
 <g:render template="/templates/filter/javascript"/>
 <semui:filter showFilterButton="true">
-    <g:form controller="${controllerName}" action="${actionName}" params="${params}" method="get" class="ui form">
-        <input type="hidden" name="sort" value="${params.sort}">
-        <input type="hidden" name="order" value="${params.order}">
+    <g:form controller="${controllerName}" action="${actionName}" id="${params.id}" method="get" class="ui form">
+        <g:hiddenField name="sort" value="${params.sort}"/>
+        <g:hiddenField name="order" value="${params.order}"/>
+
+        <g:hiddenField name="surveyConfigID" value="${params.surveyConfigID}"/>
+        <g:hiddenField name="tab" value="${params.tab}"/>
+        <g:hiddenField name="tabStat" value="${params.tabStat}"/>
 
         <div class="two fields">
             <div class="field">
@@ -59,7 +63,7 @@
                     </select>
                 </div>
             </g:if>
-            <g:if test="${params.mode != 'advanced'}">
+            <g:if test="${params.mode != 'advanced' && !showStatsFilter}">
                 <div class="field">
                     <semui:datepicker label="subscription.details.asAt" id="asAt" name="asAt"
                                       value="${params.asAt}"
@@ -216,7 +220,7 @@
                 </select>
             </div>
 
-            <g:if test="${controllerName == 'subscription'}">
+            <g:if test="${controllerName == 'subscription' && !showStatsFilter}">
                 <div class="field">
                     <label>${message(code: 'issueEntitlement.perpetualAccessBySub.label')}</label>
                     <laser:select class="ui fluid dropdown" name="hasPerpetualAccess"
@@ -229,9 +233,39 @@
             </g:if>
         </div>
 
+        <g:if test="${controllerName == 'subscription' && showStatsFilter}">
+            <div class="two fields">
+                <div class="field">
+                    <label for="metricType"><g:message code="default.usage.metricType"/></label>
+                    <select name="metricType" id="metricType" class="ui selection dropdown">
+                        <option value=""><g:message code="default.select.choose.label"/></option>
+                        <g:each in="${metricTypes}" var="metricType">
+                            <option <%=(params.metricType == metricType) ? 'selected="selected"' : ''%>
+                                    value="${metricType}">
+                                ${metricType}
+                            </option>
+                        </g:each>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="reportType"><g:message code="default.usage.reportType"/></label>
+                    <select name="reportType" id="reportType" multiple="multiple" class="ui selection dropdown">
+                        <option value=""><g:message code="default.select.choose.label"/></option>
+                        <g:each in="${reportTypes}" var="reportType">
+                            <option <%=(params.list('reportType')?.contains(reportType)) ? 'selected="selected"' : ''%>
+                                    value="${reportType}">
+                                <g:message code="default.usage.${reportType}"/>
+                            </option>
+                        </g:each>
+                    </select>
+                </div>
+            </div>
+        </g:if>
+
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
+                <g:link controller="${controllerName}" action="${actionName}" id="${params.id}" params="[surveyConfigID: params.surveyConfigID, tab: params.tab, tabStat: params.tabStat]"
+                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</g:link>
                 <input type="submit" class="ui secondary button"
                        value="${message(code: 'default.button.filter.label')}"/>
             </div>

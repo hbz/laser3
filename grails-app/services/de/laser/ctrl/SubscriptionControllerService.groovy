@@ -1046,12 +1046,6 @@ class SubscriptionControllerService {
                 Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
                 sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
             }
-
-            if(params.tab == 'previousIEs') {
-                Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], previousSubscription)
-                sourceIEs = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
-            }
-
             if(params.tab == 'currentIEs') {
                 GrailsParameterMap parameterMap = params.clone()
                 Map query = filterService.getIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], previousSubscription)
@@ -1067,23 +1061,16 @@ class SubscriptionControllerService {
             result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(newSub)
             result.countCurrentIEs = (previousSubscription ? subscriptionService.countIssueEntitlementsFixed(previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(newSub)
             result.countAllIEs = subscriptionService.countIssueEntitlementsFixed(baseSub)
-            //result.countAllSourceIEs = sourceIEs.size()
+
             result.num_ies_rows = sourceIEs.size()
-            //subscriptionService.getIssueEntitlementsFixed(baseSub).size()
 
-            if(params.tab == 'previousIEsStats' || params.tab == 'allIEsStats') {
-
-                List<Long> previousTitles = []
-                if(params.tab == 'previousIEsStats' ) {
-                    previousTitles = subscriptionService.getTippIDsFixed(previousSubscription)
-                }
+            if(params.tab == 'allIEsStats') {
                 result = surveyService.getStatsForParticipant(result, params, newSub, result.subscriber, subscriptionService.getTippIDsFixed(baseSub))
-
             }else {
 
                 params.sort = params.sort ?: 'tipp.sortname'
                 params.order = params.order ?: 'asc'
-                result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
+                result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
 
                 /*Map query = filterService.getIssueEntitlementQuery(params, newSub)
                 List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
