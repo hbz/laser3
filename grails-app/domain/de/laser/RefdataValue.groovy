@@ -175,6 +175,24 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         return (data.size() > 0) ? data[0] : null
     }
 
+    static RefdataValue getCurrentSemester() {
+        Calendar now = GregorianCalendar.getInstance(), adjacentYear = GregorianCalendar.getInstance()
+        //Month is zero-based, April-September is summer term
+        String semesterKey
+        if(now.get(Calendar.MONTH) < 3) {
+            adjacentYear.add(Calendar.YEAR, -1)
+            semesterKey = "w${adjacentYear.getTime().format("yy")}/${now.getTime().format("yy")}"
+        }
+        else if(now.get(Calendar.MONTH) >= 9) {
+            adjacentYear.add(Calendar.YEAR, 1)
+            semesterKey = "w${now.getTime().format("yy")}/${adjacentYear.getTime().format("yy")}"
+        }
+        else {
+            semesterKey = "s${now.getTime().format("yy")}"
+        }
+        RefdataValue.getByValue(semesterKey)
+    }
+
     int compareTo(RefdataValue rdv) {
 
         def a = rdv.order  ?: 0
