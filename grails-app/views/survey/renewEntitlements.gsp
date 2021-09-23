@@ -33,9 +33,9 @@
     </semui:exportDropdown>
     <semui:actionsDropdown>
         <g:if test="${surveyOrg.finishDate && surveyInfo && surveyInfo.status.id == RDStore.SURVEY_SURVEY_STARTED.id}">
-            <semui:actionsDropdownItem controller="survey" action="openIssueEntitlementsSurveyAgain"
-                                       params="[id: surveyConfig.id, participant: participant.id]"
-                                       message="openIssueEntitlementsSurveyAgain.label"/>
+            <semui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant"
+                                       params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+                                       message="openSurveyAgainForParticipant.button"/>
         </g:if>
 
     %{--<g:if test="${surveyInfo && surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_COMPLETED.id]}">
