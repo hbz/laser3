@@ -8,12 +8,12 @@
     %{--<g:set var="filterLabels" value="${ExportLocalHelper.getCachedFilterLabels( token )}" />--}%
     %{--<g:set var="queryLabels" value="${ExportLocalHelper.getCachedQueryLabels( token )}" />--}%
 
-    <semui:modal id="${modalID}" text="Export" msgSave="Exportieren">
+    <semui:modal id="${modalID}" text="Export" msgSave="${message(code: 'default.button.export.label')}">
 
     %{--
         <div class="ui form">
             <div class="field">
-                <label>Zu exportierende Datensätze</label>
+                <label>${message(code: 'reporting.modal.export.todoData')}</label>
             </div>
             <div class="ui segments">
                 <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterLabels, stacked: true]}" />
@@ -25,8 +25,7 @@
         <g:set var="dcSize" value="${ExportLocalHelper.getDetailsCache(token).idList.size()}" />
         <g:if test="${dcSize > 50}">
             <div class="ui info message">
-                <i class="info circle icon"></i>
-                Bei größeren Datenmengen kann der Export einige Sekunden dauern.
+                <i class="info circle icon"></i> ${message(code: 'reporting.modal.export.todoTime')}
             </div>
         </g:if>
 
@@ -37,7 +36,7 @@
                 <div class="ui vertical segment">
 
                 <div class="field">
-                    <label>Zu exportierende Felder</label>
+                    <label>${message(code: 'reporting.modal.export.todoFields')}</label>
                 </div>
                 <div class="fields">
 
@@ -96,32 +95,32 @@
                 <div class="fields">
 
                     <div id="fileformat-csv" class="wide eight field">
-                        <label>CSV-Konfiguration</label>
+                        <label>${message(code: 'reporting.modal.export.cfg.csv')}</label>
                         <p>
-                            Feldtrenner: <span class="ui circular label">${BaseExport.CSV_FIELD_SEPARATOR}</span> <br />
-                            Zeichenkettentrenner: <span class="ui circular label">${BaseExport.CSV_FIELD_QUOTATION}</span> <br />
-                            Trenner für mehrfache Werte: <span class="ui circular label">${BaseExport.CSV_VALUE_SEPARATOR}</span>
+                            ${message(code: 'reporting.modal.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${BaseExport.CSV_FIELD_SEPARATOR}</span> <br />
+                            ${message(code: 'reporting.modal.export.cfg.csv.fieldQuotation')}: <span class="ui circular label">${BaseExport.CSV_FIELD_QUOTATION}</span> <br />
+                            ${message(code: 'reporting.modal.export.cfg.csv.valueSeparator')}: <span class="ui circular label">${BaseExport.CSV_VALUE_SEPARATOR}</span>
                         </p>
                     </div>
 
                     <div id="fileformat-pdf" class="wide eight field">
-                        <label>PDF-Konfiguration</label>
+                        <label>${message(code: 'reporting.modal.export.cfg.pdf')}</label>
                         <p>
-                            Seitenformat: <span class="ui circular label">auto</span> <br />
-                            Suchinformationen: <span class="ui circular label">anzeigen</span> <br />
+                            ${message(code: 'reporting.modal.export.cfg.pdf.pageFormat')}: <span class="ui circular label">${message(code: 'reporting.modal.export.cfg.pdf.pageFormat.default')}</span> <br />
+                            ${message(code: 'reporting.modal.export.cfg.pdf.queryInfo')}: <span class="ui circular label">${message(code: 'reporting.modal.export.cfg.pdf.queryInfo.default')}</span> <br />
                         </p>
                     </div>
 
                     <div class="wide eight field">
                         <div class="field" style="margin-bottom: 1em !important;">
-                            <label for="fileformat">Dateiformat</label>
+                            <label for="fileformat">${message(code: 'default.fileFormat.label')}</label>
                             <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
                                       optionKey="key" optionValue="value"
                                       from="${[csv:'CSV', pdf:'PDF']}"
                             />
                         </div>
                         <div class="field">
-                            <label for="filename">Dateiname</label>
+                            <label for="filename">${message(code: 'default.fileName.label')}</label>
                             <input name="filename" id="filename" value="${ExportLocalHelper.getFileName(queryLabels)}" />
                         </div>
                     </div>
