@@ -1431,6 +1431,51 @@ class SurveyService {
                     queryParams.languages << Long.parseLong(lang)
                 }
             }
+
+            if (params.filter) {
+                filter += "and ( ( lower(title.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = title.id and ident.value like :identifier ) ) or ((lower(title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(title.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
+                queryParams.title = "%${params.filter.trim().toLowerCase()}%"
+                queryParams.identifier = "%${params.filter}%"
+                queryParams.ebookFirstAutorOrFirstEditor = "%${params.filter.trim().toLowerCase()}%"
+            }
+
+            if (params.pkgfilter && (params.pkgfilter != '')) {
+                filter += " and title.pkg.id = :pkgId "
+                queryParams.pkgId = Long.parseLong(params.pkgfilter)
+            }
+
+            if(params.summaryOfContent) {
+                filter += " and lower(title.summaryOfContent) like :summaryOfContent "
+                queryParams.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
+            }
+
+            if(params.ebookFirstAutorOrFirstEditor) {
+                filter += " and (lower(title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(title.firstEditor) like :ebookFirstAutorOrFirstEditor) "
+                queryParams.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
+            }
+
+            if(params.yearsFirstOnline) {
+                filter += " and (Year(title.dateFirstOnline) in (:yearsFirstOnline)) "
+                queryParams.yearsFirstOnline = params.list('yearsFirstOnline').collect { Integer.parseInt(it) }
+            }
+
+            if (params.identifier) {
+                filter += "and ( exists ( from Identifier ident where ident.tipp.id = title.id and ident.value like :identifier ) ) "
+                queryParams.identifier = "${params.identifier}"
+            }
+
+            if (params.publishers) {
+                filter += "and lower(title.publisherName) in (:publishers) "
+                queryParams.publishers = params.list('publishers').collect { it.toLowerCase() }
+            }
+
+
+            if (params.title_types && params.title_types != "" && params.list('title_types')) {
+                filter += " and lower(title.titleType) in (:title_types)"
+                queryParams.title_types = params.list('title_types').collect { ""+it.toLowerCase()+"" }
+            }
+
+
             if(params.metricType && params.list("metricType").size() > 0) {
                 filter += " and r.metricType in (:metricType) "
                 queryParams.metricType = params.metricType

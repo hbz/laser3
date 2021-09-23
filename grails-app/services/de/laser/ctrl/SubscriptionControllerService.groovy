@@ -1046,12 +1046,6 @@ class SubscriptionControllerService {
                 Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
                 sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
             }
-
-            if(params.tab == 'previousIEs') {
-                Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], previousSubscription)
-                sourceIEs = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
-            }
-
             if(params.tab == 'currentIEs') {
                 GrailsParameterMap parameterMap = params.clone()
                 Map query = filterService.getIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], previousSubscription)
@@ -1067,23 +1061,16 @@ class SubscriptionControllerService {
             result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(newSub)
             result.countCurrentIEs = (previousSubscription ? subscriptionService.countIssueEntitlementsFixed(previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(newSub)
             result.countAllIEs = subscriptionService.countIssueEntitlementsFixed(baseSub)
-            //result.countAllSourceIEs = sourceIEs.size()
+
             result.num_ies_rows = sourceIEs.size()
-            //subscriptionService.getIssueEntitlementsFixed(baseSub).size()
 
-            if(params.tab == 'previousIEsStats' || params.tab == 'allIEsStats') {
-
-                List<Long> previousTitles = []
-                if(params.tab == 'previousIEsStats' ) {
-                    previousTitles = subscriptionService.getTippIDsFixed(previousSubscription)
-                }
+            if(params.tab == 'allIEsStats') {
                 result = surveyService.getStatsForParticipant(result, params, newSub, result.subscriber, subscriptionService.getTippIDsFixed(baseSub))
-
             }else {
 
                 params.sort = params.sort ?: 'tipp.sortname'
                 params.order = params.order ?: 'asc'
-                result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
+                result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
 
                 /*Map query = filterService.getIssueEntitlementQuery(params, newSub)
                 List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
@@ -1568,6 +1555,11 @@ class SubscriptionControllerService {
             boolean filterSet = false
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
             Map checkedCache = sessionCache.get("/subscription/addEntitlements/${params.id}")
+
+            if (!checkedCache) {
+                sessionCache.put("/subscription/addEntitlements/${params.id}", [:])
+                checkedCache = sessionCache.get("/subscription/addEntitlements/${params.id}")
+            }
             Set<String> addedTipps = IssueEntitlement.executeQuery('select tipp.gokbId from IssueEntitlement ie join ie.tipp tipp where ie.status != :deleted and ie.subscription = :sub',[deleted:ie_deleted,sub:result.subscription])
             /*result.subscription.issueEntitlements.each { ie ->
                 if(ie instanceof IssueEntitlement && ie.status != ie_deleted)
@@ -1588,9 +1580,9 @@ class SubscriptionControllerService {
                 if(tippIds)
                     tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(tippIds.drop(result.offset).take(result.max),[sort:'sortname']))
                 //now, assemble the identifiers available to highlight
-                Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNs('zdb'),
-                                                               eissn: IdentifierNamespace.findByNs('eissn'), isbn: IdentifierNamespace.findByNs('isbn'),
-                                                               issn : IdentifierNamespace.findByNs('issn'), pisbn: IdentifierNamespace.findByNs('pisbn')]
+                Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
+                                                               eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name), isbn: IdentifierNamespace.findByNsAndNsType('isbn',TitleInstancePackagePlatform.class.name),
+                                                               issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name), pisbn: IdentifierNamespace.findByNsAndNsType('pisbn', TitleInstancePackagePlatform.class.name)]
                 result.num_tipp_rows = tippIds.size()
                 result.tipps = tipps
                 Map<String, Object> identifiers = [zdbIds: [], onlineIds: [], printIds: [], unidentified: []]
@@ -1714,7 +1706,7 @@ class SubscriptionControllerService {
                             //is title in LAS:eR?
                             List<TitleInstancePackagePlatform> matchingTipps = TitleInstancePackagePlatform.executeQuery("select tipp from Identifier id join id.tipp tipp where id.value = :value and id.ns in (:ns) and tipp.pkg in (:subPkgs)",[value: idCandidate.value, ns: idCandidate.namespaces, subPkgs: result.subscription.packages.collect { SubscriptionPackage sp -> sp.pkg }]) //it is *always* possible to have multiple packages linked to a subscription!
                             if (matchingTipps) {
-                                TitleInstancePackagePlatform tipp = matchingTipps.find { TitleInstancePackagePlatform matchingTipp -> matchingTipp.pkg == result.subscription.packages.pkg } as TitleInstancePackagePlatform
+                                TitleInstancePackagePlatform tipp = matchingTipps.find { TitleInstancePackagePlatform matchingTipp -> matchingTipp.pkg in result.subscription.packages.pkg } as TitleInstancePackagePlatform
                                 //is title already added?
                                 if (addedTipps.contains(tipp.gokbId)) {
                                     errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleAlreadyAdded', null, locale)}")
