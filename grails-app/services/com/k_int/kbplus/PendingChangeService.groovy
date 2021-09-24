@@ -8,6 +8,7 @@ import de.laser.IssueEntitlement
 import de.laser.Org
 import de.laser.Package
 import de.laser.PendingChange
+import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
@@ -516,69 +517,138 @@ class PendingChangeService extends AbstractLockableService {
 
     Map<String, Object> getChanges(LinkedHashMap<String, Object> configMap) {
         Map<String, Object> result = [:]
-        //IMPORTANT! In order to avoid session mismatches, NO domain operation may take at this place! DO NOT USE GORM methods here!
         Locale locale = LocaleContextHolder.getLocale()
         Date time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
         def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
         Sql sql = new Sql(dataSource)
+        List pending = [], notifications = []
+        Map<String, Long> roleTypes = ["consortia": RDStore.OR_SUBSCRIPTION_CONSORTIA.id, "subscriber": RDStore.OR_SUBSCRIBER.id, "member": RDStore.OR_SUBSCRIBER_CONS.id]
+        Map<Long, String> status = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS).collectEntries { RefdataValue rdv -> [(rdv.id): rdv.getI10n("value")] },
+        acceptedStatus = [(RDStore.PENDING_CHANGE_CONFIG_ACCEPT.id): RDStore.PENDING_CHANGE_CONFIG_ACCEPT.getI10n("value"), (RDStore.PENDING_CHANGE_CONFIG_REJECT.id): RDStore.PENDING_CHANGE_CONFIG_REJECT.getI10n("value")]
+        //IMPORTANT! In order to avoid session mismatches, NO domain operation may take at this place! DO NOT USE GORM methods here!
         sql.withTransaction {
             //package changes
-            String subscribedPackagesQuery = "select pcc_sp_fk, pcc_setting_key_enum, case when pcc_setting_value_rv_fk = :prompt then 'prompt' when pcc_setting_value_rv_fk = :accept and pcc_with_notification = true then 'notify' end as setting from pending_change_configuration join subscription_package on pcc_sp_fk = sp_id join subscription on sp_sub_fk = sub_id join org_role on sp_sub_fk = or_sub_fk where or_org_fk = :context and or_roletype_fk = any(:roleTypes) and (pcc_setting_value_rv_fk = :prompt or pcc_with_notification = true)"
+            String subscribedPackagesQuery = "select pcc_sp_fk, sp_pkg_fk, sp_date_created, pcc_setting_key_enum, case when pcc_setting_value_rv_fk = :prompt then 'prompt' when pcc_setting_value_rv_fk = :accept and pcc_with_notification = true then 'notify' end as setting from pending_change_configuration join subscription_package on pcc_sp_fk = sp_id join subscription on sp_sub_fk = sub_id join org_role on sp_sub_fk = or_sub_fk where or_org_fk = :context and or_roletype_fk = any(:roleTypes) and (pcc_setting_value_rv_fk = :prompt or pcc_with_notification = true)"
             if(configMap.consortialView)
                 subscribedPackagesQuery += ' and sub_parent_sub_fk is null'
             List subscribedPackages = sql.rows(subscribedPackagesQuery, [context: configMap.contextOrg.id, roleTypes: sql.connection.createArrayOf('bigint', [RDStore.OR_SUBSCRIPTION_CONSORTIA.id,RDStore.OR_SUBSCRIBER_CONS.id,RDStore.OR_SUBSCRIBER.id] as Object[]), prompt: RDStore.PENDING_CHANGE_CONFIG_PROMPT.id, accept: RDStore.PENDING_CHANGE_CONFIG_ACCEPT.id])
             if(!configMap.consortialView) {
                 //TODO get inherited parents setting
             }
-            Map<String, Map<Long, Set<String>>> packageConfigMap = [notify: [:], prompt: [:]]
+            Map<String, Map<List, Set<String>>> packageConfigMap = [notify: [:], prompt: [:]]
             subscribedPackages.each { GroovyRowResult row ->
                 //log.debug(row.toString())
                 if(row.get('setting') != null) {
                     Long spId = row.get('pcc_sp_fk')
+                    Long spPkg = row.get('sp_pkg_fk')
+                    Date dateEntry = row.get('sp_date_created')
                     String setting = row.get('setting')
-                    Set<String> packageSettings = packageConfigMap.get(setting).get(spId)
+                    Set<String> packageSettings = packageConfigMap.get(setting).get([spId, spPkg, dateEntry])
                     if(!packageSettings)
                         packageSettings = []
                     packageSettings << row.get('pcc_setting_key_enum')
-                    packageConfigMap.get(setting).put(spId, packageSettings)
+                    packageConfigMap.get(setting).put([spId, spPkg, dateEntry], packageSettings)
                 }
             }
-            //log.debug(packageConfigMap.toMapString())
+            //log.debug(packageConfigMap.notify.keySet().collect { List pkgSetting -> pkgSetting[0] }.toListString())
             /*
                 I need to:
                 - get the concerned subscription IDs
                 - get the change counts
              */
+            //log.debug("start")
+            Set subNotifyPkgs = packageConfigMap.notify.keySet(), subPromptPkgs = packageConfigMap.prompt.keySet()
+            String notificationsQuery1 = "select count(id) as count, pc_pkg_fk as pkg, pc_msg_token from pending_change join subscription_package on pc_pkg_fk = sp_pkg_fk where sp_id = any(:sp) and pc_ts >= :date group by pc_pkg_fk, pc_msg_token"
+            List pkgCount = sql.rows(notificationsQuery1, [sp: sql.connection.createArrayOf('bigint', subNotifyPkgs.collect{ List sp -> sp[0] } as Object[]), date: time.toTimestamp()])
+            //log.debug(pkgCount.toListString())
+            String notificationsQuery2 = "select count(id) as count, tipp_pkg_fk as pkg, pc_msg_token from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = any(:sp) and pc_oid = concat('${Subscription.class.name}',':',sp_sub_fk) and pc_ts >= :date group by tipp_pkg_fk, pc_msg_token"
+            List titleCount = sql.rows(notificationsQuery2, [sp: sql.connection.createArrayOf('bigint', subNotifyPkgs.collect{ List sp -> sp[0] } as Object[]), date: time.toTimestamp()])
+            //log.debug(titleCount.toListString())
+            String notificationsQuery3 = "select count(id) as count, tipp_pkg_fk as pkg, pc_msg_token from pending_change join tippcoverage on pc_tc_fk = tc_id join title_instance_package_platform on tc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = any(:sp) and pc_oid = concat('${Subscription.class.name}',':',sp_sub_fk) and pc_ts >= :date group by tipp_pkg_fk, pc_msg_token"
+            List coverageCount = sql.rows(notificationsQuery3, [sp: sql.connection.createArrayOf('bigint', subNotifyPkgs.collect{ List sp -> sp[0] } as Object[]), date: time.toTimestamp()])
+            //log.debug(coverageCount.toListString())
+            String pendingQuery1 = "select count(id) as count, tipp_pkg_fk as pkg, pc_msg_token, date_trunc('day', pc_ts) as day from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = any(:sp) and not exists(select done.id from pending_change as done where pc_tipp_fk = done.pc_tipp_fk and done.pc_oid = concat('${Subscription.class.name}',':',sp_sub_fk)) group by tipp_pkg_fk, pc_msg_token, day"
+            List titlePendingCount = sql.rows(pendingQuery1, [sp: sql.connection.createArrayOf('bigint', subPromptPkgs.collect{ List sp -> sp[0] } as Object[])])
+            //log.debug(titlePendingCount.toListString())
+            String pendingQuery2 = "select count(id) as count, tipp_pkg_fk as pkg, pc_msg_token, date_trunc('day', pc_ts) as day from pending_change join tippcoverage on pc_tc_fk = tc_id join title_instance_package_platform on tc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = any(:sp) and not exists(select done.id from pending_change as done where pc_tc_fk = done.pc_tc_fk and done.pc_oid = concat('${Subscription.class.name}',':',sp_sub_fk)) group by tipp_pkg_fk, pc_msg_token, day"
+            List coveragePendingCount = sql.rows(pendingQuery2, [sp: sql.connection.createArrayOf('bigint', subPromptPkgs.collect{ List sp -> sp[0] } as Object[])])
+            //log.debug(coveragePendingCount.toListString())
+
             /*
                 aim:
                 Map<String,Object> eventRow = [packageSubscription:[id: sp.subscription.id, name: sp.subscription.dropdownNamingConvention()],eventString:messageSource.getMessage(token,args,locale),msgToken:token]
                                 notifications << eventRow
              */
-            String notificationsQuery1 = 'select count(id) from pending_change join subscription_package on pc_pkg_fk = sp_pkg_fk where sp_id in (:sp) and pc_msg_token = any(:tokens) and pc_ts >= :date'
-            List pkgCount = sql.rows(notificationsQuery1, [sp: packageConfigMap.notifications.keySet()])
-            /*
-            implementation alternative A
-            String notificationsQuery1 = 'select count(id) from pending_change join subscription_package on pc_pkg_fk = sp_pkg_fk where sp_id = :sp and pc_msg_token = any(:tokens) and pc_ts >= :date',
-            notificationsQuery2 = 'select count(id) from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = :sp and pc_msg_token = any(:tokens) and pc_ts >= :date',
-            notificationsQuery3 = 'select count(id) from pending_change where pc_tc_fk in (select tc_id from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = :sp) and pc_msg_token = any(:tokens) and pc_ts >= :date'
-            packageConfigMap.notify.each { Long spId, Set<String> tokens ->
-                Map<String, Object> notificationParams = [sp: spId, tokens: sql.connection.createArrayOf('varchar', tokens as Object[]), date: time.toTimestamp()]
-                if([PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED].any { String pkgToken -> pkgToken in tokens }) {
-                    List pkgCount = sql.rows(notificationsQuery1, notificationParams)
-                    log.debug(pkgCount.toListString())
+            notifications.addAll(getEventRows(pkgCount, locale, status, roleTypes, sql, subNotifyPkgs, false))
+            notifications.addAll(getEventRows(titleCount, locale, status, roleTypes, sql, subNotifyPkgs, false))
+            notifications.addAll(getEventRows(coverageCount, locale, status, roleTypes, sql, subNotifyPkgs, false))
+            pending.addAll(getEventRows(titlePendingCount, locale, status, roleTypes, sql, subPromptPkgs, true))
+            pending.addAll(getEventRows(coveragePendingCount, locale, status, roleTypes, sql, subPromptPkgs, true))
+            sql.rows("select id, pc_ci_fk, pc_msg_token, pc_old_value, pc_new_value, pc_sub_fk, pc_status_rdv_fk from pending_change where pc_owner = :contextOrg and pc_status_rdv_fk = any(:status) and (pc_msg_token = :newSubscription or pc_ci_fk is not null)", [contextOrg: configMap.contextOrg.id, status: sql.connection.createArrayOf('bigint', acceptedStatus.keySet() as Object[]), newSubscription: 'pendingChange.message_SU_NEW_01']).each { GroovyRowResult pc ->
+                Map<String,Object> eventRow = [event:pc.get("pc_msg_token")]
+                if(pc.get("pc_ci_fk")) {
+                    List subRows = sql.rows("select ci_sub_fk, sub_name, sub_start_date, sub_end_date, sub_status_rv_fk, org_sortname, or_roletype_fk, sub_parent_sub_fk from cost_item join subscription on ci_sub_fk = sub_id join org_role on sub_id = or_sub_fk join org on or_org_fk = org_id where ci_id = :ciId and or_roletype_fk = any(:subscriberTypes)", [ciId: pc.get("pc_ci_fk"), subscriberTypes: sql.connection.createArrayOf('bigint', roleTypes.values() as Object[])])
+                    if(subRows) {
+                        GroovyRowResult entry = subRows[0]
+                        eventRow.costItem = pc.get("pc_ci_fk")
+                        eventRow.costItemSubscription = [id: entry.get("ci_sub_fk"), name: subscriptionName(entry, status, locale)]
+                        Object[] args = [pc.get("pc_old_value"),pc.get("pc_new_value")]
+                        eventRow.eventString = messageSource.getMessage(pc.get("pc_msg_token"),args,locale)
+                        eventRow.changeId = pc.get("id")
+                    }
                 }
-                if([PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_UPDATED, PendingChangeConfiguration.TITLE_DELETED].any { String titleToken -> titleToken in tokens }) {
-                    List titleCount = sql.rows(notificationsQuery2, notificationParams)
-                    log.debug(titleCount.toListString())
+                else {
+                    List prevSub = sql.rows("select l_dest_sub_fk from links where l_source_sub_fk = :newSub and l_link_type_rv_fk = :follows", [newSub: pc.get("pc_sub_fk"), follows: RDStore.LINKTYPE_FOLLOWS.id])
+                    if(prevSub) {
+                        GroovyRowResult previous = prevSub[0]
+                        eventRow.eventString = messageSource.getMessage("${pc.get("pc_msg_token")}.eventString", null, locale)
+                        eventRow.changeId = pc.get("id")
+                        eventRow.subscription = [source: Subscription.class.name + ':' + previous.get("l_dest_sub_fk"), target: Subscription.class.name + ':' + pc.get("pc_sub_fk")]
+                    }
                 }
-                if([PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_UPDATED, PendingChangeConfiguration.COVERAGE_DELETED].any { String titleToken -> titleToken in tokens }) {
-                    List coverageCount = sql.rows(notificationsQuery3, notificationParams)
-                    log.debug(coverageCount.toListString())
+                if(pc.get("pc_status_rdv_fk") == RDStore.PENDING_CHANGE_PENDING.id)
+                    pending << eventRow
+                else if(pc.get("pc_status_rdv_fk") in [RDStore.PENDING_CHANGE_ACCEPTED.id, RDStore.PENDING_CHANGE_REJECTED.id]) {
+                    notifications << eventRow
                 }
             }
-            */
+        }
+        result.notifications = notifications.drop(configMap.acceptedOffset).take(configMap.max)
+        result.notificationsCount = notifications.size()
+        result.pending = pending.drop(configMap.pendingOffset).take(configMap.max)
+        result.pendingCount = pending.size()
+        result.acceptedOffset = configMap.acceptedOffset
+        result.pendingOffset = configMap.pendingOffset
+        result
+    }
+
+    List<Map<String, Object>> getEventRows(List<GroovyRowResult> entries, Locale locale, Map status, Map roleTypes, Sql sql, Set subPkgConfigs, boolean checkEntry) {
+        List result = []
+        entries.each { GroovyRowResult row ->
+            List spData = subPkgConfigs.find { List spPkgCfg -> spPkgCfg[1] == row.get("pkg") }
+            if((checkEntry && row.get("day") > spData[2]) || !checkEntry) {
+                List subRows = sql.rows("select sub_id, sub_name, sub_start_date, sub_end_date, sub_status_rv_fk, org_sortname, or_roletype_fk, sub_parent_sub_fk from subscription_package join subscription on sp_sub_fk = sub_id join org_role on sub_id = or_sub_fk join org on or_org_fk = org_id where sp_id = :spId and or_roletype_fk = any(:subscriberTypes)", [spId: spData[0], subscriberTypes: sql.connection.createArrayOf('bigint', roleTypes.values() as Object[])])
+                if(subRows) {
+                    GroovyRowResult entry = subRows[0]
+                    result << [packageSubscription: [id: entry.get('sub_id'), name: subscriptionName(subRows[0], status, locale)], eventString: messageSource.getMessage(row.get('pc_msg_token'), [row.get('count')] as Object[], locale), msgToken: row.get('pc_msg_token')]
+                }
+            }
         }
         result
+    }
+
+    String subscriptionName(GroovyRowResult entry, Map<Long, String> status, Locale locale) {
+        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+        //log.debug(subRows.toListString())
+        String startDate = "", endDate = "", additionalInfo = ""
+        if(entry.get('sub_start_date'))
+            startDate = sdf.format(entry.get('sub_start_date'))
+        if(entry.get('sub_end_date'))
+            endDate = sdf.format(entry.get('sub_end_date'))
+        if(entry.get('sub_parent_sub_fk')) {
+            additionalInfo = " - ${messageSource.getMessage('gasco.filter.consortialLicence', null, locale)}"
+        }
+        "${entry.get('sub_name')} - ${status.get(entry.get('sub_status_rv_fk'))} (${startDate} - ${endDate})${additionalInfo}"
     }
 
     Map<String,Object> getChanges_old(LinkedHashMap<String, Object> configMap) {
