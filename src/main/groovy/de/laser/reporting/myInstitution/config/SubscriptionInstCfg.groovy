@@ -56,7 +56,7 @@ class SubscriptionInstCfg extends BaseConfig {
                             ]
                     ],
                     query2 : [
-                            'distribution' : [ // TODO ..
+                            'distribution' : [
                                      'subscription-x-identifier' : [
                                              detailsTemplate    : 'subscription',
                                              chartTemplate      : '2axis2values_nonMatches',

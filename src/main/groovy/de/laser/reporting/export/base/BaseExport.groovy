@@ -11,6 +11,8 @@ import de.laser.reporting.export.local.SubscriptionExport as SubscriptionExportL
 import de.laser.reporting.export.myInstitution.SubscriptionExport as SubscriptionExportGlobal
 
 import grails.util.Holders
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 abstract class BaseExport {
 
@@ -25,44 +27,44 @@ abstract class BaseExport {
     static String CSV_FIELD_SEPARATOR   = ','
     static String CSV_FIELD_QUOTATION   = '"'
 
-    static Map<String, String> CUSTOM_LABEL = [
+    static List<String> CUSTOM_LABEL = [
 
-            'globalUID'                 : 'Link (Global UID)',
+            'globalUID',
 
-            'x-identifier'              : 'Identifikatoren',                    // dyn.value
-            'x-provider'                : 'Anbieter',                           // XYCfg.CONFIG.base.query2.Verteilung
-            'x-property'                : 'Merkmal',                            // QDP; dyn.value
+            'x-identifier',                    // dyn.value
+            'x-provider',                      // XYCfg.CONFIG.base.query2.Verteilung
+            'x-property',                      // QDP; dyn.value
 
             // virtual; without XY.CONFIG.base.x
 
-            '@ae-subscription-member'       : 'Teilnehmer',
-            '@ae-subscription-memberCount'  : 'Anzahl der Teilnehmer',
-            '@ae-subscription-prevNext'     : 'Vorgänger/Nachfolger',
+            '@ae-subscription-member',
+            '@ae-subscription-memberCount',
+            '@ae-subscription-prevNext',
 
-            '@ae-license-subscriptionCount' : 'Anzahl der Lizenzen',
-            '@ae-license-memberCount'       : 'Anzahl der Teilnehmerverträge',
+            '@ae-license-subscriptionCount',
+            '@ae-license-memberCount',
 
-            '@ae-org-accessPoint'           : 'Zugangskonfigurationen (ohne Links)',    // dyn.value
-            '@ae-org-contact'               : 'Kontaktdaten',                           // dyn.value
-            '@ae-org-readerNumber'          : 'Nutzerzahlen und Stichtage',             // dyn.value
+            '@ae-org-accessPoint',      // dyn.value
+            '@ae-org-contact',          // dyn.value
+            '@ae-org-readerNumber',     // dyn.value
 
-            '@ae-entitlement-priceItem'                         : 'Preise',
-            '@ae-entitlement-tippName'                          : 'Titel der Ressource',
-            '@ae-entitlement-tippDeweyDecimalClassification'    : 'Dewey-Dezimalklassifikation',
-            '@ae-entitlement-tippEditionStatement'              : 'Auflage',
-            '@ae-entitlement-tippFirstAuthor'                   : 'Autor(en)name',
-            '@ae-entitlement-tippFirstEditor'                   : 'Herausgeber',
-            '@ae-entitlement-tippHostPlatformURL'               : 'Plattform-URL',
-            '@ae-entitlement-tippIdentifier'                    : 'Identifikatoren',            // dyn.value
-            '@ae-entitlement-tippLanguage'                      : 'Sprachen',
-            '@ae-entitlement-tippOpenAccessX'                   : 'Open Access (verzögert/hybrid)',
-            '@ae-entitlement-tippPackage'                       : 'Paket',
-            '@ae-entitlement-tippPlatform'                      : 'Platform',
-            '@ae-entitlement-tippProvider'                      : 'Anbieter',
-            '@ae-entitlement-tippPublisherName'                 : 'Verlag',
-            '@ae-entitlement-tippSeriesName'                    : 'Name der Reihe',
-            '@ae-entitlement-tippSubjectReference'              : 'Fachbereich',
-            '@ae-entitlement-tippTitleType'                     : 'Titel-Typ'
+            '@ae-entitlement-priceItem',
+            '@ae-entitlement-tippName',
+            '@ae-entitlement-tippDeweyDecimalClassification',
+            '@ae-entitlement-tippEditionStatement',
+            '@ae-entitlement-tippFirstAuthor',
+            '@ae-entitlement-tippFirstEditor',
+            '@ae-entitlement-tippHostPlatformURL',
+            '@ae-entitlement-tippIdentifier',            // dyn.value
+            '@ae-entitlement-tippLanguage',
+            '@ae-entitlement-tippOpenAccessX',
+            '@ae-entitlement-tippPackage',
+            '@ae-entitlement-tippPlatform',
+            '@ae-entitlement-tippProvider',
+            '@ae-entitlement-tippPublisherName',
+            '@ae-entitlement-tippSeriesName',
+            '@ae-entitlement-tippSubjectReference',
+            '@ae-entitlement-tippTitleType'
     ]
 
     String token                    // cache token
@@ -147,5 +149,13 @@ abstract class BaseExport {
         base.fields.get(cfg).findAll {
             (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == field)
         }
+    }
+
+    static String getMessage(String token) {
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+
+        // println ' ---> ' + 'reporting.export.base.custom.' + token
+        messageSource.getMessage('reporting.export.base.custom.' + token, null, locale)
     }
 }

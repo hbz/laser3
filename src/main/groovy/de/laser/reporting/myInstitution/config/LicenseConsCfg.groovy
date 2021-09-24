@@ -43,7 +43,7 @@ class LicenseConsCfg extends BaseConfig {
                             ]
                     ],
                     query2 : [
-                            'distribution' : [ // TODO ..
+                            'distribution' : [
                                      'license-x-identifier' : [
                                              detailsTemplate     : 'license',
                                              chartTemplate       : '2axis2values_nonMatches',

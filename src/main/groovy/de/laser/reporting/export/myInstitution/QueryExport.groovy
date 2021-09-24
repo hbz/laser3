@@ -1,6 +1,9 @@
 package de.laser.reporting.export.myInstitution
 
 import de.laser.reporting.export.base.BaseQueryExport
+import grails.util.Holders
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 class QueryExport extends BaseQueryExport {
 
@@ -11,7 +14,6 @@ class QueryExport extends BaseQueryExport {
     }
 
     Map<String, Object> getData() {
-
         Map<String, Object> queryCache = ExportGlobalHelper.getQueryCache( token )
 
         Map<String, Object> result = [
@@ -22,7 +24,9 @@ class QueryExport extends BaseQueryExport {
         List<String> chart = queryCache.labels.chart
 
         if ( ! chart) {
-            result.cols.add( 'Anzahl' )
+            MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+
+            result.cols.add( messageSource.getMessage('default.count.label', null, LocaleContextHolder.getLocale()) )
             result.rows = data.collect{ e ->
                 [e.label.toString(), e.idList.size().toString()]
             }

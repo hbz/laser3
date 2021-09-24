@@ -3,6 +3,7 @@ package de.laser
 import de.laser.helper.RDStore
 import de.laser.reporting.ReportingCache
 import de.laser.reporting.ReportingCacheHelper
+import de.laser.reporting.myInstitution.base.BaseConfig
 import de.laser.reporting.myInstitution.base.BaseQuery
 import de.laser.reporting.local.SubscriptionReporting
 import grails.gorm.transactions.Transactional
@@ -31,10 +32,10 @@ class ReportingLocalService {
             Subscription sub = Subscription.get( params.id )
 
             if (prefix in ['timeline']) {
-                Map<String, Object> queryCfg = SubscriptionReporting.getCurrentQuery2Config( sub ).getAt('Entwicklung').getAt(clone.query) as Map
+                Map<String, Object> queryCfg = SubscriptionReporting.getCurrentQuery2Config( sub ).getAt('timeline').getAt(clone.query) as Map
                 result.putAll( SubscriptionReporting.query(clone) )
                 //result.labels.tooltip = queryCfg.getAt('label') // TODO - used for CSV-Export only
-                result.labels.chart = queryCfg.getAt('chartLabels')
+                result.labels.chart = queryCfg.getAt('chartLabels').collect{ SubscriptionReporting.getMessage('timeline.chartLabel.' + it) } // TODO
                 result.tmpl = '/subscription/reporting/chart/timeline/' + queryCfg.getAt('chart')
             }
             else {
