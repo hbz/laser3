@@ -543,11 +543,11 @@ class SubscriptionService {
                  RDStore.SUBSCRIPTION_ORDERED]
         )
         if(validSubChilds) {
-            validSubChilds = validSubChilds?.sort { a, b ->
+            /*validSubChilds = validSubChilds?.sort { a, b ->
                 def sa = a.getSubscriber()
                 def sb = b.getSubscriber()
                 (sa.sortname ?: sa.name ?: "")?.compareTo((sb.sortname ?: sb.name ?: ""))
-            }
+            }*/
         }
         validSubChilds
     }
