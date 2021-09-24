@@ -38,7 +38,6 @@ import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.helper.EhcacheWrapper
 import de.laser.helper.SwissKnife
-import de.laser.properties.PropertyDefinition
 import de.laser.reporting.ReportingCache
 import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.export.base.BaseExportHelper

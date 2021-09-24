@@ -5,7 +5,6 @@ import com.k_int.kbplus.ExportService
 import com.k_int.kbplus.InstitutionsService
 import de.laser.annotations.DebugAnnotation
 import de.laser.ctrl.MyInstitutionControllerService
-import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.finance.PriceItem
@@ -30,7 +29,6 @@ import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
 import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WfWorkflowPrototype
-import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
@@ -1470,7 +1468,7 @@ join sub.orgRelations or_sub where
         def periodInDays = 600
         Map<String,Object> pendingChangeConfigMap = [contextOrg: result.institution, consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"), periodInDays:periodInDays, max:result.max, offset:result.acceptedOffset]
 
-        result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
+        result.putAll(pendingChangeService.getChanges_old(pendingChangeConfigMap))
 
         result
     }

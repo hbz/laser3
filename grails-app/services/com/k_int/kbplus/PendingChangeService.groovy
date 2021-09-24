@@ -32,7 +32,10 @@ import de.laser.interfaces.AbstractLockableService
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.core.GrailsClass
+import grails.util.Holders
 import grails.web.databinding.DataBindingUtils
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
 import net.sf.json.JSONObject
 import org.grails.web.json.JSONElement
 import grails.web.mapping.LinkGenerator
@@ -511,7 +514,74 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
-    Map<String,Object> getChanges(LinkedHashMap<String, Object> configMap) {
+    Map<String, Object> getChanges(LinkedHashMap<String, Object> configMap) {
+        Map<String, Object> result = [:]
+        //IMPORTANT! In order to avoid session mismatches, NO domain operation may take at this place! DO NOT USE GORM methods here!
+        Locale locale = LocaleContextHolder.getLocale()
+        Date time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
+        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+        Sql sql = new Sql(dataSource)
+        sql.withTransaction {
+            //package changes
+            String subscribedPackagesQuery = "select pcc_sp_fk, pcc_setting_key_enum, case when pcc_setting_value_rv_fk = :prompt then 'prompt' when pcc_setting_value_rv_fk = :accept and pcc_with_notification = true then 'notify' end as setting from pending_change_configuration join subscription_package on pcc_sp_fk = sp_id join subscription on sp_sub_fk = sub_id join org_role on sp_sub_fk = or_sub_fk where or_org_fk = :context and or_roletype_fk = any(:roleTypes) and (pcc_setting_value_rv_fk = :prompt or pcc_with_notification = true)"
+            if(configMap.consortialView)
+                subscribedPackagesQuery += ' and sub_parent_sub_fk is null'
+            List subscribedPackages = sql.rows(subscribedPackagesQuery, [context: configMap.contextOrg.id, roleTypes: sql.connection.createArrayOf('bigint', [RDStore.OR_SUBSCRIPTION_CONSORTIA.id,RDStore.OR_SUBSCRIBER_CONS.id,RDStore.OR_SUBSCRIBER.id] as Object[]), prompt: RDStore.PENDING_CHANGE_CONFIG_PROMPT.id, accept: RDStore.PENDING_CHANGE_CONFIG_ACCEPT.id])
+            if(!configMap.consortialView) {
+                //TODO get inherited parents setting
+            }
+            Map<String, Map<Long, Set<String>>> packageConfigMap = [notify: [:], prompt: [:]]
+            subscribedPackages.each { GroovyRowResult row ->
+                //log.debug(row.toString())
+                if(row.get('setting') != null) {
+                    Long spId = row.get('pcc_sp_fk')
+                    String setting = row.get('setting')
+                    Set<String> packageSettings = packageConfigMap.get(setting).get(spId)
+                    if(!packageSettings)
+                        packageSettings = []
+                    packageSettings << row.get('pcc_setting_key_enum')
+                    packageConfigMap.get(setting).put(spId, packageSettings)
+                }
+            }
+            //log.debug(packageConfigMap.toMapString())
+            /*
+                I need to:
+                - get the concerned subscription IDs
+                - get the change counts
+             */
+            /*
+                aim:
+                Map<String,Object> eventRow = [packageSubscription:[id: sp.subscription.id, name: sp.subscription.dropdownNamingConvention()],eventString:messageSource.getMessage(token,args,locale),msgToken:token]
+                                notifications << eventRow
+             */
+            String notificationsQuery1 = 'select count(id) from pending_change join subscription_package on pc_pkg_fk = sp_pkg_fk where sp_id in (:sp) and pc_msg_token = any(:tokens) and pc_ts >= :date'
+            List pkgCount = sql.rows(notificationsQuery1, [sp: packageConfigMap.notifications.keySet()])
+            /*
+            implementation alternative A
+            String notificationsQuery1 = 'select count(id) from pending_change join subscription_package on pc_pkg_fk = sp_pkg_fk where sp_id = :sp and pc_msg_token = any(:tokens) and pc_ts >= :date',
+            notificationsQuery2 = 'select count(id) from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = :sp and pc_msg_token = any(:tokens) and pc_ts >= :date',
+            notificationsQuery3 = 'select count(id) from pending_change where pc_tc_fk in (select tc_id from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = :sp) and pc_msg_token = any(:tokens) and pc_ts >= :date'
+            packageConfigMap.notify.each { Long spId, Set<String> tokens ->
+                Map<String, Object> notificationParams = [sp: spId, tokens: sql.connection.createArrayOf('varchar', tokens as Object[]), date: time.toTimestamp()]
+                if([PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED].any { String pkgToken -> pkgToken in tokens }) {
+                    List pkgCount = sql.rows(notificationsQuery1, notificationParams)
+                    log.debug(pkgCount.toListString())
+                }
+                if([PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_UPDATED, PendingChangeConfiguration.TITLE_DELETED].any { String titleToken -> titleToken in tokens }) {
+                    List titleCount = sql.rows(notificationsQuery2, notificationParams)
+                    log.debug(titleCount.toListString())
+                }
+                if([PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_UPDATED, PendingChangeConfiguration.COVERAGE_DELETED].any { String titleToken -> titleToken in tokens }) {
+                    List coverageCount = sql.rows(notificationsQuery3, notificationParams)
+                    log.debug(coverageCount.toListString())
+                }
+            }
+            */
+        }
+        result
+    }
+
+    Map<String,Object> getChanges_old(LinkedHashMap<String, Object> configMap) {
         SessionCacheWrapper scw = new SessionCacheWrapper()
         String ctx = 'dashboard/changes'
         Map<String, Object> changesCache = scw.get(ctx) as Map<String, Object>
