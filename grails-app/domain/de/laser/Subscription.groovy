@@ -244,7 +244,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                 if (ieIDs.size() > 0) {
                     log.debug("beforeUpdate() set perpetualAccessBySub of ${ieIDs.size()} IssueEntitlements to sub:" + this)
                     ieIDs.collate(32767).each {
-                        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.id in (:idList)", [sub: this, idList: ieIDs.take(32768)])
+                        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.id in (:idList)", [sub: this, idList: it])
                     }
                 }
             }else {
@@ -252,7 +252,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                 if (ieIDs.size() > 0) {
                     log.debug("beforeUpdate() set perpetualAccessBySub of ${ieIDs.size()} IssueEntitlements to null:" + this)
                     ieIDs.collate(32767).each {
-                        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = null where ie.id in (:idList)", [idList: ieIDs.take(32768)])
+                        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = null where ie.id in (:idList)", [idList: it])
                     }
 
 
