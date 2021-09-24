@@ -72,7 +72,7 @@ class OrganisationInstCfg extends BaseConfig {
                             ]
                     ],
                     query2 : [
-                            'distribution' : [ // TODO ..
+                            'distribution' : [
                                      'org-x-identifier' : [
                                              detailsTemplate    : 'organisation',
                                              chartTemplate      : '2axis2values_nonMatches',

@@ -1,6 +1,9 @@
 package de.laser.reporting.export.local
 
 import de.laser.reporting.export.base.BaseQueryExport
+import grails.util.Holders
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 class QueryExport extends BaseQueryExport {
 
@@ -22,14 +25,16 @@ class QueryExport extends BaseQueryExport {
         List<String> chart = queryCache.labels.chart
 
         // todo --
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+
         if ( queryCache.labels.tooltip ) {
             result.cols.add( queryCache.labels.tooltip ) // simple
         }
         else {
-            result.cols.add( 'Zeitraum' )
+            result.cols.add( messageSource.getMessage('default.period.label', null, LocaleContextHolder.getLocale()) )
         }
         if ( ! chart) {
-            result.cols.add( 'Anzahl' ) // simple
+            result.cols.add( messageSource.getMessage('default.count.label', null, LocaleContextHolder.getLocale()) ) // simple
         }
         else {
             result.cols.addAll( chart )
