@@ -3,12 +3,14 @@
 <g:if test="${filteredSubscriptions}">
 
     <div class="ui segment">
+
+        <h1><g:message code="subscriptionsManagement.allProperties"/> </h1>
+
         <g:if test="${controllerName == "subscription"}">
             <div class="ui two column very relaxed grid">
                 <div class="column">
                     <semui:filter>
-                        <h3 class="ui header">${message(code: 'subscriptionsManagement.onlyPropOfParentSubscription', args: [subscription.name])} <semui:totalNumber
-                                total="${propList.size()}"/>:</h3>
+                        <h3 class="ui header">${message(code: 'subscriptionsManagement.onlyPropOfParentSubscription', args: [subscription.name])}:</h3>
                         <g:form action="${actionName}" method="post" class="ui form" id="${params.id}"
                                 params="[tab: params.tab]">
                             <g:render template="/templates/properties/genericFilter"
@@ -25,11 +27,8 @@
                 </div>
 
                 <div class="column">
-                    <g:set var="allProperties"
-                           value="${PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP) + PropertyDefinition.findAllByTenantAndDescr(contextOrg, PropertyDefinition.SUB_PROP)}"/>
                     <semui:filter>
-                        <h3 class="ui header">${message(code: 'subscription.properties')} <semui:totalNumber
-                                total="${allProperties.size()}"/>:</h3>
+                        <h3 class="ui header">${message(code: 'subscriptionsManagement.allProperties')}:</h3>
                         <g:form action="${actionName}" method="post" class="ui form" id="${params.id}"
                                 params="[tab: params.tab]">
                             <g:render template="/templates/properties/genericFilter"
@@ -49,11 +48,8 @@
             <div class="ui vertical divider"><g:message code="default.or"/></div>
         </g:if>
         <g:if test="${controllerName == "myInstitution"}">
-            <g:set var="allProperties"
-                   value="${PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP) + PropertyDefinition.findAllByTenantAndDescr(contextOrg, PropertyDefinition.SUB_PROP)}"/>
             <semui:filter>
-                <h3 class="ui header">${message(code: 'subscription.properties')} <semui:totalNumber
-                        total="${allProperties.size()}"/>:</h3>
+                <h3 class="ui header">${message(code: 'subscriptionsManagement.allProperties')}:</h3>
                 <g:form action="${actionName}" method="post" class="ui form" id="${params.id}"
                         params="[tab: params.tab]">
                     <g:render template="/templates/properties/genericFilter"
