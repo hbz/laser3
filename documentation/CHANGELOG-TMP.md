@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3832    24.09.2021  dev     2.2         Moe     Feature     Darstellungsanpassungen der Merkmalsverwaltungen
+
 3542    23.09.2021  dev     2.2         Moe     Feature     ClickMe Excel Nutzerzahlen
 
 3824    21.09.2021  dev     2.2         Andreas Bug         Bildschrim blieb bei Elemente in andere Lizenz kopieren hängen
