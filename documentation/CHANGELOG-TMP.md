@@ -7,11 +7,15 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-3832    24.09.2021  dev     2.2         Moe     Feature     Darstellungsanpassungen der Merkmalsverwaltungen
+3821    24.09.2021  dev     2.2         David   Feature     Reporting: Vollnutzer braucht einige Auswahlmöglichkeiten nicht
 
 3542    23.09.2021  dev     2.2         Moe     Feature     ClickMe Excel Nutzerzahlen
 
+3834    24.09.2021  dev     2.2         Andreas Feature     Eingrenzung der darzustellenden Titelmenge
+
 3817    24.09.2021  dev     2.2         David   Feature     Reporting: Übersetzung
+
+3542    23.09.2021  dev     2.2         Moe     Feature     ClickMe Excel Nutzerzahlen
 
 3824    21.09.2021  dev     2.2         Andreas Bug         Bildschrim blieb bei Elemente in andere Lizenz kopieren hängen
 
