@@ -6,6 +6,7 @@ import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.helper.DateUtils
 import de.laser.properties.PropertyDefinition
+import de.laser.reporting.local.SubscriptionReporting
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
@@ -57,13 +58,10 @@ class BaseQuery {
             String cfgKey = it.value.get('meta').cfgKey
 
             it.value.get('query')?.default?.each { it2 ->
-                if (cfgKey == 'SubscriptionReporting') {  // -- fallback
-                    if (it2.value.containsKey(query)) {
-                        meta = [ it2.key, it2.value.get(query) ]
-                    }
-                }
-                else {
-                    if (it2.value.contains(query)) {
+                if (it2.value.contains(query)) {
+                    if (cfgKey == 'SubscriptionReporting') {
+                        meta = [SubscriptionReporting.getMessage(it2.key), SubscriptionReporting.getMessage('query.' + query) ]
+                    } else {
                         meta = [ BaseConfig.getMessage(it2.key), BaseConfig.getMessage(cfgKey + '.query.' + query) ]
                     }
                 }
@@ -71,7 +69,11 @@ class BaseQuery {
             // TODO - query dist
             it.value.get('query2')?.each { it2 ->
                 if (it2.value.containsKey(query)) {
-                    meta = [ BaseConfig.getMessage(it2.key), BaseConfig.getMessage(cfgKey + '.dist.' + query) ]
+                    if (cfgKey == 'SubscriptionReporting') {
+                        meta = [SubscriptionReporting.getMessage(it2.key), SubscriptionReporting.getMessage('timeline.' + query) ]
+                    } else {
+                        meta = [ BaseConfig.getMessage(it2.key), BaseConfig.getMessage(cfgKey + '.dist.' + query) ]
+                    }
                 }
             }
         }
@@ -328,7 +330,7 @@ class BaseQuery {
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
 
-        // println ' ---> ' + 'reporting.cfg.' + token
+        // println ' ---> ' + 'reporting.query.base.' + token
         messageSource.getMessage('reporting.query.base.' + token, null, locale)
     }
 }

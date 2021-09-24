@@ -91,7 +91,8 @@ class ExportLocalHelper extends BaseExportHelper {
     static String getFieldLabel(BaseExport export, String fieldName) {
 
         if ( isFieldMultiple(fieldName) ) {
-            String label = BaseExport.CUSTOM_LABEL.get(fieldName)
+            // String label = BaseExport.CUSTOM_LABEL.get(fieldName)
+            String label = BaseExport.getMessage(fieldName)
 
             if (fieldName == 'x-identifier' || fieldName == '@ae-entitlement-tippIdentifier') {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
@@ -120,8 +121,8 @@ class ExportLocalHelper extends BaseExportHelper {
         else if (fieldName == 'x-property') {
             return 'Merkmal: ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
         }
-        else if (BaseExport.CUSTOM_LABEL.containsKey(fieldName)) {
-            return BaseExport.CUSTOM_LABEL.get(fieldName)
+        else if (BaseExport.CUSTOM_LABEL.contains(fieldName)) {
+            return BaseExport.getMessage(fieldName)
         }
 
         // --- adapter ---

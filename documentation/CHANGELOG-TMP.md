@@ -11,6 +11,8 @@
 
 3542    23.09.2021  dev     2.2         Moe     Feature     ClickMe Excel Nutzerzahlen
 
+3817    24.09.2021  dev     2.2         David   Feature     Reporting: Übersetzung
+
 3824    21.09.2021  dev     2.2         Andreas Bug         Bildschrim blieb bei Elemente in andere Lizenz kopieren hängen
 
 3819    22.09.2021  dev     2.2         Moe     Bug         Fehlermeldung beim Aufrufen der Teilnehmer
