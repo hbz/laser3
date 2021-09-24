@@ -196,7 +196,7 @@ class SurveyService {
                     }
                 }
 
-                surveyConfig.surveyProperties.each {
+                surveyConfig.surveyProperties.sort { it.surveyProperty.getI10n('name') }.each {
                     titles.addAll([messageSource.getMessage('surveyProperty.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('default.type.label', null, LocaleContextHolder.getLocale()),
                                    messageSource.getMessage('surveyResult.result', null, LocaleContextHolder.getLocale()),
@@ -307,7 +307,7 @@ class SurveyService {
                         }
                     }
 
-                    SurveyResult.findAllBySurveyConfigAndParticipant(surveyConfig, surveyOrg.org).sort{it.type.name}.each { surResult ->
+                    SurveyResult.findAllBySurveyConfigAndParticipant(surveyConfig, surveyOrg.org).sort{it.type.getI10n('name')}.each { surResult ->
                         row.add([field: surResult.type?.getI10n('name') ?: '', style: null])
                         row.add([field: PropertyDefinition.getLocalizedValue(surResult.type.type) ?: '', style: null])
 

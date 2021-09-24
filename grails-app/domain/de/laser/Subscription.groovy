@@ -222,6 +222,9 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     @Override
     def afterUpdate() {
         super.afterUpdateHandler()
+
+
+
     }
     @Override
     def beforeInsert() {
@@ -231,6 +234,31 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     def beforeUpdate() {
         Map<String, Object> changes = super.beforeUpdateHandler()
         log.debug ("beforeUpdate() " + changes.toMapString())
+
+        if ((this._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION])
+                && changes.oldMap.containsKey('hasPerpetualAccess')
+                && changes.newMap.containsKey('hasPerpetualAccess')
+                && changes.oldMap.hasPerpetualAccess != changes.newMap.hasPerpetualAccess) {
+            if(changes.newMap.hasPerpetualAccess == true) {
+                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus and ie.perpetualAccessBySub is null', [sub: this, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])
+                if (ieIDs.size() > 0) {
+                    log.debug("beforeUpdate() set perpetualAccessBySub of ${ieIDs.size()} IssueEntitlements to sub:" + this)
+                    ieIDs.collate(32767).each {
+                        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.id in (:idList)", [sub: this, idList: it])
+                    }
+                }
+            }else {
+                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus and ie.perpetualAccessBySub is not null', [sub: this, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])
+                if (ieIDs.size() > 0) {
+                    log.debug("beforeUpdate() set perpetualAccessBySub of ${ieIDs.size()} IssueEntitlements to null:" + this)
+                    ieIDs.collate(32767).each {
+                        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = null where ie.id in (:idList)", [idList: it])
+                    }
+
+
+                }
+            }
+        }
 
         auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }

@@ -277,7 +277,7 @@
                         </g:if>
 
                         <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                            <g:each in="${surResults.sort { it.type.name }}" var="resultProperty">
+                            <g:each in="${surResults.sort { it.type.getI10n('name') }}" var="resultProperty">
                                 <td>
                                     <g:if test="${resultProperty.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
 
@@ -529,7 +529,7 @@
                         </g:if>
 
                         <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                            <g:each in="${surResults.sort { it.type.name }}" var="resultProperty">
+                            <g:each in="${surResults.sort { it.type.getI10n('name') }}" var="resultProperty">
                                 <td>
                                     <g:if test="${resultProperty.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
 

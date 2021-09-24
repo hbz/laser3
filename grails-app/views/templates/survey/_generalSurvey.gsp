@@ -266,7 +266,7 @@
             </thead>
 
             <tbody>
-            <g:each in="${surveyProperties.sort { it.surveyProperty.name }}" var="surveyProperty" status="i">
+            <g:each in="${surveyProperties.sort { it.surveyProperty.getI10n('name') }}" var="surveyProperty" status="i">
                 <tr>
                     <td class="center aligned">
                         ${i + 1}
