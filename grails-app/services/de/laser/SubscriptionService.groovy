@@ -784,6 +784,14 @@ class SubscriptionService {
         ies
     }
 
+    List getCurrentIssueEntitlementIDs(Subscription subscription) {
+        List<Long> ieIDs = subscription?
+                IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur",
+                        [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT])
+                : []
+        ieIDs
+    }
+
     List getVisibleOrgRelationsWithoutConsortia(Subscription subscription) {
         List visibleOrgRelations = []
         subscription?.orgRelations?.each { OrgRole or ->

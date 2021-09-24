@@ -42,7 +42,7 @@
                     <tr>
                         <th><g:message code="default.usage.consortiaTableHeader"/></th>
                     </tr>
-                    <g:each in="${Subscription.executeQuery('select new map(sub.id as memberId, org.sortname as memberName) from OrgRole oo join oo.org org join oo.sub sub where sub.instanceOf = :parent and oo.roleType in (:subscrRoles) order by org.sortname asc', [parent: subscription, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row">
+                    <g:each in="${Subscription.executeQuery('select new map(sub.id as memberId, org.sortname as memberName) from OrgRole oo join oo.org org join oo.sub sub where sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and exists (select sp.id from SubscriptionPackage sp where sp.subscription = sub) order by org.sortname asc', [parent: subscription, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row">
                         <tr>
                             <td><g:link action="stats" id="${row.memberId}">${row.memberName}</g:link></td>
                         </tr>
