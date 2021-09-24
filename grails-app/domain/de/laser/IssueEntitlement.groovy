@@ -124,6 +124,11 @@ class IssueEntitlement extends AbstractBase implements Comparable {
           ie.generateSortTitle()
       }
       if(ie.save()) {
+
+          if(subscription.hasPerpetualAccess){
+              ie.perpetualAccessBySub = subscription
+          }
+
           Set<TIPPCoverage> tippCoverages = TIPPCoverage.findAllByTipp(tipp)
         if(tippCoverages) {
           tippCoverages.each { TIPPCoverage tc ->
