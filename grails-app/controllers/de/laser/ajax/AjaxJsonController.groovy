@@ -37,7 +37,6 @@ import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
-import javafx.collections.transformation.SortedList
 import org.springframework.context.i18n.LocaleContextHolder
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
