@@ -15,6 +15,8 @@ import de.laser.reporting.myInstitution.base.BaseQuery
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.plugins.web.taglib.ApplicationTagLib
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 import java.time.Year
@@ -34,51 +36,46 @@ class SubscriptionReporting {
                     ],
                     query: [
                             default: [
-                                    'Bestand' : [
-                                            'tipp-publisherName'    : 'Verlag',
-                                            'tipp-seriesName'       : 'Name der Reihe',
-                                            'tipp-subjectReference' : 'Fachbereich',
-                                            'tipp-titleType'        : 'Titel-Typ',
-                                            'tipp-medium'           : 'Medium',
-                                            'tipp-ddcs'             : 'Dewey-Dezimalklassifikation',
-                                            'tipp-languages'        : 'Sprache',
-                                            //'tipp-platform'         : 'Plattform',
-                                            //'tipp-package'          : 'Paket'
+                                    'tipp' : [
+                                            'tipp-publisherName',
+                                            'tipp-seriesName',
+                                            'tipp-subjectReference',
+                                            'tipp-titleType',
+                                            'tipp-medium',
+                                            'tipp-ddcs',
+                                            'tipp-languages',
+                                            //'tipp-platform',
+                                            //'tipp-package'
                                     ]
                             ]
                     ],
 
                     query2: [
                             default: [
-                                    'Entwicklung' : [
+                                    'timeline' : [
                                             'timeline-entitlement' : [
-                                                    label : 'Bestand',
                                                     chart : '1axis3values',
-                                                    chartLabels : [ 'Titel entfernt', 'Neue Titel', 'Aktuelle Titel' ]
+                                                    chartLabels : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
                                             ]
                                     ]
                             ],
-                            consAtcons: [ // TODO
-                                    'Entwicklung' : [
+                            consAtcons: [
+                                    'timeline' : [
                                             'timeline-member' : [
-                                                    label : 'Teilnehmer',
                                                     chart : '1axis3values',
-                                                    chartLabels : [ 'Teilnehmer entfernt', 'Neue Teilnehmer', 'Aktuelle Teilnehmer' ]
+                                                    chartLabels : [ 'member.1', 'member.2', 'member.3' ]
                                             ],
                                             'timeline-cost' : [
-                                                    label : 'Teilnehmerkosten',
                                                     chart : 'cost',
-                                                    chartLabels : [ 'Wert', 'Endpreis (nach Steuer)' ]
+                                                    chartLabels : [ 'cost.1', 'cost.2' ]
                                             ],
                                             'timeline-entitlement' : [
-                                                    label : 'Bestand',
                                                     chart : '1axis3values',
-                                                    chartLabels : [ 'Titel entfernt', 'Neue Titel', 'Aktuelle Titel' ]
+                                                    chartLabels : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
                                             ],
                                             'timeline-annualMember-subscription' : [
-                                                    label       : 'Jahresring → Teilnehmerlizenz',
                                                     chart       : 'annualMember',
-                                                    chartLabels : [ 'Teilnehmerlizenzen' ]
+                                                    chartLabels : [ 'annualMember-subscription' ]
                                             ],
                                     ]
                             ],
@@ -115,7 +112,7 @@ class SubscriptionReporting {
                 if (it.value.containsKey(params.query)) {
                     String sd = sub.startDate ? sdf.format(sub.startDate) : NO_STARTDATE
                     String ed = sub.endDate ? sdf.format(sub.endDate) : NO_ENDDATE
-                    meta = [ it.key, it.value.get(params.query).label, "${sd} - ${ed}" ]
+                    meta = [ getMessage( it.key ), getMessage( 'timeline.' + params.query ), "${sd} - ${ed}" ]
                 }
             }
         }
@@ -127,7 +124,7 @@ class SubscriptionReporting {
         CONFIG.base.query2.each { cats ->
             cats.value.each {it ->
                 if (it.value.containsKey(params.query)) {
-                    meta = [ it.key, it.value.get(params.query).label, "${params.id}" ]
+                    meta = [ getMessage( it.key ), getMessage( 'timeline.' + params.query ), "${params.id}" ]
                 }
             }
         }
@@ -526,5 +523,13 @@ class SubscriptionReporting {
         }
 
         result
+    }
+
+    static String getMessage(String token) {
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+
+        // println ' ---> ' + 'reporting.local.subscription.' + token
+        messageSource.getMessage('reporting.local.subscription.' + token, null, locale)
     }
 }

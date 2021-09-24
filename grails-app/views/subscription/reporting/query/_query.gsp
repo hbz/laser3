@@ -1,15 +1,16 @@
+<%@ page import="de.laser.reporting.local.SubscriptionReporting" %>
 <div class="ui segment form">
 
     <div class="fields <laser:numberToString number="${cfgQueryList2.size() + 2}" min="2"/>">
         <g:each in="${cfgQueryList2}" var="cfgQuery" status="qci">
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
-                    <label for="query-chooser-2-${qci}">${field.key}</label>
+                    <label for="query-chooser-2-${qci}">${SubscriptionReporting.getMessage(field.key)}</label>
                     <g:select name="query-chooser-2"
                               id="query-chooser-2-${qci}"
                               from="${field.value}"
-                              optionKey="key"
-                              optionValue="${{it.value.label}}"
+                              optionKey="${{it.key}}"
+                              optionValue="${{SubscriptionReporting.getMessage('timeline.' + it.key)}}"
                               class="ui selection dropdown la-not-clearable"
                               noSelection="${['': message(code: 'default.select.choose.label')]}" />
                 </div>
@@ -19,12 +20,12 @@
         <g:each in="${cfgQueryList}" var="cfgQuery" status="qci">
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
-                    <label for="query-chooser-1-${qci}">${field.key}</label>
+                    <label for="query-chooser-1-${qci}">${SubscriptionReporting.getMessage(field.key)}</label>
                     <g:select name="query-chooser-1"
                               id="query-chooser-1-${qci}"
                               from="${field.value}"
-                              optionKey="key"
-                              optionValue="${{it.value}}"
+                              optionKey="${{it}}"
+                              optionValue="${{SubscriptionReporting.getMessage('query.' + it)}}"
                               class="ui selection dropdown la-not-clearable"
                               noSelection="${['': message(code: 'default.select.choose.label')]}" />
                 </div>
