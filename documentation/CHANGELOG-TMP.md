@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3821    24.09.2021  dev     2.2         David   Feature     Reporting: Vollnutzer braucht einige Auswahlmöglichkeiten nicht
+
 3542    23.09.2021  dev     2.2         Moe     Feature     ClickMe Excel Nutzerzahlen
 
 3817    24.09.2021  dev     2.2         David   Feature     Reporting: Übersetzung

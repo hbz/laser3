@@ -33,4 +33,22 @@ databaseChangeLog = {
         dropColumn(columnName: "ie_has_perpetual_access", tableName: "issue_entitlement")
     }
 
+    changeSet(author: "klober (modified)", id: "1632228806219-6") {
+        grailsChange {
+            change {
+                sql.execute("delete from system_profiler where sp_archive in ('1.3-RC', '1.4-RC', '1.5-RC', '1.6-RC', '2.0-RC', '2.1-RC')")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1632228806219-7") {
+        grailsChange {
+            change {
+                sql.execute("delete from system_profiler where sp_archive in ('1.5', '1.6')")
+            }
+            rollback {}
+        }
+    }
+
 }
