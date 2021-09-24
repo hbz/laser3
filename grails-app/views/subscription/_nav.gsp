@@ -33,7 +33,13 @@
     <g:if test="${((contextService.getOrg().getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']) || params.orgBasicMemberView)&& subscription?.type == de.laser.helper.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
         <semui:securedSubNavItem orgPerm="ORG_BASIC_MEMBER" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
-    <semui:subNavItem controller="subscription" action="stats" params="${[id:params.id]}" message="default.stats.label" />
+    <g:if test="${subscription.packages}">
+        <semui:subNavItem controller="subscription" action="stats" params="${[id:params.id]}" message="default.stats.label" />
+    </g:if>
+    <g:else>
+        <semui:subNavItem disabled="disabled" message="default.stats.label" tooltip="${message(code: 'default.stats.noPackage')}"/>
+    </g:else>
+
 
     <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_INST']}">
         <semui:subNavItem controller="subscription" action="reporting" params="${[id:params.id]}" message="myinst.reporting" />
