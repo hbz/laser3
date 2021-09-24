@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3818    24.09.2021  dev     2.2         Andreas Bug         Dashboard-Benachrichtigungen/Änderungen auf natives SQL umgestellt
+
 3835    24.09.2021  dev     2.2         Moe     Feature     Dauerhafter Zugriff in Lizenzbestände setzen über Dauerhafter Zugriff Attribute der Lizenz
 
 3832    24.09.2021  dev     2.2         Moe     Feature     Darstellungsanpassungen der Merkmalsverwaltungen
@@ -19,9 +21,9 @@
 
 3542    23.09.2021  dev     2.2         Moe     Feature     ClickMe Excel Nutzerzahlen
 
-3824    21.09.2021  dev     2.2         Andreas Bug         Bildschrim blieb bei Elemente in andere Lizenz kopieren hängen
-
 3819    22.09.2021  dev     2.2         Moe     Bug         Fehlermeldung beim Aufrufen der Teilnehmer
+
+3824    21.09.2021  dev     2.2         Andreas Bug         Bildschrim blieb bei Elemente in andere Lizenz kopieren hängen
 
 3822    21.09.2021  dev     2.2         Andreas Feature     neue FID-Merkmale, Referenzwerte und Identifier-Namensräume aufgenommen
 
