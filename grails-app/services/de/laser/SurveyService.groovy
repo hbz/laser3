@@ -1112,36 +1112,23 @@ class SurveyService {
         }
     }
 
-    def addSubMembers(SurveyConfig surveyConfig) {
+    void addSubMembers(SurveyConfig surveyConfig) {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
-        result.user = contextService.getUser()
 
-        result.editable = (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') && surveyConfig.surveyInfo.owner.id == result.institution.id)
-
-        if (!result.editable) {
-            return
-        }
-
-        List orgs = []
         List currentMembersSubs = subscriptionService.getValidSurveySubChilds(surveyConfig.subscription)
 
-        currentMembersSubs.each{ sub ->
-            orgs.addAll(sub.getAllSubscribers())
-        }
-
-        if (orgs) {
-
-            orgs.each { org ->
+        currentMembersSubs.each { Subscription subChild ->
+                Org org = subChild.getSubscriber()
 
                 if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org))) {
 
                     boolean existsMultiYearTerm = false
-                    Subscription sub = surveyConfig.subscription
-                    if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
-                        Subscription subChild = sub.getDerivedSubscriptionBySubscribers(org)
 
-                        if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
+                    if (!surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
+
+
+                        if (subChild.isCurrentMultiYearSubscriptionNew()) {
                             existsMultiYearTerm = true
                         }
 
@@ -1158,19 +1145,21 @@ class SurveyService {
                             if(surveyConfig.surveyInfo.status in [RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]) {
                                 surveyConfig.surveyProperties.each { property ->
 
-                                    SurveyResult surveyResult = new SurveyResult(
-                                            owner: result.institution,
-                                            participant: org ?: null,
-                                            startDate: surveyConfig.surveyInfo.startDate,
-                                            endDate: surveyConfig.surveyInfo.endDate ?: null,
-                                            type: property.surveyProperty,
-                                            surveyConfig: surveyConfig
-                                    )
+                                    if(!SurveyResult.findBySurveyConfigAndParticipantAndTypeAndOwner(surveyConfig, org, property.surveyProperty, result.institution)) {
+                                        SurveyResult surveyResult = new SurveyResult(
+                                                owner: result.institution,
+                                                participant: org ?: null,
+                                                startDate: surveyConfig.surveyInfo.startDate,
+                                                endDate: surveyConfig.surveyInfo.endDate ?: null,
+                                                type: property.surveyProperty,
+                                                surveyConfig: surveyConfig
+                                        )
 
-                                    if (surveyResult.save()) {
-                                        log.debug( surveyResult.toString() )
-                                    } else {
-                                        log.error("Not create surveyResult: " + surveyResult)
+                                        if (surveyResult.save()) {
+                                            log.debug(surveyResult.toString())
+                                        } else {
+                                            log.error("Not create surveyResult: " + surveyResult)
+                                        }
                                     }
                                 }
 
@@ -1182,7 +1171,7 @@ class SurveyService {
                     }
                 }
             }
-        }
+
     }
 
     void copySurveyConfigCharacteristic(SurveyConfig oldSurveyConfig, SurveyConfig newSurveyConfig, params){
@@ -1562,7 +1551,9 @@ class SurveyService {
         List<OrgRole> orgRoles = OrgRole.findAllByOrgAndRoleTypeInList(org, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN])
 
         if(orgRoles) {
-            List<IssueEntitlement> issueEntitlementList = IssueEntitlement.findAllBySubscriptionInListAndStatusAndAcceptStatusAndTippAndPerpetualAccessBySubIsNotNull(orgRoles.sub, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED, tipp, true)
+            List<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByHostPlatformURL(tipp.hostPlatformURL)
+
+            List<IssueEntitlement> issueEntitlementList = IssueEntitlement.findAllBySubscriptionInListAndStatusAndAcceptStatusAndTippInListAndPerpetualAccessBySubIsNotNull(orgRoles.sub, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED, tipps, true)
             if(issueEntitlementList && issueEntitlementList.size() > 0){
                 return true
             }else {

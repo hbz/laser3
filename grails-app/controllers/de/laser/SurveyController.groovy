@@ -972,7 +972,6 @@ class SurveyController {
                         break
                 }
 
-                result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
             }
             CostItem.withTransaction { TransactionStatus ts ->
                 List<CostItem> surveyCostItems = CostItem.executeQuery('select costItem from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and surOrg.org.id in (:orgIDs) and costItem.costItemStatus != :status', [survConfig:  result.surveyConfig, orgIDs: selectedMembers.collect{Long.parseLong(it)}, status: RDStore.COST_ITEM_DELETED])

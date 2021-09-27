@@ -364,11 +364,11 @@
                             <label for="show.subscriber">${message(code: 'default.compare.show.subscriber.name')}</label>
                         </div><br />
                     </g:if>
-                    <div class="ui checkbox">
+                   %{-- <div class="ui checkbox">
                         <g:checkBox name="show.connectedObjects" value="true" checked="false"
                                     onchange="JSPC.app.adjustDropdown()"/>
                         <label for="show.connectedObjects">${message(code: 'default.compare.show.connectedObjects.name')}</label>
-                    </div>
+                    </div>--}%
                     <br />
                     <select id="selectedSubs" name="selectedSubs" multiple="" class="ui search selection fluid dropdown">
                         <option value="">${message(code: 'default.select.choose.label')}</option>
