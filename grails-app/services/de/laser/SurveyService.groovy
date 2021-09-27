@@ -1551,7 +1551,9 @@ class SurveyService {
         List<OrgRole> orgRoles = OrgRole.findAllByOrgAndRoleTypeInList(org, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN])
 
         if(orgRoles) {
-            List<IssueEntitlement> issueEntitlementList = IssueEntitlement.findAllBySubscriptionInListAndStatusAndAcceptStatusAndTippAndPerpetualAccessBySubIsNotNull(orgRoles.sub, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED, tipp, true)
+            List<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByHostPlatformURL(tipp.hostPlatformURL)
+
+            List<IssueEntitlement> issueEntitlementList = IssueEntitlement.findAllBySubscriptionInListAndStatusAndAcceptStatusAndTippInListAndPerpetualAccessBySubIsNotNull(orgRoles.sub, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED, tipps, true)
             if(issueEntitlementList && issueEntitlementList.size() > 0){
                 return true
             }else {
