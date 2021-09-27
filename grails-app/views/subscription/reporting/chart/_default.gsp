@@ -10,10 +10,16 @@
                 ['id', 'name', 'value'],
                 <%
                     if (objectReference) {
-                        data.reverse().each { it -> print "['${objectReference}:${it[0]}', '${it[1]}', ${it[2]}]," } // workaround : XYZ
+                        data.reverse().each { it ->
+                            if (it[0] instanceof String) {
+                                print "['${objectReference}:${it[0].replaceAll("'", BaseQuery.SQM_MASK)}', '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]}]," // property
+                            } else {
+                                print "['${objectReference}:${it[0]}', '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]}]," // rdv
+                            }
+                        } // workaround : XYZ
                     }
                     else {
-                        data.reverse().each { it -> print "['${it[0]}', '${it[1]}', ${it[2]}]," }
+                        data.reverse().each { it -> print "['${it[0]}', '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]}]," }
                     }
                 %>
             ]

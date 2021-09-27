@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3836    27.09.2021  dev     2.2         David   Feature     Reporting: Sonderzeichen
+
 3818    24.09.2021  dev     2.2         Andreas Bug         Dashboard-Benachrichtigungen/Änderungen auf natives SQL umgestellt
 
 3835    24.09.2021  dev     2.2         Moe     Feature     Dauerhafter Zugriff in Lizenzbestände setzen über Dauerhafter Zugriff Attribute der Lizenz

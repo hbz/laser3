@@ -30,6 +30,7 @@ class BaseQuery {
     static int SPEC_DATA_ID_2   = 9990002
     static int SPEC_DATA_ID_3   = 9990003
 
+    static String SQM_MASK      = "\\\\\'"
 
     static Map<String, Object> getEmptyResult(String query, String chart) {
         return [
@@ -115,7 +116,6 @@ class BaseQuery {
 
         result.data.each { d ->
             d[0] = Math.abs(d[0].hashCode())
-            d[1] = d[1].replaceAll("'", '"')
 
             result.dataDetails.add([
                     query : query,
@@ -131,7 +131,7 @@ class BaseQuery {
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
 
         result.data.each { d ->
-            d[1] = RefdataValue.get(d[0]).getI10n('value').replaceAll("'", '"')
+            d[1] = RefdataValue.get(d[0]).getI10n('value')
 
             result.dataDetails.add( [
                     query:  query,
@@ -248,7 +248,7 @@ class BaseQuery {
         ) : []
 
         result.data.each { d ->
-            d[1] = PropertyDefinition.get(d[0]).getI10n('name').replaceAll("'", '"')
+            d[1] = PropertyDefinition.get(d[0]).getI10n('name')
 
             List<Long> objIdList =  Org.executeQuery(
                     dataDetailsHqlPart + ' and (prop.tenant = :ctxOrg or prop.isPublic = true) and pd.id = :d order by pd.name_' + locale,

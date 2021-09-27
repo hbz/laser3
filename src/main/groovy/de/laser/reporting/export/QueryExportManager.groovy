@@ -40,13 +40,15 @@ class QueryExportManager {
     static String buildCsvRow(List<String> content) {
 
         content.collect{ it ->
+            boolean enclose = false
             if (! it) {
                 return ''
             }
             if (it.contains( BaseExport.CSV_FIELD_QUOTATION )) {
-                it = it.replaceAll( BaseExport.CSV_FIELD_QUOTATION , BaseExport.CSV_FIELD_QUOTATION + BaseExport.CSV_FIELD_QUOTATION)
+                it = it.replaceAll( BaseExport.CSV_FIELD_QUOTATION , BaseExport.CSV_FIELD_QUOTATION + BaseExport.CSV_FIELD_QUOTATION) // !
+                enclose = true
             }
-            if (it.contains( BaseExport.CSV_FIELD_SEPARATOR )) {
+            if (enclose || it.contains( BaseExport.CSV_FIELD_SEPARATOR )) {
                 return BaseExport.CSV_FIELD_QUOTATION + it.trim() + BaseExport.CSV_FIELD_QUOTATION
             }
             return it.trim()
