@@ -74,6 +74,13 @@
                             $("#reporting-modal-nodata").modal('show');
                         }
                         else {
+                            var dsl = JSPC.app.reporting.current.chart.option.dataset.source.length
+                            if (dsl > 11) {
+                                $('#chart-wrapper').css('height', 150 + (19 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                            } else {
+                                $('#chart-wrapper').removeAttr('style');
+                            }
+
                             var echart = echarts.init($('#chart-wrapper')[0]);
                             echart.setOption( JSPC.app.reporting.current.chart.option );
 

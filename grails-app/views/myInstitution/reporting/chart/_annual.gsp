@@ -8,7 +8,7 @@
         dataset: {
             source: [
                 ['id', 'name', 'value'],
-                <% data.each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]}]," } %>
+                <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}]," } %>
             ]
         },
         toolbox: JSPC.app.reporting.helper.toolbox,
@@ -59,7 +59,7 @@
         dataset: {
             source: [
                 ['id', 'name', 'value'],
-                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]}]," } %>
+                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}]," } %>
             ]
         },
         tooltip: {

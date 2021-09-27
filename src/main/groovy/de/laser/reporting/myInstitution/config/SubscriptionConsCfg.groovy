@@ -67,12 +67,12 @@ class SubscriptionConsCfg extends BaseConfig {
                                      ],
                                      'subscription-x-annual' : [
                                              detailsTemplate    : 'subscription',
-                                             chartTemplate      : 'generic',
+                                             chartTemplate      : 'annual',
                                              chartLabels        : []
                                      ],
                                      'subscription-x-memberAnnual' : [
                                              detailsTemplate    : 'subscription',
-                                             chartTemplate      : 'generic',
+                                             chartTemplate      : 'annual',
                                              chartLabels        : []
                                      ],
                                      'subscription-x-provider' : [
