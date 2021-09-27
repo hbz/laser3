@@ -158,4 +158,5 @@ databaseChangeLog = {
     include file: 'changelog-2021-08-26.groovy'
     include file: 'changelog-2021-09-02.groovy'
     include file: 'changelog-2021-09-21.groovy'
+    include file: 'changelog-2021-09-27.groovy'
 }

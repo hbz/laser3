@@ -1196,17 +1196,17 @@ class OrganisationController  {
         Map<String,Map<String,ReaderNumber>> numbersWithDueDate = organisationService.groupReaderNumbersByProperty(ReaderNumber.findAllByOrgAndDueDateIsNotNull((Org) result.orgInstance,[sort:params.sortB,order:params.orderB]),"dueDate")
 
         TreeSet<String> semesterCols = [], dueDateCols = []
-        Map<String,Integer> dueDateSums = [:]
-        Map<String,Map<String,Integer>> semesterSums = [:]
+        Map<String,BigDecimal> dueDateSums = [:]
+        Map<String,Map<String,BigDecimal>> semesterSums = [:]
         numbersWithSemester.each { Map.Entry<String,Map<String,ReaderNumber>> semesters ->
             semesters.value.each { Map.Entry<String,ReaderNumber> row ->
                 semesterCols << row.key
                 ReaderNumber rn = row.value
-                Map<String,Integer> semesterSumRow = semesterSums.get(semesters.key)
+                Map<String,BigDecimal> semesterSumRow = semesterSums.get(semesters.key)
                 if(!semesterSumRow)
                     semesterSumRow = [:]
                 if(rn.value) {
-                    Integer groupSum = semesterSumRow.get(rn.referenceGroup)
+                    BigDecimal groupSum = semesterSumRow.get(rn.referenceGroup)
                     if(groupSum == null) {
                         groupSum = rn.value
                     }
@@ -1220,7 +1220,7 @@ class OrganisationController  {
             dueDates.value.each { Map.Entry<String,ReaderNumber> row ->
                 dueDateCols << row.key
                 ReaderNumber rn = row.value
-                Integer dueDateSum = dueDateSums.get(dueDates.key)
+                BigDecimal dueDateSum = dueDateSums.get(dueDates.key)
                 if(rn.value) {
                     if(dueDateSum == null) {
                         dueDateSum = rn.value
