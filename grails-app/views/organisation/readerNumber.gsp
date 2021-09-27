@@ -74,19 +74,19 @@
                             </g:each>
                             <%
                                 Map<String,Integer> sumRow = semesterSums.get(numbersInstance.getKey())
-                                int students = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_STUDENTS,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
-                                int FTEs = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_FTE,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
-                                int staff = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_SCIENTIFIC_STAFF,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
+                                BigDecimal students = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_STUDENTS,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
+                                BigDecimal FTEs = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_FTE,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
+                                BigDecimal staff = sumRow.get(RefdataValue.getByValueAndCategory(ReaderNumber.READER_NUMBER_SCIENTIFIC_STAFF,RDConstants.NUMBER_TYPE).getI10n('value')) ?: 0
                                 boolean missing = students == 0 || FTEs == 0 || staff == 0
                                 //int allOthers = sumRow.findAll { row -> !RefdataCategory.getAllRefdataValues(RDConstants.NUMBER_TYPE).collect { rdv -> rdv.getI10n("value") }.contains(row.key) }.collect { row -> row.value }.sum()
                             %>
                             <td>
                                 <g:if test="${FTEs > 0}">
-                                    <g:formatNumber number="${students+FTEs}"/>
+                                    <g:formatNumber number="${students+FTEs}" minFractionDigits="2" maxFractionDigits="2"/>
                                 </g:if>
                                 <g:if test="${FTEs > 0 && staff > 0}">/</g:if>
                                 <g:if test="${staff > 0}">
-                                    <g:formatNumber number="${students+staff}"/>
+                                    <g:formatNumber number="${students+staff}" minFractionDigits="2" maxFractionDigits="2"/>
                                 </g:if>
                             </td>
                             <td>

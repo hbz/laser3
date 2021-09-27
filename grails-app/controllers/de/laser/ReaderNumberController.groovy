@@ -21,13 +21,14 @@ class ReaderNumberController  {
 
 			rnData.org = Org.get(params.orgid)
 			rnData.referenceGroup = RefdataValue.get(params.referenceGroup).getI10n('value')
+			rnData.value = new BigDecimal(params.value)
 			ReaderNumber numbersInstance = new ReaderNumber(rnData)
 			if (! numbersInstance.save()) {
 				flash.error = message(code: 'default.not.created.message', args: [message(code: 'readerNumber.number.label')])
 				log.error(numbersInstance.errors.toString())
 			}
 		}
-		redirect controller: 'organisation', action: 'readerNumber', params: [id:params.orgid,tableA:params.tableA,tableB:params.tableB,sort:params.sort,order:params.order]
+		redirect controller: 'organisation', action: 'readerNumber', params: [id: params.orgid, tableA: params.tableA, tableB: params.tableB, sort: params.sort, order: params.order]
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
@@ -43,13 +44,14 @@ class ReaderNumberController  {
 			rnData.referenceGroup = RefdataValue.get(params.referenceGroup).getI10n('value')
 			if(params.dueDate)
 				rnData.dueDate = sdf.parse(params.dueDate)
+			rnData.value = new BigDecimal(params.value)
 			numbersInstance.properties = rnData
 			if (! numbersInstance.save()) {
 				flash.error = message(code:'default.not.updated.message', args: [message(code: 'readerNumber.label'), numbersInstance.id])
 				log.error(numbersInstance.errors.toString())
 			}
 		}
-		redirect controller: 'organisation', action: 'readerNumber', params: [id:params.orgid,tableA:params.tableA,tableB:params.tableB,sort:params.sort,order:params.order]
+		redirect controller: 'organisation', action: 'readerNumber', params: [id: params.orgid, tableA: params.tableA, tableB: params.tableB, sort: params.sort, order: params.order]
     }
 
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
