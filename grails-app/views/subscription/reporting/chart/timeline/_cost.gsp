@@ -1,8 +1,9 @@
+<%@ page import="de.laser.reporting.myInstitution.base.BaseQuery" %>
 JSPC.app.reporting.current.chart.option = {
     dataset: {
         dimensions: ['id', 'name', 'valueCons', 'valueConsTax', 'annual', 'isCurrent'],
         source: [
-            <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]},  ${it[3]}, '${it[4]}', ${it[5]}]," } %>
+            <% data.each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]},  ${it[3]}, '${it[4]}', ${it[5]}]," } %>
         ]
     },
     grid:  {

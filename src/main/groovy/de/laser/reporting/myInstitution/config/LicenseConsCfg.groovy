@@ -56,7 +56,7 @@ class LicenseConsCfg extends BaseConfig {
                                     ],
                                     'license-x-annual' : [
                                             detailsTemplate     : 'license',
-                                            chartTemplate       : 'generic',
+                                            chartTemplate       : 'annual',
                                             chartLabels         : []
                                     ]
                             ]

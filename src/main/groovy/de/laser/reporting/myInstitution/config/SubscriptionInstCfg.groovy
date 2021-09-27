@@ -69,7 +69,7 @@ class SubscriptionInstCfg extends BaseConfig {
                                      ],
                                      'subscription-x-annual' : [
                                              detailsTemplate    : 'subscription',
-                                             chartTemplate      : 'generic',
+                                             chartTemplate      : 'annual',
                                              chartLabels        : []
                                      ],
                                      'subscription-x-provider' : [
