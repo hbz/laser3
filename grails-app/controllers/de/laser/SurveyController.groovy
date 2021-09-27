@@ -1241,21 +1241,17 @@ class SurveyController {
 
             if(params.tab == 'participantsViewAllNotFinish'){
                 params.participantsNotFinish = true
-                result.participants = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig)
             }else if(params.tab == 'participantsViewAllFinish'){
                 params.participantsFinish = true
-                result.participants = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)
-            }else{
-                result.participants = result.surveyConfig.orgs
             }
 
             result.participantsNotFinishTotal = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).size()
             result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
             result.participantsTotal = result.surveyConfig.orgs.size()
 
-             //Map<String,Object> fsq = filterService.getSurveyResultQuery(params, result.surveyConfig)
+             Map<String,Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
-            //result.surveyResult = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
+            result.participants = SurveyOrg.executeQuery(fsq.query, fsq.queryParams, params)
 
 
             result.propList    = result.surveyConfig.surveyProperties.surveyProperty
@@ -1309,13 +1305,9 @@ class SurveyController {
      Map<String,Object> surveyTransfer() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
-         Map<String,Object> fsq = filterService.getSurveyResultQuery(params, result.surveyConfig)
+         Map<String,Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
-        result.surveyResult = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
-
-        result.participants = result.surveyConfig.orgs
-
-        result.availableSubscriptions = subscriptionService.getMySubscriptions_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
+        result.participants = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
 
         result.propList    = result.surveyConfig.surveyProperties.surveyProperty
 
@@ -1473,12 +1465,12 @@ class SurveyController {
             params.participantsFinish = true
         }
 
-         Map<String,Object> fsq = filterService.getSurveyResultQuery(params, result.surveyConfig)
-
-        result.surveyResult = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
-
         result.participantsNotFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).size()
         result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
+
+        Map<String,Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
+
+        result.participants = SurveyOrg.executeQuery(fsq.query, fsq.queryParams, params)
 
         result.propList    = result.surveyConfig.surveyProperties.surveyProperty
 
