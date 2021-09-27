@@ -250,7 +250,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                     newSubID: "${newSub.id}"
                 },
                 success: function (data) {
-                        <g:if test="${editable && (params.tab == 'allIEs' || params.tab == 'allIEsStats')}">
+                        <g:if test="${editable && params.tab != 'selectedIEs'}">
                             $("#processButton").html(data.checkedCount + " ${g.message(code: 'renewEntitlementsWithSurvey.preliminary')}");
                         </g:if>
 
