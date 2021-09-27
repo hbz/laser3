@@ -11,7 +11,7 @@ class ReaderNumber {
     String referenceGroup
     String dateGroupNote //counts for every number for a given date
 
-    Integer value
+    BigDecimal value
     @RefdataAnnotation(cat = RDConstants.SEMESTER)
     RefdataValue semester
     Date dueDate

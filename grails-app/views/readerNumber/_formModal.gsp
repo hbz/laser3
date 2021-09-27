@@ -64,7 +64,7 @@
                     <label for="value">
                         <g:message code="readerNumber.number.label"/>
                     </label>
-                    <input type="number" id="value" name="value" value="${numbersInstance?.value}"/>
+                    <input type="number" id="value" name="value" step=".01" value="${numbersInstance?.value}"/>
                 </div>
             </div>
 
