@@ -34,15 +34,15 @@
                         </g:elseif>
                         <g:elseif test="${entry.subscription}">
                             <div class="right aligned wide column">
-                                <g:link controller="subscription" action="show" id="${entry.subscription._getCalculatedPrevious().id}">
-                                    ${entry.subscription._getCalculatedPrevious().dropdownNamingConvention(institution)}
+                                <g:link controller="subscription" action="show" id="${entry.subscription.id}">
+                                    ${entry.subscription.name}
                                 </g:link>
                             </div>
                         </g:elseif>
                     </div><!-- .column -->
                     <div class="ten wide column">
-                        <g:if test="${entry.subPkg}">
-                            <g:link controller="subscription" action="entitlementChanges" id="${entry.subPkg.subscription.id}" params="[tab: 'changes', eventType: entry.msgToken]">${raw(entry.eventString)}</g:link>
+                        <g:if test="${entry.packageSubscription}">
+                            <g:link controller="subscription" action="entitlementChanges" id="${entry.packageSubscription.id}" params="[tab: 'changes', eventType: entry.msgToken]">${raw(entry.eventString)}</g:link>
                         </g:if>
                         <g:else>
                             ${raw(entry.eventString)}
