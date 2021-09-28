@@ -143,9 +143,13 @@
                             <div class="description">
                                 ${wf.description}
                                 <br />
-                                <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
-                                    <i class="icon clipboard"></i>${wf.subscription.name}
-                                </g:link>
+                                <br />
+                                <div class="ui la-flexbox">
+                                    <i class="icon clipboard la-list-icon"></i>
+                                    <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
+                                        ${wf.subscription.name}
+                                    </g:link>
+                                </div>
                                 <g:if test="${wf.comment}">
                                     <div style="margin: 1em 2em; padding: 0.1em 0.5em; border-bottom: 1px dashed #BBBBBB">
                                         ${wf.comment}

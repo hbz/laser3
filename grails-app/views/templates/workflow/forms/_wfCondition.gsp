@@ -13,8 +13,10 @@
     </div>
 
     <div class="field required">
-        <label for="${prefix}_type">${message(code:'default.type.label')}</label>
-        <div style="text-align:right; color:#ee1111">Die Änderung des Typs löscht ALLE typabhängigen Datenfelder</div>
+        <label for="${prefix}_type">
+            ${message(code:'default.type.label')}
+            <span style="float:right; font-weight:normal; color:#ee1111">Die Änderung des Typs löscht ALLE typabhängigen Datenfelder</span>
+        </label>
         <g:select class="ui dropdown la-not-clearable" id="${prefix}_type" name="${prefix}_type"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                       required="required"
@@ -53,7 +55,7 @@
                                 <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
                             </div>
                             <div class="field">
-                                <label for="${prefix}_${field}_isTrigger">...</label>
+                                <label for="${prefix}_${field}_isTrigger">&nbsp;</label>
                                 <div class="ui checkbox">
                                     <input type="checkbox" name="${prefix}_${field}_isTrigger" id="${prefix}_${field}_isTrigger"
                                         <% if (condition?.getProperty(field + '_isTrigger')) { print 'checked="checked"' } %>
