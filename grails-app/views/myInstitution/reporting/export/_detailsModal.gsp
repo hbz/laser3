@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.base.BaseExport; de.laser.reporting.export.myInstitution.ExportGlobalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.export.base.BaseExport; de.laser.reporting.export.myInstitution.ExportGlobalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 <!-- _detailsModal.gsp -->
 <g:set var="export" value="${DetailsExportManager.createExport( token, BaseConfig.KEY_MYINST )}" />
@@ -98,7 +98,15 @@
                             ${message(code: 'reporting.modal.export.cfg.csv.valueSeparator')}: <span class="ui circular label">${BaseExport.CSV_VALUE_SEPARATOR}</span>
                         </p>
                     </div>
-
+                    <div id="fileformat-xlsx" class="wide eight field">
+                        <label>${message(code: 'reporting.modal.export.cfg.xlsx')}</label>
+                        <p>
+                            ${message(code: 'reporting.modal.export.cfg.xlsx.default')}
+                            <br />
+                            <br />
+                            <span class="ui label orange">Funktionalität in Entwicklung</span>
+                        </p>
+                    </div>
                     <div id="fileformat-pdf" class="wide eight field">
                         <label>${message(code: 'reporting.modal.export.cfg.pdf')}</label>
                         <p>
@@ -112,12 +120,18 @@
                             <label for="fileformat">${message(code: 'default.fileFormat.label')}</label>
                             <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
                                       optionKey="key" optionValue="value"
-                                      from="${[csv:'CSV', pdf:'PDF']}"
+                                      from="${[csv:'CSV', pdf:'PDF', xlsx: 'XLSX']}"
                             />
+                            %{-- <semui:dropdownWithI18nExplanations name="fileformat"
+                                    class="ui dropdown la-not-clearable"
+                                    from="[csv: ['CSV', 'Comma-Separated Values'], pdf: ['PDF', 'Portable Document Format'], xlsx: ['XLSX', 'Excel - Office Open XML']]" value="csv"
+                                    optionKey="key"
+                                    optionValue="${{it.value[0]}}"
+                                    optionExpl="${{it.value[1]}}" /> --}%
                         </div>
                         <div class="field">
                             <label for="filename">${message(code: 'default.fileName.label')}</label>
-                            <input name="filename" id="filename" value="${ExportGlobalHelper.getFileName(queryLabels)}" />
+                            <input name="filename" id="filename" value="${BaseExportHelper.getFileName(queryLabels)}" />
                         </div>
                     </div>
 

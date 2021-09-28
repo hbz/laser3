@@ -116,11 +116,11 @@ class SemanticUiInplaceTagLib {
                     else {
                         if(attrs.owner[attrs.field] instanceof String)
                             oldValue = attrs.owner[attrs.field].replaceAll("(.{50})",'$1&shy;')
-                        else oldValue = attrs.owner[attrs.field].encodeAsHTML()
+                        else oldValue = attrs.owner[attrs.field]
                     }
                 }
-                out << " data-oldvalue=\"${oldValue}\">"
-                out << oldValue
+                out << " data-oldvalue=\"${oldValue.encodeAsHTML()}\">"
+                out << oldValue.encodeAsHTML()
             }
             else {
                 out << ">"
