@@ -222,9 +222,11 @@
                                     <g:else>
                                         ${prop.type.getI10n('name')}
                                     </g:else>
+                                    <%--
                                     <g:if test="${prop.type.multipleOccurrence}">
                                         <span class="orange"> M </span>
                                     </g:if>
+                                    --%>
                                 </td>
                                 <td>
                                     <g:if test="${prop.type.isIntegerType()}">
