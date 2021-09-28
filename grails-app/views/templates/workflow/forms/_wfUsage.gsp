@@ -12,10 +12,18 @@
             <p><strong>${workflow.title}</strong></p>
             <p>${workflow.description}</p>
             <p>
-                <g:link controller="subscription" action="show" params="${[id: workflow.subscription.id]}">
-                    <i class="icon clipboard"></i>${workflow.subscription.name}
-                </g:link>
+                <div class="ui la-flexbox">
+                    <i class="icon clipboard la-list-icon"></i>
+                    <g:link controller="subscription" action="show" params="${[id: workflow.subscription.id]}">
+                        ${workflow.subscription.name}
+                    </g:link>
+                </div>
             </p>
+        </div>
+
+        <div class="field">
+            <label for="${prefixOverride}_comment">${message(code:'default.comment.label')}</label>
+            <textarea id="${prefixOverride}_comment" name="${prefixOverride}_comment" rows="2">${workflow.comment}</textarea>
         </div>
 
         <div class="field">
@@ -27,11 +35,6 @@
                               optionKey="id"
                               optionValue="value" />
             </div>
-        </div>
-
-        <div class="field">
-            <label for="${prefixOverride}_comment">${message(code:'default.comment.label')}</label>
-            <textarea id="${prefixOverride}_comment" name="${prefixOverride}_comment" rows="2">${workflow.comment}</textarea>
         </div>
 
         %{-- <g:if test="${! subscription}"> currentWorkflows --}%
@@ -158,31 +161,24 @@
         <div class="field">
             <p><strong>${task.title}</strong></p>
             <p>${task.description}</p>
-        </div>
-
-        <div class="field">
-            <div class="fields two">
-                <div class="field">
-                    <label for="${prefixOverride}_priority">${message(code:'default.priority.label')}</label>
-                    <p>
-                        <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
-                        ${task.priority.getI10n('value')}
-                    </p>
-                </div>
-                <div class="field">
-                    <label for="${prefixOverride}_status">${message(code:'default.status.label')}</label>
-                    <laser:select class="ui dropdown la-not-clearable" id="${prefixOverride}_status" name="${prefixOverride}_status"
-                                  from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_STATUS )}"
-                                  value="${task.status?.id}"
-                                  optionKey="id"
-                                  optionValue="value" />
-                </div>
-            </div>
+            <p>
+                <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}" style="color:darkgrey"></i>
+                ${task.priority.getI10n('value')}
+            </p>
         </div>
 
         <div class="field">
             <label for="${prefixOverride}_comment">${message(code:'default.comment.label')}</label>
             <textarea id="${prefixOverride}_comment" name="${prefixOverride}_comment" rows="2">${task.comment}</textarea>
+        </div>
+
+        <div class="field">
+            <label for="${prefixOverride}_status">${message(code:'default.status.label')}</label>
+            <laser:select class="ui dropdown la-not-clearable" id="${prefixOverride}_status" name="${prefixOverride}_status"
+                          from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_STATUS )}"
+                          value="${task.status?.id}"
+                          optionKey="id"
+                          optionValue="value" />
         </div>
 
         <g:if test="${task.condition}">

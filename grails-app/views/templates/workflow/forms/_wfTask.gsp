@@ -7,20 +7,22 @@
         <input type="text" name="${prefix}_title" id="${prefix}_title" value="${task?.title}" required="required" />
     </div>
 
-    <div class="field">
-        <label for="${prefix}_description">${message(code:'default.description.label')}</label>
-        <input type="text" name="${prefix}_description" id="${prefix}_description" value="${task?.description}" />
-    </div>
+    <div class="fields two" style="margin-bottom:0;">
+        <div class="field twelve wide">
+            <label for="${prefix}_description">${message(code:'default.description.label')}</label>
+            <input type="text" name="${prefix}_description" id="${prefix}_description" value="${task?.description}" />
+        </div>
 
-    <div class="field required">
-        <label for="${prefix}_priority">${message(code:'default.priority.label')}</label>
-        <laser:select class="ui dropdown la-not-clearable" id="${prefix}_priority" name="${prefix}_priority"
-                      required="required"
-                      noSelection="${['' : message(code:'default.select.choose.label')]}"
-                      from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_PRIORITY )}"
-                      value="${task?.priority?.id}"
-                      optionKey="id"
-                      optionValue="value" />
+        <div class="field four wide required">
+            <label for="${prefix}_priority">${message(code:'default.priority.label')}</label>
+            <laser:select class="ui dropdown la-not-clearable" id="${prefix}_priority" name="${prefix}_priority"
+                          required="required"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                          from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_PRIORITY )}"
+                          value="${task?.priority?.id}"
+                          optionKey="id"
+                          optionValue="value" />
+        </div>
     </div>
 
     <g:if test="${prefix == WfTaskPrototype.KEY}">
@@ -72,6 +74,11 @@
 
     <g:if test="${prefix == WfTask.KEY}">
 
+        <div class="field">
+            <label for="${prefix}_comment">${message(code:'default.comment.label')}</label>
+            <input type="text" name="${prefix}_comment" id="${prefix}_comment" value="${task?.comment}" />
+        </div>
+
         <div class="field required">
             <label for="${prefix}_status">${message(code:'default.status.label')}</label>
             <laser:select class="ui dropdown la-not-clearable" id="${prefix}_status" name="${prefix}_status"
@@ -80,11 +87,6 @@
                           value="${task?.status?.id}"
                           optionKey="id"
                           optionValue="value" />
-        </div>
-
-        <div class="field">
-            <label for="${prefix}_comment">${message(code:'default.comment.label')}</label>
-            <input type="text" name="${prefix}_comment" id="${prefix}_comment" value="${task?.comment}" />
         </div>
 
         %{--
