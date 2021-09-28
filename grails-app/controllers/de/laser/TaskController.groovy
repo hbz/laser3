@@ -106,8 +106,8 @@ class TaskController  {
         [taskInstance: taskInstance]
     }
 
-	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
-	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+	@DebugAnnotation(test='hasAffiliation("INST_USER")', wtc = 2)
+	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def edit() {
 		Task.withTransaction {
 			Org contextOrg = contextService.getOrg()

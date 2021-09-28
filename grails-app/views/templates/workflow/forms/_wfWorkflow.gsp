@@ -38,6 +38,11 @@
     </g:if>
     <g:if test="${prefix == WfWorkflow.KEY}">
 
+        <div class="field">
+            <label for="${prefix}_comment">${message(code:'default.comment.label')}</label>
+            <input type="text" name="${prefix}_comment" id="${prefix}_comment" value="${workflow?.comment}" />
+        </div>
+
         <div class="field required">
             <label for="${prefix}_status">${message(code:'default.status.label')}</label>
             <laser:select class="ui dropdown la-not-clearable" id="${prefix}_status" name="${prefix}_status"
@@ -50,17 +55,15 @@
         </div>
 
         <div class="field">
-            <label for="${prefix}_comment">${message(code:'default.comment.label')}</label>
-            <input type="text" name="${prefix}_comment" id="${prefix}_comment" value="${workflow?.comment}" />
-        </div>
-
-        <div class="field">
             <label for="${prefix}_subscription">${message(code:'subscription.label')}</label>
             <p>
                 <g:if test="${workflow?.subscription}">
-                    <g:link controller="subscription" action="show" params="${[id: workflow.subscription.id]}">
-                        <i class="icon clipboard"></i> ${workflow.subscription.name}
-                    </g:link>
+                    <div class="ui la-flexbox">
+                        <i class="icon clipboard la-list-icon"></i>
+                        <g:link controller="subscription" action="show" params="${[id: workflow.subscription.id]}">
+                            ${workflow.subscription.name}
+                        </g:link>
+                    </div>
                 </g:if>
             </p>
             %{--
@@ -89,9 +92,12 @@
             <label for="${prefix}_prototype">${message(code:'default.prototype.label')}</label>
             <p>
                 <g:if test="${workflow?.prototype}">
-                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + workflow.prototype.id]}">
-                        <i class="icon clone outline"></i> ${workflow.prototype.title}
-                    </g:link>
+                    <div class="ui la-flexbox">
+                        <i class="icon clone outline la-list-icon"></i>
+                        <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + workflow.prototype.id]}">
+                             ${workflow.prototype.title}
+                        </g:link>
+                    </div>
                 </g:if>
             </p>
         </div>

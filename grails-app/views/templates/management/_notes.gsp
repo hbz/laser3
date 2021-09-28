@@ -14,7 +14,7 @@
 
     <div class="ui segment">
     <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'notes']" method="post"
-            class="ui form">
+            class="ui form notes">
         <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
@@ -68,8 +68,12 @@
                 <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriber() : zeile.orgs}"/>
                 <tr>
                     <td>
-                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
-                                    checked="false" disabled="${!editable}"/>
+                        <%-- This whole construct is necessary for that the form validation works!!! --%>
+                        <div class="field">
+                            <div class="ui checkbox">
+                                <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}" checked="false" disabled="${!editable}"/>
+                            </div>
+                        </div>
                     </td>
                     <td>${i + 1}</td>
                     <g:if test="${controllerName == "subscription"}">
@@ -137,6 +141,22 @@
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', true)
         } else {
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
+        }
+    });
+
+    $('.notes').form({
+        on: 'blur',
+        inline: true,
+        fields: {
+            noSubscription: {
+                identifier: 'selectedSubs',
+                rules: [
+                    {
+                        type: 'checked',
+                        prompt: '<g:message code="subscriptionsManagement.noSelectedSubscriptions.table"/>'
+                    }
+                ]
+            }
         }
     });
 

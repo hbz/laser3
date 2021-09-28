@@ -1,7 +1,5 @@
 <laser:serviceInjection />
 
-<!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
-<g:set var="overwriteEditable" value="${editable || accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
 
 <div class="ui grid la-clear-before">
 
@@ -28,6 +26,8 @@
             </thead>
             <tbody>
             <g:each in="${taskInstanceList}" var="taskInstance">
+                <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
+                <g:set var="overwriteEditable" value="${editable || taskService.isTaskEditableBy(taskInstance, contextService.getUser(), contextService.getOrg())}" />
                 <tr>
                     <th scope="row" class="la-th-column la-main-object" >${fieldValue(bean: taskInstance, field: "title")}</th>
 
