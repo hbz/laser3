@@ -100,10 +100,11 @@
             <table class="ui celled la-table table">
                 <thead>
                 <tr>
-                    <th>
-                        <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"
-                                    disabled="${!editable}"/>
-                    </th>
+                    <g:if test="${editable}">
+                        <th>
+                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
+                        </th>
+                    </g:if>
                     <th>${message(code: 'sidewide.number')}</th>
                     <g:if test="${controllerName == "subscription"}">
                         <th>${message(code: 'default.sortname.label')}</th>
@@ -130,10 +131,17 @@
                     <g:set var="sub" value="${zeile instanceof Subscription ? zeile : zeile.sub}"/>
                     <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriber() : zeile.orgs}"/>
                     <tr>
-                        <td>
-                            <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
-                                        checked="false" disabled="${!editable}"/>
-                        </td>
+                        <g:if test="${editable}">
+                            <td>
+                                <%-- This whole construct is necessary for that the form validation works!!! --%>
+                                <div class="field">
+                                    <div class="ui checkbox">
+                                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
+                                                    checked="false"/>
+                                    </div>
+                                </div>
+                            </td>
+                        </g:if>
                         <td>${i + 1}</td>
                         <g:if test="${controllerName == "subscription"}">
                             <td>
