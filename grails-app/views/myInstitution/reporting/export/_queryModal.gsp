@@ -19,6 +19,15 @@
                                 ${message(code: 'reporting.modal.export.cfg.csv.valueSeparator')}: <span class="ui circular label">${BaseExport.CSV_VALUE_SEPARATOR}</span>
                             </p>
                         </div>
+                        <div id="fileformat-xlsx" class="wide eight field">
+                            <label>${message(code: 'reporting.modal.export.cfg.xlsx')}</label>
+                            <p>
+                                ${message(code: 'reporting.modal.export.cfg.xlsx.default')}
+                                <br />
+                                <br />
+                                <span class="ui label orange">Funktionalität in Entwicklung</span>
+                            </p>
+                        </div>
 
                         %{-- ERMS-3614
                         <div id="fileformat-pdf" class="wide eight field">
@@ -41,18 +50,20 @@
                                 <label for="fileformat">${message(code: 'default.fileFormat.label')}</label>
                                 <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
                                           optionKey="key" optionValue="value"
-                                          from="${[csv:'CSV']}"
+                                          from="${[csv:'CSV', xlsx: 'XLSX']}"
                                 />
                                 %{-- ERMS-3614
-                                <g:select name="fileformat" class="ui selection dropdown la-not-clearable"
-                                          optionKey="key" optionValue="value"
-                                          from="${[csv:'CSV', pdf:'PDF']}"
-                                />
+                                <semui:dropdownWithI18nExplanations name="fileformat"
+                                        class="ui dropdown la-not-clearable"
+                                        from="[csv: ['CSV', 'Comma-Separated Values'], pdf: ['PDF', 'Portable Document Format'], xlsx: ['XLSX', 'Excel - Office Open XML']]" value="csv"
+                                        optionKey="key"
+                                        optionValue="${{it.value[0]}}"
+                                        optionExpl="${{it.value[1]}}" />
                                 --}%
                             </div>
                             <div class="field">
                                 <label for="filename">${message(code: 'default.fileName.label')}</label>
-                                <input name="filename" id="filename" value="${message(code: 'reporting.modal.export.fileName.auto')}" disabled />
+                                <input name="filename" id="filename" placeholder="${message(code: 'reporting.modal.export.fileName.auto')}" />
                             </div>
                         </div>
 
