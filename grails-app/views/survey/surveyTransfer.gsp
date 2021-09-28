@@ -55,6 +55,7 @@
 
         <g:render template="evaluationParticipantsView" model="[showCheckbox: true,
                                                                 showTransferFields: true,
+                                                                processAction: 'processTransferParticipants',
                                                                 tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner']]"/>
 
     </semui:form>

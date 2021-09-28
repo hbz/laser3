@@ -116,8 +116,9 @@
     </semui:filter>
 
     <br><br>
-    <g:form action="processTransferParticipants" controller="survey" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
+
+    <g:form action="${processAction}" controller="survey" method="post" class="ui form"
+            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]">
 
         <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
 
@@ -657,6 +658,37 @@
             </div>
 
         </g:if>
+
+        <g:if test="${showOpenParticipantsAgainButtons}">
+            <div class="content">
+                <div class="ui form twelve wide column">
+                    <div class="two fields">
+                        <g:if test="${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}">
+                            <div class="eight wide field" style="text-align: left;">
+                                <button name="openOption" type="submit" value="ReminderMail" class="ui button">
+                                    ${message(code: 'openParticipantsAgain.reminder')}
+                                </button>
+                            </div>
+                        </g:if>
+                        <g:else>
+
+                            <div class="eight wide field" style="text-align: left;">
+                                <button name="openOption" type="submit" value="OpenWithoutMail" class="ui button">
+                                    ${message(code: 'openParticipantsAgain.openWithoutMail.button')}
+                                </button>
+                            </div>
+
+                            <div class="eight wide field" style="text-align: right;">
+                                <button name="openOption" type="submit" value="OpenWithMail" class="ui button">
+                                    ${message(code: 'openParticipantsAgain.openWithMail.button')}
+                                </button>
+                            </div>
+                        </g:else>
+                    </div>
+                </div>
+            </div>
+        </g:if>
+
     </g:form>
 
 </semui:form>
