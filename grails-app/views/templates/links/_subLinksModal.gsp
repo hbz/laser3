@@ -65,7 +65,7 @@
                     refdataValues << RDStore.COMBO_TYPE_FOLLOWS
                 }
                 else refdataValues.addAll(RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE)
-                refdataValues.each { rv ->
+                refdataValues.each { RefdataValue rv ->
                     String[] linkArray = rv.getI10n("value").split("\\|")
                     linkArray.eachWithIndex { l, int perspective ->
                         linkTypes.put(genericOIDService.getOID(rv)+"§"+perspective,l)

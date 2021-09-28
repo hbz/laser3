@@ -1181,7 +1181,7 @@ class AjaxController {
                             }
                             else {
                                 // no match found, creating new prop with backref
-                                Identifier.constructWithFactoryResult([value: identifier.value, parent: identifier, reference: member, namespace: identifier.ns])
+                                Identifier.constructWithFactoryResult([value: identifier.value, note: identifier.note, parent: identifier, reference: member, namespace: identifier.ns])
                             }
                         }
                     }

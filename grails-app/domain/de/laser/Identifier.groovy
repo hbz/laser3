@@ -362,21 +362,41 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
                         "${description}"
                 ]
 
-                PendingChange newPendingChange = changeNotificationService.registerPendingChange(
-                        PendingChange.PROP_SUBSCRIPTION,
-                        childId.sub,
-                        childId.sub.getSubscriber(),
-                        [
-                                changeTarget:"${Subscription.class.name}:${childId.sub.id}",
-                                changeType: PendingChangeService.EVENT_PROPERTY_CHANGE,
-                                changeDoc:changeDocument
-                        ],
-                        PendingChange.MSG_SU02,
-                        msgParams,
-                        "Der Identifikator <strong>${childId.ns.getI10n("name")}</strong> hat sich von <strong>\"${changeDocument.oldLabel?:changeDocument.old}\"</strong> zu <strong>\"${changeDocument.newLabel?:changeDocument.new}\"</strong> von der Lizenzvorlage geändert. " + description
-                )
-                if (newPendingChange && childId.sub.isSlaved) {
-                    slavedPendingChanges << newPendingChange
+                if(childId.sub) {
+                    PendingChange newPendingChange = changeNotificationService.registerPendingChange(
+                            PendingChange.PROP_SUBSCRIPTION,
+                            childId.sub,
+                            childId.sub.getSubscriber(),
+                            [
+                                    changeTarget:"${Subscription.class.name}:${childId.sub.id}",
+                                    changeType: PendingChangeService.EVENT_PROPERTY_CHANGE,
+                                    changeDoc:changeDocument
+                            ],
+                            PendingChange.MSG_SU02,
+                            msgParams,
+                            "Der Identifikator <strong>${childId.ns.getI10n("name")}</strong> hat sich von <strong>\"${changeDocument.oldLabel?:changeDocument.old}\"</strong> zu <strong>\"${changeDocument.newLabel?:changeDocument.new}\"</strong> von der Lizenzvorlage geändert. " + description
+                    )
+                    if (newPendingChange && childId.sub.isSlaved) {
+                        slavedPendingChanges << newPendingChange
+                    }
+                }
+                else if(childId.lic) {
+                    PendingChange newPendingChange = changeNotificationService.registerPendingChange(
+                            PendingChange.PROP_LICENSE,
+                            childId.lic,
+                            childId.lic.getLicensee(),
+                            [
+                                    changeTarget:"${License.class.name}:${childId.lic.id}",
+                                    changeType: PendingChangeService.EVENT_PROPERTY_CHANGE,
+                                    changeDoc:changeDocument
+                            ],
+                            PendingChange.MSG_LI02,
+                            msgParams,
+                            "Der Identifikator <strong>${childId.ns.getI10n("name")}</strong> hat sich von <strong>\"${changeDocument.oldLabel?:changeDocument.old}\"</strong> zu <strong>\"${changeDocument.newLabel?:changeDocument.new}\"</strong> von der Lizenzvorlage geändert. " + description
+                    )
+                    if (newPendingChange && childId.lic.isSlaved) {
+                        slavedPendingChanges << newPendingChange
+                    }
                 }
             }
 
