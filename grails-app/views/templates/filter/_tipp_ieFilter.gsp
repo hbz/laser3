@@ -13,6 +13,8 @@
            value="${packageInstance ? controlledListService.getAllPossibleDateFirstOnlineYearByPackage(packageInstance,actionName) : []}"/>
     <g:set var="publishers"
            value="${packageInstance ? controlledListService.getAllPossiblePublisherByPackage(packageInstance,actionName) : []}"/>
+    <g:set var="titleTypes"
+           value="${packageInstance ? controlledListService.getAllPossibleTitleTypesByPackage(packageInstance,actionName) : []}"/>
 </g:if>
 
 <g:if test="${controllerName == 'subscription'}">
@@ -28,6 +30,8 @@
            value="${subscription ? controlledListService.getAllPossibleDateFirstOnlineYearBySub(subscription) : []}"/>
     <g:set var="publishers"
            value="${subscription ? controlledListService.getAllPossiblePublisherBySub(subscription) : []}"/>
+    <g:set var="titleTypes"
+           value="${subscription ? controlledListService.getAllPossibleTitleTypesBySub(subscription) : []}"/>
 
 </g:if>
 
@@ -176,7 +180,7 @@
                 <select name="title_types" id="title_types" multiple=""
                         class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${controlledListService.getAllPossibleTitleTypes()}"
+                    <g:each in="${titleTypes}"
                             var="titleType">
                         <option <%=(params.list('title_types')?.contains(titleType)) ? 'selected="selected"' : ''%>
                                 value="${titleType}">
