@@ -269,14 +269,14 @@
 
                 <div class="field" style="text-align: right;">
                     <button id="subscription-info-toggle"
-                            class="ui button blue la-modern-button">Lizenzinformationen anzeigen <i class="ui angle double down icon"></i></button></button>
+                            class="ui button blue la-modern-button"><g:message code="surveyConfigsInfo.subscriptionInfo.show"/> <i class="ui angle double down icon"></i></button></button>
                     <laser:script file="${this.getGroovyPageFileName()}">
                         $('#subscription-info-toggle').on('click', function () {
                             $("#subscription-info").transition('slide down');
                             if ($("#subscription-info").hasClass('visible')) {
-                                $(this).html('Lizenzinformationen anzeigen <i class="ui angle double down icon"></i>')
+                                $(this).html('<g:message code="surveyConfigsInfo.subscriptionInfo.show"/> <i class="ui angle double down icon"></i>')
                             } else {
-                                $(this).html('Lizenzinformationen ausblenden <i class="ui angle double up icon"></i>')
+                                $(this).html('<g:message code="surveyConfigsInfo.subscriptionInfo.hide"/> <i class="ui angle double up icon"></i>')
                             }
                         })
                     </laser:script>
@@ -286,14 +286,14 @@
 
                                 <div class="field" style="text-align: right;">
                                     <button id="package-info-toggle"
-                                            class="ui button blue la-modern-button">Paketinformationen anzeigen <i class="ui angle double down icon"></i></button></button>
+                                            class="ui button blue la-modern-button"><g:message code="surveyConfigsInfo.packageInfo.show"/> <i class="ui angle double down icon"></i></button></button>
                                     <laser:script file="${this.getGroovyPageFileName()}">
                                         $('#package-info-toggle').on('click', function () {
                                             $("#packages").transition('slide down');
                                             if ($("#packages").hasClass('visible')) {
-                                                $(this).html('Paketinformationen anzeigen <i class="ui angle double down icon"></i>')
+                                                $(this).html('<g:message code="surveyConfigsInfo.packageInfo.show"/> <i class="ui angle double down icon"></i>')
                                             } else {
-                                                $(this).html('Paketinformationen ausblenden <i class="ui angle double up icon"></i>')
+                                                $(this).html('<g:message code="surveyConfigsInfo.packageInfo.hide"/> <i class="ui angle double up icon"></i>')
                                             }
                                         })
                                     </laser:script>

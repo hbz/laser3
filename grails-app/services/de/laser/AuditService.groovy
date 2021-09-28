@@ -127,7 +127,7 @@ class AuditService {
                                         //OID        : "${obj.owner.class.name}:${obj.owner.id}",
                                         event   : "${obj.class.simpleName}.updated",
                                         prop    : cp,
-                                        name    : obj instanceof AbstractBaseWithCalculatedLastUpdated ? obj.type.name : obj.ns.getI10n("name"),
+                                        name    : obj instanceof AbstractPropertyWithCalculatedLastUpdated ? obj.type.name : obj.ns.getI10n("name"),
                                         type    : obj."${cp}".class.name,
                                         old     : old_oid ?: oldMap[cp], // Backward Compatibility
                                         oldLabel: oldMap[cp] instanceof RefdataValue ? oldMap[cp].toString() : oldMap[cp],

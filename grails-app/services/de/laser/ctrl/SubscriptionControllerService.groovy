@@ -1261,7 +1261,7 @@ class SubscriptionControllerService {
                 if(!Package.findByGokbId(pkgUUID)) {
                     ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                     result.source = apiSource.baseUrl
-                    GlobalRecordSource source = GlobalRecordSource.findByUriLike(result.source+'%')
+                    GlobalRecordSource source = GlobalRecordSource.findByUriLikeAndRectype(result.source+'%', GlobalSourceSyncService.RECTYPE_TIPP)
                     log.debug("linkPackage. Global Record Source URL: " +source.uri)
                     globalSourceSyncService.source = source
                     //to be deployed in parallel thread
@@ -1275,7 +1275,10 @@ class SubscriptionControllerService {
                             }
                             else {
                                 if(queryResult.records && queryResult.count > 0) {
-                                    globalSourceSyncService.updateRecords(queryResult.records, 0)
+                                    if(queryResult.count > 5000)
+                                        globalSourceSyncService.processScrollPage(queryResult, 'TitleInstancePackagePlatform', null, pkgUUID)
+                                    else
+                                        globalSourceSyncService.updateRecords(queryResult.records, 0)
                                 }
                                 else {
                                     globalSourceSyncService.createOrUpdatePackage(pkgUUID)

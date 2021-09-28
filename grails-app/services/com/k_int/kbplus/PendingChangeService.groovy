@@ -423,7 +423,7 @@ class PendingChangeService extends AbstractLockableService {
                             targetProperty."${changeDoc.prop}" = newProp
                         }
                         else {
-                            targetProperty."${changeDoc.prop}" = AbstractPropertyWithCalculatedLastUpdated.parseValue("${changeDoc.new}", targetProperty.type.type)
+                            targetProperty."${changeDoc.prop}" = AbstractPropertyWithCalculatedLastUpdated.parseValue("${changeDoc.new}", changeDoc.type)
                         }
 
                         log.debug("Setting value for ${changeDoc.name}.${changeDoc.prop} to ${changeDoc.new}")
