@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 <g:set var="exportClickMeService" bean="exportClickMeService"/>
 <!-- _individuallyExportModal.gsp -->
-<g:set var="formFields" value="${exportClickMeService.getExportOrgFieldsForUI(contextOrg)}"/>
+<g:set var="formFields" value="${exportClickMeService.getExportOrgFieldsForUI()}"/>
 
 <semui:modal id="${modalID}" text="Excel-Export" hideSubmitButton="true">
 
