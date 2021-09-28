@@ -16,10 +16,9 @@ import java.time.Year
 
 abstract class BaseExportHelper {
 
-    static String getFileName(List<String> labels) {
+    static String getFileName(List<String> labels = ['Reporting']) {
 
         SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
-        labels = labels ?: [ 'Reporting' ]
 
         String filename = sdf.format(new Date()) + '_' + labels.collect{
             it.replaceAll('[→/]', '-')

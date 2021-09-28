@@ -534,7 +534,7 @@ class AjaxHtmlController {
         Map<String, Object> selectedFields = [:]
         selectedFieldsRaw.each { it -> selectedFields.put(it.key.replaceFirst('cde:', ''), it.value) }
 
-        String filename = params.filename ?: BaseExportHelper.getFileName(['Reporting'])
+        String filename = params.filename ?: BaseExportHelper.getFileName()
         ReportingCache rCache
         BaseExport export
         Map<String, Object> detailsCache
@@ -657,8 +657,8 @@ class AjaxHtmlController {
 
         ReportingCache rCache
         BaseQueryExport export
-        List<String> queryLabels
-        String filename
+        List<String> queryLabels = []
+        String filename = params.filename ?: BaseExportHelper.getFileName()
 
         if (params.context == BaseConfig.KEY_MYINST) {
             rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
@@ -666,8 +666,6 @@ class AjaxHtmlController {
             if (rCache.exists()) {
                 export      = QueryExportManager.createExport( params.token, BaseConfig.KEY_MYINST )
                 queryLabels = ExportGlobalHelper.getIncompleteQueryLabels( params.token )
-                filename    = ExportGlobalHelper.getFileName( queryLabels )
-
                 //detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
                 //export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
             }
@@ -682,8 +680,6 @@ class AjaxHtmlController {
             if (rCache.exists()) {
                 export      = QueryExportManager.createExport( params.token, BaseConfig.KEY_SUBSCRIPTION )
                 queryLabels = ExportLocalHelper.getCachedQueryLabels( params.token )
-                filename    = ExportLocalHelper.getFileName(['Reporting'])
-
                 //detailsCache = ExportLocalHelper.getDetailsCache(params.token)
                 //export = DetailsExportManager.createLocalExport(params.token, selectedFields)
             }

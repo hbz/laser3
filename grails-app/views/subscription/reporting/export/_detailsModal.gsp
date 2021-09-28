@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.export.base.BaseExport; de.laser.reporting.export.local.ExportLocalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.export.base.BaseExport; de.laser.reporting.export.local.ExportLocalHelper; de.laser.reporting.export.DetailsExportManager; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 <!-- _detailsModal.gsp -->
 <g:set var="export" value="${DetailsExportManager.createExport( token, BaseConfig.KEY_SUBSCRIPTION )}" />
@@ -6,7 +6,7 @@
 <g:if test="${export}">
     <g:set var="formFields" value="${export.getAllFields()}" />
     %{--<g:set var="filterLabels" value="${ExportLocalHelper.getCachedFilterLabels( token )}" />--}%
-    %{--<g:set var="queryLabels" value="${ExportLocalHelper.getCachedQueryLabels( token )}" />--}%
+    <g:set var="queryLabels" value="${ExportLocalHelper.getCachedQueryLabels( token )}" />
 
     <semui:modal id="${modalID}" text="Export" msgSave="${message(code: 'default.button.export.label')}">
 
@@ -134,7 +134,7 @@
                         </div>
                         <div class="field">
                             <label for="filename">${message(code: 'default.fileName.label')}</label>
-                            <input name="filename" id="filename" value="${ExportLocalHelper.getFileName(queryLabels)}" />
+                            <input name="filename" id="filename" value="${BaseExportHelper.getFileName(queryLabels)}" />
                         </div>
                     </div>
 

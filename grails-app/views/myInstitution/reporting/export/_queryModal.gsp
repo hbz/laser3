@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.export.base.BaseExport; de.laser.reporting.export.myInstitution.ExportGlobalHelper;" %>
+<%@ page import="de.laser.reporting.export.base.BaseExportHelper; de.laser.reporting.myInstitution.base.BaseConfig; de.laser.reporting.export.base.BaseExport;" %>
 <laser:serviceInjection />
 <!-- _queryModal.gsp -->
 
@@ -63,7 +63,7 @@
                             </div>
                             <div class="field">
                                 <label for="filename">${message(code: 'default.fileName.label')}</label>
-                                <input name="filename" id="filename" placeholder="${message(code: 'reporting.modal.export.fileName.auto')}" />
+                                <input name="filename" id="filename" value="${BaseExportHelper.getFileName()}" />
                             </div>
                         </div>
 
