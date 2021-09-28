@@ -56,15 +56,7 @@
                                 </g:if>
                             </td>
                         </tr>
-                        <g:if test="${pair.propertySet && pair instanceof License}">
-                            <tr>
-                                <td colspan="5">
-                                    <div>
-                                        <g:render template="/subscription/licProp" model="[license: pair, derivedPropDefGroups: pair.getCalculatedPropDefGroups(contextOrg), linkId: link.id]"/>
-                                    </div>
-                                </td>
-                            </tr>
-                        </g:if>
+                        <%-- once the subscription export comes, we need or may need to display here the license's properties --%>
                     </g:each>
                 </g:if>
             </g:each>
