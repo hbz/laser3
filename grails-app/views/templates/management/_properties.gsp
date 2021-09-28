@@ -4,7 +4,7 @@
 
     <div class="ui segment">
 
-        <h1><g:message code="subscriptionsManagement.allProperties"/> </h1>
+        <h1><g:message code="subscriptionsManagement.properties.info"/> </h1>
 
         <g:if test="${controllerName == "subscription"}">
             <div class="ui two column very relaxed grid">

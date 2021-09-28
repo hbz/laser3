@@ -228,7 +228,7 @@
                             </g:each>
                             <br />
                         </g:if>
-                        <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" overwriteEditable="${editable}" validation="maxlength" maxlength="255"/>
+                        ${raw(ci.costTitle?.replaceAll(/(.{50})/,'$1&shy;'))}
                     </td>
                     <g:if test="${!fixedSubscription}">
                         <td>

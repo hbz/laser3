@@ -380,12 +380,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
         })
     }
 
-    void processScrollPage(Map<String, Object> result, String componentType, String changedSince) throws SyncException {
+    void processScrollPage(Map<String, Object> result, String componentType, String changedSince, String pkgFilter = null) throws SyncException {
         if(result.count >= 5000) {
             int offset = 0, max = 5000
             Map<String, Object> queryParams = [component_type: componentType, max: max]
             if(changedSince)
                 queryParams.changedSince = changedSince
+            if(pkgFilter)
+                queryParams.pkg = pkgFilter
             String scrollId
             boolean more = true
             while(more) {

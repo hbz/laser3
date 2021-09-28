@@ -56,6 +56,7 @@ import de.laser.workflow.WfWorkflowPrototype
 import de.laser.workflow.WfTask
 import de.laser.workflow.WfTaskPrototype
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.poi.ss.usermodel.Workbook
 
 import javax.servlet.ServletOutputStream
 
@@ -533,7 +534,7 @@ class AjaxHtmlController {
         Map<String, Object> selectedFields = [:]
         selectedFieldsRaw.each { it -> selectedFields.put(it.key.replaceFirst('cde:', ''), it.value) }
 
-        String filename = params.filename ?: BaseExportHelper.getFileName(['Reporting'])
+        String filename = params.filename ?: BaseExportHelper.getFileName()
         ReportingCache rCache
         BaseExport export
         Map<String, Object> detailsCache
@@ -570,7 +571,7 @@ class AjaxHtmlController {
                 response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
                 response.contentType = 'text/csv'
 
-                List<String> rows = DetailsExportManager.export(export, 'csv', detailsCache.idList as List<Long>)
+                List<String> rows = DetailsExportManager.exportAsList(export, 'csv', detailsCache.idList as List<Long>)
 
                 ServletOutputStream out = response.outputStream
                 out.withWriter { w ->
@@ -580,9 +581,20 @@ class AjaxHtmlController {
                 }
                 out.close()
             }
+            else if (params.fileformat == 'xlsx') {
+
+                response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.xlsx"')
+                response.contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+                Workbook wb = DetailsExportManager.exportAsWorkbook(export, 'xlsx', detailsCache.idList as List<Long>)
+
+                ServletOutputStream out = response.outputStream
+                wb.write(out)
+                out.close()
+            }
             else if (params.fileformat == 'pdf') {
 
-                List<List<String>> content = DetailsExportManager.export(export, 'pdf', detailsCache.idList as List<Long>)
+                List<List<String>> content = DetailsExportManager.exportAsList(export, 'pdf', detailsCache.idList as List<Long>)
                 Map<String, Object> struct = [:]
 
                 String view = ''
@@ -645,8 +657,8 @@ class AjaxHtmlController {
 
         ReportingCache rCache
         BaseQueryExport export
-        List<String> queryLabels
-        String filename
+        List<String> queryLabels = []
+        String filename = params.filename ?: BaseExportHelper.getFileName()
 
         if (params.context == BaseConfig.KEY_MYINST) {
             rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, params.token )
@@ -654,8 +666,6 @@ class AjaxHtmlController {
             if (rCache.exists()) {
                 export      = QueryExportManager.createExport( params.token, BaseConfig.KEY_MYINST )
                 queryLabels = ExportGlobalHelper.getIncompleteQueryLabels( params.token )
-                filename    = ExportGlobalHelper.getFileName( queryLabels )
-
                 //detailsCache = ExportGlobalHelper.getDetailsCache(params.token)
                 //export = DetailsExportManager.createGlobalExport(params.token, selectedFields)
             }
@@ -670,8 +680,6 @@ class AjaxHtmlController {
             if (rCache.exists()) {
                 export      = QueryExportManager.createExport( params.token, BaseConfig.KEY_SUBSCRIPTION )
                 queryLabels = ExportLocalHelper.getCachedQueryLabels( params.token )
-                filename    = ExportLocalHelper.getFileName(['Reporting'])
-
                 //detailsCache = ExportLocalHelper.getDetailsCache(params.token)
                 //export = DetailsExportManager.createLocalExport(params.token, selectedFields)
             }
@@ -682,10 +690,11 @@ class AjaxHtmlController {
         }
 
         if (params.fileformat == 'csv') {
+
             response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.csv"')
             response.contentType = 'text/csv'
 
-            List<String> rows = QueryExportManager.export( export, 'csv' )
+            List<String> rows = QueryExportManager.exportAsList( export, 'csv' )
 
             ServletOutputStream out = response.outputStream
             out.withWriter { w ->
@@ -695,12 +704,23 @@ class AjaxHtmlController {
             }
             out.close()
         }
+        else if (params.fileformat == 'xlsx') {
+
+            response.setHeader('Content-disposition', 'attachment; filename="' + filename + '.xlsx"')
+            response.contentType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+            Workbook wb = QueryExportManager.exportAsWorkbook( export, 'xlsx' )
+
+            ServletOutputStream out = response.outputStream
+            wb.write(out)
+            out.close()
+        }
         else if (params.fileformat == 'pdf') {
             // TODO
             // TODO
             // TODO
             // TODO
-            List<List<String>> content = QueryExportManager.export(export, 'pdf')
+            List<List<String>> content = QueryExportManager.exportAsList(export, 'pdf')
 
             Map<String, Object> struct = [:]
 

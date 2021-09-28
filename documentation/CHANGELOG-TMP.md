@@ -7,6 +7,24 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3854    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         fehlende Übersetzungsstrings nachgereicht
+
+3853    28.09.2021  rc-2.2  2.2-RC      David   Bug         RC 2.2: Systemmeldungen nicht editierbar
+
+3852    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         verschiedene Vererbungsbugs behoben
+
+3848    28.09.2021  rc-2.2  2.2-RC      Andreas Feature     Buttons in Umfrage umbenannt
+
+3847    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         Tippfehler bei Hinweistext korrigiert
+
+3844    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         obsoleten und fehlerhaften Menüpunkt entfernt
+
+3841    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         Minor-Bugfix(-versuch) für Org-Verknüpfungen
+
+3827    28.09.2021  rc-2.2  2.2-RC      Moe     Feature     ClickMe Excel für meine Lizenzen?
+
+3510    28.09.2021  rc-2.2  2.2-RC      David   Feature     Reporting: XSLX-Export
+
 3836    27.09.2021  dev     2.2         David   Feature     Reporting: Sonderzeichen
 
 3826    27.09.2021  dev     2.2         Andreas Feature     Umstellung der Nutzerzahlen auf Kommazahlen
