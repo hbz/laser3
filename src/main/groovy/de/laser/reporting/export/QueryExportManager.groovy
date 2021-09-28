@@ -2,9 +2,14 @@ package de.laser.reporting.export
 
 import de.laser.reporting.export.base.BaseExport
 import de.laser.reporting.export.base.BaseQueryExport
-import de.laser.reporting.export.local.ExportLocalHelper
-import de.laser.reporting.export.myInstitution.ExportGlobalHelper
 import de.laser.reporting.myInstitution.base.BaseConfig
+import org.apache.poi.ss.usermodel.Cell
+import org.apache.poi.ss.usermodel.CellStyle
+import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.ss.usermodel.Sheet
+import org.apache.poi.ss.usermodel.VerticalAlignment
+import org.apache.poi.ss.usermodel.Workbook
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 
 class QueryExportManager {
 
@@ -17,7 +22,7 @@ class QueryExportManager {
         }
     }
 
-    static List export(BaseQueryExport export, String format) {
+    static List exportAsList(BaseQueryExport export, String format) {
 
         List rows = []
         Map<String, Object> data = export.getData()
@@ -25,19 +30,26 @@ class QueryExportManager {
         if (format == 'csv') {
             rows.add( data.cols.join( BaseExport.CSV_FIELD_SEPARATOR ) )
             data.rows.each { row ->
-                rows.add( buildCsvRow( row ) )
+                rows.add( buildRowCSV( row ) )
             }
         }
         else if (format == 'pdf') {
             rows.add( data.cols )
             data.rows.each { row ->
-                rows.add( buildPdfRow( row ) )
+                rows.add( buildRowPDF( row ) )
             }
         }
         rows
     }
 
-    static String buildCsvRow(List<String> content) {
+    static Workbook exportAsWorkbook(BaseQueryExport export, String format) {
+
+        if (format == 'xlsx') {
+            buildXLSX(export)
+        }
+    }
+
+    static String buildRowCSV(List<String> content) {
 
         content.collect{ it ->
             boolean enclose = false
@@ -55,7 +67,7 @@ class QueryExportManager {
         }.join( BaseExport.CSV_FIELD_SEPARATOR )
     }
 
-    static List<String> buildPdfRow(List<String> content) {
+    static List<String> buildRowPDF(List<String> content) {
 
         content.collect{ it ->
             if (! it) {
@@ -63,5 +75,44 @@ class QueryExportManager {
             }
             return it.trim()
         }
+    }
+
+    static Workbook buildXLSX(BaseQueryExport export) {
+
+        Map<String, Object> data = export.getData()
+
+        Workbook workbook = new XSSFWorkbook()
+        Sheet sheet = workbook.createSheet( export.token )
+
+        CellStyle cellStyle = workbook.createCellStyle()
+        cellStyle.setVerticalAlignment( VerticalAlignment.CENTER )
+
+        data.rows.eachWithIndex { row, idx ->
+
+            Row entry = sheet.createRow(idx+1)
+            row.eachWithIndex{ str, i ->
+                Cell cell = entry.createCell(i)
+                cell.setCellStyle(cellStyle)
+
+                if (str == null) {
+                    cell.setCellValue('')
+                }
+                else {
+                    cell.setCellValue( str.trim() )
+                }
+                sheet.autoSizeColumn(i)
+            }
+        }
+
+        Row header = sheet.createRow(0)
+
+        data.cols.eachWithIndex{ col, idx ->
+            Cell headerCell = header.createCell(idx)
+            headerCell.setCellStyle(cellStyle)
+            headerCell.setCellValue(col as String)
+            sheet.autoSizeColumn(idx)
+        }
+
+        workbook
     }
 }
