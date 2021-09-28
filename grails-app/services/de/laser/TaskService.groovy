@@ -20,6 +20,10 @@ class TaskService {
 
     private static final String select_with_join = 'select t from Task t LEFT JOIN t.responsibleUser ru '
 
+    boolean isTaskEditableBy(Task task, User user, Org org) {
+        task.creator == user || task.responsibleUser?.id == user.id || task.responsibleOrg?.id == org.id
+    }
+
     Map<String, Object> getTasks(int offset, User user, Org contextOrg, object) {
         Map<String, Object> result = [:]
         result.taskInstanceList = getTasksByResponsiblesAndObject(user, contextOrg, object)

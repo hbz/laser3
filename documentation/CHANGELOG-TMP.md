@@ -7,11 +7,19 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3866    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         Menüpunkt "Merkmale in Objekten verwalten" war für INST_USERs erreichbar
+
+3861    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         Aufgaben an einen INST_USER waren von selbigem nicht bearbeitbar
+
 3854    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         fehlende Übersetzungsstrings nachgereicht
 
 3853    28.09.2021  rc-2.2  2.2-RC      David   Bug         RC 2.2: Systemmeldungen nicht editierbar
 
 3852    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         verschiedene Vererbungsbugs behoben
+
+3851    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         Fehlermeldung in der Lizenzverwaltung vereinheitlicht
+
+3849    28.09.2021  rc-2.2  2.2-RC      Andreas Feature     Lizenzverwaltungsformular kann nicht ohne Lizenz abgeschickt werden
 
 3848    28.09.2021  rc-2.2  2.2-RC      Andreas Feature     Buttons in Umfrage umbenannt
 

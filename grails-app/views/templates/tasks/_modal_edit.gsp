@@ -119,6 +119,13 @@
 
         JSPC.app.toggleResponsibleUserEdit();
 
+            $.fn.form.settings.rules.responsibleUser = function() {
+                    if($("#radioresponsibleUser").is(":checked")) {
+                        return $('#responsibleUserInput').val();
+                    }
+                    else return true;
+                }
+
             $('#edit_task')
                 .form({
                     on: 'blur',
