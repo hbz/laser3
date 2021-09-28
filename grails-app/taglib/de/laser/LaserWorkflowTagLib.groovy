@@ -114,12 +114,12 @@ class LaserWorkflowTagLib {
                     else if (docctx.owner?.filename) {
                         linkBody = docctx.owner.filename
                     }
-                    linkBody = '<i class="icon file"></i>' + linkBody + ' (' + docctx.owner?.type?.getI10n('value') + ')'
 
-                    out << g.link( [controller: 'docstore', id: docctx.owner.uuid], linkBody)
+                    out << '<i class="icon file"></i> ' + condition.getProperty(field + '_title') +
+                            ': ' + g.link( [controller: 'docstore', id: docctx.owner.uuid], linkBody + ' (' + docctx.owner?.type?.getI10n('value') + ')')
                 }
                 else {
-                    out << '<i class="icon file la-light-grey"></i>'
+                    out << '<i class="icon file la-light-grey"></i> ' + (condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label'))
                 }
             }
         }
