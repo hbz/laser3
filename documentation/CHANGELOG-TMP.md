@@ -7,6 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
+3853    27.09.2021  rc-2.2  2.2-RC      David   Bug         RC 2.2: Systemmeldungen nicht editierbar
+
 3836    27.09.2021  dev     2.2         David   Feature     Reporting: Sonderzeichen
 
 3826    27.09.2021  dev     2.2         Andreas Feature     Umstellung der Nutzerzahlen auf Kommazahlen
