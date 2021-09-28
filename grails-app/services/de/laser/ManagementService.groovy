@@ -96,7 +96,7 @@ class ManagementService {
                 result << subscriptionProperties(controller, parameterMap)
                 break
             case "documents":
-                if(parameterMap.processOption) {
+                if(parameterMap.processOption && input_file) {
                     processDocuments(controller, parameterMap, input_file)
                     parameterMap.remove('processOption')
                 }
@@ -373,7 +373,7 @@ class ManagementService {
                 }
             } else {
                 if (selectedSubs.size() < 1) {
-                    flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedMember', null, locale)
+                    flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedSubscriptions', null, locale)
                 }
                 if (!params.selectedPackage) {
                     flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedPackage', null, locale)
@@ -532,7 +532,7 @@ class ManagementService {
                     }
             } else {
                 if (selectedSubs.size() < 1) {
-                    flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedMember', null, locale)
+                    flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedSubscriptions', null, locale)
                 }
                 if (!propertiesFilterPropDef) {
                     flash.error = messageSource.getMessage('subscriptionsManagement.noPropertySelected',null, locale)
@@ -671,7 +671,7 @@ class ManagementService {
                 }
 
             } else {
-                flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedMember', null, locale)
+                flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedSubscriptions', null, locale)
             }
         }
     }
@@ -710,7 +710,7 @@ class ManagementService {
                 }
 
             } else {
-                flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedMember', null, locale)
+                flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedSubscriptions', null, locale)
             }
         }
     }
@@ -775,7 +775,7 @@ class ManagementService {
                 }
 
             } else {
-                flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedMember', null, locale)
+                flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedSubscriptions', null, locale)
             }
         }
     }

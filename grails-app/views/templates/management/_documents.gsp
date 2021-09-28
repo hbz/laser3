@@ -14,19 +14,19 @@
 
     <div class="ui segment">
     <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'documents']" method="post"
-            class="ui form" id="newDocument" enctype="multipart/form-data">
+            class="ui form newDocument" id="newDocument" enctype="multipart/form-data">
         <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
         <h4 class="ui header">${message(code: 'subscriptionsManagement.document.info.newDocument')}</h4>
 
-        <div class="field">
+        <div class="field required">
             <label for="upload_title">${message(code: 'template.addDocument.name')}:</label>
 
             <input type="text" id="upload_title" name="upload_title" value=""/>
         </div>
 
-        <div class="field">
+        <div class="field required">
             <label for="upload_file">${message(code: 'template.addDocument.file')}:</label>
 
             <div class="ui fluid action input">
@@ -38,22 +38,22 @@
                     <i class="attach icon"></i>
                 </div>
             </div>
+        </div>
 
-            <div class="field">
-                <label for="doctype">${message(code: 'template.addDocument.type')}:</label>
+        <div class="field">
+            <label for="doctype">${message(code: 'template.addDocument.type')}:</label>
 
-                <%
-                    List notAvailable = [RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT, RDStore.DOC_TYPE_ONIXPL]
-                    List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE) - notAvailable
-                %>
-                <g:select from="${documentTypes}"
-                          class="ui dropdown fluid"
-                          optionKey="value"
-                          optionValue="${{ it.getI10n('value') }}"
-                          name="doctype"
-                          id="doctype"
-                          value=""/>
-            </div>
+            <%
+                List notAvailable = [RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT, RDStore.DOC_TYPE_ONIXPL]
+                List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE) - notAvailable
+            %>
+            <g:select from="${documentTypes}"
+                      class="ui dropdown fluid"
+                      optionKey="value"
+                      optionValue="${{ it.getI10n('value') }}"
+                      name="doctype"
+                      id="doctype"
+                      value=""/>
         </div>
 
         <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
@@ -93,8 +93,13 @@
                 <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriber() : zeile.orgs}"/>
                 <tr>
                     <td>
-                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
-                                    checked="false" disabled="${!editable}"/>
+                        <%-- This whole construct is necessary for that the form validation works!!! --%>
+                        <div class="field">
+                            <div class="ui checkbox">
+                                <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
+                                            checked="false" disabled="${!editable}"/>
+                            </div>
+                        </div>
                     </td>
                     <td>${i + 1}</td>
                     <g:if test="${controllerName == "subscription"}">
@@ -172,6 +177,40 @@
     $('input:file', '.ui.action.input').on('change', function (e) {
         var name = e.target.files[0].name;
         $('input:text', $(e.target).parent()).val(name);
+    });
+
+    $('.newDocument').form({
+        on: 'blur',
+        inline: true,
+        fields: {
+            upload_title: {
+                identifier: 'upload_title',
+                rules: [
+                    {
+                        type: 'empty',
+                        prompt: '<g:message code="validation.needsToBeFilledOut"/>'
+                    }
+                ]
+            },
+            upload_file: {
+                identifier: 'upload_file',
+                rules: [
+                    {
+                        type: 'empty',
+                        prompt: '<g:message code="validation.needsToBeFilledOut"/>'
+                    }
+                ]
+            },
+            noSubscription: {
+                identifier: 'selectedSubs',
+                rules: [
+                    {
+                        type: 'checked',
+                        prompt: '<g:message code="subscriptionsManagement.noSelectedSubscriptions.table"/>'
+                    }
+                ]
+            }
+        }
     });
 
 </laser:script>

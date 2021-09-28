@@ -21,7 +21,7 @@
 
             </g:if>
             <g:else>
-                <g:message code="subscriptionsManagement.noValidLicenses" args="${args.superOrgType}"/>
+                <g:message code="subscriptionsManagement.noValidLicenses"/>
             </g:else>
 
         </div>
