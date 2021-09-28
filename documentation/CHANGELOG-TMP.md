@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3827    28.09.2021  rc-2.2  2.2-RC      Moe     Feature     ClickMe Excel für meine Lizenzen?
+
 3853    28.09.2021  rc-2.2  2.2-RC      David   Bug         RC 2.2: Systemmeldungen nicht editierbar
 
 3510    28.09.2021  rc-2.2  2.2-RC      David   Feature     Reporting: XSLX-Export
