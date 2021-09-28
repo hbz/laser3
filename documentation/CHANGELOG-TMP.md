@@ -21,6 +21,8 @@
 
 3841    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         Minor-Bugfix(-versuch) für Org-Verknüpfungen
 
+3827    28.09.2021  rc-2.2  2.2-RC      Moe     Feature     ClickMe Excel für meine Lizenzen?
+
 3510    28.09.2021  rc-2.2  2.2-RC      David   Feature     Reporting: XSLX-Export
 
 3836    27.09.2021  dev     2.2         David   Feature     Reporting: Sonderzeichen
