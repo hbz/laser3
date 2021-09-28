@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3827    28.09.2021  dev     2.2         Moe     Feature     ClickMe Excel für meine Lizenzen?
+
 3836    27.09.2021  dev     2.2         David   Feature     Reporting: Sonderzeichen
 
 3826    27.09.2021  dev     2.2         Andreas Feature     Umstellung der Nutzerzahlen auf Kommazahlen
