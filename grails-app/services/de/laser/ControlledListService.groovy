@@ -557,6 +557,32 @@ class ControlledListService {
         return TitleInstancePackagePlatform.executeQuery('select distinct(tipp.titleType) from TitleInstancePackagePlatform tipp where tipp.titleType is not null')
     }
 
+    Set<String> getAllPossibleTitleTypesByPackage(Package pkg, String forTitles) {
+        Locale locale = LocaleContextHolder.getLocale()
+        RefdataValue tippStatus = getTippStatusForRequest(forTitles)
+        Set<String> titleTypes = []
+
+        titleTypes = TitleInstancePackagePlatform.executeQuery("select titleType from TitleInstancePackagePlatform where titleType is not null and pkg = :pkg and status = :status ", [pkg: pkg, status: tippStatus])
+
+        if(titleTypes.size() == 0){
+            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, locale)
+        }
+        titleTypes
+    }
+
+    Set<String> getAllPossibleTitleTypesBySub(Subscription subscription) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<String> titleTypes = []
+
+        if(subscription.packages){
+            titleTypes = TitleInstancePackagePlatform.executeQuery("select titleType from TitleInstancePackagePlatform where titleType is not null and pkg in (:pkg) ", [pkg: subscription.packages.pkg])
+        }
+        if(titleTypes.size() == 0){
+            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, locale)
+        }
+        titleTypes
+    }
+
     Set<String> getAllPossibleSeriesByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
