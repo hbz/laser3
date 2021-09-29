@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3871    29.09.2021  rc-2.2  2.2-RC      Andreas Bug         Tippfehler im Lizenzmerkmal korrigiert
+
 3865    29.09.2021  rc-2.2  2.2-RC      Andreas Feature     Eingrenzung der Umfangangaben auf vorhandene Werte
 
 3863    29.09.2021  rc-2.2  2.2-RC      Andreas Feature     neue Spakte we:kb-gepflegt in Anbieterlisten

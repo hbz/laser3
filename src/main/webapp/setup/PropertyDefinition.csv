@@ -211,7 +211,7 @@ Subscription Property,GASCO negotiator name,GASCO-Verhandlername,GASCO negotiato
 Subscription Property,Hosting fee,Hosting-Gebühr,Hosting fee,java.lang.String,,,,,Ist eine Hosting-Gebühr zu entrichten?,,,,,
 Subscription Property,Internal distribution model,Internes Verteilungsmodell,Internal distribution model,java.lang.String,,,,,"Wie werden bei interner Kostenverteilung die Kosten für die Teilnehmer berechnet? Gleichmäßige Aufteilung, nutzungsbasiert, nach FTE? Bei mehreren Faktoren: wie wird gewichtet?",,,,,
 Subscription Property,Joining during the period,Unterjähriger Einstieg,Joining during the period,de.laser.RefdataValue,y.n,,,,Ist ein unterjähriger Einstieg in die Lizenz möglich?,,,,,
-Subscription Property,KBART,KBART,KBART,de.laser.RefdataValue,y.n,,,,Existiert ein KBART-Lieferung?,,,,,
+Subscription Property,KBART,KBART,KBART,de.laser.RefdataValue,y.n,,,,Existiert eine KBART-Lieferung?,Does a KBART delivery exist?,,,,
 Subscription Property,KfL advisor,KfL advisor,KfL-Betreuer,de.laser.RefdataValue,kfl.advisor,,true,,,,,,,
 Subscription Property,License: content data,Vertrag: Inhaltsdaten,License: content data,de.laser.RefdataValue,license.content,,true,,,,,,,
 Subscription Property,License: metadata,Vertrag: Metadaten,License: metadata,de.laser.RefdataValue,license.metadata,,true,,Umfasst der Vertrag die Lieferung von Metadaten?,Does the license include the delivery of metadata?,,,,
