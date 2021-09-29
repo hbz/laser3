@@ -188,10 +188,11 @@
             <table class="ui celled monitor stackable la-table compact table">
                 <thead>
                 <tr>
-                    <th>
-                        <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"
-                                    disabled="${!editable}"/>
-                    </th>
+                    <g:if test="${editable}">
+                        <th>
+                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
+                        </th>
+                    </g:if>
                     <th>${message(code: 'sidewide.number')}</th>
                     <g:if test="${controllerName == "subscription"}">
                         <th>${message(code: 'default.sortname.label')}</th>
@@ -226,15 +227,17 @@
                     <g:set var="sub" value="${zeile instanceof Subscription ? zeile : zeile.sub}"/>
                     <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriber() : zeile.orgs}"/>
                     <tr>
-                        <td>
-                            <%-- This whole construct is necessary for that the form validation works!!! --%>
-                            <div class="field">
-                                <div class="ui checkbox">
-                                    <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
-                                                checked="false" disabled="${!editable}"/>
+                        <g:if test="${editable}">
+                            <td>
+                                <%-- This whole construct is necessary for that the form validation works!!! --%>
+                                <div class="field">
+                                    <div class="ui checkbox">
+                                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
+                                                    checked="false"/>
+                                    </div>
                                 </div>
-                            </div>
-                        </td>
+                            </td>
+                        </g:if>
                         <td>${i + 1}</td>
                         <g:if test="${controllerName == "subscription"}">
                             <td>
@@ -319,7 +322,7 @@
                         <g:if test="${accessService.checkPerm('ORG_INST')}">
                             <td>
                                 <g:if test="${(sub.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && sub._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
-                                    <semui:xEditableBoolean owner="${sub}" field="isAutomaticRenewAnnually" overwriteEditable="${sub.isAllowToAutomaticRenewAnnually()}"/>
+                                    <semui:xEditableBoolean owner="${sub}" field="isAutomaticRenewAnnually" overwriteEditable="${editable && sub.isAllowToAutomaticRenewAnnually()}"/>
                                 </g:if>
                             </td>
                         </g:if>

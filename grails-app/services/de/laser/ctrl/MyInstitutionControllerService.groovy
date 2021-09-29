@@ -31,6 +31,7 @@ class MyInstitutionControllerService {
     def filterService
     def surveyService
     def taskService
+    def workflowService
 
     FormService formService
     SubscriptionService subscriptionService
@@ -100,11 +101,15 @@ class MyInstitutionControllerService {
                  status: RDStore.SURVEY_SURVEY_STARTED])
         */
 
-        if(accessService.checkPerm('ORG_CONSORTIUM')){
+        if (accessService.checkPerm('ORG_CONSORTIUM')){
             /*activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
                     " order by surConfig.surveyInfo.endDate",
                     [org: result.institution,
                      status: RDStore.SURVEY_SURVEY_STARTED])*/
+
+            if (params.cmd && params.cmd.contains(WfWorkflow.KEY)) {
+                workflowService.usage(params)
+            }
 
             List<WfWorkflow> workflows = WfWorkflow.executeQuery(
                     'select wf from WfWorkflow wf where wf.owner = :ctxOrg and wf.status = :status order by wf.id desc',

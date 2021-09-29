@@ -557,6 +557,53 @@ class ControlledListService {
         return TitleInstancePackagePlatform.executeQuery('select distinct(tipp.titleType) from TitleInstancePackagePlatform tipp where tipp.titleType is not null')
     }
 
+    Set<String> getAllPossibleTitleTypesByPackage(Package pkg, String forTitles) {
+        Locale locale = LocaleContextHolder.getLocale()
+        RefdataValue tippStatus = getTippStatusForRequest(forTitles)
+        Set<String> titleTypes = []
+
+        titleTypes = TitleInstancePackagePlatform.executeQuery("select titleType from TitleInstancePackagePlatform where titleType is not null and pkg = :pkg and status = :status ", [pkg: pkg, status: tippStatus])
+
+        if(titleTypes.size() == 0){
+            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, locale)
+        }
+        titleTypes
+    }
+
+    Set<String> getAllPossibleTitleTypesBySub(Subscription subscription) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<String> titleTypes = []
+
+        if(subscription.packages){
+            titleTypes = TitleInstancePackagePlatform.executeQuery("select titleType from TitleInstancePackagePlatform where titleType is not null and pkg in (:pkg) ", [pkg: subscription.packages.pkg])
+        }
+        if(titleTypes.size() == 0){
+            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, locale)
+        }
+        titleTypes
+    }
+
+    Set<RefdataValue> getAllPossibleCoverageDepthsByPackage(Package pkg, String forTitles) {
+        Locale locale = LocaleContextHolder.getLocale()
+        RefdataValue tippStatus = getTippStatusForRequest(forTitles)
+        Set<RefdataValue> coverageDepths = []
+
+        coverageDepths.addAll(RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg = :pkg and tipp.status = :status) ", [pkg: pkg, status: tippStatus]))
+
+        coverageDepths
+    }
+
+    Set<RefdataValue> getAllPossibleCoverageDepthsBySub(Subscription subscription) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<RefdataValue> coverageDepths = []
+
+        if(subscription.packages){
+            coverageDepths = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg in (:pkg)) ", [pkg: subscription.packages.pkg])
+        }
+
+        coverageDepths
+    }
+
     Set<String> getAllPossibleSeriesByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)

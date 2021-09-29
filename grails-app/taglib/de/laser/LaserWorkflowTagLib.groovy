@@ -73,39 +73,31 @@ class LaserWorkflowTagLib {
         String field = attrs.field
         WfCondition condition = attrs.condition as WfCondition
 
-        Closure getField = { cc, cf ->
-            String markup = (cc.getProperty(cf + '_title') ?: message(code:'workflow.field.noTitle.label'))
-            if (cc.getProperty(cf + '_isTrigger')) {
-                markup = '<u>' + markup + '</u>'
-            }
-            markup
-        }
-
         if (field && condition) {
+            String pTitle = (condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label'))
 
             if (field.startsWith('checkbox')) {
+                if (condition.getProperty(field + '_isTrigger')) {
+                    pTitle = '<u>' + pTitle + '</u>'
+                }
                 if (condition.getProperty(field) == true) {
-                    out << '<i class="icon check square outline"></i> '
+                    out << '<i class="icon check square outline"></i> ' + pTitle
                 }
                 else {
-                    out << '<i class="icon square outline la-light-grey"></i> '
+                    out << '<i class="icon square outline la-light-grey"></i> ' + pTitle
                 }
-                out << getField(condition, field)
             }
             else if (field.startsWith('date')) {
                 if (condition.getProperty(field)) {
-                    out << '<i class="icon calendar alternate outline"></i> '
-                    out << (condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label'))
+                    out << '<i class="icon calendar alternate outline"></i> ' + pTitle
                     out << ': ' + DateUtils.getSDF_NoTime().format(condition.getProperty(field))
                 }
                 else {
-                    out << '<i class="icon calendar alternate outline la-light-grey"></i> '
-                    out << (condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label'))
+                    out << '<i class="icon calendar alternate outline la-light-grey"></i> ' + pTitle
                 }
             }
             else if (field.startsWith('file')) {
                 DocContext docctx = condition.getProperty(field) as DocContext
-
                 if (docctx) {
                     String linkBody = message(code:'template.documents.missing')
                     if (docctx.owner?.title) {
@@ -114,12 +106,11 @@ class LaserWorkflowTagLib {
                     else if (docctx.owner?.filename) {
                         linkBody = docctx.owner.filename
                     }
-                    linkBody = '<i class="icon file"></i>' + linkBody + ' (' + docctx.owner?.type?.getI10n('value') + ')'
-
-                    out << g.link( [controller: 'docstore', id: docctx.owner.uuid], linkBody)
+                    out << '<i class="icon file"></i> ' + pTitle
+                    out << ': ' + g.link( [controller: 'docstore', id: docctx.owner.uuid], linkBody + ' (' + docctx.owner?.type?.getI10n('value') + ')')
                 }
                 else {
-                    out << '<i class="icon file la-light-grey"></i>'
+                    out << '<i class="icon file la-light-grey"></i> ' + pTitle
                 }
             }
         }

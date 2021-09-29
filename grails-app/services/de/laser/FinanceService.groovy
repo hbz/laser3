@@ -916,8 +916,8 @@ class FinanceService {
             costItems = costItemSet
         else costItems = []
         //List<Map> billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * ((ci.taxKey.taxRate/100.0) + 1)) as billingSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value",[costItems:costItems])
-        List billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci.id in (:costItems) and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19])
-        List billingSumsNegative = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci.id in (:costItems) and ci.costItemElementConfiguration.value = 'negative' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19])
+        List billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as localSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci.id in (:costItems) and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19])
+        List billingSumsNegative = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax,sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as localSumAfterTax,ci.billingCurrency.order as ciOrder) from CostItem ci where ci.id in (:costItems) and ci.costItemElementConfiguration.value = 'negative' group by ci.billingCurrency.value, ci.billingCurrency.order order by ciOrder",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19])
         Map<BigDecimal,BigDecimal> localSumsPositive = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci.id in (:costItems) and ci.costItemElementConfiguration.value = 'positive'",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
         Map<BigDecimal,BigDecimal> localSumsNegative = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax5 then 5 when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax16 then 16 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci.id in (:costItems) and ci.costItemElementConfiguration.value = 'negative'",[costItems:costItems,tax5:CostItem.TAX_TYPES.TAXABLE_5,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax16:CostItem.TAX_TYPES.TAXABLE_16,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
         List billingSums = []
@@ -925,6 +925,8 @@ class FinanceService {
         Map<String,BigDecimal> localSums = [:]
         BigDecimal billingSum = 0.0
         BigDecimal billingSumAfterTax = 0.0
+        BigDecimal localSum = 0.0
+        BigDecimal localSumAfterTax = 0.0
         if(billingSumsPositive.size() > 0) {
             billingSumsPositive.each { posEntry ->
                 if (billingSumsNegative.size() > 0) {
@@ -933,24 +935,30 @@ class FinanceService {
                         Map negEntry = billingSumsNegative[index]
                         billingSum = posEntry.billingSum - negEntry.billingSum
                         billingSumAfterTax = posEntry.billingSumAfterTax - negEntry.billingSumAfterTax
+                        localSum = posEntry.localSum - negEntry.localSum
+                        localSumAfterTax = posEntry.localSumAfterTax - negEntry.localSumAfterTax
                     }
                     else {
                         billingSum = posEntry.billingSum
                         billingSumAfterTax = posEntry.billingSumAfterTax
+                        localSum = posEntry.localSum
+                        localSumAfterTax = posEntry.localSumAfterTax
                     }
                 }
                 else {
                     billingSum = posEntry.billingSum
                     billingSumAfterTax = posEntry.billingSumAfterTax
+                    localSum = posEntry.localSum
+                    localSumAfterTax = posEntry.localSumAfterTax
                 }
                 positiveCurrencies << posEntry.currency
-                billingSums.add([currency: posEntry.currency, billingSum: billingSum, billingSumAfterTax: billingSumAfterTax])
+                billingSums.add([currency: posEntry.currency, billingSum: billingSum, billingSumAfterTax: billingSumAfterTax, localSum: localSum, localSumAfterTax: localSumAfterTax])
             }
         }
         if(billingSumsNegative.size() > 0) {
             billingSumsNegative.each { negEntry ->
                 if(!positiveCurrencies.contains(negEntry.currency))
-                    billingSums.add([currency: negEntry.currency, billingSum: negEntry.billingSum * (-1), billingSumAfterTax: negEntry.billingSumAfterTax * (-1)])
+                    billingSums.add([currency: negEntry.currency, billingSum: negEntry.billingSum * (-1), billingSumAfterTax: negEntry.billingSumAfterTax * (-1), localSum: negEntry.localSum * (-1), localSumAfterTax: negEntry.localSumAfterTax * (-1)])
             }
         }
         if(localSumsPositive.localSum && localSumsPositive.localSumAfterTax) {

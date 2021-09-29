@@ -30,17 +30,20 @@
                     <td class="right aligned"><g:formatNumber number="${entry.billingSumAfterTax}" type="currency" currencySymbol="${entry.currency}"/></td>
                 </tr>
             </g:if>
-            <tr>
-                <td rowspan="2">
-                    <i class="bordered large euro sign icon a-timeLineIcon la-timeLineIcon-contact"></i>
-                </td>
-                <th class="control-label">${message(code:'financials.sum.local')}</th>
-                <td class="right aligned"><g:formatNumber number="${data.localSums.localSum}" type="currency" currencySymbol="EUR"/></td>
-            </tr>
-            <tr>
-                <th class="control-label">${message(code:'financials.sum.localAfterTax')}</th>
-                <td class="right aligned" ><g:formatNumber number="${data.localSums.localSumAfterTax}" type="currency" currencySymbol="EUR"/></td>
-            </tr>
+            <g:if test="${entry.localSum > 0}">
+                <tr>
+                    <td rowspan="2">
+                        <i class="bordered large euro sign icon a-timeLineIcon la-timeLineIcon-contact"></i>
+                    </td>
+                    <th class="control-label">${message(code:'financials.sum.local')}</th>
+                    <td class="right aligned"><g:formatNumber number="${entry.localSum}" type="currency" currencySymbol="EUR"/></td>
+                </tr>
+                <tr>
+                    <th class="control-label">${message(code:'financials.sum.localAfterTax')}</th>
+                    <td class="right aligned" ><g:formatNumber number="${entry.localSumAfterTax}" type="currency" currencySymbol="EUR"/></td>
+                </tr>
+            </g:if>
+
 
         </g:each>
 
