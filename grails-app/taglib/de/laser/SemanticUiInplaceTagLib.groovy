@@ -107,7 +107,7 @@ class SemanticUiInplaceTagLib {
                 else {
                     if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length()==0)) {
                     }
-                    else if(attrs.field in ['decValue','listPrice','localPrice']) {
+                    else if(attrs.field in ['decValue','listPrice','localPrice'] || (attrs.field == 'value' && attrs.owner instanceof ReaderNumber)) {
                         NumberFormat nf = NumberFormat.getInstance(LocaleContextHolder.getLocale())
                         nf.setMinimumFractionDigits(2)
                         nf.setMaximumFractionDigits(2)
