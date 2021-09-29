@@ -987,7 +987,7 @@ join sub.orgRelations or_sub where
             params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id.toString()]
         }
 
-        if(params.tab == 'documents' && request.getFile("upload_file")) {
+        if(params.tab == 'documents' && params.processOption == 'newDoc') {
             def input_file = request.getFile("upload_file")
             if (input_file.size == 0) {
                 flash.error = message(code: 'template.emptyDocument.file')
