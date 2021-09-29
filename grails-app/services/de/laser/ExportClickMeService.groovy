@@ -1764,13 +1764,13 @@ class ExportClickMeService {
 
                 ReaderNumber readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, currentSemester)
                 ReaderNumber readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, currentSemester)
+                ReaderNumber readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE.value_de, org, currentSemester)
 
-                println(currentSemester.value_de)
-                println(readerNumberStudents)
-                if(readerNumberStudents || readerNumberStaff){
+                if(readerNumberStudents || readerNumberStaff || readerNumberFTE){
                     row.add([field: currentSemester.getI10n('value'), style: null])
                     row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
                     row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
+                    row.add([field: readerNumberFTE ? readerNumberFTE.value : '', style: null])
                 }else{
                     boolean nextSemester = false
 
@@ -1782,15 +1782,18 @@ class ExportClickMeService {
                         if (nextSemester) {
                             readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, refdataValueList[count])
                             readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, refdataValueList[count])
-                            if (readerNumberStudents || readerNumberStaff) {
+                            readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE.value_de, org, refdataValueList[count])
+                            if (readerNumberStudents || readerNumberStaff || readerNumberFTE) {
                                 row.add([field: refdataValueList[count].getI10n('value'), style: null])
                                 row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
                                 row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
+                                row.add([field: readerNumberFTE ? readerNumberFTE.value : '', style: null])
                                 break
                             }
                         }
                     }
-                    if(!readerNumberStudents && !readerNumberStaff){
+                    if(!readerNumberStudents && !readerNumberStaff && !readerNumberFTE){
+                        row.add([field: '', style: null])
                         row.add([field: '', style: null])
                         row.add([field: '', style: null])
                         row.add([field: '', style: null])
@@ -1810,6 +1813,9 @@ class ExportClickMeService {
                 }
                 if(readerNumberStaff){
                     sum = sum + readerNumberStaff.value
+                }
+                if(readerNumberFTE){
+                    sum = sum + readerNumberFTE.value
                 }
                 row.add([field: sum, style: null])
 
