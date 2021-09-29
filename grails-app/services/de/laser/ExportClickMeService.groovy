@@ -225,10 +225,10 @@ class ExportClickMeService {
                     label: 'Provider',
                     message: 'default.provider.label',
                     fields: [
-                            'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'org.sortname.label'],
-                            'provider.name'              : [field: 'providers.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'org.altname.label'],
-                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'org.url.label'],
+                            'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
+                            'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
+                            'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altname'],
+                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url'],
                             'provider.platforms'         : [field: 'providers.platforms.name', label: 'Platform', message: 'org.platforms.label'],
                             'provider.platforms.url'         : [field: 'providers.platforms.primaryUrl', label: 'Primary URL', message: 'platform.primaryURL'],
                     ]
@@ -238,10 +238,10 @@ class ExportClickMeService {
                     label: 'Agency',
                     message: 'default.agency.label',
                     fields: [
-                            'agency.sortname'          : [field: 'agencies.sortname', label: 'Sortname', message: 'org.sortname.label'],
-                            'agency.name'              : [field: 'agencies.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'agency.altnames'          : [field: 'agencies.altnames.name', label: 'Alt Name', message: 'org.altname.label'],
-                            'agency.url'               : [field: 'agencies.url', label: 'Url', message: 'org.url.label'],
+                            'agency.sortname'          : [field: 'agencies.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
+                            'agency.name'              : [field: 'agencies.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
+                            'agency.altnames'          : [field: 'agencies.altnames.name', label: 'Alt Name', message: 'exportClickMe.agency.altname'],
+                            'agency.url'               : [field: 'agencies.url', label: 'Url', message: 'exportClickMe.agency.url'],
                     ]
             ],
 
