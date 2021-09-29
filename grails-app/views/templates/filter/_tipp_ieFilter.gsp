@@ -15,6 +15,8 @@
            value="${packageInstance ? controlledListService.getAllPossiblePublisherByPackage(packageInstance,actionName) : []}"/>
     <g:set var="titleTypes"
            value="${packageInstance ? controlledListService.getAllPossibleTitleTypesByPackage(packageInstance,actionName) : []}"/>
+    <g:set var="coverageDepths"
+           value="${packageInstance ? controlledListService.getAllPossibleCoverageDepthsByPackage(packageInstance,actionName) : []}"/>
 </g:if>
 
 <g:if test="${controllerName == 'subscription'}">
@@ -32,6 +34,8 @@
            value="${subscription ? controlledListService.getAllPossiblePublisherBySub(subscription) : []}"/>
     <g:set var="titleTypes"
            value="${subscription ? controlledListService.getAllPossibleTitleTypesBySub(subscription) : []}"/>
+    <g:set var="coverageDepths"
+           value="${subscription ? controlledListService.getAllPossibleCoverageDepthsBySub(subscription) : []}"/>
 
 </g:if>
 
@@ -214,7 +218,7 @@
                 <select name="coverageDepth" id="coverageDepth" multiple=""
                         class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.COVERAGE_DEPTH)}"
+                    <g:each in="${coverageDepths}"
                             var="coverageDepth">
                         <option <%=(params.list('coverageDepth')?.contains(coverageDepth.value)) ? 'selected="selected"' : ''%>
                                 value="${coverageDepth}">
