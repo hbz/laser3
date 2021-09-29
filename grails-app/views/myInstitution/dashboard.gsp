@@ -277,6 +277,7 @@
                                 <th rowspan="2">${message(code:'subscription.label')}</th>
                                 <th rowspan="2">${message(code:'default.progress.label')}</th>
                                 <th class="la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
+                                <th rowspan="2"></th>
                             </tr>
                             <tr>
                                 <th class="la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>
@@ -287,15 +288,13 @@
                                 <g:set var="wfInfo" value="${wf.getInfo()}" />
                                 <tr>
                                     <td>
-                                        %{-- <i class="ui icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i> --}%
                                         <div class="la-flexbox">
                                             <i class="ui icon tasks la-list-icon"></i>
-                                            <g:link controller="subscription" action="workflows" id="${wf.subscription.id}" params="${[info: 'subscription:' + wf.subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
+                                            <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'dashboard:' + wf.subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
                                                 <strong>${wf.title}</strong>
                                             </g:link>
                                         </div>
                                     </td>
-
                                     <td>
                                         <div class="la-flexbox">
                                             <i class="ui icon clipboard la-list-icon"></i>
@@ -324,16 +323,32 @@
                                         <br />
                                         ${DateUtils.getSDF_NoTime().format(wf.dateCreated)}
                                     </td>
+                                    <td class="x">
+                                        <g:link controller="subscription" action="workflows" id="${wf.subscription.id}"
+                                                class="ui icon button blue la-modern-button"
+                                                params="${[info: 'subscription:' + wf.subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
+                                            <i class="icon pencil"></i>
+                                        </g:link>
+                                    </td>
                                 </tr>
                             </g:each>
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            <div id="wfModal" class="ui modal"></div>
         </g:if>
         </sec:ifAnyGranted>
 
     <laser:script file="${this.getGroovyPageFileName()}">
+
+        $('.wfModalLink').on('click', function(e) {
+            e.preventDefault();
+            var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), false);
+            func();
+        });
+
         JSPC.app.taskcreate = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);
 
         JSPC.app.taskedit = function(id) {

@@ -631,7 +631,7 @@
             this.calculateBillingCurrency.click( function() {
                 if (! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costLocalCurrency) && ! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costCurrencyRate)) {
                     let parsedLocalCurrency = JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
-                    JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.outputValue(JSPC.app.finance${idSuffix}.parsedLocalCurrency / JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim()));
+                    JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.outputValue(parsedLocalCurrency / JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim()));
                     $(".la-account-currency").find(".field").removeClass("error");
                     JSPC.app.finance${idSuffix}.calcTaxResults();
                 }
