@@ -225,10 +225,10 @@ class ExportClickMeService {
                     label: 'Provider',
                     message: 'default.provider.label',
                     fields: [
-                            'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'org.sortname.label'],
-                            'provider.name'              : [field: 'providers.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'org.altname.label'],
-                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'org.url.label'],
+                            'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
+                            'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
+                            'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altname'],
+                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url'],
                             'provider.platforms'         : [field: 'providers.platforms.name', label: 'Platform', message: 'org.platforms.label'],
                             'provider.platforms.url'         : [field: 'providers.platforms.primaryUrl', label: 'Primary URL', message: 'platform.primaryURL'],
                     ]
@@ -238,10 +238,10 @@ class ExportClickMeService {
                     label: 'Agency',
                     message: 'default.agency.label',
                     fields: [
-                            'agency.sortname'          : [field: 'agencies.sortname', label: 'Sortname', message: 'org.sortname.label'],
-                            'agency.name'              : [field: 'agencies.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'agency.altnames'          : [field: 'agencies.altnames.name', label: 'Alt Name', message: 'org.altname.label'],
-                            'agency.url'               : [field: 'agencies.url', label: 'Url', message: 'org.url.label'],
+                            'agency.sortname'          : [field: 'agencies.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
+                            'agency.name'              : [field: 'agencies.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
+                            'agency.altnames'          : [field: 'agencies.altnames.name', label: 'Alt Name', message: 'exportClickMe.agency.altname'],
+                            'agency.url'               : [field: 'agencies.url', label: 'Url', message: 'exportClickMe.agency.url'],
                     ]
             ],
 
@@ -1764,13 +1764,13 @@ class ExportClickMeService {
 
                 ReaderNumber readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, currentSemester)
                 ReaderNumber readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, currentSemester)
+                ReaderNumber readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE.value_de, org, currentSemester)
 
-                println(currentSemester.value_de)
-                println(readerNumberStudents)
-                if(readerNumberStudents || readerNumberStaff){
+                if(readerNumberStudents || readerNumberStaff || readerNumberFTE){
                     row.add([field: currentSemester.getI10n('value'), style: null])
                     row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
                     row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
+                    row.add([field: readerNumberFTE ? readerNumberFTE.value : '', style: null])
                 }else{
                     boolean nextSemester = false
 
@@ -1782,15 +1782,18 @@ class ExportClickMeService {
                         if (nextSemester) {
                             readerNumberStaff = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.value_de, org, refdataValueList[count])
                             readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS.value_de, org, refdataValueList[count])
-                            if (readerNumberStudents || readerNumberStaff) {
+                            readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE.value_de, org, refdataValueList[count])
+                            if (readerNumberStudents || readerNumberStaff || readerNumberFTE) {
                                 row.add([field: refdataValueList[count].getI10n('value'), style: null])
                                 row.add([field: readerNumberStudents ? readerNumberStudents.value : '', style: null])
                                 row.add([field: readerNumberStaff ? readerNumberStaff.value : '', style: null])
+                                row.add([field: readerNumberFTE ? readerNumberFTE.value : '', style: null])
                                 break
                             }
                         }
                     }
-                    if(!readerNumberStudents && !readerNumberStaff){
+                    if(!readerNumberStudents && !readerNumberStaff && !readerNumberFTE){
+                        row.add([field: '', style: null])
                         row.add([field: '', style: null])
                         row.add([field: '', style: null])
                         row.add([field: '', style: null])
@@ -1810,6 +1813,9 @@ class ExportClickMeService {
                 }
                 if(readerNumberStaff){
                     sum = sum + readerNumberStaff.value
+                }
+                if(readerNumberFTE){
+                    sum = sum + readerNumberFTE.value
                 }
                 row.add([field: sum, style: null])
 
