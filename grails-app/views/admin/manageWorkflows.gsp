@@ -158,12 +158,6 @@
         <div class="ui segment attached bottom" style="background-color: #f9fafb;">
 
             <div class="la-flexbox">
-                <i class="icon tasks la-list-icon"></i>
-                <g:link controller="subscription" action="workflows" id="${wf.subscription.id}" params="${[info: 'subscription:' + wf.subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
-                    <strong>${wf.title}</strong>
-                </g:link>
-            </div>
-            <div class="la-flexbox">
                 <i class="icon clipboard la-list-icon"></i>
                 <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
                     ${wf.subscription}
@@ -187,6 +181,12 @@
                     role="button"
                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                 <i class="trash alternate outline icon"></i>
+            </g:link>
+
+            <g:link class="ui small icon blue button right floated la-modern-button"
+                    controller="subscription" action="workflows" id="${wf.subscription.id}"
+                    params="${[info: 'subscription:' + wf.subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
+                <i class="icon pencil"></i>
             </g:link>
 
             <br />
@@ -581,7 +581,7 @@
 
     $('.wfModalLink').on('click', function(e) {
         e.preventDefault();
-        var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), true);
+        var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), false);
         func();
     });
 

@@ -27,7 +27,7 @@
     $('#wfModal .wfModalLink').on('click', function(e) {
         e.preventDefault();
         $('#wfModal').modal('hide');
-        var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), true);
+        var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), false);
         func();
     });
 </laser:script>
