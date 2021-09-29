@@ -49,7 +49,7 @@
             <div class="ui attached segment">
                 <g:each in="${condition.getFields()}" var="field">
                     <g:if test="${field.startsWith('checkbox')}">
-                        <div class="fields two">
+                        <div class="fields two" style="margin-bottom:0;">
                             <div class="field">
                                 <label for="${prefix}_${field}_title">Titel für ${condition.getFieldLabel(field)}</label>
                                 <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
@@ -66,7 +66,7 @@
                         </div>
                     </g:if>
                     <g:if test="${field.startsWith('date')}">
-                        <div class="fields two">
+                        <div class="fields two" style="margin-bottom:0;">
                             <div class="field">
                                 <label for="${prefix}_${field}_title">Titel für ${condition.getFieldLabel(field)}</label>
                                 <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
@@ -76,7 +76,7 @@
                         </div>
                     </g:if>
                     <g:if test="${field.startsWith('file')}">
-                        <div class="fields two">
+                        <div class="fields two" style="margin-bottom:0;">
                             <div class="field">
                                 <label for="${prefix}_${field}_title">Titel für ${condition.getFieldLabel(field)}</label>
                                 <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
@@ -121,18 +121,21 @@
 
                             <g:set var="docctx" value="${condition.getProperty(field)}" />
                             <g:if test="${docctx}">
-                                <g:link controller="docstore" id="${docctx.owner.uuid}">
-                                    <i class="icon file"></i>
-                                    <g:if test="${docctx.owner?.title}">
-                                        ${docctx.owner.title}
-                                    </g:if>
-                                    <g:elseif test="${docctx.owner?.filename}">
-                                        ${docctx.owner?.filename}
-                                    </g:elseif>
-                                    <g:else>
-                                        ${message(code:'template.documents.missing')}
-                                    </g:else>
-                                </g:link> (${docctx.owner?.type?.getI10n("value")})
+                                <div class="ui la-flexbox">
+                                    <i class="icon file la-list-icon"></i>
+                                    <g:link controller="docstore" id="${docctx.owner.uuid}">
+                                        <g:if test="${docctx.owner?.title}">
+                                            ${docctx.owner.title}
+                                        </g:if>
+                                        <g:elseif test="${docctx.owner?.filename}">
+                                            ${docctx.owner?.filename}
+                                        </g:elseif>
+                                        <g:else>
+                                            ${message(code:'template.documents.missing')}
+                                        </g:else>
+                                        (${docctx.owner?.type?.getI10n("value")})
+                                    </g:link>
+                                </div>
                             </g:if>
                             <g:else>
                                 <input type="text" name="${prefix}_${field}" id="${prefix}_${field}" readonly="readonly" value="<Link zur Datei>" />
