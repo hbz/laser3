@@ -82,11 +82,11 @@
                             %>
                             <td>
                                 <g:if test="${FTEs > 0}">
-                                    <g:formatNumber number="${students+FTEs}" minFractionDigits="2" maxFractionDigits="2"/>
+                                    <g:formatNumber number="${students+FTEs}" minFractionDigits="2" maxFractionDigits="2" format="${message(code:'default.decimal.format')}"/>
                                 </g:if>
                                 <g:if test="${FTEs > 0 && staff > 0}">/</g:if>
                                 <g:if test="${staff > 0}">
-                                    <g:formatNumber number="${students+staff}" minFractionDigits="2" maxFractionDigits="2"/>
+                                    <g:formatNumber number="${students+staff}" minFractionDigits="2" maxFractionDigits="2" format="${message(code:'default.decimal.format')}"/>
                                 </g:if>
                             </td>
                             <td>
@@ -141,7 +141,7 @@
                                         </g:if>
                                     </td>
                                 </g:each>
-                                <td><g:formatNumber number="${dueDateSums.get(numbersInstance.getKey())}"/></td>
+                                <td><g:formatNumber number="${dueDateSums.get(numbersInstance.getKey())}" format="${message(code:'default.decimal.format')}"/></td>
                                 <td><semui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/></td>
                                 <td class="x">
                                     <g:if test="${editable}">
