@@ -15,6 +15,8 @@
 
 3862    29.09.2021  rc-2.2  2.2-RC      Andreas Bug         Kostendarstellung auf Lizenzübersichtsseite angepasst
 
+3855    29.09.2021  rc-2.2  2.2-RC      Andreas Bug         Titelvergleich wieder lauffähig gemacht
+
 3867    28.09.2021  rc-2.2  2.2-RC      Moe     Bug         Rechter von Benutzern in Meine Lizenzverwaltung
 
 3866    28.09.2021  rc-2.2  2.2-RC      Andreas Bug         Menüpunkt "Merkmale in Objekten verwalten" war für INST_USERs erreichbar

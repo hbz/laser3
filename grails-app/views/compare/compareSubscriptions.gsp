@@ -67,7 +67,7 @@
     <br />
 
 
-    <div style="overflow-y: scroll;">
+    <div>
 
             <g:if test="${params.tab == 'compareProperties'}">
                 <div class="ui padded grid">
