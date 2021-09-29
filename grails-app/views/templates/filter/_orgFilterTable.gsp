@@ -50,6 +50,9 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('hasInstAdmin')}">
                 <th>${message(code: 'org.hasInstAdmin.label')}</th>
             </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
+                <th>${message(code: 'org.isWekbCurated.label')}</th>
+            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">
                 <th>${message(code: 'default.status.label')}</th>
             </g:if>
@@ -224,12 +227,6 @@
                                 <i class="chess rook grey la-list-icon icon"></i>
                             </span>
                         </g:if>
-                        <g:elseif test="${org.gokbId != null && RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${RDStore.OT_PROVIDER.getI10n("value")}">
-                                <i class="grey handshake outline la-list-icon icon"></i>
-                            </span>
-                        </g:elseif>
                         <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                             ${fieldValue(bean: org, field: "name")} <br />
                             <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
@@ -308,6 +305,16 @@
                     <g:else>
                         ${raw(instAdminIcon)}
                     </g:else>
+                </td>
+            </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
+                <td>
+                    <g:if test="${org.gokbId != null && RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()}">
+                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                              data-content="${RDStore.OT_PROVIDER.getI10n("value")}">
+                            <i class="grey handshake outline la-list-icon icon"></i>
+                        </span>
+                    </g:if>
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">
