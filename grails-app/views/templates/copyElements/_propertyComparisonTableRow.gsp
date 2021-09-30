@@ -322,7 +322,7 @@
                                                 <g:if test="${targetObject.isSlaved}">
                                                     <span class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'property.audit.target.inherit.auto')}"
-                                                          data-position="top right"><i class="icon thumbtack grey la-rotate"></i>
+                                                          data-position="top right"><i class="icon grey la-thumbtack-regular"></i>
                                                     </span>
                                                 </g:if>
                                                 <g:else>

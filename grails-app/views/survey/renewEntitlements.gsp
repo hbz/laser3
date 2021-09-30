@@ -31,25 +31,25 @@
                     params="${[exportXLSX: true, participant: participant.id]}">${message(code: 'default.button.exports.xls')}</g:link>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
-    <semui:actionsDropdown>
-        <g:if test="${surveyOrg.finishDate && surveyInfo && surveyInfo.status.id == RDStore.SURVEY_SURVEY_STARTED.id}">
-            <semui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant"
-                                       params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
-                                       message="openSurveyAgainForParticipant.button"/>
+
+        <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_SURVEY_COMPLETED.id]}">
+            <semui:actionsDropdown>
+                <g:if test="${surveyOrg.finishDate}">
+                    <semui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant"
+                                               params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+                                               message="openSurveyAgainForParticipant.button"/>
+
+                </g:if>
+                <g:if test="${!surveyOrg.finishDate}">
+                    <semui:actionsDropdownItem controller="survey" action="finishSurveyForParticipant"
+                                               params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
+                                               message="finishSurveyForParticipant.button"/>
+
+                </g:if>
+            </semui:actionsDropdown>
         </g:if>
 
-    %{--<g:if test="${surveyInfo && surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_COMPLETED.id]}">
-        <semui:actionsDropdownItem controller="survey" action="completeIssueEntitlementsSurveyforParticipant"
-                                   params="[id: surveyConfig.id, participant: participant.id]"
-                                   message="completeIssueEntitlementsSurvey.forParticipant.label"/>
-    </g:if>
-    <g:else>
-        <semui:actionsDropdownItemDisabled tooltip="${message(code: 'renewEntitlementsWithSurvey.noCompleted')}" controller="survey"
-                                           action="completeIssueEntitlementsSurveyforParticipant"
-                                           message="completeIssueEntitlementsSurvey.forParticipant.label"/>
-    </g:else>--}%
 
-    </semui:actionsDropdown>
 </semui:controlButtons>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>
