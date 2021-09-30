@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3881    30.09.2021  rc-2.2  2.2-RC      Andreas Feature     Anpassung der Statistik-Filter-Dropdowns
+
+--      30.09.2021  rc-2.2  2.2-RC      Andreas Bug         Sortierung bei Titelumfrage-Auflistung korrigiert
+
 3871    29.09.2021  rc-2.2  2.2-RC      Andreas Bug         Tippfehler im Lizenzmerkmal korrigiert
 
 3865    29.09.2021  rc-2.2  2.2-RC      Andreas Feature     Eingrenzung der Umfangangaben auf vorhandene Werte
