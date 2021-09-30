@@ -1837,7 +1837,7 @@ class SurveyController {
             flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.reject', args: [params.list('selectedIEs').size()])
         }
 
-        redirect(action: 'renewEntitlements', id: result.surveyConfig.id, params:[participant: result.participant.id])
+        redirect(action: 'renewEntitlements', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
 
     }
 
