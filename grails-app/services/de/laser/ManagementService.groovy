@@ -428,8 +428,6 @@ class ManagementService {
 
                 result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
 
-                Set<PropertyDefinition> propList = result.subscriptions ? PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :ctx and sp.instanceOf = null", [subscriptionSet: result.subscriptions, ctx: result.institution]) : []
-                result.propList = propList
 
                 result.filteredSubscriptions = result.subscriptions
             }
