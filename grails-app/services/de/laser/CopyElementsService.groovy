@@ -25,11 +25,12 @@ import org.springframework.context.i18n.LocaleContextHolder
 import javax.servlet.http.HttpServletRequest
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.concurrent.ExecutorService
 
 @Transactional
 class CopyElementsService {
 
-
+    ExecutorService executorService
     GenericOIDService genericOIDService
     ComparisonService comparisonService
     TaskService taskService
@@ -739,15 +740,29 @@ class CopyElementsService {
                 isTargetSubChanged = true
             }
 
-            if (params.subscription?.deletePackageIds && isBothObjectsSet(sourceObject, targetObject)) {
-                List<SubscriptionPackage> packagesToDelete = params.list('subscription.deletePackageIds').collect { genericOIDService.resolveOID(it) }
-                deletePackages(packagesToDelete, targetObject, flash)
-                isTargetSubChanged = true
+            boolean lock = false
+            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+            threadArray.each { Thread thread ->
+                if (thread.name == 'PackageTransfer_'+sourceObject.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
+                    flash.message = messageSource.getMessage('subscription.details.copyPackage.thread.running',null, LocaleContextHolder.getLocale())
+                    lock = true
+                }
             }
-            if (params.subscription?.takePackageIds && isBothObjectsSet(sourceObject, targetObject)) {
-                List<SubscriptionPackage> packagesToTake = params.list('subscription.takePackageIds').collect { genericOIDService.resolveOID(it) }
-                copyPackages(packagesToTake, targetObject, flash)
-                isTargetSubChanged = true
+            if(!lock) {
+                executorService.execute({
+                    Thread.currentThread().setName("PackageTransfer_${sourceObject.id}")
+                    if (params.subscription?.deletePackageIds && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                        List<SubscriptionPackage> packagesToDelete = params.list('subscription.deletePackageIds').collect { genericOIDService.resolveOID(it) }
+                        deletePackages(packagesToDelete, targetObject, flash)
+                        isTargetSubChanged = true
+                    }
+                    if (params.subscription?.takePackageIds && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                        List<SubscriptionPackage> packagesToTake = params.list('subscription.takePackageIds').collect { genericOIDService.resolveOID(it) }
+                        copyPackages(packagesToTake, targetObject, flash)
+                        isTargetSubChanged = true
+                    }
+                })
             }
 
 
@@ -1210,7 +1225,7 @@ class CopyElementsService {
     boolean copyPackages(List<SubscriptionPackage> packagesToTake, Object targetObject, def flash) {
         Locale locale = LocaleContextHolder.getLocale()
         packagesToTake.each { SubscriptionPackage subscriptionPackage ->
-            if (targetObject.packages?.find { it.pkg?.id == subscriptionPackage.pkg?.id }) {
+            if (SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, targetObject)) { //targetObject.packages?.find { it.pkg?.id == subscriptionPackage.pkg?.id }
                 Object[] args = [subscriptionPackage.pkg.name]
                 flash.error += messageSource.getMessage('subscription.err.packageAlreadyExistsInTargetSub', args, locale)
             } else {
@@ -1233,12 +1248,13 @@ class CopyElementsService {
                         newOrgAccessPointLink.subPkg = newSubscriptionPackage
                         newOrgAccessPointLink.save()
                     }
-
+                    List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlements(targetObject)
+                            //.findAll { it.tipp.id == ie.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
                     subscriptionPackage.getIssueEntitlementsofPackage().each { ie ->
                         //deleted check on both levels here because there are issue entitlements pointing to TIPPs which have been removed from we:kb
                         if (ie.status != RDStore.TIPP_STATUS_DELETED && ie.tipp.status != RDStore.TIPP_STATUS_DELETED) {
-                            def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ie.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
-                            if (list.size() > 0) {
+                            boolean check = targetIEs.find { IssueEntitlement targetIE -> targetIE.tipp.id == ie.tipp.id && targetIE.status != RDStore.TIPP_STATUS_DELETED }
+                            if (check) {
                                 // mich gibts schon! Fehlermeldung ausgeben!
                                 Object[] args = [ie.name]
                                 flash.error += messageSource.getMessage('subscription.err.titleAlreadyExistsInTargetSub', args, locale)
@@ -1356,9 +1372,8 @@ class CopyElementsService {
         }
     }
 
-    boolean isBothObjectsSet(Object sourceObject, Object targetObject) {
+    boolean isBothObjectsSet(Object sourceObject, Object targetObject, FlashScope flash = getCurrentFlashScope()) {
         Locale locale = LocaleContextHolder.getLocale()
-        FlashScope flash = getCurrentFlashScope()
 
         if (!sourceObject || !targetObject) {
             Object[] args = [messageSource.getMessage("${sourceObject.getClass().getSimpleName().toLowerCase()}.label", null, locale)]

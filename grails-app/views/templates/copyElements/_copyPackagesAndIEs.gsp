@@ -71,7 +71,7 @@
                                 </label>
 
                                 <div>
-                                    <strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}
+                                    <g:link controller="subscription" action="index" id="${sourceObject.id}"><strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}</g:link>
                                 </div>
                                 <%--
                                 <g:set var="ies" value="${sp.getIssueEntitlementsofPackage()}"/>
@@ -176,7 +176,7 @@
                                 </label>
 
                                 <div>
-                                    <strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}
+                                    <g:link controller="subscription" action="index" id="${targetObject?.id}"><strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}</g:link>
                                 </div>
                                 <%--
                                 <g:set var="ies" value="${sp.getIssueEntitlementsofPackage()}"/>
