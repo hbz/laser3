@@ -7,11 +7,15 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3871    29.09.2021  rc-2.2  2.2-RC      Andreas Bug         Tippfehler im Lizenzmerkmal korrigiert
+
 3865    29.09.2021  rc-2.2  2.2-RC      Andreas Feature     Eingrenzung der Umfangangaben auf vorhandene Werte
 
 3863    29.09.2021  rc-2.2  2.2-RC      Andreas Feature     neue Spakte we:kb-gepflegt in Anbieterlisten
 
 3862    29.09.2021  rc-2.2  2.2-RC      Andreas Bug         Kostendarstellung auf Lizenzübersichtsseite angepasst
+
+3855    29.09.2021  rc-2.2  2.2-RC      Andreas Bug         Titelvergleich wieder lauffähig gemacht
 
 3867    28.09.2021  rc-2.2  2.2-RC      Moe     Bug         Rechter von Benutzern in Meine Lizenzverwaltung
 

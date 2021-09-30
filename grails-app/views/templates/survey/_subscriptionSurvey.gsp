@@ -282,7 +282,7 @@
                     </laser:script>
                 </div>
 
-                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
+                <g:if test="${subscription.packages}">
 
                                 <div class="field" style="text-align: right;">
                                     <button id="package-info-toggle"
@@ -386,7 +386,7 @@
 
 
                             <div class="column">
-                                <g:if test="${subscription.packages}">
+                                %{--<g:if test="${subscription.packages}">
                                     <table class="ui three column la-selectable table">
                                         <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
                                             <tr>
@@ -406,7 +406,7 @@
                                             </tr>
                                         </g:each>
                                     </table>
-                                </g:if>
+                                </g:if>--}%
 
                                 <g:if test="${visibleOrgRelations}">
 
@@ -503,7 +503,7 @@
 
         </div>
 
-        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
+        <g:if test="${subscription.packages}">
             <div id="packages" class="la-inline-lists hidden"></div>
         </g:if>
 
@@ -1188,7 +1188,7 @@
        </g:each>
     </g:if>
 
-    <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
+    <g:if test="${subscription.packages}">
         JSPC.app.loadPackages = function () {
                   $.ajax({
                       url: "<g:createLink controller="ajaxHtml" action="getGeneralPackageData"/>",
