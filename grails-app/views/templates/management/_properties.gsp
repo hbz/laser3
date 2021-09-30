@@ -1,10 +1,10 @@
 <%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.helper.RDStore; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
-<g:if test="${filteredSubscriptions}">
+
+    <g:set var="allProperties"
+           value="${PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP) + PropertyDefinition.findAllByTenantAndDescr(contextOrg, PropertyDefinition.SUB_PROP)}"/>
 
     <div class="ui segment">
-
-        <h1><g:message code="subscriptionsManagement.properties.info"/> </h1>
 
         <g:if test="${controllerName == "subscription"}">
             <div class="ui two column very relaxed grid">
@@ -82,7 +82,7 @@
             </div>
         </div>
     </g:if>
-</g:if>
+
 
 
 
