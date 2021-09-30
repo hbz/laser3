@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3881    30.09.2021  rc-2.2  2.2-RC      Andreas Feature     Anpassung der Statistik-Filter-Dropdowns
+
+--      30.09.2021  rc-2.2  2.2-RC      Andreas Bug         Sortierung bei Titelumfrage-Auflistung korrigiert
+
 3878    30.09.2021  rc-2.2  2.2-RC      Moe     Bug         abgelaufene Lizenz wird nicht verlängert und der Status ändert sich nicht         
 
 3873    30.09.2021  rc-2.2  2.2-RC      Moe     Bug         500er bei Eingabe von IP-Adresse

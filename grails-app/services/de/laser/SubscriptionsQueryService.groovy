@@ -120,21 +120,23 @@ class SubscriptionsQueryService {
             }
             // identifier based
             else {
-
                 base_qry += "AND ( exists ( select ident.id from Identifier ident"
 
-                base_qry += " where ( ident.sub = s.id or "
+                base_qry += " where ( ident.sub.id = s.id or "
 
-                base_qry += "ident.lic in (select li.sourceLicense from Links li where li.destinationSubscription = s and li.linkType = :linkType) or "
+                //base_qry += "ident.lic.id in (select li.sourceLicense.id from Links li where li.destinationSubscription.id = s.id and li.linkType = :linkType) "
+                base_qry += "ident.lic.id in (select li.sourceLicense.id from Links li where li.destinationSubscription.id = s.id and li.linkType = :linkType) or "
+                qry_params.put('linkType', RDStore.LINKTYPE_LICENSE)
 
-                base_qry += "ident.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = s) or "
+                //base_qry += "ident.pkg.id in (select sp.pkg.id from SubscriptionPackage sp where sp.subscription.id = s.id) "
+                base_qry += "ident.pkg.id in (select sp.pkg.id from SubscriptionPackage sp where sp.subscription.id = s.id) or "
 
-                base_qry += "ident.tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription = s) or "
+                //base_qry += "ident.tipp.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription.id = s.id) "
+                base_qry += "ident.tipp.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription.id = s.id) or "
 
-                base_qry += "ident.org in (select ro.org from OrgRole ro where ro.sub = s) "
+                base_qry += "ident.org.id in (select ro.org.id from OrgRole ro where ro.sub.id = s.id) "
 
                 base_qry += ") and ident.value = :identifier ) )"
-                qry_params.put('linkType', RDStore.LINKTYPE_LICENSE)
             }
 
             qry_params.put('identifier', params.identifier.trim())

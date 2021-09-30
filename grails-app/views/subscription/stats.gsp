@@ -1,6 +1,9 @@
 <%@ page import="de.laser.helper.RDStore; org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource" %>
 <laser:serviceInjection />
 <%-- r:require module="annotations" / --%>
+<g:set var="subjects" value="${controlledListService.getAllPossibleSubjectsBySub(subscription)}"/>
+<g:set var="ddcs" value="${controlledListService.getAllPossibleDdcsBySub(subscription)}"/>
+<g:set var="languages" value="${controlledListService.getAllPossibleLanguagesBySub(subscription)}"/>
 
 <!doctype html>
 <html>
@@ -82,7 +85,7 @@
                                     class="ui search selection dropdown">
                                 <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                                <g:each in="${controlledListService.getAllPossibleSubjectsBySub(subscription)}" var="subject">
+                                <g:each in="${subjects}" var="subject">
                                     <option <%=(params.list('subject_references')?.contains(subject)) ? 'selected="selected"' : ''%>
                                             value="${subject}">
                                         ${subject}
@@ -98,12 +101,15 @@
                                     class="ui search selection dropdown">
                                 <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                                <g:each in="${controlledListService.getAllPossibleDdcsBySub(subscription)}" var="ddc">
+                                <g:each in="${ddcs}" var="ddc">
                                     <option <%=(params.list('ddcs')?.contains(ddc.id.toString())) ? 'selected="selected"' : ''%>
                                             value="${ddc.id}">
                                         ${ddc.value} - ${ddc.getI10n("value")}
                                     </option>
                                 </g:each>
+                                <g:if test="${ddcs.size() == 0}">
+                                    <option value=""><g:message code="titleInstance.noDdc.label" /></option>
+                                </g:if>
                             </select>
                         </div>
 
@@ -114,19 +120,22 @@
                                     class="ui search selection dropdown">
                                 <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                                <g:each in="${controlledListService.getAllPossibleLanguagesBySub(subscription)}" var="language">
+                                <g:each in="${languages}" var="language">
                                     <option <%=(params.list('languages')?.contains(language.id.toString())) ? 'selected="selected"' : ''%>
                                             value="${language.id}">
                                         ${language.getI10n("value")}
                                     </option>
                                 </g:each>
+                                <g:if test="${languages.size() == 0}">
+                                    <option value=""><g:message code="titleInstance.noLanguage.label" /></option>
+                                </g:if>
                             </select>
                         </div>
                     </div>
                     <div class="three fields">
                         <div class="field">
                             <label for="metricType"><g:message code="default.usage.metricType"/></label>
-                            <select name="metricType" id="metricType" class="ui selection dropdown">
+                            <select name="metricType" id="metricType" class="ui search selection dropdown">
                                 <option value=""><g:message code="default.select.choose.label"/></option>
                                 <g:each in="${metricTypes}" var="metricType">
                                     <option <%=(params.metricType == metricType) ? 'selected="selected"' : ''%>
@@ -134,12 +143,15 @@
                                         ${metricType}
                                     </option>
                                 </g:each>
+                                <g:if test="${metricTypes.size() == 0}">
+                                    <option value="<g:message code="default.stats.noMetric" />"><g:message code="default.stats.noMetric" /></option>
+                                </g:if>
                             </select>
                         </div>
 
                         <div class="field">
                             <label for="reportType"><g:message code="default.usage.reportType"/></label>
-                            <select name="reportType" id="reportType" multiple="multiple" class="ui selection dropdown">
+                            <select name="reportType" id="reportType" multiple="multiple" class="ui search selection dropdown">
                                 <option value=""><g:message code="default.select.choose.label"/></option>
                                 <g:each in="${reportTypes}" var="reportType">
                                     <option <%=(params.list('reportType')?.contains(reportType)) ? 'selected="selected"' : ''%>
@@ -147,6 +159,9 @@
                                         <g:message code="default.usage.${reportType}"/>
                                     </option>
                                 </g:each>
+                                <g:if test="${reportTypes.size() == 0}">
+                                    <option value="<g:message code="default.stats.noReport" />"><g:message code="default.stats.noReport" /></option>
+                                </g:if>
                             </select>
                         </div>
 
