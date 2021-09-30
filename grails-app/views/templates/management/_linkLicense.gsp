@@ -193,7 +193,6 @@
                         <td class="x">
                             <g:link controller="subscription" action="show" id="${sub.id}"
                                     class="ui icon button blue la-modern-button"
-                                    data-tooltip="${message(code: 'subscription.details.viewMember.label')}"
                                     data-position="left center"
                                     role="button">
                                 <i aria-hidden="true" class="write icon"></i></g:link>
