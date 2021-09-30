@@ -34,7 +34,8 @@ class AccessPointController  {
     def addIpRange() {
         Map<String,Object> ctrlResult = accessPointControllerService.addIpRange(params)
         if (ctrlResult.status == AccessPointControllerService.STATUS_ERROR) {
-            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id, params: [ip: ctrlResult.result.invalidRanges.join(' ')]
+            flash.error = ctrlResult.result.error
+            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id, params: [ip: ctrlResult.result.invalidRanges.join(' '), tab: params.tab]
             return
         } else {
             redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id, params: [autofocus: true, tab: params.tab]

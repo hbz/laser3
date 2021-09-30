@@ -299,16 +299,20 @@
                         </g:if>
 
                         <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                            <g:if test="${surResultParticipation}">
-                                <td>
-                                    <g:render template="surveyResult" model="[surResult: surResultParticipation, surveyOrg: surveyOrg]"/>
-                                </td>
+                            <g:if test="${surveyConfig.surveyProperties}">
+                                <g:if test="${surResultParticipation}">
+                                    <td>
+                                        <g:render template="surveyResult"
+                                                  model="[surResult: surResultParticipation, surveyOrg: surveyOrg]"/>
+                                    </td>
+                                </g:if>
+                                <g:each in="${surResults.sort { it.type.getI10n('name') }}" var="resultProperty">
+                                    <td>
+                                        <g:render template="surveyResult"
+                                                  model="[surResult: resultProperty, surveyOrg: surveyOrg]"/>
+                                    </td>
+                                </g:each>
                             </g:if>
-                            <g:each in="${surResults.sort { it.type.getI10n('name') }}" var="resultProperty">
-                                <td>
-                                    <g:render template="surveyResult" model="[surResult: resultProperty, surveyOrg: surveyOrg]"/>
-                                </td>
-                            </g:each>
                         </g:if>
                         <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                             <td>
@@ -522,16 +526,18 @@
                         </g:if>
 
                         <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
-                            <g:if test="${surResultParticipation}">
-                                <td>
-                                    <g:render template="surveyResult" model="[surResult: surResultParticipation, surveyOrg: surveyOrg]"/>
-                                </td>
+                            <g:if test="${surveyConfig.surveyProperties}">
+                                <g:if test="${surResultParticipation}">
+                                    <td>
+                                        <g:render template="surveyResult" model="[surResult: surResultParticipation, surveyOrg: surveyOrg]"/>
+                                    </td>
+                                </g:if>
+                                <g:each in="${surResults}" var="resultProperty">
+                                    <td>
+                                        <g:render template="surveyResult" model="[surResult: resultProperty, surveyOrg: surveyOrg]"/>
+                                    </td>
+                                </g:each>
                             </g:if>
-                            <g:each in="${surResults}" var="resultProperty">
-                                <td>
-                                    <g:render template="surveyResult" model="[surResult: resultProperty, surveyOrg: surveyOrg]"/>
-                                </td>
-                            </g:each>
                         </g:if>
                         <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                             <td>

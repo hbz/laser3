@@ -23,7 +23,7 @@ class RenewSubscriptionService extends AbstractLockableService {
     def contextService
 
     boolean subscriptionRenewCheck() {
-        if (true) {
+        if (running) {
             running = true
             println "processing all current local subscriptions with annually peroide to renew ..."
             Date currentDate = new Date()
@@ -33,7 +33,7 @@ class RenewSubscriptionService extends AbstractLockableService {
 
             // CURRENT -> EXPIRED
 
-            Set<Long> currentSubsIds = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and s.startDate < :currentDate and (s.endDate != null and s.endDate < :currentDate) and s.type = :type and s.isAutomaticRenewAnnually = true',
+            Set<Long> currentSubsIds = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and s.startDate < :currentDate and (s.endDate != null and s.endDate <= :currentDate) and s.type = :type and s.isAutomaticRenewAnnually = true',
                     [status: RDStore.SUBSCRIPTION_CURRENT, currentDate: currentDate, type: RDStore.SUBSCRIPTION_TYPE_LOCAL])
 
             log.info("Current subscriptions reached end date and are now (${currentDate}) to renew: " + currentSubsIds)

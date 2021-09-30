@@ -11,6 +11,10 @@
 
 --      30.09.2021  rc-2.2  2.2-RC      Andreas Bug         Sortierung bei Titelumfrage-Auflistung korrigiert
 
+3878    30.09.2021  rc-2.2  2.2-RC      Moe     Bug         abgelaufene Lizenz wird nicht verlängert und der Status ändert sich nicht         
+
+3873    30.09.2021  rc-2.2  2.2-RC      Moe     Bug         500er bei Eingabe von IP-Adresse
+
 3871    29.09.2021  rc-2.2  2.2-RC      Andreas Bug         Tippfehler im Lizenzmerkmal korrigiert
 
 3865    29.09.2021  rc-2.2  2.2-RC      Andreas Feature     Eingrenzung der Umfangangaben auf vorhandene Werte
