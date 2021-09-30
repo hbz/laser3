@@ -40,7 +40,7 @@
 
     <div class="ui segment">
         <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'linkLicense']" method="post"
-                class="ui form" data-confirm-id="deleteLicenses_form">
+                class="ui form licenseForm" data-confirm-id="deleteLicenses_form">
             <g:hiddenField id="pllm_id_${params.id}" name="id" value="${params.id}"/>
             <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
@@ -220,6 +220,22 @@
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', true)
         } else {
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
+        }
+    });
+
+    $('.licenseForm').form({
+        on: 'blur',
+        inline: true,
+        fields: {
+            noSubscription: {
+                identifier: 'selectedSubs',
+                rules: [
+                    {
+                        type: 'checked',
+                        prompt: '<g:message code="subscriptionsManagement.noSelectedSubscriptions.table"/>'
+                    }
+                ]
+            }
         }
     });
 </laser:script>
