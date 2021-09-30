@@ -12,10 +12,16 @@ if (! JSPC.app.reporting) {
                     green:  'rgb(144,202,117)',
                     blue:   'rgb(58,111,196)',
                     ice:    'rgb(115,192,222)',
+                    yellow: 'rgb(250,200,88)',
+                    orange: 'rgb(255,165,0)',
+                    purple: 'rgb(154,96,180)',
                     redInactive:    'rgba(238,102,102, 0.3)',
                     greenInactive:  'rgba(144,202,117, 0.3)',
                     blueInactive:   'rgba(58,111,196, 0.3)',
                     iceInactive:    'rgba(115,192,222, 0.3)',
+                    yellowInactive: 'rgba(250,200,88, 0.3)',
+                    orangeInactive: 'rgba(255,165,0, 0.3)',
+                    purpleInactive: 'rgba(154,96,180, 0.3)'
                 },
                 pie: {
                     emphasis: {

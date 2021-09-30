@@ -4,10 +4,12 @@ import de.laser.FinanceService
 import de.laser.IssueEntitlement
 import de.laser.Links
 import de.laser.Org
+import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.ctrl.FinanceControllerService
+import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.reporting.myInstitution.SubscriptionQuery
@@ -43,9 +45,9 @@ class SubscriptionReporting {
                                             'tipp-titleType',
                                             'tipp-medium',
                                             'tipp-ddcs',
-                                            'tipp-languages',
-                                            //'tipp-platform',
-                                            //'tipp-package'
+                                            'tipp-languages'
+                                          //  'tipp-package',
+                                          //  'tipp-platform'
                                     ]
                             ]
                     ],
@@ -67,7 +69,7 @@ class SubscriptionReporting {
                                             ],
                                             'timeline-cost' : [
                                                     chart : 'cost',
-                                                    chartLabels : [ 'cost.1', 'cost.2' ]
+                                                    chartLabels : [ 'cost.1', 'cost.2', 'cost.3', 'cost.4' ]
                                             ],
                                             'timeline-entitlement' : [
                                                     chart : '1axis3values',
@@ -276,11 +278,21 @@ class SubscriptionReporting {
 
                     timeline.eachWithIndex { s, i ->
                         clone.setProperty('id', s.id)
-                        Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, financeControllerService.getResultGenerics(clone))
+
+                        Map<String, Object> fsCifsMap = financeControllerService.getResultGenerics(clone)
+                        fsCifsMap.put('max', 5000)
+                        Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, fsCifsMap)
+
+                        //List<CostItem> relevantCostItems = finance.cons.costItems.findAll{ it.costItemElementConfiguration in [RDStore.CIEC_POSITIVE, RDStore.CIEC_NEGATIVE]} ?: []
+                        List<CostItem> neutralCostItems  = finance.cons.costItems.findAll{ it.costItemElementConfiguration == RDStore.CIEC_NEUTRAL } ?: []
+                        List<Double> vncList  = neutralCostItems.collect{Double cilc = it.costInLocalCurrency ?: 0.0; it.finalCostRounding ? cilc.round(0) : cilc.round(2) }
+                        List<Double> vnctList = neutralCostItems.collect{it.getCostInLocalCurrencyAfterTax() }
 
                         List data = [
                                 s.id,
                                 s.name,
+                                vncList ? vncList.sum() : 0.0,
+                                vnctList ? vnctList.sum() : 0.0,
                                 finance.cons?.sums?.localSums?.localSum ?: 0,
                                 finance.cons?.sums?.localSums?.localSumAfterTax ?: 0,
                                 (s.startDate ? sdf.format(s.startDate) : NO_STARTDATE) + ' - ' + (s.endDate ? sdf.format(s.endDate) : NO_ENDDATE),
@@ -290,10 +302,12 @@ class SubscriptionReporting {
                         result.dataDetails.add([
                                 query : params.query,
                                 id    : s.id,
-                                label : data[4],
-                                idList: [],
-                                value1: g.formatNumber( number: (finance.cons?.sums?.localSums?.localSum ?: 0), type: 'currency',  currencySymbol: '' ).trim(),
-                                value2: g.formatNumber( number: (finance.cons?.sums?.localSums?.localSumAfterTax ?: 0), type: 'currency',  currencySymbol: '' ).trim()
+                                label : data[6],
+                                idList: finance.cons.costItems.collect{ it.id },
+                                vnc:  g.formatNumber( number: data[2], type: 'currency',  currencySymbol: '' ).trim(),
+                                vnct: g.formatNumber( number: data[3], type: 'currency',  currencySymbol: '' ).trim(),
+                                vc:   g.formatNumber( number: (finance.cons?.sums?.localSums?.localSum ?: 0), type: 'currency',  currencySymbol: '' ).trim(),
+                                vct:  g.formatNumber( number: (finance.cons?.sums?.localSums?.localSumAfterTax ?: 0), type: 'currency',  currencySymbol: '' ).trim()
                         ])
                     }
                 }
@@ -432,14 +446,14 @@ class SubscriptionReporting {
                                 query : params.query,
                                 id    : d[0],
                                 label : d[1],
-                                idList: Subscription.executeQuery(
+                                idList: TitleInstancePackagePlatform.executeQuery(
                                         'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.platform.id = :d order by tipp.sortname',
                                         [idList: idList, d: d[0]]
                                 )
                         ])
                     }
-                } */
-                /* else if (params.query == 'tipp-package') {
+                }
+                else if (params.query == 'tipp-package') {
                     result.data = Platform.executeQuery(
                             'select p.id, p.name, count(*) from TitleInstancePackagePlatform tipp join tipp.pkg p where tipp.id in (:idList) group by p.id order by p.name',
                             [idList: idList]
@@ -449,7 +463,7 @@ class SubscriptionReporting {
                                 query : params.query,
                                 id    : d[0],
                                 label : d[1],
-                                idList: Subscription.executeQuery(
+                                idList: TitleInstancePackagePlatform.executeQuery(
                                         'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.pkg.id = :d order by tipp.sortname',
                                         [idList: idList, d: d[0]]
                                 )

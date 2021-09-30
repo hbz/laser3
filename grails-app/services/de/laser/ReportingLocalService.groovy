@@ -80,7 +80,13 @@ class ReportingLocalService {
 
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty('id', params.id)
-                Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, financeControllerService.getResultGenerics(clone))
+
+                Map<String, Object> fsCifsMap = financeControllerService.getResultGenerics(clone)
+                fsCifsMap.put('max', 5000)
+                Map<String, Object> finance = financeService.getCostItemsForSubscription(clone, fsCifsMap)
+
+                result.relevantCostItems = finance.cons.costItems.findAll{ it.costItemElementConfiguration in [RDStore.CIEC_POSITIVE, RDStore.CIEC_NEGATIVE]} ?: []
+                result.neutralCostItems  = finance.cons.costItems.minus( result.relevantCostItems )
 
                 result.billingSums = finance.cons.sums?.billingSums ?: []
                 result.localSums   = finance.cons.sums?.localSums ?: []

@@ -59,7 +59,183 @@
     </g:else>
 </div>
 
-%{-- <g:render template="/subscription/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" /> TODO --}%
+<g:if test="${relevantCostItems}">
+    <div class="ui segment">
+        <table class="ui table la-table compact">
+            <thead>
+                <tr>
+                    <th rowspan="2"></th>
+                    <th rowspan="2">${message(code:'reporting.local.subscription.timeline.timeline-member')}</th>
+                    <th rowspan="2">${message(code:'financials.costItemElement')}</th>
+                    <th rowspan="2">${message(code:'financials.taxRate')}</th>
+                    <th rowspan="2"></th>
+                    <th class="la-smaller-table-head">${message(code:'financials.sum.billing')}</th>
+                    <th class="la-smaller-table-head">${message(code:'financials.sum.local')}</th>
+                    <th class="la-smaller-table-head">${message(code:'financials.dateFrom')}</th>
+                </tr>
+                <tr>
+                    <th class="la-smaller-table-head">${message(code:'financials.sum.billingAfterTax')}</th>
+                    <th class="la-smaller-table-head">${message(code:'financials.sum.localAfterTax')}</th>
+                    <th class="la-smaller-table-head">${message(code:'financials.dateTo')}</th>
+                </tr>
+            </thead>
+            <tbody>
+            <g:each in="${relevantCostItems}" var="ci" status="i">
+                <tr>
+                    <td>${i+1}.</td>
+                    <td>
+                        <g:each in="${ci.sub.orgRelations}" var="ciSubscr">
+                            <g:if test="${[RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id].contains(ciSubscr.roleType.id)}">
+                                <g:link controller="org" action="show" id="${ciSubscr.org.id}">${ciSubscr.org.sortname ?: ciSubscr.org.name}</g:link>
+                            </g:if>
+                        </g:each>
+                    </td>
+                    <td>
+                        ${ci.costItemElement?.getI10n("value")}
+                    </td>
+                    <td>
+                        <g:if test="${ci.taxKey && ci.taxKey.display}">
+                            ${ci.taxKey.taxRate + '%'}
+                        </g:if>
+                        <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                            ${RDStore.TAX_REVERSE_CHARGE.getI10n("value")}
+                        </g:elseif>
+                        <g:elseif test="${ci.taxKey in [CostItem.TAX_TYPES.TAX_CONTAINED_7, CostItem.TAX_TYPES.TAX_CONTAINED_19]}">
+                            ${ci.taxKey.taxType.getI10n("value")}
+                        </g:elseif>
+                        <g:elseif test="${! ci.taxKey}">
+                            <g:message code="financials.taxRate.notSet"/>
+                        </g:elseif>
+                    </td>
+                    <td>
+                        <%
+                            switch (ci.costItemElementConfiguration) {
+                                case RDStore.CIEC_POSITIVE:
+                                    print '<i class="plus green circle icon"></i>'
+                                    break
+                                case RDStore.CIEC_NEGATIVE:
+                                    print '<i class="minus red circle icon"></i>'
+                                    break
+                                case RDStore.CIEC_NEUTRAL:
+                                    print '<i class="circle yellow icon"></i>'
+                                    break
+                                default:
+                                    print'<i class="question circle icon"></i>'
+                                    break
+                            }
+                        %>
+                    </td>
+                    <td>
+                        <span style="color:darkgrey"><g:formatNumber number="${ci.costInBillingCurrency ?: 0.0}" type="currency" currencySymbol="${ci.billingCurrency ?: 'EUR'}" /></span>
+                        <br />
+                        <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="${ci.billingCurrency ?: 'EUR'}" />
+                    </td>
+                    <td>
+                        <span style="color:darkgrey"><g:formatNumber number="${ci.costInLocalCurrency ?: 0.0}" type="currency" currencySymbol="EUR" /></span>
+                        <br />
+                        <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
+                    </td>
+                    <td>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ci.startDate}"/>
+                        <br />
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ci.endDate}"/>
+                    </td>
+                </tr>
+            </g:each>
+            </tbody>
+        </table>
+    </div>
+</g:if>
+
+<g:if test="${neutralCostItems}">
+    <div class="ui segment">
+        <table class="ui table la-table compact">
+            <thead>
+            <tr>
+                <th rowspan="2"></th>
+                <th rowspan="2">${message(code:'reporting.local.subscription.timeline.timeline-member')}</th>
+                <th rowspan="2">${message(code:'financials.costItemElement')}</th>
+                <th rowspan="2">${message(code:'financials.taxRate')}</th>
+                <th rowspan="2"></th>
+                <th class="la-smaller-table-head">${message(code:'financials.sum.billing')}</th>
+                <th class="la-smaller-table-head">${message(code:'financials.sum.local')}</th>
+                <th class="la-smaller-table-head">${message(code:'financials.dateFrom')}</th>
+            </tr>
+            <tr>
+                <th class="la-smaller-table-head">${message(code:'financials.sum.billingAfterTax')}</th>
+                <th class="la-smaller-table-head">${message(code:'financials.sum.localAfterTax')}</th>
+                <th class="la-smaller-table-head">${message(code:'financials.dateTo')}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <g:each in="${neutralCostItems}" var="ci" status="i">
+                <tr>
+                    <td>${i+1}.</td>
+                    <td>
+                        <g:each in="${ci.sub.orgRelations}" var="ciSubscr">
+                            <g:if test="${[RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id].contains(ciSubscr.roleType.id)}">
+                                <g:link controller="org" action="show" id="${ciSubscr.org.id}">${ciSubscr.org.sortname ?: ciSubscr.org.name}</g:link>
+                            </g:if>
+                        </g:each>
+                    </td>
+                    <td>
+                        ${ci.costItemElement?.getI10n("value")}
+                    </td>
+                    <td>
+                        <g:if test="${ci.taxKey && ci.taxKey.display}">
+                            ${ci.taxKey.taxRate + '%'}
+                        </g:if>
+                        <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                            ${RDStore.TAX_REVERSE_CHARGE.getI10n("value")}
+                        </g:elseif>
+                        <g:elseif test="${ci.taxKey in [CostItem.TAX_TYPES.TAX_CONTAINED_7, CostItem.TAX_TYPES.TAX_CONTAINED_19]}">
+                            ${ci.taxKey.taxType.getI10n("value")}
+                        </g:elseif>
+                        <g:elseif test="${! ci.taxKey}">
+                            <g:message code="financials.taxRate.notSet"/>
+                        </g:elseif>
+                    </td>
+                    <td>
+                        <%
+                            switch (ci.costItemElementConfiguration) {
+                                case RDStore.CIEC_POSITIVE:
+                                    print '<i class="plus green circle icon"></i>'
+                                    break
+                                case RDStore.CIEC_NEGATIVE:
+                                    print '<i class="minus red circle icon"></i>'
+                                    break
+                                case RDStore.CIEC_NEUTRAL:
+                                    print '<i class="circle yellow icon"></i>'
+                                    break
+                                default:
+                                    print'<i class="question circle icon"></i>'
+                                    break
+                            }
+                        %>
+                    </td>
+                    <td>
+                        <span style="color:darkgrey"><g:formatNumber number="${ci.costInBillingCurrency ?: 0.0}" type="currency" currencySymbol="${ci.billingCurrency ?: 'EUR'}" /></span>
+                        <br />
+                        <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="${ci.billingCurrency ?: 'EUR'}" />
+                    </td>
+                    <td>
+                        <span style="color:darkgrey"><g:formatNumber number="${ci.costInLocalCurrency ?: 0.0}" type="currency" currencySymbol="EUR" /></span>
+                        <br />
+                        <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
+                    </td>
+                    <td>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ci.startDate}"/>
+                        <br />
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ci.endDate}"/>
+                    </td>
+                </tr>
+            </g:each>
+            </tbody>
+        </table>
+    </div>
+</g:if>
+
+<g:render template="/subscription/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />
 
 
 
