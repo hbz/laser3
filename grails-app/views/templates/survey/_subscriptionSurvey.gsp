@@ -887,9 +887,8 @@
                 <th>${message(code: 'surveyProperty.name')}</th>
                 <th>${message(code: 'surveyProperty.expl.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
-                <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL}">
-                    <th>${message(code: 'surveyProperty.mandatoryProperty')}</th>
-                </g:if>
+                <th>${message(code: 'surveyProperty.mandatoryProperty')}</th>
+
                 <th></th>
             </tr>
             </thead>
@@ -934,18 +933,21 @@
                             (${refdataValues.join('/')})
                         </g:if>
                     </td>
-                    <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL}">
-                        <td>
-                            <g:form action="surveyPropertyMandatory" method="post" class="ui form"
-                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, surveyConfigProperties: surveyProperty.id]">
 
-                                    <div class="ui checkbox">
-                                        <input type="checkbox" onchange="this.form.submit()" ${surveyProperty.surveyProperty == RDStore.SURVEY_PROPERTY_PARTICIPATION ? 'readonly="readonly" disabled="true"' : ''}
-                                               name="mandatoryProperty" ${surveyProperty.mandatoryProperty ? 'checked' : ''}>
-                                    </div>
-                            </g:form>
-                        </td>
-                    </g:if>
+                    <td>
+                        <g:set var="surveyPropertyMandatoryEditable" value="${(editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
+                                (surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL || (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && surveyProperty.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION)))}"/>
+                        <g:form action="surveyPropertyMandatory" method="post" class="ui form"
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, surveyConfigProperties: surveyProperty.id]">
+
+                            <div class="ui checkbox">
+                                <input type="checkbox"
+                                       onchange="${surveyPropertyMandatoryEditable ? 'this.form.submit()' :  ''}" ${!surveyPropertyMandatoryEditable ? 'readonly="readonly" disabled="true"' : ''}
+                                       name="mandatoryProperty" ${surveyProperty.mandatoryProperty ? 'checked' : ''}>
+                            </div>
+                        </g:form>
+                    </td>
+
                     <td>
                         <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
                                 SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyProperty.surveyProperty)
@@ -1060,15 +1062,15 @@
                             </span>
                         </g:if>
 
-                        <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL}">
-                            <g:set var="surveyConfigProperties" value="${SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyResult.surveyConfig, surveyResult.type)}"/>
-                            <g:if test="${surveyConfigProperties && surveyConfigProperties.mandatoryProperty}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                      data-content="${message(code: 'default.mandatory.tooltip')}">
-                                    <i class="info circle icon"></i>
-                                </span>
-                            </g:if>
+                        <g:set var="surveyConfigProperties"
+                               value="${SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyResult.surveyConfig, surveyResult.type)}"/>
+                        <g:if test="${surveyConfigProperties && surveyConfigProperties.mandatoryProperty}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${message(code: 'default.mandatory.tooltip')}">
+                                <i class="info circle icon"></i>
+                            </span>
                         </g:if>
+
 
                     </td>
                     <td>
@@ -1193,7 +1195,7 @@
                   $.ajax({
                       url: "<g:createLink controller="ajaxHtml" action="getGeneralPackageData"/>",
                       data: {
-                          subscription: "${surveyConfig.subscription.id}"
+                          subscription: "${subscription.id}"
                       }
                   }).done(function(response){
                       $("#packages").html(response);
