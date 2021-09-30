@@ -90,7 +90,7 @@ class SubscriptionPackage implements Comparable {
   }
 
   int getIssueEntitlementCountOfPackage(){
-    IssueEntitlement.countBySubscription(this.subscription)
+    IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and ie.subscription = :sub and ie.status != :deleted', [sub: this.subscription, pkg: this.pkg, deleted: RDStore.TIPP_STATUS_DELETED])[0]
   }
 
   String getIEandPackageSize(){

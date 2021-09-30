@@ -15,6 +15,8 @@
 
 3873    30.09.2021  rc-2.2  2.2-RC      Moe     Bug         500er bei Eingabe von IP-Adresse
 
+3838    30.09.2021  rc-2.2  2.2-RC      Andreas Bug         Umstrukturierung des Titelübertrages zwischen zwei Lizenzen
+
 3871    29.09.2021  rc-2.2  2.2-RC      Andreas Bug         Tippfehler im Lizenzmerkmal korrigiert
 
 3865    29.09.2021  rc-2.2  2.2-RC      Andreas Feature     Eingrenzung der Umfangangaben auf vorhandene Werte
