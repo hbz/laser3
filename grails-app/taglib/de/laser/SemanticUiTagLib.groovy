@@ -221,7 +221,7 @@ class SemanticUiTagLib {
                         if (hasAuditConfig) {
                             if (obj.isSlaved) {
                                 out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack grey la-rotate"></i>'
+                                out << '<i aria-hidden="true" class="icon grey la-thumbtack-regular"></i>'
                                 out << '</span>'
                             }
                             else {
@@ -293,7 +293,7 @@ class SemanticUiTagLib {
                         if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
                             if (obj.isSlaved) {
                                 out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack grey la-rotate"></i>'
+                                out << '<i aria-hidden="true" class="icon grey la-thumbtack-regular"></i>'
                                 out << '</span>'
                             }
                             else {
@@ -312,7 +312,7 @@ class SemanticUiTagLib {
 
                             if (obj.isSlaved) {
                                 out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack grey la-rotate"></i>'
+                                out << '<i aria-hidden="true" class="icon grey la-thumbtack-regular"></i>'
                                 out << '</span>'
                             }
                             else {

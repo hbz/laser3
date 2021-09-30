@@ -63,7 +63,7 @@
         </tr>
         <tr>
             <td>
-                <i aria-hidden="true" class="icon la-js-editmode-icon thumbtack la-rotate"></i>
+                <i aria-hidden="true" class="icon la-js-editmode-icon thumbtack la-thumbtack-regular"></i>
             </td>
             <td>
                 Wert wird automatisch geerbt
