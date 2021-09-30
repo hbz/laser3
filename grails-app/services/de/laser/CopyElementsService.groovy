@@ -762,31 +762,30 @@ class CopyElementsService {
                         copyPackages(packagesToTake, targetObject, flash)
                         isTargetSubChanged = true
                     }
+
+                    if (params.subscription?.takePackageSettings && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                        List<SubscriptionPackage> packageSettingsToTake = params.list('subscription.takePackageSettings').collect {
+                            genericOIDService.resolveOID(it)
+                        }
+                        packageSettingsToTake.each { SubscriptionPackage sp ->
+                            //explicit loading of service needed because lazy initialisation gives null
+                            copyPendingChangeConfiguration(PendingChangeConfiguration.findAllBySubscriptionPackage(sp), SubscriptionPackage.findBySubscriptionAndPkg(targetObject, sp.pkg))
+                        }
+                        isTargetSubChanged = true
+                    }
+
+                    if (params.subscription?.takeTitleGroups && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                        List<IssueEntitlementGroup> takeTitleGroups = params.list('subscription.takeTitleGroups').collect { genericOIDService.resolveOID(it) }
+                        copyIssueEntitlementGroupItem(takeTitleGroups, targetObject)
+
+                    }
+
+                    if (params.subscription?.deleteTitleGroups && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                        List<IssueEntitlementGroup> deleteTitleGroups = params.list('subscription.deleteTitleGroups').collect { genericOIDService.resolveOID(it) }
+                        deleteIssueEntitlementGroupItem(deleteTitleGroups)
+
+                    }
                 })
-            }
-
-
-            if (params.subscription?.takePackageSettings && isBothObjectsSet(sourceObject, targetObject)) {
-                List<SubscriptionPackage> packageSettingsToTake = params.list('subscription.takePackageSettings').collect {
-                    genericOIDService.resolveOID(it)
-                }
-                packageSettingsToTake.each { SubscriptionPackage sp ->
-                    //explicit loading of service needed because lazy initialisation gives null
-                    copyPendingChangeConfiguration(PendingChangeConfiguration.findAllBySubscriptionPackage(sp), SubscriptionPackage.findBySubscriptionAndPkg(targetObject, sp.pkg))
-                }
-                isTargetSubChanged = true
-            }
-
-            if (params.subscription?.takeTitleGroups && isBothObjectsSet(sourceObject, targetObject)) {
-                List<IssueEntitlementGroup> takeTitleGroups = params.list('subscription.takeTitleGroups').collect { genericOIDService.resolveOID(it) }
-                copyIssueEntitlementGroupItem(takeTitleGroups, targetObject)
-
-            }
-
-            if (params.subscription?.deleteTitleGroups && isBothObjectsSet(sourceObject, targetObject)) {
-                List<IssueEntitlementGroup> deleteTitleGroups = params.list('subscription.deleteTitleGroups').collect { genericOIDService.resolveOID(it) }
-                deleteIssueEntitlementGroupItem(deleteTitleGroups)
-
             }
 
             /*if (params.subscription?.deleteEntitlementIds && isBothObjectsSet(sourceObject, targetObject)) {
