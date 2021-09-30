@@ -25,7 +25,7 @@
 
 
 <div class="ui top attached tabular menu">
-    <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}" params="[tab: 'changes']"
+    <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}" params="[tab: 'changes', eventType: params.eventType]"
             class="item ${params.tab == "changes" ? 'active' : ''}">
         <g:message code="myinst.menu.pendingChanges.label"/>
         <span class="ui circular label">
@@ -34,7 +34,7 @@
     </g:link>
 
     <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}"
-            params="[tab: 'acceptedChanges']"
+            params="[tab: 'acceptedChanges', eventType: params.eventType]"
             class="item ${params.tab == "acceptedChanges" ? 'active' : ''}">
         <g:message code="myinst.menu.acceptedChanges.label"/>
         <span class="ui circular label">
